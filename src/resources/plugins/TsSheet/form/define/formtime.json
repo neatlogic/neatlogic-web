@@ -1,0 +1,22 @@
+{
+  "handler": "formtime",
+  "label": "时间",
+  "type": "form",
+  "category": "basic",
+  "icon": "tsfont-formtime",
+  "hasValue": true,
+  "config": {
+    "isRequired": false,
+    "description": "",
+    "width": "100%",
+    "isMask": false,
+    "isHide": false,
+    "placeholder": "请选择时间",
+    "format": "HH:mm:ss",
+    "validValueList": [],
+    "isReadOnly": false,
+    "isDisabled": false
+  },
+  "override_config": {},
+  "reaction": { "mask": {}, "hide": {}, "display": {}, "readonly": {}, "disable": {}, "setvalue": {} }
+}

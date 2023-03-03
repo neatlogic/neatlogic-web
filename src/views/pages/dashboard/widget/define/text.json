@@ -1,0 +1,18 @@
+{
+  "name": "text",
+  "label": "文本",
+  "type": "text",
+  "icon": "tsfont-title",
+  "widgetType": "basic",
+  "hasCustomConfig": true, 
+  "width": 3,
+  "height": 3,
+  "padding": 10,
+  "dataTypes": [
+    { "value": "static", "text": "静态数据" },
+    { "value": "dynamic", "text": "动态数据" }
+  ],
+  "needData": true, 
+  "fields": [{ "name": "text", "label": "文案", "type": ["text","number","datetime","time","date"], "isRequired": true }],
+  "config": { "align": "left", "backgroundColor": "", "backgroundImage": "", "fontsize": 12, "color": "" }
+}

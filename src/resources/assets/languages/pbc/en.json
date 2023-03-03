@@ -1,0 +1,7 @@
+{
+  "errorMessage":{
+    "empty":{
+      "resource":"Resource :'{name}' does not exist"
+    }
+  }
+}

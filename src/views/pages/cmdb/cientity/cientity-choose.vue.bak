@@ -1,0 +1,258 @@
+<template>
+  <div>
+    <TsDialog :is-show="isShow" v-bind="dialogConfig" @on-close="close">
+      <template v-slot:header>
+        <div>选择配置</div>
+      </template>
+      <template v-slot>
+        <div>
+          <div class="clearfix" style="margin-bottom:10px">
+            <div style="float:left">
+              <TsFormInput
+                v-model="searchParam.keyword"
+                border="border"
+                :width="400"
+                placeholder="请输入关键字"
+              ></TsFormInput>
+            </div>
+            <div v-if="!isAdvancedSearch" style="float:left;margin-left:10px">
+              <Button type="primary" @click="searchCiEntity">搜索</Button>
+            </div>
+            <div v-if="attrList && attrList.length > 0" style="float:left;cursor:pointer;line-height:30px;margin-left:10px">
+              <span @click="isAdvancedSearch = !isAdvancedSearch">高级搜索<i :class="isAdvancedSearch?'ts-caret-up':'ts-caret-down'"></i></span>
+            </div>
+          </div>
+          <div v-if="isAdvancedSearch">
+            <Card v-if="attrList && attrList.length > 0" dis-hoverstyle="margin-bottom:10px">
+              <TsRow>
+                <Col v-for="(attr, index) in searchAttrList" :key="index" span="12">
+                  <TsRow class="search-item">
+                    <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
+                    <Col span="6" class="search-expression">
+                      <TsFormSelect
+                        v-model="attr.expression"
+                        border="border"
+                        :dataList="attr.expressionList"
+                        @change="setAttrData(attr,'expression',$event)"
+                      ></TsFormSelect>
+                    </Col>
+                    <Col v-if="attr.expression != 'is-null' && attr.expression != 'is-not-null'" span="12" class="search-condition">
+                      <AttrHandler ref="propHandler" :attrData="attr" @setData="setAttrData(attr, 'value', $event)"></AttrHandler>
+                    </Col>
+                  </TsRow>
+                </Col>
+              </TsRow>
+              <div style="text-align:right"><Button type="primary" @click="searchCiEntity()">搜索</Button></div>
+            </Card>
+          </div>
+          <div v-if="ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0">
+            <TsTable
+              v-if="ciEntityData"
+              v-bind="ciEntityData"
+              rowKey="id"
+              @getSelected="getSelected"
+            >
+              <template v-for="(head, index) in finalHeaderList" :slot="head.key" slot-scope="{ row }">
+                <div v-if="head.key.indexOf('attr_') == 0 && row.attrEntityData" :key="index">
+                  <div v-if="row.attrEntityData[head.key]">
+                    <div v-if="row.attrEntityData[head.key].type == 'property'">
+                      <PropertyViewer :handler="row.attrEntityData[head.key].handler" :propConfig="getPropConfig(row.attrEntityData[head.key].propId)" :valueList="row.attrEntityData[head.key].valueList"></PropertyViewer>
+                    </div>
+                    <div v-else>
+                      <span v-for="(v,vindex) in row.attrEntityData[head.key].valueList" :key="vindex">
+                        {{ v }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if="row.relEntityData['valueList']" :key="index">
+                  <a
+                    v-for="(relentity,rindex) in row.relEntityData[head.key]['valueList']"
+                    :key="rindex"
+                    class="text-aciton"
+                    style="text-decoration:underline;margin-right:5px"
+                    href="javascript:void(0)"
+                    @click="toCiEntity(relentity.ciEntityId, relentity.ciId)"
+                  >
+                    <span>{{ relentity.ciEntityName }}</span><span style="margin-left:2px;font-size:12px"><i class="ts-cube"></i></span>
+                  </a>
+                </div>
+              </template>
+            </TsTable>
+          </div>
+          <div v-if="!ciEntityData.tbodyList || ciEntityData.tbodyList.length == 0">
+            没有任何配置项
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <Button @click="close()">取消</Button>
+        <Button type="primary" @click="chooseCiEntity()">确定</Button>
+      </template>
+    </TsDialog>
+  </div>
+</template>
+<script>
+import PropertyViewer from './attr-viewer.vue';
+export default {
+  name: '',
+  components: {
+    PropertyViewer,
+    TsTable: resolve =>
+      require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormInput: resolve =>
+      require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsFormSelect: resolve =>
+      require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    AttrHandler: resolve =>
+      require(['./attr-handler.vue'], resolve)
+  },
+  props: {
+    ciId: {type: Number},
+    isShow: { type: Boolean, default: false }
+  },
+  data() {
+    return {
+      isAdvancedSearch: false,
+      attrList: [],
+      ciEntityData: {},
+      selectedCiEntityList: [],
+      searchParam: {needCheck: true},
+      dialogConfig: {
+        type: 'slider',
+        maskClose: false,
+        isShow: false,
+        width: '1000px'
+      },
+      attrFilterList: {}
+    };
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {
+  },
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    getSelected: function(id, entity) {
+      this.selectedCiEntityList = [];
+      if (entity && entity.length > 0) {
+        entity.forEach(element => {
+          this.selectedCiEntityList.push({ciEntityId: element.id, ciEntityName: element.name});
+        });
+      }
+    },
+    searchCiEntity() {
+      this.searchParam.attrFilterList = [];
+      for (const key in this.attrFilterList) {
+        const d = this.attrFilterList[key];
+        if (d.attrId && d.expression) {
+          const obj = {
+            attrId: d.attrId,
+            defaultValue: d.valueList, 
+            expression: d.expression
+          };
+          this.searchParam.attrFilterList.push(obj);
+        }
+      }
+      this.$api.cmdb.cientity.searchCiEntity(this.searchParam).then(res => {
+        this.ciEntityData = res.Return;
+      });
+    }, 
+    close() {
+      this.$emit('close');
+    },
+    chooseCiEntity() {
+      this.$emit('close', this.selectedCiEntityList);
+    },
+    getAttrByCiId() {
+      this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+        this.attrList = res.Return;
+      });
+    },
+    getPropConfig(propId) {
+      if (this.attrList && this.attrList.length > 0) {
+        for (let i = 0; i < this.attrList.length; i++) {
+          const attr = this.attrList[i];
+          if (attr.propId == propId) {
+            return attr.propConfig;
+          }
+        }
+      }
+      return null;
+    },
+    setAttrData(attr, type, value) {
+      if (!this.attrFilterList['a' + attr.id]) {
+        this.attrFilterList['a' + attr.id] = {};
+        this.attrFilterList['a' + attr.id].attrId = attr.id;
+      }
+      if (type == 'value') {
+        this.attrFilterList['a' + attr.id].valueList = value;
+      } else if (type == 'expression') {
+        this.attrFilterList['a' + attr.id].expression = value;
+      }
+    }
+  },
+  filter: {},
+  computed: {
+    finalHeaderList: function() {
+      let finalList = [];
+      if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
+        this.ciEntityData.theadList.forEach(element => {
+          if (element.key.indexOf('attr_') == 0 || element.key.indexOf('relto_') == 0 || element.key.indexOf('relfrom_') == 0) {
+            finalList.push(element);
+          }
+        });
+      }
+      return finalList;
+    },
+    searchAttrList() {
+      if (this.attrList && this.attrList.length > 0) {
+        return this.attrList.filter(attr => { return attr.canSearch == 1; });
+      } else {
+        return null;
+      }
+    }
+  },
+  watch: {
+    isShow: {
+      handler: function(val) {
+        if (val) {
+          this.searchParam['ciId'] = this.ciId;
+          this.searchCiEntity();
+          this.getAttrByCiId();
+        }
+      }
+    },
+    isAdvancedSearch: {
+      handler: function(val) {
+        if (!val) {
+          if (this.attrList && this.attrList.length > 0) {
+            this.attrList.forEach(element => {
+              element.expression = null;
+            });
+          }
+          this.attrFilterList = [];
+          this.searchCiEntity();
+        } else {
+          this.$set(this.searchParam, 'keyword', '');
+        }
+      }
+    }
+  }
+};
+</script>
+<style lang="less" scoped>
+.search-item {
+  height: 40px;
+  line-height: 38px;
+  .search-label {
+    text-align: right;
+  }
+}
+</style>

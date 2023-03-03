@@ -1,0 +1,114 @@
+{
+  "input": [
+    {
+      "text": "等于",
+      "value": "equal"
+    },
+    {
+      "text": "不等于",
+      "value": "notequal"
+    },
+    {
+      "text": "包含",
+      "value": "like"
+    },
+    {
+      "text": "不包含",
+      "value": "notlike"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ],
+  "select": [
+    {
+      "text": "包含",
+      "value": "like"
+    },
+    {
+      "text": "不包含",
+      "value": "notlike"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ],
+  "date": [
+    {
+      "text": "在区间内",
+      "value": "between"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ],
+  "user": [
+    {
+      "text": "包含",
+      "value": "like"
+    },
+    {
+      "text": "不包含",
+      "value": "notlike"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ],
+  "team": [
+    {
+      "text": "包含",
+      "value": "like"
+    },
+    {
+      "text": "不包含",
+      "value": "notlike"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ],
+  "role": [
+    {
+      "text": "包含",
+      "value": "like"
+    },
+    {
+      "text": "不包含",
+      "value": "notlike"
+    },
+    {
+      "text": "为空",
+      "value": "is-null"
+    },
+    {
+      "text": "不为空",
+      "value": "is-not-null"
+    }
+  ]
+}

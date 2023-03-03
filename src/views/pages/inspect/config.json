@@ -1,0 +1,7 @@
+{
+  "module":"inspect",
+  "menuType":{
+    "inspectmanage": "巡检管理",
+    "inspectResult": "巡检结果"
+  }
+}

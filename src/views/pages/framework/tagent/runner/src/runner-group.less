@@ -1,0 +1,43 @@
+@charset "UTF-8";
+// runner组编辑新增页面样式
+.groupwork {
+  display: flex;
+  position: relative;
+  /deep/ div:first-of-type {
+    //  解决网段IP和掩码有错误提示，高度不对齐问题
+    height: 50px;
+    line-height: 40px;
+  }
+  /deep/ .form-error-tip {
+    position: absolute;
+    top: 34px;
+  }
+  /deep/ .ivu-input-icon {
+    line-height: 38px;
+  }
+}
+.netWork {
+  margin-left: 50px;
+  margin-top: 10px;
+  position: relative;
+  top: -31px;
+  width: 78%;
+  right: -68px;
+}
+.step {
+  width: 75%;
+  margin: 0 auto;
+  padding: 0 0 25px 0;
+}
+.runner-manage-group-wrap {
+  /deep/ .tscontain-body {
+    height: 300px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /deep/ .tscontain-header,  /deep/ .tscontain-headerBg {
+    height: 0;
+  }
+}
+
+

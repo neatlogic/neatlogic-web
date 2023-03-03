@@ -1,0 +1,11 @@
+import * as d3 from 'd3';
+import '@/resources/plugins/TsDiagram/js/class.js';
+import '@/resources/plugins/TsDiagram/css/graphStyle.css';
+import '@/resources/plugins/TsDiagram/js/diagram.js';
+import '@/resources/plugins/TsDiagram/js/diagram.curve.js';
+import '@/resources/plugins/TsDiagram/js/diagram.pillar.js';
+import '@/resources/plugins/TsDiagram/js/diagram.area.js';
+import '@/resources/plugins/TsDiagram/js/diagram.pie.js';
+import '@/resources/plugins/TsDiagram/js/diagram.point.js';
+import '@/resources/plugins/TsDiagram/js/diagram.numerical.js';
+window.d3 = d3;

@@ -1,0 +1,28 @@
+/*
+  inspect：巡检
+  pbc：监管报送
+  deploy 自动发布
+*/
+@modules:framework,dashboard,process,knowledge,report,cmdb,autoexec,inspect,pbc,deploy;
+html {
+  [class^="module-img-"],
+  [class*=" module-img-"]{
+    background-image: url('~img-module/modules/icon/big/framework-default.png');
+  }
+  each(@modules, {
+    .module-img-@{value} {
+      background-image: url('~img-module/modules/icon/big/@{value}-default.png');
+    }
+  });
+  &.theme-dark {
+    [class^="module-img-"],
+    [class*=" module-img-"]{
+      background-image: url('~img-module/modules/icon/big/framework-dark.png');
+    }
+    each(@modules, {
+      .module-img-@{value} {
+        background-image: url('~img-module/modules/icon/big/@{value}-dark.png');
+      }
+    }); 
+  }
+}

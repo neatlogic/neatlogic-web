@@ -1,0 +1,14 @@
+{
+  "name": "custom",
+  "label": "自定义",
+  "type": "custom",
+  "icon": "tsfont-plugin",
+  "widgetType": "other",
+  "hasCustomConfig": true,
+  "width": 5,
+  "height": 7,
+  "padding": 10,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "needData": true,
+  "config": {"template": "", "fileList": [], "config": ""  }
+}

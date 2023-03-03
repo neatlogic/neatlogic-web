@@ -1,0 +1,400 @@
+{
+    "titleType": {
+        "globalColor": "主题色",
+        "topbg": "头部颜色",
+        "table": "表格颜色",
+        "formColor": "表单颜色",
+        "menuSelect": "左侧菜单颜色",
+        "others": "其他颜色",
+        "dashboard": "仪表板颜色",
+        "logo": "LOGO 图片"
+    },
+    "light": [
+        {
+            "titleType": "globalColor",
+            "label": "主题色",
+            "param": "--primary-color",
+            "value": "#1670F0",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "globalcolor"
+        },
+        {
+            "titleType": "globalColor",
+            "label": "主题色鼠标经过颜色",
+            "param": "--primary-hover-color",
+            "value": "#1670F0",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "globalColor",
+            "label": "主题色激活颜色",
+            "param": "--primary-active-color",
+            "value": "#004CB8",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "topbg",
+            "label": "头部背景",
+            "param": "--topbg-color",
+            "value": "#333547",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "menu"
+        },
+        {
+            "titleType": "topbg",
+            "label": "头部背景鼠标经过色值",
+            "param": "--top-active",
+            "value": "#333547",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表格斑马颜色",
+            "param": "--table-stripe-color",
+            "value": "#333547",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "table"
+        },
+        {
+            "titleType": "table",
+            "label": "表格移上去颜色",
+            "param": "--table-hover-color",
+            "value": "#ECEDF0",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表格选中颜色及主色弱化",
+            "param": "--primary-grey",
+            "value": "#E7F0FF",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表头颜色",
+            "param": "--th-bg-color",
+            "value": "#EFF0F3",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "formColor",
+            "label": "多选框选中背景色",
+            "param": "--condition-checkbox-color",
+            "value": "#6ac0ff",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "checkbox-tag"
+        },
+        {
+            "titleType": "formColor",
+            "label": "下拉选中和鼠标经过色值",
+            "param": "--selected-bg",
+            "value": "#E7F3FF",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "select-selected-bg"
+        },
+        {
+            "titleType": "formColor",
+            "label": "开关底色",
+            "param": "--switch-bg",
+            "value": "#96BEF8",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "switch"
+        },
+        {
+            "titleType": "formColor",
+            "label": "多选和单选(禁用,选中状态)",
+            "param": "--form-disabled",
+            "value": "#96BEF8",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "form-disabled"
+        },
+        {
+            "titleType": "menuSelect",
+            "label": "左侧菜单选中颜色",
+            "param": "--menu-select",
+            "value": "#EFF0F3",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "menuSelect",
+            "label": "左侧菜单鼠标经过颜色",
+            "param": "--menu-hover",
+            "value": "#F6F6F7",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "辅助色",
+            "param": "--gray-color",
+            "value": "#F2F4F5",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "分割线颜色",
+            "param": "--dividing-color",
+            "value": "#E5E5E5",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "边框颜色",
+            "param": "--border-color",
+            "value": "#E5E5E5",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "警告背景颜色",
+            "param": "--warning-bg-color",
+            "value": "#FFF5E7",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "图表颜色",
+            "param": "chart",
+            "value": ["#B9D582","#68AC90","#FFBA5A","#559BFE","#7B8CFE","#EC8AD2","#EEB49F","#78EAD4","#E2F293","#FFA973","#7BB0F8","#A1A6FC"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "值图背景",
+            "param": "chart-number",
+            "value": ["#C5E2D6","#E5F1DB","#D9E8FE","#DEE2D0","#FCE5C5","#F1DBE2"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "值图文字",
+            "param": "chart-number-text",
+            "value": ["#76B39A","#7EA438","#559BFE","#9DA788","#FEBC60","#EF87A8"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "logo",
+            "label": "LOGO图片配置",
+            "param": "logo",
+            "value": "logo_big_dark.png",
+            "type": "file",
+            "input": "file"
+        }
+    ],
+    "dark": [
+        {
+            "titleType": "globalColor",
+            "title": "主题色",
+            "label": "主题色",
+            "param": "--primary-color",
+            "value": "#00BCD4",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "globalcolor"
+        },
+        {
+            "titleType": "globalColor",
+            "label": "主题色鼠标经过颜色",
+            "param": "--primary-hover-color",
+            "value": "#33C9DC",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "globalColor",
+            "label": "主题色激活颜色",
+            "param": "--primary-active-color",
+            "value": "#004CB8",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "topbg",
+            "label": "头部背景",
+            "param": "--topbg-color",
+            "value": "#333547",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "menu"
+        },
+        {
+            "titleType": "topbg",
+            "label": "头部背景鼠标经过色值",
+            "param": "--top-active",
+            "value": "#3B495F",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表格斑马颜色",
+            "param": "--table-stripe-color",
+            "value": "#151824",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "table"
+        },
+        {
+            "titleType": "table",
+            "label": "表格移上去颜色",
+            "param": "--table-hover-color",
+            "value": "#2C2F3A",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表格选中颜色及主色弱化",
+            "value": "#57657D",
+            "param": "--primary-grey",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "table",
+            "label": "表头颜色",
+            "param": "--th-bg-color",
+            "value": "#151824",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "formColor",
+            "label": "多选框背景色",
+            "param": "--condition-checkbox-color",
+            "value": "#6ac0ff",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "checkbox-tag"
+        },
+        {
+            "titleType": "formColor",
+            "label": "下拉选中和鼠标经过色值",
+            "param": "--selected-bg",
+            "value": "#5B5D66",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "select-selected-bg"
+        },
+        {
+            "titleType": "formColor",
+            "name": "themSwitch",
+            "label": "开关底色",
+            "param": "--switch-bg",
+            "value": "#0D4E5D",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "switch"
+        },
+        {
+            "titleType": "formColor",
+            "label": "多选和单选(禁用,选中状态)",
+            "param": "--form-disabled",
+            "value": "#96BEF8",
+            "type": "common",
+            "input": "colorpicker",
+            "example": "form-disabled"
+        },
+        {
+            "titleType": "menuSelect",
+            "label": "左侧菜单选中颜色",
+            "param": "--menu-select",
+            "value": "#151824",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "menuSelect",
+            "label": "左侧菜单鼠标经过颜色",
+            "param": "--menu-hover",
+            "value": "#2C2F3A",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "辅助色",
+            "param": "--gray-color",
+            "value": "#F2F4F5",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "分割线颜色",
+            "param": "--dividing-color",
+            "value": "#464755",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "边框颜色",
+            "param": "--border-color",
+            "value": "#464755",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "others",
+            "label": "警告背景颜色",
+            "param": "--warning-bg-color",
+            "value": "#7c6e57",
+            "type": "common",
+            "input": "colorpicker"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "图表颜色",
+            "param": "chart",
+            "value": ["#B9D582","#68AC90","#FFBA5A","#559BFE","#7B8CFE","#EC8AD2","#EEB49F","#78EAD4","#E2F293","#FFA973","#7BB0F8","#A1A6FC"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "值图背景",
+            "param": "chart-number",
+            "value": ["#C5E2D6","#E5F1DB","#D9E8FE","#DEE2D0","#FCE5C5","#F1DBE2"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "dashboard",
+            "label": "值图文字",
+            "param": "chart-number-text",
+            "value": ["#76B39A","#7EA438","#559BFE","#9DA788","#FEBC60","#EF87A8"],
+            "type": "dashboard",
+            "input": "colorpickerlist"
+        },
+        {
+            "titleType": "logo",
+            "label": "LOGO图片配置",
+            "value": "logo_big_dark.png",
+            "param": "logo",
+            "type": "file",
+            "input": "file"
+        }
+    ]
+  }

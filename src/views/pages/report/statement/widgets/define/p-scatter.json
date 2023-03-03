@@ -1,0 +1,42 @@
+{
+  "name": "pscatter",
+  "label": "散点图",
+  "type": "pscatter",
+  "icon": "tsfont-chart-scatter",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 500,
+  "height": 200,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": "number", "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": "number", "isRequired": true },
+    { "name": "colorField", "label": "颜色字段", "type": "text", "isRequired": true }
+  ],
+  "config": {
+    "xField": "xField",
+    "yField": "yField",
+    "colorField": "colorField",
+    "size": 5,
+    "shape": "circle",
+    "yAxis": { "title": { "text": "" } },
+    "xAxis": {
+      "label": {
+        "autoHide": true,
+        "autoEllipsis": true
+      },
+      "title": { "text": "" }
+    },
+    "meta": {
+      "xField": { "alias": "X轴字段" },
+      "yField": { "alias": "Y轴字段" },
+      "colorField": { "alias": "颜色字段" }
+    },
+    "legend": {
+      "visible": true,
+      "position": "bottom"
+    }
+  }
+}

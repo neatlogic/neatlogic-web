@@ -1,0 +1,30 @@
+{
+  "name": "liquid",
+  "label": "水波图",
+  "type": "liquid",
+  "icon": "tsfont-chart-liquid",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 3,
+  "height": 9,
+  "padding": 10,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [{ "name": "number", "label": "值", "type": "number", "isRequired": true }],
+  "config": {
+    "shape": "circle",
+    "color": "",
+    "outline": {
+      "border": 2,
+      "distance": 0,
+      "style": {
+        "stroke": ""
+      }
+    },
+    "wave": {
+      "length": 128
+    },
+    "pattern": { "type": "" },
+    "statistic": { "content": { "style": { "color": "", "fontSize": 14 } } }
+  }
+}

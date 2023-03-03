@@ -1,0 +1,10 @@
+{
+  "module":"autoexec",
+  "menuType":{
+    "detail": "router.autoexec.detail",
+    "job": "router.autoexec.job",
+    "quickService": "router.autoexec.quickService",
+    "tool": "router.autoexec.tool",
+    "config": "router.autoexec.config"
+  }
+}

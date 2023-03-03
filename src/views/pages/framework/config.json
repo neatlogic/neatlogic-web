@@ -1,0 +1,13 @@
+{
+  "module": "framework",
+  "menuType": {
+    "user": "router.framework.user",
+    "message": "router.framework.message",
+    "integration": "router.framework.integration",
+    "notify": "router.framework.notify",
+    "job": "router.framework.job",
+    "others": "router.framework.others",
+    "healthcheck": "router.framework.healthcheck",
+    "license": "router.framework.license"
+  }
+}

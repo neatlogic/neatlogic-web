@@ -1,0 +1,12 @@
+{
+  "name": "map",
+  "label": "地图",
+  "type": "map",
+  "icon": "tsfont-location",
+  "widgetType": "geography",
+  "width": 500,
+  "height": 500,
+  "padding": 5,
+  "hasCustomConfig": false,
+  "needData": false
+}

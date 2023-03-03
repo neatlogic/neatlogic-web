@@ -1,0 +1,12 @@
+{
+  "name": "district",
+  "label": "县级行政区",
+  "type": "district",
+  "icon": "tsfont-location-o",
+  "widgetType": "geography",
+  "width": 5,
+  "height": 2,
+  "padding": 10,
+  "hasCustomConfig": false,
+  "needData": false
+}

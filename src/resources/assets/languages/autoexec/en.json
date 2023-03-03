@@ -1,0 +1,128 @@
+{
+  "action": "action",
+  "step": "step",
+  "execMode": "execMode",
+  "execTarget": "execTarget",
+  "execRecord": "execRecord",
+  "execUser":"execUser",
+  "target":"target",
+  "remote": "remote",
+  "local": "local",
+  "script": "script",
+  "tool": "tool",
+  "job":"job",
+  "operation": "operation",
+  "actionLevel": "action level",
+  "inputParam": "inputParam",
+  "outputParam": "outputParam",
+  "failPolicy": "failPolicy",
+  "failStop": "stop when failed",
+  "failGoon": "goon when failed",
+  "concurrentThreads":"concurrent threads",
+  "execute":"execute",
+  "operator":"operator",
+  "startEndTime":"starting and ending time",
+  "costTime":"costTime",
+  "node":"node",
+  "console":"console",
+  "toolClassification": "tool classification",
+  "http":"connection protocol",
+  "agent":{
+    "message":"runner information",
+    "runner":"runner"
+  },
+  "jobBtn":{
+    "pause":"pause",
+    "stop":"stop",
+    "goon":"goon",
+    "redo":"redo",
+    "ignore":"ignore",
+    "resetAll":"reset all",
+    "reset":"reset"
+  },
+  "exec":{
+    "rate":"completion rate"
+  },
+  "nodeDetial":{
+    "log":"output criteria",
+    "param":"@:autoexec.outputParam",
+    "record":"operation record "
+  },
+  "add":{
+    "action":"@.capitalize:common.add1 a new @:autoexec.action",
+    "step":"@.capitalize:common.add1 a new @:autoexec.step",
+    "operation":"@.capitalize:common.add1 a new @:autoexec.operation",
+    "target":"@.capitalize:common.add1 a new @:autoexec.target",
+    "script":"@.capitalize:common.add1 a new @:autoexec.script",
+    "job":"@.capitalize:common.add1 a new @:autoexec.job"
+  },
+  "copy":{
+    "action":"@.capitalize:common.copy @:autoexec.action",
+    "step":"@.capitalize:common.copy @:autoexec.step",
+    "operation":"@.capitalize:common.copy @:autoexec.operation",
+    "target":"@.capitalize:common.copy @:autoexec.target",
+    "script":"@.capitalize:common.copy @:autoexec.script",
+    "tool": "@.capitalize:common.copy @:autoexec.tool"
+  },
+  "param": {
+    "constant": "constant",
+    "runtimeparam": "runtimeparam",
+    "prenodeoutputparam": "prenodeoutputparam",
+    "empty": "empty"
+  },
+  "publish":{
+    "action":"@:common.publish as a @:autoexec.action",
+    "finish":"@:common.published as a @:autoexec.action"
+  },
+  "tips": {
+    "emptyText": "is empty",
+    "emptyData": "no data",
+    "failureStrategy":"After a failure, it automatically skips the failed node and continues to work on the next unstarted node",
+    "empty": {
+      "operation": "@.capitalize:autoexec.operation @:autoexec.tips.emptyText",
+      "step": "@.capitalize:autoexec.step @:autoexec.tips.emptyText",
+      "input": "@.capitalize:autoexec.inputParam @:autoexec.tips.emptyText",
+      "output": "@.capitalize:autoexec.outputParam @:autoexec.tips.emptyText"
+    }
+  },
+  "warning": {
+    "emptyText": "can not be empty",
+    "emptyText1": "which is required can not be empty",
+    "empty": {
+      "operation": "@.capitalize:autoexec.operation @:autoexec.warning.emptyText",
+      "step": "@.capitalize:autoexec.step @:autoexec.warning.emptyText",
+      "input": "@.capitalize:autoexec.inputParam @:autoexec.warning.emptyText1",
+      "output": "@.capitalize:autoexec.outputParam @:autoexec.warning.emptyText1",
+      "execTarget":"@:autoexec.execTarget @:autoexec.warning.emptyText1",
+      "execUser":"@:autoexec.execUser @:autoexec.tips.emptyText"
+    }
+  },
+  "placeholder":{
+    "node":"Please enter a node name or IP",
+    "version": "Please enter a version name"
+  },
+  "jobs": {
+    "letter": "jobs",
+    "status": "@:autoexec.jobs @:common.status",
+    "source": "@:autoexec.jobs @:common.source"
+  },
+  "disableDesc": {
+    "letter": "No permission, please contact the administrator！",
+    "active": "The current combination tool is disabled. Please activate the combination tool before executing",
+    "reference":"Referenced and cannot be deleted"
+  },
+  "scriptBtn": {
+    "saveDraft": "To save a draft",
+    "submitAudit": "Submit audit"
+  },
+  "schedule": {
+    "cronExpress": "cron expression",
+    "autoexecCombopName": "Associative combination tool",
+    "execCount": "Number of executions",
+    "enable": "enable",
+    "disable": "disable",
+    "planStartTime": "plan start time",
+    "planEndTime": "plan end time",
+    "isSureToDeleteThisTimeJob": "is sure to delete this time job"
+  }
+}

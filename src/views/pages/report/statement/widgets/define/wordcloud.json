@@ -1,0 +1,23 @@
+{
+  "name": "wordcloud",
+  "label": "词云图",
+  "type": "wordcloud",
+  "icon": "tsfont-chart-wordcloud",
+  "widgetType": "other",
+  "hasCustomConfig": true,
+  "width": 500,
+  "height": 200,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "wordField", "label": "名称字段", "type": "text", "isRequired": true },
+    { "name": "colorField", "label": "颜色字段", "type": "text", "isRequired": true },
+    { "name": "weightField", "label": "数值字段", "type": "number", "isRequired": true }
+  ],
+  "config": {
+    "wordStyle": {
+      "fontSize": [8, 32]
+    }
+  }
+}

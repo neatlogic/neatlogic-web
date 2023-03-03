@@ -1,0 +1,7 @@
+{
+  "module":"pbc",
+  "menuType":{
+    "pbcreport": "数据上报",
+    "manage": "参数设置"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "stackedbar",
+  "label": "堆叠条形图",
+  "type": "stackedbar",
+  "icon": "tsfont-storage",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 5,
+  "height": 5,
+  "padding": 10,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": "number", "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": ["text", "date", "datetime", "time"], "isRequired": true },
+    { "name": "seriesField", "label": "分组字段", "type": ["text", "date", "datetime", "time"], "isRequired": true }
+  ],
+  "config": {
+    "isPercent": false,
+    "label": false,
+    "columnWidthRatio": 0.5,
+    "connectedArea": true,
+    "legend": {
+      "visible": true,
+      "position": "bottom"
+    }
+  }
+}

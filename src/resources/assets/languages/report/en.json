@@ -1,0 +1,23 @@
+{
+  "report":"report forms",
+  "control":"control",
+  "visits":"visits",
+  "isActive":"activate or not",
+  "sending":"sending",
+  "template": {
+    "letter": "template",
+    "list": "@:report.template.letter @:common.list",
+    "add": "@:common.add @:report.template.letter",
+    "edit": "@:common.edit @:report.template.letter"
+  },
+  "box": {
+    "input": "input",
+    "select": "select",
+    "checkbox": "checkbox",
+    "radio": "radio"
+  },
+  "send": {
+    "time": "sending time",
+    "record": "Send record"
+  }
+}

@@ -1,0 +1,56 @@
+<template>
+  <div>
+    <span class="tip-title">{{ config.typeName }}</span>
+    <span v-if="textShow(config) && textShow(config) =='删除'" class="text-grey text-padding">{{ textShow(config) }}</span>
+    <span v-html="config.oldContent"></span>
+    <span v-if="textShow(config) && textShow(config) !='删除'" class="text-grey text-padding">{{ textShow(config) }}</span>
+    <span v-html="config.newContent"></span>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+   
+  },
+  filters: {},
+  props: {
+    config: Object
+  },
+  data() {
+    return {};
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {},
+  computed: {
+    textShow() {
+      return function(config) {
+        let text = null;
+        if (config.oldContent && config.newContent) {
+          text = '改为';
+        } else if (config.oldContent && !config.newContent) {
+          text = '删除';
+        } else {
+          text = '';
+        }
+        return text;
+      };
+    }
+  },
+  watch: {}
+};
+</script>
+<style lang='less' scoped>
+.text-padding{
+  padding: 0 8px;
+}
+</style>

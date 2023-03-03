@@ -1,0 +1,25 @@
+{
+  "name": "rose",
+  "label": "玫瑰图",
+  "type": "rose",
+  "icon": "tsfont-chart-rose",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 250,
+  "height": 250,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "yField", "label": "数值字段", "type": "number", "isRequired": true },
+    { "name": "xField", "label": "分类字段", "type": "text", "isRequired": true },
+    { "name": "seriesField", "label": "分组字段", "type": "text", "isRequired": true }
+  ],
+  "config": {
+    "legend": {
+      "visible": true,
+      "position": "bottom",
+      "layout": "horizontal"
+    }
+  }
+}

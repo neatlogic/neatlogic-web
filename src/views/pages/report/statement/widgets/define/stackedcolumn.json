@@ -1,0 +1,28 @@
+{
+  "name": "stackedcolumn",
+  "label": "堆叠柱状图",
+  "type": "stackedcolumn",
+  "icon": "tsfont-chart-bar",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 500,
+  "height": 200,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": "text", "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": "number", "isRequired": true },
+    { "name": "seriesField", "label": "分组字段", "type": "text", "isRequired": true }
+  ],
+  "config": {
+    "isPercent": false,
+    "label": false,
+    "columnWidthRatio": 0.5,
+    "connectedArea": true,
+    "legend": {
+      "visible": true,
+      "position": "bottom"
+    }
+  }
+}

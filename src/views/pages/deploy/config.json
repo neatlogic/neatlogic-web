@@ -1,0 +1,7 @@
+{
+  "module":"deploy",
+  "menuType":{
+    "job": "作业", 
+    "config": "配置"
+  }
+}

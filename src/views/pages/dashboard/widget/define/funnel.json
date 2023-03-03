@@ -1,0 +1,27 @@
+{
+  "name": "funnel",
+  "label": "漏斗图",
+  "type": "funnel",
+  "icon": "tsfont-chart-funnel",
+  "widgetType": "other",
+  "hasCustomConfig": true,
+  "width": 3,
+  "height": 7,
+  "padding": 10,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "名称字段", "type": ["text", "date", "datetime", "time"], "isRequired": true },
+    { "name": "yField", "label": "数值字段", "type": "number", "isRequired": true }
+  ],
+  "config": {
+    "dynamicHeight": true,
+    "isTransposed": false,
+    "legend": {
+      "visible": true,
+      "position": "bottom",
+      "layout": "horizontal"
+    },
+    "label": {}
+  }
+}

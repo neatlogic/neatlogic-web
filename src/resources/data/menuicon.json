@@ -1,0 +1,158 @@
+[
+  {
+    "keyword": "setting 设置 配置",
+    "icon": "ts-setting"
+  },
+  {
+    "keyword": "search 搜索",
+    "icon": "ts-search"
+  },
+  {
+    "keyword": "upload 上传",
+    "icon": "ts-upload"
+  },
+  {
+    "keyword": "link 链接",
+    "icon": "ts-link"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-notice"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-problem"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-alert"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-linechart"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-request"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-typelist"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-works"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-dev-security"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-email"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-tags"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-playbook"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-batch-ops"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-batchdeploy"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-stack"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-signature"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-dictionary"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-report"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-auth"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-cloud"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-pulse"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-dashboard"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-dashboard-job"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-auth"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-browser"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-certificate"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-callcenter"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-cmdb"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-ip"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-home"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-monitor"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-plugin"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-octopus"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-apm"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-m-deployment"
+  },
+  {
+    "keyword": "",
+    "icon": "ts-sitemap"
+  }
+]

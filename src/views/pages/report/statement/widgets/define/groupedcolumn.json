@@ -1,0 +1,27 @@
+{
+  "name": "groupedcolumn",
+  "label": "分组柱状图",
+  "type": "groupedcolumn",
+  "icon": "tsfont-chart-bar",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 500,
+  "height": 200,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": "text", "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": "number", "isRequired": true },
+    { "name": "seriesField", "label": "分组字段", "type": "text", "isRequired": true }
+  ],
+  "config": {
+    "columnWidthRatio": 0.5,
+    "legend": {
+      "visible": true,
+      "position": "bottom"
+    },
+    "yAxis": true,
+    "xAxis": true
+  }
+}

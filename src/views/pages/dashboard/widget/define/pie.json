@@ -1,0 +1,37 @@
+{
+  "name": "pie",
+  "label": "饼图",
+  "type": "pie",
+  "icon": "tsfont-chart-pie",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 3,
+  "height": 9,
+  "padding": 10,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "angleField", "label": "数值字段", "type": "number", "isRequired": true },
+    { "name": "colorField", "label": "分类字段", "type": ["text", "date", "datetime", "time"], "isRequired": true }
+  ],
+  "config": {
+    "legend": {
+      "visible": true,
+      "position": "bottom",
+      "layout": "horizontal"
+    },
+    "label": {
+      "type": "inner"
+    },
+    "statistic": {
+      "content": {
+        "style": {
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "fontSize": 12,
+          "color": ""
+        }
+      }
+    }
+  }
+}

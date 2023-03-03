@@ -1,0 +1,11 @@
+{
+  "module":"process",
+  "menuType":{
+    "task": "term.process.task",
+    "catalog": "term.process.catalog",
+    "flow": "term.process.flow",
+    "form": "term.process.form",
+    "event": "term.process.event",
+    "others": "page.others"  
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "document":"document",
+  "knowledge":"knowledge",
+  "intellectualCircle":"intellectual circle",
+  "template":"template",
+  "all":"all",
+  "back":"go back",
+  "rollback":"rollback",
+  "creator":"creator",
+  "creatTime ":"creation time",
+  "approve":"approve",
+  "approver":"approver",
+  "backChange":"Return to modify",
+  "reason":"reason",
+  "activity":"activity",
+  "keyword":"keyword",
+  "placeholder":"please input",
+  "search":"search",
+  "collect":"collect",
+  "collected":"collected",
+  "accessory":"accessory",
+  "navigation":"navigation",
+  "classify":"classify",
+  "member":"member",
+  "title":"title",
+  "tag":"tag",
+  "find":"find",
+  "replace1":"for replace",
+  "replace":"replace",
+  "globalReplacement":"global replacement",
+  "nothing":"nothing",
+  "versions":"versions",
+  "comparison":"comparison",
+  "h-versions":"the version of history",
+  "c-versions":"current version",
+  "catalog":"catalog",
+  "tip":{
+    "del":{
+      "document":"Make sure to delete the document",
+      "draft":"Make sure to delete the draft",
+      "intellectualCircle":"Make sure to delete the intellectual circle",
+      "template":"Make sure to delete the intellectual template",
+      "versions":"Make sure to delete the template"
+    },
+    "operate":{
+      "collect":"Collection of success",
+      "cancel":"cancel collection ",
+      "like":"Thumb up success",
+      "cancelLike":"Cancel the thumb up",
+      "approve":"approve success",
+      "modify":"modify successfully",
+      "submit":"submit successfully",
+      "rollback":"The fallback success"
+    },
+    "placeholder":{
+      "keyword":"@:knowledge.placeholder @:knowledge.keyword",
+      "template":"@:knowledge.placeholder @:knowledge.template @:common.name",
+      "document":"@:knowledge.placeholder@:knowledge.document@:common.name",
+      "search":"Please enter a replacement",
+      "find":"Please enter what to look for"
+    },
+    "warning":{
+      "knowType":"Knowledge classification cannot be empty",
+      "approver":"Please select the approver",
+      "knowName":"Knowledge classification names cannot be duplicated",
+      "navigation":"The navigation directory cannot be empty",
+      "release":"Confirm the new release",
+      "rollback":"Make sure to fall back to this version"
+    }
+ },
+ "empty":{
+  "title":"Cannot be empty, only Chinese characters, letters, numbers, and underscores are supported",
+  "catalog":"Text free directory"
+},
+ "desc":{
+   "rejected":"The application was rejected, for reasons",
+   "updateBefore":"before modification",
+   "updateAfter":"after modification"
+ },
+ "tooltip":{
+  "approver":"The approver has the right to view, edit, approve and delete all knowledge documents in the knowledge circle",
+  "member":"Knowledge circle members have the right to view and edit all knowledge documents in the circle",
+  "documentCount":"This statistic includes the approved and unapproved knowledge",
+  "sumbit":"The document is pending review, and you can view the review progress in the activity for the document",
+  "template":"Note: When the template is selected, the new template will overwrite all the contents of the current document",
+  "replace":"The current keyword contains links. Replacements are not allowed",
+  "replace1":"{n} has been replaced. Keyword containing links is not allowed to be replaced. It is automatically skipped",
+  "replace2":"The copy at {n} has been replaced",
+  "search":"Turn off search and replace"
+},
+ "add":{
+   "condition":"Add filter"
+  },
+  "clear":{
+    "conditions":"Clear all conditions"
+  },
+  "level":{
+    "primaryClassification" :"The primary classification",
+    "sameDirectory":"At the same directory",
+    "lowerDirectory":"The lower directory",
+    "navigationDirectory":"Navigation directory"
+   },
+   "btn":{
+    "saveDraft":"To save a draft",
+    "submitAudit":"Submit audit",
+    "saveTemplate":"Save as template"
+  }
+}

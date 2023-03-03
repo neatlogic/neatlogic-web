@@ -1,0 +1,11 @@
+{
+  "name": "spark",
+  "label": "礼花",
+  "type": "spark",
+  "widgetType": "animation",
+  "width": 3,
+  "height": 9,
+  "padding": 10,
+  "hasCustomConfig": false,
+  "needData": false
+}

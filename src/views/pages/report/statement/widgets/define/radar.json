@@ -1,0 +1,40 @@
+{
+  "name": "radar",
+  "label": "雷达图",
+  "type": "radar",
+  "icon": "tsfont-chart-radar",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 250,
+  "height": 250,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "分类字段", "type": "text", "isRequired": true },
+    { "name": "yField", "label": "数值字段", "type": "number", "isRequired": true },
+    { "name": "seriesField", "label": "分组字段", "type": "text", "isRequired": false }
+  ],
+  "config": {
+    "legend": {
+      "visible": true,
+      "position": "bottom",
+      "layout": "horizontal"
+    },
+    "xAxis": {
+      "line": null,
+      "tickLine": null,
+      "grid": {
+        "line": {
+          "style": {
+            "lineDash": null
+          }
+        }
+      }
+    },
+    "area": { "smooth": true },
+    "point": {
+      "size": 3
+    }
+  }
+}

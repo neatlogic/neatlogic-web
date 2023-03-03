@@ -1,0 +1,7 @@
+{
+  "module":"dashboard",
+  "menuType":{
+    "overview": "仪表板管理",
+    "topvisit": "仪表板列表"
+  }
+}

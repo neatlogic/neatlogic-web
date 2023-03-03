@@ -1,0 +1,5 @@
+{
+  "dashboard":{
+    "add":"@:common.add@:common.dashboard"
+  }
+}

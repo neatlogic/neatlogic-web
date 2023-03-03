@@ -1,0 +1,7 @@
+{
+  "module":"knowledge",
+  "menuType":{  
+    "overview": "router.knowledge.knowledgetypemanage",
+    "others": "page.others" 
+  }
+}

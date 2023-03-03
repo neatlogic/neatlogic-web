@@ -1,0 +1,11 @@
+{
+  "name": "firework",
+  "label": "烟花",
+  "type": "firework",
+  "widgetType": "animation",
+  "width": 5,
+  "height": 2,
+  "padding": 10,
+  "hasCustomConfig": false,
+  "needData": false
+}

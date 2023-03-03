@@ -1,0 +1,40 @@
+{
+  "name": "heatmap",
+  "label": "热力图",
+  "type": "heatmap",
+  "icon": "tsfont-chart-heatmap",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 5,
+  "height": 5,
+  "padding": 10,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": ["text", "date", "datetime", "time"], "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": ["text", "date", "datetime", "time"], "isRequired": true },
+    { "name": "colorField", "label": "颜色字段", "type": "number", "isRequired": true }
+  ],
+  "config": {
+    "xField": "xField",
+    "yField": "yField",
+    "colorField": "colorField",
+    "yAxis": { "title": { "text": "" } },
+    "xAxis": {
+      "label": {
+        "autoHide": true,
+        "autoEllipsis": true
+      },
+      "title": { "text": "" }
+    },
+    "legend": {
+      "visible": true,
+      "position": "bottom"
+    },
+    "meta": {
+      "xField": { "alias": "X轴字段" },
+      "yField": { "alias": "Y轴字段" },
+      "colorField": { "alias": "颜色字段" }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "bar",
+  "label": "条形图",
+  "type": "bar",
+  "icon": "tsfont-storage",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 500,
+  "height": 200,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [
+    { "name": "xField", "label": "X轴字段", "type": "number", "isRequired": true },
+    { "name": "yField", "label": "Y轴字段", "type": "text", "isRequired": true }
+  ],
+  "config": {
+    "legend": { "visible": true, "position": "bottom" },
+    "barWidthRatio": 0.5,
+    "color": "",
+    "yAxis": {
+      "label": {
+        "autoHide": true,
+        "autoEllipsis": true
+      },
+      "title": { "text": "" }
+    },
+    "xAxis": { "title": { "text": "" } }
+  }
+}

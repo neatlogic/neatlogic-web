@@ -1,0 +1,19 @@
+{
+  "handler": "formcube",
+  "label": "矩阵选择",
+  "type": "form",
+  "category": "basic",
+  "icon": "tsfont-softwareservice",
+  "hasValue": true,
+  "override_config": {},
+  "config": {
+    "isRequired": false,
+    "description": "",
+    "width": "100%",
+    "isMask": false,
+    "isHide": false,
+    "isReadOnly": false,
+    "isDisabled": false
+  },
+  "reaction": { "mask": {}, "hide": {}, "display": {}, "readonly": {}, "disable": {}, "emit": {} }
+}

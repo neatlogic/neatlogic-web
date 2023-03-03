@@ -1,0 +1,9 @@
+{
+  "module":"report",
+  "menuType":{
+    "reportmanage": "报表管理",
+    "reporttemplate": "模板管理",
+    "statementmanage":"大屏管理",
+    "reportconfig": "设置"
+  }
+}

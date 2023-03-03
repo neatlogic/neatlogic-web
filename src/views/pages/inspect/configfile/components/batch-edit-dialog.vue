@@ -1,0 +1,199 @@
+<template>
+  <div>
+    <TsDialog
+      :title="title"
+      type="modal"
+      :isShow="true"
+      :okText="editType == 'clear'?'清理':'确定'"
+      :btnType="editType == 'clear'?'error':'primary'"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div class="pb-nm">
+          <TsFormRadio
+            v-model="type"
+            :dataList="dataList"
+            :vertical="true"
+          ></TsFormRadio>
+        </div>
+        <div v-if="conditionList && conditionList.length" class="condition-list">
+          <div v-for="(item,index) in conditionList" :key="index" class="pr-lg pb-sm">
+            <div class="item ivu-tag-default">
+              <span class="text-tip">{{ item.label }}：</span>
+              <span>{{ item.text }}</span>
+            </div>
+          </div>
+        </div>
+        <div v-if="editType != 'clear'" class="pt-xs">
+          <TsCodemirror ref="filePath" v-model="filePath" placeholder="换行输入多个路径"></TsCodemirror>
+        </div>
+      </template>
+      <template>
+
+      </template>
+    </TsDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
+    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+  },
+  props: {
+    editType: String,
+    title: String,
+    selectList: Array,
+    searchParam: Object,
+    conditionConfig: Object,
+    conditionConfigText: Object
+  },
+  data() {
+    return {
+      type: 'condition',
+      dataList: [
+        {
+          text: '表格中勾选的资产',
+          value: 'select'
+        },
+        {
+          text: '当前过滤条件下的所有资产',
+          value: 'condition'
+        }
+      ],
+      searchConfigText: {
+        protocolIdList: '连接协议',
+        stateIdList: '资产状态',
+        inspectJobPhaseNodeStatusList: '作业状态',
+        envIdList: '环境',
+        appSystemIdList: '系统',
+        appModuleIdList: '模块',
+        tagIdList: '标签',
+        keyword: '关键字',
+        typeId: '模型'
+      },
+      conditionList: [],
+      filePath: null
+    };
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    okDialog() {
+      let data = {};
+      let pathList = [];
+      if (this.$refs.filePath) {
+        let list = this.$refs.filePath.codemirror.getValue().split('\n');
+        if (list && list.length) {
+          list.forEach(i => {
+            if (i.trim()) {
+              pathList.push(i.trim());
+            }
+          });
+        }
+      }
+      if (!this.$utils.isEmpty(pathList)) {
+        this.$set(data, 'pathList', pathList);
+      }
+      if (this.type == 'select') {
+        this.$set(data, 'typeId', this.conditionConfig.typeId);
+        this.$set(data, 'defaultValue', this.selectList);
+      } else if (this.type == 'condition') {
+        Object.assign(data, this.conditionConfig);
+      }
+      if (this.editType == 'add') {
+        this.batchAddPath(data);
+      } else if (this.editType == 'delete') {
+        this.batchDeletePath(data);
+      } else if (this.editType == 'clear') {
+        this.batchDeleteFile(data);
+      }
+      this.$emit('close');
+    },
+    closeDialog() {
+      this.$emit('close');
+    },
+    batchAddPath(data) { //批量添加路径
+      this.$api.inspect.configfile.batchAddPath(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Notice.success({
+            title: '添加成功'
+          });
+        }
+      });
+    },
+    batchDeletePath(data) { //批量删除路径
+      this.$api.inspect.configfile.batchDeletePath(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Notice.success({
+            title: this.$t('message.content.deletesuccess')
+          });
+        }
+      });
+    },
+    batchDeleteFile(data) { //批量清除
+      this.$api.inspect.configfile.batchDeleteFile(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Notice.success({
+            title: '清除成功'
+          });
+        }
+      });
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {
+    selectList: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.type = 'select';
+        } else {
+          this.dataList[0].disabled = true;
+          this.dataList[0].description = '表格中未勾选资产';
+          this.type = 'condition';
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    conditionConfigText: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          Object.keys(val).forEach(key => {
+            if (this.searchConfigText[key]) {
+              this.conditionList.push({
+                label: this.searchConfigText[key],
+                text: Array.isArray(val[key]) ? val[key].join('|') : val[key] 
+              });
+            }
+          });
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
+};
+</script>
+<style lang="less" scoped>
+.condition-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  .item {
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+}
+</style>

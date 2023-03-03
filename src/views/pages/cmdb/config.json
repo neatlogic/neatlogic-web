@@ -1,0 +1,10 @@
+{
+  "module":"cmdb",
+  "menuType":{
+    "cientitymanage": "router.cmdb.cientitymanage",
+    "customview": "router.cmdb.customview",
+    "resourceCenter":"router.cmdb.resourcecenter",
+    "discovery": "router.cmdb.discovery",
+    "cmdbmanage": "router.cmdb.cmdbmanage"
+  }
+}

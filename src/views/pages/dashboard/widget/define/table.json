@@ -1,0 +1,14 @@
+{
+  "name": "table",
+  "label": "表格",
+  "type": "table",
+  "icon": "tsfont-chart-table",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 5,
+  "height": 5,
+  "padding": 10,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "needData": true,
+  "config": { "autoscroll": true }
+}

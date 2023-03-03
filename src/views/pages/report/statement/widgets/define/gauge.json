@@ -1,0 +1,42 @@
+{
+  "name": "gauge",
+  "label": "仪表盘",
+  "type": "gauge",
+  "icon": "tsfont-chart-progress",
+  "widgetType": "basic",
+  "hasCustomConfig": true,
+  "width": 250,
+  "height": 250,
+  "padding": 5,
+  "needData": true,
+  "dataTypes": [{ "value": "dynamic", "text": "动态数据" }],
+  "fields": [{ "name": "number", "label": "值", "type": "number", "isRequired": true }],
+  "config": {
+    "type": "",
+    "innerRadius": 0.8,
+    "range": {
+      "color": ""
+    },
+    "indicator": {
+      "pointer": {
+        "style": {
+          "stroke": ""
+        }
+      },
+      "pin": {
+        "style": {
+          "stroke": "",
+          "fill": ""
+        }
+      }
+    },
+    "statistic": {
+      "content": {
+        "style": {
+          "color": "",
+          "fontSize": 20
+        }
+      }
+    }
+  }
+}
