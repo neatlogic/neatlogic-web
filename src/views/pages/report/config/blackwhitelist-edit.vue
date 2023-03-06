@@ -2,8 +2,8 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="blackWhiteData.id">{{ $t('term.report.editAvailableObject') }}</div>
-        <div v-if="!blackWhiteData.id">{{ $t('term.report.addAvailableObject') }}</div>
+        <div v-if="blackWhiteData.id">{{ $t('page.edit') }}{{ $t('page.availableObject') }}</div>
+        <div v-if="!blackWhiteData.id">{{ $t('page.add') }}{{ $t('page.availableObject') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
@@ -45,10 +45,10 @@ export default {
         {
           type: 'text',
           name: 'itemName',
-          label: this.$t('page.itemName'),
+          label: this.$t('page.itemname'),
           maxlength: 50,
-          desc: this.$t('term.report.describe.itemNameDescribe'),
-          validateList: [{name: 'required', message: this.$t('page.inputTypeName')}],
+          desc: this.$t('term.report.describe.itemnamedescribe'),
+          validateList: [{name: 'required', message: this.$t('page.inputtypeName')}],
           onChange: (name) => {
             this.blackWhiteData.itemName = name;
           }
@@ -56,7 +56,7 @@ export default {
         {
           type: 'radio',
           name: 'itemType',
-          label: this.$t('page.itemType'),
+          label: this.$t('page.itemtype'),
           dataList: [{value: 'table', text: $t('page.table')}, {value: 'column', text: $t('page.field')}],
           validateList: [{name: 'required'}],
           onChange: (val) => {
@@ -67,8 +67,8 @@ export default {
           type: 'radio',
           name: 'type',
           label: this.$t('page.type'),
-          dataList: [{value: 'whitelist', text: this.$t('page.whiteList')}, {value: 'blacklist', text: this.$t('page.blackList')}],
-          desc: this.$t('term.report.describe.typeDescribe'),
+          dataList: [{value: 'whitelist', text: this.$t('page.whitelist')}, {value: 'blacklist', text: this.$t('page.blacklist')}],
+          desc: this.$t('term.report.describe.typedescribe'),
           validateList: [{name: 'required'}],
           onChange: (val) => {
             this.blackWhiteData.type = val;

@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="isDialogShow = true">{{ $t('term.report.sendPlan') }}</span>
+        <span class="tsfont-plus text-action" @click="isDialogShow = true">{{ $t('term.report.sendplan') }}</span>
       </template>
       <template v-slot:topRight>
         <div>
@@ -55,7 +55,7 @@
               <ul class="tstable-action-ul">
                 <li class="ts-page" @click="viewRecord(row)">{{ $t('report.send.record') }}</li>
                 <!-- <li class="tsfont-edit" @click="toEditPage('edit',row)">编辑</li> -->
-                <li class="tsfont-copy" @click="toEditPage('copy',row)">{{ $t('common.copy') }}</li>
+                <li class="tsfont-copy" @click="toEditPage('copy',row)">{{ $t('page.copy') }}</li>
               </ul>
             </div>
           </template>
@@ -69,7 +69,7 @@
     <!-- 添加对话框 -->
     <TsDialog
       :isShow.sync="isDialogShow"
-      :title="$t('term.report.addSendPlan')"
+      :title="$t('term.report.addsendplan')"
       @on-ok="toEditPage('add', {name})"
       @on-cancel="$refs.form.clearForm()"
     >
@@ -115,13 +115,13 @@ export default {
         pageSize: 20
       },
       theadList: [
-        {title: this.$t('common.planName'), key: 'name'},
-        {title: this.$t('common.emailTitle'), key: 'emailTitle'},
-        {title: this.$t('common.recipient'), key: 'toNameList'},
-        {title: this.$t('common.executePlan'), key: 'cron'},
-        {title: this.$t('common.status'), key: 'isActive'},
-        {title: this.$t('term.report.nextSendingTime'), key: 'nextFireTime'},
-        {title: this.$t('term.report.sendTimes'), key: 'execCount'},
+        {title: this.$t('page.planname'), key: 'name'},
+        {title: this.$t('page.emailtitle'), key: 'emailTitle'},
+        {title: this.$t('page.recipient'), key: 'toNameList'},
+        {title: this.$t('page.executeplan'), key: 'cron'},
+        {title: this.$t('page.status'), key: 'isActive'},
+        {title: this.$t('term.report.nextsendingtime'), key: 'nextFireTime'},
+        {title: this.$t('term.report.sendtimes'), key: 'execCount'},
         {title: '', key: 'action'}
       ],
       tableConfig: {

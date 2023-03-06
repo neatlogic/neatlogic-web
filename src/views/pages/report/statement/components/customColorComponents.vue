@@ -46,7 +46,7 @@
           <el-input
             v-model="colorValue"
             style="width: 200px"
-            :placeholder="$t('common.inputColor')"
+            :placeholder="$t('form.placeholder.inputcolor')"
             size="mini"
           >
             <template slot="append">

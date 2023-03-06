@@ -7,9 +7,9 @@
           placement="right"
           width="700"
           :transfer="true"
-          :title="$t('term.report.dataSourceConfigExample')"
+          :title="$t('term.report.dataSourceconfigexample')"
         >
-          <a href="javascript:void(0)">{{ $t('term.report.dataSourceConfigExample') }}</a>
+          <a href="javascript:void(0)">{{ $t('term.report.datasourceconfigexample') }}</a>
           <div slot="content" style="height:600px;">
             <div>
               <Tag>
@@ -75,16 +75,16 @@ export default {
       datasourceHelp: 
         `<mapper>	
           <resultMap id="dataMap" type="java.util.LinkedHashMap">
-            <id column="id" :property="${this.$t('term.report.taskId')}"/>
+            <id column="id" :property="${this.$t('term.report.taskid')}"/>
             <result column="title" :property="${this.$t('page.title')}"/>
             <result column="status" :property="${this.$t('page.status')}"/>
-            <result column="start_time" :property="${this.$t('term.report.reportTime')}"/>
-            <result column="end_time" :property="${this.$t('term.report.completeTime')}"/>
+            <result column="start_time" :property="${this.$t('term.report.reporttime')}"/>
+            <result column="end_time" :property="${this.$t('term.report.completetime')}"/>
             <result column="owner" :property="${this.$t('term.report.reporter')}"/>
-            <result column="serial_number" :property="${this.$t('term.report.taskNumber')}"/>
+            <result column="serial_number" :property="${this.$t('term.report.tasknumber')}"/>
             <collection property="stepList" javaType="java.util.List" ofType="java.util.LinkedHashMap">
-              <id column="stepId" :property="${this.$t('term.report.stepId')}"/>
-              <result column="name" :property="${this.$t('term.report.stepName')}"/>
+              <id column="stepId" :property="${this.$t('term.report.stepid')}"/>
+              <result column="name" :property="${this.$t('term.report.stepname')}"/>
             </collection>
           </resultMap>
           <select id="getProcessTaskList" resultMap="dataMap">
@@ -130,7 +130,7 @@ export default {
   destroyed() {},
   methods: {
     clipboardSuc: function() {
-      this.$Message.success(this.$t('message.content.copySuccess'));
+      this.$Message.success(this.$t('message.content.copysuccess'));
     }
   },
   filter: {},

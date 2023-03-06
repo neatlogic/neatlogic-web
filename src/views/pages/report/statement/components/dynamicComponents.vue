@@ -5,8 +5,8 @@
         <el-select
           v-model="dataSetValue"
           size="mini"
-          filterable
-          :placeholder="$t('common.select1')"
+          filterable$t
+          :placeholder="$t('page.select1')"
           @change="selectDataSet"
         >
           <el-option

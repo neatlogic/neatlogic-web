@@ -6,8 +6,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="reportData.id">{{ isCopy ? $t('term.report.copyTemplate') : $t('term.report.editTemplate') }}</div>
-        <div v-if="!reportData.id">{{ $t('term.report.addTemplate') }}</div>
+        <div v-if="reportData.id">{{ isCopy ? $t('term.report.copytemplate') : $t('term.report.edittemplate') }}</div>
+        <div v-if="!reportData.id">{{ $t('term.report.addtemplate') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="reportForm" :item-list="reportFormConfig">
@@ -21,12 +21,12 @@
           </template>
           <template v-slot:config>
             <Tabs>
-              <TabPane :label="$t('term.report.conditionConfig')">
+              <TabPane :label="$t('term.report.conditionconfig')">
                 <ReportParam :paramList="reportData.paramList" @setParam="setParam"></ReportParam></TabPane>
-              <TabPane :label="$t('term.report.dataSourceConfig')">
+              <TabPane :label="$t('term.report.datasourceconfig')">
                 <ReportContent :reportData="reportData" @setSql="setSql"></ReportContent>
               </TabPane>
-              <TabPane :label="$t('term.report.contentConfig')">
+              <TabPane :label="$t('term.report.contentconfig')">
                 <ContentHelp></ContentHelp>
                 <TsCodemirror codeMode="xml" :value.sync="reportData.content" height="500px"></TsCodemirror>
               </TabPane>
@@ -86,7 +86,7 @@ export default {
             name: 'searchUrl',
             url: '/api/rest/report/save',
             key: 'name',
-            message: this.$t('message.content.nameExists'),
+            message: this.$t('message.content.nameexists'),
             params: { id: ''}
           }],
           width: 400,
@@ -107,7 +107,7 @@ export default {
         {
           type: 'userselect',
           name: 'authList',
-          label: this.$t('common.authorization'),
+          label: this.$t('page.auth'),
           width: 400,
           groupList: ['user', 'team', 'role'],
           onChange: function(name) {
@@ -117,7 +117,7 @@ export default {
         {
           type: 'slot',
           name: 'isActive',
-          label: this.$t('term.report.isActive')
+          label: this.$t('term.report.isactive')
         },
         { type: 'slot', name: 'config', label: '' }
       ]};

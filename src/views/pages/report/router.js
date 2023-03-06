@@ -51,7 +51,7 @@ export default [
     name: 'reportinstance-manage',
     component: reportinstanceManage,
     meta: {
-      title: 'router.report.reportManage',
+      title: 'router.report.reportmanage',
       ismenu: true,
       type: 'reportmanage',
       icon: 'ts-layout',
@@ -63,7 +63,7 @@ export default [
     name: 'report-show',
     component: reportShow,
     meta: {
-      title: 'router.report.reportDetail',
+      title: 'router.report.reportdetail',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE']
@@ -74,7 +74,7 @@ export default [
     name: 'report-manage',
     component: reportManage,
     meta: {
-      title: 'router.report.reportTemplateManage',
+      title: 'router.report.reporttemplatemanage',
       ismenu: true,
       type: 'reporttemplate',
       icon: 'ts-layout',
@@ -86,7 +86,7 @@ export default [
     name: 'demo',
     component: demo,
     meta: {
-      title: 'router.report.demoPage',
+      title: 'router.report.demopage',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE']
@@ -97,7 +97,7 @@ export default [
     name: 'reportinstance-show',
     component: reportinstanceShow,
     meta: {
-      title: 'router.report.reportInstanceDetail',
+      title: 'router.report.reportinstancedetail',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE'],
@@ -109,7 +109,7 @@ export default [
     name: 'sendjob-manage',
     component: sendjobManage,
     meta: {
-      title: 'router.report.sendPlan',
+      title: 'router.report.sendplan',
       ismenu: true,
       icon: 'ts-m-metrics',
       type: 'reportmanage',
@@ -121,7 +121,7 @@ export default [
     name: 'sendjob-edit',
     component: sendjobEdit,
     meta: {
-      title: 'router.report.editSendPlan',
+      title: 'router.report.editsendplan',
       ismenu: false,
       authority: ['REPORT_BASE']
     }
@@ -131,7 +131,7 @@ export default [
     name: 'statement-edit',
     component: statementEdit,
     meta: {
-      title: 'router.report.monitorDesign',
+      title: 'router.report.monitordesign',
       icon: 'tsfont-db',
       ismenu: false,
       authority: ['REPORT_STATEMENT_MODIFY']
@@ -142,7 +142,7 @@ export default [
     name: 'statement-view',
     component: statementView,
     meta: {
-      title: 'router.report.monitorDetail',
+      title: 'router.report.monitordetail',
       ismenu: false,
       authority: ['REPORT_BASE']
     }
@@ -152,7 +152,7 @@ export default [
     name: 'statement-manage',
     component: statementManage,
     meta: {
-      title: 'router.report.monitorManage',
+      title: 'router.report.monitormanage',
       icon: 'tsfont-agent',
       ismenu: true,
       type: 'statementmanage',

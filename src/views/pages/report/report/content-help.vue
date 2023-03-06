@@ -7,9 +7,9 @@
           placement="right"
           width="700"
           :transfer="true"
-          :title="$t('term.report.contentConfigExample')"
+          :title="$t('term.report.contentconfigexample')"
         >
-          <a href="javascript:void(0)">{{ $t('term.report.contentConfigExample') }}</a>
+          <a href="javascript:void(0)">{{ $t('term.report.contentconfigexample') }}</a>
           <div slot="content" style="height:600px;">
             <div style="word-break:break-all;white-space:pre-wrap;">
               内容配置支持
@@ -96,11 +96,11 @@ export default {
   data() {
     return {
       table: {
-        config: `{\n' + '   "data":"dataList",\n' + '   "title":"${this.$t('common.title')}",\n' + '   "header":${this.$t('term.report.describe.headerDescribe')},\n' + '   "column":${this.$t('term.report.describe.columnDescribe')}\n' + '}`
+        config: `{\n' + '   "data":"dataList",\n' + '   "title":"${this.$t('page.title')}",\n' + '   "header":${this.$t('term.report.describe.headerdescribe')},\n' + '   "column":${this.$t('term.report.describe.columndescribe')}\n' + '}`
       },
       barHelp: {
         data: '<resultMap id="bar">\n' + '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' + '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' + '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' + '</resultMap>',
-        config: `{\n' + '   "data":"dataList",\n' + '   "title":${this.$t('common.title')},\n' + '   "xLabel":${this.$t('term.report.xLabel')},\n' + '   "yLabel":${this.$t('term.report.yLabel')},\n' + '   "width":${this.$t('term.report.widthDescribe')},\n' + '   "height":${this.$t('term.report.heightDescribe')},\n' + '   "isShowValue":${this.$t('term.report.showValueDescribe')},\n' + '   "tick":${this.$t('term.report.tickDescribe')}\n' + '}`
+        config: `{\n' + '   "data":"dataList",\n' + '   "title":${this.$t('page.title')},\n' + '   "xLabel":${this.$t('term.report.xlabel')},\n' + '   "yLabel":${this.$t('term.report.ylabel')},\n' + '   "width":${this.$t('term.report.widthdescribe')},\n' + '   "height":${this.$t('term.report.heightdescribe')},\n' + '   "isShowValue":${this.$t('term.report.showvaluedescribe')},\n' + '   "tick":${this.$t('term.report.tickdescribe')}\n' + '}`
       },
       barhHelp: {
         data: '<resultMap id="barh">\n' + '   <result property="xField"/><!--X坐标列，必须是数值，必须存在-->\n' + '   <result property="yFiled"/><!--Y坐标列，必须存在-->\n' + '   <result property="groupField"/><!--分组列，选择存在-->\n' + '</resultMap>'

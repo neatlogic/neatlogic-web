@@ -52,7 +52,7 @@ export default {
       if (type === 'image') {
         this.upload(file);
       } else {
-        this.$message.warn(this.$t('term.report.describe.onlyLastPictureFormat'));
+        this.$message.warn(this.$t('term.report.describe.onlylastpictureformat'));
       }
     },
     upload(imgUrl) {

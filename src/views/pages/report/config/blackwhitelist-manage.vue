@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addBlackWhiteList()">{{ $t('page.availableObject') }}</span>
+        <span class="text-action tsfont-plus" @click="addBlackWhiteList()">{{ $t('page.availableobject') }}</span>
       </template>
       <div slot="content" ref="maintable" class="content">
         <TsTable v-if="blackWhiteListData" :theadList="theadList" v-bind="blackWhiteListData">
@@ -11,8 +11,8 @@
             <span v-else-if="row.itemType == 'column'">{{ $t('page.field') }}</span>
           </template>
           <template v-slot:type="{ row }">
-            <span v-if="row.type == 'blacklist'" class="text-error">{{ $t('page.blackList') }}</span>
-            <span v-else-if="row.type == 'whitelist'" class="text-success">{{ $t('page.whiteList') }}</span>
+            <span v-if="row.type == 'blacklist'" class="text-error">{{ $t('page.blacklist') }}</span>
+            <span v-else-if="row.type == 'whitelist'" class="text-success">{{ $t('page.whitelist') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -20,12 +20,12 @@
                 <li
                   class="tsfont-edit"
                   @click="editBlackWhiteList(row)"
-                >{{ $t('term.report.editTemplate') }}
+                >{{ $t('term.report.edittemplate') }}
                 </li>
                 <li
                   class="tsfont-trash-o"
                   @click="deleteBlackWhiteList(row)"
-                >{{ $t('term.report.deleteTemplate') }}
+                >{{ $t('term.report.deletetemplate') }}
                 </li>
               </ul>
             </div>
@@ -49,8 +49,8 @@ export default {
       isShow: false,
       currentId: null,
       theadList: [
-        {key: 'itemName', title: this.$t('page.itemName')},
-        {key: 'itemType', title: this.$t('page.itemType')},
+        {key: 'itemName', title: this.$t('page.itemname')},
+        {key: 'itemType', title: this.$t('page.itemtype')},
         {key: 'type', title: this.$t('page.type')},
         {key: 'description', title: this.$t('page.explain')},
         {key: 'action'}

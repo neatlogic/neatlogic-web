@@ -1,22 +1,22 @@
 <template>
   <div v-show="visible" class="contentmenu" :style="styleObj">
     <div class="contentmenu__item" @click="deleteLayer">
-      <i class="iconfont iconguanbi"></i> {{ $t('term.report.deleteLayer') }}
+      <i class="iconfont iconguanbi"></i> {{ $t('term.report.deletelayer') }}
     </div>
     <div class="contentmenu__item" @click="copyLayer">
-      <i class="iconfont iconfuzhi1"></i> {{ $t('term.report.copyLayer') }}
+      <i class="iconfont iconfuzhi1"></i> {{ $t('term.report.copylayer') }}
     </div>
     <div class="contentmenu__item" @click="istopLayer">
-      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.istopLayer') }}
+      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.istoplayer') }}
     </div>
     <div class="contentmenu__item" @click="setlowLayer">
-      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.setlowLayer') }}
+      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.setlowlayer') }}
     </div>
     <div class="contentmenu__item" @click="moveupLayer">
-      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.moveupLayer') }}
+      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.moveuplayer') }}
     </div>
     <div class="contentmenu__item" @click="movedownLayer">
-      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.movedownLayer') }}
+      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.movedownlayer') }}
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@ export default {
       this.$emit('update:visible', false);
     },
     deleteLayer() {
-      this.$confirm(this.$t('term.report.describe.confirmDeleteLayer'), this.$t('page.tip'), {
+      this.$confirm(this.$t('term.report.describe.confirmdeletelayer'), this.$t('page.tip'), {
         confirmButtonText: this.$t('button.confirm'),
         cancelButtonText: this.$t('button.cancel'),
         type: 'warning'

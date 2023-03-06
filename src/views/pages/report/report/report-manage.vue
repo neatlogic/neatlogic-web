@@ -51,8 +51,8 @@
             <span class="text-href" @click.stop="showReport(row.id)">{{ row.name }}</span>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <span v-if="row.isActive" class="text-success">{{ $t('common.yes') }}</span>
-            <span v-if="!row.isActive" class="text-grey">{{ $t('common.no') }}</span>
+            <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-if="!row.isActive" class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -131,7 +131,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isActive'),
+          title: this.$t('term.report.isactive'),
           key: 'isActive'
         },
         {

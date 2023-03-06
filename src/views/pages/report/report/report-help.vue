@@ -2,7 +2,7 @@
   <div>
     <Collapse v-model="panel" accordion>
       <Panel name="1">
-        {{ $t('term.report.dataSourceConfigExample') }}
+        {{ $t('term.report.datasourceconfigexample') }}
         <div slot="content">
           <div>
             <Tag><strong>&lt;</strong> <i class="text-grey ts-long-arrow-right"></i> <strong>&amp;lt;</strong></Tag>
@@ -18,7 +18,7 @@
         </div>
       </Panel>
       <Panel name="2">
-        {{ $t('term.report.contentConfigExample') }}
+        {{ $t('term.report.contentconfigexample') }}
         <div slot="content">
           <!-- <div v-highlight>{{ contentHelp }}</div>-->
           内容配置支持<b>freemarker</b>语法，通过<b>report.xxx</b>获取指定结果集。<br>
@@ -68,8 +68,8 @@ export default {
       table: {
         config: `{\n
         "title":${this.$t('page.title')},\n
-        "header":${this.$t('term.report.describe.headerDescribe')},\n
-        "column":${this.$t('term.report.describe.columnDescribe')}\n
+        "header":${this.$t('term.report.describe.headerdescribe')},\n
+        "column":${this.$t('term.report.describe.columndescribe')}\n
          }`
       },
       barHelp: {
@@ -80,12 +80,12 @@ export default {
           '</resultMap>',
         config: `{\n
            "title": ${this.$t('page.title')},\n
-           "xLabel":${this.$t('term.report.xLabel')},\n
-           "yLabel":${this.$t('term.report.yLabel')},\n
-           "width":${this.$t('term.report.describe.widthDescribe')},\n
-           "height":${this.$t('term.report.describe.heightDescribe')},\n
-           "isShowValue":${this.$t('term.report.describe.showValueDescribe')},\n
-           "tick":${this.$t('term.report.describe.tickDescribe')}\n
+           "xLabel":${this.$t('term.report.xlabel')},\n
+           "yLabel":${this.$t('term.report.ylabel')},\n
+           "width":${this.$t('term.report.describe.widthdescribe')},\n
+           "height":${this.$t('term.report.describe.heightdescribe')},\n
+           "isShowValue":${this.$t('term.report.describe.showvaluedescribe')},\n
+           "tick":${this.$t('term.report.describe.tickdescribe')}\n
          }`
       },
       barhHelp: {

@@ -33,7 +33,7 @@ export default {
         },
         valueKey: {
           type: 'select',
-          label: this.$t('term.report.valueField'),
+          label: this.$t('term.report.valuefield'),
           dataList: this.matrixData,
           textName: 'name',
           valueName: 'uuid',
@@ -42,7 +42,7 @@ export default {
         },
         textKey: {
           type: 'select',
-          label: this.$t('term.report.textField'),
+          label: this.$t('term.report.textfield'),
           dataList: this.matrixData,
           textName: 'name',
           valueName: 'uuid',

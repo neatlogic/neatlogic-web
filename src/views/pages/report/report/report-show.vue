@@ -7,7 +7,7 @@
           v-auth="'REPORT_MODIFY'"
           class="tsfont-left text-action"
           @click="$back('/report-manage')"
-        >{{ $getFromPage($t('page.templateList')) }}</span>
+        >{{ $getFromPage($t('page.templatelist')) }}</span>
       </template>
       <template v-slot:topLeft>
         <span v-auth="'REPORT_MODIFY'">{{ reportData.name }}</span>

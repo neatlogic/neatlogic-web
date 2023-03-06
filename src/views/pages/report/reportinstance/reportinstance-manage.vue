@@ -77,7 +77,7 @@ export default {
         textName: 'name',
         dynamicUrl: '/api/rest/report/list',
         rootName: 'tbodyList',
-        placeholder: this.$t('term.report.describe.chooseTemplate')
+        placeholder: this.$t('term.report.describe.choosetemplate')
       },
       theadList: [
         {
@@ -85,7 +85,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isActive'),
+          title: this.$t('term.report.isactive'),
           key: 'isActive'
         },
         {
@@ -167,7 +167,7 @@ export default {
       const { id, name } = row;
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: `${this.$t('term.report.describe.confirmDeleteReport')}：${name}?`,
+        content: `${this.$t('term.report.describe.confirmdeletereport')}：${name}?`,
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReportInstance({ id });

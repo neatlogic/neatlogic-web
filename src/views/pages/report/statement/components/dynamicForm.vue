@@ -33,7 +33,7 @@
               v-model.trim="formData[item.name]"
               type="text"
               size="mini"
-              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
               clearable
               @change="changed($event, item.name)"
             />
@@ -44,7 +44,7 @@
               type="textarea"
               size="mini"
               rows="2"
-              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
               @change="changed($event, item.name)"
             />
 
@@ -52,7 +52,7 @@
               v-if="item.type == 'el-switch'"
               v-model="formData[item.name]"
               size="mini"
-              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+              :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
               @change="changed($event, item.name)"
             />
             <ColorPicker
@@ -83,7 +83,7 @@
               v-model="formData[item.name]"
               size="mini"
               clearable
-              :placeholder="$t('commom.select1')"
+              :placeholder="$t('page.select1')"
               @change="val => changed(val, item.name)"
             >
               <el-option
@@ -110,7 +110,7 @@
 
             <!-- 弹窗 -->
             <el-dialog
-              :title="$t('term.report.codeEdit')"
+              :title="$t('term.report.codeedit')"
               :visible.sync="dialogVisibleStaticData"
               width="50%"
               :before-close="handleClose"
@@ -126,7 +126,7 @@
                 <el-button
                   @click="dialogVisibleStaticData = false"
                 >{{ $t('button.cancel') }}</el-button>
-                <el-button type="primary" @click="saveData">{{ $t('button.condirm') }}</el-button>
+                <el-button type="primary" @click="saveData">{{ $t('button.confirm') }}</el-button>
               </span>
             </el-dialog>
           </el-form-item>
@@ -174,7 +174,7 @@
                     v-model.trim="formData[itemChildList.name]"
                     type="text"
                     size="mini"
-                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
                     clearable
                     @change="changed($event, itemChildList.name)"
                   />
@@ -185,14 +185,14 @@
                     size="mini"
                     type="textarea"
                     rows="2"
-                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
                     @change="changed($event, itemChildList.name)"
                   />
 
                   <el-switch
                     v-if="itemChildList.type == 'el-switch'"
                     v-model="formData[itemChildList.name]"
-                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('form.label.content')})"
+                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.content')})"
                     size="mini"
                     @change="changed($event, itemChildList.name)"
                   />
@@ -227,7 +227,7 @@
                     v-model="formData[itemChildList.name]"
                     size="mini"
                     clearable
-                    :placeholder="$t('commom.select1')"
+                    :placeholder="$t('page.select1')"
                     @change="val => changed(val, itemChildList.name)"
                   >
                     <el-option

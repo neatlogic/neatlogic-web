@@ -22,11 +22,11 @@ export default {
       formConfig: {
         defaultValue: {
           type: 'text',
-          label: this.$t('common.defaultValue')
+          label: this.$t('page.defaultValue')
         }, 
         length: {
           type: 'text',
-          label: this.$t('common.length')
+          label: this.$t('page.length')
         }}
     };
   },

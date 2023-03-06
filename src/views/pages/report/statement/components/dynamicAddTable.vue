@@ -6,11 +6,11 @@
       icon="el-icon-plus"
       plain
       @click="handleAddClick"
-    >{{ $t('common.new') }}</el-button>
+    >{{ $t('page.new') }}</el-button>
     <el-table :data="formData" style="width: 100%">
       <el-table-column prop="name" :label="$t('page.name')" width="60" />
       <el-table-column prop="key" :label="'key' + $t('page.value')" width="70" />
-      <el-table-column prop="width" :label="$t('common.width')" width="50" />
+      <el-table-column prop="width" :label="$t('page.width')" width="50" />
       <el-table-column :label="$t('page.action')" width="100">
         <template slot-scope="scope">
           <div class="button-group">
@@ -30,7 +30,7 @@
     </el-table>
 
     <el-dialog
-      :title="$t('common.new')"
+      :title="$t('page.new')"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose"
@@ -44,18 +44,18 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item :label="'key' + $t('common.value') + ':'">
+        <el-form-item :label="'key' + $t('page.value') + ':'">
           <el-input
             v-model.trim="rowFormData['key']"
-            :placeholder="$t('form.placeholder.pleaseinput', {target: 'key' + $t('common.value')})"
+            :placeholder="$t('form.placeholder.pleaseinput', {target: 'key' + $t('page.value')})"
             size="mini"
           >
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('common.width') + ':'">
+        <el-form-item :label="$t('page.width') + ':'">
           <el-input
             v-model.trim="rowFormData['width']"
-            :placeholder="$t('form.placeholder.pleaseinput', {target:$t('common.width')})"
+            :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.width')})"
             size="mini"
           >
           </el-input>

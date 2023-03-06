@@ -7,8 +7,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="reportInstanceData.id">{{ $t('term.report.editReport') }}</div>
-        <div v-if="!reportInstanceData.id">{{ $t('term.report.addReport') }}</div>
+        <div v-if="reportInstanceData.id">{{ $t('term.report.editreport') }}</div>
+        <div v-if="!reportInstanceData.id">{{ $t('term.report.addreport') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="reportForm" :item-list="reportInstanceFormConfig">
@@ -27,8 +27,8 @@
                   <tr>
                     <th style="width:50px">{{ $t('page.display') }}</th>
                     <th>{{ $t('page.name') }}</th>
-                    <th>{{ $t('common.tag') }}</th>
-                    <th>{{ $t('page.defaultValue') }}</th>
+                    <th>{{ $t('page.tag') }}</th>
+                    <th>{{ $t('page.defaultvalue') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -49,7 +49,7 @@
               </table>
             </div>
             <div v-else>
-              {{ $t('page.withoutParam') }}
+              {{ $t('page.withoutparam') }}
             </div>
           </template>
           <template v-slot:tableConfig>
@@ -151,7 +151,7 @@ export default {
         }, 
         authList: {
           type: 'userselect',
-          label: this.$t('common.authorization'),
+          label: this.$t('page.auth'),
           width: 400,
           groupList: ['user', 'team', 'role'],
           onChange: function(name) {
@@ -160,7 +160,7 @@ export default {
         },
         isActive: {
           type: 'slot',
-          label: this.$t('term.report.isActive')
+          label: this.$t('term.report.isactive')
         },
         config: {
           type: 'slot',
@@ -168,7 +168,7 @@ export default {
         },
         tableConfig: {
           type: 'slot',
-          label: this.$t('term.report.displayField'),
+          label: this.$t('term.report.displayfield'),
           /* get value() {
             return _this.tableList.map(table => {
               const {id: tableId, valueList: columnList} = table;
@@ -188,7 +188,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isActive'),
+          title: this.$t('term.report.isactive'),
           key: 'isActive'
         },
         {
