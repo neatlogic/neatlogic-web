@@ -23,8 +23,8 @@
             <a href="#" @click="showReport(row.id)">{{ row.name }}</a>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <span v-if="row.isActive" class="text-success">{{ $t('common.yes') }}</span>
-            <span v-if="!row.isActive" class="text-grey">{{ $t('common.no') }}</span>
+            <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-if="!row.isActive" class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -38,7 +38,7 @@
                     @on-change="toggleReportInstanceActive(row)"
                   ></TsFormSwitch>
                 </li>
-                <li class="tsfont-edit" @click="editReportInstance(row.id)">{{ $t('common.edit') }}</li>
+                <li class="tsfont-edit" @click="editReportInstance(row.id)">{{ $t('page.edit') }}</li>
                 <li class="tsfont-trash-o" @click="deleteReportInstance(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -72,7 +72,7 @@ export default {
       reportSelectConfig: {
         search: true,
         value: null,
-        label: this.$.t('common.status'),
+        label: this.$.t('page.status'),
         valueName: 'id',
         textName: 'name',
         dynamicUrl: '/api/rest/report/list',

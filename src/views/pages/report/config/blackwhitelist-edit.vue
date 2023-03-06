@@ -2,8 +2,8 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="blackWhiteData.id">{{ $t('page.edit') }}{{ $t('page.availableobject') }}</div>
-        <div v-if="!blackWhiteData.id">{{ $t('page.add') }}{{ $t('page.availableobject') }}</div>
+        <div v-if="blackWhiteData.id">{{ $t('page.edittarget', { target: $t('page.availableobject') }) }}</div>
+        <div v-if="!blackWhiteData.id">{{ $t('page.addtarget', { target: $t('page.availableobject') }) }}</div>
       </template>
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">

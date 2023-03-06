@@ -20,7 +20,7 @@ export default {
       formConfig: {
         defaultValue: {
           type: 'date',
-          label: this.$t('common.defaultvalue'),
+          label: this.$t('page.defaultvalue'),
           transfer: true,
           format: this.config.tsFormDateFormat,
           valueType: 'format',

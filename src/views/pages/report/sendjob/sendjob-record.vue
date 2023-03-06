@@ -70,7 +70,7 @@ export default {
         pageSize: 20
       },
       theadList: [
-        {title: this.$t('common.status'), key: 'status'},
+        {title: this.$t('page.status'), key: 'status'},
         {title: this.$t('term.report.sendtimes'), key: 'startTime'},
         {title: '收件人', key: 'receiverList'},
         {title: '', key: 'action'}

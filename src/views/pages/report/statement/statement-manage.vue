@@ -43,7 +43,7 @@
                 <li
                   class="tsfont-edit"
                   @click="editReport(row)"
-                >{{ $t('common.edit') }}</li>
+                >{{ $t('page.edit') }}</li>
                 <li
                   class="tsfont-trash-o"
                   @click="deleteReport(row)"

@@ -20,7 +20,7 @@ export default {
       formConfig: {
         defaultValue: {
           type: 'datetimerange',
-          label: this.$t('common.defaultvalue'),
+          label: this.$t('page.defaultvalue'),
           transfer: true,
           format: this.config.tsFormDatePickerFormat,
           valueType: 'format',

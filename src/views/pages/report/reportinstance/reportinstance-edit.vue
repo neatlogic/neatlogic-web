@@ -164,7 +164,7 @@ export default {
         },
         config: {
           type: 'slot',
-          label: this.$t('common.condition')
+          label: this.$t('page.condition')
         },
         tableConfig: {
           type: 'slot',
