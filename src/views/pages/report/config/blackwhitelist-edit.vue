@@ -2,8 +2,8 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="blackWhiteData.id">{{ $t('page.edit') }}{{ $t('page.availableObject') }}</div>
-        <div v-if="!blackWhiteData.id">{{ $t('page.add') }}{{ $t('page.availableObject') }}</div>
+        <div v-if="blackWhiteData.id">{{ $t('page.edit') }}{{ $t('page.availableobject') }}</div>
+        <div v-if="!blackWhiteData.id">{{ $t('page.add') }}{{ $t('page.availableobject') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
@@ -48,7 +48,7 @@ export default {
           label: this.$t('page.itemname'),
           maxlength: 50,
           desc: this.$t('term.report.describe.itemnamedescribe'),
-          validateList: [{name: 'required', message: this.$t('page.inputtypeName')}],
+          validateList: [{name: 'required', message: this.$t('page.inputtypename')}],
           onChange: (name) => {
             this.blackWhiteData.itemName = name;
           }
