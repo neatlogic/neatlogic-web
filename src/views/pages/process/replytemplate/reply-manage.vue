@@ -83,7 +83,7 @@ export default {
         {
           type: 'userselect',
           name: 'authList',
-          label: this.$t('form.label.auth'),
+          label: this.$t('page.auth'),
           width: '100%',
           groupList: ['user', 'role', 'team'],
           validateList: ['required'],

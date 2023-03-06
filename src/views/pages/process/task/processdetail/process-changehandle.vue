@@ -352,7 +352,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="assistModal"
-      :title="isEdit ? '编辑' : '创建'"
+      :title="isEdit ? $t('page.edit') : $t('page.build')"
       :okBtnDisable="disabledConfig.subtasking"
       @on-ok="assistOk()"
       @on-close="assistModal = false"

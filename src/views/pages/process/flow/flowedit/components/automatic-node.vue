@@ -32,7 +32,7 @@
     ></ButtonSetting>
     <div class="permission-list">
       <div class="list">
-        <div class="second-title text-grey">时间窗口</div>
+        <div class="second-title text-grey">{{ $t('term.process.startTimeWindow') }}</div>
         <TsFormDatePicker
           v-model="timeWindow"
           type="timerange"

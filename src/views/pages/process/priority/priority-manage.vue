@@ -28,7 +28,7 @@
             <div :style="{ color: row.color ? row.color : '' }" class="cur" @click="editRow(row.uuid)">{{ row.name }}</div>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <div>{{ row.isActive == 1 ? $t('form.label.enable') : $t('form.label.disable') }}</div>
+            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
           </template>
         </TsTable>
       </div>
@@ -150,8 +150,8 @@ export default {
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 1, text: this.$t('form.label.enable') },
-            { value: 0, text: this.$t('form.label.disable') }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ]
         },
         {
@@ -186,8 +186,8 @@ export default {
         placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.status')}),
         border: 'border',
         dataList: [
-          { value: 1, text: this.$t('form.label.enable') },
-          { value: 0, text: this.$t('form.label.disable') }
+          { value: 1, text: this.$t('page.enable') },
+          { value: 0, text: this.$t('page.disable') }
         ],
         onChange: function(value) {
           Object.assign(_this.searchParam, {

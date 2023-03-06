@@ -16,7 +16,7 @@
         <TsRow>
           <Col span="6">
             <div class="time-start dividing-color">
-              <span class="text-grey">激活时间</span>
+              <span class="text-grey">{{ $t('page.activationtime') }}</span>
               <div class="time-date overflow">
                 <span v-if="item.activeTime" :title="item.activeTime | formatDate">
                   {{ item.activeTime | formatDate }}
@@ -27,7 +27,7 @@
           </Col>
           <Col span="6">
             <div class="time-start dividing-color">
-              <span class="text-grey">开始时间</span>
+              <span class="text-grey">{{ $t('page.starttime') }}</span>
               <div class="time-date overflow">
                 <span v-if="item.startTime" :title="item.startTime | formatDate">
                   {{ item.startTime | formatDate }}
@@ -38,7 +38,7 @@
           </Col>
           <Col span="6">
             <div>
-              <span class="text-grey">结束时间</span>
+              <span class="text-grey">{{ $t('page.endtime') }}</span>
               <div class="time-date overflow">
                 <span v-if="item.endTime" :title="item.endTime | formatDate">
                   {{ item.endTime | formatDate }}
@@ -49,7 +49,7 @@
           </Col>
           <Col v-if="item.handler =='event' && item.handlerStepInfo" span="6">
             <div>
-              <span class="text-grey">归档类型</span>
+              <span class="text-grey">{{ $t('term.process.archivedtype') }}</span>
               <div class="time-date">
                 {{ item.handlerStepInfo.eventTypeNamePath || '-' }}
               </div>

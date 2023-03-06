@@ -28,15 +28,15 @@
                   <span :style="{ color: stepTooltip.statusVo.color }">{{ stepTooltip.statusVo.text }}</span>
                 </li>
                 <li v-if="stepTooltip.startTime" class="tooltip-list">
-                  <span class="label">开始时间</span>
+                  <span class="label">{{ $t('page.starttime') }}</span>
                   <span>{{ stepTooltip.startTime | formatDate }}</span>
                 </li>
                 <li v-if="stepTooltip.endTime" class="tooltip-list">
-                  <span class="label">结束时间</span>
+                  <span class="label">{{ $t('page.endtime') }}</span>
                   <span>{{ stepTooltip.endTime | formatDate }}</span>
                 </li>
                 <li v-if="stepTooltip.majorUser" class="tooltip-list">
-                  <span class="label">处理人</span>
+                  <span class="label">{{ $t('term.process.dealwithuser') }}</span>
                   <span>
                     <UserCard v-bind="stepTooltip.majorUser.userVo" hideAvatar></UserCard>
                   </span>

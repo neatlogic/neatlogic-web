@@ -95,7 +95,7 @@ export default {
       //   { title: '类型', key: 'type'},
       //   { title: '标签', key: 'tag'},
       //   { title: '帐号', key: 'user'},
-      //   { title: '描述', key: 'desc'}
+      //   { title: this.$t('page.description'), key: 'desc'}
       // ],
     };
   },

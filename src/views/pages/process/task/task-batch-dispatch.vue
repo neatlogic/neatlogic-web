@@ -3,14 +3,14 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-upload" @click="isUploadDialogVisiable = true">导入工单</span>
-          <span class="action-item tsfont-download" @click="showDownloadDialog">下载模板</span>
+          <span class="action-item tsfont-upload" @click="isUploadDialogVisiable = true">{{ $t('term.process.importjob') }}</span>
+          <span class="action-item tsfont-download" @click="showDownloadDialog">{{ $t('term.process.downloadtemp') }}</span>
         </div>
       </template>
       <template slot="topRight">
         <TsRow>
           <Col :span="6"><TsformSelect v-model="searchParams.status" v-bind="selectConfig" @on-change="status => search({ status })" /></Col>
-          <Col :span="18"><InputSearcher v-model="searchParams.keyword" placeholder="标题/工单号" @change="search()"></InputSearcher></Col>
+          <Col :span="18"><InputSearcher v-model="searchParams.keyword" :placeholder="$t('page.title')+ '/' + $t('term.process.worknum')" @change="search()"></InputSearcher></Col>
         </TsRow>
       </template>
       <template v-slot:content>
@@ -24,7 +24,7 @@
             @changePageSize="pageSize => search({ pageSize })"
           >
             <template v-slot:status="{ row }">
-              <span v-if="row.status === 1" class="text-success">成功</span>
+              <span v-if="row.status === 1" class="text-success">{{ $t('page.success') }}</span>
               <Tooltip
                 v-else
                 transfer
@@ -35,7 +35,7 @@
               >
                 <template v-slot:default>
                   <div class="text-danger overflow" style="max-width:160px;">
-                    <span>失败</span>
+                    <span>{{ $t('page.fail') }}</span>
                     <span>({{ row.errorReason }})</span>
                   </div>
                 </template>
@@ -51,23 +51,23 @@
 
     <!-- 导入工单对话框 -->
     <TsDialog
-      title="导入工单"
+      :title="$t('term.process.importjob')"
       :hasFooter="false"
       :isShow.sync="isUploadDialogVisiable"
       className="task-upload-dialog"
     >
-      <p class="text-primary">为避免导入失败，请使用本页面下载的模板</p>
+      <p class="text-primary">{{ $t('term.process.importjobtip') }}</p>
       <Upload class="upload" v-bind="uploadConfig">
         <p class="upload-icon"><img src="@/resources/components/UploadDialog/upload-icon.png" /></p>
-        <p class="upload-tip text-default">拖拽文件到此处或点击上传</p>
-        <p class="upload-limit text-tip">支持导入10MB以内的.xlsx文件</p>
+        <p class="upload-tip text-default">{{ $t('page.uploadtips') }}</p>
+        <p class="upload-limit text-tip">{{ $t('term.process.importjobrule', {target: '.xlsx'}) }}</p>
       </Upload>
     </TsDialog>
 
     <!-- 下载模板对话框 -->
     <TsDialog
       :isShow.sync="isDownloadDialogVisiable"
-      title="下载模板"
+      :title="$t('term.process.downloadtemp')"
       width="460px"
       className="download-dialog"
     >
@@ -106,11 +106,11 @@ export default {
       channelUuid: '',
       selectConfig: {
         clearable: true,
-        placeholder: '请选择上报状态',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.reportstatus')}),
         border: 'border',
         dataList: [
-          { value: '0', text: '失败' },
-          { value: '1', text: '成功' }
+          { value: '0', text: this.$t('page.fail') },
+          { value: '1', text: this.$t('page.success') }
         ]
       },
       searchParams: {
@@ -120,13 +120,13 @@ export default {
         pageSize: 20
       },
       theadList: [
-        { title: '记录ID', key: 'id' },
-        { title: '工单号', key: 'serialNumber' },
-        { title: '标题', key: 'title' },
-        { title: '服务通道', key: 'channelName' },
-        { title: '上报状态', key: 'status' },
-        { title: '上报人', key: 'ownerVo', type: 'user' },
-        { title: '导入时间', key: 'importTime', type: 'time' }
+        { title: this.$t('term.process.recordid'), key: 'id' },
+        { title: this.$t('term.process.worknum'), key: 'serialNumber' },
+        { title: this.$t('page.title'), key: 'title' },
+        { title: this.$t('term.process.servicechannel'), key: 'channelName' },
+        { title: this.$t('term.process.reportstatus'), key: 'status' },
+        { title: this.$t('term.process.reportuser'), key: 'ownerVo', type: 'user' },
+        { title: this.$t('term.process.importtime'), key: 'importTime', type: 'time' }
       ],
       tableConfig: {
         tbodyList: [],
@@ -138,12 +138,12 @@ export default {
         {
           name: 'channel',
           type: 'select',
-          label: '服务',
+          label: this.$t('term.process.catalog'),
           labelWidth: '80',
           width: '100%',
           transfer: true,
           validateList: ['required'],
-          placeholder: '请选择服务',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.catalog')}),
           search: true,
           dynamicUrl: 'api/rest/process/channel/search',
           rootName: 'channelList',
@@ -195,7 +195,7 @@ export default {
     },
     uploadError(error, res) {
       this.isUploadDialogVisiable = false;
-      this.$Notice.error({ title: '上传失败', desc: res.Message });
+      this.$Notice.error({ title: this.$t('message.content.uploadfailed'), desc: res.Message });
       this.search();
     },
     showDownloadDialog() {

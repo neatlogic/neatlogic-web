@@ -5,7 +5,7 @@
       <template v-slot:topLeft>
         <InputSearcher
           v-model="keywork"
-          placeholder="请输入节点名称"
+          :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.nodename')})"
           @change="getNodeList"
         ></InputSearcher>
       </template>
@@ -27,7 +27,7 @@
             <div class="contain-right">
               <div v-if="node.config.authorityList">
                 <p class="text-title block-title">
-                  <span class="bg-block" :class="{'text-primary':node.handler==nodeType && actionType=='auth'}">授权</span>
+                  <span class="bg-block" :class="{'text-primary':node.handler==nodeType && actionType=='auth'}">{{ $t('page.auth') }}</span>
                   <span class="border-line dividing-color" :class="{'border-primary':node.handler==nodeType && actionType=='auth'}"></span>
                 </p>
                 <Row class="block-div">
@@ -76,7 +76,7 @@
               <div v-if="node.config.notifyPolicyConfig">
                 <p class="text-title block-title">
                   <span class="bg-block">
-                    <span class="name" :class="{'text-primary':node.handler==nodeType && actionType=='inform'}">通知</span>
+                    <span class="name" :class="{'text-primary':node.handler==nodeType && actionType=='inform'}">{{ $t('page.notify') }}</span>
                     <span class="select">
                       <TsFormSelect
                         v-model="node.config.notifyPolicyConfig.policyId"
@@ -85,15 +85,15 @@
                         @on-change="notifySelectChange(node)"
                       >
                         <template v-slot:first-ul>
-                          <li class="tsfont-plus text-href first-slot" @click.stop="gotoAddNotify(node)">策略</li>
+                          <li class="tsfont-plus text-href first-slot" @click.stop="gotoAddNotify(node)">{{ $t('page.notificationstrategy') }}</li>
                         </template>
                       </TsFormSelect>
                     </span>
-                    <span class="tsfont-rotate-right notify-icon" title="刷新" @click="refreshNotifyList(node)"></span>
+                    <span class="tsfont-rotate-right notify-icon" :title="$t('page.refresh')" @click="refreshNotifyList(node)"></span>
                     <span
                       v-if="node.config.notifyPolicyConfig.policyId"
                       class="tsfont-edit notify-icon"
-                      title="编辑"
+                      :title="$t('page.edit')"
                       @click="editNotify(node.config.notifyPolicyConfig.policyId)"
                     ></span>
                   </span>
@@ -104,7 +104,7 @@
                     style="float:right;cursor: pointer;"
                     @click="showNotify(node)"
                   >
-                    {{ node.config.notifyPolicyConfig.controlShow ? '隐藏已匹配参数' : '显示已匹配参数' }}
+                    {{ node.config.notifyPolicyConfig.controlShow ? $t('term.process.hideparams') : $t('term.process.showparams') }}
                   </span>
                 </p>
                 <div v-if="node.config.notifyPolicyConfig && node.config.notifyPolicyConfig.myParamMappingList && node.config.notifyPolicyConfig.myParamMappingList.length > 0">
@@ -195,7 +195,7 @@ export default {
         textName: 'name',
         rootName: 'tbodyList'
       },
-      mapList: [{value: 'customButtonList', text: '按钮映射'}, {value: 'customStatusList', text: '状态映射'}, {value: 'replaceableTextList', text: '其它映射'}],
+      mapList: [{value: 'customButtonList', text: this.$t('term.process.btnmapping')}, {value: 'customStatusList', text: this.$t('term.process.statusmapping')}, {value: 'replaceableTextList', text: this.$t('term.process.othersmapping')}],
       saving: false,
       nodeType: null, //用于从别处过来的时候获取是哪一种节点类型
       actionType: null, //用于从别处过来的时候获取是哪一种参数
@@ -304,7 +304,7 @@ export default {
           !d.valid() && (isSubmit = false);
         });
       if (!isSubmit) {
-        this.$Message.warning('通知策略参数填写完整');
+        this.$Message.warning(this.$t('message.content.required', {target: this.$t('page.notificationstrategy')}));
         return;
       }
       return isSubmit;

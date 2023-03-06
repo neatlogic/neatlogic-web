@@ -16,7 +16,7 @@
 <template>
   <div v-if="isShow" class="information-box">
     <div class="bg-op padding radius-lg">
-      <div class="information-title">当前步骤</div>
+      <div class="information-title">{{ $t('term.process.currentstep') }}</div>
       <Carousel
         v-if="isShow"
         v-model="value"
@@ -29,18 +29,18 @@
           <CarouselItem v-for="(object,sindex) in stepList" :key="sindex">
             <div v-for="(item, index) in getStepInformationList(object)" :key="'step'+index" class="information-list">
               <template v-if="item.value == 'majorUser'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
                   <UserCard v-bind="item.textConfig.userVo" :iconSize="16"></UserCard>
                   <span v-if="object.originalUserVo">
-                    <span style="vertical-align: bottom;">（代</span>
+                    <span style="vertical-align: bottom;">（{{ $t('term.process.act') }}</span>
                     <UserCard v-bind="object.originalUserVo" :iconSize="16"></UserCard>
                     <span style="vertical-align: bottom;">）</span>
                   </span>
                 </div>
               </template>
               <template v-else-if="item.value == 'workerList' && item.textConfig.length > 0">
-                <div v-if="item.textConfig.length > 0" class="infor-left text-grey">{{ item.title }}</div>
+                <div v-if="item.textConfig.length > 0" class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
                   <span class="minoruser-list">
                     <span><UserCard
@@ -54,17 +54,17 @@
                 </div>
               </template>
               <template v-else-if="item.value == 'statusVo'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
                   {{ item.textConfig.text }}
                 </div>
               </template>
               <template v-else-if="timeShow(item.value)">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">{{ item.textConfig | formatDate }}</div>
               </template>
-              <template v-else class="information-list">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+              <template v-else>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">{{ item.textConfig }}</div>
               </template>
             </div>
@@ -92,47 +92,47 @@ export default {
       defaultProcessTaskStep: [
         //步骤信息
         {
-          title: '步骤名称',
+          title: this.$t('term.process.stepname'),
           value: 'name',
           textConfig: null
         },
         {
-          title: '处理人',
+          title: this.$t('term.process.dealwithuser'),
           value: 'majorUser',
           textConfig: null
         },
         {
-          title: '待处理人',
+          title: this.$t('term.process.pendinguser'),
           value: 'workerList',
           textConfig: null
         },
         {
-          title: '步骤状态',
+          title: this.$t('term.process.stepstatus'),
           value: 'statusVo',
           textConfig: null
         },
         {
-          title: '变更状态',
+          title: this.$t('term.process.changestatus'),
           value: 'changeStatusVo',
           textConfig: null
         },
         {
-          title: '激活时间',
+          title: this.$t('page.activationtime'),
           value: 'activeTime',
           textConfig: null
         },
         {
-          title: '开始时间',
+          title: this.$t('page.starttime'),
           value: 'startTime',
           textConfig: null
         },
         {
-          title: '结束时间',
+          title: this.$t('page.endtime'),
           value: 'endTime',
           textConfig: null
         },
         {
-          title: '超时时间',
+          title: this.$t('page.timeout'),
           value: 'expireTime',
           textConfig: null
         }

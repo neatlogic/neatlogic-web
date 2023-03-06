@@ -20,7 +20,7 @@
     </div>
     <div v-if="isNeedUploadFile" class="bg-op radius-lg padding list-block">
       <div class="title" :class="{'pb-nm':showDetailConfig.file}" @click="showDetailConfig.file = !showDetailConfig.file">
-        <span>附件</span>
+        <span>{{ $t('page.accessory') }}</span>
         <span class="detail-icon text-tip-active" :class="showDetailConfig.file?'tsfont-down':'tsfont-up'"></span>
       </div>
       <TsUpLoad

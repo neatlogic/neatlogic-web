@@ -20,7 +20,7 @@
             :key="'1'+index"
             class="soptemplate-list"
             :class="item.isActive === 0?'undraggable border-color':'bg-block'"
-            :title="item.isActive === 0?'模板未激活，不可引用':''"
+            :title="item.isActive === 0? $t('term.process.tempnotreferenced'):''"
             @dragstart="dropstart($event, item)"
           >
             <div class="overflow">{{ item.name }}</div>
@@ -34,7 +34,7 @@
                     placement="bottom-end"
                     @on-visible-change="showTemplateList(arguments, item)"
                   >
-                    <span class="ts-catalogue text-tip-active " title="引用列表"></span>
+                    <span class="ts-catalogue text-tip-active " :title="$t('page.referencelist')"></span>
                     <DropdownMenu slot="list" class="dropdown">
                       <DropdownItem v-for="(c,cindex) in item.changeTemplateList" :key="cindex" @click.native="toChangeEdit(c)">
                         <div class="text-action">{{ c.name }}</div>
@@ -42,11 +42,11 @@
                     </DropdownMenu>
                   </Dropdown>
                 </span>
-                <span class="ts-intersect text-tip-active padding-lf" title="复制" @click="editTemplate(item, true)"></span>
-                <span class="tsfont-edit text-tip-active padding-lf" title="编辑" @click="editTemplate(item)"></span>
+                <span class="ts-intersect text-tip-active padding-lf" :title="$t('page.copy')" @click="editTemplate(item, true)"></span>
+                <span class="tsfont-edit text-tip-active padding-lf" :title="$t('page.edit')" @click="editTemplate(item)"></span>
                 <span
                   class="tsfont-trash-s padding-lf"
-                  :title="item.changeTemplateList.length > 0?'模板被引用不可删除':'删除'"
+                  :title="item.changeTemplateList.length > 0?$t('term.process.tempdelete'):$t('page.delete')"
                   :class="item.changeTemplateList.length > 0?'text-disabled':'text-tip-active'"
                   @click="delTemplate(item)"
                 ></span>
@@ -115,7 +115,7 @@ export default {
       loadingShow: false,
       keyword: '',
       changeSopList: [],
-      dialogTitle: '添加SOP模板',
+      dialogTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.soptemp')}),
       templateDialog: false,
       config: {},
       isTransferDom: true,
@@ -127,7 +127,7 @@ export default {
           name: 'name',
           value: '',
           maxlength: 50,
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           width: '90%',
           validateList: ['required', {
             name: 'searchUrl', url: 'api/rest/change/sop/copy'
@@ -140,7 +140,7 @@ export default {
             type: 'userselect',
             name: 'authority',
             value: '',
-            label: '分组',
+            label: this.$t('page.group'),
             transfer: true,
             groupList: ['team'],
             multiple: false
@@ -149,7 +149,7 @@ export default {
             type: 'select',
             name: 'type',
             value: '',
-            label: '类型',
+            label: this.$t('page.type'),
             search: true,
             dynamicUrl: '/api/rest/change/sop/type/list',
             rootName: 'changeSopTypeList',
@@ -159,15 +159,15 @@ export default {
             type: 'radio',
             name: 'isActive',
             value: '',
-            label: '状态',
+            label: this.$t('page.status'),
             itemWidth: '100%',
             dataList: [
               {
-                text: '启用',
+                text: this.$t('page.enable'),
                 value: 1
               },
               {
-                text: '禁用',
+                text: this.$t('page.disable'),
                 value: 0
               }
             ]
@@ -224,17 +224,17 @@ export default {
     },
     addTemplate() {
       this.config = {};
-      this.dialogTitle = '添加SOP模板';
+      this.dialogTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.soptemp')});
       this.templateDialog = true;
     },
     async editTemplate(config, type) {
       if (type) {
-        this.dialogTitle = '复制SOP模板';
+        this.dialogTitle = this.$t('dialog.title.copytarget', {target: this.$t('term.process.soptemp')});
         this.copyId = config.id;
         this.copyForm[0].value = config.name + '_copy';
         this.copySopDialog = true;
       } else {
-        this.dialogTitle = '编辑SOP模板';
+        this.dialogTitle = this.$t('dialog.title.edittarget', {target: this.$t('term.process.soptemp')});
         await this.getSopConfig(config.id);
         this.templateDialog = true;
       }

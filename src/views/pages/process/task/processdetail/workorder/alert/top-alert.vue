@@ -48,14 +48,14 @@
         <div class="default-detail">
           <div class="tranferReport-list">
             <div class="item-box">
-              <div class="text-grey fz10">标题</div>
+              <div class="text-grey fz10">{{ $t('page.title') }}</div>
               <div class="overflow text-href" :title="processTaskVo.title" @click="toTaskdetail(processTaskVo.id)">
                 {{ processTaskVo.title }}
               </div>
             </div>
             <div class="item-box">
               <div class="text-grey fz10">
-                工单号
+                {{ $t('term.process.worknum') }}
               </div>
               <div class="overflow item-content">
                 <div class="overflow text-href item-serialNumber" @click="toTaskdetail(processTaskVo.id)">
@@ -77,7 +77,7 @@
             </div>
             <div class="item-box">
               <div class="text-grey fz10">
-                状态
+                {{ $t('page.status') }}
               </div>
               <div v-if="processTaskVo.statusVo">{{ processTaskVo.statusVo.text }}</div>
             </div>

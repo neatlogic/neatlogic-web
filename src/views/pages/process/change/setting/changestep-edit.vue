@@ -4,7 +4,7 @@
       <div v-if="newChangeStepList && newChangeStepList.length > 0">
         <span class="text-grey top-title">{{ title }}</span>
         <span class="tsfont-edit text-action" style="position: relative;">
-          <span @click="editUser">批量编辑处理人</span>
+          <span @click="editUser">{{ $t('term.process.batchedituser') }}</span>
           <div v-if="visible" class="pop-box">
             <div class="tooltip-box">
               <div class="tooltip tipbottom">
@@ -27,7 +27,7 @@
                       size="small"
                       style="margin:0;"
                       @click="changeAllUser"
-                    >确定</Button>
+                    >{{ $t('button.confirm') }}</Button>
                   </div>
                 </div>
               </div>
@@ -35,11 +35,11 @@
           </div>
         </span>
         <div class="top-right">
-          <span class="tsfont-trash-o text-action" @click="clearSetting">清空</span>
+          <span class="tsfont-trash-o text-action" @click="clearSetting">{{ $t('page.clear') }}</span>
         </div>
       </div>
       <div v-else>
-        <span class="tsfont-plus text-href" @click="addStep">步骤</span>
+        <span class="tsfont-plus text-href" @click="addStep">{{ $t('term.process.step') }}</span>
       </div>
     </div>
     <div v-if="newChangeStepList && newChangeStepList.length>0" class="change-main card-wrapper">
@@ -66,14 +66,14 @@
               <UserCard :uuid="cd.workerVo.uuid" :initType="cd.workerVo.initType"></UserCard>
             </div>
             <div class="data-block">
-              <div class="text-grey">计划开始日期{{ cd.parentUuid }}</div>
+              <div class="text-grey">{{ $t('term.process.planstartdate') }}{{ cd.parentUuid }}</div>
               <div>
                 {{ cd.planStartDate || '-' }}
               </div>
             </div>
             <div class="time-block">
               <div>
-                <div class="text-grey">时间窗口</div>
+                <div class="text-grey">{{ $t('term.process.startTimeWindow') }}</div>
                 <div v-if="cd.startTimeWindow || cd.endTimeWindow">
                   <span>{{ cd.startTimeWindow }}</span>
                   <span>-</span>
@@ -83,7 +83,7 @@
               </div>
             </div>
             <div class="files-block" style="position: relative;">
-              <div class="text-grey">附件</div>
+              <div class="text-grey">{{ $t('page.accessory') }}</div>
               <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
                 <Dropdown trigger="click">
                   <span>{{ cd.fileIdList.length }}</span>
@@ -110,7 +110,7 @@
             <ul class="order-tabs-title">
               <li class="active">
                 <div class="title-box">
-                  描述
+                  {{ $t('page.description') }}
                 </div>
               </li>
             </ul>
@@ -125,7 +125,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-grey content-text">暂无描述</div>
+          <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
         </div>
       </div>
     </div>
@@ -162,10 +162,10 @@ export default {
   data() {
     return {
       isSelectId: null,
-      title: '步骤信息',
+      title: this.$t('term.process.stepinfor'),
       addType: 'step',
       stepDialog: false,
-      dialogStepTitle: '添加步骤',
+      dialogStepTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')}),
       ChangeStepConfig: {}, //添加步骤数据
       selectId: null,
       // changeWidth: 700,
@@ -173,7 +173,7 @@ export default {
       allWorkerVo: null,
       groupList: ['user', 'team'],
       visible: false,
-      validateList: [{ name: 'required', message: '请选择处理人' }],
+      validateList: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
       newChangeStepList: [],
       stepConfig: null, //步骤信息
       character: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z']
@@ -291,10 +291,10 @@ export default {
     editsStep(type, obj, index) {
       this.dialogParentUuid = null;
       if (type == 'edit') {
-        this.dialogStepTitle = '编辑步骤';
+        this.dialogStepTitle = this.$t('dialog.title.edittarget', {target: this.$t('term.process.step')});
         this.stepConfig = obj || null;
       } else {
-        this.dialogStepTitle = '添加步骤';
+        this.dialogStepTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
         this.dialogParentUuid = obj.parentUuid;
         this.stepIndex = index - 0 + 1;
       }

@@ -4,7 +4,6 @@
       v-model="keyword"
       class="input-border"
       search
-      placeholder="请输入"
       clearable
       @on-enter="getParamList"
       @on-clear="getParamList"
@@ -20,8 +19,8 @@
         <div class="btn-box">
           <div class="btn-box-bg bg-block"></div>
           <div class="action-list">
-            <i class="tsfont-edit text-tip-active padding-lf" title="编辑" @click="editParam(item)"></i>
-            <i class="tsfont-trash-s text-tip-active padding-lf" title="删除" @click="delParam(item)"></i>
+            <i class="tsfont-edit text-tip-active padding-lf" :title="$t('page.edit')" @click="editParam(item)"></i>
+            <i class="tsfont-trash-s text-tip-active padding-lf" :title="$t('page.delete')" @click="delParam(item)"></i>
           </div>
         </div>
       </div>
@@ -37,7 +36,7 @@
       @on-ok="saveParam"
     >
       <template>
-        <Alert v-if="paramId">提示：修改变量后，将同步替换所有变更步骤中引用的对应变量</Alert>
+        <Alert v-if="paramId">{{ $t('term.process.paramstip') }}</Alert>
         <TsForm
           ref="paramForm"
           :itemList="paramForm"
@@ -49,7 +48,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="delparamDialog"
-      title="警告"
+      :title="$t('page.warning')"
       height="400px"
       btnType="error"
       :maskClose="false"
@@ -57,18 +56,18 @@
     >
       <template v-slot>
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
-        <Alert type="error">删除后无法恢复，并会同步清空以下步骤中引用的当前变量。</Alert>
+        <Alert type="error">{{ $t('term.process.paramsdeltip') }}</Alert>
         <div style="padding-bottom:10px;">
           <div>
-            <span class="text-title">引用列表</span>
+            <span class="text-title">{{ $t('page.referencelist') }}</span>
             <span class="tsfont-rotate-right text-action" style="padding-left:8px;" @click="refreshReference"></span>
           </div>
           <table v-if="referenceList.length>0" class="reference-table">
             <thead>
               <tr class>
-                <th>步骤名称</th>
-                <th>sop模板</th>
-                <th>操作</th>
+                <th>{{ $t('term.process.stepname') }}</th>
+                <th>{{ $t('term.process.soptemp') }}</th>
+                <th>{{ $t('page.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +105,7 @@ export default {
     return {
       keyword: '',
       paramDialog: false,
-      dialogTitle: '添加变量',
+      dialogTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.changeparams')}),
       paramId: null,
       paramForm: [
         {
@@ -114,7 +113,7 @@ export default {
           name: 'name',
           value: '',
           maxlength: 50,
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           width: '90%',
           validateList: ['required', 'parameter', {
             name: 'searchUrl', url: 'api/rest/change/param/save'
@@ -124,7 +123,7 @@ export default {
           type: 'select',
           name: 'mappingMethod',
           value: '',
-          label: '映射方式',
+          label: this.$t('term.process.mappingmethod'),
           width: '90%',
           transfer: true,
           validateList: ['required']
@@ -177,7 +176,7 @@ export default {
         e.value = '';
       });
       this.paramId = null;
-      this.dialogTitle = '添加变量';
+      this.dialogTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.changeparams')});
       this.paramDialog = true;
     },
     saveParam() {
@@ -205,7 +204,7 @@ export default {
     editParam(obj) {
       this.paramForm[0].value = obj.name;
       this.paramForm[1].value = obj.mappingMethod;
-      this.dialogTitle = '编辑变量';
+      this.dialogTitle = this.$t('dialog.title.edittarget', {target: this.$t('term.process.changeparams')});
       this.paramId = obj.id;
       this.paramDialog = true;
     },

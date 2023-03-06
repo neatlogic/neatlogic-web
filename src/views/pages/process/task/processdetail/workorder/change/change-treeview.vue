@@ -44,7 +44,7 @@
             </div>
           </div>
           <div class="files-block">
-            <div class="text-grey">附件</div>
+            <div class="text-grey">{{ $t('page.accessory') }}</div>
             <span v-if="cd.fileIdList && cd.fileIdList.length"> {{ cd.fileIdList.length }}</span>
             <span v-else>-</span>
           </div>
@@ -87,7 +87,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-grey content-text">暂无描述</div>
+          <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
         </div>
         <div v-show="cd.cur == 1">
           <div class="content-text">
@@ -167,7 +167,7 @@ export default {
       changeTitle: [
         //工单处理标题
         {
-          title: '描述',
+          title: this.$t('page.description'),
           isCount: false
         },
         {

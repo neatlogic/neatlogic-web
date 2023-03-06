@@ -76,7 +76,7 @@ export default {
           isDefault: false,
           type: 'userselect',
           name: 'workerList',
-          label: '处理人',
+          label: this.$t('term.process.dealwithuser'),
           value: [],
           width: '100%',
           groupList: ['user'],
@@ -97,7 +97,7 @@ export default {
           name: 'content',
           width: '100%',
           value: '',
-          label: '描述',
+          label: this.$t('page.description'),
           validateList: ['required']
         }
       ],

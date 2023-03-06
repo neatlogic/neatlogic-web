@@ -38,7 +38,7 @@ export default {
         if (config.oldContent && config.newContent) {
           text = '改为';
         } else if (config.oldContent && !config.newContent) {
-          text = '删除';
+          text = this.$t('page.delete');
         } else {
           text = '';
         }

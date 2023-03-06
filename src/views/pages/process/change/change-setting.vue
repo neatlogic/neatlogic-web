@@ -1,10 +1,10 @@
 <template>
   <div class="changeSetting">
     <Tabs value="SettingParameter">
-      <TabPane label="SOP模板" name="SettingParameter">
+      <TabPane :label="$t('term.process.soptemp')" name="SettingParameter">
         <SopSetting ref="sopSetting"></SopSetting>
       </TabPane>
-      <TabPane label="变量" name="SettingTemplate">
+      <TabPane :label="$t('term.process.changeparams')" name="SettingTemplate">
         <ParamSetting></ParamSetting>
       </TabPane>
     </Tabs>

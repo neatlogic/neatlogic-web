@@ -4,9 +4,9 @@
       <div class="change-top">
         <div v-if="newChangeStepList && newChangeStepList.length > 0">
           <div class="action-group">
-            <span v-if="isComplete" class="action-item active tsfont-file-single" @click="selectChangeTemplate">变更模板</span>
+            <span v-if="isComplete" class="action-item active tsfont-file-single" @click="selectChangeTemplate">{{ $t('term.process.changetemp') }}</span>
             <span v-if="isComplete" class="action-item active">
-              <span class="tsfont-edit icon-font" @click="editUser">批量编辑处理人</span>
+              <span class="tsfont-edit icon-font" @click="editUser">{{ $t('term.process.batchedituser') }}</span>
               <div v-if="visible" class="pop-box">
                 <div class="tooltip-box">
                   <div class="tooltip tipbottom">
@@ -29,14 +29,14 @@
                           size="small"
                           style="margin:0;"
                           @click="changeAllUser"
-                        >确定</Button>
+                        >{{ $t('button.confirm') }}</Button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </span>
-            <span v-if="isComplete" class="action-item active tsfont-trash-o" @click="clearSetting">清空步骤</span>
+            <span v-if="isComplete" class="action-item active tsfont-trash-o" @click="clearSetting">{{ $t('page.clear') }}</span>
           </div>
         </div>
         <div v-else class="action-group">
@@ -44,8 +44,8 @@
             v-if="isComplete"
             class="action-item active tsfont-file-single"
             @click="selectChangeTemplate"
-          >变更模板</span>
-          <span v-if="isComplete" class="action-item active tsfont-plus" @click="addStep">变更步骤</span>
+          >{{ $t('term.process.changetemp') }}</span>
+          <span v-if="isComplete" class="action-item active tsfont-plus" @click="addStep">{{ $t('term.process.changestep') }}</span>
         </div>
       </div>
       <div v-if="newChangeStepList && newChangeStepList.length>0" class="change-main card-wrapper pt-nm">
@@ -73,14 +73,14 @@
                 <UserCard v-bind="cd.workerVo" :initType="cd.workerVo.initType"></UserCard>
               </div>
               <div class="data-block">
-                <div class="text-grey">计划开始日期{{ cd.parentUuid }}</div>
+                <div class="text-grey">{{ $t('term.process.planstartdate') }}{{ cd.parentUuid }}</div>
                 <div>
                   {{ cd.planStartDate || '-' }}
                 </div>
               </div>
               <div class="time-block">
                 <div>
-                  <div class="text-grey">时间窗口</div>
+                  <div class="text-grey">{{ $t('term.process.startTimeWindow') }}</div>
                   <div v-if="cd.startTimeWindow || cd.endTimeWindow">
                     <span>{{ cd.startTimeWindow }}</span>
                     <span>-</span>
@@ -90,7 +90,7 @@
                 </div>
               </div>
               <div class="files-block" style="position: relative;">
-                <div class="text-grey">附件</div>
+                <div class="text-grey">{{ $t('page.accessory') }}</div>
                 <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
                   <Dropdown trigger="click">
                     <span>{{ cd.fileIdList.length }}</span>
@@ -117,7 +117,7 @@
               <ul class="order-tabs-title">
                 <li class="active">
                   <div class="title-box">
-                    描述
+                    {{ $t('page.description') }}
                   </div>
                 </li>
               </ul>
@@ -132,7 +132,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="text-grey content-text">暂无描述</div>
+            <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@ export default {
       groupList: ['user', 'team'],
       visible: false,
       validateList: {
-        user: [{ name: 'required', message: '请选择处理人' }],
+        user: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
         template: [{ name: 'required', message: '请选择模板' }],
         paramInput: [{ name: 'required', message: '请输入' }]
       },
@@ -412,10 +412,9 @@ export default {
     },
     delStep(id, name, cd) {
       //删除步骤
-      let _this = this;
       this.$createDialog({
-        title: '警告',
-        content: `确定删除该步骤：<b>${name}</b>？`,
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: name}),
         btnType: 'error',
         'on-ok': vnode => {
           let index = this.newChangeStepList.map(item => item.uuid).indexOf(id);

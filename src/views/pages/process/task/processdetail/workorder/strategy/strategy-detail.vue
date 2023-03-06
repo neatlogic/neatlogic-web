@@ -28,7 +28,7 @@
         <TsRow class="mb-xs">
           <Col span="8"><span class="text-title">策略</span><span class="text-default">{{ item.taskConfigPolicyName }}</span></Col>
           <Col span="12" class="time">
-            <span class="text-title">开始时间</span>
+            <span class="text-title">{{ $t('page.starttime') }}</span>
             <span class="text-default">{{ item.createTime | formatDate }}</span>
           </Col>
           <Col v-if="isCreatetask" span="4" class="operations action-group">
@@ -39,7 +39,7 @@
         <TsRow>
           <Col span="24">
             <div class="content-main">
-              <span class="text-title">描述</span>
+              <span class="text-title">{{ $t('page.description') }}</span>
               <span class="text-default" v-html="item.content"></span>
             </div>
            
@@ -76,7 +76,7 @@
 
         <div v-if="!readonly && item.isReplyable">
           <div class="mt-md file-main">
-            <span class="title mr-md">附件</span>
+            <span class="title mr-md">{{ $t('page.accessory') }}</span>
             <TsUpLoad
               ref="fileList"
               className="smallUpload"
@@ -180,7 +180,7 @@ export default {
       isCreatetask: false, //新增，修改，删除权限
       theadList: [
         {
-          title: '处理人',
+          title: this.$t('term.process.dealwithuser'),
           key: 'userUuid',
           type: 'user',
           uuid: 'userUuid'
@@ -195,7 +195,7 @@ export default {
           type: 'html',
           maxLength: '50'
         }, {
-          title: '附件',
+          title: this.$t('page.accessory'),
           key: 'fileList',
           type: 'file'
         }
@@ -208,7 +208,7 @@ export default {
           placeholder: '请选择',
           type: 'userselect',
           name: 'userList',
-          label: '处理人',
+          label: this.$t('term.process.dealwithuser'),
           groupList: ['user'],
           rangeList: [],
           validateList: [{name: 'required', message: '请选择'}],
@@ -217,7 +217,7 @@ export default {
         content: {
           type: 'ckeditor',
           name: 'content',
-          label: '描述',
+          label: this.$t('page.description'),
           validateList: ['required']
         } 
       },

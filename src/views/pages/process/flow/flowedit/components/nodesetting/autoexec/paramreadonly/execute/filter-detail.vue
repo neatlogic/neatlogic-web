@@ -78,7 +78,7 @@ export default {
         { title: '所属部门', key: 'bgList', type: 'usercards'},
         { title: '所有者', key: 'ownerList', type: 'usercards'},
         { title: '维护期', key: 'maintenanceWindow'},
-        { title: '描述', key: 'description'}
+        { title: this.$t('page.description'), key: 'description'}
       ],
       tableData: null,
       currentPage: 1,

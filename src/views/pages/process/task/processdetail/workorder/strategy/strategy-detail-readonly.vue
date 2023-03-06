@@ -24,14 +24,14 @@
             <span class="text-default">{{ item.taskConfigPolicyName }}</span>
           </Col>
           <Col span="12" class="time">
-            <span class="text-title">开始时间</span>
+            <span class="text-title">{{ $t('page.starttime') }}</span>
             <span class="text-default">{{ item.createTime | formatDate }}</span>
           </Col>
         </TsRow>
         <TsRow>
           <Col span="24">
             <div class="content-main">
-              <span class="text-title">描述</span>
+              <span class="text-title">{{ $t('page.description') }}</span>
               <span class="text-default" v-html="item.content"></span>
             </div>
           </Col>
@@ -89,7 +89,7 @@ export default {
       processTaskStepTaskList: [],
       theadList: [
         {
-          title: '处理人',
+          title: this.$t('term.process.dealwithuser'),
           key: 'userUuid',
           type: 'user',
           uuid: 'userUuid'
@@ -104,7 +104,7 @@ export default {
           type: 'html',
           maxLength: '50'
         }, {
-          title: '附件',
+          title: this.$t('page.accessory'),
           key: 'fileList',
           type: 'file'
         }

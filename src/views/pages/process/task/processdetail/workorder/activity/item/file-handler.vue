@@ -67,7 +67,7 @@ export default {
         if ((config.oldContent && this.setData(config.oldContent).length > 0) && (config.newContent && this.setData(config.newContent).length > 0)) {
           text = '改为';
         } else if ((config.oldContent && this.setData(config.oldContent).length > 0) && (!config.newContent || this.setData(config.newContent).length == 0)) {
-          text = '删除';
+          text = this.$t('page.delete');
         } else {
           text = '';
         }

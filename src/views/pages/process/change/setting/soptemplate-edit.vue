@@ -3,7 +3,7 @@
     <div class="template-content">
       <div class="info-list">
         <div class="title text-grey">
-          <div class="basic-top">基本信息</div>
+          <div class="basic-top">{{ $t('page.basesetting') }}</div>
           <div class="dividing-color line-top"></div>
           <div class="basic-top">
             <TsFormSwitch
@@ -28,7 +28,7 @@
               </Col>
               <Col span="12">
                 <div class="change-tip">
-                  <span class="text-grey">分组</span>
+                  <span class="text-grey">{{ $t('page.group') }}</span>
                   <Tooltip
                     placement="bottom"
                     max-width="300"
@@ -37,7 +37,7 @@
                   >
                     <i class="tsfont-info-o cursor-pointer text-title"></i>
                     <div slot="content">
-                      <p>支持关联用户组，创建变更模板时可通过该分组快速过滤SOP模板</p>
+                      <p>{{ $t('term.process.changegrouptip') }}</p>
                     </div>
                   </Tooltip>
                 </div>
@@ -55,7 +55,7 @@
               </Col>
               <Col span="12">
                 <div class="change-tip">
-                  <span class="text-grey">类型</span>
+                  <span class="text-grey">{{ $t('page.type') }}</span>
                   <Tooltip
                     placement="bottom"
                     max-width="300"
@@ -64,7 +64,7 @@
                   >
                     <i class="tsfont-info-o cursor-pointer text-title"></i>
                     <div slot="content">
-                      <p>支持自定义添加类型，创建变更模板时可通过该类型快速过滤</p>
+                      <p>{{ $t('term.process.changetypetip') }}</p>
                     </div>
                   </Tooltip>
                 </div>
@@ -126,9 +126,9 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: '模板名称',
+          label: this.$t('page.templatename'),
           validateList: [
-            { name: 'required', message: '请输入名称' },
+            { name: 'required', message: this.$t('form.placeholder.name') },
             { name: 'searchUrl', url: 'api/rest/change/sop/save', key: 'name', params: () => ({id: this.config.id})}
           ]
         }
