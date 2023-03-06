@@ -7,8 +7,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="reportInstanceData.id">编辑报表</div>
-        <div v-if="!reportInstanceData.id">添加报表</div>
+        <div v-if="reportInstanceData.id">{{ $t('term.report.editReport') }}</div>
+        <div v-if="!reportInstanceData.id">{{ $t('term.report.addReport') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="reportForm" :item-list="reportInstanceFormConfig">
@@ -25,10 +25,10 @@
               <table class="tstable-body">
                 <thead>
                   <tr>
-                    <th style="width:50px">显示</th>
+                    <th style="width:50px">{{ $t('page.display') }}</th>
                     <th>{{ $t('page.name') }}</th>
                     <th>{{ $t('common.tag') }}</th>
-                    <th>默认值</th>
+                    <th>{{ $t('page.defaultValue') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -49,7 +49,7 @@
               </table>
             </div>
             <div v-else>
-              没有任何参数
+              {{ $t('page.withoutParam') }}
             </div>
           </template>
           <template v-slot:tableConfig>
@@ -127,7 +127,7 @@ export default {
         },
         name: {
           type: 'text',
-          label: _this.$i18n.t('page.name'),
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required'],
           width: 400,
@@ -137,7 +137,7 @@ export default {
         },
         reportId: {
           type: 'select',
-          label: _this.$i18n.t('report.template.letter'),
+          label: this.$t('page.template'),
           width: 400,
           validateList: ['required'],
           valueName: 'id',
@@ -151,7 +151,7 @@ export default {
         }, 
         authList: {
           type: 'userselect',
-          label: _this.$i18n.t('common.authorization'),
+          label: this.$t('common.authorization'),
           width: 400,
           groupList: ['user', 'team', 'role'],
           onChange: function(name) {
@@ -160,15 +160,15 @@ export default {
         },
         isActive: {
           type: 'slot',
-          label: _this.$i18n.t('report.isActive')
+          label: this.$t('term.report.isActive')
         },
         config: {
           type: 'slot',
-          label: _this.$i18n.t('common.condition')
+          label: this.$t('common.condition')
         },
         tableConfig: {
           type: 'slot',
-          label: '显示字段',
+          label: this.$t('term.report.displayField'),
           /* get value() {
             return _this.tableList.map(table => {
               const {id: tableId, valueList: columnList} = table;
@@ -184,19 +184,19 @@ export default {
       tableList: [],
       theadList: [
         {
-          title: _this.$i18n.t('page.name'),
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: _this.$i18n.t('report.isActive'),
+          title: this.$t('term.report.isActive'),
           key: 'isActive'
         },
         {
-          title: _this.$i18n.t('report.template.letter'),
+          title: this.$t('page.template'),
           key: 'reportName'
         },
         {
-          title: _this.$i18n.t('report.visits'),
+          title: this.$t('term.report.visits'),
           key: 'visitCount'
         },
         {

@@ -20,7 +20,7 @@ export default {
         matrix: {
           type: 'select',
           name: 'matrix',
-          label: '矩阵',
+          label: this.$t('term.report.matrix'),
           dynamicUrl: '/api/rest/matrix/search',
           rootName: 'tbodyList',
           textName: 'name',
@@ -33,7 +33,7 @@ export default {
         },
         valueKey: {
           type: 'select',
-          label: '值字段',
+          label: this.$t('term.report.valueField'),
           dataList: this.matrixData,
           textName: 'name',
           valueName: 'uuid',
@@ -42,7 +42,7 @@ export default {
         },
         textKey: {
           type: 'select',
-          label: '文本字段',
+          label: this.$t('term.report.textField'),
           dataList: this.matrixData,
           textName: 'name',
           valueName: 'uuid',

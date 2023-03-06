@@ -2,7 +2,7 @@
   <Drawer 
     :value="visible"
     class="sendjob-record"
-    :title="$t('report.send.record')"
+    :title="$t('term.report.sendRecord')"
     width="800px"
     :mask-closable="true"
     :mask="true"
@@ -20,7 +20,7 @@
       <template v-slot:status="{row}">
         <span v-if="row.status === 'succeed'" class="text-success">{{ $t('common.success') }}</span>
         <span v-else-if="row.status === 'failed'" class="text-danger">{{ $t('common.fail') }}</span>
-        <span v-else-if="row.status === 'running'" class="text-primary">{{ $t('report.sending') }}</span>
+        <span v-else-if="row.status === 'running'" class="text-primary">{{ $t('term.report.sending') }}</span>
       </template>
       <template v-slot:receiverList="{row}">
         <template v-if="row.receiverList.length <= 7">
@@ -70,8 +70,8 @@ export default {
         pageSize: 20
       },
       theadList: [
-        {title: _this.$i18n.t('common.status'), key: 'status'},
-        {title: _this.$i18n.t('report.send.time'), key: 'startTime'},
+        {title: this.$t('common.status'), key: 'status'},
+        {title: this.$t('term.report.sendTimes'), key: 'startTime'},
         {title: '收件人', key: 'receiverList'},
         {title: '', key: 'action'}
       ],
@@ -104,7 +104,7 @@ export default {
       const params = { auditId: row.id }; 
       const res = await this.$api.report.sendjob.getAuditLog(params);
       this.$createDialog({
-        title: '失败原因',
+        title: this.$t('page.failReason'),
         content: res.Return,
         hasFooter: false
       });

@@ -6,9 +6,9 @@
           <tr>
             <th style="width:15%">{{ $t('page.name') }}</th>
             <th style="width:15%">{{ $t('common.tag') }}</th>
-            <th style="width:40%">{{ $t('report.control') }}</th>
+            <th style="width:40%">{{ $t('term.report.control') }}</th>
             <th style="width:15%">{{ $t('common.width') }}</th>
-            <th style="width: 5%">是否必填</th>
+            <th style="width: 5%">{{ $t('page.requiredOrNot') }}</th>
             <th style="width:10%;" class="text-right">
               <a href="javascript:void(0)" @click="addParam">
                 <i class="tsfont-plus-o" style="font-size: 13px;"></i>
@@ -92,7 +92,7 @@
     >{{ $t('common.param') }}</a>
     <TsDialog :is-show="isShow" v-bind="paramDialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>参数配置</div>
+        <div>{{ $t('term.report.paramConfig') }}</div>
       </template>
       <template v-slot>
         <component :is="currentParam.type+'config'" ref="paramComponent" :config="currentParam.config"></component>
@@ -129,13 +129,13 @@ export default {
     return {
       myParamList: [],
       controllerTypeList: [
-        {value: 'forminput', text: _this.$i18n.t('report.box.input'), hasconfig: false},
-        {value: 'formselect', text: _this.$i18n.t('report.box.select'), hasconfig: true},
-        {value: 'formselects', text: '下拉多选框', hasconfig: true},
-        {value: 'formcheckbox', text: _this.$i18n.t('report.box.checkbox'), hasconfig: true},
-        {value: 'formradio', text: _this.$i18n.t('report.box.radio'), hasconfig: true},
-        {value: 'formdaterange', text: '时间范围', hasconfig: false},
-        {value: 'formdate', text: '日期', hasconfig: false}
+        {value: 'forminput', text: this.$t('common.input'), hasconfig: false},
+        {value: 'formselect', text: this.$t('common.select'), hasconfig: true},
+        {value: 'formselects', text: this.$t('common.multiSelect'), hasconfig: true},
+        {value: 'formcheckbox', text: this.$t('common.checkbox'), hasconfig: true},
+        {value: 'formradio', text: this.$t('common.radio'), hasconfig: true},
+        {value: 'formdaterange', text: this.$t('common.timeRange'), hasconfig: false},
+        {value: 'formdate', text: this.$t('common.date'), hasconfig: false}
       ],
       widthTypeList: [
         {value: 24, text: '100%'},
@@ -145,11 +145,11 @@ export default {
       datePickerTypeList: [
         // 显示格式
         {
-          text: '年-月-日 时:分',
+          text: this.$t('common.dateTimeRangeText'),
           value: 'datetimerange'
         },
         {
-          text: '年-月-日',
+          text: this.$t('common.dateRangeText'),
           value: 'daterange'
         }
       ],

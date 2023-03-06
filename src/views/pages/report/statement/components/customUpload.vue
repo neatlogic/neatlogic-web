@@ -52,7 +52,7 @@ export default {
       if (type === 'image') {
         this.upload(file);
       } else {
-        this.$message.warn('只能上次图片格式');
+        this.$message.warn(this.$t('term.report.describe.onlyLastPictureFormat'));
       }
     },
     upload(imgUrl) {

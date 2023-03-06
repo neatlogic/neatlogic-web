@@ -1,18 +1,18 @@
 <template>
   <div>
-    <TsContain> 
+    <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addBlackWhiteList()">可用对象</span>
+        <span class="text-action tsfont-plus" @click="addBlackWhiteList()">{{ $t('page.availableObject') }}</span>
       </template>
       <div slot="content" ref="maintable" class="content">
         <TsTable v-if="blackWhiteListData" :theadList="theadList" v-bind="blackWhiteListData">
           <template v-slot:itemType="{ row }">
-            <span v-if="row.itemType == 'table'">表</span>
-            <span v-else-if="row.itemType == 'column'">字段</span>
+            <span v-if="row.itemType == 'table'">{{ $t('page.table') }}</span>
+            <span v-else-if="row.itemType == 'column'">{{ $t('page.field') }}</span>
           </template>
           <template v-slot:type="{ row }">
-            <span v-if="row.type == 'blacklist'" class="text-error">黑名单</span>
-            <span v-else-if="row.type == 'whitelist'" class="text-success">白名单</span>
+            <span v-if="row.type == 'blacklist'" class="text-error">{{ $t('page.blackList') }}</span>
+            <span v-else-if="row.type == 'whitelist'" class="text-success">{{ $t('page.whiteList') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -20,11 +20,13 @@
                 <li
                   class="tsfont-edit"
                   @click="editBlackWhiteList(row)"
-                >编辑</li>
+                >{{ $t('term.report.editTemplate') }}
+                </li>
                 <li
                   class="tsfont-trash-o"
                   @click="deleteBlackWhiteList(row)"
-                >删除</li>
+                >{{ $t('term.report.deleteTemplate') }}
+                </li>
               </ul>
             </div>
           </template>
@@ -47,10 +49,10 @@ export default {
       isShow: false,
       currentId: null,
       theadList: [
-        {key: 'itemName', title: '对象名称'},
-        {key: 'itemType', title: '对象类型'},
-        {key: 'type', title: '类型'},
-        {key: 'description', title: '说明'},
+        {key: 'itemName', title: this.$t('page.itemName')},
+        {key: 'itemType', title: this.$t('page.itemType')},
+        {key: 'type', title: this.$t('page.type')},
+        {key: 'description', title: this.$t('page.explain')},
         {key: 'action'}
       ],
       blackWhiteListData: {},
@@ -85,7 +87,7 @@ export default {
       this.isShow = true;
     },
     deleteBlackWhiteList(item) {
-      
+
     },
     closeEditDialog(needRefresn) {
       this.isShow = false;

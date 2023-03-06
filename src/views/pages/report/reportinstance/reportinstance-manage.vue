@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addReportInstance()">报表</span>
+        <span class="text-action tsfont-plus" @click="addReportInstance()">{{ $t('term.report.report') }}</span>
       </template>
       <template slot="topRight">
         <TsRow>
@@ -72,28 +72,28 @@ export default {
       reportSelectConfig: {
         search: true,
         value: null,
-        label: _this.$i18n.t('common.status'),
+        label: this.$.t('common.status'),
         valueName: 'id',
         textName: 'name',
         dynamicUrl: '/api/rest/report/list',
         rootName: 'tbodyList',
-        placeholder: '请选择模板'
+        placeholder: this.$t('term.report.describe.chooseTemplate')
       },
       theadList: [
         {
-          title: _this.$i18n.t('page.name'),
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: _this.$i18n.t('report.isActive'),
+          title: this.$t('term.report.isActive'),
           key: 'isActive'
         },
         {
-          title: _this.$i18n.t('report.template.letter'),
+          title: this.$t('page.template'),
           key: 'reportName'
         },
         {
-          title: _this.$i18n.t('report.visits'),
+          title: this.$t('term.report.visits'),
           key: 'visitCount'
         },
         {
@@ -166,8 +166,8 @@ export default {
     deleteReportInstance: function(row) {
       const { id, name } = row;
       this.$createDialog({
-        title: '警告',
-        content: '确定删除该报表：' + name + '?',
+        title: this.$t('page.warning'),
+        content: `${this.$t('term.report.describe.confirmDeleteReport')}：${name}?`,
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReportInstance({ id });

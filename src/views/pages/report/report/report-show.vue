@@ -7,7 +7,7 @@
           v-auth="'REPORT_MODIFY'"
           class="tsfont-left text-action"
           @click="$back('/report-manage')"
-        >{{ $getFromPage('模板列表') }}</span>
+        >{{ $getFromPage($t('page.templateList')) }}</span>
       </template>
       <template v-slot:topLeft>
         <span v-auth="'REPORT_MODIFY'">{{ reportData.name }}</span>
@@ -155,7 +155,7 @@ export default {
         // _this.$refs['iframe'].src = 'data:text/html;charset=utf-8,' + res.data;
         _this.reportContent = res.data || res;
         if (showStatus) {
-          _this.$Message.success('刷新成功');
+          _this.$Message.success(_this.$t('message.content.refreshsuccess'));
         }
       }).finally(() => {
         this.loadingShow = false;

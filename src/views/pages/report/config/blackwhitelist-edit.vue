@@ -2,16 +2,16 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="blackWhiteData.id">编辑可用对象</div>
-        <div v-if="!blackWhiteData.id">添加可用对象</div>
+        <div v-if="blackWhiteData.id">{{ $t('term.report.editAvailableObject') }}</div>
+        <div v-if="!blackWhiteData.id">{{ $t('term.report.addAvailableObject') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -45,10 +45,10 @@ export default {
         {
           type: 'text',
           name: 'itemName',
-          label: '对象名称',
+          label: this.$t('page.itemName'),
           maxlength: 50,
-          desc: '支持itemName*或*itemName两种匹配方式，如果输入*，代表匹配所有对象。',
-          validateList: [{name: 'required', message: '请输入类型名称'}],
+          desc: this.$t('term.report.describe.itemNameDescribe'),
+          validateList: [{name: 'required', message: this.$t('page.inputTypeName')}],
           onChange: (name) => {
             this.blackWhiteData.itemName = name;
           }
@@ -56,8 +56,8 @@ export default {
         {
           type: 'radio',
           name: 'itemType',
-          label: '对象类型',
-          dataList: [{value: 'table', text: '表格'}, {value: 'column', text: '字段'}],
+          label: this.$t('page.itemType'),
+          dataList: [{value: 'table', text: $t('page.table')}, {value: 'column', text: $t('page.field')}],
           validateList: [{name: 'required'}],
           onChange: (val) => {
             this.blackWhiteData.itemType = val;
@@ -66,9 +66,9 @@ export default {
         {
           type: 'radio',
           name: 'type',
-          label: '类型',
-          dataList: [{value: 'whitelist', text: '白名单'}, {value: 'blacklist', text: '黑名单'}],
-          desc: '在白名单匹配范围内的对象才能被访问，黑名单用于屏蔽白名单中的对象。',
+          label: this.$t('page.type'),
+          dataList: [{value: 'whitelist', text: this.$t('page.whiteList')}, {value: 'blacklist', text: this.$t('page.blackList')}],
+          desc: this.$t('term.report.describe.typeDescribe'),
           validateList: [{name: 'required'}],
           onChange: (val) => {
             this.blackWhiteData.type = val;
@@ -77,7 +77,7 @@ export default {
         {
           type: 'textarea',
           name: 'description',
-          label: '备注',
+          label: this.$t('page.memo'),
           maxlength: 500,
           onChange: (name) => {
             this.blackWhiteData.description = name;

@@ -2,7 +2,7 @@
   <div>
     <Collapse v-model="panel" accordion>
       <Panel name="1">
-        数据源配置范例
+        {{ $t('term.report.dataSourceConfigExample') }}
         <div slot="content">
           <div>
             <Tag><strong>&lt;</strong> <i class="text-grey ts-long-arrow-right"></i> <strong>&amp;lt;</strong></Tag>
@@ -18,7 +18,7 @@
         </div>
       </Panel>
       <Panel name="2">
-        内容配置范例
+        {{ $t('term.report.contentConfigExample') }}
         <div slot="content">
           <!-- <div v-highlight>{{ contentHelp }}</div>-->
           内容配置支持<b>freemarker</b>语法，通过<b>report.xxx</b>获取指定结果集。<br>
@@ -66,27 +66,27 @@ export default {
     return {
       panel: '1',
       table: {
-        config: '{\n' +
-                '   "title":"标题",\n' +
-                '   "header":"表头，可选，为空代表显示使用数据集名称，多个表头用英文逗号分隔",\n' +
-                '   "column":"字段，可选，为空代表显示所有数据集数据，多个字段用英文逗号分隔"\n' +
-                '}'
+        config: `{\n
+        "title":${this.$t('page.title')},\n
+        "header":${this.$t('term.report.describe.headerDescribe')},\n
+        "column":${this.$t('term.report.describe.columnDescribe')}\n
+         }`
       },
       barHelp: {
         data: '<resultMap id="bar">\n' +
-              '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' +
-              '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' +
-              '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' +
-              '</resultMap>',
-        config: '{\n' +
-                '   "title":"标题",\n' +
-                '   "xLabel":"x坐标标题",\n' +
-                '   "yLabel":"y坐标标题",\n' +
-                '   "width":"宽度，默认1000",\n' +
-                '   "height":"高度，默认400",\n' +
-                '   "isShowValue":"false|true，柱子上是否显示数值，默认true",\n' +
-                '   "tick":"number，x坐标显示位置不够时，控制间隔点数"\n' +
-                '}'
+          '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' +
+          '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' +
+          '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' +
+          '</resultMap>',
+        config: `{\n
+           "title": ${this.$t('page.title')},\n
+           "xLabel":${this.$t('term.report.xLabel')},\n
+           "yLabel":${this.$t('term.report.yLabel')},\n
+           "width":${this.$t('term.report.describe.widthDescribe')},\n
+           "height":${this.$t('term.report.describe.heightDescribe')},\n
+           "isShowValue":${this.$t('term.report.describe.showValueDescribe')},\n
+           "tick":${this.$t('term.report.describe.tickDescribe')}\n
+         }`
       },
       barhHelp: {
         data: '<resultMap id="barh">\n' +

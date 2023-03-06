@@ -3,15 +3,15 @@
     <TsContain :enableCollapse="true">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addReport()">模板</span>
-          <span class="action-item tsfont-upload" @click="importReport()">导入</span>
+          <span class="action-item tsfont-plus" @click="addReport()">{{ $t('page.template') }}</span>
+          <span class="action-item tsfont-upload" @click="importReport()">{{ $t('page.import') }}</span>
           <span
             v-if="!batchDownLoading && selectList && selectList.length > 0"
             v-download="exportReport()"
             class="action-item tsfont-download"
-          >导出</span>
-          <span v-if="batchDownLoading" class="action-item disable" title="正在导出数据，请耐心等候">
-            <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>导出
+          >{{ $t('page.export') }}</span>
+          <span v-if="batchDownLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
+            <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>{{ $t('page.export') }}
           </span>
         </div>
       </template>
@@ -51,8 +51,8 @@
             <span class="text-href" @click.stop="showReport(row.id)">{{ row.name }}</span>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <span v-if="row.isActive" class="text-success">是</span>
-            <span v-if="!row.isActive" class="text-grey">否</span>
+            <span v-if="row.isActive" class="text-success">{{ $t('common.yes') }}</span>
+            <span v-if="!row.isActive" class="text-grey">{{ $t('common.no') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -67,12 +67,12 @@
                   ></TsFormSwitch>
                 </li>
                 <li v-if="!singleDownLoading" v-download="exportReport(row.id)" class="tsfont-download">导出</li>
-                <span v-if="singleDownLoading" class="disable" title="正在导出数据，请耐心等候">
-                  <Icon type="ios-loading" size="12"></Icon>导出
+                <span v-if="singleDownLoading" class="disable" :title="$t('page.downloadloadingtip')">
+                  <Icon type="ios-loading" size="12"></Icon>{{ $t('page.export') }}
                 </span>
-                <li class="tsfont-copy" @click="editReport(row.id, true)">复制</li>
-                <li class="tsfont-edit" @click="editReport(row.id)">编辑</li>
-                <li class="tsfont-trash-o" @click="deleteReport(row)">删除</li>
+                <li class="tsfont-copy" @click="editReport(row.id, true)">{{ $t('page.copy') }}</li>
+                <li class="tsfont-edit" @click="editReport(row.id)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o" @click="deleteReport(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -127,19 +127,19 @@ export default {
       theadList: [
         {key: 'selection', multiple: true},
         {
-          title: _this.$i18n.t('page.name'),
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: _this.$i18n.t('report.isActive'),
+          title: this.$t('term.report.isActive'),
           key: 'isActive'
         },
         {
-          title: _this.$i18n.t('page.type'),
+          title: this.$t('page.type'),
           key: 'type'
         },
         {
-          title: _this.$i18n.t('report.visits'),
+          title: this.$t('term.report.visits'),
           key: 'visitCount'
         },
         {
@@ -240,8 +240,8 @@ export default {
     deleteReport: function(row) {
       const { id, name } = row;
       this.$createDialog({
-        title: '警告',
-        content: '确定删除该报表模板：' + name + '?',
+        title: this.$t('page.warning'),
+        content: `${this.$t('term.report.describe.confirmDeleteTemplate')}：${name}?`,
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReport({ id });

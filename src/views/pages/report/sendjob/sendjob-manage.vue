@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="isDialogShow = true">发送计划</span>
+        <span class="tsfont-plus text-action" @click="isDialogShow = true">{{ $t('term.report.sendPlan') }}</span>
       </template>
       <template v-slot:topRight>
         <div>
@@ -69,7 +69,7 @@
     <!-- 添加对话框 -->
     <TsDialog
       :isShow.sync="isDialogShow"
-      title="添加发送计划"
+      :title="$t('term.report.addSendPlan')"
       @on-ok="toEditPage('add', {name})"
       @on-cancel="$refs.form.clearForm()"
     >
@@ -101,7 +101,7 @@ export default {
         name: {
           type: 'text',
           width: '100%',
-          label: _this.$i18n.t('page.name'),
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/report/sendjob/save' }],
           onChange: value => {
@@ -115,13 +115,13 @@ export default {
         pageSize: 20
       },
       theadList: [
-        {title: '计划名称', key: 'name'},
-        {title: '邮件标题', key: 'emailTitle'},
-        {title: '收件人', key: 'toNameList'},
-        {title: '执行计划', key: 'cron'},
-        {title: _this.$i18n.t('common.status'), key: 'isActive'},
-        {title: '下次发送时间', key: 'nextFireTime'},
-        {title: '发送次数', key: 'execCount'},
+        {title: this.$t('common.planName'), key: 'name'},
+        {title: this.$t('common.emailTitle'), key: 'emailTitle'},
+        {title: this.$t('common.recipient'), key: 'toNameList'},
+        {title: this.$t('common.executePlan'), key: 'cron'},
+        {title: this.$t('common.status'), key: 'isActive'},
+        {title: this.$t('term.report.nextSendingTime'), key: 'nextFireTime'},
+        {title: this.$t('term.report.sendTimes'), key: 'execCount'},
         {title: '', key: 'action'}
       ],
       tableConfig: {

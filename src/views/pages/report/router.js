@@ -51,7 +51,7 @@ export default [
     name: 'reportinstance-manage',
     component: reportinstanceManage,
     meta: {
-      title: '报表管理',
+      title: 'router.report.reportManage',
       ismenu: true,
       type: 'reportmanage',
       icon: 'ts-layout',
@@ -63,7 +63,7 @@ export default [
     name: 'report-show',
     component: reportShow,
     meta: {
-      title: '报表详情',
+      title: 'router.report.reportDetail',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE']
@@ -74,7 +74,7 @@ export default [
     name: 'report-manage',
     component: reportManage,
     meta: {
-      title: '报表模板管理',
+      title: 'router.report.reportTemplateManage',
       ismenu: true,
       type: 'reporttemplate',
       icon: 'ts-layout',
@@ -86,7 +86,7 @@ export default [
     name: 'demo',
     component: demo,
     meta: {
-      title: 'demo 页面',
+      title: 'router.report.demoPage',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE']
@@ -97,7 +97,7 @@ export default [
     name: 'reportinstance-show',
     component: reportinstanceShow,
     meta: {
-      title: '报表详情',
+      title: 'router.report.reportInstanceDetail',
       ismenu: false,
       icon: 'ts-m-metrics',
       authority: ['REPORT_BASE'],
@@ -109,7 +109,7 @@ export default [
     name: 'sendjob-manage',
     component: sendjobManage,
     meta: {
-      title: '发送计划',
+      title: 'router.report.sendPlan',
       ismenu: true,
       icon: 'ts-m-metrics',
       type: 'reportmanage',
@@ -121,7 +121,7 @@ export default [
     name: 'sendjob-edit',
     component: sendjobEdit,
     meta: {
-      title: '编辑发送计划',
+      title: 'router.report.editSendPlan',
       ismenu: false,
       authority: ['REPORT_BASE']
     }
@@ -131,7 +131,7 @@ export default [
     name: 'statement-edit',
     component: statementEdit,
     meta: {
-      title: '大屏设计器',
+      title: 'router.report.monitorDesign',
       icon: 'tsfont-db',
       ismenu: false,
       authority: ['REPORT_STATEMENT_MODIFY']
@@ -142,7 +142,7 @@ export default [
     name: 'statement-view',
     component: statementView,
     meta: {
-      title: '大屏详情',
+      title: 'router.report.monitorDetail',
       ismenu: false,
       authority: ['REPORT_BASE']
     }
@@ -152,7 +152,7 @@ export default [
     name: 'statement-manage',
     component: statementManage,
     meta: {
-      title: '大屏管理',
+      title: 'router.report.monitorManage',
       icon: 'tsfont-agent',
       ismenu: true,
       type: 'statementmanage',

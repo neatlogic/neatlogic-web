@@ -7,9 +7,9 @@
           placement="right"
           width="700"
           :transfer="true"
-          title="数据源配置范例"
+          :title="$t('term.report.dataSourceConfigExample')"
         >
-          <a href="javascript:void(0)">数据源配置范例</a>
+          <a href="javascript:void(0)">{{ $t('term.report.dataSourceConfigExample') }}</a>
           <div slot="content" style="height:600px;">
             <div>
               <Tag>
@@ -75,16 +75,16 @@ export default {
       datasourceHelp: 
         `<mapper>	
           <resultMap id="dataMap" type="java.util.LinkedHashMap">
-            <id column="id" property="工单ID"/>
-            <result column="title" property="标题"/>
-            <result column="status" property="状态"/>
-            <result column="start_time" property="上报时间"/>
-            <result column="end_time" property="完成时间"/>
-            <result column="owner" property="上报人"/>
-            <result column="serial_number" property="工单号"/>
+            <id column="id" :property="${this.$t('term.report.taskId')}"/>
+            <result column="title" :property="${this.$t('page.title')}"/>
+            <result column="status" :property="${this.$t('page.status')}"/>
+            <result column="start_time" :property="${this.$t('term.report.reportTime')}"/>
+            <result column="end_time" :property="${this.$t('term.report.completeTime')}"/>
+            <result column="owner" :property="${this.$t('term.report.reporter')}"/>
+            <result column="serial_number" :property="${this.$t('term.report.taskNumber')}"/>
             <collection property="stepList" javaType="java.util.List" ofType="java.util.LinkedHashMap">
-              <id column="stepId" property="步骤ID"/>
-              <result column="name" property="步骤名"/>
+              <id column="stepId" :property="${this.$t('term.report.stepId')}"/>
+              <result column="name" :property="${this.$t('term.report.stepName')}"/>
             </collection>
           </resultMap>
           <select id="getProcessTaskList" resultMap="dataMap">
@@ -130,7 +130,7 @@ export default {
   destroyed() {},
   methods: {
     clipboardSuc: function() {
-      this.$Message.success('复制成功');
+      this.$Message.success(this.$t('message.content.copySuccess'));
     }
   },
   filter: {},
