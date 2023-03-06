@@ -6,47 +6,47 @@
       icon="el-icon-plus"
       plain
       @click="handleAddClick"
-    >新增</el-button>
+    >{{ $t('page.new') }}</el-button>
     <el-table :data="formData" style="width: 100%">
-      <el-table-column prop="color" label="颜色" align="center">
+      <el-table-column prop="color" :label="$t('page.color')" align="center">
         <template slot-scope="scope">
           <span class="color-box" :style="{ background: scope.row.color }" />
         </template>
       </el-table-column>
-      <el-table-column label="位置" align="center">
+      <el-table-column :label="$t('page.position')" align="center">
         <template slot-scope="scope">
           <span
             class="editor"
             @click="handleEditorClick(scope.$index, scope.row)"
           >
-            <i class="el-icon-edit" /> 编辑
+            <i class="el-icon-edit" /> {{ $t('page.edit') }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column :label="$t('page.action')" align="center">
         <template slot-scope="scope">
           <span
             class="editor"
             @click="handleDeleteClick(scope.$index, scope.row)"
           >
-            <i class="el-icon-delete" /> 删除
+            <i class="el-icon-delete" /> {{ $t('page.delete') }}
           </span>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog
-      title="新增"
+      :title="$t('page.new')"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose"
     >
       <el-form>
-        <el-form-item label="颜色">
+        <el-form-item :label="$t('page.color')">
           <el-input
             v-model="colorValue"
             style="width: 200px"
-            placeholder="请输入颜色"
+            :placeholder="$t('form.placeholder.inputcolor')"
             size="mini"
           >
             <template slot="append">
@@ -60,12 +60,12 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
+        <el-button size="mini" @click="dialogVisible = false">{{ $t('button.cancel') }}</el-button>
         <el-button
           size="mini"
           type="primary"
           @click="handleSaveClick"
-        >确 定</el-button>
+        >{{ $t('button.confirm') }}</el-button>
       </span>
     </el-dialog>
   </div>

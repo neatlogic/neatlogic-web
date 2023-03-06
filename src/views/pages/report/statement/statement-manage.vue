@@ -2,7 +2,7 @@
   <div>
     <TsContain> 
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addStatement()">大屏</span>
+        <span class="text-action tsfont-plus" @click="addStatement()">{{ $t('term.report.monitor') }}</span>
       </template>
       <template slot="topRight">
         <InputSearcher
@@ -43,7 +43,7 @@
                 <li
                   class="tsfont-edit"
                   @click="editReport(row)"
-                >{{ $t('common.edit') }}</li>
+                >{{ $t('page.edit') }}</li>
                 <li
                   class="tsfont-trash-o"
                   @click="deleteReport(row)"

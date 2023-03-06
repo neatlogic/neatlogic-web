@@ -2,7 +2,7 @@
   <div class="sendjob-edit">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/sendjob-manage')">返回</span>
+        <span class="tsfont-left text-action" @click="$back('/sendjob-manage')">{{ $t('page.back') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput v-model="jobConfig.name" :maxlength="50" :validateList="nameValidateList" />
@@ -12,14 +12,14 @@
           <div class="action-item">
             <TsFormSwitch v-model="jobConfig.isActive" :showStatus="true" />
           </div>
-          <div class="action-item  text-action tsfont-eye" @click="previewJob">预览</div>
-          <div class="action-item  text-action tsfont-save" :class="{ 'text-disabled': isSaving }" @click="saveJob">{{ $t('common.save') }}</div>
+          <div class="action-item  text-action tsfont-eye" @click="previewJob">{{ $t('page.preview') }}</div>
+          <div class="action-item  text-action tsfont-save" :class="{ 'text-disabled': isSaving }" @click="saveJob">{{ $t('page.save') }}</div>
           <div class="action-item  text-action tsfont-trash-s" :class="{ 'text-grey text-disabled': operation === 'add' }" @click="deleteJob">{{ $t('page.delete') }}</div>
         </div>
       </template>
       <div slot="content" class="sendjob-edit-content">
         <section class="form-section basic-info">
-          <Divider orientation="left">基本信息</Divider>
+          <Divider orientation="left">{{ $t('page.basicinfo') }}</Divider>
           <TsForm ref="basicInfoForm" :itemList="basicInfoFormConfig">
             <template v-slot:toList>
               <TsFormSelect v-model="basicInfoFormConfig.toList.value" v-bind="formSelectConfig" :dealDataByUrl="dealDataByUrl">
@@ -54,12 +54,12 @@
         </section>
         <section class="form-section report-detail">
           <div>
-            <Divider orientation="left">报表详情</Divider>
+            <Divider orientation="left">{{ $t('term.report.reportdetail') }}</Divider>
           </div>
           <div style="display:grid;grid-template-columns:120px auto;width:100%">
             <div></div>
             <div>
-              <div class="mb-nm tsfont-plus text-href" @click="showAddDialog">添加报表</div>
+              <div class="mb-nm tsfont-plus text-href" @click="showAddDialog">{{ $t('term.report.addreport') }}</div>
               <Draggable
                 v-model="jobConfig.reportList"
                 tag="ol"
@@ -75,7 +75,7 @@
                       <h3 class="report-name">{{ report.name }}</h3>
                     </div>
                     <ul class="action-group">
-                      <li class="action-item last text-action tsfont-eye" @click="previewReport(report)">预览</li>
+                      <li class="action-item last text-action tsfont-eye" @click="previewReport(report)">{{ $t('page.preview') }}</li>
                       <li class="action-item last text-action tsfont-trash-s" @click="removeReport(index)">{{ $t('page.delete') }}</li>
                     </ul>
                   </div>
@@ -97,14 +97,14 @@
           </div>
         </section>
         <section class="form-section cron">
-          <Divider orientation="left">定时发送</Divider>
+          <Divider orientation="left">{{ $t('term.report.scheduledsending') }}</Divider>
           <TsForm ref="cronForm" :itemList="getForm('cron')" />
         </section>
       </div>
     </TsContain>
 
     <!-- 添加对话框 -->
-    <TsDialog :isShow.sync="isAddDialogShow" title="添加报表" @on-ok="addReport">
+    <TsDialog :isShow.sync="isAddDialogShow" :title="$t('term.report.addreport')" @on-ok="addReport">
       <TsForm ref="dialogForm" :itemList="getForm('reportIdList')" />
     </TsDialog>
 
@@ -114,7 +114,7 @@
       :hasFooter="false"
       width="large"
       fullscreen
-      :title="previewType === 'sendjob' ? '发送计划' : '报表预览'"
+      :title="previewType === 'sendjob' ? $t('term.report.sendplan') : $t('term.report.previewreport')"
       @on-close="setBasicFormReadonly(false)"
     >
       <div v-if="previewType === 'report'" :style="{ overflow: 'auto' }">
@@ -223,24 +223,24 @@ export default {
         emailTitle: {
           type: 'text',
           readonly: false,
-          label: '标题',
+          label: this.$t('page.title'),
           validateList: ['required']
         },
         emailContent: {
           type: 'textarea',
-          label: '正文',
+          label: this.$t('page.textmainbody'),
           readonly: false,
           autosize: { minRows: 2 }
         },
         toList: {
           type: 'slot',
-          label: '收件人',
+          label: this.$t('page.recipient'),
           readonly: false,
           value: []
         },
         ccList: {
           type: 'slot',
-          label: '抄送人',
+          label: this.$t('page.cc'),
           readonly: false,
           value: []
         }
@@ -248,7 +248,7 @@ export default {
       formConfig: {
         reportIdList: {
           type: 'select',
-          label: '报表',
+          label: this.$t('term.report.report'),
           require: ['required'],
           multiple: true,
           value: [],
@@ -262,7 +262,7 @@ export default {
         cron: {
           type: 'quartz',
           defaultValue: '',
-          label: '执行计划',
+          label: this.$t('page.executeplan'),
           showType: 'edit',
           validateList: ['required']
         }
@@ -318,16 +318,16 @@ export default {
     async init(operation) {
       this.initialJob = this.$utils.deepClone(this.jobConfig);
       if (operation === 'add') {
-        document.title = '新建发送计划';
+        document.title = this.$t('term.report.newsendplan');
         return;
       }
       const params = { id: this.$route.query.id };
       const res = await this.$api.report.sendjob.get(params);
       this.jobConfig = res.Return.job;
       if (operation === 'edit') {
-        document.title = '编辑发送计划';
+        document.title = this.$t('term.report.editsendplan');
       } else if (operation === 'copy') {
-        document.title = '复制发送计划';
+        document.title = this.$t('term.report.copysendplan');
         this.jobConfig.name = this.jobConfig.name + '_copy';
         this.jobConfig.id = null;
       }
@@ -402,8 +402,8 @@ export default {
     async deleteJob() {
       if (this.operation === 'add') return;
       this.$createDialog({
-        title: '警告',
-        content: '确定删除该发送计划：' + this.jobConfig.name + '?',
+        title: this.$t('page.warning'),
+        content: `${this.$t('term.report.describe.confirmdeletesendingplan')}：${this.jobConfig.name}?`,
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { id: this.jobConfig.id };
@@ -422,7 +422,7 @@ export default {
       if (!this.$refs.basicInfoForm.valid()) return false;
       if (!this.$refs.cronForm.valid()) return false;
       if (this.jobConfig.reportList.length === 0) {
-        this.$Notice.warning({ title: '错误', desc: '报表不能为空，请添加报表' });
+        this.$Notice.warning({ title: this.$t('page.error'), desc: this.$t('term.report.describe.reportisempty') });
         return false;
       }
       const reportList = this.jobConfig.reportList.map(report => {

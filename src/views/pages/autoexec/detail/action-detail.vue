@@ -915,9 +915,9 @@ export default {
       //获取所有的校验数据，进行拼接
       let isValid = true;
       this.validList = [].concat(this.validStepConfig()); //基本信息的校验
-      if (this.executeConfig && this.executeConfig.whenToSpecify == 'now' && !this.executeConfig.executeUser) {
-        this.validList.push({ text: this.$i18n.t('autoexec.execUser') + '：' + this.$i18n.t('autoexec.warning.empty.execUser'), type: 'error', config: { type: 'executeSetting' } });
-      }
+      // if (this.executeConfig && this.executeConfig.whenToSpecify == 'now' && !this.executeConfig.executeUser) {
+      //   this.validList.push({ text: this.$i18n.t('autoexec.execUser') + '：' + this.$i18n.t('autoexec.warning.empty.execUser'), type: 'error', config: { type: 'executeSetting' } });
+      // }
 
       if (this.validList.find(item => item.type == 'error')) {
         this.validVisible = true;

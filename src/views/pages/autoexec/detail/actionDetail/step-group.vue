@@ -33,7 +33,7 @@
       <div class="item-list">
         <div class="item-label text-title">预设目标</div>
         <div class="item-text">
-          <template v-if="!$utils.isEmpty(groupConfig.config)">
+          <template v-if="canEdit && !$utils.isEmpty(groupConfig.config)">
             <div class="tsfont-edit text-action" @click="editTarget()"></div>
           </template>
           <Button
@@ -43,6 +43,7 @@
             @click="addTarget()"
           ><span class="tsfont-plus btn-icon">执行目标</span>
           </Button>
+          <span v-else>-</span>
         </div>
       </div>
       <template v-if="groupConfig.config.executeConfig && !$utils.isEmpty(groupConfig.config.executeConfig)">
@@ -248,7 +249,7 @@ export default {
             search: true,
             clearable: true,
             transfer: true,
-            disabled: !_this.canEdit,
+            // disabled: !_this.canEdit,
             dealDataByUrl: _this.dealDataByUrl || null
 
           },

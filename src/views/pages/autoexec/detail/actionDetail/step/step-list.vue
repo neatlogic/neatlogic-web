@@ -45,14 +45,14 @@
                   <div class="stepType">
                     <span class="text-grey fz10">{{ getExecModeText(step.execMode) }}</span>
                   </div>
-                  <div v-if="canEdit && !isRunner" class="stepBtn" @click.stop>
+                  <div v-if="canEdit" class="stepBtn" @click.stop>
                     <div class="action-group line radius-lg" :class="step.uuid == value ?'bg-selected':'bg-grey'">
                       <span class="tsfont-plus action-item" @click="editStep(null, sindex, step.groupUuid)">阶段</span>
                       <span class="tsfont-edit action-item" @click="editStep(step, null, step.groupUuid)">编辑</span>
                       <span class="tsfont-trash-o action-item" @click="delStep(step, sindex)">删除</span>
                     </div>
                   </div>
-                  <div v-else-if="isRunner" class="stepBtn" @click.stop>
+                  <div v-else-if="!canEdit || isRunner" class="stepBtn" @click.stop>
                     <div class="tsfont-eye pt-xs pb-xs radius-lg text-action" :class="step.uuid == value ?'bg-selected':'bg-grey'" @click.stop="editStep(step)">
                       查看
                     </div>

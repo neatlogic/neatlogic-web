@@ -54,6 +54,7 @@
               ref="runtimeparam"
               :defaultValue="settingConfig.executeNodeConfig.paramList"
               :paramList="nodeTypeParamList"
+              :canEdit="isEditSetting"
             ></Param>
           </div>
         </div>
@@ -128,6 +129,7 @@ export default {
           // label: _this.$i18n.t('autoexec.execUser'),
           label: this.$t('term.autoexec.job.executeuser'),
           value: '',
+          placeholder: '',
           disabled: !_this.isEditSetting
         },
         roundCount: {
