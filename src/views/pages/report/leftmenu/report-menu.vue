@@ -1,7 +1,7 @@
 <template>
   <div class="menu_link">
     <div v-if="reportList && reportList.length>0">
-      <div class="title text-grey">报表</div>
+      <div class="title text-grey">{{ $t('term.report.report') }}</div>
       <ul>
         <li v-for="(report, index) in reportList" :key="index" :class="$route.fullPath.indexOf(report.id)>-1 ? 'active link' : 'link'">
           <!--<router-link :to="'/reportinstance-show/'+report.id" class="ts-report">{{ report.name }}</router-link>-->

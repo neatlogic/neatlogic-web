@@ -1,22 +1,22 @@
 <template>
   <div v-show="visible" class="contentmenu" :style="styleObj">
     <div class="contentmenu__item" @click="deleteLayer">
-      <i class="iconfont iconguanbi"></i> 删除图层
+      <i class="iconfont iconguanbi"></i> {{ $t('term.report.deletelayer') }}
     </div>
     <div class="contentmenu__item" @click="copyLayer">
-      <i class="iconfont iconfuzhi1"></i> 复制图层
+      <i class="iconfont iconfuzhi1"></i> {{ $t('term.report.copylayer') }}
     </div>
     <div class="contentmenu__item" @click="istopLayer">
-      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> 置顶图层
+      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.istoplayer') }}
     </div>
     <div class="contentmenu__item" @click="setlowLayer">
-      <i class="iconfont iconleft-copy"></i> 置底图层
+      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.setlowlayer') }}
     </div>
     <div class="contentmenu__item" @click="moveupLayer">
-      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> 上移一层
+      <i class="iconfont iconjinlingyingcaiwangtubiao01"></i> {{ $t('term.report.moveuplayer') }}
     </div>
     <div class="contentmenu__item" @click="movedownLayer">
-      <i class="iconfont iconleft-copy"></i> 下移一层
+      <i class="iconfont iconleft-copy"></i> {{ $t('term.report.movedownlayer') }}
     </div>
   </div>
 </template>
@@ -34,22 +34,22 @@ export default {
       this.$emit('update:visible', false);
     },
     deleteLayer() {
-      this.$confirm('是否删除所选图层?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('term.report.describe.confirmdeletelayer'), this.$t('page.tip'), {
+        confirmButtonText: this.$t('button.confirm'),
+        cancelButtonText: this.$t('button.cancel'),
         type: 'warning'
       })
         .then(() => {
           this.$emit('deletelayer');
           this.$message({
             type: 'success',
-            message: '删除成功!'
+            message: `${this.$t('message.content.deletesuccess')}！`
           });
         })
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: this.$t('message.content.deleteCancel')
           });
         });
     },

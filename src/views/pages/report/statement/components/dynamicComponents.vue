@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-form label-width="100px" label-position="left">
-      <el-form-item label="数据集">
+      <el-form-item :label="$t('page.dataSet')">
         <el-select
           v-model="dataSetValue"
           size="mini"
-          filterable
-          placeholder="请选择"
+          filterable$t
+          :placeholder="$t('page.select1')"
           @change="selectDataSet"
         >
           <el-option
@@ -37,7 +37,7 @@
         plain
         size="mini"
         @click="saveDataBtn"
-      >刷新</el-button>
+      >{{ $t('button.refresh') }}</el-button>
     </el-form>
   </div>
 </template>

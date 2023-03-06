@@ -2,7 +2,7 @@
   <el-input
     v-model="colorValue"
     clearable
-    placeholder="请输入颜色"
+    :placeholder="$t('form.placeholder.inputcolor')"
     size="mini"
     @change="changeColor"
   >

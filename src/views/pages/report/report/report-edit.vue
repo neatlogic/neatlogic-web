@@ -6,8 +6,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="reportData.id">{{ isCopy ? '复制模板' : $t('report.template.edit') }}</div>
-        <div v-if="!reportData.id">{{ $t('report.template.add') }}</div>
+        <div v-if="reportData.id">{{ isCopy ? $t('term.report.copytemplate') : $t('term.report.edittemplate') }}</div>
+        <div v-if="!reportData.id">{{ $t('term.report.addtemplate') }}</div>
       </template>
       <template v-slot>
         <TsForm ref="reportForm" :item-list="reportFormConfig">
@@ -21,12 +21,12 @@
           </template>
           <template v-slot:config>
             <Tabs>
-              <TabPane label="条件配置">
+              <TabPane :label="$t('term.report.conditionconfig')">
                 <ReportParam :paramList="reportData.paramList" @setParam="setParam"></ReportParam></TabPane>
-              <TabPane label="数据源配置">
+              <TabPane :label="$t('term.report.datasourceconfig')">
                 <ReportContent :reportData="reportData" @setSql="setSql"></ReportContent>
               </TabPane>
-              <TabPane label="内容配置">
+              <TabPane :label="$t('term.report.contentconfig')">
                 <ContentHelp></ContentHelp>
                 <TsCodemirror codeMode="xml" :value.sync="reportData.content" height="500px"></TsCodemirror>
               </TabPane>
@@ -80,13 +80,13 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: _this.$i18n.t('page.name'),
+          label: this.$i18n.t('page.name'),
           maxlength: 50,
           validateList: ['required', { 
             name: 'searchUrl',
             url: '/api/rest/report/save',
             key: 'name',
-            message: '名称已存在',
+            message: this.$t('message.content.nameexists'),
             params: { id: ''}
           }],
           width: 400,
@@ -97,7 +97,7 @@ export default {
         {
           type: 'text',
           name: 'type',
-          label: _this.$i18n.t('page.type'),
+          label: this.$t('page.type'),
           maxlength: 50,
           width: 400,
           onChange: function(name) {
@@ -107,7 +107,7 @@ export default {
         {
           type: 'userselect',
           name: 'authList',
-          label: _this.$i18n.t('common.authorization'),
+          label: this.$t('page.auth'),
           width: 400,
           groupList: ['user', 'team', 'role'],
           onChange: function(name) {
@@ -117,7 +117,7 @@ export default {
         {
           type: 'slot',
           name: 'isActive',
-          label: _this.$i18n.t('report.isActive')
+          label: this.$t('term.report.isactive')
         },
         { type: 'slot', name: 'config', label: '' }
       ]};
@@ -178,7 +178,7 @@ export default {
           if (error.Message) {
             this.$Message.error(error.Message);
           } else {
-            this.$Message.error('保存失败');
+            this.$Message.error(this.$t('message.content.savefailed'));
           }
         }).finally(() => {
           this.isSaving = false;
