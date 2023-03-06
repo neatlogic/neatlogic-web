@@ -94,7 +94,7 @@
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem label="连接协议2" labelWidth="80">
+        <TsFormItem label="连接协议" labelWidth="80">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.protocolId)">
             <TsFormSelect 
               v-bind="executeForm.itemList.protocolId" 
@@ -249,7 +249,7 @@ export default {
             search: true,
             clearable: true,
             transfer: true,
-            // disabled: _this.canEdit,
+            // disabled: !_this.canEdit,
             dealDataByUrl: _this.dealDataByUrl || null
 
           },

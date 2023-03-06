@@ -49,7 +49,6 @@
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
           <div class="target-detail">
-            {{ isEditSetting }}
             <Param
               :id="id"
               ref="runtimeparam"
