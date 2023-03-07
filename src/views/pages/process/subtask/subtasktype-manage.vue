@@ -162,7 +162,7 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           width: '100%',
           maxlength: 50,
           validateList: [
@@ -210,7 +210,7 @@ export default {
         {
           type: 'switch',
           name: 'isActive',
-          label: this.$t('form.label.enable'),
+          label: this.$t('page.enable'),
           width: '90%',
           transfer: true,
           multiple: false,

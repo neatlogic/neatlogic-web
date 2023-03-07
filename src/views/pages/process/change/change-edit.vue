@@ -10,7 +10,7 @@
           <TsFormInput
             ref="changeName"
             v-model="changeBasicData.name"
-            placeholder="请输入模板名称"
+            :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.templatename')})"
             :class="{ 'tsForm-formItem-error': !nameValid }"
             maxlength="50"
             :validateList="nameValidateList"
@@ -23,27 +23,25 @@
                 v-model="changeBasicData.isActive"
                 :true-value="1"
                 :false-value="0"
-                trueText="已激活"
-                falseText="已禁用"
                 :showStatus="true"
               ></TsFormSwitch>
             </span>
             <span class="action-item tsfont-save" @click="saveChange">
-              保存
+              {{ $t('button.save') }}
             </span>
             <span class="action-item tsfont-trash-s" :class="!changeTemplateId?'disable':''" @click="delChange">
-              删除
+              {{ $t('button.delete') }}
             </span>
           </div>
         </template>
         <div slot="content" class="main-content">
           <div class="basic-info">
-            <div class="title text-title">基本信息</div>
+            <div class="title text-title">{{ $t('page.basesetting') }}</div>
             <div class="bg-block basic-main radius-lg">
               <TsRow>
                 <Col span="12">
                   <div class="change-tip">
-                    <span class="text-title" style="padding-right:4px;">分组</span>
+                    <span class="text-title" style="padding-right:4px;">{{ $t('page.group') }}</span>
                     <Tooltip
                       placement="bottom"
                       max-width="300"
@@ -52,7 +50,7 @@
                     >
                       <i class="tsfont-info-o cursor-pointer text-title"></i>
                       <div slot="content">
-                        <p>支持关联用户组，创建变更时可通过该分组快速过滤变更模板</p>
+                        <p>{{ $t('term.process.changegrouptip') }}</p>
                       </div>
                     </Tooltip>
                   </div>
@@ -69,7 +67,7 @@
                 </Col>
                 <Col span="12">
                   <div class="change-tip">
-                    <span class="text-title" style="padding-right:4px;">类型</span>
+                    <span class="text-title" style="padding-right:4px;">{{ $t('page.type') }}</span>
                     <Tooltip
                       placement="bottom"
                       max-width="300"
@@ -78,7 +76,7 @@
                     >
                       <i class="tsfont-info-o cursor-pointer text-title"></i>
                       <div slot="content">
-                        <p>支持自定义添加类型，创建变更时可通过该类型快速过滤变更模板</p>
+                        <p>{{ $t('term.process.changetypetip') }}</p>
                       </div>
                     </Tooltip>
                   </div>
@@ -99,7 +97,7 @@
             </div>
           </div>
           <div class="template-step">
-            <div class="title text-title">模板步骤</div>
+            <div class="title text-title">{{ $t('term.process.templatesteps') }}</div>
             <draggable
               v-model="changeSopList"
               tag="ul"
@@ -129,7 +127,7 @@
                   </div>
                 </div>
               </li>
-              <li v-if="changeSopList.length == 0" class="drag-tip bg-block text-tip radius-lg">请从右侧拖拽SOP模板到此处</li>
+              <li v-if="changeSopList.length == 0" class="drag-tip bg-block text-tip radius-lg">{{ $t('term.process.soptip') }}</li>
             </draggable>
           </div>
         </div>
@@ -259,7 +257,7 @@ export default {
         validList.push(false);
         this.$Notice.error({
           title: this.$t('page.templatename'),
-          desc: '不能为空，仅支持汉字、字母、数字和下划线'
+          desc: this.$t('form.validate.requiredname')
         });
       }
       return validList;
@@ -285,8 +283,8 @@ export default {
     delChange() {
       if (this.changeTemplateId) {
         this.$createDialog({
-          title: '警告',
-          content: '确定删除该模板：' + this.changeBasicData.name + '?',
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.changeBasicData.name}),
           btnType: 'error',
           'on-ok': vnode => {
             let data = {

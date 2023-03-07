@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addRow()">服务类型</span>
+        <span class="text-action tsfont-plus" @click="addRow()">{{ $t('term.process.sertype') }}</span>
       </template>
       <template slot="topRight">
         <TsRow>
@@ -27,12 +27,12 @@
             <div :style="{ color: row.color ? row.color : '' }" class="cur" @click="editRow(row.uuid)">{{ row.name }}</div>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <div>{{ row.isActive == 1 ? '启用' : '禁用' }}</div>
+            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-rotate-right icon" @click="updateUuid(row.uuid)">更新工单号</li>
+                <li class="tsfont-rotate-right icon" @click="updateUuid(row.uuid)">{{ $t('term.process.updateworknum') }}</li>
                 <li :class="{disable: disabledConfig.deleting}" class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('button.delete') }}</li>
               </ul>
             </div>
@@ -137,10 +137,10 @@ export default {
       policyList: [],
       theadList: [
         { title: this.$t('page.name'), key: 'name', minWidth: 300, resizable: true },
-        { title: '状态', key: 'isActive', minWidth: 300, resizable: true },
-        { title: '工单号前缀', key: 'prefix', minWidth: 300, resizable: true },
-        { title: '工单号规则', key: 'handlerName', minWidth: 300, resizable: true },
-        { title: '描述', key: 'description', minWidth: 300, resizable: true },
+        { title: this.$t('page.status'), key: 'isActive', minWidth: 300, resizable: true },
+        { title: this.$t('term.process.worknumper'), key: 'prefix', minWidth: 300, resizable: true },
+        { title: this.$t('term.process.worknumrules'), key: 'handlerName', minWidth: 300, resizable: true },
+        { title: this.$t('page.description'), key: 'description', minWidth: 300, resizable: true },
         { title: ' ', key: 'action', align: 'right', width: 10 }
       ],
       tableData: null,
@@ -174,13 +174,13 @@ export default {
           defaultValue: '',
           maxlength: 30,
           width: '100%',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           validateList: [
             'required',
             { 
               name: 'searchUrl', 
               url: 'api/rest/process/channeltype/save',
-              message: '服务类型已存在',
+              message: this.$t('message.content.targetisexists', {target: this.$t('term.process.sertype')}),
               params: () => ({uuid: this.oldformSetting[0].value})
             }
           ]
@@ -190,13 +190,13 @@ export default {
           name: 'isActive',
           value: 1,
           defaultValue: 1,
-          label: '状态',
+          label: this.$t('page.status'),
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 1, text: '启用' },
-            { value: 0, text: '禁用' }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ]
         },
         {
@@ -206,7 +206,7 @@ export default {
           defaultValue: '',
           maxlength: 30,
           width: '100%',
-          label: '工单号前缀',
+          label: this.$t('term.process.worknumper'),
           validateList: ['required']
         },
         {
@@ -214,7 +214,7 @@ export default {
           name: 'handler',
           value: '',
           defaultValue: '',
-          label: '工单号规则',
+          label: this.$t('term.process.worknumrules'),
           width: '100%',
           validateList: ['required'],
           url: '/api/rest/processtask/serialnumber/policy/list',
@@ -231,7 +231,7 @@ export default {
         {
           type: 'textarea',
           name: 'description',
-          label: '描述',
+          label: this.$t('page.description'),
           width: '100%',
           value: '',
           defaultValue: ''
@@ -249,14 +249,14 @@ export default {
         name: 'isActive',
         search: true,
         value: '',
-        label: '状态',
+        label: this.$t('page.status'),
         valueName: 'value',
         textName: 'text',
-        placeholder: '请选择启用状态',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.status')}),
         border: 'border',
         dataList: [
-          { value: 1, text: '启用' },
-          { value: 0, text: '禁用' }
+          { value: 1, text: this.$t('page.enable') },
+          { value: 0, text: this.$t('page.disable') }
         ],
         onChange: function(value) {
           Object.assign(_this.searchParam, {
@@ -308,13 +308,6 @@ export default {
             _this.tableData.theadList = _this.theadList;
             this.loadingShow = false;
           }
-        })
-        .catch(error => {
-          if (error.data.Message) {
-            this.$Message.error('获取列表数据失败：' + error.data.Message);
-          } else {
-            this.$Message.error('接口请求错误');
-          }
         });
     },
     getPageData(currentPage) {
@@ -327,7 +320,7 @@ export default {
       _this.formSetting.forEach(item => {
         item.value = item.defaultValue;
       });
-      this.editTsDialog.title = '添加服务类型';
+      this.editTsDialog.title = this.$t('dialog.title.addtarget', {target: this.$t('term.process.sertype')});
       this.editTsDialog.isShow = true;
       this.resetForm();
     },

@@ -7,8 +7,8 @@
       popper-class="sla-content"
     >
       <div>
-        <span v-if="slaTimeList[0].timeLeft > 0" class="text-warning">剩余</span>
-        <span v-else class="text-danger">超时</span>
+        <span v-if="slaTimeList[0].timeLeft > 0" class="text-warning">{{ $t('page.timeremaining') }}</span>
+        <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
         <span v-if="slaTimeList[0].timeLeft >= 0 || slaTimeList[0].displayModeAfterTimeout == 'workTime'">
           {{ Math.abs(slaTimeList[0].timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
         </span>
@@ -27,8 +27,8 @@
             <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
             <div class="infor-right">
               <div>
-                <span v-if="sla.timeLeft > 0" class="text-warning">剩余</span>
-                <span v-else class="text-danger">超时</span>
+                <span v-if="sla.timeLeft > 0" class="text-warning">{{ $t('page.timeremaining') }}</span>
+                <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
                 <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'">
                   {{ Math.abs(sla.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                 </span>

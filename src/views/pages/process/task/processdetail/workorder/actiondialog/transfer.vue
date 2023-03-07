@@ -49,7 +49,7 @@ export default {
           //转交表单
           type: 'userselect',
           name: 'workerList',
-          label: '处理人',
+          label: this.$t('term.process.dealwithuser'),
           value: '',
           width: '100%',
           groupList: ['user'],

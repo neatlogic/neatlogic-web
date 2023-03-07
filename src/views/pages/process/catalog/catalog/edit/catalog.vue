@@ -13,7 +13,7 @@
         class="save"
         type="primary"
         @click="save()"
-      >{{ $t('common.save') }}</Button>
+      >{{ $t('button.save') }}</Button>
     </div>
   </div>
 </template>
@@ -44,20 +44,20 @@ export default {
           placeholder: '',
           maxlength: 50,
           width: '75%',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           validateList: ['required', 'name-special']
         },
         {
           type: 'switch',
           name: 'isActive',
           isHidden: false,
-          label: this.$t('form.label.enable'),
+          label: this.$t('page.enable'),
           validateList: ['required']
         },
         {
           type: 'userselect',
           name: 'authorityList',
-          label: this.$t('form.label.auth'),
+          label: this.$t('page.auth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
           value: ['common#alluser']

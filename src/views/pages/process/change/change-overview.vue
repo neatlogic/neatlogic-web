@@ -4,7 +4,7 @@
     <div :style="{ 'padding-right': rightWidth + 'px' }">
       <TsContain>
         <template v-slot:topLeft>
-          <span class="tsfont-plus text-action" @click="addChange">模板</span>
+          <span class="tsfont-plus text-action" @click="addChange">{{ $t('page.template') }}</span>
         </template>
         <template v-slot:topRight>
           <InputSearcher
@@ -87,7 +87,7 @@ export default {
       loadingShow: true,
       rightWidth: 280,
       keyword: '',
-      dialogTitle: '添加变更模板',
+      dialogTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.changetemp')}),
       changeDialog: false,
       currentPage: 1,
       pageSize: 24,
@@ -97,7 +97,7 @@ export default {
           name: 'name',
           value: '',
           maxlength: 50,
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           width: '100%',
           validateList: ['required', {
             name: 'searchUrl',
@@ -162,7 +162,7 @@ export default {
       });
     },
     addChange() {
-      this.dialogTitle = '添加变更模板';
+      this.dialogTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.changetemp')});
       this.changeDialog = true;
     },
     toEditChange(item) {
@@ -174,7 +174,7 @@ export default {
       });
     },
     copyChange(obj) {
-      this.dialogTitle = '复制变更模板';
+      this.dialogTitle = this.$t('dialog.title.copytarget', {target: this.$t('term.process.changetemp')});
       this.changeForm[0].value = obj.name + '_copy';
       this.copyId = obj.id;
       this.isCopy = true;
@@ -212,10 +212,7 @@ export default {
       };
       this.$api.process.change.updateChangeTemplate(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Notice.success({
-            title: obj.isActive == 1 ? '变更模板启用成功' : '变更模板禁用成功',
-            duration: 1.5
-          });
+          this.$Message.success(this.$t('message.content.executesuccess'));
         }
       });
     },

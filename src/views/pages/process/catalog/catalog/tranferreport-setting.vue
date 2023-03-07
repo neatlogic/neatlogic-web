@@ -6,7 +6,7 @@
           <TsFormSelect
             ref="validSelect"
             v-model="item.channelTypeRelationId"
-            placeholder="请选择关系"
+            :placeholder="$t('form.placeholder.pleaseselect', {target:$t('page.relation')})"
             :dataList="relarelationSelectList"
             :validateList="validConfig.validRelatioTnId"
             @on-change="changeRelationId(item)"
@@ -17,7 +17,7 @@
             <TsFormTree
               ref="validSelect"
               v-model="item.targetList"
-              placeholder="请选择允许转报的服务"
+              :placeholder="$t('form.placeholder.pleaseselect', {target:$t('term.process.serallowforwarding')})"
               :url="treeUrl"
               :params="{ channelTypeRelationId: item.channelTypeRelationId }"
               :multiple="true"
@@ -27,19 +27,19 @@
             ></TsFormTree>
           </template>
           <template v-else>
-            <TsFormSelect ref="validSelect" placeholder="请选择允许转报的服务" :validateList="validConfig.validTarget"></TsFormSelect>
+            <TsFormSelect ref="validSelect" :placeholder="$t('form.placeholder.pleaseselect', {target:$t('term.process.serallowforwarding')})" :validateList="validConfig.validTarget"></TsFormSelect>
           </template>
         </div>
         <div class="edit-select">
           <UserSelect
             ref="validSelect"
             v-model="item.authorityList"
-            placeholder="请选择授权对象"
+            :placeholder="$t('form.placeholder.pleaseselect', {target:$t('term.process.authorizeduser')})"
             :validateList="validConfig.validAuthority"
           ></UserSelect>
         </div>
         <div class="flex-start edit-select flex-1">
-          <span>使用原上报人</span>
+          <span>{{ $t('term.process.useoriginalreporter') }}</span>
           <TsFormSwitch
             v-model="item.isUsePreOwner"
             class="switch-width"
@@ -88,9 +88,9 @@ export default {
       ],
       relarelationSelectList: [],
       validConfig: {
-        validRelatioTnId: [{ name: 'required', message: '请选择关系' }],
-        validTarget: [{ name: 'required', message: '请选择允许转报的服务' }],
-        validAuthority: [{ name: 'required', message: '请选择授权对象' }]
+        validRelatioTnId: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.relation')}) }],
+        validTarget: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.serallowforwarding')}) }],
+        validAuthority: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.authorizeduser')}) }]
       },
       treeUrl: '/api/rest/process/catalog/channel/tree'
     };

@@ -4,7 +4,7 @@
     <div v-if="taskLoading">
       <Spin fix>
         <div class="taskLading-img"></div>
-        <div class="text-primary taskLading-text">工单流转中，请等待...</div>
+        <div class="text-primary taskLading-text">{{ $t('term.process.pleasewait') }}</div>
       </Spin>
     </div>
     <div v-if="pocesstaskview">
@@ -23,13 +23,12 @@
       >
         <div class="workorder-task">
           <div class="task-list">
-            <div class="title-top">任务列表</div>
+            <div class="title-top">{{ $t('page.tasklist') }}</div>
             <div class="task-secrch">
               <TsFormInput
                 v-model="keyword"
                 class="search"
                 search
-                placeholder="请输入"
                 clearable
                 border="border"
               ></TsFormInput>
@@ -49,34 +48,34 @@
                       <span v-if="item.slaTimeVo" class="tast-time" :class="taskSlaTime(item.slaTimeVo.expireTime) < 0 ? 'text-danger' : 'text-tip'">
                         <Tooltip trasnfer theme="light">
                           <span v-if="item.slaTimeVo.status == 'doing'">
-                            <span v-if="taskSlaTime(item.slaTimeVo.expireTime) < 0">超时{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost({ unitNumber: 3, language: 'zh', separator: ' ' }) }}</span>
-                            <span v-else>剩余{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost({ unitNumber: 3, language: 'zh', separator: ' ' }) }}</span>
+                            <span v-if="taskSlaTime(item.slaTimeVo.expireTime) < 0">{{ $t('page.overtime') }}{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost({ unitNumber: 3, language: 'zh', separator: ' ' }) }}</span>
+                            <span v-else>{{ $t('page.timeremaining') }}{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost({ unitNumber: 3, language: 'zh', separator: ' ' }) }}</span>
                           </span>
                           <span v-else-if="item.slaTimeVo.status == 'pause'">
-                            <span :class="[item.slaTimeVo.timeLeft > 0 ? 'text-warning' :'text-danger']">{{ item.slaTimeVo.timeLeft > 0 ? '剩下' : '超时' }}</span>
+                            <span :class="[item.slaTimeVo.timeLeft > 0 ? 'text-warning' :'text-danger']">{{ item.slaTimeVo.timeLeft > 0 ? $t('page.timeremaining') : $t('page.overtime') }}</span>
                             <span v-if="item.slaTimeVo.timeLeft > 0">{{ item.slaTimeVo.timeLeft | formatTimeCost({unitNumber: 3, separator: ' '}) }}  </span>
                             <span v-else>
                               {{ ( - item.slaTimeVo.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' '}) }}
                             </span>
                           </span>
                           <span v-else-if="item.slaTimeVo.status == 'done'">
-                            <span class="text-warning">耗时</span>
+                            <span class="text-warning">{{ $t('page.timeconsuming') }}</span>
                             <span>{{ (item.slaTimeVo.timeSum - item.slaTimeVo.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh',separator: ' '}) }}</span>
                           </span>
                           <div slot="content">
                             <div v-if="item.slaTimeVo.status == 'doing'">
-                              <span v-if="taskSlaTime(item.slaTimeVo.expireTime) < 0">超时{{ taskSlaTime(item.slaTimeVo.expireTime)| formatTimeCost }}</span>
-                              <span v-else>剩余{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost }}</span>
+                              <span v-if="taskSlaTime(item.slaTimeVo.expireTime) < 0">{{ $t('page.overtime') }}{{ taskSlaTime(item.slaTimeVo.expireTime)| formatTimeCost }}</span>
+                              <span v-else>{{ $t('page.timeremaining') }}{{ taskSlaTime(item.slaTimeVo.expireTime) | formatTimeCost }}</span>
                             </div>
                             <div v-else-if="item.slaTimeVo.status == 'pause'">
-                              <span :class="[item.slaTimeVo.timeLeft > 0 ? 'text-warning' :'text-danger']">{{ item.slaTimeVo.timeLeft > 0 ? '剩下' : '超时' }}</span>
+                              <span :class="[item.slaTimeVo.timeLeft > 0 ? 'text-warning' :'text-danger']">{{ item.slaTimeVo.timeLeft > 0 ? $t('page.timeremaining') : $t('page.overtime') }}</span>
                               <span v-if="item.slaTimeVo.timeLeft > 0">{{ item.slaTimeVo.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh',separator: ' '}) }}  </span>
                               <span v-else>
                                 {{ ( - item.slaTimeVo.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' '}) }}
                               </span>
                             </div>
                             <div v-else-if="item.slaTimeVo.status == 'done'">
-                              <span class="text-warning">耗时</span>
+                              <span class="text-warning">{{ $t('page.timeconsuming') }}</span>
                               <span>{{ (item.slaTimeVo.timeSum - item.slaTimeVo.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh',separator: ' '}) }}</span>
                             </div>
                           </div>
@@ -140,7 +139,7 @@ export default {
       processTaskId: null, //工单id
       processTaskStepId: null, //步骤id
       taskHeight: 1000, //任务列表滚动高度
-      loadingTip: '加载中',
+      loadingTip: this.$t('page.loadingtip'),
       taskList: [], //任务列表
       keyword: null, //任务列表搜索
       processCurrentPage: 1, //任务当前页

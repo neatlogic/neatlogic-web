@@ -63,14 +63,14 @@ export default {
   data() {
     let _this = this;
     return {
-      dialogTitle: '编辑',
+      dialogTitle: this.$t('page.edit'),
       dataConfig: null,
       stepDialog: false,
       stepDialogForm: [
         {
           type: 'text',
           name: 'name',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           maxlength: 50,
           width: '90%',
           // readonly: true,
@@ -79,18 +79,18 @@ export default {
         {
           type: 'userselect',
           name: 'worker',
-          label: '处理人',
+          label: this.$t('term.process.dealwithuser'),
           width: '90%',
           transfer: true,
           multiple: false,
           groupList: ['user', 'team'],
-          validateList: [{ name: 'required', message: '请选择处理人' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
           onChange: _this.getUserText
         },
         {
           type: 'date',
           name: 'planStartDate',
-          label: '计划开始日期',
+          label: this.$t('term.process.planstartdate'),
           value: '',
           placeholder: '',
           dataList: [],
@@ -102,7 +102,7 @@ export default {
           type: 'slot',
           name: 'startTimeWindow',
           width: '50%',
-          label: '时间窗口'
+          label: this.$t('term.process.startTimeWindow')
         }
       ],
       workerName: '',

@@ -5,7 +5,7 @@
       <div slot="top">
         <Row>
           <Col span="14">
-            <span class="span-black ts-angle-left" @click="validChangData">任务列表</span>
+            <span class="span-black ts-angle-left" @click="validChangData">{{ $t('page.tasklist') }}</span>
             <div class="input-contain">
               <TsFormInput
                 ref="formNameInput"

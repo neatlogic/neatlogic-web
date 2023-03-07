@@ -55,7 +55,7 @@
                     :false-value="0"
                     @on-change="changeFileSelect"
                   ></Checkbox>
-                  <span>附件</span>
+                  <span>{{ $t('page.accessory') }}</span>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default {
       },
       list: [],
       fileConfig: {
-        title: '附件',
+        title: this.$t('page.accessory'),
         handler: 'file',
         isChecked: 1,
         fileList: []
@@ -167,7 +167,7 @@ export default {
       if (config.startProcessTaskStep.comment) {
         //工单描述
         let obj = {
-          title: '描述',
+          title: this.$t('page.description'),
           handler: 'content',
           isChecked: 1,
           content: '',

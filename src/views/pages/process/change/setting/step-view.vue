@@ -12,14 +12,14 @@
             <UserCard :uuid="cd.workerVo.uuid" :initType="cd.workerVo.initType"></UserCard>
           </div>
           <div class="data-block">
-            <div class="text-grey">计划开始日期{{ cd.parentUuid }}</div>
+            <div class="text-grey">{{ $t('term.process.planstartdate') }}{{ cd.parentUuid }}</div>
             <div>
               {{ cd.planStartDate || '-' }}
             </div>
           </div>
           <div class="time-block">
             <div>
-              <div class="text-grey">时间窗口</div>
+              <div class="text-grey">{{ $t('term.process.startTimeWindow') }}</div>
               <div v-if="cd.startTimeWindow || cd.endTimeWindow">
                 <span>{{ cd.startTimeWindow }}</span>
                 <span>-</span>
@@ -29,7 +29,7 @@
             </div>
           </div>
           <div class="files-block" style="position: relative;">
-            <div class="text-grey">附件</div>
+            <div class="text-grey">{{ $t('page.accessory') }}</div>
             <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
               <Dropdown trigger="click">
                 <span>{{ cd.fileIdList.length }}</span>
@@ -49,7 +49,7 @@
           <ul class="order-tabs-title">
             <li class="active">
               <div class="title-box">
-                描述
+                {{ $t('page.description') }}
               </div>
             </li>
           </ul>
@@ -64,7 +64,7 @@
             </div>
           </div>
         </div>
-        <div v-else class="text-grey content-text">暂无描述</div>
+        <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
       </div>
     </div>
   </div>

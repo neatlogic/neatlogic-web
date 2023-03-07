@@ -27,7 +27,7 @@
           </div>
           <div class="item-box overflow">
             <span class="text-grey fz10">
-              工单号
+              {{ $t('term.process.worknum') }}
             </span>
             <span class="item-serialNumber overflow">
               <span class="text-href" @click="toTaskdetail(item.id)">{{ item.serialNumber }}</span> 
@@ -36,7 +36,7 @@
           </div>
           <div class="item-box overflow">
             <span class="text-grey fz10">
-              状态
+              {{ $t('page.status') }}
             </span>
             <span>{{ item.statusVo.text }}</span>
           </div>
@@ -150,23 +150,23 @@ export default {
           key: 'selection'
         },
         {
-          title: '标题',
+          title: this.$t('page.title'),
           key: 'title'
         },
         {
-          title: '工单号',
+          title: this.$t('term.process.worknum'),
           key: 'serialNumber'
         },
         {
-          title: '上报人',
+          title: this.$t('term.process.reportuser'),
           key: 'ownerName'
         },
         {
-          title: '上报时间',
+          title: this.$t('term.process.reportdate'),
           key: 'startTime'
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'statusVo'
         }
       ],

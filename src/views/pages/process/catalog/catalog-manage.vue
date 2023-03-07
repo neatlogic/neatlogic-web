@@ -14,7 +14,7 @@
       <template v-slot:topRight>
         <div class="div-btn-contain action-group">
           <span v-if="catalogData.uuid !== '' || channelData.uuid !== ''" :class="[!(childrenCount == undefined || childrenCount == 0) || disabledConfig.saving ? 'disable' : '', 'action-item tsfont-trash-o']" @click="del()">{{ $t('page.delete') }}</span>
-          <span :class="{ disable: disabledConfig.saving }" class="action-item ts-save" @click="saveCurrent()">{{ $t('common.save') }}</span>
+          <span :class="{ disable: disabledConfig.saving }" class="action-item ts-save" @click="saveCurrent()">{{ $t('button.save') }}</span>
         </div>
       </template>
       <template v-slot:sider>

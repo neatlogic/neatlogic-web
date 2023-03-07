@@ -17,7 +17,7 @@
           </Col>
           <Col span="8">
             <div class="text-title pb-sm">
-              工单号
+              {{ $t('term.process.worknum') }}
             </div>
             <div class="">
               <span class="text-action" style="padding-right:8px;" @click="toTaskdetail(processTaskVo.id)">{{ processTaskVo.serialNumber }}</span> 
@@ -26,7 +26,7 @@
           </Col>
           <Col span="8">
             <div class="text-title pb-sm">
-              状态
+              {{ $t('page.status') }}
             </div>
             <div v-if="processTaskVo.statusVo" :style="{'color':processTaskVo.statusVo.color}">{{ processTaskVo.statusVo.text }}</div>
           </Col>
@@ -35,7 +35,7 @@
           <span class="text-href" @click="openDetail()">详情<i :class="isShow?'tsfont-up':'tsfont-down'"></i></span>
         </div>
         <div v-if="processTaskVo.tranferReportDirection == 'from' && processTaskVo.comment && isShow" class="comment-detail dividing-color">
-          <div class="text-title">描述</div>
+          <div class="text-title">{{ $t('page.description') }}</div>
           <div v-html="processTaskVo.comment.content"></div>
           <div v-if="processTaskVo.comment.fileList && processTaskVo.comment.fileList.length > 0">
             <div v-for="file in processTaskVo.comment.fileList" :key="file.id">

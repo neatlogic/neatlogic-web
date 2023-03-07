@@ -31,7 +31,7 @@
                       <TsFormDatePicker
                         ref="startTimeWindow"
                         v-model="startTimeWindow"
-                        placeholder="开始时间"
+                        :placeholder="$t('page.starttime')"
                         format="HH:mm"
                         width="100%"
                         type="time"
@@ -42,7 +42,7 @@
                       <TsFormDatePicker
                         ref="endTimeWindow"
                         v-model="endTimeWindow"
-                        placeholder="结束时间"
+                        :placeholder="$t('page.endtime')"
                         format="HH:mm"
                         width="100%"
                         type="time"
@@ -72,12 +72,11 @@
             <Col span="8">
               <div class="param-right border-color">
                 <div class="search-block">
-                  <div class="param-title text-title">变量列表</div>
+                  <div class="param-title text-title">{{ $t('term.process.paramlist') }}</div>
                   <TsFormInput
                     v-model="keyword"
                     class="input-border"
                     search
-                    placeholder="请输入"
                     clearable
                     @on-enter="getParamList"
                     @on-clear="getParamList"
@@ -118,7 +117,9 @@ export default {
   props: {
     dialogTitle: {
       type: String,
-      default: '添加步骤'
+      default() {
+        return this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
+      }
     },
     isShow: {
       type: Boolean,
@@ -141,41 +142,41 @@ export default {
         {
           type: 'text',
           name: 'code',
-          label: '编码',
+          label: this.$t('term.process.encoded'),
           maxlength: 50,
           width: '100%',
-          validateList: [{ name: 'required', message: '请输入' }, { name: 'stepindex' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.encoded')}) }, { name: 'stepindex' }]
         },
         {
           type: 'text',
           name: 'name',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           maxlength: 50,
           width: '100%',
-          validateList: [{ name: 'required', message: '请输入名称' }, { name: 'name-special' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.name') }, { name: 'name-special' }]
         },
         {
           type: 'slot',
           name: 'content',
-          label: '描述',
+          label: this.$t('page.description'),
           width: '100%',
           transfer: true
         },
         {
           type: 'userselect',
           name: 'worker',
-          label: '处理人',
+          label: this.$t('term.process.dealwithuser'),
           width: '100%',
           transfer: true,
           multiple: false,
           groupList: ['user', 'team'],
-          validateList: [{ name: 'required', message: '请选择处理人' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
           onChange: _this.getUserText
         },
         {
           type: 'date',
           name: 'planStartDate',
-          label: '计划开始日期',
+          label: this.$t('term.process.planstartdate'),
           value: '',
           placeholder: '',
           dataList: [],
@@ -188,7 +189,7 @@ export default {
           type: 'slot',
           name: 'startTimeWindow',
           width: '50%',
-          label: '时间窗口'
+          label: this.$t('term.process.startTimeWindow')
         },
         // {
         //   type: 'timerange',
@@ -201,7 +202,7 @@ export default {
         {
           type: 'slot',
           name: 'fileIdList',
-          label: '附件'
+          label: this.$t('page.accessory')
         }
       ],
       startTimeWindow: '',

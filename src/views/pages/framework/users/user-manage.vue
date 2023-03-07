@@ -174,7 +174,7 @@ export default {
           key: 'roleDescriptionList'
         },
         {
-          title: this.$t('term.framework.userteam'),
+          title: this.$t('page.userteam'),
           key: 'teamNameList'
         },
         {

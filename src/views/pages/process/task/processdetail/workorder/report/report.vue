@@ -20,7 +20,7 @@
     <template v-if="startHandler!='changecreate'">
       <template v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)">
         <div v-if="dataConfig.content && isNeedContent" class="report-content pb10">
-          <div class="text-grey fz10 pb-xs">描述</div>
+          <div class="text-grey fz10 pb-xs">{{ $t('page.description') }}</div>
           <div class="content-bg bg-tip-grey radius-sm">
             <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
               <div ref="getheight" v-html="dataConfig.content"></div>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div v-if="dataConfig.fileList.length > 0" class="report-content">
-          <div class="text-grey pb10 fz10">附件</div>
+          <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
           <div>
             <div v-for="(file, flindex) in dataConfig.fileList" :key="flindex" class="file-title">
               <span class="tsfont-attachment">
@@ -46,7 +46,7 @@
         </div>
       </template>
       <template v-else-if="actionConfig.update">
-        <div class="text-grey">暂无描述</div>
+        <div class="text-grey">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
       </template>
     </template>
     <template v-else-if="startHandler=='changecreate'">
@@ -55,8 +55,8 @@
           <TsRow>
             <Col span="8">
               <div class="change-tip overflow text-grey fz10">
-                <div class="require-label">计划起止时间</div>
-                <div v-if="handlerStepInfo.autoStart" class="autoStart border-color">自动开始</div>
+                <div class="require-label">{{ $t('term.process.planStartEndTime') }}</div>
+                <div v-if="handlerStepInfo.autoStart" class="autoStart border-color">{{ $t('term.process.autostart') }}</div>
               </div>
               <div class="change-text">
                 <template v-if="handlerStepInfo.planStartEndTime &&handlerStepInfo.planStartEndTime.length > 0">
@@ -66,14 +66,14 @@
               </div>
             </Col>
             <Col span="8">
-              <div class="change-tip text-grey fz10">时间窗口</div>
+              <div class="change-tip text-grey fz10">{{ $t('term.process.startTimeWindow') }}</div>
               <div class="change-text">
                 <template v-if="handlerStepInfo.startTimeWindow || handlerStepInfo.endTimeWindow">{{ handlerStepInfo.startTimeWindow || '~' }} - {{ handlerStepInfo.endTimeWindow || '~' }}</template>
                 <template v-else>-</template>
               </div>
             </Col>
             <Col span="8">
-              <div class="change-tip text-grey require-label fz10">变更经理</div>
+              <div class="change-tip text-grey require-label fz10">{{ $t('term.process.changeowner') }}</div>
               <div class="change-text">
                 <template v-if="handlerStepInfo.owner">
                   <UserCard :uuid="handlerStepInfo.owner"></UserCard>
@@ -87,7 +87,7 @@
           <template v-if="handlerStepInfo.content || (handlerStepInfo.fileList && handlerStepInfo.fileList.length > 0)">
             <div v-if="handlerStepInfo.content" class="report-content">
               <div class="text-grey comment-title fz10">
-                变更说明
+                {{ $t('term.process.changecontent') }}
               </div>
               <div class="content-bg bg-tip-grey radius-sm">
                 <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
@@ -97,13 +97,13 @@
                   v-if="isView"
                   class="text-href pt6"
                   @click="viewMoreContent"
-                  v-text="maxheight=='200px'?'查看更多':'收起'"
+                  v-text="maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway')"
                 ></div>
               </div>
        
             </div>
             <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
-              <div class="text-grey pb10 fz10">附件</div>
+              <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
               <div>
                 <div v-for="(file, flindex) in handlerStepInfo.fileList" :key="flindex" class="file-title">
                   <span class="tsfont-attachment">
@@ -148,7 +148,7 @@
                   v-model="changecreateConfig.startTimeWindow"
                   type="time"
                   format="HH:mm"
-                  placeholder="开始时间"
+                  :placeholder="$t('page.starttime')"
                   width="120px"
                 ></TsFormDatePicker>
                 <div class="item-line">-</div>
@@ -156,7 +156,7 @@
                   v-model="changecreateConfig.endTimeWindow"
                   type="time"
                   format="HH:mm"
-                  placeholder="结束时间"
+                  :placeholder="$t('page.endtime')"
                   width="120px"
                 ></TsFormDatePicker>
               </div>
@@ -234,7 +234,7 @@ export default {
       omnipotentForm: {
         content: {
           type: 'ckeditor',
-          label: '描述',
+          label: this.$t('page.description'),
           isHidden: false
         }
       },
@@ -250,7 +250,7 @@ export default {
         owner: {
           name: 'owner',
           value: '',
-          label: '变更经理',
+          label: this.$t('term.process.changeowner'),
           type: 'userselect',
           multiple: false,
           groupList: ['user'],
@@ -260,7 +260,7 @@ export default {
         autoStart: {
           name: 'autoStart',
           value: 1,
-          label: '自动开始',
+          label: this.$t('term.process.autostart'),
           type: 'select',
           validateList: ['required'],
           search: false,
@@ -286,13 +286,13 @@ export default {
         startTimeWindow: {
           type: 'slot',
           name: 'startTimeWindow',
-          label: '时间窗口',
+          label: this.$t('term.process.startTimeWindow'),
           format: 'HH:mm',
           transfer: true
         },
         content: {
           type: 'ckeditor',
-          label: '描述',
+          label: this.$t('page.description'),
           value: '',
           isHidden: false
         }
