@@ -206,7 +206,6 @@ export default {
 </style>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
 .item {
   height: 30px;
 }
@@ -222,7 +221,7 @@ export default {
 
 </style>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .currentstepworkerUser{
   padding-right:10px;
   // max-width: 108px; 

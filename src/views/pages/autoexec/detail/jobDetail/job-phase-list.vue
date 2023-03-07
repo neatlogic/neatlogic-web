@@ -211,7 +211,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .name-grid {
   display: grid;
   grid-template-columns: auto 60px;

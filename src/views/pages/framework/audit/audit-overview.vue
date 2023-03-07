@@ -438,7 +438,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .operation-audit {
   .top-default {
     display: flex;
@@ -629,7 +629,7 @@ export default {
 </style>
 
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .theme-dark {
   .operation-audit {
     .table-row:hover {

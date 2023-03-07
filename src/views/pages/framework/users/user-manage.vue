@@ -652,7 +652,7 @@ export default {
 </script>
 
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .user-management {
   .top {
     .bar-top {

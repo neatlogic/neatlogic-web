@@ -5,7 +5,7 @@
         <!-- 作业参数作为执行目标 -->
         <template v-if="paramList.length">
           <span class="text-tip nopadding">引用输入参数</span>
-          <span v-for="(p,pindex) in paramList" :key="pindex" class="item border-color bg-op">{{ getParamText(p.text) }}</span>
+          <span v-for="(p,pindex) in paramList" :key="`p_${pindex}`" class="item border-color bg-op">{{ getParamText(p.text) }}</span>
         </template>
         <!-- 过滤器 -->
         <template v-if="filter">
@@ -195,6 +195,9 @@ export default {
     initData(val, isValid) {
       let _this = this;
       this.validMessage = '';
+      this.showData = []; 
+      this.valueConfig = {};// 设置默认初始值，解决切换不同的组合工具，执行目标内容没有清空的问题
+      this.showNumber = 0;
       this.valueConfig = Object.assign(this.valueConfig, this.$utils.deepClone(val));
       let paramList = this.valueConfig.paramList ? this.valueConfig.paramList.map(item => ({ text: item, type: 'param' })) : [];
       this.paramList = paramList;

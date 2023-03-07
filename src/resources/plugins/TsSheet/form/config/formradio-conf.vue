@@ -139,7 +139,8 @@ export default {
         firstText: '数据源',
         transfer: true
       },
-      selectMatrixConfig: null
+      selectMatrixConfig: null,
+      isFirst: true
     };
   },
   beforeCreate() {},
@@ -176,6 +177,23 @@ export default {
       this.$set(this.config.mapping, 'value', '');
       this.$set(this.config.mapping, 'text', '');
       this.$set(this.config, 'sourceColumnList', []);
+    },
+    getFilterList(val) {
+      let filterList = [];
+      if (val && val.length > 0) {
+        val.forEach(item => {
+          if (item.valueList && item.column && item.expression) {
+            filterList.push({
+              uuid: item.column,
+              expression: item.expression,
+              valueList: item.valueList
+            });
+          }
+        });
+      }
+      if (filterList.length > 0) {
+        this.$set(this.config, 'defaultValue', null);
+      }
     }
   },
   filter: {},
@@ -252,6 +270,16 @@ export default {
             }
           });
         }
+      },
+      deep: true,
+      immediate: true
+    },
+    'config.sourceColumnList': {
+      handler(val, oldVal) {
+        if (!this.isFirst && !this.$utils.isSame(val, oldVal)) {
+          this.getFilterList(val);
+        }
+        this.isFirst = false;
       },
       deep: true,
       immediate: true

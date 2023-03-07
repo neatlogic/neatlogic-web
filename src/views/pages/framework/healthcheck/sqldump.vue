@@ -264,7 +264,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .dbinfo {
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;

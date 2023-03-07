@@ -423,7 +423,7 @@ function setWidth($contain, $target, transfer) {
 }
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .read-container {
   border: 1px solid;
   line-height: 30px;
