@@ -5,12 +5,12 @@
         <div class="action-group">
           <Tooltip
             v-if="appModuleData && !appModuleData.appId"
-            content="请选中应用或模块后再创建版本"
+            :content="$t('term.deploy.selectaddversion')"
             max-width="400"
             placement="right"
             transfer
           >
-            <span class="tsfont-plus text-disabled action-item">版本</span>
+            <span class="tsfont-plus text-disabled action-item">{{ $t('page.versions') }}</span>
           </Tooltip>
           <Tooltip
             v-else-if="!hasAuth"
@@ -18,12 +18,12 @@
             placement="right"
             transfer
           >
-            <span class="tsfont-plus text-disabled action-item">版本</span>
+            <span class="tsfont-plus text-disabled action-item">{{ $t('page.versions') }}</span>
             <ul slot="content">
-              <li v-if="!canEdit">您没有当前应用的“编辑配置权限”，请联系管理员授权</li>
+              <li v-if="!canEdit">{{ $t('term.deploy.noconfigauthtip') }}</li>
             </ul>
           </Tooltip>
-          <span v-else-if="appModuleData && appModuleData.appId" class="action-item tsfont-plus" @click="addVersion">版本</span>
+          <span v-else-if="appModuleData && appModuleData.appId" class="action-item tsfont-plus" @click="addVersion">{{ $t('page.versions') }}</span>
         </div>
       </template>
       <template v-slot:sider>
@@ -53,7 +53,7 @@
             <span v-if="row" class="text-href" @click="gotoDeployStatus(row)">{{ row.version }}</span>
           </template>
           <template slot="compileCount" slot-scope="{ row }">
-            <span>{{ row.compileCount }} {{ row.compileFailCount ? `失败${row.compileFailCount}次` : '' }}</span>
+            <span>{{ row.compileCount }} {{ row.compileFailCount ? $t('term.deploy.failurecount', {target: row.compileFailCount}) : '' }}</span>
           </template>
           <template slot="buildNo" slot-scope="{ row }">
             <div v-if="row.buildNoList && row.buildNoList.length > 0">
@@ -116,7 +116,7 @@
               width="400"
               trigger="hover"
               placement="top"
-              content="您没有版本&制品管理权限，请联系管理员授权"
+              :content="$t('term.deploy.notversionproductauth')"
             >
               <TsFormSwitch
                 v-model="row.isFreeze"
@@ -150,8 +150,8 @@
           <template slot="action" slot-scope="{ row, index }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-trash-o icon" @click="deleteVersion(row.id, row.version, index)">删除</li>
-                <li class="tsfont-file-single icon" @click="openProjectDirectoryDialog(row.id)">工程目录</li>
+                <li class="tsfont-trash-o icon" @click="deleteVersion(row.id, row.version, index)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-file-single icon" @click="openProjectDirectoryDialog(row.id)">{{ $t('term.deploy.projectdirectory') }}</li>
               </ul>
             </div>
           </template>
@@ -224,15 +224,15 @@ export default {
       selectedModule: null,
       theadList: [
         {
-          title: '版本号',
+          title: this.$t('page.versions'),
           key: 'version'
         },
         {
-          title: '编译次数',
+          title: this.$t('page.compilecount'),
           key: 'compileCount'
         },
         {
-          title: '封版',
+          title: this.$t('term.deploy.sealplate'),
           key: 'isFreeze'
         },
         {
@@ -252,7 +252,7 @@ export default {
           key: 'description'
         },
         {
-          title: '创建时间',
+          title: this.$t('page.creatTime'),
           type: 'time',
           key: 'fcd'
         },
@@ -300,8 +300,8 @@ export default {
     deleteVersion(id, name, index) {
       if (id && name) {
         this.$createDialog({
-          title: '删除版本',
-          content: `确认删除：${name}版本号?`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: name}),
           btnType: 'error',
           'on-ok': vnode => {
             vnode.isShow = false;
@@ -388,7 +388,7 @@ export default {
       if (id) {
         this.$api.deploy.version.unLockVersion({ id, isFreeze }).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(isFreeze ? '已封版' : '未封版');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
           }
         });
       }

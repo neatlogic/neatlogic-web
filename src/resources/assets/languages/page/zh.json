@@ -17,7 +17,7 @@
   "value": "值",
   "positiontransfer": "位置对调",
   "creator": "创建者",
-  "creatTime ": "创建时间",
+  "creatTime": "创建时间",
   "memo": "备注",
   "auth": "授权",
   "error": "错误",
@@ -322,7 +322,15 @@
   "authority": "权限",
   "namedescription": "名称、描述",
   "compile": "编译",
+  "compilecount": "编译次数",
   "normal": "正常",
   "publish": "发布",
-  "notpublish": "未发布"
+  "notpublish": "未发布",
+  "newversion": "新建版本",
+  "unittest": "单元测试",
+  "codescan": "代码扫描",
+  "putawayall": "收起所有",
+  "expandall": "展开所有",
+  "scene": "场景",
+  "executeuser": "执行用户"
 }

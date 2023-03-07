@@ -78,24 +78,24 @@ export default {
       searchParams: {},
       theadList: [
         {
-          title: '实例名',
+          title: this.$t('term.deploy.instancename'),
           key: 'resourceName'
         },
         {
-          title: 'IP',
+          title: this.$t('page.ip'),
           key: 'ip'
         },
         {
-          title: '发布状态',
+          title: this.$t('term.deploy.publishstatus'),
           key: 'status'
         },
         {
-          title: '最后发布时间',
+          title: this.$t('term.deploy.lastpublishtime'),
           key: 'deployTime',
           type: 'time'
         },
         {
-          title: '最后发布用户',
+          title: this.$t('term.deploy.lastpublisheduser'),
           key: 'deployUserVo',
           type: 'user'
         }

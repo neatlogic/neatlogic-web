@@ -28,18 +28,18 @@
         <div v-if="hasEditAuth" class="action-group no-line">
           <template v-if="!canEdit">
             <div class="action-item">
-              <Button type="primary" @click="editProfile()">编辑</Button>
+              <Button type="primary" @click="editProfile()">{{ $t('button.edit') }}</Button>
             </div>
           </template>
           <template v-else>
             <div class="action-item tsfont-save" @click="savePipelineDraft()">
-              存为草稿
+              {{ $t('page.savedraft') }}
             </div>
             <div class="action-item tsfont-config" @click="showRuntimeParamList">
-              作业参数
+              {{ $t('term.deploy.jobparam') }}
             </div>
             <div class="action-item tsfont-close-o" @click="cancelEdit()">
-              取消
+              {{ $t('button.cancel') }}
             </div>
             <div class="action-item">
               <Button type="primary" @click="saveProfile()">{{ $t('button.save') }}</Button>
@@ -62,14 +62,14 @@
                     transfer-class-name="poptip-topo"
                     transfer
                   >
-                    <span class="text-action">流程图</span>
+                    <span class="text-action">{{ $t('term.deploy.flowchart') }}</span>
                     <div slot="content" class="step-topo">
                       <StepTopo :stepList="stepList" :execModeList="execModeList" @jumpToStep="jumpToStep"></StepTopo>
                     </div>
                   </Poptip>
                 </div>
                 <div class="action-item tsfont-down" :class="showAllStepList?'tsfont-up':'tsfont-down'" @click="showSteplist()">
-                  {{ showAllStepList?'收起所有':'展开所有' }}
+                  {{ showAllStepList? $t('page.putawayall') : $t('page.expandall') }}
                 </div>
               </div>
               <div class="step-list">
@@ -98,7 +98,7 @@
               >
                 <TabPane
                   v-if="profileList.length > 0"
-                  label="预置参数"
+                  :label="$t('term.deploy.presetparameter')"
                   name="profile"
                 >
                   <div class="setting-main">
@@ -116,7 +116,7 @@
                   </div>
                 </TabPane>
                 <TabPane
-                  label="场景"
+                  :label="$t('page.scene')"
                   name="scenario"
                 >
                   <div class="setting-main">
@@ -131,7 +131,7 @@
                   </div>
                 </TabPane>
                 <TabPane
-                  label="执行帐号"
+                  :label="$t('term.deploy.executiveaccount')"
                   name="executeSetting"
                 >
                   <div class="setting-main padding">
@@ -147,7 +147,7 @@
                   </div>
                 </TabPane>
                 <TabPane
-                  label="阶段组"
+                  :label="$t('term.deploy.stagegroup')"
                   name="stepGroup"
                 >
                   <div class="setting-main padding">
@@ -171,7 +171,7 @@
       </template>
     </TsContain>
     <TsDialog
-      title="编辑流水线"
+      :title="$t('page.edittarget', {target: $t('term.deploy.pipeline')})"
       type="modal"
       :isShow.sync="showDialog"
     >
@@ -183,16 +183,16 @@
       <template v-slot:footer>
         <div class="action-group">
           <div class="action-item" @click="showDialog = false">
-            取消
+            {{ $t('button.cancel') }}
           </div>
           <div class="action-item">
             <Button type="error" @click="deletePipelineDraft()">
-              丢弃草稿
+              {{ $t('term.deploy.discarddraft') }}
             </Button>
           </div>
           <div class="action-item">
             <Button type="primary" @click="editPipelineDraft()">
-              编辑草稿
+              {{ $t('term.deploy.editdraft') }}
             </Button>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default {
       appSystemId: null, //应用id
       appModuleId: null, //模块id
       envId: null, //环境id
-      pathName: '应用系统',
+      pathName: this.$t('term.deploy.applicationsystem'),
       loadingShow: true,
       initPipelineData: {}, //初始化数据
       tabValue: 'profile',
@@ -465,10 +465,10 @@ export default {
       await this.getPipelineDraftData();
       if (!this.$utils.isEmpty(this.pipelineDraftData)) {
         if (this.$AuthUtils.getCurrentUser().uuid == this.pipelineDraftData.lcu) {
-          this.editTitle = '您有未保存的草稿，请选择继续编辑草稿或丢弃草稿重新编辑';
+          this.editTitle = this.$t('term.deploy.nosavedraft');
         } else {
           let userData = await this.$api.common.getUser({userUuid: this.pipelineDraftData.lcu});
-          this.editTitle = '用户' + userData.name + '/' + userData.userId + '有未保存的草稿，请选择继续编辑草稿或丢弃草稿重新编辑';
+          this.editTitle = this.$t('term.deploy.userhasnosavedraft', {username: userData.name, userid: userData.userId});
         }
         this.showDialog = true; 
       } else {
@@ -679,8 +679,8 @@ export default {
     },
     cancelEdit() {
       this.$createDialog({
-        title: this.$t('dialog.title.deleteconfirm'),
-        content: '确认取消编辑？',
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('dialog.content.cancelconfirm'),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;
@@ -694,13 +694,13 @@ export default {
       let stepList = this.stepList;
       if (!stepList.length) {
         //至少有一个阶段
-        validList = [{ text: '至少选择一个阶段', type: 'error' }];
+        validList = [{ text: this.$t('term.deploy.chooseatleastonephase'), type: 'error' }];
       } else {
         stepList.forEach(v => {
           //校验至少一个脚本+输入参数如果必填需要有值
           if (!v.config || !v.config.phaseOperationList || !v.config.phaseOperationList.length) {
             validList.push({
-              text: '阶段' + v.name + '设置：至少选择一个工具',
+              text: this.$t('term.deploy.phaseatleastonetool', {target: v.name}),
               type: 'error',
               stepUuid: v.uuid,
               id: '#step_' + v.uuid
@@ -716,7 +716,7 @@ export default {
       }
       //至少需要设置一个场景
       if (!this.scenarioList.length) {
-        validList.push({ text: '至少选择一个场景', type: 'error', component: 'scenario' });
+        validList.push({ text: this.$t('term.deploy.chooseatleastonescenario'), type: 'error', component: 'scenario' });
       }
       //执行用户
       if (this.$refs.executeSetting) {
@@ -745,7 +745,7 @@ export default {
       let data = this.getSaveData();
       this.$api.deploy.apppipeline.savePipelineDraft(data).then((res) => {
         if (res.Status == 'OK') {
-          this.$Message.success('草稿保存成功');
+          this.$Message.success(this.$t('message.content.savesuccess'));
           this.initData(this.initPipelineData);
           this.canEdit = false;
         }
@@ -897,7 +897,7 @@ export default {
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
-              text: '阶段' + step.name + '设置：【' + p.operationName + '】请输入条件',
+              text: this.$t('term.deploy.phasesetcondition', {stepname: step.name, operationname: p.operationName}),
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,
@@ -931,7 +931,7 @@ export default {
                 });
                 if (!isPass) {
                   validList.push({
-                    text: '阶段' + step.name + '设置：【' + p.operationName + '】输入参数数据填写不完整',
+                    text: this.$t('term.deploy.phasesetinputparamtip', {stepname: step.name, operationname: p.operationName}),
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
@@ -948,7 +948,7 @@ export default {
                 });
                 if (!isPassArgument) {
                   validList.push({
-                    text: '阶段' + step.name + '设置：【' + p.operationName + '】自由参数数据填写不完整',
+                    text: this.$t('term.deploy.phasesetfreeparamtip', {stepname: step.name, operationname: p.operationName}),
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
@@ -959,7 +959,7 @@ export default {
               //预置参数集校验
               if (p.config.isActive && !p.config.profileId) {
                 validList.push({
-                  text: '阶段' + step.name + '设置：【' + p.operationName + '】请选择预置参数集',
+                  text: this.$t('term.deploy.phaseselectpresetparamtip', {stepname: step.name, operationname: p.operationName}),
                   type: 'error',
                   stepUuid: step.uuid,
                   operationUuid: p.uuid,
@@ -969,7 +969,7 @@ export default {
             }
           } else {
             validList.push({
-              text: '阶段' + step.name + '工具【' + p.operationName + '】已被删除，请清理该工具后保存',
+              text: this.$t('term.deploy.phasetooldeletetip', {stepname: step.name, operationname: p.operationName}),
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,
@@ -1004,7 +1004,7 @@ export default {
           } else {
             this.$router.push({
               path: '/404',
-              query: {des: `您没有[${authInfo.abbrName || ''}应用]的配置查看权限`}
+              query: {des: this.$t('term.deploy.noappviewauth', {abbrname: authInfo.abbrName || ''})}
             });
           }
         }

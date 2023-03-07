@@ -8,20 +8,20 @@
             ghost
             class="ml-nm"
             @click="$back()"
-          >取消</Button>
+          >{{ $t('button.cancel') }}</Button>
           <Button
             v-if="current > 0"
             type="primary"
             ghost
             class="ml-nm"
             @click=" current -= 1"
-          >上一步</Button>
+          >{{ $t('page.previousstep') }}</Button>
           <Button
             v-if="current < stepTextList.length - 1"
             type="primary"
             class="ml-nm"
             @click="nextStep(current + 1)"
-          >下一步</Button>
+          >{{ $t('page.thenextstep') }}</Button>
           <Button
             v-if="current == stepTextList.length - 1"
             type="primary"
@@ -55,14 +55,14 @@
                     transfer-class-name="poptip-topo"
                     transfer
                   >
-                    <span class="text-action">流程图</span>
+                    <span class="text-action">{{ $t('term.deploy.flowchart') }}</span>
                     <div slot="content" class="step-topo">
                       <StepTopo :stepList="stepList" :execModeList="execModeList" @jumpToStep="jumpToStep"></StepTopo>
                     </div>
                   </Poptip>
                 </div>
                 <div class="action-item tsfont-down" :class="showAllStepList?'tsfont-up':'tsfont-down'" @click="showSteplist()">
-                  {{ showAllStepList?'收起所有':'展开所有' }}
+                  {{ showAllStepList? $t('term.deploy.putawayall'): $t('term.deploy.expandall') }}
                 </div>
               </div>
               <div class="action-config">
@@ -85,7 +85,7 @@
                   </div>
                   <div v-show="current==2" class="padding">
                     <div class="pb-nm">
-                      预置参数
+                      {{ $t('term.deploy.presetparameter') }}
                     </div>
                     <ProfileSetting
                       :appSystemId="appSystemId"
@@ -99,7 +99,7 @@
                   </div>
                   <div v-show="current==3">
                     <div class="pt-nm pl-nm pr-nm">
-                      场景设置
+                      {{ $t('term.deploy.scenesetting') }}
                     </div>
                     <ScenarioSetting
                       :currentScenarioList="scenarioList"
@@ -125,20 +125,20 @@
               ghost
               class="ml-nm"
               @click="$back()"
-            >取消</Button>
+            >{{ $t('button.cancel') }}</Button>
             <Button
               v-if="current > 0"
               type="primary"
               ghost
               class="ml-nm"
               @click=" current -= 1"
-            >上一步</Button>
+            >{{ $t('page.previousstep') }}</Button>
             <Button
               v-if="current < stepTextList.length - 1"
               type="primary"
               class="ml-nm"
               @click="nextStep(current + 1)"
-            >下一步</Button>
+            >{{ $t('page.thenextstep') }}</Button>
             <Button
               v-if="current == stepTextList.length-1"
               type="primary"
@@ -184,12 +184,12 @@ export default {
       appModuleId: null,
       envId: null,
       current: 0,
-      stepTextList: ['选择工具', '编辑流水线', '预置参数', '场景设置', '执行用户', '执行器'],
+      stepTextList: [this.$t('term.deploy.selectiontool'), this.$t('page.edittarget', {target: this.$t('term.deploy.pipeline')}), this.$t('term.deploy.presetparameter'), this.$t('term.deploy.scenesetting'), this.$t('page.executeuser'), this.$t('term.deploy.actuator')],
       formConfig: [
         {
           type: 'select',
           name: 'actionId',
-          label: '组合工具',
+          label: this.$t('term.deploy.combinationtool'),
           dynamicUrl: '/api/rest/autoexec/combop/list',
           params: {isActive: 1},
           rootName: 'tbodyList',

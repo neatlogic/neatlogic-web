@@ -33,7 +33,7 @@
             <PieChart
               :axiosParams="{ versionId: versionId, name: 'unit_test',
                               chart: 'last_code_test_result' }"
-              title="最新一次代码测试结果"
+              :title="$t('term.deploy.lastcodetestresult')"
             ></PieChart>
           </div>
         </Col>
@@ -50,7 +50,7 @@
             <LineChart
               :axiosParams="{versionId: versionId, name: 'unit_test',
                              chart: 'last_five_incremental_coverage_rate'}"
-              title="最新五次增量覆盖率(%)"
+              :title="$t('term.deploy.lastfiveincrementalcoveragerate')"
             ></LineChart>
           </div>
         </Col>
@@ -67,7 +67,7 @@
             <BarChart
               :axiosParams="{versionId: versionId, name: 'unit_test',
                              chart: 'last_five_full_coverage_rate'}"
-              title="最新五次全量覆盖率(%)"
+              :title="$t('term.deploy.lastfivefullcoveragerate')"
             ></BarChart>
           </div>
         </Col>
@@ -94,32 +94,32 @@ export default {
       lastCodeTestResult: '', // 最新一次代码测试结果
       textList: [
         {
-          label: '执行时间',
+          label: this.$t('term.deploy.executiontime'),
           textName: 'buildTime',
           value: ''
         },
         {
-          label: '成功率[成功/失败]',
+          label: this.$t('term.deploy.successrate'),
           textName: 'testSuccessDensity',
           value: ''
         },
         {
-          label: '全量分支覆盖率',
+          label: this.$t('term.deploy.fullbranchcoverage'),
           textName: 'branchCoverage',
           value: ''
         },
         {
-          label: '增量分支覆盖率',
+          label: this.$t('term.deploy.incrementalbranchcoverage'),
           textName: 'newBranchCoverage',
           value: ''
         },
         {
-          label: '全量行覆盖率',
+          label: this.$t('term.deploy.fulllinecoverage'),
           textName: 'lineCoverage',
           value: ''
         },
         {
-          label: '增量行覆盖率',
+          label: this.$t('term.deploy.incrementalrowcoverage'),
           textName: 'newLineCoverage',
           value: ''
         }
