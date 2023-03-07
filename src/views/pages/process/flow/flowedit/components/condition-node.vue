@@ -681,7 +681,7 @@ export default {
 </script>
 
 <style lang='less'>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .transparentSelect {
   .ivu-input {
     background-color: transparent !important;

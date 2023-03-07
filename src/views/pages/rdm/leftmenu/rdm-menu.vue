@@ -107,7 +107,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
 
 .OverviewMenu {
   padding-top: 8px;

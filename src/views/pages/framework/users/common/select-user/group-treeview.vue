@@ -112,7 +112,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .group-treeview {
   .item-sub {
     margin-left: 50px;

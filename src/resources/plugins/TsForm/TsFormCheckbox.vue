@@ -273,7 +273,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .ivu-checkbox-group-vertical {
   .ivu-checkbox-group-item {
     display: block;

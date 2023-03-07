@@ -496,7 +496,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .catalog .noShadow {
   box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 10%) !important;
   border-radius: 10px !important;

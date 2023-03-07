@@ -1528,7 +1528,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .theme(@primary-color,@bg-grey-hover,@dividing-color) {
   .TacticsSetting {
     width: 100%;

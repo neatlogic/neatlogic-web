@@ -232,7 +232,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .ciContainer{
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
