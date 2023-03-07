@@ -15,19 +15,21 @@
  */
 <template>
   <TsDialog v-bind="validDialog" :isShow="visible" @on-close="close()">
-    <div class="valid-title"><span class="tsfont-info-o text-warning"></span>是否保存执行目标</div>
+    <div class="valid-title"><span class="tsfont-info-o text-warning"></span>{{ $t('term.autoexec.issaveexecutetarget') }}</div>
     <div v-for="(item,index) in resultList" :key="index" class="valid-box">
       <template v-if="item.type == 'resourceIsEmpty'">
-        <span>当前过滤器下，未找到匹配的执行目标</span>
+        <span>{{ $t('term.autoexec.notmatchexecutetarget') }}</span>
       </template>
       <template v-if="item.type == 'executeUserIsNotFoundInProtocol'">
-        <span> “{{ item.protocol }}”协议中未找到“{{ item.executeUser }}”用户，执行时无法通过“{{ item.executeUser }}”用户连接执行目标，可前往帐号管理页面</span>
-        <span class="text-href" @click="gotoAccountManage()">添加帐号</span>
+        <span>
+          {{ $t('term.autoexec.nousertoaccountpagesetting', {protocol: item.protocol, executeuser: item.executeUser }) }}
+        </span>
+        <span class="text-href" @click="gotoAccountManage()">{{ $t('term.autoexec.addaccount') }}</span>
       </template>
       <template v-if="item.type == 'executeUserIsNotFoundInResource'">
-        <div class="title-tip">以下目标：</div>
+        <div class="title-tip">{{ $t('term.autoexec.thefollowingobjectives') }}</div>
         <template v-if="item.list.length > 0">
-          <div class="text-tip">执行目标：</div>
+          <div class="text-tip">{{ $t('term.autoexec.executetarget') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.list" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
@@ -35,20 +37,22 @@
           </ul>
         </template>
         <template v-if="item.whitelist && item.whitelist.length > 0">
-          <div class="text-tip">白名单：</div>
+          <div class="text-tip">{{ $t('page.whitelist') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.whitelist" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
             </li>
           </ul>
         </template>
-        <span>未找到“{{ item.protocol }}”的“{{ item.executeUser }}”帐号，执行时将跳过上述目标，可前往资产清单页面</span>
-        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">添加绑定帐号</span>
+        <span>
+          {{ $t('term.autoexec.noexecuteusertoassetmanage', {protocol: item.protocol , executeuser: item.executeUser}) }}
+        </span>
+        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
       </template>
       <template v-if="item.type == 'protocolIsNotFoundInResource'">
-        <div class="title-tip">以下目标：</div>
+        <div class="title-tip">{{ $t('term.autoexec.thefollowingobjectives') }}</div>
         <template v-if="item.list.length > 0">
-          <div class="text-tip">执行目标：</div>
+          <div class="text-tip">{{ $t('term.autoexec.executetarget') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.list" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
@@ -56,20 +60,20 @@
           </ul>
         </template>
         <template v-if="item.whitelist && item.whitelist.length > 0">
-          <div class="text-tip">白名单：</div>
+          <div class="text-tip">{{ $t('page.whitelist') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.whitelist" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
             </li>
           </ul>
         </template>
-        <span>执行时将跳过上述目标，可前往资产清单页面</span>
-        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">添加绑定帐号</span>
+        <span>{{ $t('term.autoexec.ignoretargettoassetpage') }}</span>
+        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
       </template>
       <template v-if="item.type == 'resourceIsNotFound'">
-        <div class="title-tip">以下目标：</div>
+        <div class="title-tip">{{ $t('term.autoexec.thefollowingobjectives') }}</div>
         <template v-if="item.list.length > 0">
-          <div class="text-tip">执行目标：</div>
+          <div class="text-tip">{{ $t('term.autoexec.executetarget') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.list" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
@@ -77,19 +81,19 @@
           </ul>
         </template>
         <template v-if="item.whitelist && item.whitelist.length > 0">
-          <div class="text-tip">白名单：</div>
+          <div class="text-tip">{{ $t('page.whitelist') }}：</div>
           <ul>
             <li v-for="(i,iindex) in item.whitelist" :key="iindex" class="text-tip valid-list">
               {{ i.ip }}<template v-if="i.port">:{{ i.port }}</template>
             </li>
           </ul>
         </template>
-        <span>未在资产清单中找到对应资产，执行时将跳过上述目标</span>
+        <span>{{ $t('term.autoexec.notfoundassetstip') }}</span>
       </template>
     </div>
     <template v-slot:footer>
-      <Button type="primary" ghost @click="close()">返回编辑</Button>
-      <Button type="primary" @click="save()">保存</Button>
+      <Button type="primary" ghost @click="close()">{{ $t('page.back') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('button.save') }}</Button>
     </template>
   </TsDialog>
 </template>

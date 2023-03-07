@@ -4,7 +4,7 @@
     <div class="information-box">
       <div class="information bg-op padding radius-lg">
         <div class="information-title h4">
-          基本信息
+          {{ $t('page.basicinfo') }}
           <span v-if="hasAuth" class="tsfont-edit text-action" @click="edit"></span>
         </div>
         <div class="form-list">
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div v-if="config.referenceCount > 0" class="action-list bg-op padding radius-lg">
-      <div class="action-title h4">关联组合工具</div>
+      <div class="action-title h4">{{ $t('term.autoexec.relatecombinationtool') }}</div>
       <ReferenceList
         :id="config.id"
         :calleeType="config.type"
@@ -73,19 +73,19 @@ export default {
         {
           name: 'typeName',
           text: '',
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           isRequired: true
         },
         {
           name: 'catalogName',
           text: '-',
-          label: '工具目录',
+          label: this.$t('term.autoexec.directorytool'),
           isRequired: true
         },
         {
           name: 'isLibName',
           text: '-',
-          label: '是否库文件',
+          label: this.$t('term.autoexec.islibraryfile'),
           isRequired: true
         }
       ],
@@ -93,13 +93,13 @@ export default {
         {
           name: 'execModeText',
           text: '',
-          label: this.$i18n.t('autoexec.execMode'),
+          label: this.$t('term.autoexec.executionmode'),
           isRequired: true
         },
         {
           name: 'riskName',
           text: '',
-          label: '风险等级',
+          label: this.$t('term.autoexec.risklevel'),
           isRequired: true
         },
         {
@@ -111,26 +111,26 @@ export default {
         {
           name: 'defaultProfileName',
           text: '-',
-          label: '预置参数集',
+          label: this.$t('term.autoexec.presetparameterset'),
           isRequired: false
         },
         {
           name: 'description',
           text: '-',
-          label: this.$i18n.t('common.description'),
+          label: this.$t('page.description'),
           isRequired: false
         }],
       isLibSettingList: [
         {
           name: 'defaultProfileName',
           text: '-',
-          label: '预置参数集',
+          label: this.$t('term.autoexec.presetparameterset'),
           isRequired: false
         },
         {
           name: 'description',
           text: '-',
-          label: this.$i18n.t('common.description'),
+          label: this.$t('page.description'),
           isRequired: false
         }]
     };

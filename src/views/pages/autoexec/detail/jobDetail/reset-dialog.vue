@@ -1,11 +1,11 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-ok="okDialog" @on-close="closeDialog">
     <template v-slot>
-      <div class="mb-nm">重置节点将会使节点状态变为“待运行”，确认重置节点？</div>
+      <div class="mb-nm">{{ $t('term.autoexec.resetnodeconfirm') }}</div>
       <Alert show-icon>
-        <div>重置节点适用于以下两种场景：</div>
-        <div>1.节点需要重跑，重置为“待运行”状态后，可重跑节点。</div>
-        <div>2.本平台出现故障，导致所有节点停止运行，可重置所有节点，重跑当前作业。</div>
+        <div>{{ $t('term.autoexec.resetnodescene') }}</div>
+        <div>1.{{ $t('term.autoexec.waitrunnodetip') }}</div>
+        <div>2.{{ $t('term.autoexec.malfunctionrerunjob') }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -24,7 +24,7 @@ export default {
     return {
       dialogConfig: {
         loading: false,
-        title: '重置确认',
+        title: this.$t('dialog.title.updateconfirm'),
         type: 'modal',
         maskClose: false,
         isShow: true,

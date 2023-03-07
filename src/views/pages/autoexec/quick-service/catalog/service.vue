@@ -119,7 +119,7 @@
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeAccountForm ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeAccountForm')"></span>
       </div>
       <div v-show="unfoldAndFold.executeAccountForm">
-        <TsFormItem :label="$t('common.protocol')" :required="hasFormUuid">
+        <TsFormItem :label="$t('page.protocol')" :required="hasFormUuid">
           <div class="form-wrap-box">
             <TsFormSelect
               ref="mappingModeForm"
@@ -335,7 +335,7 @@ export default {
         {
           type: 'userselect',
           name: 'authorityList',
-          label: this.$t('common.authorization'),
+          label: this.$t('page.auth'),
           groupList: ['user', 'team', 'role', 'common'],
           value: ['common#alluser'],
           validateList: ['required']
@@ -437,7 +437,7 @@ export default {
         dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getProtocolDataList,
-        placeholder: this.$t('common.select1')
+        placeholder: this.$t('page.pleaseselect')
       },
       executeUserForm: {
       },

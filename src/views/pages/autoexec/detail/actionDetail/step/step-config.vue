@@ -23,8 +23,7 @@
     <div v-if="canEdit && operationType=='combop'" class="add-bar">
       <Button type="primary" ghost @click.native="addOperation">
         <span class="text-href tsfont-plus add-text">
-          <!-- {{ $t('autoexec.add.operation') }} -->
-          添加工具 
+          {{ $t('term.autoexec.tool') }}
         </span>
       </Button>
     </div>
@@ -218,7 +217,7 @@ export default {
     },
     valid() {
       if (!this.phaseOperationList || !this.phaseOperationList.length) {
-        return this.$i18n.t('autoexec.warning.empty.operation');
+        return this.$t('page.notarget', {target: this.$t('term.autoexec.tool')});
       } else {
         if (this.$refs.list) {
           return this.$refs.list.valid();

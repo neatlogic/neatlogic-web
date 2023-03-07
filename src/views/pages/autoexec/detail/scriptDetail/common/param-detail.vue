@@ -3,23 +3,23 @@
     <div v-if="paramList.length > 0" class="param-list text-title tips param-header">
       <TsRow :gutter="8">
         <Col span="3">
-          <div class="overflow">参数英文名</div>
+          <div class="overflow">{{ $t('term.autoexec.parameterenglishname') }}</div>
         </Col>
         <Col span="3">
-          <div class="overflow">参数中文名</div>
+          <div class="overflow">{{ $t('term.autoexec.parameterchinesename') }}</div>
         </Col>
         <Col span="3">
-          <div class="overflow">控件类型</div>
+          <div class="overflow">{{ $t('term.autoexec.controltype') }}</div>
         </Col>
         <Col span="8">
-          <div class="overflow">校验/默认值</div>
+          <div class="overflow">{{ $t('page.validate') }}/{{ $t('page.defaultvalue') }}</div>
         </Col>
         <Col span="7">
-          <div class="overflow">描述</div>
+          <div class="overflow">{{ $t('page.description') }}</div>
         </Col>
       </TsRow>
       <div class="btn-item" style="top: -7px;">
-        必填
+        {{ $t('page.require') }}
       </div>
     </div>
     <div v-if="paramList && paramList.length > 0" class="param-box">
@@ -39,7 +39,7 @@
                 maxlength="50"
                 :validateList="validateConfig.key"
                 :errorMessage="item.keyErrorMessage"
-                placeholder="参数名英文名"
+                :placeholder="$t('term.autoexec.parameterenglishname')"
                 @on-change="changeName(item, index,'key')"
               ></TsFormInput>
             </Col>
@@ -50,7 +50,7 @@
                 :disabled="!isEdit"
                 maxlength="50"
                 :validateList="validateConfig.name"
-                placeholder="参数中文名"
+                :placeholder="$t('term.autoexec.parameterchinesename')"
                 :errorMessage="item.nameErrorMessage"
                 @on-change="changeName(item, index,'name')"
               ></TsFormInput>
@@ -85,7 +85,7 @@
                 v-model="item.description"
                 :disabled="!isEdit"
                 maxlength="255"
-                placeholder="描述"
+                :placeholder="$t('page.description')"
               ></TsFormInput>
             </Col>
           </TsRow>
@@ -145,7 +145,9 @@ export default {
     },
     paramText: {
       type: String,
-      default: '输入参数'
+      default() {
+        return this.$t('term.autoexec.inputparam');
+      }
     },
     setValidComponentsList: Array
   },
@@ -208,10 +210,10 @@ export default {
       let validList = [];
       this.paramList.forEach((item, index) => {
         if (item.key != '' && item.name == '') {
-          this.$set(item, 'nameErrorMessage', '请输入内容');
+          this.$set(item, 'nameErrorMessage', this.$t('form.validate.pleaseenterthecontent'));
           validList.push(false);
         } else if (item.name != '' && item.key == '') {
-          this.$set(item, 'keyErrorMessage', '请输入内容');
+          this.$set(item, 'keyErrorMessage', this.$t('form.validate.pleaseenterthecontent'));
           validList.push(false);
         } else {
           this.changeName(item, index, 'key');
@@ -254,7 +256,7 @@ export default {
         if (type == 'key') {
           if (findNameList.length > 1) {
             this.isRepeatName = true;
-            this.$set(item, 'keyErrorMessage', '英文名重复');
+            this.$set(item, 'keyErrorMessage', this.$t('form.validate.englishnamerepetition'));
           } else {
             this.isRepeatName = false;
             this.paramList.forEach(p => {
@@ -264,7 +266,7 @@ export default {
         } else if (type == 'name') {
           if (findNameList.length > 1) {
             this.isRepeatName = true;
-            this.$set(item, 'nameErrorMessage', '中文名重复');
+            this.$set(item, 'nameErrorMessage', this.$t('form.validate.chinesenamerepetition'));
           } else {
             this.isRepeatName = false;
             this.paramList.forEach(p => {

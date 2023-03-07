@@ -131,7 +131,7 @@ export default {
       isReady: true, //刷新后用于重置组件，让组件可以重新开始所有刷新
       prevPath: {
         router: '/job-manage',
-        name: '作业管理'
+        name: this.$t('router.autoexec.jobmanage')
       },
       tabsValue: 'jobdetail',
       selectStepId: null,
@@ -291,7 +291,7 @@ export default {
     revokeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job.jobname')}),
+        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job.revokeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -401,8 +401,8 @@ export default {
     },
     takeoverFn() {
       this.$createDialog({
-        title: this.$t('term.autoexec.job.takeoverjob'),
-        content: this.$t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job.jobname')}),
+        title: this.$t('term.autoexec.takeoverjob'),
+        content: this.$t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job
             .takeoverJob({ jobId: this.jobData.id })
@@ -453,7 +453,6 @@ export default {
       return this.jobData && !this.$utils.isEmpty(this.jobData.extraInfo) ? '215px' : '116px';
     },
     exportJob() {
-      // {{$t('term.autoexec.exportjob')}}
       return {
         url: '/api/binary/autoexec/job/export',
         method: 'post',

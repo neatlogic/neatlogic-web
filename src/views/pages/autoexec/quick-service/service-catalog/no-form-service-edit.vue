@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="radius-lg bg-op padding">
       <div class="flex-between" :class="unfoldAndFold.jobName ? 'mb-sm' : ''">
-        <span>{{ $t('term.autoexec.jobname') }}<i class="require-label"></i></span>
+        <span>{{ $t('term.autoexec.job') }}<i class="require-label"></i></span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.jobName ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('jobName')"></span>
       </div>
       <TsFormItem v-show="unfoldAndFold.jobName" label="" :labelWidth="0">
@@ -71,7 +71,7 @@
         <span class="tsfont-down cursor" :class="unfoldAndFold.protocol ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('protocol')"></span>
       </div>
       <div v-show="unfoldAndFold.protocol">
-        <TsFormItem v-if="hasServiceValue.protocol" :label="$t('common.protocol')" :required="true">
+        <TsFormItem v-if="hasServiceValue.protocol" :label="$t('page.protocol')" :required="true">
           <TsFormSelect
             ref="protocol"
             v-model="protocol"
@@ -213,7 +213,7 @@ export default {
         dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getProtocolDataList,
-        placeholder: this.$i18n.t('common.select1'),
+        placeholder: this.$i18n.t('page.pleaseselect'),
         validateList: ['required']
       },
       executeUserForm: {

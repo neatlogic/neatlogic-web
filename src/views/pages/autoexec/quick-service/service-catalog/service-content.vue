@@ -10,7 +10,7 @@
         >{{ pathItem }}</span>
       </div>
       <div class="more">
-        <span v-show="serviceData.pageCount > 1" class="cursor" @click="seeMore()">{{ $t('common.viewMore') }}</span>
+        <span v-show="serviceData.pageCount > 1" class="cursor" @click="seeMore()">{{ $t('page.viewmore') }}</span>
       </div>
     </div>
     <div v-if="!$utils.isEmpty(serviceData)">

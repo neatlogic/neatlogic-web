@@ -2,28 +2,24 @@
   <TsDialog v-bind="dialogConfig" @on-ok="okDialog" @on-close="closeDialog">
     <template v-slot>
       <div v-if="pendingCount || succeedCount || runningCount" class="mb-nm">
-        <span>选中节点包含</span>
+        <span>{{ $t('term.autoexec.selectednodeinclude') }}</span>
         <span v-if="ignoreCount" class="ml-xs mr-xs">
-          <b>{{ ignoreCount }}</b>
-          个已忽略
+          {{ $t('term.autoexec.ignorecount', {target: ignoreCount}) }}
         </span>
         <span v-if="pendingCount" class="ml-xs mr-xs">
-          <b>{{ pendingCount }}</b>
-          个待运行
+          {{ $t('term.autoexec.pendingcount', {target: pendingCount}) }}
         </span>
         <span v-if="succeedCount" class="ml-xs mr-xs">
-          <b>{{ succeedCount }}</b>
-          个已成功
+          {{ $t('term.autoexec.runningcount', {target: succeedCount}) }}
         </span>
         <span v-if="runningCount" class="ml-xs mr-xs">
-          <b>{{ runningCount }}</b>
-          个运行中
+          {{ $t('term.autoexec.ignorecount', {target: runningCount}) }}
         </span>
-        <span>节点，是否剔除这些节点并继续？</span>
+        <span>{{ $t('term.autoexec.deletenodecontinue') }}</span>
       </div>
-      <div v-else class="mb-nm">确认忽略选中节点？</div>
+      <div v-else class="mb-nm">{{ $t('term.autoexec.ignoreselectednodeconfirm') }}</div>
       <Alert show-icon>
-        <div>作业重跑或继续运行时，将跳过已忽略的节点</div>
+        <div>{{ $t('term.autoexec.jobruntip') }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -41,7 +37,7 @@ export default {
     return {
       dialogConfig: {
         loading: false,
-        title: '忽略确认',
+        title: this.$t('dialog.title.updateconfirm'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -72,7 +68,7 @@ export default {
         sqlIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.id)
       };
       if (param.resourceIdList.length == 0) {
-        this.$Notice.info({ title: '提示', desc: '当前选中节点没有可忽略的节点，请重新选择'});
+        this.$Notice.info({ title: this.$t('page.tip'), desc: this.$t('term.autoexec.noignorenode')});
         return;
       }
       this.$set(this.dialogConfig, 'loading', true);

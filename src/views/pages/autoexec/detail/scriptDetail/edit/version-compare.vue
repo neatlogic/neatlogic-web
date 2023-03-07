@@ -51,7 +51,7 @@
                 ></TsFormSelect>
               </div>
               <div v-if="!targetId" class="compare-centent">
-                <div class="fz10 text-tip">请在下表中选择需要对比的版本</div>
+                <div class="fz10 text-tip">{{ $t('term.autoexec.selectcomparativeversion') }}</div>
                 <TsTable
                   v-bind="versionConfig"
                   :fixedHeader="false"
@@ -117,7 +117,7 @@ export default {
       showDialog: true,
       dialogConfig: {
         type: 'slider',
-        title: '版本对比',
+        title: this.$t('dialog.title.versioncomparison'),
         hasFooter: false,
         width: '1200px',
         maskClose: true
@@ -138,11 +138,11 @@ export default {
       pageSize: 20,
       statusList: [
         {
-          text: _this.$i18n.t('common.update'),
+          text: _this.$i18n.t('page.update'),
           colorClass: 'bg-warning'
         },
         {
-          text: _this.$i18n.t('common.add'),
+          text: _this.$i18n.t('page.add'),
           colorClass: 'bg-completa'
         },
         {

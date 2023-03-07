@@ -7,8 +7,7 @@
     >
       <template v-slot:header>
         <div>
-          <!-- {{ $t('autoexec.param.runtimeparam') }} -->
-          作业参数
+          {{ $t('term.autoexec.jobparam') }}
         </div>
       </template>
       <template v-slot>

@@ -10,13 +10,13 @@
           <span
             class="action-item tsfont-plus"
             :class="{ 'text-disabled': !hasAuth }"
-            :title="!hasAuth ? $t('autoexec.disableDesc.letter') : ''"
+            :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
             @click="addAction"
-          >{{ $t('autoexec.action') }}</span>
+          >{{ $t('term.autoexec.combinationtool') }}</span>
           <span
             class="action-item tsfont-import"
             :class="{ 'text-disabled': !hasAuth }"
-            :title="!hasAuth ? $t('autoexec.disableDesc.letter') : ''"
+            :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
             @click="uploadAction()"
           >{{ $t('page.import') }}</span>
           <span
@@ -25,7 +25,7 @@
             v-download:prevent="preventDownload"
             class="action-item tsfont-export"
           >{{ $t('page.export') }}</span>
-          <span v-else class="action-item tsfont-export text-disabled" :title="$t('autoexec.disableDesc.letter')">{{ $t('page.export') }}</span>
+          <span v-else class="action-item tsfont-export text-disabled" :title="$t('page.notauthrelationadmin')">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -69,7 +69,7 @@
                 <template v-if="versionStatus == 'passed'" slot="action" slot-scope="{ row }">
                   <div class="tstable-action">
                     <ul class="tstable-action-ul">
-                      <li :class="{ disable: !row.editable }" :title="!row.editable ? $t('autoexec.disableDesc.letter') : ''" @click.stop>
+                      <li :class="{ disable: !row.editable }" :title="!row.editable ? $t('page.notauthrelationadmin') : ''" @click.stop>
                         <TsFormSwitch
                           v-model="row.isActive"
                           :true-value="1"
@@ -82,23 +82,23 @@
                       <li
                         class="icon tsfont-plus"
                         :class="{ disable: !row.executable || !row.isActive }"
-                        :title="!row.isActive ? $t('autoexec.disableDesc.letter') : !row.executable ? $t('autoexec.disableDesc.letter') : ''"
+                        :title="!row.isActive ? $t('page.notauthrelationadmin') : !row.executable ? $t('page.notauthrelationadmin') : ''"
                         @click.stop="toExecute(row)"
-                      >{{ $t('autoexec.job') }}</li>
+                      >{{ $t('autoexec') }}</li>
                       <li
                         class="icon tsfont-copy"
-                        :title="!hasAuth ? $t('autoexec.disableDesc.letter') : ''"
+                        :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
                         :class="{ disable: !hasAuth }"
                         @click.stop="copyAction(row)"
-                      >{{ $t('common.copy') }}</li>
-                      <li :title="!row.isActive ? $t('autoexec.disableDesc.letter') : !row.executable ? $t('autoexec.disableDesc.letter') : ''">
+                      >{{ $t('page.copy') }}</li>
+                      <li :title="!row.isActive ? $t('page.notauthrelationadmin') : !row.executable ? $t('page.notauthrelationadmin') : ''">
                         <!-- 执行作业 -->
                         <TimeJobClickText :id="row.id" :isShow="true" :disable="!row.executable || !row.isActive"></TimeJobClickText>
                       </li>
-                      <li class="icon tsfont-change" @click.stop="openRecord(row)">{{ $t('autoexec.execRecord') }}</li>
+                      <li class="icon tsfont-change" @click.stop="openRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
                       <li
                         class="icon tsfont-trash-o"
-                        :title="!row.deletable ? $t('autoexec.disableDesc.letter') : row.referenceCount > 0 ? $t('autoexec.disableDesc.reference') : ''"
+                        :title="!row.deletable ? $t('page.notauthrelationadmin') : row.referenceCount > 0 ? $t('page.citetarget', {target: ''}) : ''"
                         :class="{ disable: !row.deletable }"
                         @click.stop="deleteRow(row)"
                       >{{ $t('page.delete') }}</li>
@@ -118,8 +118,8 @@
       @on-close="closeAction"
     >
       <template v-slot:header>
-        <div v-if="isCopy">{{ $t('common.copy') }}{{ $t('autoexec.action') }}</div>
-        <div v-else>{{ $t('autoexec.add.action') }}</div>
+        <div v-if="isCopy">{{ $t('page.copy') }}{{ $t('term.autoexec.combinationtool') }}</div>
+        <div v-else>{{ $t('page.newtarget', {target: $t('term.autoexec.combinationtool')}) }}</div>
       </template>
       <TsForm
         ref="addActionForm"
@@ -225,9 +225,9 @@ export default {
           name: 'typeId',
           value: '',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -278,7 +278,7 @@ export default {
           name: 'description',
           value: '',
           maxlength: 500,
-          label: this.$i18n.t('common.description')
+          label: this.$i18n.t('page.description')
         }
       },
       invokeNotifyPolicyConfig: {
@@ -309,7 +309,7 @@ export default {
             name: 'typeId',
             value: '',
             dataList: [],
-            label: this.$t('term.autoexec.job.toolclassification'),
+            label: this.$t('term.autoexec.toolclassification'),
             search: true,
             dynamicUrl: '/api/rest/autoexec/type/search',
             rootName: 'tbodyList',

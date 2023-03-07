@@ -28,13 +28,13 @@
             :disabled="true"
           ></TsCodemirror>
           <div class="operation-box action-group">
-            <span v-clipboard="scriptContent" v-clipboard:success="clipboardSuccess" class="action-item tsfont-copy">复制</span>
+            <span v-clipboard="scriptContent" v-clipboard:success="clipboardSuccess" class="action-item tsfont-copy">{{ $t('page.copy') }}</span>
             <span
               v-if="!isDownloading"
               v-download="downloadConfig"
               class="action-item tsfont-download"
-            >下载</span>
-            <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon>下载</span>
+            >{{ $t('page.download') }}</span>
+            <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon>{{ $t('page.download') }}</span>
           </div>
         </div>
         <NoData v-else></NoData>
@@ -94,7 +94,7 @@ export default {
   destroyed() {},
   methods: {
     clipboardSuccess() {
-      this.$Message.success('复制成功');
+      this.$Message.success(this.$t('message.content.copysuccess'));
     },
     getScriptContent() {
       if (this.scriptData && !this.$utils.isEmptyObj(this.scriptData)) {

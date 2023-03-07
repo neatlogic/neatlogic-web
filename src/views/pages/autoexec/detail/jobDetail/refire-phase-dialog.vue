@@ -3,15 +3,15 @@
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
         <div v-if="execMode == 'sqlfile'">
-          跳过所有已成功，已忽略节点，重新执行当前阶段？
+          {{ $t('term.autoexec.reexecutecurrenphase') }}
         </div>
         <div v-else>
           <TsFormRadio v-model="redoType" :vertical="true" :dataList="dataList"></TsFormRadio>
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '执行阶段[' + this.phaseName + ']',
+        title: this.$t('term.autoexec.executephase') + '[' + this.phaseName + ']',
         type: 'modal',
         maskClose: false,
         isShow: true,

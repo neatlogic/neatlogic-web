@@ -54,7 +54,7 @@ export default {
             type: 'datetime',
             transfer: true,
             label: this.$t('page.plantime'),
-            desc: this.$t('term.autoexec.job.taskexpirationtip'),
+            desc: this.$t('term.autoexec.taskexpirationtip'),
             selectableRange: () => {
               const now = new Date().getTime();
               return [now + 5 * 60 * 1000, 0];
@@ -64,7 +64,7 @@ export default {
           triggerType: {
             type: 'select',
             transfer: true,
-            label: this.$t('term.autoexec.job.triggertype'),
+            label: this.$t('term.autoexec.triggertype'),
             dataList: [],
             validateList: ['required']
           }

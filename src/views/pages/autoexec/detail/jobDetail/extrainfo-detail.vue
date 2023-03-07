@@ -2,7 +2,7 @@
   <div class="extrainfo-detail bg-op padding radius-lg">
     <div class="extrainfo-content">
       <div class="overflow">
-        <div class="text-tip pb-sm">应用</div>
+        <div class="text-tip pb-sm">{{ $t('page.apply') }}</div>
         <div v-if="config.appSystemAbbrName || config.appSystemName" class="text-href overflow" @click="gotoManage('app')">
           <span v-if="config.appSystemAbbrName">{{ config.appSystemAbbrName }}</span>
           <span v-if="config.appSystemName">[{{ config.appSystemName }}]</span>
@@ -10,7 +10,7 @@
         <div v-else>-</div>
       </div>
       <div class="overflow">
-        <div class="text-tip pb-sm">模块</div>
+        <div class="text-tip pb-sm">{{ $t('page.module') }}</div>
         <div v-if="config.appModuleAbbrName || config.appModuleName" class="text-href overflow" @click="gotoManage('module')">
           <span v-if="config.appModuleAbbrName">{{ config.appModuleAbbrName }}</span>
           <span v-if="config.appModuleName">[{{ config.appModuleName }}]</span>
@@ -18,12 +18,12 @@
         <div v-else>-</div>
       </div>
       <div class="overflow">
-        <div class="text-tip pb-sm">环境</div>
+        <div class="text-tip pb-sm">{{ $t('page.environment') }}</div>
         <div v-if="config.envName" class="text-href" @click="gotoManage('env')">{{ config.envName }}</div>
         <div v-else>-</div>
       </div>
       <div class="overflow">
-        <div class="text-tip pb-sm">版本</div>
+        <div class="text-tip pb-sm">{{ $t('page.versions') }}</div>
         <div
           v-if="config.version"
           :class="config.env? 'text-href' : 'text-disabled'"
@@ -34,7 +34,7 @@
             v-else
             transfer
             theme="light"
-            content="暂无环境制品"
+            :content="$t('term.autoexec.noenvproducts')"
           >
             <span class="pr-xs">{{ config.version.version }}</span>
           </Tooltip>

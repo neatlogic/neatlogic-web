@@ -14,7 +14,7 @@
             <span style="display: inline-block;">
               <UserCard v-bind="versionVo.reviewerVo" hideAvatar></UserCard>
             </span>
-            <span>驳回了审批，原因：</span>
+            <span>{{ $t('term.autoexec.rejectreason') }}</span>
             <span :title="versionVo.rejectReason">{{ versionVo.rejectReason }}</span>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default {
       formConfig: {
         content: {
           type: 'textarea',
-          label: '原因',
+          label: this.$t('page.reason'),
           width: '100%',
           labelWidth: '60',
           maxlength: 500,
@@ -137,7 +137,6 @@ export default {
 <style lang="less" scoped>
 .version-detail{
   position: relative;
-  // padding: 16px;
   height: 100%;
   overflow-y: auto;
   /deep/ .version-top{

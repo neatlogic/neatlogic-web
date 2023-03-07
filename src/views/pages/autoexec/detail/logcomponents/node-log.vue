@@ -8,7 +8,7 @@
     >
       <div v-if="isLoading" class="isLoading text-op tips">
         <Icon type="ios-loading" size="18" class="loading"></Icon>
-        加载中...
+        {{ $t('page.loading') }}
       </div>
       <div id="divLog" ref="codeContent">
         <div
@@ -36,13 +36,13 @@
         :class="isAutoScroll ? 'tsfont-unlock' : 'tsfont-lock'"
         class="action-item"
         @click="isAutoScroll = !isAutoScroll"
-      >{{ isAutoScroll ? '自动滚屏' : '锁定屏幕' }}</span>
-      <span class="action-item tsfont-copy" @click="onCopy">复制</span>
+      >{{ isAutoScroll ? $t('page.automaticscrolling') : $t('page.lockscreen') }}</span>
+      <span class="action-item tsfont-copy" @click="onCopy">{{ $t('page.copy') }}</span>
       <span
         v-if="!isDownloading"
         v-download="downloadConfig"
         class="tsfont-download action-item"
-      >下载</span>
+      >{{ $t('page.download') }}</span>
       <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon></span>
       <span v-if="encodeList.length" class="action-item">
         <Dropdown trigger="click">
@@ -88,7 +88,7 @@ export default {
       isDownloading: false,
       isLoading: false,
       //这是终点状态节点列表，非终点状态列表的需要定时刷新。到达终点状态列表之后，还会再刷新一次，确保所有状态一致。
-      descText: '加载最新数据中',
+      descText: this.$t('page.loading'),
       logData: null,
       logContentList: [],
       timmer: null,
@@ -163,7 +163,7 @@ export default {
           param.logPos = logPos;
         }
         if (param.direction == 'down') {
-          this.descText = '加载最新数据中';
+          this.descText = this.$t('page.loading');
           //向下滚动才需要中断自动刷新
           if (this.timmer) {
             clearTimeout(this.timmer);
@@ -202,7 +202,7 @@ export default {
           .finally(() => {
             this.isLoading = false;
             if (param.direction == 'down' && this.logData && this.logData.isRefresh == 0) {
-              this.descText = '数据加载完成';
+              this.descText = this.$t('page.loadfinish');
             }
             if (param.direction == 'down' && this.isAutoScroll) {
               if (this.logContentList.length > 0) {

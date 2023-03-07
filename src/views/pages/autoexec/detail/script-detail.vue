@@ -24,7 +24,7 @@
       border="border"
     >
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/script-manage')">{{ $getFromPage('自定义工具库') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/script-manage')">{{ $getFromPage('term.autoexec.customtoollibrary') }}</span>
       </template>
       <template v-slot:topLeft>
         <template v-if="!isEdit">
@@ -39,7 +39,7 @@
           <TsFormInput
             ref="formNameInput"
             v-model="title"
-            :placeholder="$t('autoexec.placeholder.version')"
+            :placeholder="$t('term.autoexec.pleaseinputversionname')"
             maxlength="50"
             size="large"
             isEmptyBg
@@ -174,17 +174,17 @@ export default {
       editBtnList: [
         {
           disabled: 0,
-          text: this.$i18n.t('common.compare'),
+          text: this.$t('page.compare'),
           value: 'compare'
         },
         {
           disabled: 0,
-          text: this.$i18n.t('common.validate'),
+          text: this.$i18n.t('page.validate'),
           value: 'validate'
         },
         {
           disabled: 0,
-          text: this.$i18n.t('common.test'),
+          text: this.$i18n.t('page.test'),
           value: 'test'
         },
         {
@@ -194,12 +194,12 @@ export default {
         },
         {
           disabled: 0,
-          text: this.$i18n.t('autoexec.scriptBtn.saveDraft'),
+          text: this.$i18n.t('page.savedraft'),
           value: 'save'
         },
         {
           disabled: 0,
-          text: this.$i18n.t('autoexec.scriptBtn.submitAudit'),
+          text: this.$i18n.t('page.submitaudit'),
           value: 'submit'
         }
       ],
@@ -302,7 +302,7 @@ export default {
           }
         });
       } else {
-        this.tipText = '您有未保存的修改';
+        this.tipText = this.$t('term.autoexec.nosavetip');
         this.isTipShow = true;
       }
     },
@@ -314,7 +314,7 @@ export default {
         this.validList = validList;
       } else {
         this.validList = [];
-        this.validList.push({ text: '脚本校验成功', type: 'success' });
+        this.validList.push({ text: this.$t('term.autoexec.scriptvalidsuccess'), type: 'success' });
       }
       this.validVisible = true;
       return valid;
@@ -403,7 +403,7 @@ export default {
             resolve();
           })
           .catch(error => {
-            _this.tipText = '当前自定义工具仅有一个版本，删除此版本将导致删除当前自定义工具。';
+            _this.tipText = this.$t('term.autoexec.deletelastversiontip');
             resolve();
           });
       });
@@ -447,7 +447,7 @@ export default {
         } else if (isLib == 0 && testIndex == -1) {
           let validateIndex = this.editBtnList.findIndex(item => item.value == 'validate');
           if (validateIndex >= 0) {
-            this.editBtnList.splice(validateIndex + 1, 0, {disabled: 0, text: this.$i18n.t('common.test'), value: 'test'});
+            this.editBtnList.splice(validateIndex + 1, 0, {disabled: 0, text: this.$i18n.t('page.test'), value: 'test'});
           }
         }
       }
@@ -460,7 +460,7 @@ export default {
           } else if (isLib == 0 && testIndex == -1) {
             let validateIndex = this.versionOperateList.findIndex(item => item.value == 'validate');
             if (validateIndex >= 0) {
-              this.versionOperateList.splice(validateIndex + 1, 0, {disabled: 0, text: this.$i18n.t('common.test'), value: 'test'});
+              this.versionOperateList.splice(validateIndex + 1, 0, {disabled: 0, text: this.$i18n.t('page.test'), value: 'test'});
             }
           }
         }
@@ -514,7 +514,7 @@ export default {
       if (!this.isEdit || this.$utils.isSame(initData, data)) {
         this.isCompareShow = true;
       } else {
-        this.tipText = '您有未保存的修改';
+        this.tipText = this.$t('term.autoexec.nosavetip');
         this.isTipShow = true;
       }
     },

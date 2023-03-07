@@ -1,9 +1,9 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-ok="okDialog" @on-close="closeDialog">
     <template v-slot>
-      <div class="mb-nm">确认忽略当前阶段？</div>
+      <div class="mb-nm">{{ $t('term.autoexec.ignorephaseconfirm') }}</div>
       <Alert show-icon>
-        <div>作业重跑或继续运行时，将跳过已忽略的节点</div>
+        <div>{{ $t('term.autoexec.jobruntip') }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -20,7 +20,7 @@ export default {
     return {
       dialogConfig: {
         loading: false,
-        title: '忽略确认',
+        title: this.$t('dialog.title.updateconfirm'),
         type: 'modal',
         maskClose: false,
         isShow: true,

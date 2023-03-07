@@ -2,7 +2,7 @@
   <TsDialog
     type="modal"
     :isShow.sync="showDialog"
-    :title="$t('page.execute') + $t('autoexec.action')"
+    :title="$t('page.execute') + $t('term.autoexec.combinationtool')"
     @on-ok="onOk"
   >
     <TsForm ref="form" v-bind="formConfig"></TsForm>
@@ -43,8 +43,8 @@ export default {
             type: 'select',
             value: 2,
             transfer: true,
-            label: '分批数量',
-            desc: '将执行目标按数量等分为N个批次，先后执行',
+            label: this.$t('term.autoexec.batchquantity'),
+            desc: this.$t('term.autoexec.roundcountdescrition'),
             textName: 'value',
             dataList: dataList,
             validateList: ['required']

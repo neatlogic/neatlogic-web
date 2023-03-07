@@ -2,7 +2,7 @@
   <div class="operate-manage">
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="addRow()">{{ $t('autoexec.actionLevel') }}</span>
+        <span class="tsfont-plus text-action" @click="addRow()">{{ $t('term.autoexec.operationlevel') }}</span>
       </template>
       <template v-slot:topRight>
         <div>

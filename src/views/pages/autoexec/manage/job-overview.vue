@@ -40,18 +40,18 @@ export default {
           combopName: _this.$route.query.combopName
         },
         search: false,
-        placeholder: this.$i18n.t('autoexec.action') + this.$i18n.t('page.name'),
+        placeholder: this.$i18n.t('term.autoexec.combinationtool') + this.$i18n.t('page.name'),
         searchList: [
           {
             type: 'text',
             name: 'combopName',
             value: _this.$route.query.combopName,
-            label: _this.$i18n.t('autoexec.action')
+            label: _this.$i18n.t('term.autoexec.combinationtool')
           },
           {
             type: 'select',
             name: 'typeIdList',
-            label: _this.$t('term.autoexec.job.toolclassification'),
+            label: _this.$t('term.autoexec.toolclassification'),
             value: '',
             dynamicUrl: '/api/rest/autoexec/type/search',
             rootName: 'tbodyList',
@@ -62,7 +62,7 @@ export default {
             type: 'select',
             name: 'statusList',
             value: '',
-            label: _this.$i18n.t('autoexec.jobs.status'),
+            label: this.$t('term.autoexec.jobstatus'),
             search: true,
             dynamicUrl: '',
             rootName: 'tbodyList',
@@ -74,7 +74,7 @@ export default {
             type: 'select',
             name: 'sourceList',
             value: [],
-            label: _this.$i18n.t('autoexec.jobs.source'),
+            label: this.$t('term.autoexec.jobsource'),
             multiple: true,
             url: '/api/rest/autoexec/job/source/list'
           },
@@ -82,7 +82,7 @@ export default {
             type: 'userselect',
             name: 'execUserList',
             value: '',
-            label: this.$t('term.autoexec.job.operator'),
+            label: this.$t('term.autoexec.operator'),
             groupList: ['user'],
             transfer: true
           }

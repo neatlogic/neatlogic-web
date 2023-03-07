@@ -3,12 +3,12 @@
   <div class="type-manage">
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="addType">{{ $t('term.autoexec.job.toolclassification') }}</span>
+        <span class="tsfont-plus text-action" @click="addType">{{ $t('term.autoexec.toolclassification') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher
           v-model="keyword"
-          :placeholder="$t('term.autoexec.job.namedescription')"
+          :placeholder="$t('term.autoexec.namedescription')"
           @change="getTableData(1)"
         ></InputSearcher>
       </template>
@@ -35,10 +35,10 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="icon tsfont-edit" @click.stop="edit(row)"> {{ $t('common.edit') }}</li>
+                  <li class="icon tsfont-edit" @click.stop="edit(row)"> {{ $t('page.edit') }}</li>
                   <li
                     class="icon tsfont-trash-o"
-                    :title="row.type==='factory'? $t('term.autoexec.job.factoryclassnodelete') : (row.referenceCountForScript>0 ||row.referenceCountForTool>0|| row.referenceCountForCombop > 0?'当前类型已被工具引用，无法删除':'')"
+                    :title="row.type==='factory'? $t('term.autoexec.factoryclassnodelete') : (row.referenceCountForScript>0 ||row.referenceCountForTool>0|| row.referenceCountForCombop > 0?'当前类型已被工具引用，无法删除':'')"
                     :class="{disable:row.referenceCountForScript>0 ||row.referenceCountForTool>0 || row.referenceCountForCombop > 0}"
                     @click.stop="deleteRow(row)"
                   >{{ $t('page.delete') }}</li>

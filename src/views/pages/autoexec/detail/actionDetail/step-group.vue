@@ -255,7 +255,7 @@ export default {
           },
           executeUser: {
             type: 'text',
-            label: this.$t('term.autoexec.job.executeuser')
+            label: this.$t('term.autoexec.executeuser')
           },
           roundCount: {
             type: 'select',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 <template>
-  <div>添加脚本</div>
+  <div>{{ $t('page.newtarget', {target: $t('page.script')}) }}</div>
 </template>
 <script>
 export default {

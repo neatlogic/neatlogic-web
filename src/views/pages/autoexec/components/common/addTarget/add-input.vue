@@ -16,7 +16,7 @@
                 :placeholder="inputPlaceholder"
               ></Input>
               <div class="footer-btn">
-                <Button type="primary" ghost @click="addTarget">添加到目标</Button>
+                <Button type="primary" ghost @click="addTarget">{{ $t('term.autoexec.addtotarget') }}</Button>
                 <div class="input-valid" :class="messageConfig.error+messageConfig.info? 'text-href':'text-primary'">
                   <Tooltip max-width="320" theme="light" transfer>
                     <div class="valid-text overflow tips">{{ messageConfig.succee+messageConfig.error+messageConfig.info }}</div>
@@ -30,7 +30,7 @@
           </Col>  
           <Col :span="13">
             <div class="bg-op node-show radius-sm">
-              <div v-if="currentDataList.length>0" class="text-href clear-btn" @click="clearAll">{{ $t('common.clear') }}</div>
+              <div v-if="currentDataList.length>0" class="text-href clear-btn" @click="clearAll">{{ $t('page.clear') }}</div>
               <Row :gutter="10">
                 <Col v-for="(data,index) in currentDataList.slice(0, showNumber)" :key="index" :span="8">
                   <div class="item-span bg-op border-color overflow radius-sm">
@@ -42,9 +42,9 @@
                 </Col>
               </Row>
               <div v-if="currentDataList.length>showNumber" class="text-grey div-btn tips">
-                <span class="text-tip-active" @click="isMoreNode = true">{{ $t('common.viewMore') }}{{ currentDataList.length }}个目标</span>
+                <span class="text-tip-active" @click="isMoreNode = true">{{ $t('term.autoexec.viewalltarget', {target: currentDataList.length}) }}</span>
               </div>
-              <div v-if="currentDataList.length==0" class="text-tip no-data-tip">未添加执行目标</div>
+              <div v-if="currentDataList.length==0" class="text-tip no-data-tip">{{ $t('term.autoexec.notaddtotarget') }}</div>
             </div>
           </Col>
         </Row>
@@ -152,9 +152,9 @@ export default {
           this.messageConfig.succee++;
         }
       });
-      this.messageConfig.succee = `成功导入${this.messageConfig.succee}个目标；`;
-      this.messageConfig.error = errorList.length > 0 ? `${errorList.join('、')} 格式不正确；` : '';
-      this.messageConfig.info = repeatList.length > 0 ? `${repeatList.join('、')} 目标重复；` : '';
+      this.messageConfig.succee = this.$t('term.autoexec.importsuccesstarget', {target: this.messageConfig.succee});
+      this.messageConfig.error = errorList.length > 0 ? `${errorList.join('、')} ` + this.$t('term.autoexec.formaterror') : '';
+      this.messageConfig.info = repeatList.length > 0 ? `${repeatList.join('、')}` + this.$t('term.autoexec.targetrepetition') : '';
     },
     removeItem(index) {
       this.currentDataList.splice(index, 1);

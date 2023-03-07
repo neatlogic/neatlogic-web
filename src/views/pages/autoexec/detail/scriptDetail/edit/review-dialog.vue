@@ -9,19 +9,19 @@
         <div slot="content" class="submit-style">
           <div>
             <i class="tsfont-check-s text-success" style="font-size:40px"></i>
-            <span class="success-fz">提交成功</span>
+            <span class="success-fz">{{ $t('message.content.commitsuccess') }}</span>
           </div>
-          <div class="text-tip">工具待审核</div>
+          <div class="text-tip">{{ $t('term.autoexec.toolreadyaudit') }}</div>
           <div class="submit-btn-list">
             <Button
               size="large"
               type="primary"
               style="width:190px;"
               @click="viewDocument('submit')"
-            >查看工具</Button>
+            >{{ $t('page.viewtool') }}</Button>
           </div>
           <div class="submit-btn-list">
-            <Button size="large" style="width:190px;" @click="togoList">返回工具库</Button>
+            <Button size="large" style="width:190px;" @click="togoList">{{ $t('term.autoexec.backtolibrary') }}</Button>
           </div>
         </div>
       </template>
@@ -39,9 +39,9 @@
         <div slot="content">
           <div>
             <i class="tsfont-check-s text-success icon-fz"></i>
-            <span class="success-fz">提交成功</span>
+            <span class="success-fz">{{ $t('message.content.commitsuccess') }}</span>
           </div>
-          <div class="text-tip content-tip">确定发布新版本？</div>
+          <div class="text-tip content-tip">{{ $t('term.autoexec.surepublishthenewversion') }}</div>
         </div>
       </template>
     </TsDialog>

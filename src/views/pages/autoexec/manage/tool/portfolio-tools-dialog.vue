@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      :title="$t('term.autoexec.job.selectcombinationtool')"
+      :title="$t('term.autoexec.selectcombinationtool')"
       type="slider"
       width="large"
       :isShow="true"
@@ -20,7 +20,7 @@
             <Col span="10">
               <InputSearcher
                 v-model="keyword"
-                :placeholder="$t('form.placeholder.pleaseinput', {target: $t('term.autoexec.job.namedescription')})"
+                :placeholder="$t('form.placeholder.pleaseinput', {target: $t('term.autoexec.namedescription')})"
                 style="margin-right: 12px;"
                 @change="() => getDataList(1)"
               ></InputSearcher>

@@ -35,7 +35,7 @@
           ></TsFormInput>
         </div>
         <div style="text-align:left">
-          <Button type="primary" @click="doAction()">继续执行</Button>
+          <Button type="primary" @click="doAction()">{{ $t('button.continueexecute') }}</Button>
         </div>
       </div>
     </template>
@@ -52,7 +52,7 @@
           ></TsFormSelect>
         </div>
         <div style="text-align:left">
-          <Button type="primary" @click="doAction()">继续执行</Button>
+          <Button type="primary" @click="doAction()">{{ $t('button.continueexecute') }}</Button>
         </div>
       </div>
     </template>

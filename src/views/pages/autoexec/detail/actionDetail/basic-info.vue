@@ -89,7 +89,7 @@ export default {
           type: 'textarea',
           name: 'description',
           value: '',
-          label: _this.$i18n.t('common.description'),
+          label: _this.$i18n.t('page.description'),
           width: '100%',
           maxlength: 500,
           readonly: true

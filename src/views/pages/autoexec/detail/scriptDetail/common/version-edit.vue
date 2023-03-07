@@ -2,7 +2,7 @@
 <template>
   <div>
     <div id="inputParam" class="item-list">
-      <div class="title">{{ $t('autoexec.inputParam') }}</div>
+      <div class="title">{{ $t('term.autoexec.inputparam') }}</div>
       <div class="param-box">
         <template v-if="!isEdit">
           <ParamsReadonly
@@ -22,10 +22,10 @@
           :setValidComponentsList="setValidComponentsList"
         ></ParamDetail>
       </div>
-      <div v-if="!isEdit && versionVo.inputParamList.length == 0" class="line-2 text-tip">{{ $t('autoexec.tips.empty.input') }}</div>
+      <div v-if="!isEdit && versionVo.inputParamList.length == 0" class="line-2 text-tip">{{ $t('page.notarget', {target: $t('term.autoexec.inputparam')}) }}</div>
     </div>
     <div id="outputParam" class="item-list">
-      <div class="title">{{ $t('autoexec.outputParam') }}</div>
+      <div class="title">{{ $t('term.autoexec.outputparameter') }}</div>
       <div class="param-box">
         <template v-if="!isEdit">
           <ParamsReadonly
@@ -41,11 +41,11 @@
           :list="versionVo.outputParamList"
           :typeList="outputParamTypeList"
           :params="paramMode.output"
-          :paramText="$t('autoexec.outputParam')"
+          :paramText="$t('term.autoexec.outputparameter')"
           :isEdit="isEdit"
         ></ParamDetail>
       </div>
-      <div v-if="!isEdit && versionVo.outputParamList.length == 0" class="line-2 text-tip">{{ $t('autoexec.tips.empty.output') }}</div>
+      <div v-if="!isEdit && versionVo.outputParamList.length == 0" class="line-2 text-tip">{{ $t('page.notarget', {target: $t('term.autoexec.outputparameter')}) }}</div>
     </div>
     <!-- 自由参数 -->
     <template v-if="!isEdit">
@@ -65,7 +65,7 @@
       </div>
     </div> -->
     <div id="versionParser" class="item-list">
-      <div class="title require-label">脚本解析器</div>
+      <div class="title require-label">{{ $t('term.autoexec.scriptparser') }}</div>
       <div>
         <TsFormSelect
           ref="versionParser"
@@ -77,7 +77,7 @@
       </div>
     </div>
     <div id="useLib" class="item-list">
-      <div class="title">依赖工具</div>
+      <div class="title">{{ $t('term.autoexec.dependenttool') }}</div>
       <div>
         <TsFormSelect
           ref="useLib"
@@ -90,7 +90,7 @@
       </div>
     </div>
     <div id="codeLinelist" class="item-list">
-      <div class="title require-label">脚本内容
+      <div class="title require-label">{{ $t('term.autoexec.scriptcontent') }}
         <Poptip trigger="hover" placement="right-end" transfer>
           <span class="tsfont-question-o"></span>
           <div slot="content">
@@ -125,8 +125,7 @@ my $outParam1=＂outParam1-Value＂
           :disabled="!isEdit"
           @onBlur="onBlur"
         ></TsCodemirror>
-        <p v-if="isInfoCode" class="form-error-tip">请输入脚本内容</p>
-        <!-- <EditCode ref="codeLinelist" :dataList="versionVo.lineList" :disabled="!isEdit"></EditCode> -->
+        <p v-if="isInfoCode" class="form-error-tip">{{ $t('form.placeholder.pleaseinput', {target: $t('term.autoexec.scriptcontent')}) }}</p>
       </div>
     </div>
   </div>
@@ -134,7 +133,6 @@ my $outParam1=＂outParam1-Value＂
 <script>
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import ParamDetail from './param-detail.vue';
-// import EditCode from './edit-code.vue';
 import ParamsReadonly from '@/views/pages/autoexec/components/param/params-readonly.vue';
 export default {
   name: '',
@@ -142,7 +140,6 @@ export default {
     TsFormSelect,
     ParamDetail,
     TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
-    // EditCode,
     ParamsReadonly,
     ArgumentEdit: resolve => require(['./argument/argument-edit'], resolve),
     ArgumentView: resolve => require(['./argument/argument-view'], resolve)
@@ -182,12 +179,12 @@ export default {
         type: 'select',
         name: 'parser',
         value: '',
-        label: '脚本解析器',
+        label: this.$t('term.autoexec.scriptparser'),
         multiple: false,
-        placeholder: '请选择脚本解析器',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.autoexec.scriptparser')}),
         width: '50%',
         dataList: [],
-        validateList: [{name: 'required', message: '请选择脚本解析器'}],
+        validateList: [{name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.autoexec.scriptparser')})}],
         transfer: true
       },
       useLibConfig: {
@@ -199,9 +196,9 @@ export default {
         valueName: 'id',
         params: { isLib: 1, versionStatus: 'passed'},
         value: '',
-        label: '依赖工具',
+        label: this.$t('term.autoexec.dependenttool'),
         multiple: true,
-        placeholder: '请选择依赖工具',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.autoexec.dependenttool')}),
         width: '50%',
         dataList: [],
         transfer: true
@@ -324,19 +321,19 @@ export default {
     async valid() {
       let validList = [];
       if (this.$refs.inputParamList && this.$refs.inputParamList.validName().length > 0) {
-        validList.push({focus: '#inputParam', text: '输入参数数据填写不正确', type: 'error'});
+        validList.push({focus: '#inputParam', text: this.$t('term.autoexec.inputparamerror'), type: 'error'});
       }
       if (this.$refs.outputParamList && this.$refs.outputParamList.validName().length > 0) {
-        validList.push({focus: '#outputParam', text: '输出参数数据填写不正确', type: 'error'});
+        validList.push({focus: '#outputParam', text: this.$t('term.autoexec.outputparamerror'), type: 'error'});
       }
       if (this.$refs.versionParser && !this.$refs.versionParser.valid()) {
-        validList.push({focus: '#versionParser', text: '解析器：请选择', type: 'error'});
+        validList.push({focus: '#versionParser', text: this.$t('term.autoexec.selectparser'), type: 'error'});
       }
       if (this.codemirrorGetValue().length === 0) {
-        validList.push({focus: '#codeLinelist', text: '脚本内容：请输入内容', type: 'error'});
+        validList.push({focus: '#codeLinelist', text: this.$t('term.autoexec.inputscriptcontent'), type: 'error'});
       }
       if (this.$refs.argument && !this.$refs.argument.valid()) {
-        validList.push({focus: '#argument', text: '自由参数：请输入内容', type: 'error'});
+        validList.push({focus: '#argument', text: this.$t('term.autoexec.inputfreeparam'), type: 'error'});
       } 
       // let lineValid = await this.validCheck(); //接口未完成，之后补
       this.$emit('updateValidList', validList);
@@ -382,7 +379,7 @@ export default {
                 this.versionVo.lineList = list;
                 for (let i = 0; i < list.length; i++) {
                   if (list[i].riskCodeLevel == 'critical') {
-                    validList.push({text: '脚本内容：不符合规则', type: 'error'});
+                    validList.push({text: this.$t('term.autoexec.scriptcontenterror'), type: 'error'});
                   }
                 }
               }

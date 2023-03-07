@@ -25,7 +25,7 @@
       ></FilterSearch>
     </template>
     <template v-else>
-      <TsFormItem label="过滤器" labelWidth="80">
+      <TsFormItem :label="$t('page.filter')" labelWidth="80">
         <FilterSearch
           :defaultValue="defaultValue"
           :defaultSearchValue="defaultSearchValue"

@@ -13,7 +13,7 @@
         class="save"
         type="primary"
         @click="save()"
-      >{{ $t('common.save') }}</Button>
+      >{{ $t('button.save') }}</Button>
     </div>
   </div>
 </template>
@@ -67,7 +67,7 @@ export default {
         {
           type: 'userselect',
           name: 'authorityList',
-          label: this.$t('common.authorization'),
+          label: this.$t('page.auth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
           value: ['common#alluser'],

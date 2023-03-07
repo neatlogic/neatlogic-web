@@ -42,7 +42,7 @@
             @getSelected="getSelected"
           >
             <template slot-scope="{ row }">
-              <div :title="row.type && row.type == 'script' ? $t('autoexec.script') : $t('autoexec.tool')">
+              <div :title="row.type && row.type == 'script' ? $t('term.autoexec.customtool') : $t('term.autoexec.tool')">
                 <div class="risk-level" :style="{ color: row.riskVo.color, background: row.riskVo.color+'20'}">{{ row.riskVo.name }}</div>
                 <div class="operation-li">
                   <div class="name-title overflow" :class="row.type && row.type == 'script' ? 'tsfont-script' : 'tsfont-tool'">
@@ -121,7 +121,7 @@ export default {
             name: 'type',
             value: '',
             label: this.$t('term.autoexec.category'),
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             dataList: [
               {
                 text: this.$t('term.autoexec.customtool'),
@@ -138,8 +138,8 @@ export default {
             type: 'select',
             name: 'typeIdList',
             value: '',
-            label: this.$t('term.autoexec.job.toolclassification'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.toolclassification'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             search: true,
             multiple: true,
             params: { 
@@ -157,7 +157,7 @@ export default {
             dataList: [],
             label: this.$t('term.autoexec.directorytool'),
             multiple: false,
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             search: false,
             textName: 'name',
             valueName: 'id',
@@ -169,7 +169,7 @@ export default {
             name: 'riskIdList',
             value: '',
             label: this.$t('term.autoexec.operationlevel'),
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             multiple: true,
             dynamicUrl: '/api/rest/autoexec/risk/list',
             transfer: true

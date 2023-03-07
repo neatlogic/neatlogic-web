@@ -1,12 +1,12 @@
 <template>
   <div class="node-code padding radius-lg" :style="{ '--height': offsetHeight }">
     <div style="text-align:right" class="mb-nm action-group">
-      <span class="padding-xs tsfont-copy cursor-pointer" title="复制" @click="onCopy"></span>
+      <span class="padding-xs tsfont-copy cursor-pointer" :title="$t('page.copy')" @click="onCopy"></span>
       <span
         v-if="!isDownloading"
         v-download="downloadConfig"
         class="padding-xs tsfont-download cursor-pointer"
-        title="下载"
+        :title="$t('page.download')"
       ></span>
       <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon></span>
       <span v-if="encodeList.length" class="action-item">

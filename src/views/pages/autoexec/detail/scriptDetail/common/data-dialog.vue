@@ -6,18 +6,18 @@
     <div>
       <div>
         <i class="tsfont-danger-o text-warning icon-fz"></i>
-        <span v-if="type == 'delete' && tipText" class="title-fz">是否删除当前自定义工具</span>
-        <span v-if="type == 'delete' && !tipText" class="title-fz">是否删除当前版本</span>
-        <span v-else-if="type == 'compare' || type=='test'" class="title-fz">是否保存当前修改</span>
+        <span v-if="type == 'delete' && tipText" class="title-fz">{{ $t('dialog.content.deleteconfirm', {target: $t('term.autoexec.customtool')}) }}</span>
+        <span v-if="type == 'delete' && !tipText" class="title-fz">{{ $t('dialog.content.deleteconfirm', {target: $t('page.versions')}) }}</span>
+        <span v-else-if="type == 'compare' || type=='test'" class="title-fz">{{ $t('dialog.content.saveconfirm') }}</span>
       </div>
       <div v-if="tipText" class="text-tip content-tip">{{ tipText }}</div>
     </div>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button @click="close">取消</Button>
-        <Button v-if="type == 'delete'" type="error" @click="delData">确定</Button>
-        <Button v-else-if="type == 'compare'" type="primary" @click="saveCompare">保存并对比</Button>
-        <Button v-else-if="type == 'test'" type="primary" @click="test">保存并测试</Button>
+        <Button @click="close">{{ $t('button.cancel') }}</Button>
+        <Button v-if="type == 'delete'" type="error" @click="delData">{{ $t('button.confirm') }}</Button>
+        <Button v-else-if="type == 'compare'" type="primary" @click="saveCompare">{{ $t('button.savecompare') }}</Button>
+        <Button v-else-if="type == 'test'" type="primary" @click="test">{{ $t('button.savetest') }}</Button>
       </div>
     </template>
   </TsDialog>

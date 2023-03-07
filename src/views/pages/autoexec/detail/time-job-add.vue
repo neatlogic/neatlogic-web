@@ -5,18 +5,18 @@
         <span v-if="$hasBack()" class="text-action ts-angle-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ id == null ? '添加定时作业' : '编辑定时作业' }}</span>
+        <span>{{ id == null? $t('page.newtarget', {target: $t('term.autoexec.timingjob')}): $t('page.edittarget', {target: $t('term.autoexec.timingjob')}) }}</span>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
           <div v-if="current > 0" class="action-item">
-            <Button type="primary" ghost @click="next((current -= 1), true)">上一步</Button>
+            <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
           </div>
           <div v-if="current > 0" class="action-item">
-            <Button type="primary" @click="save()">保存</Button>
+            <Button type="primary" @click="save()">{{ $t('button.save') }}</Button>
           </div>
           <div v-if="current == 0" class="action-item">
-            <Button type="primary" ghost @click="next(current + 1)">下一步</Button>
+            <Button type="primary" ghost @click="next(current + 1)">{{ $t('page.thenextstep') }}</Button>
           </div>
         </div>
       </template>
@@ -35,7 +35,7 @@
           <div v-show="current == 0" class="time-job-add-form">
             <TsForm ref="form" :itemList="formSetting"></TsForm>
             <div class="flex-center time-job-add-button-wrap">
-              <Button type="primary" ghost @click="next(current + 1)">下一步</Button>
+              <Button type="primary" ghost @click="next(current + 1)">{{ $t('page.thenextstep') }}</Button>
             </div>
           </div>
           <div v-show="current == 1" class="runner-detail-wrap">
@@ -73,7 +73,7 @@ export default {
       defaultCombopId: null, // 默认组合工具id
       config: {}, // 配置的参数
       stepStatus: 'process', // 当前步骤状态 process 表示进行 error 表示错误
-      stepList: ['基本信息', this.$t('term.autoexec.toolparameter')],
+      stepList: [this.$t('page.basicinfo'), this.$t('term.autoexec.toolparameter')],
       toolParam: {}, // 工具参数
       formSetting: {
         id: {
@@ -82,7 +82,7 @@ export default {
           value: null,
           defaultValue: null, //默认值
           isHidden: true,
-          label: '主键'
+          label: '#id'
         },
         name: {
           type: 'text',
@@ -90,7 +90,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           maxlength: 50,
-          label: _this.$i18n.t('page.name'), // 名称
+          label: _this.$t('page.name'), // 名称
           validateList: [
             'required',
             'name-special',
@@ -106,7 +106,7 @@ export default {
           name: 'autoexecCombopId',
           value: '',
           defaultValue: '', //默认值
-          label: _this.$i18n.t('autoexec.action'), // 组合工具
+          label: _this.$i18n.t('term.autoexec.combinationtool'), // 组合工具
           disabled: false,
           multiple: false,
           search: true, // 可以搜索
@@ -122,18 +122,18 @@ export default {
           name: 'isActive',
           value: 1,
           defaultValue: 1, //默认值
-          label: _this.$i18n.t('common.status'), // 状态
+          label: _this.$t('page.status'), // 状态
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
             {
               value: 1,
-              text: _this.$i18n.t('autoexec.schedule.enable') // 启用
+              text: _this.$t('page.enable') // 启用
             },
             {
               value: 0,
-              text: _this.$i18n.t('autoexec.schedule.disable') // 禁用
+              text: _this.$t('page.disable') // 禁用
             }
           ]
         },
@@ -142,7 +142,7 @@ export default {
           name: 'cron',
           value: '',
           defaultValue: '', //默认值
-          label: _this.$i18n.t('autoexec.schedule.cronExpress'), // cron 表达式
+          label: this.$t('term.autoexec.timingplan'), // cron 表达式
           showType: 'edit',
           config: { direction: 'down' },
           validateList: ['required']
@@ -153,7 +153,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$i18n.t('autoexec.schedule.planStartTime') // 计划开始时间
+          label: this.$t('term.autoexec.planstarttime') // 计划开始时间
         },
         endTime: {
           type: 'datetime',
@@ -161,7 +161,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$i18n.t('autoexec.schedule.planEndTime'), // 计划结束时间
+          label: this.$t('term.autoexec.planstarttime'), // 计划结束时间
           options: {
             disabledDate(date) {
               if (_this.formSetting.beginTime.value) {

@@ -16,7 +16,7 @@
 <template>
   <div id="argument" class="argument-edit pb-nm">
     <div class="title">
-      <div class="pr-nm text">自由参数</div>
+      <div class="pr-nm text">{{ $t('term.autoexec.freeparameter') }}</div>
       <TsFormSwitch
         v-model="isActive"
         :trueValue="true"
@@ -28,17 +28,17 @@
       <div class="param-top text-title">
         <TsRow :gutter="8">
           <Col span="8">
-            <div class="overflow">名称</div>
+            <div class="overflow">{{ $t('page.name') }}</div>
           </Col>
           <Col span="6">
-            <div class="overflow">数量限制</div>
+            <div class="overflow">{{ $t('page.quantitylimit') }}</div>
           </Col>
           <Col span="10">
-            <div class="overflow">描述</div>
+            <div class="overflow">{{ $t('page.description') }}</div>
           </Col>
         </TsRow>
         <div class="btn-item">
-          必填
+          {{ $t('page.require') }}
         </div>
       </div>
       <div class="param-main">
@@ -77,7 +77,7 @@
             <TsFormInput
               v-model="argument.description"
               maxlength="500"
-              placeholder="描述"
+              :placeholder="$t('page.description')"
               border="border"
             ></TsFormInput>
           </Col>
@@ -115,12 +115,12 @@ export default {
       isArgumentCount: 0,
       dataList: [
         {
-          text: '不限制',
+          text: this.$t('page.notlimit'),
           value: 0
           
         },
         {
-          text: '限制',
+          text: this.$t('page.limit'),
           value: 1
         }
       ],
@@ -157,10 +157,10 @@ export default {
     beforeChangeActive() {
       if (this.isActive && this.argument.name) {
         this.$createDialog({
-          title: '关闭',
-          content: '关闭自由参数时，已设置的自由参数将被删除，是否继续关闭？',
+          title: this.$t('page.close'),
+          content: this.$t('term.autoexec.closefreeparamtip'),
           btnType: 'error',
-          okText: '关闭',
+          okText: this.$t('page.close'),
           'on-ok': vnode => {
             this.argument = {
               name: '',
