@@ -177,5 +177,32 @@
     "monitordesign": "大屏设计器",
     "monitordetail": "大屏详情",
     "monitormanage": "大屏管理"
+  },
+  "deploy": {
+    "job": "作业",
+    "config": "配置",
+    "applicationconfig": "应用配置",
+    "versioncenter": "版本中心",
+    "publishstatus": "发布状态",
+    "applicationconfigpipeline": "应用配置流水线",
+    "combinationtooldetail": "组合工具详情",
+    "customizetooldetails": "自定义工具详情",
+    "tooldetail": "工具详情",
+    "tooltestdetail": "工具测试页面",
+    "jobdetail": "作业详情",
+    "oneclickpublishing": "一键发布",
+    "addpublishjob": "新建发布作业",
+    "editbatchpublishjob": "编辑批量发布作业",
+    "executebatchpublishjob": "执行批量发布作业",
+    "pipelinedetail": "流水线",
+    "pipelinemanage": "超级流水线",
+    "editpipeline": "编辑流水线",
+    "activeversion": "活动版本",
+    "schedulejob": "定时作业",
+    "configadd": "配置",
+    "addschedulejob": "添加定时作业",
+    "editschedulejob": "编辑定时作业",
+    "toolclassification": "工具分类",
+    "webhook": "webhook"
   }
 }

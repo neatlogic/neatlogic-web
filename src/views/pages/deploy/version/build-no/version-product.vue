@@ -10,16 +10,16 @@
         </Breadcrumb>
       </div>
       <div class="action-group" :class="[hasAllAuth ? 'right-box' : 'right-content-box']">
-        <div v-if="!isPackDownload" v-download="packDownloadFile" class="action-item tsfont-download">打包下载</div>
-        <div v-if="isPackDownload" class="action-item disable" title="正在下载数据，请耐心等候">
-          <Icon type="ios-loading" size="18" class="loading"></Icon>下载中
+        <div v-if="!isPackDownload" v-download="packDownloadFile" class="action-item tsfont-download">{{ $t('term.deploy.packagedownload') }}</div>
+        <div v-if="isPackDownload" class="action-item disable" :title="$t('page.downloadloadingtip')">
+          <Icon type="ios-loading" size="18" class="loading"></Icon>{{ $t('page.downloading') }}
         </div>
         <template v-if="hasAllAuth">
-          <div class="action-item tsfont-plus" @click="openRenameDialog">新建文件夹</div>
-          <div class="action-item tsfont-upload" @click="openUploadFile">上传文件</div>
-          <div class="action-item tsfont-upload" @click="openUploadDialogDecompress">上传文件并解压</div>
+          <div class="action-item tsfont-plus" @click="openRenameDialog">{{ $t('term.deploy.newfolder') }}</div>
+          <div class="action-item tsfont-upload" @click="openUploadFile">{{ $t('term.deploy.uploadfile') }}</div>
+          <div class="action-item tsfont-upload" @click="openUploadDialogDecompress">{{ $t('term.deploy.uploadthefileandextractit') }}</div>
         </template>
-        <div v-clipboard="copyDownloadUrl" class="action-item tsfont-copy" @click="copyDownloadPackUrl">复制下载包地址</div>
+        <div v-clipboard="copyDownloadUrl" class="action-item tsfont-copy" @click="copyDownloadPackUrl">{{ $t('term.deploy.copythedownloadpackageaddress') }}</div>
       </div>
     </div>
     <TsTable
@@ -34,8 +34,8 @@
             v-download="downloadFile(row, row.name)"
             class="tsfont-download text-action"
           ></span>
-          <span v-if="row.isDownloading" class="action-item disable" title="正在下载数据，请耐心等候">
-            <Icon type="ios-loading" size="18" class="loading"></Icon>下载中
+          <span v-if="row.isDownloading" class="action-item disable" :title="$t('page.downloadloadingtip')">
+            <Icon type="ios-loading" size="18" class="loading"></Icon>{{ $t('page.downloading') }}
           </span>
           <span class="text-action pl-xs" @click="gotoPreview(row)">{{ row.name }}</span>
         </template>
@@ -46,11 +46,11 @@
       <template slot="action" slot-scope="{row}">
         <div class="tstable-action">
           <ul v-show="hasAllAuth" class="tstable-action-ul">
-            <li class="tsfont-edit" @click="editRename(row.name)">重命名</li>
-            <li class="tsfont-yunweishenjishebei" @click="openAuthEditDialog(row)">授权</li>
-            <li class="tsfont-copy" @click="openCopyDialog(row, 'copy')">复制</li>
-            <li class="tsfont-arrow-right" @click="openCopyDialog(row, 'move')">移动</li>
-            <li class="tsfont-trash-o" @click="delRow(row.name)">删除</li>
+            <li class="tsfont-edit" @click="editRename(row.name)">{{ $t('page.rename') }}</li>
+            <li class="tsfont-yunweishenjishebei" @click="openAuthEditDialog(row)">{{ $t('page.auth') }}</li>
+            <li class="tsfont-copy" @click="openCopyDialog(row, 'copy')">{{ $t('page.copy') }}</li>
+            <li class="tsfont-arrow-right" @click="openCopyDialog(row, 'move')">{{ $t('page.move') }}</li>
+            <li class="tsfont-trash-o" @click="delRow(row.name)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
@@ -142,19 +142,19 @@ export default {
       ],
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: '大小',
+          title: this.$t('page.size'),
           key: 'size'
         },
         {
-          title: '权限',
+          title: this.$t('page.authority'),
           key: 'permission'
         },
         {
-          title: '最后修改时间',
+          title: this.$t('term.deploy.lastrevisiontime'),
           key: 'fcdText'
         },
         {
@@ -267,8 +267,8 @@ export default {
           path: this.path == '/' ? `/${name}` : this.path + `/${name}`
         };
         this.$createDialog({
-          title: '警告',
-          content: `确认删除：${name}?`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: name}),
           btnType: 'error',
           'on-ok': vnode => {
             vnode.isShow = false;
@@ -370,7 +370,7 @@ export default {
       };
       if (location && location.origin) {
         this.copyDownloadUrl = location.origin + location.pathname + '#/download' + '?' + qs.stringify(params);
-        this.$Message.success('复制成功');
+        this.$Message.success(this.$t('message.content.copysuccess'));
       }
     }
   },

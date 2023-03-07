@@ -109,7 +109,7 @@ export default {
           {
             type: 'select',
             name: 'envId',
-            label: '环境',
+            label: this.$t('term.deploy.env'),
             url: '/api/rest/resourcecenter/appenv/list/forselect',
             params: { needPage: false },
             rootName: 'tbodyList',
@@ -136,7 +136,7 @@ export default {
           {
             type: 'select',
             name: 'statusList',
-            label: '作业状态',
+            label: this.$t('term.deploy.jobstatus'),
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },
@@ -156,7 +156,7 @@ export default {
       theadList: [
         { key: 'showChildren' },
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {

@@ -4,7 +4,7 @@
       title="配置Runner组"
       type="modal"
       :isShow="true"
-      ok-text="保存"
+      :ok-text="$t('button.save')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >

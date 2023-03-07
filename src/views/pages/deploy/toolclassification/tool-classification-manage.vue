@@ -63,7 +63,7 @@ export default {
       defaultWhitelist: [], // 默认白名单列表
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {

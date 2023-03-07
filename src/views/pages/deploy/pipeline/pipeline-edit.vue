@@ -20,7 +20,7 @@
         <div class="action-group">
           <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">权限</span>
           <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">删除</span>
-          <span v-if="canEdit" class="action-item"><Button type="primary" @click="save()">保存</Button></span>
+          <span v-if="canEdit" class="action-item"><Button type="primary" @click="save()">{{ $t('button.save') }}</Button></span>
         </div>
       </template>
       <template v-slot:content>

@@ -9,15 +9,15 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span class="tsfont-question-s text-action" @click="openWebhookHelpDialog">帮助</span>
+        <span class="tsfont-question-s text-action" @click="openWebhookHelpDialog">{{ $t('page.help') }}</span>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" @click="saveJobWebhook">保存</Button>
+        <Button type="primary" @click="saveJobWebhook">{{ $t('button.save') }}</Button>
       </template>
       <template v-slot:content>
         <ul v-if="!loadingShow">
           <li>
-            <Divider orientation="start">基本信息</Divider>
+            <Divider orientation="start">{{ $t('page.basicinfo') }}</Divider>
             <TsForm
               ref="basicForm"
               v-model="formValue"
@@ -25,7 +25,7 @@
             ></TsForm>
           </li>
           <li>
-            <Divider orientation="start">触发范围</Divider>
+            <Divider orientation="start">{{ $t('term.deploy.triggerrange') }}</Divider>
             <TsForm
               ref="triggerRangeForm"
               v-model="formValue"
@@ -53,14 +53,14 @@
                     </div>
                   </li>
                   <li>
-                    <span class="text-href tsfont-plus pt-sm" @click="addAppModuleFormList">应用/模块</span>
+                    <span class="text-href tsfont-plus pt-sm" @click="addAppModuleFormList">{{ $t('term.deploy.appmodule') }}</span>
                   </li>
                 </ul>
               </template>
             </TsForm>
           </li>
           <li>
-            <Divider orientation="start">动作</Divider>
+            <Divider orientation="start">{{ $t('term.deploy.action') }}</Divider>
             <TsForm
               ref="actionForm"
               v-model="formValue"
@@ -114,7 +114,7 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: [
             'required', 
             'name-special', 
@@ -122,7 +122,7 @@ export default {
               name: 'searchUrl', 
               url: '/api/rest/deploy/job/webhook/save', 
               key: 'name', 
-              message: '名称已存在', 
+              message: this.$t('form.validate.repeat', {target: this.$t('page.name')}), 
               params: { id: '' } 
             }],
           maxlength: 50
@@ -130,7 +130,7 @@ export default {
         {
           name: 'isActive',
           type: 'switch',
-          label: '激活',
+          label: this.$t('page.enable'),
           falseValue: 0,
           trueValue: 1
         }
@@ -140,7 +140,7 @@ export default {
         {
           name: 'type',
           type: 'radio',
-          label: '作业类型',
+          label: this.$t('term.deploy.jobtype'),
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'ScheduleType' },
@@ -163,7 +163,7 @@ export default {
         {
           name: 'integrationUuid',
           type: 'select',
-          label: '集成管理',
+          label: this.$t('term.deploy.integratedmanagement'),
           validateList: ['required'],
           dynamicUrl: '/api/rest/integration/search',
           params: {handler: 'DeployTriggerIntegrationHandler'},
@@ -184,8 +184,8 @@ export default {
         {
           name: 'appSystemId',
           type: 'select',
-          label: '应用',
-          validateList: ['required', {name: 'custom', trigger: 'change', message: '应用已存在', validator: (rule, appSystemId) => {
+          label: this.$t('term.deploy.application'),
+          validateList: ['required', {name: 'custom', trigger: 'change', message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.application')}), validator: (rule, appSystemId) => {
             // 自定义校验规则，验证唯一性
             return this.validUnique('app', appSystemId);
           }}],
@@ -233,9 +233,9 @@ export default {
         {
           name: 'appModuleId',
           type: 'select',
-          label: '模块',
+          label: this.$t('term.deploy.module'),
           labelWidth: 60,
-          validateList: ['required', {name: 'custom', trigger: 'change', message: '模块已存在', validator: (rule, appModuleId) => {
+          validateList: ['required', {name: 'custom', trigger: 'change', message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.module')}), validator: (rule, appModuleId) => {
             // 自定义校验规则，验证唯一性
             return this.validUnique('module', appModuleId);
           }}],
@@ -250,13 +250,13 @@ export default {
         {
           name: 'AppModule',
           type: 'slot',
-          label: '应用/模块',
+          label: this.$t('term.deploy.appmodule'),
           validateList: ['required']
         },
         {
           name: 'envNameList',
           type: 'select',
-          label: '环境',
+          label: this.$t('term.deploy.env'),
           multiple: true,
           validateList: ['required'],
           url: '/api/rest/resourcecenter/appenv/list/forselect',
@@ -268,7 +268,7 @@ export default {
         {
           name: 'jobStatusList',
           type: 'select',
-          label: '作业状态',
+          label: this.$t('term.deploy.jobstatus'),
           multiple: true,
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
@@ -280,7 +280,7 @@ export default {
         {
           name: 'pipelineType',
           type: 'radio',
-          label: '流水线类型',
+          label: this.$t('term.deploy.pipelinetype'),
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'PipelineType' },
@@ -306,7 +306,7 @@ export default {
         {
           name: 'pipeline',
           type: 'select',
-          label: '流水线',
+          label: this.$t('term.deploy.pipeline'),
           multiple: true,
           validateList: ['required'],
           dynamicUrl: '/api/rest/deploy/pipeline/search',
@@ -317,7 +317,7 @@ export default {
         {
           name: 'jobStatusList',
           type: 'select',
-          label: '作业状态',
+          label: this.$t('term.deploy.jobstatus'),
           multiple: true,
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
@@ -375,7 +375,7 @@ export default {
         });
       }
       dataList.unshift({
-        text: '所有应用',
+        text: this.$t('term.deploy.allapplication'),
         value: 0
       });
       return dataList;
@@ -392,7 +392,7 @@ export default {
         });
       }
       dataList.unshift({
-        text: '所有模块',
+        text: this.$t('term.deploy.allmodule'),
         value: 0
       });
       return dataList;

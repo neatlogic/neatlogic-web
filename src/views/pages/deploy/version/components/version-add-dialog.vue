@@ -4,7 +4,7 @@
       title="新建版本"
       type="modal"
       :isShow="true"
-      okText="保存"
+      :okText="$t('button.save')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -40,7 +40,7 @@ export default {
       },
       formList: [
         {
-          label: '应用',
+          label: this.$t('term.deploy.application'),
           type: 'select',
           name: 'appSystemId',
           validateList: ['required'],
@@ -58,7 +58,7 @@ export default {
           }
         },
         {
-          label: '模块',
+          label: this.$t('term.deploy.module'),
           type: 'select',
           name: 'appModuleId',
           validateList: ['required'],

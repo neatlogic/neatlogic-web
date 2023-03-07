@@ -42,7 +42,7 @@ export default {
         {
           name: 'jobName',
           type: 'text',
-          label: '作业名称',
+          label: this.$t('term.deploy.jobname'),
           validateList: ['required', 'name-special'],
           maxlength: 64
         },

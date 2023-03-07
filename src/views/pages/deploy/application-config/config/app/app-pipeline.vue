@@ -49,8 +49,8 @@ export default {
   data() {
     return {
       theadList: [
-        { key: 'name', title: '名称' },
-        { title: '修改人', key: 'lcu', type: 'user'},
+        { key: 'name', title: this.$t('page.name') },
+        { title: this.$t('page.fcu'), key: 'lcu', type: 'user'},
         { key: 'lcd', title: '最后修改时间', type: 'time' },
         { key: 'action' }],
       isAddDeployJobDialogShow: false,

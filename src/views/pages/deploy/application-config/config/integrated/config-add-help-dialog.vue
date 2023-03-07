@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="帮助"
+      :title="$t('page.help')"
       width="large"
       type="slider"
       :isShow="true"

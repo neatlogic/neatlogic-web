@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow="true"
-      ok-text="保存"
+      :ok-text="$t('button.save')"
       width="medium"
       @on-ok="okDialog"
       @on-close="closeDialog"

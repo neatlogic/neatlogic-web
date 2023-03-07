@@ -123,7 +123,7 @@ export default {
       scheduleData: {},
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
@@ -147,7 +147,7 @@ export default {
           key: 'pipelineName'
         },
         {
-          title: '应用/模块',
+          title: this.$t('term.deploy.appmodule'),
           key: 'appSystemAbbrName'
         },
         {
@@ -155,12 +155,12 @@ export default {
           key: 'execCount'
         },
         {
-          title: '修改人',
+          title: this.$t('page.fcu'),
           key: 'lcuVo',
           type: 'user'
         },
         {
-          title: '修改时间',
+          title: this.$t('page.fcd'),
           key: 'lcd',
           type: 'time'
         },
@@ -229,7 +229,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '是否确认删除该定时任务?',
         btnType: 'error',
         'on-ok': vnode => {
