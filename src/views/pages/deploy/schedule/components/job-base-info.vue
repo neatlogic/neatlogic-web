@@ -56,7 +56,7 @@ export default {
       baseFormConfig: {
         name: {
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: ['required'],
           disabled: this.disabled
         },
@@ -112,7 +112,7 @@ export default {
       generalFormConfig: {
         appSystemId: {
           type: 'select',
-          label: '应用',
+          label: this.$t('term.deploy.application'),
           value: null,
           validateList: ['required'],
           dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
@@ -126,7 +126,7 @@ export default {
           }
         },
         appModuleId: {
-          label: '模块',
+          label: this.$t('term.deploy.module'),
           type: 'select',
           value: null,
           validateList: ['required'],
@@ -142,7 +142,7 @@ export default {
       pipelineFormConfig: {
         pipelineType: {
           type: 'radio',
-          label: '流水线类型',
+          label: this.$t('term.deploy.pipelinetype'),
           value: 'appsystem', //global(全局)，appsystem（应用）
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'PipelineType' },
@@ -153,7 +153,7 @@ export default {
         },
         pipelineId: {
           type: 'select',
-          label: '流水线',
+          label: this.$t('term.deploy.pipeline'),
           value: null,
           dynamicUrl: '/api/rest/deploy/pipeline/search',
           params: {type: 'appsystem', needVerifyAuth: 1},

@@ -73,7 +73,7 @@ export default {
       theadList: [
         {
           key: 'name', 
-          title: '名称'
+          title: this.$t('page.name')
         },
         {
           key: 'authType', 

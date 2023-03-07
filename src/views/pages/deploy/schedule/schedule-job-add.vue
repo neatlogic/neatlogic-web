@@ -20,7 +20,7 @@
               >上一步</Button>
             </span>
             <span class="action-item">
-              <Button type="primary" @click="saveTimeJob()">保存</Button>
+              <Button type="primary" @click="saveTimeJob()">{{ $t('button.save') }}</Button>
             </span>
           </template>
         </div>
@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       current: 0,
-      stepList: ['基本信息', '作业参数'],
+      stepList: [this.$t('page.basicinfo'), '作业参数'],
       baseParams: {},
       isShowValidDialog: false,
       validList: []

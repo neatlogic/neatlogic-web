@@ -47,7 +47,7 @@ export default {
       envConfig: {},
       formConfig: {
         envIdList: {
-          label: '环境',
+          label: this.$t('term.deploy.env'),
           type: 'select',
           validateList: ['required'],
           valueName: 'id',

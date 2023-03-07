@@ -30,8 +30,8 @@
             <template slot="action" slot-scope="{row}">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="tsfont-rizhishoujiyufenxixitong" @click.stop="openInputParam(row)">输入参数</li>
-                  <li class="tsfont-rizhishoujiyufenxixitong" @click.stop="openOutputParam(row)">输出参数</li>
+                  <li class="tsfont-rizhishoujiyufenxixitong" @click.stop="openInputParam(row)">{{ $t('page.inputparam') }}</li>
+                  <li class="tsfont-rizhishoujiyufenxixitong" @click.stop="openOutputParam(row)">{{ $t('page.outputparam') }}</li>
                 </ul>
               </div>
             </template>
@@ -83,9 +83,9 @@ export default {
         pageSize: 20
       },
       theadList: [
-        {title: '作业名称', key: 'name'},
-        {title: '执行结果', key: 'status'},
-        {title: '触发时间', key: 'lcd', type: 'time' },
+        {title: this.$t('term.deploy.jobname'), key: 'name'},
+        {title: this.$t('term.deploy.executeresult'), key: 'status'},
+        {title: this.$t('term.deploy.triggertime'), key: 'lcd', type: 'time' },
         {key: 'action'}
       ],
       tableConfig: {
@@ -141,12 +141,12 @@ export default {
     },
     openInputParam(row) {
       this.isShowViewParamDialog = true;
-      this.viewParamTitle = '输入参数';
+      this.viewParamTitle = this.$t('page.inputparam');
       this.filePath = row && row.paramFilePath ? row.paramFilePath : (row.errorFilePath || '');
     },
     openOutputParam(row) {
       this.isShowViewParamDialog = true;
-      this.viewParamTitle = '输出参数';
+      this.viewParamTitle = this.$t('page.outputparam');
       this.filePath = row && row.resultFilePath ? row.resultFilePath : (row.errorFilePath || '');
     }
   },

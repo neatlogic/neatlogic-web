@@ -183,7 +183,7 @@ export default {
         {
           name: 'env',
           type: 'slot',
-          label: '环境',
+          label: this.$t('term.deploy.env'),
           dataList: []
         },
         {

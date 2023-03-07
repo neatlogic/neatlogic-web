@@ -69,8 +69,8 @@ export default {
         {
           key: 'selection'
         },
-        { key: 'appSystemAbbrName', title: '应用' },
-        { key: 'appModuleAbbrName', title: '模块' },
+        { key: 'appSystemAbbrName', title: this.$t('term.deploy.application') },
+        { key: 'appModuleAbbrName', title: this.$t('term.deploy.module') },
         { key: 'envScenario', title: '环境（场景）' },
         { key: 'version', title: '版本', width: 250 }
       ],
@@ -79,7 +79,7 @@ export default {
       formConfig: {
         name: {
           type: 'text',
-          label: '作业名称',
+          label: this.$t('term.deploy.jobname'),
           validateList: ['required'],
           maxlength: 50
         },

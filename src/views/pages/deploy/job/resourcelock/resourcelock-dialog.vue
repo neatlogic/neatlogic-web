@@ -87,7 +87,7 @@ export default {
           key: 'jobName'
         },
         {
-          title: '作业状态',
+          title: this.$t('term.deploy.jobstatus'),
           key: 'jobStatus'
         },
         {
@@ -147,7 +147,7 @@ export default {
     },
     deleteLock(buttonType, row) {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '作业 "' + row.jobName + '" 未执行完成，' + (buttonType === 'cancel' ? '取消等待' : '强制解锁') + '可能导致作业执行失败，是否继续?',
         btnType: 'info',
         'on-ok': vnode => {

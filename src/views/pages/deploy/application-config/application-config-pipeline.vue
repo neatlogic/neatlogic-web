@@ -27,7 +27,7 @@
             type="primary"
             class="ml-nm"
             @click="saveAppPipeline()"
-          >保存</Button>
+          >{{ $t('button.save') }}</Button>
         </div>
       </template>
       <template v-slot:content>
@@ -144,7 +144,7 @@
               type="primary"
               class="ml-nm"
               @click="saveAppPipeline()"
-            >保存</Button>
+            >{{ $t('button.save') }}</Button>
           </div>
           <!--校验 -->
           <PipelineValid v-model="isShowValid" :validList="validList" @jumpToItem="jumpToItem"></PipelineValid>
