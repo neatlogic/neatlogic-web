@@ -39,7 +39,9 @@ export default {
     disabled: { type: Boolean, default: false }
   },
   data() {
-    return {};
+    return {
+      isFirst: true
+    };
   },
   beforeCreate() {},
   created() {},
@@ -143,7 +145,19 @@ export default {
       return null;
     }
   },
-  watch: {}
+  watch: {
+    filter: {
+      handler(val, oldVal) {
+        if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, oldVal)) {
+          //改变过滤条件，清空选项
+          this.setValue(null);
+        }
+        this.isFirst = false;
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped></style>

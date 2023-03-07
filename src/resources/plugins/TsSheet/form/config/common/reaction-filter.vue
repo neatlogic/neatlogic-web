@@ -96,6 +96,9 @@ export default {
     },
     delFilterRule(rule, index) {
       this.filter.ruleList.splice(index, 1);
+      if (this.$utils.isEmpty(this.filter.ruleList)) {
+        this.$delete(this.filter, 'ruleList');
+      }
       this.$emit('input', this.filter);
     },
     valid() {
