@@ -28,7 +28,7 @@
         <Col :span="10">
           <InputSearcher
             v-model="keyword"
-            placeholder="IP、名称"
+            :placeholder="$t('term.deploy.ipname')"
             class="mb-nm"
             @change="searchData(1)"
           ></InputSearcher>
@@ -41,12 +41,12 @@
         @changePageSize="changePageSize"
       >
         <template slot="status" slot-scope="{row}">
-          <span>{{ (row && row.status) ? '发布' : '未发布' }}</span>
+          <span>{{ (row && row.status) ? $t('page.publish') : $t('page.notpublish') }}</span>
         </template>
       </TsTable>
     </div>
     <div v-else>
-      <NoData text="当前应用没有配置环境"></NoData>
+      <NoData :text="$t('term.deploy.appnotsettingenv')"></NoData>
     </div>
   </div>
 </template>

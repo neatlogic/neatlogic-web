@@ -62,7 +62,7 @@ export default {
         },
         isActive: {
           type: 'radio',
-          label: '状态',
+          label: this.$t('page.status'),
           dataList: [
             { value: 1, text: '启用' },
             { value: 0, text: '禁用' }

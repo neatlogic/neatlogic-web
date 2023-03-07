@@ -83,7 +83,7 @@ export default {
           key: 'actionName'
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'status'
         },
         {

@@ -30,7 +30,9 @@
                       <span>
                         <span class="pr-nm text-href" @click="gotoVersion(item)">{{ item.newVersion }}</span>
                         <span class="pr-nm">{{ item.fcd | formatDate }}</span>
-                        <span v-if="item.direction === 'rollback'" class="text-warning">由{{ item.oldVersion }}回退到{{ item.newVersion }}</span>
+                        <span v-if="item.direction === 'rollback'" class="text-warning">
+                          {{ $t('term.deploy.versionrollback', {oldversion: item.oldVersion, newversion: item.newVersion}) }}
+                        </span>
                       </span>
                     </TimelineItem>
                   </Timeline>
@@ -53,7 +55,9 @@ export default {
   props: {
     title: {
       type: String,
-      default: '历史版本'
+      default() {
+        return this.$t('page.hisversions');
+      }
     },
     appSystemId: Number,
     appModuleId: Number,
@@ -66,7 +70,7 @@ export default {
     return {
       dialogConfig: {
         type: 'slider',
-        title: '历史版本',
+        title: this.$t('page.hisversions'),
         titleDes: this.title,
         isShow: true,
         hasFooter: false,

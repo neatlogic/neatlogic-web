@@ -93,7 +93,7 @@ export default {
           value: 0
         },
         {
-          label: '描述',
+          label: this.$t('page.description'),
           type: 'textarea',
           name: 'description',
           maxlength: 1024,

@@ -157,7 +157,7 @@ export default {
           key: 'defaultValue'
         },
         {
-          title: '描述',
+          title: this.$t('page.description'),
           key: 'description'
         },
         { 

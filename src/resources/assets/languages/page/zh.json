@@ -319,5 +319,10 @@
   "read": "读",
   "write": "写",
   "size": "大小",
-  "authority": "权限"
+  "authority": "权限",
+  "namedescription": "名称、描述",
+  "compile": "编译",
+  "normal": "正常",
+  "publish": "发布",
+  "notpublish": "未发布"
 }

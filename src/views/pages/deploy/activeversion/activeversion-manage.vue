@@ -30,7 +30,7 @@
                         <span>{{ m.appModuleAbbrName }}</span>
                         <span v-if="m.appModuleName">[{{ m.appModuleName }}]</span>
                       </div>
-                      <div class="tsfont-history" :class="$utils.isEmpty(m.envList)?'text-disabled':'text-action'" @click="openVersion(m, item)">历史版本</div>
+                      <div class="tsfont-history" :class="$utils.isEmpty(m.envList)?'text-disabled':'text-action'" @click="openVersion(m, item)">{{ $t('page.hisversions') }}</div>
                     </div>
                     <template v-if="m.envList && m.versionList">
                       <div class="module-content">
@@ -44,7 +44,7 @@
                           <div v-for="(v,vindex) in m.versionList" :key="vindex" class="version-list pb-nm">
                             <div class="version-info">
                               <span class="version-name pr-md overflow">{{ v.version }}</span>
-                              <span class="text-tip pr-xs">编译</span>
+                              <span class="text-tip pr-xs">{{ $t('page.compile') }}</span>
                               <span class="pr-sm" :class="v.compileSuccessCount> 0?'text-success':'text-tip'">{{ v.compileSuccessCount }}</span>
                               <span :class="v.compileFailCount> 0?'text-danger':'text-tip'">{{ v.compileFailCount }}</span>
                             </div>
@@ -65,11 +65,11 @@
                         </div>
                       </div>
                     </template>
-                    <div v-else class="text-tip text-center padding">暂无活动版本</div>
+                    <div v-else class="text-tip text-center padding">{{ $t('page.notarget', {target: $t('term.deploy.activeversion')}) }}</div>
                   </div>
                 </div>
               </div>
-              <div v-else class="text-tip">暂无活动版本</div>
+              <div v-else class="text-tip">{{ $t('page.notarget', {target: $t('term.deploy.activeversion')}) }}</div>
             </div>
             <div v-if="!appSystemId && activeVersionData.rowNum > 0" class="page-container bg-grey text-right">
               <Page 
