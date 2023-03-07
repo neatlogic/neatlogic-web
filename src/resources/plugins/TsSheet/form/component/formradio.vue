@@ -36,7 +36,8 @@ export default {
   props: {},
   data() {
     return {
-      dataList: []
+      dataList: [],
+      isFirst: true
     };
   },
   beforeCreate() {},
@@ -147,8 +148,13 @@ export default {
   },
   watch: {
     filter: {
-      handler: function(val) {
+      handler: function(val, oldVal) {
+        if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, oldVal)) {
+          //改变过滤条件，清空选项
+          this.setValue(null);
+        }
         this.getData();
+        this.isFirst = false;
       },
       deep: true
     },
