@@ -189,7 +189,11 @@
     "reltask": "关联工单",
     "subtask": "子任务",
     "formpriorityrule": "表单联动规则匹配到多个优先级，请修改表单或联系管理员",
-    "autostart": "自动开始"
+    "autostart": "自动开始",
+    "timedout": "已超时",
+    "distancetimeout": "距离超时",
+    "notfocustask":"取消关注",
+    "focustask": "关注工单"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
