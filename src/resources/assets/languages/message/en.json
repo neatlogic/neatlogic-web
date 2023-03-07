@@ -1,0 +1,53 @@
+{
+  "title": {
+    "error": "错误"
+  },
+  "content": {
+    "deletesuccess": "删除成功",
+    "deletefailed": "删除失败",
+    "deletecancel": "已取消删除",
+    "updatesuccess": "修改成功",
+    "addsuccess": "添加成功",
+    "savesuccess": "保存成功",
+    "savefailed": "保存失败",
+    "executesuccess": "操作成功",
+    "cancelsuccess": "取消成功",
+    "collectionsuccess": "收藏成功",
+    "importsuccess": "导入成功",
+    "importfailed": "导入失败",
+    "recoversuccess": "恢复成功",
+    "commitsuccess": "提交成功",
+    "refreshsuccess": "刷新成功",
+    "copysuccess": "复制成功",
+    "uploadsuccess": "上传成功",
+    "uploadfailed": "上传失败",
+    "targetisexists": "{target}已存在",
+    "sessionexpired": "会话已超时，请重新登录",
+    "urlnotfound": "接口{target}不存在",
+    "noauth": "暂无访问权限",
+    "nothingchange": "无任何修改",
+    "required": "{target}不能为空",
+    "failed": "{target}获取失败",
+    "cannotrepeat": "{target}不能重复",
+    "nameexists": "名称已存在",
+    "cmdb": {
+      "diffci": "已选择的配置项不属于同一个模型，请重新选择",
+      "hasnoauth": "您没有权限编辑配置项:{target}"
+    },
+    "process": {
+      "required": "【{target}】不能为空",
+      "complete": "【{target}】请填写完整",
+      "success": "【{target}】验证成功",
+      "prioritymsg": "【{target}表单联动导致优先级为空"
+    },
+    "autoexec": {
+      "savedeadlinenolimit": "不设置代表保存期限不限制",
+      "gotoactivate": "前往激活",
+      "successimporttip": "，导入仅生成待审核版本，需要审核通过后才可激活使用。",
+      "replaceimporttip": "以下工具存在待审核版本，是否替换："
+    },
+    "knowledge": {
+      "notcatalog": "无文本目录"
+    }
+  }
+}

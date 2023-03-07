@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import utils from '@/resources/assets/js/util.js';
-import commonEn from '@/resources/assets/languages/common/en.json';
-import commonZn from '@/resources/assets/languages/common/zh.json';
+import Zh from '@/resources/assets/languages/zh.js';
+import En from '@/resources/assets/languages/en.js';
 import languagesEn from '@/resources/assets/languages/languagesEn.js';
 import languagesZh from '@/resources/assets/languages/languagesZh.js';
 export function initRouter(VueRouter, store) {
@@ -99,11 +99,13 @@ export function initI18n(VueI18n, moduleConfig) {
     locale: BASELANGUAGES, // 定义默认语言为中文
     messages: {
       zh: {
-        ...commonZn,
+        //...commonZn,
+        ...Zh,
         ...languagesZh
       },
       en: {
-        ...commonEn,
+        //...commonEn,
+        ...En,
         ...languagesEn
       }
     },

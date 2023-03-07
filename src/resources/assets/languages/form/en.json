@@ -1,0 +1,63 @@
+{
+  "label": {
+    "name": "@:page.name",
+    "icon": "@:page.icon",
+    "auth": "授权",
+    "style": "风格",
+    "animation": "动画",
+    "color": "@:page.color",
+    "backgroundcolor": "背景颜色",
+    "backgroundimage": "背景图片",
+    "bordercolor": "边框颜色",
+    "description": "@:page.description",
+    "enable": "@:page.enable",
+    "disable": "@:page.disable",
+    "replycontent": "@:page.replycontent",
+    "templatename": "@:page.templatename",
+    "defaultcontent": "@:page.defaultcontent",
+    "level": "@:page.level",
+    "primarykey": "主键",
+    "desrequired": "回复必填",
+    "content": "内容"
+  },
+  "help": {
+    "nameattribute": "名称用于拓扑展示和关系展示",
+    "uniquerule": "选择多个属性作为配置项的唯一性校验",
+    "pleaseselectnameattribute": "请选择一个属性作为配置项的名称。",
+    "activeautocollect": "激活了自动采集的关系才能在采集映射管理中配置",
+    "upsideunique": "唯一代表上游端只能被下游端引用一次",
+    "downsideunique": "唯一代表下游端只能被上游端引用一次",
+    "deleteupside": "删除上游端配置项时，自动删除下游端配置项",
+    "deletedownside": "删除下游端配置项时，自动删除上游端配置项",
+    "cascaderrelation": "当前关系数据发生变化时，系统会自动计算级联关系数据并更新。计算出来的级联关系不会再次触发级联关系计算，也不会生成事务数据，因此无法在修改记录里追溯。"
+  },
+  "placeholder": {
+    "name": "请输入名称",
+    "inputenchar": "请输入英文字母",
+    "keyword": "请输入关键字",
+    "pleaseselect": "请选择{target}",
+    "pleaseinput": "请输入{target}",
+    "required": "{target}(必填)",
+    "notrequired": "{target}(非必填)",
+    "checkrule": "校验规则",
+    "inputcolor": "请输入颜色"
+  },
+  "validate": {
+    "required": "{target}不能为空",
+    "repeat": "{target}已存在，请重新输入",
+    "fileformaterror": "文件格式不正确",
+    "fileformat": "文件名为{target}格式不正确.",
+    "uploadfile": "请上传附件",
+    "fileoverlimit": "文件大小超出限制",
+    "correctjson": "请输入正确的json",
+    "addnode": "请添加节点",
+    "adddatasource": "请添加数据源",
+    "pleaseenterthecontent": "请输入内容",
+    "englishnamerepetition": "英文名重复",
+    "chinesenamerepetition": "中文名重复",
+    "validatesuccess": "校验成功",
+    "validatefailed": "校验失败",
+    "pleaseinputscriptcontent": "请输入脚本内容",
+    "requiredname": "不能为空，仅支持汉字、字母、数字和下划线"
+  }
+}
