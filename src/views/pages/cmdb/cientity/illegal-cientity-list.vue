@@ -289,7 +289,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 
 .textRight {
   text-align: right;

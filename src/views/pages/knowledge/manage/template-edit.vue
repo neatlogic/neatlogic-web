@@ -254,7 +254,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-// @import (reference) '~@/resources/assets/css/base-theme.less';
 .template-edit {
   // /deep/.block-container{
   //   box-shadow: 0px 0px 0px 0px;

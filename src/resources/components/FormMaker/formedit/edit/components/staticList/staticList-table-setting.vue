@@ -267,7 +267,7 @@ function getDefaultValue(list, value, index) {
 }
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .list-table {
   width:100%;
   th {

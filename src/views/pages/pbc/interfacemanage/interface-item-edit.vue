@@ -215,7 +215,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .error {
   opacity: 0.5;
   cursor: pointer;

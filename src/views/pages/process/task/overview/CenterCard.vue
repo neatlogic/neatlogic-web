@@ -306,7 +306,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .workcenterpoper {
   .ivu-poptip-arrow {
     display: none;
@@ -532,7 +532,7 @@ export default {
 </style>
 
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .theme(@text-color, @title-color, @tip-color, @error-bg-color, @warning-bg-color, @gray-color, @icon-color, @bg-op) {
   .li-will-be-expired:not(:hover),
   .li-is-expired:not(:hover) {

@@ -220,7 +220,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .tactics-condition {
   padding: 0 24px;
   .add-condition {

@@ -532,7 +532,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .catalog-viewprocess {
   width: 100%;
   height: 100%;

@@ -387,7 +387,7 @@ export default {
 @import './contain.less';
 </style>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 
 /deep/.ivu-split-trigger-con {
   display: none;
