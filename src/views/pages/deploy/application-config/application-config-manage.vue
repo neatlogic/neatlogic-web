@@ -384,7 +384,7 @@ export default {
               fn: vnode => { vnode.isShow = false; }
             },
             {
-              text: '删除', 
+              text: this.$t('page.delete'), 
               type: 'error', 
               fn: vnode => {
                 vnode.isShow = false; 

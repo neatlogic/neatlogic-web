@@ -85,7 +85,7 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50
         },
         {

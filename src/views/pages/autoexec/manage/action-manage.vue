@@ -84,7 +84,7 @@
                         :class="{ disable: !row.executable || !row.isActive }"
                         :title="!row.isActive ? $t('page.notauthrelationadmin') : !row.executable ? $t('page.notauthrelationadmin') : ''"
                         @click.stop="toExecute(row)"
-                      >{{ $t('autoexec') }}</li>
+                      >{{ $t('term.autoexec.job') }}</li>
                       <li
                         class="icon tsfont-copy"
                         :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"

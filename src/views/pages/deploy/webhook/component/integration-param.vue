@@ -23,7 +23,7 @@
         </TsFormItem>
       </div>
     </div>
-    <div v-else-if="!isLoading" class="text-tip lh-2">暂无参数</div>
+    <div v-else-if="!isLoading" class="text-tip lh-2">{{ $t('page.notarget', {target: $t('page.param')}) }}</div>
     <Loading v-else-if="isLoading"></Loading>
   </div>
 </template>

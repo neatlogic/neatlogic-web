@@ -40,7 +40,7 @@ export default {
       },
       formList: [
         {
-          label: '应用',
+          label: this.$t('term.deploy.application'),
           type: 'select',
           name: 'appSystemId',
           validateList: ['required'],
@@ -54,7 +54,7 @@ export default {
           disabled: true
         },
         {
-          label: '模块',
+          label: this.$t('term.deploy.module'),
           type: 'select',
           name: 'appModuleId',
           validateList: ['required'],

@@ -44,7 +44,7 @@ export default {
           name: 'abbrName'
         },
         {
-          text: '名称',
+          text: this.$t('page.name'),
           value: '-',
           name: 'name'
         },

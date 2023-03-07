@@ -86,7 +86,7 @@ export default {
         },
        
         {
-          title: '环境',
+          title: this.$t('term.deploy.env'),
           key: 'envList'
         } 
       ],

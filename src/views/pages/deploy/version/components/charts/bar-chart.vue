@@ -48,7 +48,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 1; i <= 10; i++) {
-        this.data.push({yField: '数据' + i, xField: Math.floor(Math.random() * 100) + 1});
+        this.data.push({yField: this.$t('page.data') + i, xField: Math.floor(Math.random() * 100) + 1});
       }
     },
     createPlot() {

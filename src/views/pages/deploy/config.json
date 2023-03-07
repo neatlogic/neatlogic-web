@@ -1,7 +1,7 @@
 {
   "module":"deploy",
   "menuType":{
-    "job": "作业", 
-    "config": "配置"
+    "job": "router.deploy.job", 
+    "config": "router.deploy.config"
   }
 }

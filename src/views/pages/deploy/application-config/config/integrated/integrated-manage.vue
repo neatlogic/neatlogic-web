@@ -76,17 +76,17 @@ export default {
         tbodyList: []
       },
       theadList: [
-        { title: '名称', key: 'name'},
-        { title: '激活', key: 'isActive'},
-        { title: '模块', key: 'appModuleAbbrName'},
+        { title: this.$t('page.name'), key: 'name'},
+        { title: this.$t('page.enable'), key: 'isActive'},
+        { title: this.$t('term.deploy.module'), key: 'appModuleAbbrName'},
         { title: '仓库类型', key: 'repoType'},
         { title: '仓库服务器地址', key: 'repoServerAddress'},
         { title: '仓库名称', key: 'repoName'},
         { title: '分支', key: 'branchFilter'},
         { title: '关联事件', key: 'event'},
         { title: '动作', key: 'actionName'},
-        { title: '修改人', key: 'fcuVo', type: 'user'},
-        { title: '修改时间', key: 'lcd', type: 'time'},
+        { title: this.$t('page.fcu'), key: 'fcuVo', type: 'user'},
+        { title: this.$t('page.fcd'), key: 'lcd', type: 'time'},
         { title: '', key: 'action'}
       ]
     };
@@ -177,7 +177,7 @@ export default {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: `确定删除：${name || ''}？`,
-        okText: '删除',
+        okText: this.$t('page.delete'),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.deploy.integrated.delIntegratedById({id: id}).then(res => {
