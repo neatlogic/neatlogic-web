@@ -6,68 +6,68 @@
       icon="el-icon-plus"
       plain
       @click="handleAddClick"
-    >新增</el-button>
+    >{{ $t('page.new') }}</el-button>
     <el-table :data="formData" style="width: 100%">
-      <el-table-column prop="name" label="名称" width="60" />
-      <el-table-column prop="key" label="key值" width="70" />
-      <el-table-column prop="width" label="宽度" width="50" />
-      <el-table-column label="操作" width="100">
+      <el-table-column prop="name" :label="$t('page.name')" width="60" />
+      <el-table-column prop="key" :label="'key' + $t('page.value')" width="70" />
+      <el-table-column prop="width" :label="$t('page.width')" width="50" />
+      <el-table-column :label="$t('page.action')" width="100">
         <template slot-scope="scope">
           <div class="button-group">
             <el-button
               type="text"
               size="small"
               @click="handleEditorClick(scope.$index, scope.row)"
-            >编辑</el-button>
+            >{{ $t('button.edit') }}</el-button>
             <el-button
               type="text"
               size="small"
               @click="handleDeleteClick(scope.$index, scope.row)"
-            >删除</el-button>
+            >{{ $t('button.delete') }}</el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog
-      title="新增"
+      :title="$t('page.new')"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose"
     >
       <el-form :model="rowFormData" label-width="50px">
-        <el-form-item label="名称:">
+        <el-form-item :label="$t('page.name') + ':'">
           <el-input
             v-model.trim="rowFormData['name']"
-            placeholder="请输入名称"
+            :placeholder="$t('form.placeholder.name')"
             size="mini"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="key值:">
+        <el-form-item :label="'key' + $t('page.value') + ':'">
           <el-input
             v-model.trim="rowFormData['key']"
-            placeholder="请输入key值"
+            :placeholder="$t('form.placeholder.pleaseinput', {target: 'key' + $t('page.value')})"
             size="mini"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="宽度:">
+        <el-form-item :label="$t('page.width') + ':'">
           <el-input
             v-model.trim="rowFormData['width']"
-            placeholder="请输入宽度"
+            :placeholder="$t('form.placeholder.pleaseinput', {target:$t('page.width')})"
             size="mini"
           >
           </el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
+        <el-button size="mini" @click="dialogVisible = false">{{ $t('button.cancel') }}</el-button>
         <el-button
           size="mini"
           type="primary"
           @click="handleSaveClick"
-        >确 定</el-button>
+        >{{ $t('button.confirm') }}</el-button>
       </span>
     </el-dialog>
   </div>

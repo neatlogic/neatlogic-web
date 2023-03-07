@@ -7,12 +7,11 @@ bin
 .classpath
 .project
 logs/
-.DS_Store
 /node_modules
 Test.vue
 package-lock.json
-vue.config.js
 .history
 /dist
 yarn.lock
 .DS_Store
+/.idea

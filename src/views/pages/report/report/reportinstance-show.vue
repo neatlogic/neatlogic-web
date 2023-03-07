@@ -148,7 +148,7 @@ export default {
       }).then(res => {
         _this.reportContent = res.data || res;
         if (showStatus) {
-          _this.$Message.success('刷新成功');
+          _this.$Message.success(_this.$t('message.content.refreshsuccess'));
         }
       }).finally(() => {
         this.loadingShow = false;

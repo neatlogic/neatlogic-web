@@ -22,11 +22,11 @@ export default {
       formConfig: {
         defaultValue: {
           type: 'text',
-          label: '默认值'
+          label: this.$t('page.defaultValue')
         }, 
         length: {
           type: 'text',
-          label: '长度'
+          label: this.$t('page.length')
         }}
     };
   },

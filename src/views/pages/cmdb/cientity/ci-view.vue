@@ -7,7 +7,7 @@
       <template v-slot:topRight>
         <div v-if="ciData.authData" class="dashboard-action action-group" style="text-align:right">
           <span v-if="ciData.authData['cimanage']" class="action-item tsfont-edit" @click="editCi()">{{ $t('term.cmdb.editci') }}</span>
-          <span v-if="!ciData.isVirtual && ciData.authData['cientityinsert']" class="action-item tsfont-plus pad0" @click="addCiEntity()">{{ $t('term.cmdb.cientity') }}</span>
+          <span v-if="!ciData.isVirtual && !ciData.isAbstract && ciData.authData['cientityinsert']" class="action-item tsfont-plus pad0" @click="addCiEntity()">{{ $t('term.cmdb.cientity') }}</span>
         </div>
       </template>
       <template v-slot:sider>

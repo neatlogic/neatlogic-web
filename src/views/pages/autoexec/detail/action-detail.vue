@@ -911,10 +911,9 @@ export default {
       //获取所有的校验数据，进行拼接
       let isValid = true;
       this.validList = [].concat(this.validStepConfig()); //基本信息的校验
-      if (this.executeConfig && this.executeConfig.whenToSpecify == 'now' && !this.executeConfig.executeUser) {
-        this.validList.push({ text: this.$t('term.autoexec.executeuser') + '：' + this.$t('page.notarget', {target: this.$t('term.autoexec.executeuser')}), type: 'error', config: { type: 'executeSetting' } });
-      }
-
+      // if (this.executeConfig && this.executeConfig.whenToSpecify == 'now' && !this.executeConfig.executeUser) {
+      //   this.validList.push({ text: this.$t('term.autoexec.executeuser') + '：' + this.$t('page.notarget', {target: this.$t('term.autoexec.executeuser')}), type: 'error', config: { type: 'executeSetting' } });
+      // }
       if (this.validList.find(item => item.type == 'error')) {
         this.validVisible = true;
         isValid = false;
