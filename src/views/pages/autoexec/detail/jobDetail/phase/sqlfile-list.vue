@@ -33,7 +33,7 @@ export default {
           key: 'startTime'
         },
         {
-          title: this.$t('term.autoexec.job.costtime'),
+          title: this.$t('term.autoexec.costtime'),
           key: 'costTime'
         }
       ]

@@ -138,7 +138,7 @@ export default {
           }
         },
         {
-          label: this.$t('common.protocol'),
+          label: this.$t('page.protocol'),
           name: 'protocol',
           constantMappingMode: {
             multiple: false,
@@ -177,7 +177,7 @@ export default {
         {
           type: 'userselect',
           name: 'authorityList',
-          label: this.$t('common.authorization'),
+          label: this.$t('page.auth'),
           groupList: ['user', 'team', 'role', 'common'],
           value: ['common#alluser'],
           readonly: true

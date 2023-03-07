@@ -54,7 +54,9 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '请输入脚本'
+      default() {
+        return this.$t('form.validate.pleaseinputscriptcontent');
+      }
     },
     width: {
       type: [Number, String],
@@ -187,7 +189,7 @@ export default {
         this.validMesage = '';
         isValid = true;
       } else {
-        this.validMesage = '请输入脚本内容';
+        this.validMesage = this.$t('form.validate.pleaseinputscriptcontent');
         isValid = false;
       }
       return isValid;

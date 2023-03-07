@@ -6,10 +6,10 @@
         v-download="getDownurl()"
         type="primary"
         ghost
-      >参数下载</Button>
-      <span v-if="downLoading" class="action-item disable" title="正在下载数据，请耐心等候">
+      >{{ $t('term.autoexec.paramdownload') }}</Button>
+      <span v-if="downLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
         <Icon type="ios-loading" size="18" class="loading"></Icon>
-        下载中
+        {{ $t('page.downloading') }}
       </span>
     </div>
     <div v-for="(item, index) in paramList" :key="index">
@@ -35,9 +35,9 @@
                 ></JsonViewer>
               </div>
               <span v-if="row.value && (row.type == 'filepath' || row.type == 'file')" v-download="downloadFile(row, row.value)" class="cursor">
-                <span v-if="row.isDownloadFileLoding" class="action-item disable" title="正在下载数据，请耐心等候">
+                <span v-if="row.isDownloadFileLoding" class="action-item disable" :title="$t('page.downloadloadingtip')">
                   <Icon type="ios-loading" size="18" class="loading"></Icon>
-                  下载中
+                  {{ $t('page.downloading') }}
                 </span>
                 <span v-else class="text-href">{{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}</span>
               </span>
@@ -56,7 +56,7 @@
       </div>
 
       <div v-if="!$utils.isEmptyObj(item.argument) && item.argument.valueList&& item.argument.valueList.length>0" class="extrainfo-detail bg-op padding radius-lg">
-        <div class="pb-sm"><span style="font-weight:bold">自由参数</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>  
+        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>  
         <div class="content-grid">
           <div class="item">
             <div class="content">
@@ -97,19 +97,19 @@ export default {
       paramList: [],
       paramTheadList: [
         {
-          title: '参数中文名',
+          title: this.$t('term.autoexec.parameterchinesename'),
           key: 'name'
         },
         {
-          title: '参数英文名',
+          title: this.$t('term.autoexec.parameterenglishname'),
           key: 'key'
         },
         {
-          title: this.$i18n.t('common.param') + this.$i18n.t('common.value'),
+          title: this.$i18n.t('page.param') + this.$i18n.t('page.value'),
           key: 'value'
         },
         {
-          title: this.$i18n.t('common.description'),
+          title: this.$i18n.t('page.description'),
           key: 'description'
         }
       ],

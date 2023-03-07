@@ -108,7 +108,7 @@
       </div>
     </div>
     <div v-if="canEdit && !config.argumentCount" class="pt-sm">
-      <span class="tsfont-plus text-href" @click="addParam">添加参数</span>
+      <span class="tsfont-plus text-href" @click="addParam">{{ $t('page.param') }}</span>
     </div>
   </div>
 </template>

@@ -29,7 +29,7 @@ export default {
       sqlCode: '',
       loadingMore: false,
       downloadLoading: false,
-      descText: '加载最新数据中'
+      descText: this.$t('page.loading')
     };
   },
   beforeCreate() {},
@@ -51,7 +51,7 @@ export default {
     getSqlCode() {
       this.$api.autoexec.job.getSqlCode({...this.param}).then(res => {
         if (res && res.Status == 'OK') {
-          this.descText = '数据加载完成';
+          this.descText = this.$t('page.loadfinish');
           this.sqlCode = res.Return.content;
         }
       });

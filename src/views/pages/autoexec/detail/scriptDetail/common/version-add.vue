@@ -2,7 +2,7 @@
 <template>
   <div>
     <div class="version-top border-color">
-      <div>添加版本</div>
+      <div>{{ $t('page.newtarget', {target: $t('page.versions')}) }}</div>
       <div class="action-group no-line version-btn">
         <span
           v-for="operate in operateList"
@@ -57,17 +57,17 @@ export default {
     return {
       operateList: [
         {
-          text: '校验',
+          text: this.$t('page.validate'),
           value: 'validate',
           icon: 'tsfont-check'
         },
         {
-          text: '保存',
+          text: this.$t('button.save'),
           value: 'save',
           icon: 'tsfont-save'
         },
         {
-          text: '提交',
+          text: this.$t('button.submit'),
           value: 'submit',
           icon: 'tsfont-check-o'
         }
@@ -103,7 +103,7 @@ export default {
         this.validList = validList;
       } else {
         this.validList = [];
-        this.validList.push({text: '脚本校验成功', type: 'success'});
+        this.validList.push({text: this.$t('term.autoexec.scriptvalidsuccess'), type: 'success'});
       }
       return valid;
     },
@@ -141,7 +141,7 @@ export default {
         ...this.$refs.versionEdit.save()
       };
       let res = await this.$api.autoexec.script.saveScript(data);
-      this.$Message.success('提交成功');
+      this.$Message.success(this.$t('message.content.commitsuccess'));
       let config = res.Return;
       this.versionId = config.versionId;
       let isReviewable = config.isReviewable;

@@ -75,8 +75,8 @@
             <div v-if="toolConfig.description" class="bg-op padding mb-md radius-lg">{{ toolConfig.description }}</div>
             <div class="params-detail">
               <div class="item-list">
-                <div class="h4 pb-md">{{ $t('autoexec.inputParam') }}</div>
-                <div v-if="!toolConfig.inputParamList || toolConfig.inputParamList.length == 0" class="text-tip">{{ $t('autoexec.tips.empty.input') }}</div>
+                <div class="h4 pb-md">{{ $t('term.autoexec.inputparam') }}</div>
+                <div v-if="!toolConfig.inputParamList || toolConfig.inputParamList.length == 0" class="text-tip">{{ $t('page.notarget', {target: $t('term.autoexec.inputparam')}) }}</div>
                 <template v-else>
                   <ParamsReadonly
                     v-for="(iParam,iindex) in toolConfig.inputParamList"
@@ -87,12 +87,12 @@
                 </template>
               </div>
               <div v-if="toolConfig.argument" class="item-list free-params-box">
-                <div class="h4 pb-md">自由参数</div>
+                <div class="h4 pb-md">{{ $t('term.autoexec.freeparameter') }}</div>
                 <ParamsReadonly :typeList="paramsTypeList" :config="toolConfig.argument"></ParamsReadonly>
               </div>
               <div class="item-list">
-                <div class="h4 pb-md">{{ $t('autoexec.outputParam') }}</div>
-                <div v-if="!toolConfig.outputParamList || toolConfig.outputParamList.length == 0" class="text-tip">{{ $t('autoexec.tips.empty.output') }}</div>
+                <div class="h4 pb-md">{{ $t('term.autoexec.outputparameter') }}</div>
+                <div v-if="!toolConfig.outputParamList || toolConfig.outputParamList.length == 0" class="text-tip">{{ $t('page.notarget', {target: $t('term.autoexec.outputparameter')}) }}</div>
                 <template v-else>
                   <ParamsReadonly
                     v-for="(oParam,oindex) in toolConfig.outputParamList"
@@ -114,7 +114,7 @@
       @on-ok="saveAction()"
     >
       <template v-slot:header>
-        <div>{{ $t('autoexec.publish.action') }}</div>
+        <div>{{ $t('term.autoexec.publishcombinetool') }}</div>
       </template>
       <template v-slot>
         <div>
@@ -172,7 +172,7 @@ export default {
           name: 'name',
           value: '',
           maxlength: 50,
-          label: this.$i18n.t('page.name'),
+          label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/autoexec/combop/save', key: 'name', message: this.$t('message.content.targetisexists', {target: this.$t('page.name')}) }]
         },
         {
@@ -180,9 +180,9 @@ export default {
           name: 'typeId',
           value: '',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -194,7 +194,7 @@ export default {
           type: 'textarea',
           name: 'description',
           value: '',
-          label: this.$i18n.t('common.description'),
+          label: this.$t('page.description'),
           transfer: true,
           maxlength: 500
         }

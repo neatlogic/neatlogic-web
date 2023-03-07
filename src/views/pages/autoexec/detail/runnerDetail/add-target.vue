@@ -21,10 +21,10 @@
           <span
             v-else-if="canEdit && type=='runtime' && filter"
             class="tsfont-edit-s btn text-tip-active"
-            :title="$t('common.edit')"
+            :title="$t('page.edit')"
             @click="moreVisible=true"
           ></span>
-          <span v-if="canEdit && filter" class="btn text-href" @click="clearTarget">{{ $t('common.clear') }}</span>
+          <span v-if="canEdit && filter" class="btn text-href" @click="clearTarget">{{ $t('page.clear') }}</span>
         </template>
         <!-- 添加按钮 -->
         <Button
@@ -32,7 +32,7 @@
           type="primary"
           ghost
           @click="addTarget()"
-        ><span class="tsfont-plus btn-icon">{{ $t('autoexec.execTarget') }}</span>
+        ><span class="tsfont-plus btn-icon">{{ $t('term.autoexec.executetarget') }}</span>
         </Button>
         <!-- 已经选中的数据 -->
         <template v-for="(data,index) in showData">
@@ -46,17 +46,17 @@
           <span
             v-if="canEdit"
             class="tsfont-edit-s btn text-tip-active"
-            :title="$t('common.edit')"
+            :title="$t('page.edit')"
             @click="moreVisible=true"
           ></span>
-          <span v-else-if="showData.length>showNumber" class="btn  text-tip-active" @click="moreVisible=true"> {{ $t('common.viewMore') }}</span>
-          <span v-if="canEdit && (showData.length>0)" class="btn text-primary" @click="clearTarget">{{ $t('common.clear') }}</span>
+          <span v-else-if="showData.length>showNumber" class="btn  text-tip-active" @click="moreVisible=true"> {{ $t('page.viewmore') }}</span>
+          <span v-if="canEdit && (showData.length>0)" class="btn text-primary" @click="clearTarget">{{ $t('page.clear') }}</span>
         </div>
       </div>
       <transition name="fade">
         <span v-if="validMessage" class="form-error-tip" :title="validMessage">{{ validMessage }}</span>
       </transition>
-      <span v-if="!canEdit && showData.length<=0 && paramList.length<=0 && !filter" class="text-tip">{{ $t('autoexec.tips.emptyData') }}</span>
+      <span v-if="!canEdit && showData.length<=0 && paramList.length<=0 && !filter" class="text-tip">{{ $t('page.nodata') }}</span>
     </div>
     <!-- 编辑添加模态框 -->
     <TsDialog
@@ -206,7 +206,7 @@ export default {
         this.updateShowData();
       });
       if (isValid && this.canEdit && this.isRequired && this.noTarget) {
-        this.validMessage = this.$i18n.t('autoexec.warning.empty.execTarget');
+        this.validMessage = this.$t('form.validate.required', {target: this.$t('term.autoexec.executetarget')});
       }
 
       if (this.showData.length > 0) {
@@ -260,7 +260,7 @@ export default {
       this.showData = [];
       this.filter = null;
       if (this.isRequired) {
-        this.validMessage = this.$i18n.t('autoexec.warning.empty.execTarget');
+        this.validMessage = this.$t('form.validate.required', {target: this.$t('term.autoexec.executetarget')});
       }
     },
     onOkUpdateList(val, valueList) {
@@ -296,7 +296,7 @@ export default {
       if (this.canEdit && this.isRequired) {
         if (this.noTarget) {
           isValid = false;
-          this.validMessage = this.$i18n.t('autoexec.warning.empty.execTarget');
+          this.validMessage = this.$t('form.validate.required', {target: this.$t('term.autoexec.executetarget')});
         }
         return isValid;
       }
@@ -384,13 +384,13 @@ export default {
       let title = '';
       if (this.canEdit && !this.noTarget) {
         //编辑
-        title = this.$i18n.t('common.edit') + this.$i18n.t('autoexec.execTarget');
+        title = this.$t('page.edittarget', {target: this.$t('term.autoexec.executetarget')});
       } else if (this.canEdit && this.noTarget) {
         //新增
-        title = this.$i18n.t('common.add') + this.$i18n.t('autoexec.execTarget');
+        title = this.$t('page.newtarget', {target: this.$t('term.autoexec.executetarget')});
       } else {
-        //查看
-        title = this.$i18n.t('autoexec.execTarget') + this.$i18n.t('common.details');
+        //查看 
+        title = this.$t('page.viewtarget', {target: this.$t('term.autoexec.executetarget')});
       }
       return title;
     },

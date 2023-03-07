@@ -21,18 +21,18 @@
     >
       <span class="cursor-pointer">
         <CommonStatus v-if="versionVo.statusVo" :statusValue="versionVo.statusVo.value" :statusName="versionVo.statusVo.text"></CommonStatus>
-        <span v-if="versionVo.status=='passed'" class="top-title">版本{{ versionVo.version }}</span>
+        <span v-if="versionVo.status=='passed'" class="top-title">{{ $t('page.versions') }}{{ versionVo.version }}</span>
         <span v-else class="top-title">{{ versionVo.title }}</span>
         <i class="tsfont-down"></i>
       </span>
       <div slot="content" class="version-main">
         <div v-if="currentVersion" class="version-list">
           <div class="version-title text-title fz10">
-            当前版本
+            {{ $t('page.curversions') }}
           </div>
           <div class="currentVersion-content border-color radius-sm cursor-pointer card-hover-shadow" @click="getVersion(currentVersion)">
             <div class="version-content-top">
-              <div class="title">版本{{ currentVersion.version }}</div>
+              <div class="title">{{ $t('page.versions') }}{{ currentVersion.version }}</div>
               <div class="version-status">
                 <CommonStatus v-if="currentVersion.statusVo" :statusValue="currentVersion.statusVo.value" :statusName="currentVersion.statusVo.text"></CommonStatus>
               </div>
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div v-if="notPassedConfig.tbodyList.length > 0" class="version-list">
-          <div class="version-title text-title fz10">未审核版本</div>
+          <div class="version-title text-title fz10">{{ $t('page.unapprovedversion') }}</div>
           <TsCard
             v-model="id"
             v-bind="notPassedConfig"
@@ -75,7 +75,7 @@
           </TsCard>
         </div>
         <div v-if="historicalConfig.tbodyList.length > 0" class="version-list">
-          <div class="version-title text-title fz10">历史版本</div>
+          <div class="version-title text-title fz10">{{ $t('page.hisversions') }}</div>
           <TsCard
             v-model="id"
             v-bind="historicalConfig"
@@ -88,7 +88,7 @@
             <template slot-scope="{ row }">
               <div class="version-content cursor-pointer" @click="getVersion(row)">
                 <div class="version-content-top">
-                  <div>版本{{ row.version }}</div>
+                  <div>{{ $t('page.versions') }}{{ row.version }}</div>
                 </div>
                 <div class="text-tip fz10">
                   <span class="user overflow">

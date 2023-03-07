@@ -20,17 +20,17 @@
         <span v-if="row.startTime" class="overflow" :class="{ 'text-grey': row.isDelete === 1 }">
           <div v-if="row.startTime" class="fz10">
             <span>{{ row.startTime | formatDate }}</span>
-            <span class="text-grey ml-xs">开始</span>
+            <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
           </div>
           <div v-if="row.endTime" class="fz10">
             <span>{{ row.endTime | formatDate }}</span>
-            <span class="text-grey ml-xs">结束</span>
+            <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
           </div>
         </span>
       </template>
       <template v-slot:id="{ row }">
         <span v-download="downurl(row)" class="text-href">
-          下载日志
+          {{ $t('page.downloadlog') }}
         </span>
       </template>
     </TsTable>
@@ -59,16 +59,16 @@ export default {
           key: 'startTime'
         },
         {
-          title: this.$t('term.autoexec.job.costtime'),
+          title: this.$t('term.autoexec.costtime'),
           key: 'costTime'
         },
         {
-          title: this.$t('term.autoexec.job.executeuser'),
+          title: this.$t('term.autoexec.executeuser'),
           key: 'execUser',
           type: 'user'
         },
         {
-          title: '结果',
+          title: this.$t('page.result'),
           key: 'id'
         }
       ],

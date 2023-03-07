@@ -26,7 +26,7 @@
     >
       <TabPane
         v-if="phaseData.execMode != 'sqlfile'"
-        label="标准输出"
+        :label="$t('term.autoexec.standardoutput')"
         class="padding"
         :class="getTabDetailClass()"
         name="standardOutput"
@@ -46,7 +46,7 @@
                     <DropdownMenu slot="list">
                       <DropdownItem v-if="step && (step.type !== 'tool')" @click.native="openScriptContentDialog(step)">
                         <div>
-                          <span class="action-item">脚本内容</span>
+                          <span class="action-item">{{ $t('term.autoexec.scriptcontent') }}</span>
                         </div>
                       </DropdownItem>
                     </DropdownMenu>
@@ -69,11 +69,11 @@
                   <div v-if="!$utils.isEmpty(step.ifList) || !$utils.isEmpty(step.elseList)" class="divide-line border-color"></div>
                   <div v-if="!$utils.isEmpty(step.ifList)" class="padding-sm">
                     <div>
-                      <div class="text-grey pb-xs">条件</div>
+                      <div class="text-grey pb-xs">{{ $t('page.condition') }}</div>
                       <div class="overflow mb-sm" style="white-space: nowrap;" :title="step.condition">{{ step.condition }}</div>
                     </div>
                     <div>
-                      <div class="text-grey pb-xs">满足执行</div>
+                      <div class="text-grey pb-xs">{{ $t('term.autoexec.satisfiedexecution') }}</div>
                       <div
                         v-for="item in step.ifList"
                         :key="item.id"
@@ -85,7 +85,7 @@
                             <DropdownMenu slot="list">
                               <DropdownItem v-if="item && item.type !== 'tool'" @click.native="openScriptContentDialog(item)">
                                 <div>
-                                  <span class="action-item">脚本内容</span>
+                                  <span class="action-item">{{ $t('term.autoexec.scriptcontent') }}</span>
                                 </div>
                               </DropdownItem>
                             </DropdownMenu>
@@ -104,7 +104,7 @@
                       </div>
                     </div>
                     <div v-if="!$utils.isEmpty(step.elseList)">
-                      <div class="text-grey pb-xs">否则执行</div>
+                      <div class="text-grey pb-xs">{{ $t('term.autoexec.otherwiseexecute') }}</div>
                       <div
                         v-for="item in step.elseList"
                         :key="item.id"
@@ -116,7 +116,7 @@
                             <DropdownMenu slot="list">
                               <DropdownItem v-if="item && item.type !== 'tool'" @click.native="openScriptContentDialog(item)">
                                 <div>
-                                  <span class="action-item">脚本内容</span>
+                                  <span class="action-item">{{ $t('term.autoexec.scriptcontent') }}</span>
                                 </div>
                               </DropdownItem>
                             </DropdownMenu>
@@ -154,7 +154,7 @@
               </div>
             </div>
             <Loading v-else-if="loading" loadingShow></Loading>
-            <div v-else class="text-tip" style="margin-top:35px">暂无运行脚本</div>
+            <div v-else class="text-tip" style="margin-top:35px">{{ $t('page.notarget', {target: $t('term.autoexec.runscript')}) }}</div>
           </div>
           <div>
             <NodeLog
@@ -173,7 +173,7 @@
       </TabPane>
       <TabPane
         v-if="phaseData.execMode == 'sqlfile'"
-        label="执行结果"
+        :label="$t('term.autoexec.executionresult')"
         class="padding"
         :class="getTabDetailClass()"
         name="executeResult"
@@ -190,7 +190,7 @@
       </TabPane>
       <TabPane
         v-if="phaseData.execMode == 'sqlfile'"
-        label="脚本内容"
+        :label="$t('term.autoexec.scriptcontent')"
         class="padding"
         :class="getTabDetailClass()"
         name="scriptContent"
@@ -204,9 +204,8 @@
           :isHasExtraInfo="!$utils.isEmptyObj(jobData.extraInfo)"
         ></SqlContent>
       </TabPane>
-      <!-- :label="$t('autoexec.nodeDetial.param')" -->
       <TabPane
-        label="输入参数"
+        :label="$t('term.autoexec.inputparam')"
         class="padding"
         :class="getTabDetailClass()"
         name="inputParameters"
@@ -223,7 +222,7 @@
         ></Param>
       </TabPane>
       <TabPane
-        label="输出参数"
+        :label="$t('term.autoexec.outputparameter')"
         class="padding"
         :class="getTabDetailClass()"
         name="outputParameters"
@@ -239,9 +238,8 @@
           :type="'output'"
         ></Param>
       </TabPane>
-      <!-- :label="$i18n.t('autoexec.nodeDetial.record')" -->
       <TabPane
-        label="运行记录"
+        :label="$t('term.autoexec.runrecord')"
         class="padding"
         :class="getTabDetailClass()"
         name="record"

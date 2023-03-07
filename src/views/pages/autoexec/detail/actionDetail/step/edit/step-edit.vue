@@ -196,16 +196,12 @@ export default {
         {
           type: 'slot',
           name: 'execMode',
-          // label: this.$i18n.t('autoexec.execMode'),
-          label: '执行方式',
+          label: this.$t('term.autoexec.executionmode'),
           validateList: ['required'],
           disabled: this.scriptLength > 0,
           list: _this.execModeList,
           vertical: true,
           popLable: 120
-          // onChange: function(val) {
-          //   _this.toggleExecuteForm(val);
-          // }
         }
       ],
       executeForm: [
@@ -218,28 +214,26 @@ export default {
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
           dealDataByUrl: this.$utils.getProtocolDataList,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           transfer: true,
           disabled: !_this.canEdit
         },
         {
           type: 'text',
           name: 'executeUser',
-          // label: _this.$i18n.t('autoexec.execUser'),
-          label: this.$t('term.autoexec.job.executeuser'),
+          label: this.$t('term.autoexec.executeuser'),
           value: '',
           transfer: true,
-          // width: '75%',
           disabled: !_this.canEdit,
-          tooltip: '若此处不填用户，当前阶段默认继承组合工具执行用户，若此处填写用户，当前阶段将采用此处填写的执行用户；执行时，不可修改执行用户'
+          tooltip: this.$t('term.autoexec.nowriteusertooltip')
         },
         {
           type: 'select',
           name: 'roundCount',
           value: null,
           transfer: true,
-          label: '分批数量',
-          desc: '将执行目标按数量等分为N个批次，先后执行，阶段设置的分批数量优先级高于组合工具或作业中设置的分批数',
+          label: this.$t('term.autoexec.batchquantity'),
+          desc: this.$t('term.autoexec.batchcountprioritydesc'),
           dataList: this.$utils.getRoundCountList(),
           filterName: 'text',
           disabled: !_this.canEdit
@@ -256,7 +250,7 @@ export default {
       resultList: [], //校验结果
       validateList: ['required'],
       executePolicyList: [],
-      executeTooltip: '若此处不填写执行目标，当前阶段默认继承组合工具执行目标，若此处填写执行目标，当前阶段将采用此处填写的执行目标；执行时，不可修改阶段的执行目标'
+      executeTooltip: this.$t('term.autoexec.executeTooltip')
     };
   },
   beforeCreate() {},
@@ -324,7 +318,7 @@ export default {
       if (isExist) {
         _this.formItem.forEach(f => {
           if (f.name == key) {
-            _this.$set(f, 'errorMessage', (key == 'uk' ? _this.$i18n.t('common.uniqueIdent') : _this.$i18n.t('page.name')) + '重复，请重新输入');
+            _this.$set(f, 'errorMessage', (key == 'uk' ? _this.$i18n.t('page.uniquekey') : this.$t('form.validate.repeat', {target: _this.$i18n.t('page.name')})));
           }
         });
       } else {
@@ -368,7 +362,7 @@ export default {
           _this.resultList.length && (_this.isValid = true);
           if (!_this.isValid) {
             if (!type) {
-              this.$Message.success('校验成功');
+              this.$Message.success(this.$t('form.validate.validatesuccess'));
             }
           }
         }

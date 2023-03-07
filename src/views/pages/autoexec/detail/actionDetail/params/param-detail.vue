@@ -116,7 +116,7 @@
         type="primary"
         ghost
         @click="addParam"
-      ><span class="tsfont-plus ">{{ $i18n.t('common.param') }}</span></Button>
+      ><span class="tsfont-plus ">{{ $i18n.t('page.param') }}</span></Button>
     </div>
   </div>
 </template>

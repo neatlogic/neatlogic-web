@@ -5,10 +5,10 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/time-job-list')">{{ $getFromPage('定时任务') }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ id==null?'添加定时作业':'编辑定时作业' }}</span>
+        <span>{{ id==null? $t('page.newtarget', {target: $t('term.autoexec.timingjob')}): $t('page.edittarget', {target: $t('term.autoexec.timingjob')}) }}</span>
       </template>
       <template slot="topRight">
-        <Button v-show="isTrue" type="primary" @click="save()">保存</Button>
+        <Button v-show="isTrue" type="primary" @click="save()">{{ $t('button.save') }}</Button>
       </template>
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="!isLoading" slot="content" class="content">
@@ -18,7 +18,7 @@
           @on-click="changeTabValue"
         >
           <TabPane
-            label="基本信息"
+            :label="$t('page.basicinfo')"
             name="basicInfo"
           >
             <div class="time-job-detail-form pl-nm">
@@ -32,7 +32,7 @@
           </TabPane>
           <TabPane
             v-show="formSetting.autoexecCombopId.value"
-            label="工具参数"
+            :label="$t('term.autoexec.toolparameter')"
             name="toolParam"
           >
             <!-- 工具参数 -->
@@ -80,7 +80,7 @@ export default {
           value: null,
           defaultValue: null, //默认值
           isHidden: true,
-          label: '主键'
+          label: '#'
         },
         name: {
           type: 'text',
@@ -103,7 +103,7 @@ export default {
           name: 'autoexecCombopId',
           value: '',
           defaultValue: '', //默认值
-          label: _this.$i18n.t('autoexec.action'), // 组合工具
+          label: _this.$t('term.autoexec.combinationtool'), // 组合工具
           disabled: false,
           multiple: false,
           search: true, // 可以搜索
@@ -119,18 +119,18 @@ export default {
           name: 'isActive',
           value: 1,
           defaultValue: 1, //默认值
-          label: _this.$i18n.t('common.status'), // 状态
+          label: _this.$i18n.t('page.status'), // 状态
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
             {
               value: 1,
-              text: _this.$i18n.t('autoexec.schedule.enable') // 启用
+              text: _this.$t('page.enable') // 启用
             },
             {
               value: 0,
-              text: _this.$i18n.t('autoexec.schedule.disable') // 禁用
+              text: _this.$t('page.disable') // 禁用
             }
           ]
         },
@@ -139,7 +139,7 @@ export default {
           name: 'cron',
           value: '',
           defaultValue: '', //默认值
-          label: _this.$i18n.t('autoexec.schedule.cronExpress'), // cron 表达式
+          label: _this.$t('term.autoexec.timingplan'), // cron 表达式
           showType: 'edit',
           config: {direction: 'down'},
           validateList: ['required']
@@ -150,7 +150,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$i18n.t('autoexec.schedule.planStartTime') // 计划开始时间
+          label: _this.$t('term.autoexec.planstarttime') // 计划开始时间
         },
         endTime: {
           type: 'datetime',
@@ -158,7 +158,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$i18n.t('autoexec.schedule.planEndTime') // 计划结束时间
+          label: _this.$t('term.autoexec.planendtime') // 计划结束时间
         }
       },
       initData: {}

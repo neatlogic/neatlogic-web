@@ -34,7 +34,7 @@
                 <span class="text-grey">{{ $t('page.collect') }}</span>
               </div>
               <div class="more cursor" @click="getMore()">
-                <span v-show="favoriteData.pageCount > 1">{{ $t('common.viewMore') }}</span>
+                <span v-show="favoriteData.pageCount > 1">{{ $t('page.viewmore') }}</span>
               </div>
             </div>
             <div class="block-contnet">

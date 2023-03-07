@@ -240,7 +240,7 @@ export default {
           key: 'statusVo'
         },
         {
-          title: this.$t('term.autoexec.job.costtime'),
+          title: this.$t('term.autoexec.costtime'),
           key: 'costTime'
         },
         {

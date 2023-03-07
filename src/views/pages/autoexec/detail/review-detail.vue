@@ -54,7 +54,7 @@
             <span>
               <UserCard v-bind="sourceVersion.lcuVo" hideAvatar></UserCard>
             </span>
-            <span>提交了新版本，待</span>
+            <span>{{ $t('term.autoexec.submitnewversionwait') }}</span>
             <span v-if="sourceVersion.reviewerVoList" class="user-group">
               <span v-for="(user, index) in sourceVersion.reviewerVoList.slice(0, 2)" :key="index" class="user-list">
                 <UserCard v-bind="user" hideAvatar></UserCard>
@@ -77,7 +77,7 @@
                 </div>
               </Poptip>
             </span>
-            <span>审核</span>
+            <span>{{ $t('page.audit') }}</span>
           </div>
           <TsRow>
             <Col :span="targetVersion?'12':24">
@@ -135,7 +135,7 @@
       v-if="reviewDialog"
       :isShow.sync="reviewDialog"
       width="390px"
-      title="驳回"
+      :title="$t('page.reject')"
       @on-close="reviewDialog=false"
       @on-ok="rejectOk('reject')"
     >
@@ -163,7 +163,7 @@ export default {
     return {
       prevPath: {
         router: '/script-manage',
-        name: '返回'
+        name: this.$t('page.back')
       },
       isLoading: true,
       scriptId: null,
@@ -174,7 +174,7 @@ export default {
       operateList: [
         {
           value: 'reject',
-          text: '驳回'
+          text: this.$t('page.reject')
         },
         {
           value: 'pass',
@@ -186,7 +186,7 @@ export default {
       formConfig: {
         content: {
           type: 'textarea',
-          label: '原因',
+          label: this.$t('page.reason'),
           width: '100%',
           labelWidth: '60',
           maxlength: 500,
@@ -197,11 +197,11 @@ export default {
       flagscroll: 1,
       statusList: [
         {
-          text: _this.$i18n.t('common.update'),
+          text: _this.$i18n.t('page.update'),
           colorClass: 'bg-warning'
         },
         {
-          text: _this.$i18n.t('common.add'),
+          text: _this.$i18n.t('page.add'),
           colorClass: 'bg-completa'
         },
         {

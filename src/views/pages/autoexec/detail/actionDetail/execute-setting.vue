@@ -104,8 +104,7 @@ export default {
       loadingShow: true,
       dialogConfig: {
         type: 'slider',
-        // title: _this.$i18n.t('autoexec.execTarget'),
-        title: '执行目标',
+        title: this.$t('term.autoexec.executetarget'),
         width: 'medium',
         isShow: true,
         hasFooter: _this.isEditSetting
@@ -119,14 +118,13 @@ export default {
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
           dealDataByUrl: this.$utils.getProtocolDataList,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           disabled: !_this.isEditSetting,
           transfer: true
         },
         executeUser: {
           type: 'text',
-          // label: _this.$i18n.t('autoexec.execUser'),
-          label: this.$t('term.autoexec.job.executeuser'),
+          label: this.$t('term.autoexec.executeuser'),
           value: '',
           disabled: !_this.isEditSetting
         },
@@ -135,14 +133,13 @@ export default {
           value: null,
           transfer: true,
           disabled: !_this.isEditSetting,
-          label: '分批数量',
-          desc: '将执行目标按数量等分为N个批次，先后执行，组合工具设置分批数量后，创建作业时不可修改分批数量',
+          label: this.$t('term.autoexec.batchquantity'),
+          desc: this.$t('term.autoexec.batchcountdisabledesc'),
           dataList: this.$utils.getRoundCountList()
         },
-        whenToSpecify: {//执行目标
+        whenToSpecify: {
           type: 'radio',
-          // label: _this.$i18n.t('autoexec.execTarget'),
-          label: '选择时机',
+          label: this.$t('term.autoexec.choosethetime'),
           value: '',
           dataList: [],
           disabled: !_this.isEditSetting,

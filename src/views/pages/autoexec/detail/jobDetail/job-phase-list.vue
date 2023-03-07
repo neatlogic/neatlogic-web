@@ -48,7 +48,7 @@
         </li>
       </template>
     </ul>
-    <div v-else class="text-tip padding" style="text-align: center;">{{ $t('autoexec.tips.emptyData') }}</div>
+    <div v-else class="text-tip padding" style="text-align: center;">{{ $t('page.nodata') }}</div>
   </div>
 </template>
 <script>

@@ -17,20 +17,20 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="toPrevpath">{{ prevPath.name }}</span>
+        <span class="tsfont-left text-action" @click="$back()"></span>
       </template>
       <template v-slot:topLeft>
-        <span class="action-title-name h4">{{ oldId?$t('autoexec.copy.script'):$t('autoexec.add.script') }}</span>
+        <span class="action-title-name h4">{{ oldId ? $t('page.copyscript'):$t('page.addscript') }}</span>
       </template>
       <template v-slot:topRight>
         <div v-if="!oldId" class="div-btn-contain action-group text-right no-line">
-          <span v-show="current==0" class="action-item tsfont-arrow-right btn-icon" @click="nextStep()">下一步</span>
-          <span v-show="current==1" class="action-item tsfont-arrow-left btn-icon" @click="current=0">上一步</span>
-          <span v-show="current==1" class="action-item tsfont-save btn-icon" @click="save">保存</span>
-          <span v-show="current==1" class="action-item tsfont-send btn-icon" @click="submit">提交审核</span>
+          <span v-show="current==0" class="action-item tsfont-arrow-right btn-icon" @click="nextStep()">{{ $t('page.thenextstep') }}</span>
+          <span v-show="current==1" class="action-item tsfont-arrow-left btn-icon" @click="current=0">{{ $t('page.previousstep') }}</span>
+          <span v-show="current==1" class="action-item tsfont-save btn-icon" @click="save">{{ $t('button.save') }}</span>
+          <span v-show="current==1" class="action-item tsfont-send btn-icon" @click="submit">{{ $t('page.submitaudit') }}</span>
         </div>
         <div v-else class="div-btn-contain action-group text-right">
-          <span class="action-item tsfont-save btn-icon" @click="save">保存</span>
+          <span class="action-item tsfont-save btn-icon" @click="save">{{ $t('button.save') }}</span>
         </div>
       </template>
       <template v-slot:content>
@@ -49,7 +49,7 @@
           </div>
           <div v-show="current == 1" class="auth btn">
             <div class="item-list">
-              <div class="title require-label">草稿名称</div>
+              <div class="title require-label">{{ $t('term.autoexec.draftname') }}</div>
               <TsFormInput
                 ref="versionForm"
                 v-model="versionConfig.title"
@@ -87,15 +87,11 @@ export default {
   },
   data() {
     return {
-      prevPath: {
-        router: '/script-manage',
-        name: this.$i18n.t('autoexec.script') + this.$i18n.t('common.list')
-      },
       settingForm: [],
       oldId: null,
       scriptConfig: null, //脚本的数据
       current: 0,
-      stepList: ['基本信息', '创建版本'],
+      stepList: [this.$t('page.basicinfo'), this.$t('term.autoexec.createversion')],
       settingConfig: {
         name: '',
         typeId: '',
@@ -130,9 +126,9 @@ export default {
           name: 'typeId',
           value: '',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -147,9 +143,9 @@ export default {
           name: 'catalogId',
           value: '',
           dataList: [],
-          label: '工具目录',
+          label: this.$t('term.autoexec.directorytool'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: false,
           textName: 'name',
@@ -161,7 +157,7 @@ export default {
         {
           name: 'isLib',
           type: 'radio',
-          label: '是否库文件',
+          label: this.$t('term.autoexec.islibraryfile'),
           dataList: [
             {
               text: this.$t('page.yes'),
@@ -190,9 +186,9 @@ export default {
           type: 'select',
           name: 'execMode',
           value: '',
-          label: this.$i18n.t('autoexec.execMode'),
+          label: this.$t('term.autoexec.executionmode'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           width: '100%',
           dynamicUrl: '/api/rest/universal/enum/get',
           params: {enumClass: 'ScriptExecMode'},
@@ -203,9 +199,9 @@ export default {
           type: 'select',
           name: 'riskId',
           value: '',
-          label: '风险等级',
+          label: this.$t('term.autoexec.risklevel'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           width: '100%',
           dynamicUrl: '/api/rest/autoexec/risk/list',
           validateList: ['required']
@@ -220,7 +216,7 @@ export default {
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
-          tooltip: '用于在作业详情页面展示个性化数据',
+          tooltip: this.$t('term.autoexec.jobdetailspecialinfo'),
           with: '100%',
           transfer: true
         },
@@ -229,7 +225,7 @@ export default {
           name: 'description',
           value: '',
           maxlength: 500,
-          label: this.$i18n.t('common.description'),
+          label: this.$i18n.t('page.description'),
           width: '100%'
         }
       ],
@@ -239,7 +235,7 @@ export default {
           name: 'description',
           value: '',
           maxlength: 500,
-          label: this.$i18n.t('common.description'),
+          label: this.$i18n.t('page.description'),
           width: '100%'
         }
       ],
@@ -293,12 +289,6 @@ export default {
           this.formList[i].dataList = await this.$toolCatalogUtils.getTreeList();
         }
       }
-    },
-    toPrevpath() {
-      //返回到列表页面
-      this.$router.push({
-        path: this.prevPath.router
-      });
     },
     getDetail(id) {
       //根据id获取详情
@@ -390,7 +380,7 @@ export default {
         }
         this.$api.autoexec.script.copyScript(data).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('复制成功');
+            this.$Message.success(this.$t('message.content.copysuccess'));
             this.$router.push({
               path: '/script-detail',
               query: {
@@ -411,7 +401,7 @@ export default {
         data.catalogId = this.$toolCatalogUtils.handleCatalogIdAlltoZero(data);
       }
       let res = await this.$api.autoexec.script.saveScript(data);
-      this.$Message.success('提交成功');
+      this.$Message.success(this.$t('message.content.commitsuccess'));
       let config = res.Return;
       this.id = config.id;
       this.versionId = config.versionId;

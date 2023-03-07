@@ -87,7 +87,7 @@
         @on-ok="saveAction()"
       >
         <template v-slot:header>
-          <div>{{ $t('autoexec.publish.action') }}</div>
+          <div>{{ $t('term.autoexec.publishcombinetool') }}</div>
         </template>
         <template v-slot>
           <div>
@@ -126,13 +126,13 @@ export default {
         'false-value': 0
       },
       searchConfig: {
-        placeholder: this.$i18n.t('common.insert') + this.$i18n.t('page.name') + '、' + this.$i18n.t('common.description'),
+        placeholder: this.$i18n.t('page.insert') + this.$i18n.t('page.name') + '、' + this.$i18n.t('page.description'),
         searchList: [
           {
             type: 'select',
             name: 'typeIdList',
-            label: this.$t('term.autoexec.job.toolclassification'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.toolclassification'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             search: true,
             multiple: true,
             dynamicUrl: '/api/rest/autoexec/type/search',
@@ -143,8 +143,8 @@ export default {
           {
             type: 'select',
             name: 'execMode',
-            label: this.$i18n.t('autoexec.execMode'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.executionmode'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'ScriptExecMode' },
             transfer: true
@@ -152,8 +152,8 @@ export default {
           {
             type: 'select',
             name: 'riskIdList',
-            label: this.$i18n.t('autoexec.actionLevel'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.operationlevel'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             multiple: true,
             dynamicUrl: '/api/rest/autoexec/risk/list',
             transfer: true
@@ -161,8 +161,8 @@ export default {
           {
             type: 'select',
             name: 'isActive',
-            label: this.$i18n.t('common.status'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$i18n.t('page.status'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             dataList: [
               {
                 text: this.$i18n.t('page.enable'),
@@ -215,9 +215,9 @@ export default {
           name: 'typeId',
           value: '',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -229,7 +229,7 @@ export default {
           type: 'textarea',
           name: 'description',
           value: '',
-          label: this.$i18n.t('common.description'),
+          label: this.$i18n.t('page.description'),
           transfer: true,
           maxlength: 500
         }

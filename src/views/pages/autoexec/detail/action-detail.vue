@@ -8,14 +8,14 @@
       border="border"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('组合工具') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('router.autoexec.combinationtool') }}</span>
       </template>
       <template v-slot:topLeft>
         <div v-if="versionId == null && effectiveEditable">
           <TsFormInput
             ref="formNameInput"
             v-model="versionName"
-            :placeholder="$t('autoexec.placeholder.version')"
+            :placeholder="$t('term.autoexec.pleaseinputversionname')"
             maxlength="50"
             size="large"
             isEmptyBg
@@ -33,15 +33,15 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <span class="action-item tsfont-blocks" @click="openExecuteSetting">执行目标</span>
-          <span class="action-item tsfont-config" @click="openParamsSetting">作业参数</span>
-          <span v-if="effectiveEditable" class="action-item tsfont-check" @click="openValid()">{{ $t('common.validate') }}</span>
-          <span v-if="effectiveEditable" class="action-item" @click="testVersionAction()">测试</span>
-          <span v-if="effectiveCancelable" class="action-item" @click="cancelVersionAction()">取消</span>
-          <span v-if="effectiveDeletable" class="action-item" @click="deleteVersionAction()">删除版本</span>
-          <span v-if="effectiveEditable" class="action-item" @click="saveVersionAction()">保存草稿</span>
+          <span class="action-item tsfont-blocks" @click="openExecuteSetting">{{ $t('term.autoexec.executetarget') }}</span>
+          <span class="action-item tsfont-config" @click="openParamsSetting">{{ $t('term.autoexec.jobparam') }}</span>
+          <span v-if="effectiveEditable" class="action-item tsfont-check" @click="openValid()">{{ $t('page.validate') }}</span>
+          <span v-if="effectiveEditable" class="action-item" @click="testVersionAction()">{{ $t('page.test') }}</span>
+          <span v-if="effectiveCancelable" class="action-item" @click="cancelVersionAction()">{{ $t('button.cancel') }}</span>
+          <span v-if="effectiveDeletable" class="action-item" @click="deleteVersionAction()">{{ $t('term.autoexec.deletedversion') }}</span>
+          <span v-if="effectiveEditable" class="action-item" @click="saveVersionAction()">{{ $t('page.savedraft') }}</span>
           <span v-if="effectiveEditable" class="action-item">
-            <Button type="primary" @click="submitVersionAction()">提交审核</Button>
+            <Button type="primary" @click="submitVersionAction()">{{ $t('page.submitaudit') }}</Button>
           </span>
           <span v-if="versionIsActive == 1" class="action-item">
             <Dropdown trigger="hover" placement="bottom-start">
@@ -49,8 +49,7 @@
               <DropdownMenu slot="list">
                 <DropdownItem @click.native="isShowRecord = true">
                   <div class="more-action">
-                    <!-- {{ $t('autoexec.execRecord') }} -->
-                    执行记录
+                    {{ $t('term.autoexec.executionrecord') }}
                   </div>
                 </DropdownItem>
                 <!-- 激活 -->
@@ -67,22 +66,22 @@
               type="primary"
               icon="tsfont tsfont-plus"
               :disabled="!isActive || !executable"
-              :title="!isActive ? '当前组合工具为禁用状态，请先激活组合工具后再执行' : !executable ? '无执行权限，请联系管理员！' : ''"
+              :title="!isActive ? $t('term.autoexec.activecombinetooltip') : !executable ? $t('term.autoexec.noexecuteauthrelateadmin') : ''"
               ghost
               @click="toExecute"
-            >作业</Button>
+            >{{ $t('term.autoexec.job') }}</Button>
           </span>
           <span v-if="effectiveCreateable" class="action-item">
             <Button
               type="primary"
               @click="createVersionAction()"
-            >编辑</Button>
+            >{{ $t('button.edit') }}</Button>
           </span>
           <span v-if="effectiveReviewable" class="action-item">
             <Button
               type="error"
               @click="rejectVersionAction()"
-            >驳回</Button>
+            >{{ $t('page.reject') }}</Button>
           </span>
           <span v-if="effectiveReviewable" class="action-item">
             <Button
@@ -94,13 +93,13 @@
             <Button
               type="info"
               @click="retractVersionAction()"
-            >撤回</Button>
+            >{{ $t('button.revocation') }}</Button>
           </span>
           <span v-if="effectiveRollbackable" class="action-item">
             <Button
               type="info"
               @click="rollbackVersionAction()"
-            >回退</Button>
+            >{{ $t('button.rollback') }}</Button>
           </span>
         </div>
       </template>
@@ -145,7 +144,7 @@
       </template>
       <div slot="right">
         <Tabs v-model="tabValue" class="block-tabs" :animated="false">
-          <TabPane :label="effectiveBaseInfoEditable ? getBasicInfoLabel('基本信息') : '基本信息'" name="basicInfo">
+          <TabPane :label="effectiveBaseInfoEditable ? getBasicInfoLabel($t('page.basicinfo')) : $t('page.basicinfo')" name="basicInfo">
             <div class="setting-main bg-op block-large">
               <BasicInfo
                 :dataConfig="basicInfo"
@@ -159,7 +158,7 @@
               ></TimeJobClickText>
             </div>
           </TabPane>
-          <TabPane v-if="currentConfig" label="阶段组" name="stepGroup">
+          <TabPane v-if="currentConfig" :label="$t('term.autoexec.stagegroup')" name="stepGroup">
             <div class="setting-main bg-op block-large">
               <StepGroup
                 :id="id"
@@ -170,7 +169,7 @@
               ></StepGroup>
             </div>
           </TabPane>
-          <TabPane label="场景" name="scenario">
+          <TabPane :label="$t('term.autoexec.scene')" name="scenario">
             <div class="setting-main bg-op block-large">
               <ScenarioSetting
                 :combopId="id"
@@ -183,7 +182,7 @@
               ></ScenarioSetting>
             </div>
           </TabPane>
-          <TabPane v-if="profileList.length > 0" label="预置参数" name="profile">
+          <TabPane v-if="profileList.length > 0" :label="$t('term.autoexec.presetparameter')" name="profile">
             <div class="setting-main bg-op block-large">
               <ProfileSetting :profileList="profileList" @updateProfileList="updateProfileList"></ProfileSetting>
             </div>
@@ -225,7 +224,7 @@
       @on-close="showBasicInfoEditDialog = false"
     >
       <template v-slot:header>
-        <div>编辑基本信息</div>
+        <div>{{ $t('page.edittarget', {target: $t('page.basicinfo')}) }}</div>
       </template>
       <TsForm
         ref="editBasicInfo"
@@ -258,9 +257,9 @@
         <div slot="content">
           <div>
             <i class="tsfont-check-s text-success icon-fz"></i>
-            <span class="success-fz">提交成功</span>
+            <span class="success-fz">{{ $t('message.content.commitsuccess') }}</span>
           </div>
-          <div class="text-tip content-tip">确定发布新版本？</div>
+          <div class="text-tip content-tip">{{ $t('term.autoexec.surepublishthenewversion') }}</div>
         </div>
       </template>
     </TsDialog>
@@ -330,7 +329,6 @@ export default {
         name: {
           type: 'text',
           name: 'name',
-          // width: '100%',
           value: '',
           maxlength: 50,
           label: this.$i18n.t('page.name'),
@@ -340,11 +338,10 @@ export default {
           type: 'select',
           name: 'typeId',
           value: '',
-          // width: '100%',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -358,7 +355,7 @@ export default {
         owner: {
           type: 'userselect',
           name: 'owner',
-          label: '维护人',
+          label: this.$t('term.autoexec.maintainer'),
           transfer: true,
           multiple: false,
           groupList: ['user'],
@@ -404,9 +401,8 @@ export default {
           type: 'textarea',
           name: 'description',
           value: '',
-          // width: '100%',
           maxlength: 500,
-          label: this.$i18n.t('common.description')
+          label: this.$i18n.t('page.description')
         }
       },
       showReleaseNewVersionDialog: false,
@@ -722,15 +718,15 @@ export default {
       let content = '';
       if (versionCount > 1) {
         if (_this.versionStatus == 'draft') {
-          title = '确定删除该版本：' + _this.versionName + '？';
+          title = this.$t('dialog.content.deleteconfirm', {target: _this.versionName});
         } else {
-          title = '确定删除该版本：版本' + _this.version + '？';
+          title = this.$t('dialog.content.deleteconfirm', {target: _this.version});
         }
         
         content = '';
       } else {
-        title = '是否删除当前自定义工具';
-        content = '当前自定义工具仅有一个版本，删除此版本将导致删除当前自定义工具。';
+        title = this.$t('dialog.content.deleteconfirm', {target: _this.$t('term.autoexec.customtool')});
+        content = this.$t('term.autoexec.deletelastversiontip');
       }
       this.$createDialog({
         title: title,
@@ -772,7 +768,7 @@ export default {
               if (res.Return.reviewable == 1) {
                 this.showReleaseNewVersionDialog = true;
               } else {
-                this.$Message.success('提交成功');
+                this.$Message.success(this.$t('message.content.commitsuccess'));
               }
               canSave = true; //保存成功之后才可以进行下一步，在路由那里判断
               this.getAction();
@@ -805,7 +801,7 @@ export default {
       };
       this.$api.autoexec.action.updateVersionStatusAction(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('已驳回');
+          this.$Message.success(this.$t('message.content.executesuccess'));
           this.versionStatus = 'rejected';
           this.versionBasicInfo.status = 'rejected';
         }
@@ -818,7 +814,7 @@ export default {
       };
       this.$api.autoexec.action.updateVersionStatusAction(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('已通过');
+          this.$Message.success(this.$t('message.content.executesuccess'));
           this.showReleaseNewVersionDialog = false;
           this.versionStatus = 'passed';
           this.versionIsActive = 1;
@@ -835,7 +831,7 @@ export default {
       };
       this.$api.autoexec.action.updateVersionStatusAction(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('已撤回');
+          this.$Message.success(this.$t('message.content.executesuccess'));
           this.versionStatus = 'draft';
           this.versionBasicInfo.status = 'draft';
         }
@@ -844,7 +840,7 @@ export default {
     rollbackVersionAction() {
       this.$api.autoexec.action.updateVersionIsActiveAction({id: this.versionId}).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('已回退');
+          this.$Message.success(this.$t('message.content.executesuccess'));
           this.versionIsActive = 1;
           this.activeVersionId = this.versionId;
           this.versionBasicInfo.isActive = 1;
@@ -916,7 +912,7 @@ export default {
       let isValid = true;
       this.validList = [].concat(this.validStepConfig()); //基本信息的校验
       if (this.executeConfig && this.executeConfig.whenToSpecify == 'now' && !this.executeConfig.executeUser) {
-        this.validList.push({ text: this.$i18n.t('autoexec.execUser') + '：' + this.$i18n.t('autoexec.warning.empty.execUser'), type: 'error', config: { type: 'executeSetting' } });
+        this.validList.push({ text: this.$t('term.autoexec.executeuser') + '：' + this.$t('page.notarget', {target: this.$t('term.autoexec.executeuser')}), type: 'error', config: { type: 'executeSetting' } });
       }
 
       if (this.validList.find(item => item.type == 'error')) {
@@ -930,13 +926,13 @@ export default {
       let stepList = this.stepList;
       if (!stepList.length) {
         //至少有一个阶段
-        valid = [{ text: this.$i18n.t('autoexec.step') + this.$i18n.t('common.setting') + '：' + this.$i18n.t('autoexec.warning.empty.step'), type: 'error' }];
+        valid = [{ text: this.$t('term.autoexec.phase') + this.$i18n.t('page.setting') + '：' + this.$t('page.notarget', {target: this.$t('term.autoexec.phase')}), type: 'error' }];
       } else {
         stepList.forEach(v => {
           //校验至少一个脚本+输入参数如果必填需要有值
           if (!v.config || !v.config.phaseOperationList || !v.config.phaseOperationList.length) {
             valid.push({
-              text: this.$i18n.t('autoexec.step') + v.name + this.$i18n.t('common.setting') + '：' + this.$i18n.t('autoexec.warning.empty.operation'),
+              text: this.$t('term.autoexec.phase') + v.name + this.$i18n.t('page.setting') + '：' + this.$t('page.notarget', {target: this.$t('term.autoexec.tool')}),
               type: 'error',
               config: {
                 stepName: v.name,
@@ -1165,7 +1161,7 @@ export default {
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
-              text: '阶段' + step.name + ' 设置：请输入条件',
+              text: this.$t('term.autoexec.phase') + step.name + this.$t('term.autoexec.setinputcondition'),
               type: 'error',
               config: {
                 stepName: step.name,
@@ -1200,7 +1196,7 @@ export default {
               });
               if (!isPass) {
                 validList.push({
-                  text: '阶段' + step.name + '【' + p.operationName + '】设置:输入参数数据填写不完整',
+                  text: this.$t('term.autoexec.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.phasesetinputparamtip'),
                   type: 'error',
                   config: {
                     stepName: step.name,
@@ -1224,7 +1220,7 @@ export default {
               if (!isPassArgument) {
                 //自由参数校验信息
                 validList.push({
-                  text: '阶段' + step.name + '【' + p.operationName + '】设置:自由参数数据填写不完整',
+                  text: this.$t('term.autoexec.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.phasesetfreeparamtip'),
                   type: 'error',
                   config: {
                     stepName: step.name,
@@ -1239,7 +1235,7 @@ export default {
             }
             if (!isProfile) {
               validList.push({
-                text: '阶段' + step.name + '【' + p.operationName + '】设置:请选择预置参数集',
+                text: this.$t('term.autoexec.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.phasesetpresetparamtip'),
                 type: 'error',
                 config: {
                   stepName: step.name,
@@ -1250,7 +1246,7 @@ export default {
             }
           } else {
             validList.push({
-              text: '阶段' + step.name + '【' + p.operationName + '】已被删除，请在组合工具中清理该工具并保存',
+              text: this.$t('term.autoexec.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.phasedeletetip'),
               type: 'error',
               config: {
                 stepName: step.name,

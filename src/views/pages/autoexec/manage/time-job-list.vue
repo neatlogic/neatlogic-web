@@ -60,27 +60,27 @@
           <template slot="jobStatus" slot-scope="{ row }">
             <div v-if="!$utils.isEmpty(row.jobStatus)">
               <div>
-                <span class="text-grey">启动后已执行：</span>
+                <span class="text-grey">{{ $t('term.autoexec.starttoexecute') }}</span>
                 <span>{{ row.jobStatus.execCount || '0' }}次</span>
               </div>
               <div v-if="row.jobStatus.beginTime != null">
-                <span class="text-grey">计划开始时间：</span>
+                <span class="text-grey">{{ $t('term.autoexec.planstarttime') }}：</span>
                 <span>{{ row.jobStatus.beginTime | formatDate }}</span>
               </div>
               <div v-if="row.jobStatus.endTime != null">
-                <span class="text-grey">计划结束时间：</span>
+                <span class="text-grey">{{ $t('term.autoexec.planendtime') }}：</span>
                 <span>{{ row.jobStatus.endTime | formatDate }}</span>
               </div>
               <div v-if="row.jobStatus.lastFireTime != null">
-                <span class="text-grey">最近激活时间：</span>
+                <span class="text-grey">{{ $t('term.autoexec.lastactivetime') }}：</span>
                 <span>{{ row.jobStatus.lastFireTime | formatDate }}</span>
               </div>
               <div v-if="row.jobStatus.lastFinishTime != null">
-                <span class="text-grey">最近完成时间：</span>
+                <span class="text-grey">{{ $t('term.autoexec.lastcompletetime') }}：</span>
                 <span>{{ row.jobStatus.lastFinishTime | formatDate }}</span>
               </div>
               <div v-if="row.jobStatus.nextFireTime != null">
-                <span class="text-grey">下次激活时间：</span>
+                <span class="text-grey">{{ $t('term.autoexec.nextactivationtime') }}：</span>
                 <span>{{ row.jobStatus.nextFireTime | formatDate }}</span>
               </div>
             </div>
@@ -88,7 +88,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul v-if="row.editable" class="tstable-action-ul">
-                <li :title="!row.editable ? $t('autoexec.disableDesc.letter') : ''" @click.stop>
+                <li :title="!row.editable ? $t('page.notauthrelationadmin') : ''" @click.stop>
                   <TsFormSwitch
                     v-model="row.isActive"
                     :true-value="1"
@@ -100,7 +100,7 @@
                 </li>
                 <li
                   class="icon tsfont-trash-o"
-                  :title="!row.deletable ? $t('autoexec.disableDesc.letter') : ''"
+                  :title="!row.deletable ? $t('page.notauthrelationadmin') : ''"
                   :class="{ disable: !row.deletable }"
                   @click.stop="deleteRow(row.id, row.deletable)"
                 >
@@ -110,11 +110,11 @@
                 <li
                   v-if="row.execCount > 0"
                   class="ts-page"
-                  :title="$t('autoexec.execRecord.letter')"
+                  :title="$t('term.autoexec.executionrecord')"
                   @click="showAudit(row.uuid)"
                 >
                   <!-- 执行记录 -->
-                  {{ $t('autoexec.execRecord') }}
+                  {{ $t('term.autoexec.executionrecord') }}
                 </li>
               </ul>
             </div>
@@ -163,7 +163,7 @@ export default {
         name: 'autoexecCombopId',
         value: '',
         defaultValue: '', //默认值
-        placeholder: _this.$i18n.t('autoexec.action'), // 组合工具
+        placeholder: this.$t('term.autoexec.combinationtool'), // 组合工具
         multiple: false,
         search: true, // 可以搜索
         isNowrap: true, // 不换行
@@ -180,12 +180,12 @@ export default {
           // 选中列表表头字段
           { key: 'name', title: _this.$i18n.t('page.name') }, // 名称
           { key: 'isActive', title: _this.$i18n.t('page.status') }, // 状态
-          { key: 'cron', title: _this.$i18n.t('autoexec.schedule.cronExpress') }, // cron表达式
-          { key: 'autoexecCombopName', title: _this.$i18n.t('autoexec.schedule.autoexecCombopName') }, // 关联组合工具
-          { key: 'execCount', title: _this.$i18n.t('autoexec.schedule.execCount') }, // 执行次数
+          { key: 'cron', title: this.$t('term.autoexec.timingplan') }, // cron表达式
+          { key: 'autoexecCombopName', title: this.$t('term.autoexec.relatecombinationtool') }, // 关联组合工具
+          { key: 'execCount', title: this.$t('term.autoexec.executecount') }, // 执行次数
           { key: 'lcuVo', title: this.$t('page.fcu'), type: 'user' }, // 修改人
           { key: 'lcd', title: this.$t('page.fcd'), type: 'time' }, // 修改时间
-          { key: 'jobStatus', title: this.$t('term.autoexec.job.executionsituation') }, 
+          { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') }, 
           { key: 'action' }
         ],
         tbodyList: [],
@@ -242,7 +242,7 @@ export default {
 
       this.$createDialog({
         title: this.$i18n.t('page.warning'), // 警告
-        content: this.$i18n.t('autoexec.schedule.isSureToDeleteThisTimeJob'), // 是否确认删除该定时任务?
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.autoexec.scheduledtask')}), // 是否确认删除该定时任务?
         btnType: 'error',
         'on-ok': vnode => {
           let params = {
@@ -260,7 +260,7 @@ export default {
     },
     getActiveName(num) {
       // num 1表示启用，0 表示禁用
-      return num == 1 ? this.$i18n.t('autoexec.schedule.enable') : this.$i18n.t('autoexec.schedule.disable');
+      return num == 1 ? this.$t('page.enable') : this.$t('page.disable');
     },
     toActionDetail(row) {
       // 点击跳转道组合工具详情页面

@@ -5,7 +5,7 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ $t('autoexec.add.job') }}</span>
+        <span>{{ $t('term.autoexec.addjob') }}</span>
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align: right;">
@@ -20,26 +20,26 @@
       </template>
       <div slot="content" class="contain pl-nm pr-nm">
         <div class="box-block">
-          <Divider orientation="start">作业名称</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.jobname') }}</Divider>
           <div>
             <TsForm ref="nameForm" v-bind="nameForm"></TsForm>
           </div>
         </div>
         <div class="box-block">
-          <Divider orientation="start">输入参数</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.inputparam') }}</Divider>
           <div>
             <SetParam ref="param" :param="paramValue" :paramList="dataConfig.inputParamList"></SetParam>
           </div>
         </div>
         <div v-if="!$utils.isEmpty(argumentConfig)" class="box-block">
-          <Divider orientation="start">自由参数</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.freeparameter') }}</Divider>
           <div>
             <ArgumentParams ref="argumentConfig" :config="argumentConfig"></ArgumentParams>
           </div>
         </div>
         <template v-if="targetShow && dataConfig">
           <div class="box-block">
-            <Divider orientation="start">执行目标</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
             <div>
               <!-- 流水线执行目标 -->
               <AddTarget
@@ -52,10 +52,10 @@
                 :defaultTagFilter="tagIdList"
               ></AddTarget>
             </div>
-            <span class="text-tip">仅支持选择包含'test'标签的资产作为执行目标</span>
+            <span class="text-tip">{{ $t('term.autoexec.executetargettips') }}</span>
           </div>
           <div class="box-block">
-            <Divider orientation="start">执行帐号</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.executiveaccount') }}</Divider>
             <div>
               <TsForm
                 ref="executeForm"
@@ -96,7 +96,7 @@ export default {
           name: {
             width: '100%',
             type: 'text',
-            label: _this.$i18n.t('common.comparam.name', {'name': _this.$i18n.t('autoexec.job')}),
+            label: this.$t('term.autoexec.jobname'),
             value: '',
             validateList: ['required']
           }
@@ -108,10 +108,10 @@ export default {
         itemList: {
           protocolId: {
             type: 'select',
-            label: _this.$i18n.t('autoexec.http'),
+            label: _this.$t('page.protocol'),
             value: '',
             multiple: false,
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getProtocolDataList,
@@ -120,7 +120,7 @@ export default {
           executeUser: {
             type: 'text',
             value: '',
-            label: _this.$i18n.t('autoexec.execUser'),
+            label: _this.$t('term.autoexec.executeuser'),
             validateList: ['required']
           }
         }

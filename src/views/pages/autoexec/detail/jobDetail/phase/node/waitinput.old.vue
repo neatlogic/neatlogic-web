@@ -20,7 +20,7 @@
             class="value-item"
             :validateList="validateList"
           ></TsFormInput> 
-          <Button type="primary" @click="commit()">继续执行</Button> 
+          <Button type="primary" @click="commit()">{{ $t('button.continueexecute') }}</Button> 
         </div>
       </template>
       <template v-if="interactData.opType=='select' || interactData.opType=='mselect'">
@@ -35,7 +35,7 @@
             :multiple="interactData.opType=='mselect'?true:false"
             :dataList="getDataList"
           ></TsFormSelect>
-          <Button type="primary" @click="commit()">继续执行</Button> 
+          <Button type="primary" @click="commit()">{{ $t('button.continueexecute') }}</Button> 
         </div>
       </template>
     </div>

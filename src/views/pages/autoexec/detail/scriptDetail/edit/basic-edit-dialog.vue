@@ -1,7 +1,7 @@
 <template>
   <div class="basic-edit">
     <TsDialog
-      title="编辑基本信息"
+      :title="$t('page.edittarget', {target: $t('page.basicinfo')})"
       type="modal"
       :isShow="true"
       @on-ok="save"
@@ -86,9 +86,9 @@ export default {
           name: 'typeId',
           value: '',
           dataList: [],
-          label: this.$t('term.autoexec.job.toolclassification'),
+          label: this.$t('term.autoexec.toolclassification'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',
@@ -106,9 +106,9 @@ export default {
           name: 'catalogId',
           value: '',
           dataList: [],
-          label: '工具目录',
+          label: this.$t('term.autoexec.directorytool'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           validateList: ['required'],
           search: false,
           textName: 'name',
@@ -123,7 +123,7 @@ export default {
         {
           name: 'isLib',
           type: 'radio',
-          label: '是否库文件',
+          label: this.$t('term.autoexec.islibraryfile'),
           dataList: [
             {
               text: this.$t('page.yes'),
@@ -156,9 +156,9 @@ export default {
           type: 'select',
           name: 'execMode',
           value: '',
-          label: this.$i18n.t('autoexec.execMode'),
+          label: this.$t('term.autoexec.executionmode'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           width: '100%',
           dynamicUrl: '/api/rest/universal/enum/get',
           params: {enumClass: 'ScriptExecMode'},
@@ -174,9 +174,9 @@ export default {
           type: 'select',
           name: 'riskId',
           value: '',
-          label: '风险等级',
+          label: this.$t('term.autoexec.risklevel'),
           multiple: false,
-          placeholder: this.$i18n.t('common.select1'),
+          placeholder: this.$i18n.t('page.pleaseselect'),
           width: '100%',
           dynamicUrl: '/api/rest/autoexec/risk/list',
           validateList: ['required'],
@@ -196,7 +196,7 @@ export default {
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
-          tooltip: '用于在作业详情页面展示个性化数据',
+          tooltip: this.$t('term.autoexec.jobdetailspecialinfo'),
           with: '100%',
           transfer: true,
           onChangelabel: (val) => {
@@ -206,14 +206,14 @@ export default {
         {
           type: 'slot',
           name: 'defaultProfileId',
-          label: '预置参数集'
+          label: this.$t('term.autoexec.presetparameterset')
         },
         {
           type: 'textarea',
           name: 'description',
           value: '',
           maxlength: 500,
-          label: this.$i18n.t('common.description'),
+          label: this.$i18n.t('page.description'),
           width: '100%',
           disabled: this.operationType == 'tool',
           onChange: (val) => {
@@ -225,14 +225,14 @@ export default {
         {
           type: 'slot',
           name: 'defaultProfileId',
-          label: '预置参数集'
+          label: this.$t('term.autoexec.presetparameterset')
         },
         {
           type: 'textarea',
           name: 'description',
           value: '',
           maxlength: 500,
-          label: this.$i18n.t('common.description'),
+          label: this.$i18n.t('page.description'),
           width: '100%',
           disabled: this.operationType == 'tool',
           onChange: (val) => {
@@ -251,7 +251,7 @@ export default {
         border: 'border',
         transfer: true,
         firstSelect: false,
-        firstText: '预置参数集',
+        firstText: this.$t('term.autoexec.presetparameterset'),
         firstLi: true,
         disabled: this.operationType == 'tool',
         onChangelabel: (val) => {
@@ -318,7 +318,7 @@ export default {
     },
     refreshProfile() { //刷新
       this.profileForm.dynamicUrl = '/api/rest/autoexec/profile/search?uuid=' + this.$utils.setUuid();
-      this.$Message.success('刷新成功');
+      this.$Message.success(this.$t('message.content.refreshsuccess'));
     },
     changeLabel(label, type) {
       this.list.forEach(item => {
@@ -336,8 +336,8 @@ export default {
     },
     addSettingList() {
       let findItem = this.list.findIndex(item => item.name == 'isLibName');
-      this.list.splice(findItem + 1, 0, {name: 'execModeText', text: '', label: '执行方式', isRequired: true});
-      this.list.splice(findItem + 2, 0, {name: 'riskName', text: '', label: '风险等级', isRequired: true});
+      this.list.splice(findItem + 1, 0, {name: 'execModeText', text: '', label: this.$t('term.autoexec.executionmode'), isRequired: true});
+      this.list.splice(findItem + 2, 0, {name: 'riskName', text: '', label: this.$t('term.autoexec.risklevel'), isRequired: true});
       this.list.splice(findItem + 3, 0, {name: 'customTemplateName', text: '-', label: this.$t('term.autoexec.customtemplate'), isRequired: false });
     },
     save() {

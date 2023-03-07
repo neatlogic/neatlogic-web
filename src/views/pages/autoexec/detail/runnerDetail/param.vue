@@ -25,7 +25,7 @@
         </TsFormItem>
       </div>
     </div>
-    <div v-else-if="!showLoading" class="text-tip lh-2" :class="isFullWidth ? 'no-data-empty-top' : ''">暂无参数</div>
+    <div v-else-if="!showLoading" class="text-tip lh-2" :class="isFullWidth ? 'no-data-empty-top' : ''">{{ $t('page.notarget', {target: $t('page.param')}) }}</div>
     <Loading v-else-if="showLoading"></Loading>
   </div>
 </template>

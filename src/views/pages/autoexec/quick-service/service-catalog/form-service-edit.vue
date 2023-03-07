@@ -4,7 +4,7 @@
     <div class="radius-lg bg-op padding">
       <div class="flex-between" :class="unfoldAndFold.jobName ? 'mb-sm' : ''">
         <span class="tsfont-biaoti">
-          {{ $t('term.autoexec.jobname') }}
+          {{ $t('term.autoexec.job') }}
           <i class="require-label"></i>
         </span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.jobName ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('jobName')"></span>

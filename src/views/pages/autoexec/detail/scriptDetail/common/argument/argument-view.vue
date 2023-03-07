@@ -16,7 +16,7 @@
 <template>
   <div class="argument-view pb-nm">
     <div class="title">
-      自由参数
+      {{ $t('term.autoexec.freeparameter') }}
     </div>
     <div v-if="!$utils.isEmpty(config)" class="bg-op radius-lg padding">
       <div class="detail">
@@ -26,23 +26,23 @@
         </div>
         <div class="text-tip overflow">
           <div>
-            {{ config.defaultValue || '暂无默认值' }}
+            {{ config.defaultValue || $t('page.notarget', {target: $t('page.defaultvalue')}) }}
           </div>
-          <div class="overflow detail-des" :title="config.description?config.description:''">{{ config.description || '暂无描述' }}</div>
+          <div class="overflow detail-des" :title="config.description?config.description:''">{{ config.description || $t('page.notarget', {target: $t('page.description')}) }}</div>
         </div>
         <div class="text-tip">
           <TsFormSwitch
             v-model="config.isRequired"
             :disabled="true"
-            trueText="必填"
-            falseText="选填"
+            :trueText="$t('page.require')"
+            :falseText="$t('page.optional')"
             :showStatus="true"
           ></TsFormSwitch>
         </div>
       </div>
     </div>
     <div v-else class="text-tip">
-      暂无自由参数
+      {{ $t('page.notarget', {target: $t('term.autoexec.freeparameter')}) }}
     </div>
   </div>
 </template>

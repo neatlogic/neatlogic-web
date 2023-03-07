@@ -16,7 +16,7 @@
 <template>
   <div class="compare">
     <div v-if="config.inputParamList && config.inputParamList.length > 0" class="item-list">
-      <div class="text-title mb-md">{{ $t('autoexec.inputParam') }}</div>
+      <div class="text-title mb-md">{{ $t('term.autoexec.inputparam') }}</div>
       <TsTable
         :theadList="theadList"
         :tbodyList="config.inputParamList"
@@ -42,7 +42,7 @@
       </TsTable>
     </div>
     <div v-if="config.outputParamList && config.outputParamList.length > 0" class="item-list">
-      <div class="text-title mb-md">{{ $t('autoexec.outputParam') }}</div>
+      <div class="text-title mb-md">{{ $t('term.autoexec.outputparameter') }}</div>
       <TsTable
         :theadList="theadList"
         :tbodyList="config.outputParamList"
@@ -60,7 +60,7 @@
       </TsTable>
     </div>
     <div v-if="config.argument && !$utils.isEmpty(config.argument)" class="item-list">
-      <div class="text-title mb-md">自由参数</div>
+      <div class="text-title mb-md">{{ $t('term.autoexec.freeparameter') }}</div>
       <TsTable
         :theadList="argumentTheadList"
         :tbodyList="[config.argument]"
@@ -69,7 +69,7 @@
       >
         <template v-slot:argumentCount="{row}">
           <div v-if="row.argumentCount">{{ row.argumentCount }}</div>
-          <div v-else>不限制</div>
+          <div v-else>{{ $t('page.notlimit') }}</div>
         </template>
         <template v-slot:isRequired="{row}">
           <div>{{ row.isRequired == 1 ? $t('page.yes') : $t('page.no') }}</div>
@@ -81,11 +81,11 @@
       <div v-html="config.encoding"></div>
     </div> -->
     <div class="item-list">
-      <div class="text-title mb-md">脚本解析器</div>
+      <div class="text-title mb-md">{{ $t('term.autoexec.scriptparser') }}</div>
       <div v-html="config.parser"></div>
     </div>
     <div class="item-list">
-      <div class="text-title mb-md">脚本内容</div>
+      <div class="text-title mb-md">{{ $t('term.autoexec.scriptcontent') }}</div>
       <div class="line-box bg-code radius-sm">
         <div v-for="(item,index) in config.lineList" :key="index">
           <div :class="'bg-'+item.changeType" class="item-content" v-html="item.content"></div>
@@ -111,19 +111,19 @@ export default {
   data() {
     return {
       theadList: [
-        { title: '英文名称', key: 'key' },
-        { title: '中文名称', key: 'name' },
-        { title: '类型', key: 'typeText' },
-        { title: '默认值', key: 'defaultValue' },
+        { title: this.$t('page.englishname'), key: 'key' },
+        { title: this.$t('page.chinesename'), key: 'name' },
+        { title: this.$t('page.type'), key: 'typeText' },
+        { title: this.$t('page.defaultvalue'), key: 'defaultValue' },
         { title: this.$t('page.description'), key: 'description' },
-        { title: '是否必填', key: 'isRequired' }
+        { title: this.$t('page.isrequired'), key: 'isRequired' }
       ],
       argumentTheadList: [
         { title: this.$t('page.name'), key: 'name' },
-        { title: '默认值', key: 'defaultValue' },
-        { title: '数量限制', key: 'argumentCount' },
+        { title: this.$t('page.defaultvalue'), key: 'defaultValue' },
+        { title: this.$t('page.quantitylimit'), key: 'argumentCount' },
         { title: this.$t('page.description'), key: 'description' },
-        { title: '是否必填', key: 'isRequired' }
+        { title: this.$t('page.isrequired'), key: 'isRequired' }
       ]
     };
   },

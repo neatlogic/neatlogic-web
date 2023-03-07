@@ -9,9 +9,9 @@
       @scroll="scroll"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('组合工具') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('router.autoexec.combinationtool') }}</span>
       </template>
-      <template v-slot:topLeft><span>{{ $t('autoexec.add.job') }}</span></template>
+      <template v-slot:topLeft><span>{{ $t('term.autoexec.addjob') }}</span></template>
       <template v-if="!id" v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align: right;">
           <span v-if="source == 'human'" class="action-item">
@@ -20,7 +20,7 @@
               ghost
               icon="tsfont tsfont-save"
               @click="openSavesetting"
-            >保存</Button>
+            >{{ $t('button.save') }}</Button>
           </span>
           <span class="action-item last">
             <Button
@@ -28,19 +28,19 @@
               icon="tsfont tsfont-run"
               :disabled="(!dataConfig.isActive || !dataConfig.executable) && source == 'human'"
               @click="openExecuteSetting"
-            >立即执行</Button>
+            >{{ $t('term.autoexec.immediateexecution') }}</Button>
           </span>
         </div>
       </template>
       <div slot="content" class="contain pl-nm pr-nm" :class="{'pt-xs':!id}">
         <div v-if="!id" class="box-block">
-          <Divider orientation="start">作业名称</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.jobname') }}</Divider>
           <div>
             <TsForm ref="nameForm" v-bind="nameForm"></TsForm>
           </div>
         </div>
         <div v-if="scenarioList.length > 0" class="box-block">
-          <Divider orientation="start">场景</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.scene') }}</Divider>
           <div>
             <TsFormRadio
               v-model="scenarioId"
@@ -53,10 +53,10 @@
           </div>
         </div>
         <div v-if="dataConfig.needRoundCount" class="box-block">
-          <Divider orientation="start">分批设置</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.batchsetting') }}</Divider>
           <div>
             <TsFormItem
-              label="分批数量"
+              :label="$t('term.autoexec.batchquantity')"
               :labelWidth="100"
               labelPosition="left"
               :required="true"
@@ -71,7 +71,7 @@
         </div>
         <template v-if="dataConfig.config && showExecuteData && showScenarioExecute">
           <div v-if="needExecuteNode" class="box-block">
-            <Divider orientation="start">执行目标</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
             <div>
               <AddTarget
                 :id="actionId"
@@ -87,14 +87,14 @@
             </div>
           </div>
           <div v-if="needExecuteUser|| needProtocol" class="box-block">
-            <Divider orientation="start">执行帐号</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.executeaccount') }}</Divider>
             <div>
               <TsForm ref="executeForm" v-model="executeValue" v-bind="executeForm"></TsForm>
             </div>
           </div>
         </template>
         <div v-if="paramsList && paramsList.length > 0" class="box-block">
-          <Divider orientation="start">作业参数</Divider>
+          <Divider orientation="start">{{ $t('term.autoexec.jobparam') }}</Divider>
           <div>
             <SetParam
               :id="actionId"
@@ -108,7 +108,7 @@
         </div>
         <div v-if="!loading" class="box-block">
           <Divider orientation="start">
-            <span>流水线</span>
+            <span>{{ $t('term.autoexec.pipeline') }}</span>
             <i class="text-tip-active pr-sm" :class="isShowStepList? 'tsfont-up' : 'tsfont-down'" @click="isShowStepList=!isShowStepList"></i>
           </Divider>
           <div v-show="isShowStepList">
@@ -218,7 +218,7 @@ export default {
           name: {
             width: '100%',
             type: 'text',
-            label: _this.$i18n.t('common.comparam.name', {'name': _this.$i18n.t('autoexec.job')}),
+            label: this.$t('term.autoexec.jobname'),
             value: '',
             validateList: !_this.id ? ['required'] : [],
             isHidden: !!_this.id // 定时作业不显示，其余显示
@@ -228,23 +228,22 @@ export default {
       executeForm: {
         labelWidth: 100,
         labelPosition: 'left',
-        // width: '85%',
         itemList: {
           protocolId: {
             type: 'select',
-            label: _this.$i18n.t('autoexec.http'),
+            label: _this.$i18n.t('page.protocol'),
             value: '',
             multiple: false,
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getProtocolDataList,
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             validateList: ['required']
           },
           executeUser: {
             type: 'text',
             value: '',
-            label: _this.$i18n.t('autoexec.execUser'),
+            label: _this.$i18n.t('term.autoexec.executeaccount'),
             validateList: ['required']
           }
         }
@@ -270,13 +269,13 @@ export default {
       roundCount: 2,
       roundCountForm: {
         dataList: this.$utils.getRoundCountList(),
-        placeholder: '选择或输入',
+        placeholder: this.$t('page.selectinput'),
         border: 'border',
         filterName: 'text',
         allowCreate: true,
         search: true,
         transfer: true,
-        desc: '将执行目标按数量等分为N个批次，先后执行',
+        desc: this.$t('term.autoexec.roundcountdescrition'),
         validateList: ['required', 'maxNum']
       },
       paramValue: {},
@@ -366,7 +365,7 @@ export default {
               if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
                 this.roundCount = this.executeConfig.roundCount;
                 this.$set(this.roundCountForm, 'disabled', true);
-                this.$set(this.roundCountForm, 'disabledHoverTitle', '组合工具已设置分批数量，不可修改');
+                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
               }
               if (this.executeConfig.whenToSpecify == 'runtime') {
                 this.$set(this.executeConfig, 'executeNodeConfig', {});

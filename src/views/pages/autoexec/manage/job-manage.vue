@@ -18,7 +18,7 @@
     <TsContain border="border">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job.jobname') }}</span>
+          <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job') }}</span>
           <span v-auth="['AUTOEXEC_MODIFY']" class="action-item"> 
             <AuditConfig auditName="AUTOEXEC-JOB"></AuditConfig>
           </span>
@@ -76,8 +76,8 @@
               <span class="tsfont-warning-o text-warn"></span>
               <template v-slot:content>
                 <div>
-                  <div v-if="row.warnCount > 0">{{ $t('term.autoexec.job.jobwarninginfo') }}</div>
-                  <div v-if="row.isHasIgnored > 0">{{ $t('term.autoexec.job.jobignoreinfo') }}</div>
+                  <div v-if="row.warnCount > 0">{{ $t('term.autoexec.jobwarninginfo') }}</div>
+                  <div v-if="row.isHasIgnored > 0">{{ $t('term.autoexec.jobignoreinfo') }}</div>
                 </div>
               </template>
             </Tooltip>
@@ -114,7 +114,7 @@
               <ul class="tstable-action-ul">
                 <template v-if="row.isCanExecute && row.status == 'ready'">
                   <li class="icon tsfont-edit" @click.stop="editRow(row, 'planStartTime')">{{ $t('page.plantime') }}</li>
-                  <li class="icon tsfont-edit" @click.stop="editRow(row, 'triggerType')">{{ $t('term.autoexec.job.triggertype') }}</li>
+                  <li class="icon tsfont-edit" @click.stop="editRow(row, 'triggerType')">{{ $t('term.autoexec.triggertype') }}</li>
                   <li v-if="row.triggerType == 'manual'" class="icon tsfont-run" @click.stop="executeRow(row)">{{ $t('page.execute') }}</li>
                   <li class="icon tsfont-undo" @click.stop="revokedRow(row)">{{ $t('page.revocation') }}</li>
                 </template>
@@ -179,21 +179,21 @@ export default {
           key: 'status'
         },
         {
-          title: this.$t('term.autoexec.job.costtime'),
+          title: this.$t('term.autoexec.costtime'),
           key: 'costTime'
         },
         {
-          title: this.$t('term.autoexec.job.executeuser'),
+          title: this.$t('term.autoexec.executeuser'),
           key: 'execUserVo',
           type: 'user',
           uuid: 'uuid'
         },
         {
-          title: this.$t('term.autoexec.job.sourcecategory'),
+          title: this.$t('term.autoexec.sourcecategory'),
           key: 'operationType'
         },
         {
-          title: this.$t('term.autoexec.job.source'),
+          title: this.$t('term.autoexec.source'),
           key: 'sourceName'
         },
         {
@@ -207,11 +207,11 @@ export default {
           keyend: 'endTime'
         },
         {
-          title: this.$t('term.autoexec.job.triggertype'),
+          title: this.$t('term.autoexec.triggertype'),
           key: 'triggerTypeName'
         },
         {
-          title: this.$t('term.autoexec.job.executionsituation'),
+          title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         },
         {
@@ -220,7 +220,7 @@ export default {
       ],
       searchConfig: {
         search: true,
-        placeholder: this.$t('term.autoexec.jobname'),
+        placeholder: this.$t('term.autoexec.job'),
         searchList: [
           {
             type: 'text',
@@ -230,7 +230,7 @@ export default {
           {
             type: 'select',
             name: 'typeIdList',
-            label: this.$t('term.autoexec.job.toolclassification'),
+            label: this.$t('term.autoexec.toolclassification'),
             multiple: true,
             dynamicUrl: '/api/rest/autoexec/type/search',
             rootName: 'tbodyList',
@@ -240,7 +240,7 @@ export default {
           {
             type: 'select',
             name: 'statusList',
-            label: this.$t('term.autoexec.job.jobstatus'),
+            label: this.$t('term.autoexec.jobstatus'),
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.autoexec.constvalue.JobStatus' },
@@ -249,21 +249,21 @@ export default {
           {
             type: 'select',
             name: 'sourceList',
-            label: this.$t('term.autoexec.job.jobsource'),
+            label: this.$t('term.autoexec.jobsource'),
             multiple: true,
             url: '/api/rest/autoexec/job/source/list'
           },
           {
             type: 'userselect',
             name: 'execUserList',
-            label: this.$t('term.autoexec.job.operator'),
+            label: this.$t('term.autoexec.operator'),
             groupList: ['user'],
             transfer: true
           },
           {
             type: 'timeselect',
             name: 'startTime',
-            label: this.$t('term.autoexec.job.executiontime'),
+            label: this.$t('term.autoexec.executiontime'),
             transfer: true
           }
         ]
@@ -435,7 +435,7 @@ export default {
     revokedRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job.jobname')}),
+        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.autoexec.job.revokeJob({jobId: row.id}).then(res => {

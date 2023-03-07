@@ -24,20 +24,20 @@
         <div class="action-group">
           <span
             :class="{'text-disabled':!hasAuth}"
-            :title="!hasAuth?$t('autoexec.disableDesc.letter'):''"
+            :title="!hasAuth?$t('page.notauthrelationadmin'):''"
             class="action-item tsfont-plus"
             @click="addScript()"
-          >{{ $t('autoexec.script') }}</span>
+          >{{ $t('term.autoexec.customtool') }}</span>
           <span
             :class="{'text-disabled':!hasAuth}"
-            :title="!hasAuth?$t('autoexec.disableDesc.letter'):''"
+            :title="!hasAuth?$t('page.notauthrelationadmin'):''"
             class="tsfont-upload action-item"
             @click="uploadAction()"
           >{{ $t('page.import') }}</span>
           <span :class="{'text-disabled':!selectList || selectList.length == 0}" class="tsfont-download action-item" @click="exportList()">{{ $t('page.export') }}</span>
           <span
             :class="{'text-disabled':!hasAuth || !selectList || selectList.length == 0}"
-            :title="!hasAuth?$t('autoexec.disableDesc.letter'):''"
+            :title="!hasAuth?$t('page.notauthrelationadmin'):''"
             class="action-item tsfont-trash-o"
             @click="batchDeleteScript()"
           >{{ $t('page.batchdelete') }}</span>
@@ -168,7 +168,7 @@ export default {
       maxCount: 99, //待审批显示的最大数量
       reviewingCount: 0,
       searchConfig: {
-        placeholder: this.$i18n.t('common.insert') + this.$i18n.t('page.name') + '、' + this.$i18n.t('common.description'),
+        placeholder: this.$i18n.t('page.insert') + this.$i18n.t('page.name') + '、' + this.$i18n.t('page.description'),
         searchList: [
           {
             type: 'select',
@@ -183,8 +183,8 @@ export default {
           {
             type: 'select',
             name: 'execMode',
-            label: this.$i18n.t('autoexec.execMode'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.executionmode'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             url: '/api/rest/universal/enum/get',
             params: {enumClass: 'ScriptExecMode'},
             transfer: true,
@@ -193,8 +193,8 @@ export default {
           {
             type: 'select',
             name: 'typeIdList',
-            label: this.$t('term.autoexec.job.toolclassification'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.toolclassification'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             search: true,
             dynamicUrl: '/api/rest/autoexec/type/search',
             rootName: 'tbodyList',
@@ -205,8 +205,8 @@ export default {
           {
             type: 'select',
             name: 'riskIdList',
-            label: this.$i18n.t('autoexec.actionLevel'),
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.operationlevel'),
+            placeholder: this.$i18n.t('page.pleaseselect'),
             dynamicUrl: '/api/rest/autoexec/risk/list',
             transfer: true,
             multiple: true
@@ -234,26 +234,26 @@ export default {
           
           }, {
             key: 'parser',
-            title: '脚本解析器'
+            title: this.$t('term.autoexec.scriptparser')
           }, {
             key: 'isLib',
-            title: '是否库文件'
+            title: this.$t('term.autoexec.islibraryfile')
           }, {
             key: 'execMode',
-            title: this.$i18n.t('autoexec.execMode')
+            title: this.$t('term.autoexec.executionmode')
           }, {
             key: 'typeName',
-            title: this.$t('term.autoexec.job.toolclassification')
+            title: this.$t('term.autoexec.toolclassification')
           }, {
             key: 'riskVo',
-            title: this.$i18n.t('autoexec.actionLevel')
+            title: this.$t('term.autoexec.operationlevel')
           
           }, {
             key: 'catalogName',
-            title: '工具目录'
+            title: this.$t('term.autoexec.directorytool')
           }, {
             key: 'description',
-            title: this.$i18n.t('common.description')
+            title: this.$i18n.t('page.description')
           }, {
             key: 'action'
           }]
@@ -454,7 +454,7 @@ export default {
       };
       _this.$createDialog({
         title: _this.$i18n.t('page.warning'),
-        content: (row.isLibReference == 1 ? '当前工具已被其他工具依赖，' : '') + _this.$i18n.t('page.confirm') + _this.$i18n.t('page.delete') + _this.$i18n.t('autoexec.script') + '：' + row.name + '?',
+        content: (row.isLibReference == 1 ? '当前工具已被其他工具依赖，' : '') + _this.$i18n.t('page.confirm') + _this.$i18n.t('page.delete') + this.$t('term.autoexec.customtool') + '：' + row.name + '?',
         btnType: 'error',
         'on-ok': vnode => {
           _this.$api.autoexec.script.deleteScript(param).then(res => {

@@ -35,7 +35,7 @@
             <!-- <li class="icon tsfont-trash-o" @click.stop="deleteRow(row)">{{ $t('page.delete') }}</li> -->
             <template v-if="row.isCanExecute && row.status == 'ready'">
               <li class="icon tsfont-edit" @click.stop="editRow(row,'planStartTime')">{{ $t('page.plantime') }}</li>
-              <li class="icon tsfont-edit" @click.stop="editRow(row,'triggerType')">{{ $t('term.autoexec.job.triggertype') }}</li>
+              <li class="icon tsfont-edit" @click.stop="editRow(row,'triggerType')">{{ $t('term.autoexec.triggertype') }}</li>
               <li v-if="row.triggerType == 'manual'" class="icon tsfont-run" @click.stop="executeRow(row)">{{ $t('page.execute') }}</li>
               <li class="icon tsfont-undo" @click.stop="revokedRow(row)">{{ $t('page.revocation') }}</li>
             </template>
@@ -64,7 +64,7 @@
         </TsFormItem>
       </template>
       <template v-else-if="editType=='triggerType'">
-        <TsFormItem :label="$t('term.autoexec.job.triggertype')" :required="true" labelWidth="80">
+        <TsFormItem :label="$t('term.autoexec.triggertype')" :required="true" labelWidth="80">
           <TsFormSelect
             ref="formValid"
             v-model="triggerType" 
@@ -73,7 +73,7 @@
         </TsFormItem>
       </template>
       <template v-else-if="editType=='takeover'">
-        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job.jobname')}) }}
+        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job')}) }}
       </template>
     </TsDialog>
   </div>
@@ -114,11 +114,11 @@ export default {
             textValue: 'view'
           },
           {
-            title: this.$t('term.autoexec.job.sourcecategory'),
+            title: this.$t('term.autoexec.sourcecategory'),
             key: 'operationType'
           },
           {
-            title: this.$i18n.t('common.source'),
+            title: this.$i18n.t('page.source'),
             key: 'sourceName'
           },
           {
@@ -137,19 +137,19 @@ export default {
             key: 'status'
           },
           {
-            title: this.$t('term.autoexec.job.triggertype'),
+            title: this.$t('term.autoexec.triggertype'),
             key: 'triggerTypeName'
           },
           {
-            title: this.$t('term.autoexec.job.executionsituation'),
+            title: this.$t('term.autoexec.executionsituation'),
             key: 'completionRate'
           },
           {
-            title: this.$t('term.autoexec.job.costtime'),
+            title: this.$t('term.autoexec.costtime'),
             key: 'costTime'
           },
           {
-            title: this.$t('term.autoexec.job.executeuser'),
+            title: this.$t('term.autoexec.executeuser'),
             key: 'execUserVo',
             type: 'user',
             uuid: 'uuid'
@@ -164,7 +164,7 @@ export default {
       },
       setTimeGetData: null,
       editDialog: false,
-      editTitle: this.$t('button.edittarget', {target: this.$t('term.autoexec.job.triggertype') }),
+      editTitle: this.$t('button.edittarget', {target: this.$t('term.autoexec.triggertype') }),
       editType: 'planStartTime',
       editConfig: null,
       planStartTime: null,
@@ -174,7 +174,7 @@ export default {
           type: 'datetime',
           transfer: true,
           label: this.$t('page.plantime'),
-          desc: this.$t('term.autoexec.job.taskexpirationtip'),
+          desc: this.$t('term.autoexec.taskexpirationtip'),
           options: {
             disabledDate(date) {
               return date && date.valueOf() < Date.now() - 86400000;
@@ -187,7 +187,7 @@ export default {
           validateList: [
             'required',
             {
-              name: 'custom', message: this.$t('term.autoexec.job.taskexpirationtip'), validator: function(rule, value) { 
+              name: 'custom', message: this.$t('term.autoexec.taskexpirationtip'), validator: function(rule, value) { 
                 return _this.validDateTime(value);
               }} 
           ],
@@ -198,7 +198,7 @@ export default {
         triggerType: {
           type: 'select',
           transfer: true,
-          label: this.$t('term.autoexec.job.triggertype'),
+          label: this.$t('term.autoexec.triggertype'),
           dataList: [],
           validateList: ['required']
         }
@@ -301,7 +301,7 @@ export default {
     revokedRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job.jobname')}),
+        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.autoexec.job.revokeJob({jobId: row.id}).then(res => {
@@ -319,14 +319,14 @@ export default {
       this.editConfig = row;
       this.editType = type;
       if (type == 'planStartTime') {
-        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.job.triggertype') });
+        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.triggertype') });
         this.getTimeDisabledList();
         this.planStartTime = this.editConfig.planStartTime;
       } else if (type == 'triggerType') {
-        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.job.triggertype') });
+        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.triggertype') });
         this.triggerType = this.editConfig.triggerType;
       } else if (type == 'takeover') {
-        this.editTitle = this.$t('term.autoexec.job.takeoverjob');
+        this.editTitle = this.$t('term.autoexec.takeoverjob');
       }
       this.editDialog = true;
     },

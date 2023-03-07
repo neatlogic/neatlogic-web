@@ -29,7 +29,9 @@ export default {
     runnerData: {type: Object, default: () => {}}, //执行器信息
     nodeTitle: {
       type: String,
-      default: '节点详情'
+      default() {
+        return this.$t('term.autoexec.nodedetail');
+      }
     }
   },
   data() {

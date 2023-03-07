@@ -17,7 +17,7 @@
         </TsFormItem>
       </template>
       <template v-else-if="editType=='triggerType'">
-        <TsFormItem :label="$t('term.autoexec.job.triggertype')" :required="true" labelWidth="80">
+        <TsFormItem :label="$t('term.autoexec.triggertype')" :required="true" labelWidth="80">
           <TsFormSelect
             ref="formValid"
             v-model="triggerType" 
@@ -26,7 +26,7 @@
         </TsFormItem>
       </template>
       <template v-else-if="editType=='takeover'">
-        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job.jobname')}) }}
+        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job')}) }}
       </template>
     </TsDialog>
   </div>
@@ -57,7 +57,7 @@ export default {
           type: 'datetime',
           transfer: true,
           label: this.$t('page.plantime'),
-          desc: this.$t('term.autoexec.job.taskexpirationtip'),
+          desc: this.$t('term.autoexec.taskexpirationtip'),
           selectableRange: () => {
             const now = new Date().getTime();
             return [now + 5 * 60 * 1000, 0];
@@ -67,7 +67,7 @@ export default {
         triggerType: {
           type: 'select',
           transfer: true,
-          label: this.$t('term.autoexec.job.triggertype'),
+          label: this.$t('term.autoexec.triggertype'),
           dataList: [],
           validateList: ['required']
         }
@@ -93,10 +93,10 @@ export default {
         this.planStartTime = this.jobConfig.planStartTime;
       } else if (this.editType == 'triggerType') {
         this.getTriggerTypeLit();
-        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.job.triggertype') });
+        this.editTitle = this.$t('button.edittarget', {target: this.$t('term.autoexec.triggertype') });
         this.triggerType = this.jobConfig.triggerType;
       } else if (this.editType == 'takeover') {
-        this.editTitle = this.$t('term.autoexec.job.takeoverjob');
+        this.editTitle = this.$t('term.autoexec.takeoverjob');
       }
     },
     getTriggerTypeLit() { //触发方式
