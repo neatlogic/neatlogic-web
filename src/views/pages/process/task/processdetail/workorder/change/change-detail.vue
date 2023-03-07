@@ -23,7 +23,7 @@
       </div>
     </div>
     <div v-if="isEditStepworker" class="tsfont-edit text-action edit-userAll">
-      <span @click="editUser">批量编辑处理人</span>
+      <span @click="editUser">{{ $t('term.process.batchedituser') }}</span>
       <div v-if="visible" class="pop-box">
         <div class="tooltip-box">
           <div class="tooltip tipbottom">
@@ -69,11 +69,11 @@
             </div>
             <div v-if="cd.isActive == 1 && (cd.isAfterStartDate == 0 || cd.isInWindow == 0)" class="timewindow-block">
               <div v-if="cd.isAfterStartDate == 0">
-                <span class="text-grey timewindow-tip">计划开始日期1</span>
+                <span class="text-grey timewindow-tip">{{ $t('term.process.planstartdate') }}</span>
                 <span class="window-time-text">{{ cd.planStartDate }}</span>
               </div>
               <div v-if="cd.isAfterStartDate == 1 && cd.isInWindow == 0">
-                <span class="text-grey timewindow-tip">时间窗口</span>
+                <span class="text-grey timewindow-tip">{{ $t('term.process.startTimeWindow') }}</span>
                 <span class="window-time-text">{{ cd.startTimeWindow || '~' }}</span>
                 <span class="window-time-text">-</span>
                 <span class="window-time-text">{{ cd.endTimeWindow || '~' }}</span>
@@ -91,7 +91,7 @@
                 <div v-else>-</div>
               </div>
               <div v-else>
-                <div class="text-grey overflow" title="计划开始日期">计划开始日期</div>
+                <div class="text-grey overflow" :title="$t('term.process.planstartdate')">{{ $t('term.process.planstartdate') }}</div>
                 <div v-if="cd.planStartDate" class="overflow" :title="cd.planStartDate">
                   {{ cd.planStartDate }}
                 </div>
@@ -107,7 +107,7 @@
                 <div v-else>-</div>
               </div>
               <div v-else>
-                <div class="text-grey" title="时间窗口">时间窗口</div>
+                <div class="text-grey" :title="$t('term.process.startTimeWindow')">{{ $t('term.process.startTimeWindow') }}</div>
                 <span v-if="cd.startTimeWindow || cd.endTimeWindow" class="overflow" :title="cd.startTimeWindow + '-' + cd.endTimeWindow">
                   <span class="text-title window-time-text">{{ cd.startTimeWindow || '~' }}</span>
                   <span class="text-title window-time-text">-</span>
@@ -117,7 +117,7 @@
               </div>
             </div>
             <div v-show="cd.isActive == 0 || (cd.isAfterStartDate == 1 && cd.isInWindow == 1)" class="files-block" style="position: relative;">
-              <div class="text-grey">附件</div>
+              <div class="text-grey">{{ $t('page.accessory') }}</div>
               <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
                 <Dropdown>
                   <span>{{ cd.fileIdList.length }}</span>
@@ -178,7 +178,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="text-grey content-text">暂无描述</div>
+            <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
           </div>
           <div v-show="cd.cur == 1">
             <div v-scrollHidden class="content-text">
@@ -327,7 +327,7 @@ export default {
       allWorkerVo: null, //批量编辑处理人
       groupList: ['user', 'team'],
       visible: false,
-      validateList: [{ name: 'required', message: '请选择处理人' }],
+      validateList: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
       newChangeStepList: [],
       stepConfig: null, //步骤信息
       character: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z'],
@@ -335,7 +335,7 @@ export default {
       changeTitle: [
         //工单处理标题
         {
-          title: '描述',
+          title: this.$t('page.description'),
           isCount: false
         },
         {

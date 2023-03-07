@@ -104,7 +104,7 @@ export default {
         isActive: {
           name: 'isActive',
           type: 'switch',
-          label: this.$t('form.label.enable'),
+          label: this.$t('page.enable'),
           value: 1,
           onChange(isActive) {
             vm.scoreTemplate.isActive = isActive;

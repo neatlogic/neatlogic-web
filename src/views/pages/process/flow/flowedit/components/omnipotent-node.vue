@@ -47,7 +47,7 @@
     <div class="settingList">
       <div class="control-box">
         <div class="control-setting">
-          <span class="label">自动开始</span>
+          <span class="label">{{ $t('term.process.autostart') }}</span>
           <span class="control-btn">
             <span class="tip">仅处理人唯一时有效</span>
             <i-switch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></i-switch>

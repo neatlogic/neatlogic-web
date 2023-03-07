@@ -56,7 +56,7 @@
     </div>
     <div id="event" class="event-main">
       <div v-if="actionConfig.complete" class="upLoad-box">
-        <span class="attachment-text">附件</span>
+        <span class="attachment-text">{{ $t('page.accessory') }}</span>
         <TsUpLoad
           ref="uploadFileComment"
           styleType="text"
@@ -72,7 +72,7 @@
       <TsRow>
         <Col span="12">
           <div class="event-tip">
-            <span class="require-label" :class="validConfig.eventTypeId == false?'text-danger':'text-grey'">归档类型</span>
+            <span class="require-label" :class="validConfig.eventTypeId == false?'text-danger':'text-grey'">{{ $t('term.process.archivedtype') }}</span>
           </div>
           <div class="event-text">
             <TsFormTree
@@ -240,7 +240,7 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           value: '',
           width: '100%',
           validateList: ['required']

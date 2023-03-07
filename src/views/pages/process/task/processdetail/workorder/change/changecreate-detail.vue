@@ -7,7 +7,7 @@
           <div class="change-action-list">
             <div>
               <span v-if="isComplete" class="text-action add-user">
-                <span class="tsfont-edit icon-font" @click="editUser">批量编辑处理人</span>
+                <span class="tsfont-edit icon-font" @click="editUser">{{ $t('term.process.batchedituser') }}</span>
                 <div v-if="visible" class="pop-box">
                   <div class="tooltip-box">
                     <div class="tooltip tipbottom">
@@ -30,7 +30,7 @@
                             size="small"
                             style="margin:0;"
                             @click="changeAllUser"
-                          >确定</Button>
+                          >{{ $t('button.confirm') }}</Button>
                         </div>
                       </div>
                     </div>
@@ -40,7 +40,7 @@
               <span v-if="isComplete" class="tsfont-modules text-action" @click="selectChangeTemplate">选择模板</span>
             </div>
             <div v-if="isComplete">
-              <span class="tsfont-trash-o text-action" @click="clearSetting">清空</span>
+              <span class="tsfont-trash-o text-action" @click="clearSetting">{{ $t('page.clear') }}</span>
             </div>
           </div>
         </div>
@@ -50,9 +50,9 @@
             class="tsfont-plus text-href"
             style="padding-right:16px;"
             @click="selectChangeTemplate"
-          >变更模板</span>
+          >{{ $t('term.process.changetemp') }}</span>
           <span v-if="isComplete" class="tsfont-plus text-href" @click="addStep">步骤</span>
-          <!-- <div v-if="isComplete" class="tsfont-plus text-href add-template" @click="selectChangeTemplate">变更模板</div>
+          <!-- <div v-if="isComplete" class="tsfont-plus text-href add-template" @click="selectChangeTemplate">{{ $t('term.process.changetemp') }}</div>
           <div v-if="isComplete" class="tsfont-plus text-href" @click="addStep">步骤</div> -->
         </div>
       </div>
@@ -76,14 +76,14 @@
                 <UserCard :uuid="cd.workerVo.uuid" :initType="cd.workerVo.initType"></UserCard>
               </div>
               <div class="data-block">
-                <div class="text-grey">计划开始日期{{ cd.parentUuid }}</div>
+                <div class="text-grey">{{ $t('term.process.planstartdate') }}{{ cd.parentUuid }}</div>
                 <div>
                   {{ cd.planStartDate || '-' }}
                 </div>
               </div>
               <div class="time-block">
                 <div>
-                  <div class="text-grey">时间窗口</div>
+                  <div class="text-grey">{{ $t('term.process.startTimeWindow') }}</div>
                   <div v-if="cd.startTimeWindow || cd.endTimeWindow">
                     <span>{{ cd.startTimeWindow }}</span>
                     <span>-</span>
@@ -93,7 +93,7 @@
                 </div>
               </div>
               <div class="files-block" style="position: relative;">
-                <div class="text-grey">附件</div>
+                <div class="text-grey">{{ $t('page.accessory') }}</div>
                 <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
                   <Dropdown trigger="click">
                     <span>{{ cd.fileIdList.length }}</span>
@@ -120,7 +120,7 @@
               <ul class="order-tabs-title">
                 <li class="active">
                   <div class="title-box">
-                    描述
+                    {{ $t('page.description') }}
                   </div>
                 </li>
               </ul>
@@ -135,7 +135,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="text-grey content-text">暂无描述</div>
+            <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@ export default {
       groupList: ['user', 'team'],
       visible: false,
       validateList: {
-        user: [{ name: 'required', message: '请选择处理人' }],
+        user: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
         template: [{ name: 'required', message: '请选择模板' }],
         paramInput: [{ name: 'required', message: '请输入' }]
       },

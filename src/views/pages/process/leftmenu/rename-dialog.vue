@@ -36,7 +36,7 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required', 'name-special']
         },

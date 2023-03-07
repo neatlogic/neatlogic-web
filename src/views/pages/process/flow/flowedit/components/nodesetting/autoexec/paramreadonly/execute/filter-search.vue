@@ -62,7 +62,6 @@ export default {
         labelWidth: 100,
         // placeholder: '请输入节点ip、端口、名称',
         search: true,
-        keywordText: '关键字',
         searchList: [
           {
             type: 'tree',
@@ -169,7 +168,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: '状态',
+            label: this.$t('page.status'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: {needPage: false},

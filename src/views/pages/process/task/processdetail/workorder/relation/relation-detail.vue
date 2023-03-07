@@ -19,7 +19,7 @@
           </div>
           <div class="item-box overflow">
             <span class="text-grey fz10">
-              工单号
+              {{ $t('term.process.worknum') }}
             </span>
             <span class="item-serialNumber overflow">
               <span class="text-href" @click="toTaskdetail(item.processTaskId)">{{ item.serialNumber }}</span> 
@@ -34,7 +34,7 @@
           </div>
           <div class="item-box overflow">
             <span class="text-grey fz10">
-              状态
+              {{ $t('page.status') }}
             </span>
             <span>{{ item.statusVo.text }}</span>
           </div>

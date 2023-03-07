@@ -114,7 +114,7 @@
                 >
                   <TabPane
                     v-if="isShowStep"
-                    label="步骤信息"
+                    :label="$t('term.process.stepinfor')"
                     name="step"
                     tab="tab2"
                     class="padding"
@@ -132,7 +132,7 @@
                     <div v-if="handler != 'event' && (actionConfig.comment || (processTaskStepConfig && processTaskStepConfig.commentList && processTaskStepConfig.commentList.length > 0))" id="content" class="reply-box-margin-bottom order-list comment-box">
                     
                       <div :class="[processTaskStepConfig && processTaskStepConfig.commentList && processTaskStepConfig.commentList.length > 0 ? 'comment-tip' : '']">
-                        <span>回复</span>
+                        <span>{{ $t('page.reply') }}</span>
                       </div>
                       <div v-if="processTaskStepConfig && processTaskStepConfig.commentList && processTaskStepConfig.commentList.length > 0" class="comment-list">
                         <div
@@ -181,7 +181,7 @@
                               ></TsUpLoad>
                               <div class="comment-btn">
                                 <Button size="small" @click="cancelComment(pcomment, pindex)">{{ $t('button.cancel') }}</Button>
-                                <Button size="small" type="primary" @click="completeComment(pcomment, pindex)">完成</Button>
+                                <Button size="small" type="primary" @click="completeComment(pcomment, pindex)">{{ $t('page.complete') }}</Button>
                               </div>
                             </div>
                             <div class="comment-border dividing-color"></div>
@@ -189,7 +189,7 @@
                         </div>
                       </div>
                       <div v-if="actionConfig.comment" class="center-detail-upload-wrap">
-                        <span class="attachment-text title">附件</span>
+                        <span class="attachment-text title">{{ $t('page.accessory') }}</span>
                         <TsUpLoad
                           ref="uploadFileComment"
                           className="smallUpload"
@@ -215,7 +215,7 @@
                                 popperClass="reply-poptip"
                               >
                                 <span class="text-href">
-                                  回复模板
+                                  {{ $t('page.replytemplate') }}
                                 </span>
                                 <div slot="content">
                                   <ReplyTemplate :content="commentObj.content" @selectTemplate="selectTemplate"></ReplyTemplate>
@@ -347,7 +347,7 @@
             </TabPane>
             <template v-if="actionConfig.markrepeat || repeatList.length > 0">
               <TabPane
-                label="重复事件"
+                :label="$t('term.process.repeatedevent')"
                 name="markrepeat"
                 class="tab-content"
                 tab="tab1"
@@ -488,10 +488,10 @@ export default {
       isShowStep: false,
       repeatList: [], //重复事件列表
       tabLabelReplaceableTextConfig: {
-        replaceableReportcontent: '上报内容', // 接口返回替换文案列表为空时默认值：上报内容
-        replaceableSteplist: '步骤日志', // 接口返回替换文案列表为空时默认值：步骤日志
-        replaceableAuditlist: '活动日志', // 接口返回替换文案列表为空时默认值：活动日志
-        replaceableRelationlist: '关联工单' // 接口返回替换文案列表为空时默认值：关联工单
+        replaceableReportcontent: this.$t('term.process.reportcontent'), // 接口返回替换文案列表为空时默认值：上报内容
+        replaceableSteplist: this.$t('term.process.steplog'), // 接口返回替换文案列表为空时默认值：步骤日志
+        replaceableAuditlist: this.$t('term.process.activitylog'), // 接口返回替换文案列表为空时默认值：活动日志
+        replaceableRelationlist: this.$t('term.process.reltask') // 接口返回替换文案列表为空时默认值：关联工单
       },
       stepSortIcon: false, // 步骤排序(true正序，false倒序)
       taskConfigList: [] //子任务策略
@@ -925,7 +925,7 @@ export default {
           focus: '#form',
           icon: 'tsfont-close-o',
           iconColor: '#FF625A',
-          msg: '【表单】请填写完整',
+          msg: this.$t('message.content.process.complete', {target: this.$t('term.process.form')}),
           type: 'error'
         });
       }
@@ -937,12 +937,12 @@ export default {
         if ((this.rightsettingVue.$refs.RightSetting && this.rightsettingVue.$refs.RightSetting.valid()) || this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'ts-complete');
           this.$set(priorityConfig, 'iconColor', '#81D655');
-          this.$set(priorityConfig, 'msg', '【优先级】验证成功');
+          this.$set(priorityConfig, 'msg', this.$t('message.content.process.success', {target: this.$t('page.priority')}),);
           this.$set(priorityConfig, 'type', 'success');
         } else if (!this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'tsfont-close-o');
           this.$set(priorityConfig, 'iconColor', '#FF625A');
-          this.$set(priorityConfig, 'msg', '【优先级】表单联动导致优先级为空');
+          this.$set(priorityConfig, 'msg', this.$t('message.content.process.prioritymsg', {target: this.$t('page.priority')}));
           this.$set(priorityConfig, 'type', 'error');
         }
         validList.push(priorityConfig);
@@ -1153,7 +1153,7 @@ export default {
     },
     subTasklabel(list) {
       let number = list.length;
-      let label = '子任务';
+      let label = this.$t('term.process.subtask');
       if (this.replaceableTextConfig['replaceable_subtask']) {
         label = this.replaceableTextConfig['replaceable_subtask'].value || this.replaceableTextConfig['replaceable_subtask'].text;
       }
@@ -1267,11 +1267,11 @@ export default {
           if (list.length === 1) {
             defaultPriorityConfig = list[0];
           } else if (list.length > 1) {
-            messageConfig.content = '表单联动规则匹配到多个优先级，请修改表单或联系管理员';
+            messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
             defaultPriorityConfig = {};
           } else if (list.length == 0) { //优先级不存在时提示
-            messageConfig.content = '表单联动规则匹配的优先级不存在，请修改表单或联系管理员';
+            messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
             defaultPriorityConfig = {};
           }

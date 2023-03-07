@@ -34,7 +34,7 @@
             <TsRow>
               <Col v-if="subStep.userName" span="10">
                 <div class="sub-label overflow">
-                  <span class="text-grey sub-title">处理人</span>
+                  <span class="text-grey sub-title">{{ $t('term.process.dealwithuser') }}</span>
                   <UserCard v-bind="subStep.userVo" hideAvatar></UserCard>
                 </div>
               </Col>
@@ -52,7 +52,7 @@
               </Col>
               <Col v-if="subStep.startTime" span="10">
                 <div class="sub-label overflow">
-                  <span class="text-grey sub-title">开始时间</span>
+                  <span class="text-grey sub-title">{{ $t('page.starttime') }}</span>
                   <span>{{ subStep.startTime | formatDate }}</span>
                 </div>
               </Col>
@@ -65,7 +65,7 @@
             </TsRow>
           </div>
           <div class="text-content">
-            <span class="text-grey content-title">描述</span>
+            <span class="text-grey content-title">{{ $t('page.description') }}</span>
             <div v-html="subStep.content"></div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default {
         completesubtask: '完成',
         redosubtask: '重做',
         abortsubtask: '取消',
-        createsubtask: '创建',
+        createsubtask: this.$t('page.build'),
         commentsubtask: '回复',
         startprocess: '提交',
         completablesubtask: '完成'
@@ -164,7 +164,7 @@ export default {
           name: 'content',
           value: '',
           width: '90%',
-          label: '描述',
+          label: this.$t('page.description'),
           validateList: ['required']
         }
       ]

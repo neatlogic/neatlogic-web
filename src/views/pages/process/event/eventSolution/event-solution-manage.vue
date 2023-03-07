@@ -77,7 +77,7 @@ export default {
         name: {
           name: 'name',
           type: 'text',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           value: null,
           width: '100%',
           maxlength: 50,

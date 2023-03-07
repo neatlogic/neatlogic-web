@@ -3,7 +3,7 @@
     <span class="tip-title">{{ config.typeName }}</span>
     <div v-for="(sub, subIndex) in setData(config.newContent)" :key="subIndex" class="active-form-list">
       <div :class="subIndex == 0 ? 'show-form' : subIndex >= 1 && isShow ? 'show-form' : 'hide-form'" class="active-form-text">
-        <span v-if="sub.oldContent && hasAttr(sub) && sub.newContent ===''" class="text-grey tip-title">清空</span>
+        <span v-if="sub.oldContent && hasAttr(sub) && sub.newContent ===''" class="text-grey tip-title">{{ $t('page.clear') }}</span>
         <span class="tip-title">{{ sub.label }}</span>
         <span v-if="sub.oldContent" class="inline-block" v-html="sub.oldContent"></span>
         <span v-if="sub.oldContent && hasAttr(sub) && sub.newContent !=''" class="change-text text-grey">改为</span>

@@ -27,7 +27,7 @@
     <div ref="rightMain" class="right-setting" :style="setContentHeight(rightHeight)">
       <div class="information-box">
         <div class="bg-op padding radius-lg">
-          <div class="title h4">基本信息</div>
+          <div class="title h4">{{ $t('page.basesetting') }}</div>
           <div v-if="processTaskConfig.ownerVo" class="information-list">
             <div class="infor-left"> <UserCard :uuid="processTaskConfig.ownerVo.uuid" :iconSize="32" hideName></UserCard></div>
             <div class="infor-right">
@@ -38,19 +38,19 @@
             </div>
           </div>
           <div v-if="processTaskConfig.ownerVo" class="information-list">
-            <div class="infor-left text-grey">联系方式</div>
+            <div class="infor-left text-grey overflow">{{ $t('page.phone') }}</div>
             <div class="infor-right">
               {{ processTaskConfig.ownerVo.phone || '-' }}
             </div>
           </div>
           <div v-if="processTaskConfig.ownerVo" class="information-list">
-            <div class="infor-left text-grey">电子邮箱</div>
+            <div class="infor-left text-grey overflow">{{ $t('page.email') }}</div>
             <div class="infor-right">
               {{ processTaskConfig.ownerVo.email||'-' }}
             </div>
           </div>
           <div v-if="processTaskConfig.ownerVo" class="information-list">
-            <div class="infor-left text-grey">用户组</div>
+            <div class="infor-left text-grey overflow">{{ $t('page.userteam') }}</div>
             <div class="infor-right">
               <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
                 <Tooltip
@@ -74,29 +74,29 @@
           <div v-for="(item, index) of taskInformationList" :key="index">
             <div class="information-list">
               <template v-if="item.value == 'serialNumber'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
-                  <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success('复制成功')">
+                  <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success($t('message.content.copysuccess'))">
                     {{ item.textConfig }}
                     <i class="tsfont-copy text-action"></i>
                   </div>
                 </div>
               </template>
               <template v-else-if="item.value == 'reporterVo'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
                   <UserCard v-bind="processTaskConfig.reporterVo" :iconSize="16"></UserCard>
                 </div>
               </template>
               <template v-else-if="item.value == 'channelPath'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">
                   <span v-if="processTaskConfig.channelType" class="channel-type" :style="typeTip(processTaskConfig.channelType.color)">{{ processTaskConfig.channelType.name }}</span>
                   <span>{{ item.textConfig }}</span>
                 </div>
               </template>
               <template v-else-if="item.value == 'priority'">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div
                   v-if="!actionConfig.update"
                   ref="priorityName"
@@ -121,18 +121,18 @@
                 </div>
               </template>
               <template v-else-if="timeShow(item.value)">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">{{ item.textConfig | formatDate }}</div>
               </template>
-              <template v-else class="information-list">
-                <div class="infor-left text-grey">{{ item.title }}</div>
+              <template v-else>
+                <div class="infor-left text-grey overflow">{{ item.title }}</div>
                 <div class="infor-right">{{ item.textConfig }}</div>
               </template>
             </div>
           </div>
           <div class="information-list clearfix">
-            <div class="infor-left text-grey">
-              标签
+            <div class="infor-left text-grey overflow">
+              {{ $t('page.tag') }}
             </div>
             <div class="infor-right">
               <WorkLabel
@@ -145,7 +145,7 @@
             </div>
           </div>
           <div class="information-list clearfix">
-            <div class="infor-left text-grey">关注人</div>
+            <div class="infor-left text-grey overflow">{{ $t('term.process.focususer') }}</div>
             <div class="infor-right">
               <UserSelect
                 :value="processTaskConfig.focusUserUuidList"
@@ -158,7 +158,7 @@
             </div>
           </div>
           <div v-if="knowledgeConfig && knowledgeConfig.knowledgeDocumentVersion" class="information-list knowledge-box">
-            <div class="infor-left text-grey">关联知识</div>
+            <div class="infor-left text-grey overflow">{{ $t('term.process.relatedknowledge') }}</div>
             <div class="infor-right">
               <div :class="knowledgeConfig.knowledgeDocumentVersion.status == 'passed' ? 'text-href' : ''" class="time-height" @click="gotoKnowledge(knowledgeConfig.knowledgeDocumentVersion.status)">
                 <span>{{ knowledgeConfig.knowledgeDocumentVersion.title }}</span>
@@ -171,7 +171,7 @@
               </div>
               <div v-if="knowledgeConfig.knowledgeDocumentVersion.status == 'submitted'" class="text-tip fz10">
                 <UserCard v-bind="knowledgeConfig.knowledgeDocumentVersion.lcuVo" :iconSize="16" style="vertical-align: bottom;"></UserCard>
-                {{ knowledgeConfig.knowledgeDocumentVersion.lcd | formatDate }} 提交
+                {{ knowledgeConfig.knowledgeDocumentVersion.lcd | formatDate }} {{ $t('button.submit') }}
               </div>
               <div v-else class="text-tip fz10 overflow" :title="getpath(knowledgeConfig.knowledgeDocumentVersion.path)">
                 {{ getpath(knowledgeConfig.knowledgeDocumentVersion.path) }}
@@ -190,8 +190,8 @@
             <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
             <div class="infor-right">
               <div v-if="sla.status == 'doing'" class="time-height">
-                <span v-if="sla.timeLeft >= 0" class="text-warning">剩余</span>
-                <span v-else class="text-danger">超时</span>
+                <span v-if="sla.timeLeft >= 0" class="text-warning">{{ $t('page.timeremaining') }}</span>
+                <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
                 <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'">
                   {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                 </span>
@@ -201,8 +201,8 @@
               </div>
               <div v-else-if="sla.status == 'pause'">
                 <!-- 暂停 -->
-                <span v-if="sla.timeLeft >= 0" class="text-warning">剩余</span>
-                <span v-else class="text-danger">超时</span>
+                <span v-if="sla.timeLeft >= 0" class="text-warning">{{ $t('page.timeremaining') }}</span>
+                <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
                 <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'">
                   {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                 </span>
@@ -212,7 +212,7 @@
               </div>
               <div v-else-if="sla.status == 'done'">
                 <!-- 完成 -->
-                <span class="text-warning">耗时</span>
+                <span class="text-warning">{{ $t('page.timeconsuming') }}</span>
                 <span>
                   {{ (sla.timeSum - sla.timeLeft) | formatTimeCost({unitNumber: 3, separator: ' ', unit: 'minute' }) }}
                 </span>
@@ -225,7 +225,7 @@
       <!-- 评分 -->
       <div v-if="processTaskConfig.scoreInfo" class="information-box">
         <div class="bg-op padding radius-lg">
-          <div class="title h4">评分</div>
+          <div class="title h4">{{ $t('page.score') }}</div>
           <ScoreDisplay :scoreConfig="JSON.parse(processTaskConfig.scoreInfo)"></ScoreDisplay>
         </div>
       </div>
@@ -286,48 +286,48 @@ export default {
       defaultProcessTask: [
         //基本信息
         {
-          title: '工单号',
+          title: this.$t('term.process.worknum'),
           value: 'serialNumber',
           textConfig: null
         },
         {
-          title: '上报渠道',
+          title: this.$t('term.process.sourcename'),
           value: 'sourceName',
           textConfig: null
         },
         {
-          title: '上报时间',
+          title: this.$t('term.process.reportdate'),
           value: 'startTime',
           textConfig: null
         },
         {
-          title: '代报人',
+          title: this.$t('term.process.proxy'),
           value: 'reporterVo',
           textConfig: null
         },
         {
-          title: '上报服务',
+          title: this.$t('term.process.reportcatalog'),
           value: 'channelPath',
           textConfig: null
         },
         {
-          title: '优先级',
+          title: this.$t('page.priority'),
           value: 'priority',
           textConfig: null
         },
 
         {
-          title: '完成时间',
+          title: this.$t('page.completiontime'),
           value: 'endTime',
           textConfig: null
         },
         {
-          title: '耗时',
+          title: this.$t('page.timeconsuming'),
           value: 'timeCostStr',
           textConfig: null
         },
         {
-          title: '超时时间点',
+          title: this.$t('term.process.expiretime'),
           value: 'expireTime',
           textConfig: null
         }
@@ -369,9 +369,9 @@ export default {
   methods: {
     getSlaStatus(type, expireTime) {
       let statusObj = {
-        'doing': (this.$utils.getDateByFormat(expireTime)) + '截止',
-        'done': '已完成',
-        'pause': '已暂停'
+        'doing': (this.$utils.getDateByFormat(expireTime)) + this.$t('term.process.deadline'),
+        'done': this.$t('page.completed'),
+        'pause': this.$t('page.paused')
       };
       return statusObj[type] || '';
     },

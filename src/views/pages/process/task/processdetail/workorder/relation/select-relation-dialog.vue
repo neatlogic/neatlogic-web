@@ -125,23 +125,23 @@ export default {
           key: 'selection'
         },
         {
-          title: '标题',
+          title: this.$t('page.title'),
           key: 'title'
         },
         {
-          title: '工单号',
+          title: this.$t('term.process.worknum'),
           key: 'serialNumber'
         },
         {
-          title: '上报人',
+          title: this.$t('term.process.reportuser'),
           key: 'ownerName'
         },
         {
-          title: '上报时间',
+          title: this.$t('term.process.reportdate'),
           key: 'startTime'
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'statusVo'
         }
       ],

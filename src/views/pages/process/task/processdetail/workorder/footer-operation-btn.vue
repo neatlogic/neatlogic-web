@@ -86,7 +86,7 @@
           <template v-if="nodeBtnList.length > 1">
             <Dropdown trigger="click" transfer transfer-class-name="dropdown-ul">
               <Button type="primary">
-                流转至
+                {{ $t('term.process.transferto') }}
                 <span class="tsfont-down"></span>
               </Button>
               <DropdownMenu slot="list">

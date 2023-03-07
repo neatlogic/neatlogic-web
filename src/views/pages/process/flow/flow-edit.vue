@@ -131,14 +131,14 @@
     <TsDialog
       type="modal"
       :isShow.sync="draftModel"
-      title="从草稿中恢复文件"
-      okText="恢复"
-      cancelText="取消"
+      :title="$t('term.process.restoredrafts')"
+      :okText="$t('button.recover')"
+      :cancelText="$t('button.cancel')"
       @on-ok="draftOk"
     >
       <p style="margin-bottom: 10px;">
-        <span>保存草稿范围：最近 6 次</span>
-        <span style="margin-left: 36px;">自动保存间隔：30s</span>
+        <span>{{ $t('term.process.savedraftflow') }}</span>
+        <span style="margin-left: 36px;">{{ $t('term.process.autosaveinterval') }}</span>
       </p>
       <TsTable
         :theadList="draftKey"

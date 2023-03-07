@@ -22,8 +22,8 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('process')">{{ $t('page.refresh') }}</span>
-              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item ts-eye" @click="viewProcess">{{ $t('common.view') }}</span>
-              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-edit" @click="gotoEditFlow">{{ $t('common.edit') }}</span>
+              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item ts-eye" @click="viewProcess">{{ $t('page.view') }}1</span>
+              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-edit" @click="gotoEditFlow">{{ $t('page.edit') }}</span>
             </div>
           </div>
         </div>
@@ -46,7 +46,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('priority')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddPiority()">{{ $t('common.setting') }}</span>
+              <span class="action-item ts-setting" @click="gotoAddPiority()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -60,13 +60,13 @@
             @searchCallback="refreshSuccess('worktime')"
           >
             <template v-slot:first-ul>
-              <li class="tsfont-plus text-href first-slot" @click="gotoAddWorktime(true)">服务窗口</li>
+              <li class="tsfont-plus text-href first-slot" @click="gotoAddWorktime(true)">{{ $t('term.process.serwindow') }}</li>
             </template>
           </TsFormSelect>
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('worktime')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddWorktime()">{{ $t('common.setting') }}</span>
+              <span class="action-item ts-setting" @click="gotoAddWorktime()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -81,13 +81,13 @@
             @searchCallback="refreshSuccess('channelType')"
           >
             <template v-slot:first-ul>
-              <li class="tsfont-plus text-href first-slot" @click="gotoAddpChannelTyp(true)">服务类型</li>
+              <li class="tsfont-plus text-href first-slot" @click="gotoAddpChannelTyp(true)">{{ $t('term.process.sertype') }}</li>
             </template>
           </TsFormSelect>
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('channelType')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddpChannelTyp()">{{ $t('common.setting') }}</span>
+              <span class="action-item ts-setting" @click="gotoAddpChannelTyp()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="getRelarelation">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoRotationManage">{{ $t('common.setting') }}</span>
+              <span class="action-item ts-setting" @click="gotoRotationManage">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@
         class="save"
         type="primary"
         @click="save()"
-      >{{ $t('common.save') }}</Button>
+      >{{ $t('button.save') }}</Button>
     </div>
     <TsDialog v-if="lookSitemapModel" :isShow.sync="lookSitemapModel" v-bind="sitmapDialogSetting">
       <ViewProcess :uuid="channelValue.processUuid"></ViewProcess>
@@ -182,7 +182,7 @@ export default {
         hasFooter: false,
         width: 'large',
         height: '600px',
-        title: '查看流程'
+        title: this.$t('term.process.viewflowchart')
       },
       processConfig: {
         filterable: true,
@@ -244,25 +244,25 @@ export default {
           value: '',
           placeholder: '',
           maxlength: 50,
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           validateList: ['required', { name: 'name-special' }]
         },
         {
           type: 'switch',
           name: 'isActive',
-          label: this.$t('form.label.enable'),
+          label: this.$t('page.enable'),
           validateList: ['required']
         },
         {
           type: 'slot',
           name: 'processUuid',
-          label: '工作流',
+          label: this.$t('term.process.workflow'),
           validateList: ['required']
         },
         {
           type: 'switch',
           name: 'isNeedPriority',
-          label: '显示优先级',
+          label: this.$t('term.process.showpriority'),
           validateList: ['required'],
           onChange: (val) => {
             _this.changePriorty(val);
@@ -272,7 +272,7 @@ export default {
           type: 'slot',
           name: 'priorityUuidList',
           multiple: true,
-          label: '优先级',
+          label: this.$t('page.priority'),
           search: true,
           value: '',
           dataList: [],
@@ -283,7 +283,7 @@ export default {
         {
           type: 'select',
           name: 'defaultPriorityUuid',
-          label: '默认优先级',
+          label: this.$t('term.process.defaultpriority'),
           search: true,
           value: '',
           dataList: [],
@@ -294,7 +294,7 @@ export default {
         {
           type: 'slot',
           name: 'worktimeUuid',
-          label: '服务窗口',
+          label: this.$t('term.process.serwindow'),
           search: true,
           value: '',
           dataList: [],
@@ -305,7 +305,7 @@ export default {
         {
           type: 'slot',
           name: 'channelTypeUuid',
-          label: '服务类型',
+          label: this.$t('term.process.sertype'),
           search: true,
           value: '',
           dataList: [],
@@ -316,26 +316,26 @@ export default {
         {
           type: 'userselect',
           name: 'authorityList',
-          label: '上报授权',
+          label: this.$t('term.process.reporauth'),
           groupList: ['user', 'team', 'role', 'common']
         },
         {
           type: 'slot',
           name: 'allowTranferReport',
-          label: '允许转报'
+          label: this.$t('term.process.allowtranferreport')
         },
         {
           type: 'slot',
           name: 'channelRelationList',
-          label: '转报设置',
+          label: this.$t('term.process.transfersettings'),
           isHidden: true,
           validateList: ['required'],
-          tooltip: '转报可选的关系类型由上方服务类型决定'
+          tooltip: this.$t('term.process.transfersettingstip')
         },
         {
           type: 'slot',
           name: 'icon',
-          label: '图标'
+          label: this.$t('page.icon')
         },
         {
           type: 'slot',
@@ -347,7 +347,7 @@ export default {
           name: 'support',
           clearable: false,
           validateList: ['required'],
-          label: '使用范围',
+          label: this.$t('term.process.limituser'),
           value: '',
           defaultValueIsFirst: true,
           url: '/api/rest/universal/enum/get',
@@ -356,7 +356,7 @@ export default {
         {
           type: 'ckeditor',
           name: 'desc',
-          label: '服务说明'
+          label: this.$t('page.description')
         }
       ],
       initValue: {

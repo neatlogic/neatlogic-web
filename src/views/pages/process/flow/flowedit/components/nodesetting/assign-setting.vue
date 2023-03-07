@@ -272,7 +272,7 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">处理人</div>
+                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.dealwithuser') }}</div>
                     <div class="text custom-select">
                       <div class="input-border" style="width:100%;">
                         <UserSelect

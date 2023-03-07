@@ -6,7 +6,7 @@
         <li class="item-li" :class="{active: selectStepId === 0}" @click="selectStepId = 0">
           <div class="item-li-dot"></div>
           <div class="item-li-content">
-            全部
+            {{ $t('page.all') }}
           </div>
         </li>
         <li
@@ -14,7 +14,7 @@
           :key="index"
           class="item-li"
           :class="{'active': item.id == selectStepId}"
-          :title="item.id == currentStepId ? '当前步骤' : ''"
+          :title="item.id == currentStepId ? $t('term.process.currentstep') : ''"
           @click.stop="selectStep(item)"
         >
           <div v-if="item.id==currentStepId" class="item-li-current tsfont-location"></div>
@@ -80,28 +80,28 @@
               <span class="text-action text-more pl-sm" :class="((item.majorUser && item.majorUser.userVo) || (item.workerList && item.workerList.length == 1)) ? '' : 'text-more-mt'" @click.stop="openPoptip(item)">...</span>
               <ul slot="content">
                 <li>
-                  <span class="text-grey pr-xs">激活时间</span>
+                  <span class="text-grey pr-xs">{{ $t('page.activationtime') }}</span>
                   <span v-if="item.activeTime" :title="item.activeTime | formatDate">
                     {{ item.activeTime | formatDate }}
                   </span>
                   <span v-else>-</span>
                 </li>
                 <li>
-                  <span class="text-grey pr-xs">开始时间</span>
+                  <span class="text-grey pr-xs">{{ $t('page.starttime') }}</span>
                   <span v-if="item.startTime" :title="item.startTime | formatDate">
                     {{ item.startTime | formatDate }}
                   </span>
                   <span v-else>-</span>
                 </li>
                 <li>
-                  <span class="text-grey pr-xs">结束时间</span>
+                  <span class="text-grey pr-xs">{{ $t('page.endtime') }}</span>
                   <span v-if="item.endTime" :title="item.endTime | formatDate">
                     {{ item.endTime | formatDate }}
                   </span>
                   <span v-else>-</span>
                 </li>
                 <li v-if="item.handler =='event' && item.handlerStepInfo">
-                  <span class="text-grey pr-xs">归档类型</span>
+                  <span class="text-grey pr-xs">{{ $t('term.process.archivedtype') }}</span>
                   <span class="time-date">
                     {{ item.handlerStepInfo.eventTypeNamePath || '-' }}
                   </span>
@@ -117,7 +117,7 @@
             @click="item.isShow = false"
           >
             <div class="tab-box">
-              <span class="tab-text" :class="!item.isShow ? 'tab-text-active' : ''">操作</span>
+              <span class="tab-text" :class="!item.isShow ? 'tab-text-active' : ''">{{ $t('page.action') }}</span>
               <div v-if="!item.isShow" class="tabs-ink-bar"></div>
             </div>
           </div>
@@ -128,7 +128,7 @@
             @click="item.isShow = 1"
           >
             <div class="tab-box">
-              <span class="tab-text" :class="item.isShow == 1 ? 'tab-text-active' : ''">子任务策略</span>
+              <span class="tab-text" :class="item.isShow == 1 ? 'tab-text-active' : ''">{{ $t('term.process.subtaskpolicy') }}</span>
               <div v-if="item.isShow == 1" class="tabs-ink-bar"></div>
             </div>
           </div>
@@ -140,7 +140,7 @@
           >
             <div class="tab-box">
               <div>
-                <span class="tab-text" :class="item.isShow == 2 ? 'tab-text-active' : ''">变更步骤</span>
+                <span class="tab-text" :class="item.isShow == 2 ? 'tab-text-active' : ''">{{ $t('term.process.changestep') }}</span>
                 <span class="sub-number">{{ item.handlerStepInfo.changeStepList.length }}</span>
               </div>
               <div v-if="item.isShow == 2" class="tabs-ink-bar"></div>
@@ -211,35 +211,35 @@
                   <div class="step-infor">
                     <TsRow>
                       <Col span="8">
-                        <span class="text-grey" style="padding-right:10px">处理人</span>
+                        <span class="text-grey" style="padding-right:10px">{{ $t('term.process.dealwithuser') }}</span>
                         <span>
                           <UserCard v-bind="change.workerVo" style="display: inline-block;" hideAvatar></UserCard>
                         </span>
                       </Col>
                       <Col span="8">
-                        <span class="text-grey" style="padding-right:10px">计划开始时间</span>
+                        <span class="text-grey" style="padding-right:10px">{{ $t('term.process.planstartdate') }}</span>
                         <span>{{ change.planStartDate || '-' }}</span>
                       </Col>
                       <Col span="8">
-                        <span class="text-grey" style="padding-right:10px">时间窗口</span>
+                        <span class="text-grey" style="padding-right:10px">{{ $t('term.process.startTimeWindow') }}</span>
                         <span v-if="change.startTimeWindow || change.endTimeWindow">{{ change.startTimeWindow || '~' }} - {{ change.endTimeWindow || '~' }}</span>
                         <span v-else>-</span>
                       </Col>
                     </TsRow>
                     <TsRow>
                       <Col span="8">
-                        <span class="text-grey" style="padding-right:10px">实际开始时间</span>
+                        <span class="text-grey" style="padding-right:10px">{{ $t('term.process.actualstarttime') }}</span>
                         <span v-if="change.startTime">{{ change.startTime | formatDate }}</span>
                         <span v-else>-</span>
                       </Col>
                       <Col span="8">
-                        <span class="text-grey" style="padding-right:10px">实际结束时间</span>
+                        <span class="text-grey" style="padding-right:10px">{{ $t('term.process.actualendtime') }}</span>
                         <span v-if="change.endTime">{{ change.endTime | formatDate }}</span>
                         <span v-else>-</span>
                       </Col>
                     </TsRow>
                     <div class="change-commet">
-                      <span class="change-commet-label text-grey" style="padding-right:10px">附件</span>
+                      <span class="change-commet-label text-grey" style="padding-right:10px">{{ $t('page.accessory') }}</span>
                       <div v-if="change.fileList && change.fileList.length>0">
                         <div
                           v-for="changeFile in change.fileList"
@@ -254,7 +254,7 @@
                       <div v-else>-</div>
                     </div>
                     <div class="change-commet">
-                      <span class="change-commet-label text-grey" style="padding-right:10px">描述</span>
+                      <span class="change-commet-label text-grey" style="padding-right:10px">{{ $t('page.description') }}</span>
                       <div v-if="change.content">
                         <div v-html="change.content"></div>
                       </div>

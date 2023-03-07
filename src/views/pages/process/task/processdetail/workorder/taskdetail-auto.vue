@@ -6,7 +6,7 @@
         <TsRow>
           <Col span="12">
             <div class="auto-data">
-              <span class="text-grey lable">开始时间</span>
+              <span class="text-grey lable">{{ $t('page.starttime') }}</span>
               <span v-if="initAudit.startTime">
                 {{ initAudit.startTime | formatDate }}
               </span>
@@ -15,7 +15,7 @@
           </Col>
           <Col span="12">
             <div class="auto-data">
-              <span class="text-grey lable">结束时间</span>
+              <span class="text-grey lable">{{ $t('page.endtime') }}</span>
               <span v-if="initAudit.endTime">
                 {{ initAudit.endTime | formatDate }}
               </span>

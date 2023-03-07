@@ -24,7 +24,7 @@
             :true-value="1"
             :false-value="0"
             @on-change="isCheck"
-          >我创建的</Checkbox> </Col>
+          >{{ $t('term.process.mycreated') }}</Checkbox> </Col>
           <Col :span="18">
             <InputSearcher
               v-model="keyword"
@@ -53,7 +53,7 @@
                 <div class="title pb-sm text-action overflow" :title="row.name">{{ row.name }}</div>
                 <div class="text-grey overflow">
                   <UserCard v-bind="row.lcuVo" hideAvatar></UserCard>
-                  <span>于{{ row.lcd | formatDate }}{{ row.actionType }}</span>
+                  <span> {{ row.lcd | formatDate }} {{ row.actionType }}</span>
                 </div>
               </div>
             </template>
@@ -79,15 +79,15 @@
     <TsDialog
       type="modal"
       :isShow.sync="draftModel"
-      title="从草稿中恢复文件"
+      :title="$t('term.process.restoredrafts')"
       okText="$t('button.recover')"
       :cancelText="$t('button.cancel')"
       @on-ok="draftOk"
       @on-close="draftCancle"
     >
       <p style="margin-bottom: 10px;">
-        <span>保存草稿范围：最近 6 次</span>
-        <span style="margin-left: 36px;">自动保存间隔：30s</span>
+        <span>{{ $t('term.process.savedraftflow') }}</span>
+        <span style="margin-left: 36px;">{{ $t('term.process.autosaveinterval') }}</span>
       </p>
       <TsTable
         :theadList="draftKey"
@@ -137,7 +137,7 @@ export default {
           value: '', //默认值
           maxlength: 30,
           width: '100%',
-          label: this.$t('form.label.name'),
+          label: this.$t('page.name'),
           validateList: ['required', 'name-special', {
             name: 'searchUrl',
             url: 'api/rest/process/save',
@@ -160,11 +160,11 @@ export default {
       draftModel: false,
       draftKey: [
         {
-          title: '自动保存日期/时间',
+          title: this.$t('term.process.autosavedatetime'),
           key: 'fcd'
         },
         {
-          title: '文件名',
+          title: this.$t('page.filename'),
           key: 'name'
         }
       ],
@@ -208,16 +208,12 @@ export default {
             this.currentPage = res.Return.currentPage;
             this.flowData.cardList.map(v => {
               v.btnList = [
-                {name: '关联服务', value: 'referenceCount', icon: 'tsfont-tool', type: 'referenceCount', key: 'referenceCount'},
-                {name: '删除', value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: '流程被引用不可删除', key: 'referenceCount'},
-                {name: '多个', value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: '复制', value: 'copy', type: 'text'}, 
-                  {name: '导出', value: 'export', type: 'download'}]}
+                {name: this.$t('term.process.relcatalog'), value: 'referenceCount', icon: 'tsfont-tool', type: 'referenceCount', key: 'referenceCount'},
+                {name: this.$t('button.delete'), type: 'dropdown', menuArr: [{name: this.$t('button.copy'), value: 'copy', type: 'text'}, 
+                  {name: this.$t('button.export'), value: 'export', type: 'download'}]}
               ];
             });
           }
-        })
-        .catch(error => {
-          this.$Message.error('接口请求错误');
         });
     },
     isCheck() {
@@ -336,13 +332,6 @@ export default {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.content.executesuccess'));
           }
-        })
-        .catch(error => {
-          if (error.data.Message) {
-            this.$Message.error(error.data.Message);
-          } else {
-            this.$Message.error('接口请求错误');
-          }
         });
     },
     copy: function(uuid, name) {
@@ -391,7 +380,7 @@ export default {
             }
           });
           if (isrepeat) {
-            this.$Message.error('名称已存在');
+            this.$Message.error(this.$t('message.content.targetisexists', {target: this.$t('page.name')}));
           } else {
             this.$router.push({
               path: '/flow-edit',

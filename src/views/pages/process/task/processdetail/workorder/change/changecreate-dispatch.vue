@@ -4,9 +4,9 @@
       <TsRow>
         <Col span="8">
           <div class="change-tip text-grey fz10">
-            <span id="planStartEndTime" class="require-label" :class="validConfig.planStartEndTime == false?'text-danger':''">计划起止时间</span>
+            <span id="planStartEndTime" class="require-label" :class="validConfig.planStartEndTime == false?'text-danger':''">{{ $t('term.process.planStartEndTime') }}</span>
             <span class="change-line dividing-color"></span>
-            <span>自动开始</span>
+            <span>{{ $t('term.process.autostart') }}</span>
             <span class="change-switch">
               <TsFormSwitch
                 v-model="changeReport.autoStart"
@@ -29,14 +29,14 @@
           </div>
         </Col>
         <Col span="8">
-          <div class="change-tip text-grey fz10">时间窗口（可选）</div>
+          <div class="change-tip text-grey fz10">{{ $t('term.process.startTimeWindow') }}</div>
           <div class="change-timeWindow">
             <template v-if="actionConfig.complete">
               <span class="time-select">
                 <TsFormDatePicker
                   ref="startTimeWindow"
                   v-model="changeReport.startTimeWindow"
-                  placeholder="开始时间"
+                  :placeholder="$t('page.starttime')"
                   format="HH:mm"
                   type="time"
                   class="formItem"
@@ -47,7 +47,7 @@
                 <TsFormDatePicker
                   ref="endTimeWindow"
                   v-model="changeReport.endTimeWindow"
-                  placeholder="结束时间"
+                  :placeholder="$t('page.endtime')"
                   format="HH:mm"
                   type="time"
                   class="formItem"
@@ -63,7 +63,7 @@
           </div>
         </Col>
         <Col span="8">
-          <div id="owner" class="change-tip require-label fz10" :class="validConfig.ownerChange == false?'text-danger':'text-grey'">变更经理</div>
+          <div id="owner" class="change-tip require-label fz10" :class="validConfig.ownerChange == false?'text-danger':'text-grey'">{{ $t('term.process.changeowner') }}</div>
           <div class="change-owner">
             <template v-if="actionConfig.complete">
               <UserSelect
@@ -82,7 +82,7 @@
       </TsRow>
     </div>
     <div v-if="actionConfig.complete" class="comment-box">
-      <div class="text-grey comment-title fz10">变更说明</div>
+      <div class="text-grey comment-title fz10">{{ $t('term.process.changecontent') }}</div>
       <div>
         <div class="order-list">
           <TsCkeditor
@@ -106,7 +106,7 @@
       </div>
     </div>
     <div v-else-if="defaultTaskContent || defaultTaskFileList.length > 0" class="comment-box">
-      <div class="text-grey comment-title fz10">变更说明</div>
+      <div class="text-grey comment-title fz10">{{ $t('term.process.changecontent') }}</div>
       <div v-if="defaultTaskContent" v-imgViewer>
         <p v-html="defaultTaskContent"></p>
       </div>
@@ -185,7 +185,7 @@ export default {
       },
       groupList: ['user'],
       validateList: {
-        owner: [{ name: 'required', message: '请选择处理人' }],
+        owner: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
         planStartEndTime: [{ name: 'required', message: '请选择时间' }]
       }
     };

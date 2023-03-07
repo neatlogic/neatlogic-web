@@ -203,10 +203,10 @@ export default {
           if (list.length === 1) {
             this.$emit('setPriorityByForm', list);
           } else if (list.length > 1) {
-            messageConfig.content = '表单联动规则匹配到多个优先级，请修改表单或联系管理员';
+            messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
           } else if (list.length == 0) { //优先级不存在时提示
-            messageConfig.content = '表单联动规则匹配的优先级不存在，请修改表单或联系管理员';
+            messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
           }
         }
