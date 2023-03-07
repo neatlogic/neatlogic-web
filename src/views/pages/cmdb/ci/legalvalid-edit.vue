@@ -551,7 +551,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 //条件节点弹框
 .transparentSelect {
   /deep/ .ivu-input {

@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~assets/css/my-theme.less';
+@import (reference) '~assets/css/variable.less';
 .topnav-message {
   .bell-container {
     position: relative;
@@ -111,7 +111,7 @@ export default {
 </style>
 
 <style lang="less">
-@import (reference) '~assets/css/my-theme.less';
+@import (reference) '~assets/css/variable.less';
 .message-drawer {
   .label {
     vertical-align: unset;

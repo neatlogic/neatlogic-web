@@ -432,7 +432,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .notifytactics-overview {
   padding-top: 16px;
   .tscontain-container {

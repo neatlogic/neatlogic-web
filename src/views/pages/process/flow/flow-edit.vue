@@ -1234,7 +1234,7 @@ export default {
 
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 /deep/ .usertxt-ul {
   //用户列表纯文字展示
   .usertxt-li {

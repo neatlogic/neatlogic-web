@@ -977,7 +977,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .form-item-config {
   position: absolute;
   z-index: 999;

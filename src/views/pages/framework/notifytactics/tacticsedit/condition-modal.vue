@@ -627,7 +627,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .notify-condition {
   width: 100%;
   padding: 0 @space-xs;

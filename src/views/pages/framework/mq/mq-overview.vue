@@ -70,7 +70,7 @@ export default {
 };
 </script>
 <style lang="less" scope>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .mq-overview {
   padding-top: 16px;
   .order-tabs-title {

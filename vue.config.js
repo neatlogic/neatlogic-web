@@ -226,7 +226,7 @@ module.exports = {
     'style-resources-loader': {
       preProcessor: 'less',
       patterns: []
-      // patterns: [path.resolve(__dirname, "./src/resources/assets/css/my-theme.less")]
+      // patterns: [path.resolve(__dirname, "./src/resources/assets/css/variable.less")]
     }
   }
 };

@@ -174,7 +174,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 
 .tree {
   padding-left: 40px;
@@ -236,7 +236,7 @@ export default {
 
 <style lang="less" scoped>
 // 子树虚线的布局
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .subtree {
    .tree-node {
     position: relative;
