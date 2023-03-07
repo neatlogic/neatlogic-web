@@ -8,7 +8,7 @@
       <!--我的待办-->
       <Button v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
         <Badge :text="workcenterData.processingOfMineCount"></Badge>
-        <span>{{ $t('term.proccess.mytodo') }}</span>
+        <span>{{ $t('term.process.mytodo') }}</span>
       </Button>
     </div>
     <div ref="searchContainer" style="position:relative;text-align:right">
