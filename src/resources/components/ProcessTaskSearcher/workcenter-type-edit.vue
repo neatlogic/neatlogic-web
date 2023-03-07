@@ -1,13 +1,13 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @on-close="close">
+  <TsDialog
+    v-bind="dialogConfig"
+    @on-close="close"
+    @on-ok="save"
+  >
     <template v-slot>
       <div>
         <TsForm ref="form" v-model="data" :item-list="formConfig"></TsForm>
       </div>
-    </template>
-    <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
     </template>
   </TsDialog>
 </template>
@@ -22,7 +22,7 @@ export default {
     return {
       data: {},
       dialogConfig: {
-        title: '新建分类',
+        title: this.$t('dialog.title.addtarget', {target: this.$t('page.classify')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -31,19 +31,19 @@ export default {
       formConfig: {
         name: {
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
-          validateList: [{ name: 'required', message: '请输入名称' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.name') }]
         },
         catalogName: {
           type: 'text',
-          label: '菜单分类',
+          label: this.$t('page.classifytarget', {target: this.$t('page.menu')}),
           maxlength: 50,
           desc: '作为左侧菜单显示时的分类名称，不设置则归类到默认分类：工单中心'
         },
         type: {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           dataList: [
             {
               text: '个人分类',
@@ -75,7 +75,7 @@ export default {
           type: 'userselect',
           isMultiple: true,
           isHidden: true,
-          label: '授权', 
+          label: this.$t('page.auth'),
           transfer: true,
           validateList: [{ name: 'required', message: '请授权给用户、分组或角色' }], 
           groupList: ['user', 'role', 'common']

@@ -8,7 +8,7 @@
       <!--我的待办-->
       <Button v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
         <Badge :text="workcenterData.processingOfMineCount"></Badge>
-        <span>我的待办</span>
+        <span>{{ $t('term.proccess.mytodo') }}</span>
       </Button>
     </div>
     <div ref="searchContainer" style="position:relative;text-align:right">
@@ -37,13 +37,13 @@
                 v-model="keyword"
                 size="small"
                 width="250px"
-                placeholder="请输入标题、工单号或上报内容关键字"
+                :placeholder="$t('form.placeholder.pleaseinput',{target:$t('term.process.pleaseinputtaskcontent')})"
                 @change="searchKeyword"
               ></TsFormInput></div>
               <DropdownMenu slot="list" style="width:250px">
                 <div>
-                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: '上报内容', value: keyword })">
-                    搜索上报内容：
+                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: $t('term.process.reportcontent'), value: keyword })">
+                    {{ $t('form.placeholder.searchtarget',{target:$t('term.process.reportcontent')}) }}：
                     <b>{{ keyword }}</b>
                   </DropdownItem>
                   <div v-for="(k, index) in forecastKeyworkList" :key="index">
@@ -86,7 +86,7 @@
                 v-if="searchMode === 'simple' && $AuthUtils.hasRole('WORKCENTER_ADVANCED_SEARCH')"
                 class="text-action tsfont-left"
                 @click="changeSearchMode('custom')"
-              >高级模式</span>
+              >{{ $t('page.advancedmode') }}</span>
               <span v-else-if="searchMode === 'custom'" class="text-action tsfont-left" @click="changeSearchMode('simple')">简单模式</span>
             </div>
           </Col>
@@ -98,7 +98,7 @@
                     type="primary"
                     ghost
                     @click="openWorkcenterAddDialog"
-                  >另存为新分类</Button>
+                  >{{ $t('term.process.saveasnewcategory') }}</Button>
                 </div>
                 <div v-if="workcenterData.type!='factory'" class="action-item">
                   <Button
@@ -106,10 +106,10 @@
                     ghost
                     type="primary"
                     @click="saveWorkcenter"
-                  >保存</Button>
+                  >{{ $t('button.save') }}</Button>
                 </div>
                 <div class="action-item">
-                  <Button type="primary" @click="search">搜索</Button>
+                  <Button type="primary" @click="search">{{ $t('button.search') }}</Button>
                 </div>
               </div>
             </div>

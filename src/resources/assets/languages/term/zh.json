@@ -193,7 +193,12 @@
     "timedout": "已超时",
     "distancetimeout": "距离超时",
     "notfocustask":"取消关注",
-    "focustask": "关注工单"
+    "focustask": "关注工单",
+    "mytodo": "我的待办",
+    "pleaseinputtaskcontent": "标题、工单号或上报内容关键字",
+    "saveasnewcategory": "另存为新分类",
+    "formfilter": "表单过滤",
+    "attrdragtip": "已选属性（拖动修改排序）"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
