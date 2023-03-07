@@ -1,0 +1,428 @@
+//基础css基类代码，包括：1、基础颜色；2、基础样式；3、基础类
+@default-op: #fff;
+@default-op-opacity: #ffffffcc;
+@default-title: #8c8c8c; //标题
+@default-text: #212121; //正文
+@default-tip: #a1a1a1; //提示文案字体颜色
+@default-icon: #8c8c8c; //图标 （辅助色可用于背景上弱化标题）
+@default-dividing: #e5e5e5; //分割线
+@default-mongolia: rgba(0, 0, 0, 0.45); //蒙层
+@default-background: #f5f6fa; //背景（原背景色：#F7F8FA）
+@default-blockbg: #fff; //块状背景色
+@default-gray: #f2f4f5; //辅助灰
+@default-border: #e5e5e5;
+@default-input-border: #e8e8e8; //大输入框的颜色
+@default-boxshadow-main: rgba(0, 1, 4, 0.2);
+@default-boxshadow-bolck: rgba(0, 0, 0, 0.1);
+@default-shadow: 0px 1px 4px 0px @default-boxshadow-bolck;
+@default-main-shadow: 0px 8px 10px 0px @default-boxshadow-main;
+@default-disable: #cccccc; //失效、提示
+@default-placeholder: #a1a1a1; //placeholder字体颜色
+@default-selectbg: #e7f3ff; //下拉列表，选中和hover对应的背景颜色
+@default-table-stripe-color: #f7f8fa; //table斑马颜色
+@default-table-hover-color: #ecedf0; //table移上去颜色
+@default-th-bg-color: #eff0f3; //表头颜色
+@default-footer-btn-bg: #f7f8fa; //卡片对应底部按钮的颜色
+@default-invert-bg: #2a2c37; //反色背景
+@default-topbg-color: #333547;
+@default-top-active: #3b495f;
+@default-top-text: #f9f9f9;
+@default-bg-grey: #f4f4f4;
+@default-bg-grey-hover: #f9f9f9;
+@default-bg-code: #273142; //代码编辑器背景
+@default-color-code: #f2f4f5; //代码编辑器文案颜色
+@default-menu-select: #eff0f3; //左侧菜单选中的颜色
+@default-menu-hover: #f6f6f7; //左侧菜单hover的颜色
+@default-form-sheet-style-setting: #f9f9f9; // form表单拾色器面板颜色
+@default-form-text-disabled: #212121; // 表单字体禁用颜色
+@default-form-disabled: #96bef8; // 表单禁用颜色
+@default-form-disabled-after: #fff;
+@default-switch-bg: #96bef8;
+@default-bg-dark-grey: #eff0f3; //稍微深一点 #ECEEF5
+
+@default-primary-color: #1670f0; //主题颜色
+@default-primary-active-color: #004cb8; //主题active颜色
+@default-primary-hover-color: #004cb8; //主题hover颜色
+@default-primary-bg-color: rgba(22, 112, 240, 0.1);
+@default-link-color: #1670f0; //链接颜色
+@default-primary-grey: #e7f0ff; //主色弱化
+
+@default-info-color: #1690ff;
+@default-info-active-color: #1381e5;
+@default-info-hover-color: #004cb8;
+@default-info-bg-color: #e7f0ff;
+
+@default-success-color: #25b864;
+@default-success-active-color: #12ab73;
+@default-success-hover-color: #43cb9a;
+@default-success-bg-color: #e4f6ec;
+
+@default-warning-color: #ffba5a;
+@default-warning-active-color: #e5a750;
+@default-warning-hover-color: #ffc77b;
+@default-warning-bg-color: #fff5e7;
+
+@default-error-color: #f33b3b;
+@default-error-active-color: #e55b5b;
+@default-error-hover-color: #ff8484;
+@default-error-bg-color: #f8e3e3;
+
+@default-pending-color: #8e949f; //待处理
+
+@default-primary-color20: #c6d9f6; //开关辅助色
+
+@default-tag-bg: #f0f0f0; // 标签颜色
+@dark-tag-bg: #393b47;
+
+//点的颜色
+@default-dot-color: #e8e8e8;
+@dark-dot-color: #363842;
+
+@dark-op: #252833; //#1B2431
+@dark-op-opacity: #252833cc; //#1B2431
+@dark-title: #93959a; //标题
+@dark-text: #e0e1e2; //正文
+@dark-tip: fade(#fff, 38%); //提示文案字体颜色
+@dark-icon: #93959a; //图标 #716e6e
+@dark-dividing: #464755; //#323A46; //分割线
+@dark-mongolia: rgba(0, 0, 0, 0.2); //蒙层
+@dark-background: #151824; //#1B2431; //背景
+@dark-blockbg: #252833; //#1B2431; //块状背景
+@dark-gray: #1e212c; //辅助灰 #444343
+@dark-border: #464755; //#323A46;
+@dark-input-border: #363842; //大输入框的颜色
+@dark-boxshadow-main: rgba(0, 1, 4, 0.2);
+@dark-boxshadow-bolck: rgba(255, 255, 255, 0.1);
+@dark-shadow: 0px 2px 2px 0px @dark-boxshadow-bolck;
+@dark-main-shadow: 0px 8px 10px 0px @dark-boxshadow-main;
+@dark-disable: #43464f; //失效、提示
+@dark-placeholder: #6b6d74; //placeholder字体颜色
+@dark-selectbg: #5b5d66; //下拉列表，选中和hover对应的背景颜色
+@dark-table-stripe-color: #151824; //table斑马颜色
+@dark-table-hover-color: #2c2f3a; //table斑马颜色
+@dark-th-bg-color: #2f323e; //表头颜色
+@dark-topbg-color: #333547;
+@dark-top-active: #3b495f;
+@dark-bg-grey: #363842;
+@dark-bg-grey-hover: #2c2f3a;
+@dark-footer-btn-bg: #31343e; //卡片对应底部按钮的颜色
+@dark-invert-bg: #fff; //反色背景
+@dark-menu-select: #151824; //左侧菜单选中的颜色
+@dark-menu-hover: #2c2f3a; //左侧菜单hover的颜色
+@dark-form-sheet-style-setting: #373d46; // form表单拾色器面板颜色
+@dark-form-text-disabled: #e0e1e2; // 表单字体禁用颜色
+@dark-form-disabled: #0d4e5d; // 表单禁用颜色
+@dark-form-disabled-after: #141824; // 表单单选复选框，禁用伪类
+@dark-switch-bg: #0d4e5d;
+@dark-bg-dark-grey: #1e1f25;
+
+@dark-link-color: #00bcd4; //链接颜色
+@dark-modal-header-bg: #252833; //模态框头部颜色
+@dark-modal-background: #31343e; //模态框背景
+
+@dark-primary-color: #00bcd4; //主题颜色
+@dark-primary-active-color: #00a8be; //主题active颜色
+@dark-primary-hover-color: #33c9dc; //主题hover颜色
+@dark-primary-grey: #57657d; //选中的淡蓝色
+@dark-primary-bg-color: rgba(0, 188, 212, 0.1);
+
+@dark-info-color: #1690ff;
+@dark-info-active-color: #57afff;
+@dark-info-hover-color: #288be5;
+@dark-info-bg-color: #57657d;
+
+@dark-success-color: #25b864;
+@dark-success-active-color: #27b07e;
+@dark-success-hover-color: #56d0a3;
+@dark-success-bg-color: #3f564a;
+
+@dark-warning-color: #ffba5a;
+@dark-warning-active-color: #e5ad5f;
+@dark-warning-hover-color: #ffcd87;
+@dark-warning-bg-color: #7c6e57;
+
+@dark-error-color: #f33b3b;
+@dark-error-active-color: #e56969;
+@dark-error-hover-color: #ff9090;
+@dark-error-bg-color: #825b5b;
+
+@dark-pending-color: #8e949f; //待处理
+
+@dark-primary-color20: #0d4e5d; //开关辅助色
+
+//备份代码
+
+@title-color: #262626; //标题 85%
+@text-color: #595959; //正文 65%
+@icon-color: #8c8c8c; //图标 45%
+@dividing-color: #e5e5e5; //分割线 10%
+
+@mongolia-color: fade(#1e282c, 70%); //蒙层
+@background-color: #f9f9f9; //背景修改后
+// @background-color: #F7F8FA; //背景
+@gray-color: #f2f4f5; //辅助灰
+@menu-background: #1f232b; //左侧菜单背景色
+@border-color-base: fade(@black, 10%);
+
+@bg-shadow: 0px 10px 35px 0px rgba(0, 0, 0, 0.1);
+@white: #fff;
+@black: @title-color;
+@bg-op-color: #fff;
+
+//color
+@primary-color: #00bcd4;
+@primary-active-color: #03abc1;
+@primary-hover-color: #4dcfe1;
+@primary-grey: #e0f8fb; //主色弱化
+
+@info-color: #2d84fb;
+@info-active-color: #2979e7;
+@info-hover-color: #6ca9fc;
+
+@success-color: #25b865;
+@success-active-color: #1f9a54;
+@success-hover-color: #4fc37d;
+
+@processing-color: @primary-color;
+
+@warning-color: #f9a825;
+@warning-active-color: #e49a21;
+@warning-hover-color: #fac266;
+
+@error-color: #f71010;
+@error-active-color: #d8000f;
+@error-hover-color: #f95858;
+
+@condition-checkbox-color: #6ac0ff; //工单中心过滤条件多选框背景色
+
+// 节点样式
+@node-stroke: #f1f1f6;
+@node-fill: #f1f1f6;
+@node-icon: #0d1c2e;
+@node-name: @black;
+@node-removeIcon: @black;
+@node-start-icon: #81d553;
+@node-end-icon: #ff625a;
+// pending节点
+@node-pending-stroke: #2987f8;
+@node-pending-fill: #2987f8;
+@node-pending-icon: #0d1c2e;
+// succeed节点
+@node-succeed-stroke: #25b966;
+@node-succeed-fill: #25b966;
+@node-succeed-icon: #0d1c2e;
+// running节点
+@node-running-stroke: #f1f1f6;
+@node-running-fill: #f1f1f6;
+@node-running-icon: #0d1c2e;
+@node-running-progress: #2d84fb;
+// 线样式
+@link-stroke: #89969f;
+
+@link-color: @primary-color;
+@switch-bg: #b2ecf2; //开关背景
+@list-select-bg: #e6f3f8; //li选中颜色
+//base
+@font-family: 'PingFangSC-Regular', 'PingFang SC', 'helvetica neue', 'hiragino sans gb', arial, 'microsoft yahei ui', 'microsoft yahei', simsun, sans-serif;
+@font-size-large: 16px; //16px
+@font-size-base: 13px; //通用字号，区别于正文字号
+@font-size-small: 12px;
+@font-size-placeholder: 12px; //输入框提示文字字号
+//topnav
+@top-height: 50px;
+//actionbar
+@actionbar-height: 50px;
+
+//maintitle
+@maintitle-height: 56px;
+
+//font-size
+@font-size-login: 28px; //登录页系统名称
+@line-height-login: 36px;
+
+@font-size-modal: 18px; //弹窗对话框标题文字
+@line-height-modal: 26px;
+
+@font-size-chart: @font-size-large; //大屏展示统计图标题
+@line-height-chart: 24px;
+
+@font-size-menu: 14px; //一二级菜单
+@line-height-menu: 22px;
+
+@font-size-text: @font-size-base; //正文、基本字号
+@line-height-text: 21px;
+
+@font-size-table: 12px; //表格头部、错误提示
+@line-height-table: 20px;
+
+// vertical paddings
+@space-outer: 0px; //最外面的间隙，目前是0
+@space-lg: 24px; // 间隙_大
+@space-normal: 16px; // 间隙_比较大
+@space-md: 12px; //间隙_普通（通用类的间隙由原来16调整为12）
+@space-sm: 10px; // 间隙_小（一般用于文字间隙）
+@space-xs: 0.5 * @space-md; // 间隙_较小（比如分页的页数之间的间隙）
+@space-icon: 0.25 * @space-md; //特别小的间隙，比如图标、徽章跟文字的间隙
+
+@space-base: @space-md @space-lg; //基础的块间隙（上下普通，左右大）
+@block-radius: 2px; //块状元素圆角
+
+//button
+@btn-padding-base: 0 @space-md; //0 16px
+@btn-padding-large: 0 @space-md; //0 16px
+@btn-padding-small: 0 @space-xs; //0 8px
+@btn-border-radius: 4px; //按钮圆角
+@item-border-radius: 6px; //条状元素圆角
+@block-border-radius-min: 8px; //区域块状元素圆角1
+@block-border-radius: 10px; //区域块状元素圆角2
+
+@login-bg-color: linear-gradient(to bottom right, #fdfeff, #e6f1fe);
+
+.ta(@type) {
+  text-align: @type;
+}
+
+.fz(@size, @height) {
+  font-size: @size;
+  line-height: @height;
+}
+
+.text-shadow(@prop) {
+  -webkit-text-shadow: @prop;
+  text-shadow: @prop;
+}
+
+.transition(@prop) {
+  -webkit-transition: @prop;
+  -o-transition: @prop;
+  transition: @prop;
+}
+
+.transform(@prop) {
+  -ms-transform: @prop;
+  -moz-transform: @prop;
+  -webkit-transform: @prop;
+  -o-transform: @prop;
+  transform: @prop;
+}
+
+.animation(@prop) {
+  -moz-animation: @prop;
+  -webkit-animation: @prop;
+  -o-animation: @prop;
+  animation: @prop;
+}
+
+.box-shadow(@prop) {
+  -moz-box-shadow: @prop;
+  -webkit-box-shadow: @prop;
+  box-shadow: @prop;
+}
+
+.box-sizing(@type) {
+  -webkit-box-sizing: @type;
+  -moz-box-sizing: @type;
+  box-sizing: @type;
+}
+
+.clearfix() {
+  &:after {
+    visibility: hidden;
+    clear: both;
+    display: block;
+    content: '';
+    height: 0;
+  }
+}
+
+.flex(@justify-content) {
+  display: flex;
+  align-items: center;
+  justify-content: @justify-content;
+}
+
+.opacity(@opacity) {
+  opacity: @opacity;
+  @opacity-ie: (@opacity * 100);
+  -ms-filter:~'progid:DXImageTransform.Microsoft.Alpha(Opacity=@{opacity-ie})';
+  filter:~'alpha(opacity=@{opacity-ie})';
+}
+
+.overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: nowrap;
+}
+
+.border-radius(@prop) {
+  -moz-border-radius: @prop;
+  -webkit-border-radius: @prop;
+  border-radius: @prop;
+}
+
+.background-gradient(@prop) {
+  background: -webkit-linear-gradient(@prop);
+  background: -o-linear-gradient(@prop);
+  background: -moz-linear-gradient(@prop);
+  background: linear-gradient(@prop);
+}
+
+.tsfont() {
+  font-family: ts;
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  text-decoration: inherit;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tsfonts() {
+  font-family: tsfont;
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  text-decoration: inherit;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.padding(@space) {
+  padding: @space;
+}
+
+.keyframes (@prefix, @name, @content) when (@prefix=def) {
+  @keyframes @name {
+    @content();
+  }
+}
+
+.keyframes (@prefix, @name, @content) when (@prefix=moz) {
+  @-moz-keyframes @name {
+    @content();
+  }
+}
+
+.keyframes (@prefix, @name, @content) when (@prefix=o) {
+  @-o-keyframes @name {
+    @content();
+  }
+}
+
+.keyframes (@prefix, @name, @content) when (@prefix=webkit) {
+  @-webkit-keyframes @name {
+    @content();
+  }
+}
+
+.keyframes (@prefix, @name, @content) when (@prefix=all) {
+  .keyframes(moz, @name, @content);
+  .keyframes(o, @name, @content);
+  .keyframes(webkit, @name, @content);
+  .keyframes(def, @name, @content);
+}
