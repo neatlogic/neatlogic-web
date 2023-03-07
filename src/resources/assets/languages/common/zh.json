@@ -551,7 +551,6 @@
       "required": "{target}不能为空",
       "failed": "{target}获取失败",
       "cannotrepeat": "{target}不能重复",
-      "copysuccess": "复制成功",
       "nameexists": "名称已存在",
       "cmdb": {
         "diffci": "已选择的配置项不属于同一个模型，请重新选择",
