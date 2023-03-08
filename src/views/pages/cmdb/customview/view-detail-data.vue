@@ -7,7 +7,7 @@
       class="radius-lg"
     >
       <div slot="title" class="card-top">
-        <div class="title text-title">基本属性</div>
+        <div class="title text-title">{{ $t('term.cmdb.basicattribute') }}</div>
       </div>
       <div>
         <div class="attr-main">
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div v-if="!hasData">
-      <NoData>没有数据</NoData>
+      <NoData>{{ $t('page.nodata') }}</NoData>
     </div>
   </div>
 </template>

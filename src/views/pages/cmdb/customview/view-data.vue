@@ -4,7 +4,7 @@
     <TsContain border="border" :isSiderHide="isSiderHide">
       <template v-slot:topRight>
         <div class="dashboard-action action-group" style="text-align:right">
-          <span class="action-item tsfont-edit" @click="editView()">编辑视图</span>
+          <span class="action-item tsfont-edit" @click="editView()">{{ $t('page.edittarget', { target: $t('term.cmdb.view') }) }}</span>
         </div>
       </template>
       <template v-slot:content>
@@ -19,12 +19,12 @@
                   <span class="ci-label">{{ viewData.name }}</span>
                 </div>
                 <div v-if="viewData.description" class="ci-description overflow text-grey" :title="viewData.description">{{ viewData.description }}</div>
-                <div v-else class="text-grey">暂无描述</div>
+                <div v-else class="text-grey">{{ $t('page.nodata') }}</div>
               </div>
             </div>
             <div class="right-block bg-block  radius-lg pl-nm pr-nm pb-nm">
               <Tabs v-if="viewData && viewData.customViewTemplate && viewData.customViewTemplate.isActive" value="data">
-                <TabPane label="数据" name="data"><ViewDataList :viewId="id"></ViewDataList></TabPane>
+                <TabPane :label="$t('page.data')" name="data"><ViewDataList :viewId="id"></ViewDataList></TabPane>
                 <TabPane :label="viewData.customViewTemplate.name" name="template">
                   <CustomTemplate :id="id"></CustomTemplate>
                 </TabPane>
@@ -38,7 +38,6 @@
   </div>
 </template>
 <script>
-
 export default {
   name: '',
   components: {
@@ -46,7 +45,7 @@ export default {
     CustomTemplate: resolve => require(['./custom-template.vue'], resolve)
   },
   props: {
-    customViewId: {type: Number}
+    customViewId: { type: Number }
   },
   data() {
     const _this = this;
@@ -56,10 +55,10 @@ export default {
       scrollHeight: 800,
       loadingShow: false,
       isSiderHide: false,
-      loadingText: '加载中...',
+      loadingText: this.$t('page.loading'),
       viewData: {},
       viewList: [],
-      searchParam: {currentPage: 1}
+      searchParam: { currentPage: 1 }
     };
   },
   beforeCreate() {},
@@ -77,10 +76,10 @@ export default {
   destroyed() {},
   methods: {
     editView() {
-      this.$router.push({path: '/view-edit/' + (this.viewData.isPrivate == 1 ? 'private/' : 'public/') + this.id});
+      this.$router.push({ path: '/view-edit/' + (this.viewData.isPrivate == 1 ? 'private/' : 'public/') + this.id });
     },
     switchView(viewId) {
-      this.$router.push({path: '/view-data/' + viewId});
+      this.$router.push({ path: '/view-data/' + viewId });
     },
     isTslayout() {
       this.isSiderHide = !this.isSiderHide;
@@ -114,7 +113,7 @@ export default {
         setTimeout(() => {
           resolve();
           if (_this.processCurrentPage > 1 && _this.processCurrentPage > _this.processPageCount) {
-            _this.loadingTip = '到底了';
+            _this.loadingTip = this.$t('page.loadfinish');
             return;
           } else {
             _this.getTaskList();
@@ -123,28 +122,26 @@ export default {
       });
     },
     toViewList() {
-      this.$router.push({path: '/customview-manage' });
+      this.$router.push({ path: '/customview-manage' });
     }
-   
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>
 <style lang="less" scope>
 @import '../public/common.less';
-.right-top{
-  height: 38px!important;
+.right-top {
+  height: 38px !important;
   margin-bottom: 12px;
 }
-.iconWidth{
-  width: 20px!important;
-  line-height: 24px!important;
-  height: 36px!important;
+.iconWidth {
+  width: 20px !important;
+  line-height: 24px !important;
+  height: 36px !important;
 }
-.ci-label{
+.ci-label {
   margin-bottom: 4px;
 }
 </style>

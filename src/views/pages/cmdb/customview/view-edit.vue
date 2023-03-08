@@ -556,10 +556,10 @@ export default {
     deleteView() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '是否确认删除当前视图？',
-        cancelText: '取消',
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.cmdb.view')}),
+        cancelText: this.$t('button.cancel'),
         btnType: 'error',
-        okText: '确认',
+        okText: this.$t('button.confirm'),
         'on-ok': vnode => {
           this.$api.cmdb.customview.deleteCustomView(this.viewData.id).then(res => {
             if (res.Status == 'OK') {
@@ -822,7 +822,6 @@ export default {
     // left: 10px;
   }
   &::after {
-    content: '更换';
     left: 44px;
     width: 40px;
     position: absolute;
