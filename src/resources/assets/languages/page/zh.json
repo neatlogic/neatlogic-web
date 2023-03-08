@@ -332,5 +332,11 @@
   "putawayall": "收起所有",
   "expandall": "展开所有",
   "scene": "场景",
-  "executeuser": "执行用户"
+  "executeuser": "执行用户",
+  "inherit": "继承",
+  "fulllist": "全部串行",
+  "allparallel": "全部并行",
+  "notconfig": "未配置",
+  "path": "路径",
+  "exit": "退出"
 }

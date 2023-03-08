@@ -21,6 +21,7 @@
     "copysuccess": "复制成功",
     "uploadsuccess": "上传成功",
     "uploadfailed": "上传失败",
+    "validatesuccess": "校验成功",
     "targetisexists": "{target}已存在",
     "sessionexpired": "会话已超时，请重新登录",
     "urlnotfound": "接口{target}不存在",

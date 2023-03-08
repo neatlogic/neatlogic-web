@@ -153,7 +153,7 @@ export default {
         },
         pipelineId: {
           type: 'select',
-          label: this.$t('term.deploy.pipeline'),
+          label: this.$t('term.autoexec.pipeline'),
           value: null,
           dynamicUrl: '/api/rest/deploy/pipeline/search',
           params: {type: 'appsystem', needVerifyAuth: 1},

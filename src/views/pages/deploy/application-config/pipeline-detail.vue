@@ -36,7 +36,7 @@
               {{ $t('page.savedraft') }}
             </div>
             <div class="action-item tsfont-config" @click="showRuntimeParamList">
-              {{ $t('term.deploy.jobparam') }}
+              {{ $t('term.autoexec.jobparam') }}
             </div>
             <div class="action-item tsfont-close-o" @click="cancelEdit()">
               {{ $t('button.cancel') }}
@@ -98,7 +98,7 @@
               >
                 <TabPane
                   v-if="profileList.length > 0"
-                  :label="$t('term.deploy.presetparameter')"
+                  :label="$t('term.autoexec.presetparameter')"
                   name="profile"
                 >
                   <div class="setting-main">
@@ -147,7 +147,7 @@
                   </div>
                 </TabPane>
                 <TabPane
-                  :label="$t('term.deploy.stagegroup')"
+                  :label="$t('term.autoexec.stagegroup')"
                   name="stepGroup"
                 >
                   <div class="setting-main padding">
@@ -171,7 +171,7 @@
       </template>
     </TsContain>
     <TsDialog
-      :title="$t('page.edittarget', {target: $t('term.deploy.pipeline')})"
+      :title="$t('page.edittarget', {target: $t('term.autoexec.pipeline')})"
       type="modal"
       :isShow.sync="showDialog"
     >

@@ -306,7 +306,7 @@ export default {
         {
           name: 'pipeline',
           type: 'select',
-          label: this.$t('term.deploy.pipeline'),
+          label: this.$t('term.autoexec.pipeline'),
           multiple: true,
           validateList: ['required'],
           dynamicUrl: '/api/rest/deploy/pipeline/search',

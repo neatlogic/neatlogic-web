@@ -5,7 +5,7 @@
       class="text-action pt-nm"
       :class="isHideAll?'tsfont-down':'tsfont-up'"
       @click="toggleshowAll()"
-    >{{ isHideAll ? '展开所有' : '收起所有' }}</div>
+    >{{ isHideAll ? $t('page.expandall') : $t('page.putawayall') }}</div>
     <div
       v-for="item in profileList"
       :id="'profile_' + item.profileId"
@@ -59,7 +59,7 @@
                       transfer
                       @on-visible-change="(val)=>{getReferenceList(val, row, item)}"
                     >
-                      <span class="text-action">引用查询</span>
+                      <span class="text-action">{{ $t('term.deploy.referencequery') }}</span>
                       <DropdownMenu v-if="referenceList.length > 0" slot="list" class="dropdown">
                         <DropdownItem
                           v-for="(r, index) of referenceList"
@@ -72,13 +72,13 @@
                       <DropdownMenu v-else slot="list" class="dropdown">
                         <DropdownItem>
                           <div class="text-tip">
-                            暂无参数引用
+                            {{ $t('term.deploy.noparamreference') }}
                           </div>
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </li>
-                  <li class="icon tsfont-config" @click.stop="getParamoverrideList(row, item)">上下游参数值</li>
+                  <li class="icon tsfont-config" @click.stop="getParamoverrideList(row, item)">{{ $t('term.deploy.upstreamanddownstreamparametervalues') }}</li>
                 </ul>
               </div>
             </template>
@@ -93,7 +93,7 @@
     >
     </ToolProfileEdit>
     <TsDialog
-      title="上下游参数集"
+      :title="$t('term.deploy.upstreamanddownstreamparametersets')"
       type="modal"
       :isShow.sync="showParams"
       :hasFooter="false"
@@ -110,7 +110,7 @@
               :config="row.value.config"
               :readonly="true"
             ></Items>
-            <div v-else>未配置</div>
+            <div v-else>{{ $t('page.notconfig') }}</div>
           </template>
         </TsTable>
       </template>
@@ -145,15 +145,15 @@ export default {
       profileId: null,
       theadList: [
         {
-          title: '继承',
+          title: this.$t('page.inherit'),
           key: 'inherit'
         },
         {
-          title: '参数名',
+          title: this.$t('term.autoexec.paramsname'),
           key: 'name'
         },
         {
-          title: '参数值',
+          title: this.$t('term.autoexec.paramsvalue'),
           key: 'defaultValue'
         },
         {
@@ -168,11 +168,11 @@ export default {
       paramoverrideTable: {
         theadList: [
           {
-            title: '路径',
+            title: this.$t('page.path'),
             key: 'text'
           },
           {
-            title: '参数值',
+            title: this.$t('term.autoexec.paramsvalue'),
             key: 'value'
           }
         ],

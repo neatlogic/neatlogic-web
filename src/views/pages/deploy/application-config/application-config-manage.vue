@@ -3,38 +3,38 @@
     <TsContain :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addAppTree">应用</span>
+          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.application') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
-            <span class="action-item tsfont-plus" @click="addModuleTree">模块</span>
-            <span class="action-item tsfont-edit" @click="editAppTree">编辑应用</span>
-            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">清空配置</span>
+            <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
+            <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.application') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('term.deploy.clearconfig') }}</span>
           </template>
 
           <!-- 模块层 -->
           <template v-if="configType == 'module' && canEdit">
-            <span class="action-item tsfont-plus" @click="addEnv">环境</span>
-            <span class="action-item tsfont-edit" @click="editModule">编辑模块</span>
-            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">清空配置</span>
-            <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">复制配置</span>
+            <span class="action-item tsfont-plus" @click="addEnv">{{ $t('page.environment') }}</span>
+            <span class="action-item tsfont-edit" @click="editModule">{{ $t('page.module') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('term.deploy.clearconfig') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
           </template>
 
           <!-- 环境层 -->
           <template v-if="configType == 'env' && canEdit">
-            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">清空配置</span>
-            <span v-show="hasConfig && selectedEnv && selectedEnv.isDeletable" class="action-item tsfont-trash-o text-action" @click="delEnvConfig">删除环境</span>
-            <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">复制配置</span>
+            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('term.deploy.clearconfig') }}</span>
+            <span v-show="hasConfig && selectedEnv && selectedEnv.isDeletable" class="action-item tsfont-trash-o text-action" @click="delEnvConfig">{{ $t('term.deploy.deleteenv') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
           </template>
           <Button
             v-if="hasConfig"
             class="ml-nm"
             type="primary"
             @click="openPipelineEdit()"
-          >流水线</Button>
+          >{{ $t('term.autoexec.pipeline') }}</Button>
         </div>
       </template>
       <template v-slot:sider>
@@ -51,13 +51,6 @@
           @getSelectedEnv="getSelectedEnv"
           @getAppSystemIdList="getAppSystemIdList"
         ></AppModuleList>
-        <!--<AppConfigTree
-          :isFirstSelected="true"
-          :isShowApp="true"
-          :refreshParams="refreshParams"
-          :selectedParams="selectedParams"
-          @selectedTreeNode="selectedTreeNode"
-        ></AppConfigTree>-->
       </template>
       <template v-slot:content>
         <div class="app-content-box">
@@ -84,10 +77,10 @@
               <div class="no-data-box">
                 <NoData text=""></NoData>
                 <div v-if="!isHasAppSystemIdList" class="flex-center pt-nm">
-                  系统未添加应用，点击<span class="text-href" @click="addAppTree">添加应用</span>
+                  {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.application') }}</span>
                 </div>
                 <div v-else class="flex-center pt-nm">
-                  当前应用尚未添加配置，请选择<span class="text-href" @click="toPipeline">流水线模板</span>
+                  {{ $t('term.deploy.applynotconfigselect') }}<span class="text-href" @click="toPipeline">{{ $t('term.deploy.pipelinetemplate') }}</span>
                 </div>
               </div>
             </template>
@@ -115,7 +108,6 @@ export default {
     ModuleManage: resolve => require(['./config/module-manage'], resolve),
     EnvManage: resolve => require(['./config/env-manage'], resolve),
     AppManage: resolve => require(['./config/app-manage'], resolve),
-    //    AppConfigTree: resolve => require(['./config/app/app-config-tree'], resolve),
     AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
     CopyConfigModule: resolve => require(['./config/module/copy-config-module'], resolve), // 复制配置（模块）
     CopyConfigEnv: resolve => require(['./config/env/copy-config-env'], resolve), // 复制配置（环境）
@@ -375,11 +367,11 @@ export default {
           envId: id
         };
         this.$createDialog({
-          title: '删除环境',
-          content: `确认删除[${this.getDelEnvPath()}]环境？`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.getDelEnvPath()}),
           btnList: [//底部操作区域的按钮数组
             { 
-              text: '取消',  
+              text: this.$t('button.cancel'),  
               ghost: true, 
               fn: vnode => { vnode.isShow = false; }
             },
@@ -390,7 +382,7 @@ export default {
                 vnode.isShow = false; 
                 this.$api.deploy.applicationConfig.delEnv(params).then(res => {
                   if (res && res.Status == 'OK') {
-                    this.$Message.success('删除环境成功');
+                    this.$Message.success(this.$t('message.content.deletesuccess'));
                     this.$refs.appModuleList.refreshModule(this.appModuleId);
                     this.appModuleData = {
                       appId: this.appSystemId,
