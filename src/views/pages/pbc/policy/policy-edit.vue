@@ -87,7 +87,7 @@ export default {
     return {
       isConfigDialogShow: false,
       currentPhase: {},
-      policyData: {},
+      policyData: {phase: ''},
       interfaceData: {},
       searchParam: { pageSize: 10, hasCi: 1, hasCustomView: 1 },
       selectedInterfaceList: [],
@@ -288,7 +288,7 @@ export default {
         this.policyData.phase = this.policyData.phase.substr(0, this.policyData.phase.length - 1);
       }
     },
-    togglePhase_bak(phaseObj) {
+    /*togglePhase_bak(phaseObj) {
       if (!this.policyData.phase) {
         const phaseIndex = this.getPhaseIndex(phaseObj.phase);
         if (phaseIndex >= 0) {
@@ -317,7 +317,7 @@ export default {
       if (this.policyData.phase.endsWith(',')) {
         this.policyData.phase = this.policyData.phase.substr(0, this.policyData.phase.length - 1);
       }
-    },
+    },*/
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },

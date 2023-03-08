@@ -10,18 +10,6 @@
           <div v-for="(prop, index) in propertyList" :key="index" :class="prop.complexId ? 'form-item-row' : 'form-item'">
             <div class="form-title text-grey">
               <span v-if="prop.complexId">
-                <Poptip
-                  v-if="interfaceItemData.error && interfaceItemData.error[prop.complexId]"
-                  :transfer="true"
-                  trigger="hover"
-                  title="异常"
-                  class="error"
-                  word-wrap
-                  width="400"
-                  :content="interfaceItemData.error[prop.complexId]"
-                >
-                  <i class="text-error tsfont-warning-s"></i>
-                </Poptip>
                 <i class="tsfont-plus text-href" @click="addSubItem(prop.complexId)"></i>
                 {{ prop.complexName }}
               </span>
