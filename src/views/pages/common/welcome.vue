@@ -37,7 +37,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .welcome {
   padding-top: 40vh;
   background: linear-gradient(47deg, #EDF8FF 0%, #F5F6FA 100%);

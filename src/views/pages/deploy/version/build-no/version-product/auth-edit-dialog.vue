@@ -1,10 +1,10 @@
 <template>
   <div>
     <TsDialog
-      title="授权"
+      :title="$t('page.auth')"
       type="modal"
       :isShow="true"
-      ok-text="保存"
+      :ok-text="$t('button.save')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -52,25 +52,25 @@ export default {
           name: 'fileName',
           type: 'slot',
           maxlength: 50,
-          label: '文件'
+          label: this.$t('page.file')
         },
         {
           name: 'aUserAuth',
           type: 'checkbox',
           maxlength: 50,
-          label: '所属用户',
+          label: this.$t('term.deploy.owninguser'),
           multiple: true,
           dataList: [
             {
-              text: '读',
+              text: this.$t('page.read'),
               value: 'r'
             },
             {
-              text: '写',
+              text: this.$t('page.write'),
               value: 'w'
             },
             {
-              text: '执行',
+              text: this.$t('page.execute'),
               value: 'x'
             }
           ]
@@ -79,19 +79,19 @@ export default {
           name: 'bUserGroupAuth',
           type: 'checkbox',
           maxlength: 50,
-          label: '同组用户',
+          label: this.$t('term.deploy.groupuser'),
           multiple: true,
           dataList: [
             {
-              text: '读',
+              text: this.$t('page.read'),
               value: 'r'
             },
             {
-              text: '写',
+              text: this.$t('page.write'),
               value: 'w'
             },
             {
-              text: '执行',
+              text: this.$t('page.execute'),
               value: 'x'
             }
           ]
@@ -100,19 +100,19 @@ export default {
           name: 'cOtherUserAuth',
           type: 'checkbox',
           maxlength: 50,
-          label: '其他用户',
+          label: this.$t('term.deploy.otheruser'),
           multiple: true,
           dataList: [
             {
-              text: '读',
+              text: this.$t('page.read'),
               value: 'r'
             },
             {
-              text: '写',
+              text: this.$t('page.write'),
               value: 'w'
             },
             {
-              text: '执行',
+              text: this.$t('page.execute'),
               value: 'x'
             }
           ]
@@ -159,7 +159,7 @@ export default {
         };
         this.$api.deploy.version.updateFileChmod(params).then((res) => {
           if (res.Status == 'OK') {
-            this.$Message.success('修改权限成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
             this.closeDialog(true);
           }
         });

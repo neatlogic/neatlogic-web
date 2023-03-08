@@ -66,6 +66,7 @@ export default {
   destroyed() {},
   methods: {
     init() {
+      this.$set(this.tableData, 'tbodyList', []);
       if (this.value && this.value instanceof Array && this.value.length > 0) {
         const value = this.$utils.deepClone(this.value);
         //去掉不存在的表头数据
@@ -151,7 +152,6 @@ export default {
     value: {
       handler(val) {
         if (!this.$utils.isSame(this.tableData.tbodyList, val)) {
-          this.tableData.tbodyList = [];
           this.init();
         }
       },

@@ -361,7 +361,7 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .notice-setting {
   .notify-icon {
     line-height: 32px;

@@ -19,7 +19,7 @@
       <template v-slot:topRight>
         <div class="action-group">
           <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">权限</span>
-          <span v-if="canEdit" class="action-item tsfont-save" @click="save()">保存</span>
+          <span v-if="canEdit" class="action-item tsfont-save" @click="save()">{{ $t('button.save') }}</span>
           <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">删除</span>
           <span v-if="canEdit && $AuthUtils.hasRole(['BATCHDEPLOY_VERIFY'])" class="action-item">
             <Button type="primary" @click="submit()">提交</Button>

@@ -3,12 +3,12 @@
     <TsContain>
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <template v-slot:topLeft>
-        <span class="text-action tsfont-plus" @click="toJobWebhookAdd">配置</span>
+        <span class="text-action tsfont-plus" @click="toJobWebhookAdd">{{ $t('page.config') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher
           v-model="searchParam.keyword"
-          placeholder="名称"
+          :placeholder="$t('page.name')"
           @change="searchKeyword"
         ></InputSearcher>
       </template>
@@ -67,8 +67,8 @@
           <template slot="action" slot-scope="{row, index}">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-history" @click.stop="openExecutionRecord(row)">执行记录</li>
-                <li class="tsfont-trash-o" @click.stop="delJobWebhook(row, index)">删除</li>
+                <li class="tsfont-history" @click.stop="openExecutionRecord(row)">{{ $t('term.deploy.executionrecord') }}</li>
+                <li class="tsfont-trash-o" @click.stop="delJobWebhook(row, index)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -108,28 +108,28 @@ export default {
       },
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: '激活',
+          title: this.$t('page.enable'),
           key: 'isActive'
         },
         {
-          title: '触发状态',
+          title: this.$t('term.deploy.triggerstate'),
           key: 'jobStatusList'
         },
         {
-          title: '集成动作',
+          title: this.$t('term.deploy.integratedaction'),
           key: 'integrationName'
         },
         { 
-          title: '修改人', 
+          title: this.$t('page.fcu'), 
           key: 'fcuVo', 
           type: 'user'
         },
         { 
-          title: '修改时间', 
+          title: this.$t('page.fcd'), 
           key: 'lcd', 
           type: 'time'
         },
@@ -195,9 +195,9 @@ export default {
         return false;
       }
       this.$createDialog({
-        title: '警告',
-        content: `确认删除：${row.name || ''}?`,
-        okText: '删除',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name || ''}),
+        okText: this.$t('page.delete'),
         btnType: 'error',
         'on-ok': (vnode) => {
           this.$api.deploy.webhook.delJobWebhookById({id: row.id}).then((res) => {
@@ -220,7 +220,7 @@ export default {
       if (row && row.id) {
         this.$api.deploy.webhook.updateWebhookByIsActive({id: row.id, isActive: isActive}).then((res) => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(isActive ? '激活成功' : '禁用成功');
+            this.$Message.success(this.$t('message.content.savesuccess'));
           }
         });
       }

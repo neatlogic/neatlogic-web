@@ -6,15 +6,15 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage('', '配置列表') }}</span>
       </template>
       <template v-slot:topLeft>
-        <span class="tsfont-question-s text-action" @click="openConfigAddHelpDialog">帮助</span>
+        <span class="tsfont-question-s text-action" @click="openConfigAddHelpDialog">{{ $t('page.help') }}</span>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" @click="saveConfig">保存</Button>
+        <Button type="primary" @click="saveConfig">{{ $t('button.save') }}</Button>
       </template>
       <template v-slot:content>
         <ul>
           <li>
-            <Divider orientation="start">基本信息</Divider>
+            <Divider orientation="start">{{ $t('page.basicinfo') }}</Divider>
             <TsForm
               ref="basicForm"
               v-model="formValue"
@@ -130,7 +130,7 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: [
             'required',
             'name-special',
@@ -138,7 +138,7 @@ export default {
               name: 'searchUrl',
               url: '/api/rest/deploy/ci/save',
               key: 'name',
-              message: '名称已存在',
+              message: this.$t('form.validate.repeat', {target: this.$t('page.name')}),
               params: { id: '' }
             }],
           maxlength: 64
@@ -146,7 +146,7 @@ export default {
         {
           name: 'isActive',
           type: 'switch',
-          label: '激活',
+          label: this.$t('page.enable'),
           falseValue: 0,
           trueValue: 1
         }
@@ -155,7 +155,7 @@ export default {
         {
           name: 'appModuleId',
           type: 'select',
-          label: '模块',
+          label: this.$t('term.deploy.module'),
           validateList: ['required'],
           dynamicUrl: '/api/rest/deploy/app/config/module/list',
           params: {},

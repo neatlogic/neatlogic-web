@@ -71,7 +71,7 @@ export default [
     name: '404',
     component: page404,
     meta: {
-      title: '页面不存在'
+      title: 'router.common.pagenoexist'
     }
   },
   {
@@ -94,7 +94,7 @@ export default [
     name: 'application-config-manage',
     component: applicationConfigManage,
     meta: {
-      title: '应用配置',
+      title: 'router.deploy.applicationconfig',
       ismenu: true,
       icon: 'tsfont-file-multi',
       authority: 'DEPLOY_BASE',
@@ -106,7 +106,7 @@ export default [
     name: 'version-center-manage',
     component: versionCenterManage,
     meta: {
-      title: '版本中心',
+      title: 'router.deploy.versioncenter',
       ismenu: true,
       icon: 'tsfont-version',
       authority: 'DEPLOY_BASE',
@@ -119,7 +119,7 @@ export default [
     name: 'version-detail',
     component: versionDetail,
     meta: {
-      title: '发布状态',
+      title: 'router.deploy.publishstatus',
       ismenu: false,
       icon: '',
       authority: '',
@@ -132,7 +132,7 @@ export default [
     name: 'application-config-pipeline',
     component: applicationConfigPipeline,
     meta: {
-      title: '应用配置流水线',
+      title: 'router.deploy.applicationconfigpipeline',
       ismenu: false,
       authority: '',
       type: 'config'
@@ -143,7 +143,7 @@ export default [
     name: 'action-detail',
     component: actionDetail,
     meta: {
-      title: '组合工具详情',
+      title: 'router.deploy.combinationtooldetail',
       ismenu: false,
       icon: '',
       authority: ''
@@ -154,7 +154,7 @@ export default [
     name: 'script-detail',
     component: scriptDetail,
     meta: {
-      title: '自定义工具详情',
+      title: 'router.deploy.publishstatus',
       ismenu: false,
       authority: '',
       type: 'config'
@@ -165,7 +165,7 @@ export default [
     name: 'tool-detail',
     component: toolDetail,
     meta: {
-      title: '工具详情',
+      title: 'router.deploy.tooldetail',
       ismenu: false,
       authority: 'AUTOEXEC_SCRIPT_SEARCH',
       type: 'config'
@@ -176,7 +176,7 @@ export default [
     name: 'test-detail',
     component: testDetail,
     meta: {
-      title: '工具测试页面',
+      title: 'router.deploy.tooltestdetail',
       ismenu: false,
       icon: '',
       authority: 'AUTOEXEC_BASE',
@@ -188,7 +188,7 @@ export default [
     name: 'job-detail',
     component: jobDetail,
     meta: {
-      title: '作业详情',
+      title: 'router.deploy.jobdetail',
       ismenu: false,
       icon: 'tsfont-history',
       authority: ''
@@ -199,7 +199,7 @@ export default [
     name: 'job-manage',
     component: publishingJobManage,
     meta: {
-      title: '一键发布',
+      title: 'router.deploy.oneclickpublishing',
       ismenu: true,
       icon: 'tsfont-history',
       authority: 'DEPLOY_BASE',
@@ -211,7 +211,7 @@ export default [
     name: 'job-add',
     component: publishingJobAdd,
     meta: {
-      title: '新建发布作业',
+      title: 'router.deploy.addpublishjob',
       ismenu: false,
       icon: '',
       authority: '',
@@ -223,7 +223,7 @@ export default [
     name: 'batch-job-edit',
     component: batchPublishingJobEdit,
     meta: {
-      title: '编辑批量发布作业',
+      title: 'router.deploy.editbatchpublishjob',
       ismenu: false,
       authority: '',
       type: 'job'
@@ -234,7 +234,7 @@ export default [
     name: 'batch-job-detail',
     component: batchPublishingJobExecute,
     meta: {
-      title: '执行批量发布作业',
+      title: 'router.deploy.executebatchpublishjob',
       ismenu: false,
       authority: '',
       type: 'job'
@@ -245,7 +245,7 @@ export default [
     name: 'application-config-pipeline-detail',
     component: pipelineDetail,
     meta: {
-      title: '流水线',
+      title: 'router.deploy.pipelinedetail',
       ismenu: false,
       icon: '',
       authority: '',
@@ -257,7 +257,7 @@ export default [
     name: 'pipeline-manage',
     component: pipelineManage,
     meta: {
-      title: '超级流水线',
+      title: 'router.deploy.pipelinemanage',
       ismenu: true,
       icon: 'tsfont-auto',
       authority: 'PIPELINE_MODIFY',
@@ -269,7 +269,7 @@ export default [
     name: 'pipeline-edit',
     component: pipelineEdit,
     meta: {
-      title: '编辑流水线',
+      title: 'router.deploy.editpipeline',
       ismenu: false,
       authority: ''
     }
@@ -279,7 +279,7 @@ export default [
     name: 'activeversion-manage',
     component: activeversionManage,
     meta: {
-      title: '活动版本',
+      title: 'router.deploy.activeversion',
       ismenu: true,
       icon: 'tsfont-star-border',
       authority: 'DEPLOY_BASE',
@@ -291,7 +291,7 @@ export default [
     name: 'schedule-job-manage',
     component: scheduleJobManage,
     meta: {
-      title: '定时作业',
+      title: 'router.deploy.schedulejob',
       ismenu: true,
       icon: 'tsfont-formtime',
       authority: 'DEPLOY_BASE',
@@ -303,7 +303,7 @@ export default [
     name: 'config-add',
     component: configAdd,
     meta: {
-      title: '配置',
+      title: 'router.deploy.configadd',
       ismenu: false,
       icon: '',
       authority: '',
@@ -315,7 +315,7 @@ export default [
     name: 'schedule-job-add',
     component: scheduleJobAdd,
     meta: {
-      title: '添加定时作业',
+      title: 'router.deploy.addschedulejob',
       ismenu: false,
       authority: ''
     }
@@ -325,7 +325,7 @@ export default [
     name: 'schedule-job-edit',
     component: scheduleJobEdit,
     meta: {
-      title: '编辑定时作业',
+      title: 'router.deploy.editschedulejob',
       ismenu: false,
       authority: ''
     }
@@ -335,7 +335,7 @@ export default [
     name: 'tool-classification-manage',
     component: toolClassificationManage,
     meta: {
-      title: '工具分类',
+      title: 'router.deploy.toolclassification',
       ismenu: true,
       icon: 'tsfont-setting',
       authority: 'DEPLOY_MODIFY',
@@ -347,7 +347,7 @@ export default [
     name: 'job-webhook-manage',
     component: jobWebhookManage,
     meta: {
-      title: 'Webhook', // 作业触发器
+      title: 'router.deploy.webhook', // 作业触发器
       ismenu: true,
       icon: 'tsfont-webhook',
       authority: 'DEPLOY_MODIFY',

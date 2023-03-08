@@ -241,7 +241,7 @@ export default {
 };
 </script>
 <style lang="less" scope>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .width90{
   max-width:calc(100% - 30px);
 }

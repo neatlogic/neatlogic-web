@@ -245,7 +245,7 @@ export default {
 };
 </script>
 <style lang='less' scope>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .bar-top {
     .input-contain {
       display: inline-block;

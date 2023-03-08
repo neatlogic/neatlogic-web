@@ -363,7 +363,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
 .remove-btn {
   position: absolute;
   top: -20px;

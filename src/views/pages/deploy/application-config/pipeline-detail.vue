@@ -42,7 +42,7 @@
               取消
             </div>
             <div class="action-item">
-              <Button type="primary" @click="saveProfile()">保存</Button>
+              <Button type="primary" @click="saveProfile()">{{ $t('button.save') }}</Button>
             </div>
           </template>
         </div>
@@ -679,7 +679,7 @@ export default {
     },
     cancelEdit() {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确认取消编辑？',
         btnType: 'error',
         'on-ok': vnode => {

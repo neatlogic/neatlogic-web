@@ -258,8 +258,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
-@import (reference) '~@/resources/assets/css/base-theme.less';
 .containers{
   border-radius: 10px;
 }
@@ -317,13 +315,6 @@ export default {
         word-break: break-all;
         overflow-wrap: break-word;
       }
-    }
-  }
-  .border-tip {
-    &:after {
-      content: '丨';
-      color: @default-border;
-      opacity: 1;
     }
   }
   .action-group {

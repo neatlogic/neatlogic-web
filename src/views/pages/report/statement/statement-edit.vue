@@ -71,14 +71,14 @@
               <div
                 v-if="reportData.widgetList && reportData.widgetList.length > 0"
                 :class="currentWidgetType === '#' ? 'text-href' : 'text-grey'"
-                class="widget-type-name pt-md pb-md border"
+                class="widget-type-name pt-md pb-md border-color-base"
                 @click="switchWidgetType({ name: '#' })"
               >{{ $t('term.report.selectedwidget') }}</div>
               <div
                 v-for="widgetType in widgetTypeList"
                 :key="widgetType.name"
                 :class="currentWidgetType === widgetType.name ? 'text-href' : 'text-grey'"
-                class="widget-type-name pt-md pb-md border"
+                class="widget-type-name pt-md pb-md border-color-base"
                 @click="switchWidgetType(widgetType)"
               >
                 {{ widgetType.label }}
@@ -768,7 +768,6 @@ export default {
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/my-theme.less';
 .align-x {
   position: absolute;
   top: 0px;
@@ -858,7 +857,7 @@ export default {
   .widget-type-name {
     cursor: pointer;
     text-align: center;
-    border-bottom: 1px solid @default-border;
+    border-bottom: 1px solid;
     writing-mode: vertical-lr;
   }
   .widget-type-name:first-child {

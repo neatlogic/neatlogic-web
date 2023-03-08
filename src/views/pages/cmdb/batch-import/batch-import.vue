@@ -196,7 +196,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .batch-import {
   // /deep/.ivu-layout-sider,/deep/.ivu-layout-content{
   //   background-color: @default-op;

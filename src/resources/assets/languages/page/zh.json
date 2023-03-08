@@ -328,5 +328,11 @@
   "completed": "已完成",
   "paused": "已暂停",
   "reply": "回复",
-  "sort": "排序"
+  "inputparam": "输入参数",
+  "outputparam": "输出参数",
+  "file": "文件",
+  "read": "读",
+  "write": "写",
+  "size": "大小",
+  "authority": "权限"
 }
