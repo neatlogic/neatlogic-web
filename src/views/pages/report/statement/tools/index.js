@@ -7,16 +7,18 @@
  * @LastEditTime: 2021-12-13 10:22:37
  */
 import { widgetTool } from './main';
+import Vue from "vue";
+
 const screenConfig = {
   code: 'screen',
   type: 'screen',
-  label: '大屏设置',
+  label: Vue.prototype.i18n.t('term.report.screensetting'),
   icon: '',
   options: {
     setup: [
       {
         type: 'el-input-number',
-        label: '大屏宽度',
+        label: Vue.prototype.i18n.t('term.report.screenwidth'),
         name: 'width',
         required: false,
         placeholder: 'px',
@@ -24,7 +26,7 @@ const screenConfig = {
       },
       {
         type: 'el-input-number',
-        label: '大屏高度',
+        label: Vue.prototype.i18n.t('term.report.screenheight'),
         name: 'height',
         required: false,
         placeholder: 'px',
@@ -32,7 +34,7 @@ const screenConfig = {
       },
       {
         type: 'el-input-text',
-        label: '标题',
+        label: Vue.prototype.i18n.t('page.title'),
         name: 'title',
         require: false,
         placeholder: '',
@@ -40,14 +42,14 @@ const screenConfig = {
       },
       {
         type: 'el-input-textarea',
-        label: '大屏简介',
+        label: Vue.prototype.i18n.t('term.report.screendescription'),
         name: 'description',
         required: false,
         placeholder: ''
       },
       {
         type: 'vue-color',
-        label: '背景颜色',
+        label: Vue.prototype.i18n.t('page.backgroundcolor'),
         name: 'backgroundColor',
         required: false,
         placeholder: '',
@@ -55,7 +57,7 @@ const screenConfig = {
       },
       {
         type: 'custom-upload',
-        label: '图片地址',
+        label: Vue.prototype.i18n.t('term.report.backgroundimage'),
         name: 'backgroundImage',
         required: false,
         placeholder: '',

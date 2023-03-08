@@ -12,7 +12,7 @@
       <template v-slot:config>
         <div>
           <div v-if="currentWidget && currentWidget.dataType && currentWidget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
-            <label class="ivu-form-item-label overflow">刷新频率</label>
+            <label class="ivu-form-item-label overflow">{{ $t('term.report.refreshrate') }}</label>
             <div class="ivu-form-item-content">
               <div class="pl-md pr-md">
                 <Slider
@@ -22,7 +22,7 @@
                   :step="10"
                   :tip-format="
                     val => {
-                      return val + '秒';
+                      return val + $t('page.second');
                     }
                   "
                 ></Slider>
@@ -30,7 +30,7 @@
             </div>
           </div>
           <div v-if="currentWidget && currentWidget.dataType && currentWidget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
-            <label class="ivu-form-item-label overflow">数据源</label>
+            <label class="ivu-form-item-label overflow">{{ $t('term.report.datasource') }}</label>
             <div class="ivu-form-item-content">
               <TsFormSelect
                 dynamicUrl="/api/rest/datawarehouse/datasource/search"
@@ -52,7 +52,7 @@
           </div>
           <div v-if="currentWidgetComponent && currentWidgetComponent.fields && currentWidgetComponent.fields.length > 0">
             <div v-if="currentWidget && currentWidget.dataType === 'static'" class="ivu-form-item tsform-item ivu-form-label-top">
-              <Divider plain orientation="right" style="font-size:12px;margin:0px">静态数据绑定</Divider>
+              <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('term.report.datatype.bindstaticdata') }}</Divider>
               <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
                 <label class="ivu-form-item-label overflow">{{ field.label }}</label>
                 <div class="ivu-form-item-content">
@@ -70,7 +70,7 @@
             </div>
             <div v-else-if="currentWidget && currentWidget.dataType === 'dynamic'">
               <div v-if="datasourceSortList && datasourceSortList.length > 0" class="ivu-form-item tsform-item ivu-form-label-top">
-                <label class="ivu-form-item-label overflow">排序</label>
+                <label class="ivu-form-item-label overflow">{{ $t('page.sort') }}</label>
                 <div class="ivu-form-item-content bg-op padding-xs radius-md" style="white-space:normal">
                   <Tag
                     v-for="(field, index) in datasourceSortList"
@@ -89,7 +89,7 @@
                 </div>
               </div>
               <div class="ivu-form-item tsform-item ivu-form-label-top">
-                <label class="ivu-form-item-label overflow">返回行数（0代表不限制）</label>
+                <label class="ivu-form-item-label overflow">{{ $t('term.report.returnrows') }}</label>
                 <div class="ivu-form-item-content">
                   <div class="pl-md pr-md">
                     <Slider
@@ -101,7 +101,7 @@
                   </div>
                 </div>
               </div>
-              <Divider plain orientation="right" style="font-size:12px;margin:0px">动态数据绑定</Divider>
+              <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('term.report.datatype.binddynamicdata') }}</Divider>
               <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
                 <label class="ivu-form-item-label overflow">{{ field.label }}</label>
                 <div class="ivu-form-item-content">
@@ -120,7 +120,7 @@
                 </div>
               </div>
               <div v-if="datasourceConditionList && datasourceConditionList.length > 0">
-                <Divider plain orientation="right" style="font-size:12px;margin:0px">过滤条件</Divider>
+                <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('page.filtercondition') }}</Divider>
                 <div v-for="(field, index) in datasourceConditionList" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
                   <label class="ivu-form-item-label overflow">{{ field.label }}</label>
                   <div class="ivu-form-item-content">
@@ -159,13 +159,13 @@ export default {
     currentWidgetComponent: {type: Object}
   },
   data() {
-    return { 
+    return {
       datasourceConditionList: [],
       filterTypeList: ['text', 'number', 'date', 'time', 'datetime'], //允许排序的字段类型
       dataFormConfig: {
         dataType: {
           type: 'slot',
-          label: '数据类型'
+          label: this.$t('term.report.datatype.name')
         },
         config: {
           type: 'slot',

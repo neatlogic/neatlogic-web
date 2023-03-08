@@ -2,13 +2,13 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage('大屏管理') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
       </template>
       <template v-slot:topLeft><span>{{ reportData.name }}</span></template>
       <template slot="topRight">
         <div class="action-group">
-          <span class="action-item ts-fullscreen" @click="fullscreen">全屏</span>
-          <span v-auth="['REPORT_STATEMENT_MODIFY']" class="action-item tsfont-edit" @click="editReport()">编辑</span>
+          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span v-auth="['REPORT_STATEMENT_MODIFY']" class="action-item tsfont-edit" @click="editReport()">{{ $t('page.edit') }}</span>
         </div>
       </template>
       <div slot="content" class="pl-md pr-md">
@@ -57,25 +57,25 @@ export default {
       layoutFormConfig: {
         x: {
           type: 'number',
-          label: 'x坐标'
+          label: this.$t('term.report.xcoordinate')
         },
         y: {
           type: 'number',
-          label: 'y坐标'
+          label: this.$t('term.report.ycoordinate')
         },
         width: {
           type: 'number',
-          label: '宽度'
+          label: this.$t('page.width')
         },
         height: {
           type: 'number',
-          label: '高度'
+          label: this.$t('page.height')
         }
       },
       dataFormConfig: {
         dataType: {
           type: 'slot',
-          label: '数据类型'
+          label: this.$t('term.report.datatype.name')
         },
         config: {
           type: 'slot',
@@ -231,7 +231,7 @@ export default {
     deleteReport() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '是否确认删除当前报表?',
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.report.report')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
@@ -252,8 +252,8 @@ export default {
     },
     dataTypeList() {
       const dataTypeList = [
-        { value: 'static', text: '静态数据' },
-        { value: 'dynamic', text: '动态数据' }
+        { value: 'static', text: this.$t('term.report.datatype.staticdata') },
+        { value: 'dynamic', text: this.$t('term.report.datatype.dynamicdata') }
       ];
       if (this.currentWidget && this.currentWidget.dataType && this.currentWidget.dataType.length > 0) {
         return dataTypeList.filter(d => this.currentWidget.dataType.includes(d.value));

@@ -21,6 +21,7 @@
   },
   "content": {
     "deleteconfirm": "是否确认删除当前{target}？",
+    "deleteconfirm2": "是否确认删除{target1}：{target2}？",
     "revocationconfirm": "是否确认撤销当前{target}？",
     "takeoverjobconfirm": " 是否确认接管当前{target}？",
     "recoverconfirm": "是否确认恢复当前{target}？",
