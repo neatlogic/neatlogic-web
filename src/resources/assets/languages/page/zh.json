@@ -334,5 +334,6 @@
   "read": "读",
   "write": "写",
   "size": "大小",
-  "authority": "权限"
+  "authority": "权限",
+  "sort": "排序"
 }
