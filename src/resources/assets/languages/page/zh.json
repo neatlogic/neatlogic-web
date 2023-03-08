@@ -341,5 +341,6 @@
   "authority": "权限",
   "displaysetting": "显示设置",
   "customtemplate": "自定义模板",
-  "updatetime": "更新时间"
+  "updatetime": "更新时间",
+  "sort": "排序"
 }
