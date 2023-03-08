@@ -28,6 +28,7 @@
   "validate": "校验",
   "isrequired": "是否必填",
   "isunique": "是否唯一",
+  "ishidden": "是否隐藏",
   "attributegroup": "属性分组",
   "autocollect": "自动采集",
   "moresetting": "更多配置",
@@ -42,6 +43,7 @@
   "uniquekey": "唯一标识",
   "build": "新建",
   "new": "新增",
+  "alias": "别名",
   "newtarget": "新增{target}",
   "batchdelete": "批量删除",
   "color": "颜色",
@@ -110,6 +112,8 @@
   "width": "宽度",
   "tag": "标签",
   "title": "标题",
+  "linkname": "连线名称",
+  "linktype": "连线类型",
   "textmainbody": "正文",
   "starttime": "开始时间",
   "endtime": "结束时间",
@@ -319,5 +323,8 @@
   "read": "读",
   "write": "写",
   "size": "大小",
-  "authority": "权限"
+  "authority": "权限",
+  "displaysetting": "显示设置",
+  "customtemplate": "自定义模板",
+  "updatetime": "更新时间"
 }

@@ -29,11 +29,11 @@ npm run lint
 ```
 
 ## 设置自动eslintrc
-See Reference(https://www.cnblogs.com/weilai-info/p/10988829.html).
+https://www.cnblogs.com/weilai-info/p/10988829.html
 
 
 ## 设置vscode的个人配置
-为了统一代码风格，多人开发时不会出现格式错乱，进行二开时请使用相同的代码风格配置。\
+为了统一代码风格，多人开发时不会出现格式错乱，进行二开时请使用相同的代码风格配置。
 #### 安装插件
 EsLint、vetur、Prettier - Code formatter
 

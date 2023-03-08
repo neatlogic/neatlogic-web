@@ -65,7 +65,12 @@
       "osage": "阵列布局",
       "fdp": "无向布局",
       "twopi": "星形布局"
-    }
+    },
+    "fulljoin": "全连接",
+    "leftjoin": "左连接",
+    "rightjoin": "右连接",
+    "setstartmodel": "设为起始模型",
+    "innerproperty": "内部属性"
   },
   "process": {
     "catalog": "服务",
@@ -603,6 +608,5 @@
     "uploadthefileandextractit": "上传文件并解压",
     "copythedownloadpackageaddress": "复制下载包地址",
     "lastrevisiontime": "最后修改时间"
-
   }
 }

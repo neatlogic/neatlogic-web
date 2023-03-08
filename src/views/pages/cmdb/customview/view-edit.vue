@@ -10,7 +10,6 @@
           v-model="viewData.name"
           :width="350"
           border="border"
-          placeholder="请输入视图名称"
           :validateList="[{ name: 'required', message: '' }]"
           style="display:inline-block"
           :maxlength="50"
@@ -24,13 +23,13 @@
             :false-value="0"
             showStatus
           ></TsFormSwitch></span>
-          <span class="action-item tsfont-formtextarea" @click="openCustomTempateDialog">自定义模板</span>
-          <span class="action-item tsfont-circulation-o" @click="openDisplaySetting">显示设置</span>
+          <span class="action-item tsfont-formtextarea" @click="openCustomTempateDialog">{{ $t('page.customtemplate') }}</span>
+          <span class="action-item tsfont-circulation-o" @click="openDisplaySetting">{{ $t('page.displaysetting') }}</span>
           <span class="action-item">
-            <Button type="primary" @click="saveView()">保存</Button>
+            <Button type="primary" @click="saveView()">{{ $t('button.save') }}</Button>
           </span>
           <span v-if="viewData.id" class="action-item">
-            <Button type="error" @click="deleteView()">删除</Button>
+            <Button type="error" @click="deleteView()">{{ $t('button.delete') }}</Button>
           </span>
         </div>
       </template>
@@ -93,12 +92,12 @@
       <template v-slot:right>
         <div class="margin-md">
           <div v-if="!currentCi.uuid && !currentLink">
-            <TsFormItem label="图标" labelPosition="top">
+            <TsFormItem :label="$t('page.icon')" labelPosition="top">
               <div class="logo bg-block border-color text-primary" @click="isIconDialogShow = true">
                 <i class="logo-icon" :class="viewData.icon"></i>
               </div>
             </TsFormItem>
-            <TsFormItem v-if="viewData.type === 'public'" label="授权" labelPosition="top">
+            <TsFormItem v-if="viewData.type === 'public'" :label="$t('page.auth')" labelPosition="top">
               <UserSelect
                 v-model="viewData.authList"
                 :multiple="true"
@@ -109,29 +108,29 @@
             <!--<TsFormItem label="标签" labelPosition="top">
               <ViewTag ref="tagList" v-model="viewData.tagList" style="display:inline-block"></ViewTag>
             </TsFormItem>-->
-            <TsFormItem label="描述" labelPosition="top">
+            <TsFormItem :label="$t('page.description')" labelPosition="top">
               <TsFormInput v-model="viewData.description" type="textarea"></TsFormInput>
             </TsFormItem>
           </div>
           <div v-if="currentLink">
-            <TsFormItem label="连线名称" labelPosition="top">
+            <TsFormItem :label="$t('page.linkname')" labelPosition="top">
               <TsFormInput :value="currentLink.name" maxlength="50" @change="changeLinkName"></TsFormInput>
             </TsFormItem>
-            <TsFormItem label="连线类型" labelPosition="top">
+            <TsFormItem :label="$t('page.linktype')" labelPosition="top">
               <RadioGroup
                 v-model="currentLink.type"
                 type="button"
                 size="small"
                 @on-change="changeLinkType"
               >
-                <Radio label="Join">全连接</Radio>
-                <Radio label="Leftjoin">左连接</Radio>
-                <Radio label="Rightjoin">右连接</Radio>
+                <Radio label="Join">{{ $t('term.cmdb.fulljoin') }}</Radio>
+                <Radio label="Leftjoin">{{ $t('term.cmdb.leftjoin') }}</Radio>
+                <Radio label="Rightjoin">{{ $t('term.cmdb.rightjoin') }}</Radio>
               </RadioGroup>
             </TsFormItem>
           </div>
           <div v-if="currentCi.uuid">
-            <TsFormItem label="设为起始模型" labelPosition="left" contentAlign="right">
+            <TsFormItem :label="$t('term.cmdb.setstartmodel')" labelPosition="left" contentAlign="right">
               <TsFormSwitch
                 v-model="currentCi.isStart"
                 :true-value="1"
@@ -139,7 +138,7 @@
                 @on-change="changeStartCi"
               ></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem label="是否隐藏" labelPosition="left" contentAlign="right">
+            <TsFormItem :label="$t('page.ishidden')" labelPosition="left" contentAlign="right">
               <TsFormSwitch
                 v-model="currentCi.isHidden"
                 :true-value="1"
@@ -147,7 +146,7 @@
                 @on-change="changeCiIsShow"
               ></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem label="别名" labelPosition="top">
+            <TsFormItem :label="$t('page.alias')" labelPosition="top">
               <TsFormInput v-model="currentCi.alias" @change="changeCiAlias"></TsFormInput>
             </TsFormItem>
             <TsFormItem v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" label="属性列表" labelPosition="top">
@@ -161,7 +160,7 @@
                   <tbody>
                     <tr v-for="(constattr, cindex) in currentCi.constList" :key="'constattr_' + cindex">
                       <td style="vertical-align:top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
-                      <td style="vertical-align:top"><i title="内部属性" class="tsfont-type"></i></td>
+                      <td style="vertical-align:top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
                       <td>
                         <div>{{ constattr.label }}</div>
                         <div class="text-grey">{{ constattr.name }}</div>
@@ -169,7 +168,7 @@
                     </tr>
                     <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
                       <td style="vertical-align:top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
-                      <td style="vertical-align:top"><i title="属性" class="tsfont-blocklist"></i></td>
+                      <td style="vertical-align:top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
                       <td>
                         <div>{{ attr.label }}</div>
                         <div class="text-grey">{{ attr.name }}</div>
@@ -177,7 +176,7 @@
                     </tr>
                     <tr v-for="(rel, rindex) in currentCi.ciRelList" :key="'rel_' + rindex">
                       <td style="vertical-align:top"><Checkbox v-model="rel.isChecked" @on-change="checkRel(rel)"></Checkbox></td>
-                      <td style="vertical-align:top"><i :title="rel.direction == 'from' ? '下游关系' : '上游关系'" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
+                      <td style="vertical-align:top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
                       <td v-if="rel.direction == 'from'">
                         <div>{{ rel.toLabel }}</div>
                         <div class="text-grey">{{ rel.toName }}</div>
@@ -245,11 +244,11 @@ export default {
         },
         {
           name: 'ciName',
-          label: '模型'
+          label: this.$t('page.model')
         },
         {
           name: 'lcd',
-          label: '更新时间'
+          label: this.$t('page.updatetime')
         }
       ],
       currentCi: {
