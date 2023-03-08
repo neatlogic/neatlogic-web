@@ -43,7 +43,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'large'
       },
       isloading: false,
       layoutList: [
@@ -53,7 +53,7 @@ export default {
         { engine: 'fdp', name: this.$t('term.cmdb.topo.fdp') },
         { engine: 'twopi', name: this.$t('term.cmdb.topo.twopi') }
       ],
-      searchParam: { layout: 'circo', graphId: this.graphId },
+      searchParam: { layout: 'neato', graphId: this.graphId },
       graph: {},
       data: {},
       error: null
