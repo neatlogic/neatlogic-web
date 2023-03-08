@@ -2,14 +2,14 @@
   <div>
     <TsContain :leftWidth="160" :rightWidth="300" border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage('大屏管理') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
           ref="name"
           v-model="reportData.name"
           :validateList="[{ name: 'required', message: ' ' }]"
-          placeholder="报表名称"
+          :placeholder="$t('term.report.reportname')"
         ></TsFormInput>
       </template>
       <template v-slot:topRight>
@@ -23,7 +23,7 @@
             class="action-item tsfont-undo"
             @click="fallback()"
           >
-            撤销
+            {{ $t('page.revocation') }}
           </span>
           <span
             v-if="
@@ -38,13 +38,13 @@
             class="action-item tsfont-revover"
             @click="forward()"
           >
-            重做
+            {{ $t('page.redo') }}
           </span>
           <span class="action-item">
             <TsFormSwitch
               v-model="reportData.isAutoAlign"
-              trueText="对齐辅助线"
-              falseText="对齐辅助线"
+              :trueText="$t('term.report.alignguideline')"
+              :falseText="$t('term.report.alignguideline')"
               :showStatus="true"
               :true-value="true"
               :false-value="false"
@@ -59,9 +59,9 @@
               :false-value="0"
             ></TsFormSwitch>
           </span>
-          <span class="action-item ts-fullscreen" @click="fullscreen">全屏</span>
-          <span class="action-item tsfont-save" @click="saveReport()">保存</span>
-          <span v-if="id" class="action-item"><Button type="error" @click="deleteReport()">删除</Button></span>
+          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span class="action-item tsfont-save" @click="saveReport()">{{ $t('page.save') }}</span>
+          <span v-if="id" class="action-item"><Button type="error" @click="deleteReport()">{{ $t('page.delete') }}</Button></span>
         </div>
       </template>
       <template v-slot:left>
@@ -71,14 +71,14 @@
               <div
                 v-if="reportData.widgetList && reportData.widgetList.length > 0"
                 :class="currentWidgetType === '#' ? 'text-href' : 'text-grey'"
-                class="widget-type-name pt-md pb-md border"
+                class="widget-type-name pt-md pb-md border-color-base"
                 @click="switchWidgetType({ name: '#' })"
-              >已选组件</div>
+              >{{ $t('term.report.selectedwidget') }}</div>
               <div
                 v-for="widgetType in widgetTypeList"
                 :key="widgetType.name"
                 :class="currentWidgetType === widgetType.name ? 'text-href' : 'text-grey'"
-                class="widget-type-name pt-md pb-md border"
+                class="widget-type-name pt-md pb-md border-color-base"
                 @click="switchWidgetType(widgetType)"
               >
                 {{ widgetType.label }}
@@ -226,7 +226,7 @@
           orientation="right"
           style="font-size:12px;"
           class="mt-md mb-md"
-        >缩略图</Divider>
+        >{{ $t('page.thumbnail') }}</Divider>
         <div class="pl-md pr-md"><EagleEye :config="{ canvasHeight: reportData.height, canvasWidth: reportData.width, containerWidth: containerWidth, containerHeight: containerHeight, containerTop: canvasY, containerLeft: canvasX }" :reportData="reportData" @grab="moveContainer"></EagleEye></div>
       </template>
     </TsContain>
@@ -401,7 +401,7 @@ export default {
           for (let i = this.reportData.widgetList.length - 1; i >= 0; i--) {
             if (this.reportData.widgetList[i]._selected) {
               this.copedWidget = this.$utils.deepClone(this.reportData.widgetList[i]);
-              this.$Message.success('复制成功');
+              this.$Message.success(this.$t('message.content.copysuccess'));
               break;
             }
           }
@@ -411,7 +411,7 @@ export default {
         if (this.copedWidget) {
           this.copeWidget(this.copedWidget);
           this.copedWidget = null;
-          this.$Message.success('粘贴成功');
+          this.$Message.success(this.$t('message.content.pastesuccess'));
         }
       }
     },
@@ -679,7 +679,7 @@ export default {
     saveReport() {
       if (this.$refs['name'] && this.$refs['name'].valid()) {
         if (!this.reportData.widgetList || this.reportData.widgetList.length <= 0) {
-          this.$Message.warning('请添加报表组件');
+          this.$Message.warning(this.$t('message.content.report.addreportwidget'));
           return;
         }
         //_开头的属性都是编辑器的控制属性，不需要保存
@@ -703,7 +703,7 @@ export default {
     deleteReport() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '是否确认删除当前报表?',
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.report.report')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
@@ -731,8 +731,8 @@ export default {
     },
     dataTypeList() {
       const dataTypeList = [
-        { value: 'static', text: '静态数据' },
-        { value: 'dynamic', text: '动态数据' }
+        { value: 'static', text: this.$t('term.report.datatype.staticdata') },
+        { value: 'dynamic', text: this.$t('term.report.datatype.dynamicdata') }
       ];
       if (this.currentWidget && this.currentWidget.dataType && this.currentWidget.dataType.length > 0) {
         return dataTypeList.filter(d => this.currentWidget.dataType.includes(d.value));
@@ -768,7 +768,6 @@ export default {
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/my-theme.less';
 .align-x {
   position: absolute;
   top: 0px;
@@ -858,7 +857,7 @@ export default {
   .widget-type-name {
     cursor: pointer;
     text-align: center;
-    border-bottom: 1px solid @default-border;
+    border-bottom: 1px solid;
     writing-mode: vertical-lr;
   }
   .widget-type-name:first-child {

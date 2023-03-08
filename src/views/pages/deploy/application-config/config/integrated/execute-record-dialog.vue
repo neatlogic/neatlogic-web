@@ -87,11 +87,11 @@ export default {
           key: 'status'
         },
         {
-          title: '作业名称',
+          title: this.$t('term.deploy.jobname'),
           key: 'jobName'
         },
         {
-          title: '触发时间',
+          title: this.$t('term.deploy.triggertime'),
           key: 'fcd',
           type: 'time'
         },

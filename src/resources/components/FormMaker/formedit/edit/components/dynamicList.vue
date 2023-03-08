@@ -698,7 +698,7 @@ function getDefaultValue(list, value, index) {
 }
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .dynamicList-container {
   .check-cricle {
     width: 8px;

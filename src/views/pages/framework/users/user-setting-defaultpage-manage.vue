@@ -116,7 +116,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
   .defaultpage-manage {
     padding-bottom: 30px;
     .title {

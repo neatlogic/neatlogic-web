@@ -76,7 +76,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .tactics-setting {
   height: calc(100vh - 60px);
   padding: @space-xs 0;

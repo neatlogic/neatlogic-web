@@ -189,7 +189,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .theme(@op-color, @th-bg-color, @border-color-base){
 #preview-table-box {
   width: 100%;

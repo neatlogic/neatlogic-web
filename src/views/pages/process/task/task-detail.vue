@@ -105,7 +105,7 @@
       </nodeDetail>
     </div>
     <div v-else>
-      <NoData text="暂无权限查看" class="fullNodata"></NoData>
+      <NoData :text="$t('message.content.noauth')" class="fullNodata"></NoData>
     </div>
   </div>
 </template>

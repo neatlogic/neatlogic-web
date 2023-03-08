@@ -39,15 +39,15 @@
       </span>
       <span v-else-if="row.expireStatus==='is-expired'">
         <span class="text-grey">{{ row.expireConfig.expiredSlaName }}</span>
-        <span>已超时</span>
+        <span>{{ $t('term.process.timedout') }}</span>
         <span class="h3">
           {{ row.expireConfig.timeLeftMin | formatTimeCost({language:'en',unitNumber:1, unit: 'minute'}) }}
         </span>
       </span>
     </div>
     <div v-if="header.key === 'focususers' && row.rowClassName != 'hide-task' && row.status.value != 'draft'" :style="{ cursor: 'pointer' }" @click.stop="updateFocus(row)">
-      <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'ts-heart-s']" title="取消关注"></i>
-      <i v-else :class="['text-danger', 'ts-heart', 'not-focus']" title="关注工单"></i>
+      <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'ts-heart-s']" :title="$t('term.process.notfocustask')"></i>
+      <i v-else :class="['text-danger', 'ts-heart', 'not-focus']" :title="$t('term.process.focustask')"></i>
     </div>
     <div v-if="header.key === 'currentstepworker' && row.currentstepworker && row.currentstepworker.length > 0">
       <span v-for="(item, index) in sliceFn(row.currentstepworker, true)" :key="index" class="currentstepworkerUser">
@@ -206,7 +206,6 @@ export default {
 </style>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
 .item {
   height: 30px;
 }
@@ -222,7 +221,7 @@ export default {
 
 </style>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .currentstepworkerUser{
   padding-right:10px;
   // max-width: 108px; 

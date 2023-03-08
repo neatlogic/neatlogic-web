@@ -64,9 +64,9 @@ export default {
       formConfig: {
         width: {
           type: 'number',
-          label: '宽度',
+          label: this.$t('page.width'),
           value: this.canvas.width,
-          desc: '最小1000',
+          desc: this.$t('term.report.describe.least500'),
           onChange: width => {
             if (width > 1000) {
               this.canvas.width = width;
@@ -77,9 +77,9 @@ export default {
         },
         height: {
           type: 'number',
-          label: '高度',
+          label: this.$t('page.height'),
           value: this.canvas.height,
-          desc: '最小500',
+          desc: this.$t('term.report.describe.least1000'),
           onChange: height => {
             if (height > 500) {
               this.canvas.height = height;
@@ -90,24 +90,24 @@ export default {
         },
         backgroundColor: {
           type: 'slot',
-          label: '背景颜色'
+          label: this.$t('page.backgroundcolor')
         },
         backgroundImage: {
           type: 'slot',
-          label: '背景图片'
+          label: this.$t('page.backgroundimage')
         },
         theme: {
           type: 'slot',
-          label: '主题'
+          label: this.$t('page.theme')
         },
         backgroundImageLayout: {
           type: 'radio',
-          label: '平铺方式',
+          label: this.$t('term.report.tilingstyle'),
           value: this.canvas.config.backgroundImageLayout,
           isHidden: !this.canvas.config.backgroundImage,
           dataList: [
-            { value: 'repeat', text: '平铺' },
-            { value: 'resize', text: '拉伸' }
+            { value: 'repeat', text: this.$t('term.report.tiling') },
+            { value: 'resize', text: this.$t('term.report.stretch') }
           ],
           onChange: val => {
             this.canvas.config.backgroundImageLayout = val;
@@ -115,7 +115,7 @@ export default {
         },
         description: {
           type: 'textarea',
-          label: '说明',
+          label: this.$t('page.explain'),
           value: this.canvas.description,
           onChange: desc => {
             this.canvas.description = desc;

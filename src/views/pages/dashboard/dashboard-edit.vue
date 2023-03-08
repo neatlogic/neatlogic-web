@@ -533,7 +533,7 @@ export default {
 @import '~@/views/pages/dashboard/dashboard-edit.less';
 </style>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 
 .vue-grid-layout {
   margin: 0 6px;

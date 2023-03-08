@@ -31,7 +31,7 @@
                     <div class="content">
                       <div class="title">{{ serviceItem.name }}</div>
                       <Tooltip
-                        class="tooltip-box-width"
+                        class="tooltip-box-width mt-xs"
                         transfer
                         placement="bottom-start"
                         max-width="300"

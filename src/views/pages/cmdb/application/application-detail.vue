@@ -277,7 +277,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .application-detail {
   position: relative;
   height: 100%;

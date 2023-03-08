@@ -73,7 +73,7 @@
               >{{ actionConfig.recover }}</span>
               <!-- 查看流程图_start -->
               <span v-if="!pocesstaskview" class="action-item" @click="lookSitemap">
-                <Tooltip content="查看流程图" theme="light">
+                <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
                   <i class="ts-sitemap"></i>
                 </Tooltip>
               </span>
@@ -83,10 +83,10 @@
                 class="action-item"
                 @click="updateFocus"
               >
-                <Tooltip v-if="processTaskConfig.isFocus" content="取消关注" theme="light">
+                <Tooltip v-if="processTaskConfig.isFocus" :content="$t('term.process.notfocustask')" theme="light">
                   <i :class="['text-danger', 'ts-heart-s']"></i>
                 </Tooltip>
-                <Tooltip v-else content="关注工单" theme="light">
+                <Tooltip v-else :content="$t('term.process.focustask')" theme="light">
                   <i :class="['text-danger', 'ts-heart']"></i>
                 </Tooltip>
               </span>
@@ -229,7 +229,7 @@
                     <div v-if="processTaskStepConfig && processTaskStepConfig.processTaskStepData && processTaskStepConfig.processTaskStepData.isStepUser == 1">
                       <div v-if="processTaskStepConfig.processTaskStepData.requestAudit && JSON.stringify(processTaskStepConfig.processTaskStepData.requestAudit) != '{}'" class="request-audit">
                         <div class="automatic-title">
-                          <span>调用记录</span>
+                          <span>{{ $t('term.process.callrecord') }}</span>
                           <CommonStatus
                             v-if="processTaskStepConfig.processTaskStepData.requestAudit.status"
                             :statusName="processTaskStepConfig.processTaskStepData.requestAudit.status.text"
@@ -239,12 +239,12 @@
                         </div>
                         <AutoDetail :defaultStepData="processTaskStepConfig.processTaskStepData.requestAudit" :isShowFailed="processTaskStepConfig.processTaskStepData.requestAudit.status.value == 'failed' ? true : false" type="requestAudit"></AutoDetail>
                         <div v-if="processTaskStepConfig.processTaskStepData.requestAudit.isRetry" class="retry-btn">
-                          <Button type="primary" ghost @click="autoRetry()">重试</Button>
+                          <Button type="primary" ghost @click="autoRetry()">{{ $t('button.retry') }}</Button>
                         </div>
                       </div>
                       <div v-if="processTaskStepConfig.processTaskStepData.callbackAudit && JSON.stringify(processTaskStepConfig.processTaskStepData.callbackAudit) != '{}'" class="callback-audit border-color">
                         <div class="automatic-title">
-                          <span>回调记录</span>
+                          <span>{{ $t('term.process.callbackrecord') }}</span>
                           <CommonStatus
                             v-if="processTaskStepConfig.processTaskStepData.callbackAudit.status"
                             :statusName="processTaskStepConfig.processTaskStepData.callbackAudit.status.text"
@@ -254,7 +254,7 @@
                         </div>
                         <AutoDetail :defaultStepData="processTaskStepConfig.processTaskStepData.callbackAudit" :isShowFailed="processTaskStepConfig.processTaskStepData.callbackAudit.status.value == 'failed' ? true : false" type="callbackAudit">></AutoDetail>
                         <div v-if="processTaskStepConfig.processTaskStepData.callbackAudit.isRetry" class="retry-btn">
-                          <Button type="primary" ghost @click="autoRetry()">重试</Button>
+                          <Button type="primary" ghost @click="autoRetry()">{{ $t('button.retry') }}</Button>
                         </div>
                       </div>
                     </div>
@@ -309,7 +309,7 @@
               <TsFormItem
                 v-for="(item, index) in assignableWorkerStepList"
                 :key="index"
-                :label="'指定“' + item.name + '”处理人'"
+                :label="$t('term.process.selectaskuser', {target: item.name})"
                 :validateList="item.isRequired ? validateList : []"
                 class="input-border"
                 labelPosition="top"
@@ -436,7 +436,7 @@
     >
       <template>
         <div class="submitModelBox">
-          <p class="text-grey text-line">选择优先要处理的步骤</p>
+          <p class="text-grey text-line">{{ $t('term.process.pleselectprioritystep') }}</p>
           <div v-for="(st, stindex) in startList" :key="stindex" class="submit-btn-list">
             <Button
               size="large"
@@ -591,7 +591,7 @@ export default {
           if (this.assignableWorkerStepList[i].isRequired == 1 && !this.assignableWorkerStepList[i].value.length) {
             isSave = false;
             this.$Notice.error({
-              title: '请选择步骤处理人',
+              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.stepuser')}),
               duration: 1.5
             });
             break;

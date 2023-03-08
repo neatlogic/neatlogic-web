@@ -316,7 +316,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .tranferreport-style {
   min-width: 1200px;
   .select-style {

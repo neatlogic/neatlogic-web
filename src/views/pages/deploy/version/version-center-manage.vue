@@ -240,11 +240,11 @@ export default {
           key: 'buildNo'
         },
         {
-          title: '环境',
+          title: this.$t('term.deploy.env'),
           key: 'env'
         },
         {
-          title: '模块',
+          title: this.$t('term.deploy.module'),
           key: 'appModuleAbbrName'
         },
         {

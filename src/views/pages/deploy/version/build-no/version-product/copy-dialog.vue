@@ -3,16 +3,16 @@
     <TsDialog
       type="slider"
       :isShow="true"
-      ok-text="保存"
+      :ok-text="$t('button.save')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div>{{ type == 'move' ? '移动文件' : '复制文件' }}</div>
+        <div>{{ type == 'move' ? $t('term.deploy.movefile') : $t('term.deploy.copyfile') }}</div>
       </template>
       <template v-slot>
         <div class="pl-xs">
-          <div>目标路径</div>
+          <div>{{ $t('term.deploy.targetpath') }}</div>
           <Tree
             :data="treeData"
             :load-data="getSubTree"
@@ -83,14 +83,14 @@ export default {
         params.operation = this.type;
         this.$api.deploy.version.moveOrRenameFile(params).then((res) => {
           if (res.Status == 'OK') {
-            this.$Message.success('移动文件成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.closeDialog(true);
           }
         });
       } else {
         this.$api.deploy.version.copyFile(params).then((res) => {
           if (res.Status == 'OK') {
-            this.$Message.success('复制文件成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.closeDialog(true);
           }
         });

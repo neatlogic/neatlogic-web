@@ -1266,9 +1266,9 @@ export default {
       if (this.placeholder) {
         return this.placeholder;
       } else if (this.dynamicUrl) {
-        return '请输入';
+        return this.$t('form.placeholder.pleaseinput', {target: ''});
       } else {
-        return '请选择';
+        return this.$t('form.placeholder.pleaseselect', {target: ''});
       }
     },
     getClearable: function() {

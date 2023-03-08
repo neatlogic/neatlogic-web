@@ -181,7 +181,7 @@ export default {
 </script>
 
 <style lang="less">
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 
 .permission-list {
   .form-padding {

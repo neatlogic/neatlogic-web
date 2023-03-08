@@ -72,7 +72,7 @@ export default {
       defaultTbodyList: [],
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {

@@ -54,7 +54,7 @@
                           <div class="content">
                             <div class="title">{{ item.name }}</div>
                             <Tooltip
-                              class="tooltip-wrap"
+                              class="tooltip-wrap mt-xs"
                               transfer
                               placement="bottom-start"
                               max-width="300"
@@ -257,7 +257,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .catalog .noShadow {
   box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 10%) !important;
   border-radius: 10px !important;
@@ -326,7 +326,7 @@ export default {
         }
         .list {
           margin: 8px 0;
-          height: 100px;
+          height: 110px;
           padding: 0 40px 0 24px;
           overflow: hidden;
           position: relative;
@@ -370,7 +370,7 @@ export default {
             }
           }
           .content {
-            padding: 16px 0 16px 0;
+            padding: 24px 0;
             overflow: hidden;
             .title {
               font-size: 14px;

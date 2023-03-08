@@ -46,42 +46,42 @@ export default {
       layoutFormConfig: {
         x: {
           type: 'number',
-          label: 'x坐标',
+          label: this.$t('term.report.xcoordinate'),
           onChange: val => {
             this.$set(this.currentWidget, 'x', val);
           }
         },
         y: {
           type: 'number',
-          label: 'y坐标',
+          label: this.$t('term.report.ycoordinate'),
           onChange: val => {
             this.$set(this.currentWidget, 'y', val);
           }
         },
         width: {
           type: 'number',
-          label: '宽度',
+          label: this.$t('page.width'),
           onChange: val => {
             this.$set(this.currentWidget, 'width', val);
           }
         },
         height: {
           type: 'number',
-          label: '高度',
+          label: this.$t('page.height'),
           onChange: val => {
             this.$set(this.currentWidget, 'height', val);
           }
         },
         padding: {
           type: 'slot',
-          label: '边距',
+          label: this.$t('page.margin'),
           onChange: val => {
             this.$set(this.currentWidget, 'padding', val);
           }
         },
         border: {
           type: 'select',
-          label: '边框',
+          label: this.$t('page.border'),
           transfer: true,
           valueName: 'name',
           textName: 'label',

@@ -464,7 +464,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 
 .workcenter-container {
   .hideLeft-left,
@@ -544,7 +544,7 @@ html {
 }
 </style>
 <style lang="less" scoped>
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .top-grid {
   display: grid;
   grid-template-columns: auto 150px 50px;

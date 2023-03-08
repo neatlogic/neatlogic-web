@@ -23,8 +23,8 @@
         :style="{cursor: 'pointer'}"
         @click.stop="updateFocus(row)"
       >
-        <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'ts-heart-s']" title="取消关注"></i>
-        <i v-else :class="['text-danger', 'ts-heart', 'not-focus']" title="关注工单"></i>
+        <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'ts-heart-s']" :title="$t('term.process.notfocustask')"></i>
+        <i v-else :class="['text-danger', 'ts-heart', 'not-focus']" :title="$t('term.process.focustask')"></i>
       </div>
       <div
         slot-scope="{ row }"
@@ -44,17 +44,17 @@
         <div class="report mb-xs">
           <Row>
             <Col span="12">
-              <span class="mr-md colorgray displayInbl">状态</span>
+              <span class="mr-md colorgray displayInbl">{{ $t('page.status') }}</span>
               <span class="mr-md">{{ row.status && row.status.text }}</span>
             </Col>
             <Col v-if="row.priority && row.priority.text" span="12" class="overflow">
-              <span class="mr-md displayInbl colorgray">优先级</span>
+              <span class="mr-md displayInbl colorgray">{{ $t('page.priority') }}</span>
               <span :style="{ color: row.priority.color }" :title="row.priority.text" class="colorgrey priority">{{ row.priority.text }}</span>
             </Col>
           </Row>
         </div>
         <div class="report mb-xs flexw">
-          <span class="mr-md colorgray displayInbl shrink">上报</span>
+          <span class="mr-md colorgray displayInbl shrink">{{ $t('term.process.report') }}</span>
           <UserCard
             class="mr-md overflow"
             style="fontSize:0;"
@@ -66,7 +66,7 @@
           <span class="colorgray nowrap">{{ row.starttime |formatDate('hh:mm:ss') }}</span>
         </div>
         <div class="report mb-xs flexw">
-          <span class="mr-md colorgray displayInbl shrink">上报服务</span>
+          <span class="mr-md colorgray displayInbl shrink">{{ $t('term.process.reportcatalog') }}</span>
           <span class="mr-md nowrap overflow" :title="row.catalog + '/' + row.channel">{{ row.catalog }} / {{ row.channel }}</span>
         </div>
 
@@ -194,8 +194,8 @@ export default {
       } else if (data.name === 'abort') {
         // 取消
         this.$createDialog({
-          title: data.text + '确认',
-          content: `是否确认${data.text}该工单？`,
+          title: this.$t('dialog.title.updateconfirm'),
+          content: this.$t('dialog.content.tipconfirm', {target: data.text, name: this.$t('term.process.task')}),
           btnType: 'error',
           'on-ok': vnode => {
             this.$api.process.processtask
@@ -204,10 +204,7 @@ export default {
               })
               .then(res => {
                 if (res.Status === 'OK') {
-                  this.$Notice.success({
-                    title: data.text + '成功',
-                    desc: ''
-                  });
+                  this.$Message.success(this.$t('message.content.executesuccess'));
                   this.tbodyList.splice(bindex, 1);
                 }
               });
@@ -306,7 +303,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .workcenterpoper {
   .ivu-poptip-arrow {
     display: none;
@@ -532,7 +529,7 @@ export default {
 </style>
 
 <style lang="less">
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .theme(@text-color, @title-color, @tip-color, @error-bg-color, @warning-bg-color, @gray-color, @icon-color, @bg-op) {
   .li-will-be-expired:not(:hover),
   .li-is-expired:not(:hover) {

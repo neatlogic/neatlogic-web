@@ -194,7 +194,7 @@
                             <Option key="or" value="or">任意满足</Option>
                           </Select> -->
                           <div v-show="item.conditionGroupList && item.conditionGroupList.length > 0" class="add text-href" @click="addGroup(item)">
-                            <i class="tsfont-plus">组合条件</i>
+                            <i class="tsfont-plus">{{ $t('page.combinedcondition') }}</i>
                           </div>
                         </div>
                         <div class="top_item priority">
@@ -756,11 +756,11 @@ export default {
       notifyList: [], //策略列表
       relList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ],
@@ -939,9 +939,9 @@ export default {
       let joinText = '';
       let joinType = relList[index].joinType;
       if (joinType == 'or') {
-        joinText = '或者';
+        joinText = this.$t('page.or');
       } else {
-        joinText = '而且';
+        joinText = this.$t('page.and');
       }
       return joinText;
     },
@@ -1528,7 +1528,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/my-theme.less';
+@import '~@/resources/assets/css/variable.less';
 .theme(@primary-color,@bg-grey-hover,@dividing-color) {
   .TacticsSetting {
     width: 100%;

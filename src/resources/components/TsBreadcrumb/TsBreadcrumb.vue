@@ -84,7 +84,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
- @import (reference) '~@/resources/assets/css/my-theme.less';
+ @import (reference) '~@/resources/assets/css/variable.less';
 .breadcrumb-container {
   display: inline-block;
   padding: @space-xs 0px;

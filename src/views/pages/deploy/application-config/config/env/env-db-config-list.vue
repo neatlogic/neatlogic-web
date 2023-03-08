@@ -195,7 +195,7 @@ export default {
         return false;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确认删除当前DB配置？',
         btnType: 'error',
         'on-ok': vnode => {

@@ -4,13 +4,13 @@
       title="title"
       type="modal"
       :isShow="true"
-      ok-text="保存"
+      :ok-text="$t('button.save')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="params && params.name">重命名</div>
-        <div v-else>新建</div>
+        <div v-if="params && params.name">{{ $t('page.rename') }}</div>
+        <div v-else>{{ $t('page.build') }}</div>
       </template>
       <template v-slot>
         <div>
@@ -45,7 +45,7 @@ export default {
           name: 'name',
           type: 'text',
           maxlength: 50,
-          label: '名称',
+          label: this.$t('page.name'),
           errorMessage: '',
           onChange: (val) => {
             this.$nextTick(() => {
@@ -93,7 +93,7 @@ export default {
         };
         this.$api.deploy.version.moveOrRenameFile(params).then((res) => {
           if (res.Status == 'OK') {
-            this.$Message.success('重命名成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
             this.closeDialog(true);
           }
         });
@@ -109,7 +109,7 @@ export default {
         }
         this.$api.deploy.version.saveDirectory(params).then((res) => {
           if (res.Status == 'OK') {
-            this.$Message.success('添加成功');
+            this.$Message.success(this.$t('message.content.savesuccess'));
             this.closeDialog(true);
           }
         });
@@ -127,7 +127,7 @@ export default {
           return item.name == name;
         });
         if (nameList && nameList.length > 0) {
-          const errorMessage = nameList[0].type == 'd' ? '存在同名文件夹' : '存在同名文件';
+          const errorMessage = nameList[0].type == 'd' ? this.$t('term.deploy.foldernamerepeat') : this.$t('term.deploy.filenamerepeat');
           this.formItemList.forEach((item) => {
             if (item.name == 'name') {
               this.$set(item, 'errorMessage', errorMessage);

@@ -14,7 +14,7 @@
             class="mr-nm"
             :disabled="disabledBtn"
             @click="saveSetting('save')"
-          >保存</Button>
+          >{{ $t('button.save') }}</Button>
           <Button type="primary" :disabled="disabledBtn" @click="saveSetting('execute')">立即执行</Button>
         </div>
       </template>

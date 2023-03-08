@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><span class="text-href tsfont-plus" @click="showGroupDialog">组合条件</span></div>
+    <div><span class="text-href tsfont-plus" @click="showGroupDialog">{{ $t('page.combinedcondition') }}</span></div>
     <div v-if="isLoaded">
       <div v-for="(conditionGroup, index) in workcenterConditionDataLocal.conditionGroupList" :key="conditionGroup.uuid">
         <div class="bg-grey padding radius-md">
@@ -54,13 +54,13 @@
                 }"
               >
                 <a href="javascript:void(0)">
-                  <span v-if="conditionGroup.conditionRelList[cindex].joinType=='and'">并且</span>
-                  <span v-else-if="conditionGroup.conditionRelList[cindex].joinType=='or'">或者</span>
+                  <span v-if="conditionGroup.conditionRelList[cindex].joinType=='and'">{{ $t('page.and') }}</span>
+                  <span v-else-if="conditionGroup.conditionRelList[cindex].joinType=='or'">{{ $t('page.or') }}</span>
                   <Icon type="ios-arrow-down"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem name="and">并且</DropdownItem>
-                  <DropdownItem name="or">或者</DropdownItem>
+                  <DropdownItem name="and">{{ $t('page.and') }}</DropdownItem>
+                  <DropdownItem name="or">{{ $t('page.or') }}</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -75,13 +75,13 @@
             }"
           >
             <a href="javascript:void(0)">
-              <span v-if="workcenterConditionDataLocal.conditionGroupRelList[index].joinType=='and'">并且</span>
-              <span v-else-if="workcenterConditionDataLocal.conditionGroupRelList[index].joinType=='or'">或者</span>
+              <span v-if="workcenterConditionDataLocal.conditionGroupRelList[index].joinType=='and'">{{ $t('page.and') }}</span>
+              <span v-else-if="workcenterConditionDataLocal.conditionGroupRelList[index].joinType=='or'">{{ $t('page.or') }}</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="and">并且</DropdownItem>
-              <DropdownItem name="or">或者</DropdownItem>
+              <DropdownItem name="and">{{ $t('page.and') }}</DropdownItem>
+              <DropdownItem name="or">{{ $t('page.or') }}</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -115,8 +115,8 @@ export default {
       isLoaded: false, //标记数据是否加载完毕，确保表单可以正常回显
       mode: 'custom',
       joinTypeList: [
-        { value: 'and', text: '并且' },
-        { value: 'or', text: '或者' }
+        { value: 'and', text: this.$t('page.and') },
+        { value: 'or', text: this.$t('page.or') }
       ],
       currentConditionGroupUuid: '', //保存当前编辑分组的uuid，提供给编辑条件分组窗口使用
       currentConditionList: [], //保存当前编辑分组的属性原始数据，提供给编辑条件分组窗口使用

@@ -94,7 +94,6 @@ export default {
     return {
       isShowWorkOrderDialog: false,
       showMode: 'table',
-      showModeText: '卡片展示',
       timer: null, //定时器
       workcenterList: null, //左侧列表
       editRenameDialog: false, //重命名弹框
@@ -345,7 +344,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .OverviewMenu.menu_link {
   padding-top: 8px;
 

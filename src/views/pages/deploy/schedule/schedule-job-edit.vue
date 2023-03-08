@@ -7,7 +7,7 @@
       </template>
       <template v-slot:topLeft>编辑定时作业</template>
       <template v-slot:topRight>
-        <Button v-if="initData.editable" type="primary" @click="saveTimeJob()">保存</Button>
+        <Button v-if="initData.editable" type="primary" @click="saveTimeJob()">{{ $t('button.save') }}</Button>
       </template>
       <template v-slot:content>
         <div v-if="!loadingShow">
@@ -19,7 +19,7 @@
             @on-click="changeTabValue"
           >
             <TabPane
-              label="基本信息"
+              :label="$t('page.basicinfo')"
               name="basicInfo"
               tab="content"
             >

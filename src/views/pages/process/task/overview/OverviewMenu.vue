@@ -1,6 +1,6 @@
 <template>
   <div class="OverviewMenu menu_link">
-    <div class="title text-grey">工单中心</div>
+    <div class="title text-grey">{{ $t('term.process.workordercenter') }}</div>
     <div v-if="datalist">
       <draggable
         v-if="datalist.length > 0"
@@ -30,10 +30,10 @@
                 <span ref="horizontal" class="tsfont-option-horizontal"></span>
                 <DropdownMenu slot="list" class="overdown">
                   <DropdownItem>
-                    <div @click="editName(ditem)">重命名</div>
+                    <div @click="editName(ditem)">{{ $t('page.rename') }}</div>
                   </DropdownItem>
                   <DropdownItem v-if="ditem.isCanRole">
-                    <div @click="editUser(ditem)">授权</div>
+                    <div @click="editUser(ditem)">{{ $t('page.auth') }}</div>
                   </DropdownItem>
                   <DropdownItem>
                     <div @click="delName(ditem.name, ditem.uuid, dindex)">{{ $t('button.delete') }}</div>
@@ -56,7 +56,7 @@
     </div>
     <TsDialog
       type="modal"
-      title="重命名"
+      :title="$t('page.rename')"
       :isShow.sync="editNameModal"
       @on-ok="saveName()"
     >
@@ -64,7 +64,7 @@
     </TsDialog>
     <TsDialog
       type="modal"
-      title="授权"
+      :title="$t('page.auth')"
       :isShow.sync="editUserModal"
       @on-ok="saveValueList()"
     >
@@ -87,7 +87,6 @@ export default {
     let _this = this;
     return {
       showMode: 'table',
-      showModeText: '卡片展示',
       timer: null, //定时器
       datalist: null, //左侧列表
       editNameModal: false, //重命名弹框
@@ -112,15 +111,15 @@ export default {
         {
           type: 'radio',
           name: 'type',
-          label: '类型',
+          label: this.$t('page.type'),
           value: 'custom',
           dataList: [
             {
-              text: '自定义分类',
+              text: this.$t('page.classifytarget', {target: this.$t('page.custom')}),
               value: 'custom'
             },
             {
-              text: '系统分类',
+              text: this.$t('page.classifytarget', {target: this.$t('page.system')}),
               value: 'system'
             }
           ],
@@ -130,7 +129,7 @@ export default {
                 type: 'userselect',
                 name: 'valueList',
                 value: _this.defaultValueList,
-                label: '授权',
+                label: _this.$t('page.auth'),
                 transfer: true,
                 groupList: ['role', 'user', 'common'],
                 validateList: ['required']
@@ -267,7 +266,7 @@ export default {
             type: 'userselect',
             name: 'valueList',
             value: obj.valueList,
-            label: '授权',
+            label: this.$t('page.auth'),
             transfer: true,
             groupList: ['role', 'user', 'common'],
             validateList: ['required']
@@ -367,7 +366,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/my-theme.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .OverviewMenu {
   padding-top: 8px;
 

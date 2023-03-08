@@ -1,7 +1,7 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
-      <Tabs v-model="currentTab" name="preview">
+      <Tabs v-model="currentTab" name="preview" :animated="false">
         <TabPane label="表单" name="form" tab="preview">
           <TsSheet
             v-if="isReady"
