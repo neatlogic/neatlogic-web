@@ -8,7 +8,7 @@
     >
       <template v-slot:header>
         <div class="action-group">
-          <span class="action-item">工程目录</span>
+          <span class="action-item">{{ $t('term.deploy.projectdirectory') }}</span>
           <span v-show="params && params.moduleName" class="action-item text-tip">{{ params.moduleName }}</span>
         </div>
       </template>

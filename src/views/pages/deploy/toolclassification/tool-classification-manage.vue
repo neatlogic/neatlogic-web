@@ -2,12 +2,12 @@
   <div>
     <TsContain>
       <template v-slot:topLeft>
-        <span v-if="$AuthUtils.hasRole('AUTOEXEC_MODIFY')" class="tsfont-plus text-action" @click="toTypeManage">工具分类</span>
+        <span v-if="$AuthUtils.hasRole('AUTOEXEC_MODIFY')" class="tsfont-plus text-action" @click="toTypeManage">{{ $t('term.deploy.toolclassification') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher
           v-model="keyword"
-          placeholder="名称、描述"
+          :placeholder="$t('page.namedescription')"
           @change="() => searchToolClassification()"
         ></InputSearcher>
       </template>
@@ -19,8 +19,8 @@
           @changePageSize="changePageSize"
         >
           <template slot="isActive" slot-scope="{row}">
-            <div v-if="row.isActive == 1" class="text-success">已启用</div>
-            <div v-else class="text-grey">已禁用</div>
+            <div v-if="row.isActive == 1" class="text-success">{{ $t('page.enable') }}</div>
+            <div v-else class="text-grey">{{ $t('page.disable') }}</div>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -29,8 +29,8 @@
                   <TsFormSwitch
                     v-model="row.isActive"
                     :showStatus="true"
-                    trueText="禁用"
-                    falseText="启用"
+                    :trueText="$t('page.disable')"
+                    :falseText="$t('page.enable')"
                     @on-change="(isActive) => changeSwitch(row.id, isActive)"
                   ></TsFormSwitch>
                 </li>
@@ -67,11 +67,11 @@ export default {
           key: 'name'
         },
         {
-          title: '描述',
+          title: this.$t('page.description'),
           key: 'description'
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'isActive'
         },
         {
@@ -131,7 +131,7 @@ export default {
       if (id) {
         this.$api.deploy.toolclassification.updateToolClassificationStatus({id: id, isActive: isActive}).then((res) => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(isActive ? '启用成功' : '禁用成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
           }
         });
       }

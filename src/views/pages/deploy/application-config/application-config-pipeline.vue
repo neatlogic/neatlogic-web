@@ -8,20 +8,20 @@
             ghost
             class="ml-nm"
             @click="$back()"
-          >取消</Button>
+          >{{ $t('button.cancel') }}</Button>
           <Button
             v-if="current > 0"
             type="primary"
             ghost
             class="ml-nm"
             @click=" current -= 1"
-          >上一步</Button>
+          >{{ $t('page.previousstep') }}</Button>
           <Button
             v-if="current < stepTextList.length - 1"
             type="primary"
             class="ml-nm"
             @click="nextStep(current + 1)"
-          >下一步</Button>
+          >{{ $t('page.thenextstep') }}</Button>
           <Button
             v-if="current == stepTextList.length - 1"
             type="primary"
@@ -55,14 +55,14 @@
                     transfer-class-name="poptip-topo"
                     transfer
                   >
-                    <span class="text-action">流程图</span>
+                    <span class="text-action">{{ $t('term.deploy.flowchart') }}</span>
                     <div slot="content" class="step-topo">
                       <StepTopo :stepList="stepList" :execModeList="execModeList" @jumpToStep="jumpToStep"></StepTopo>
                     </div>
                   </Poptip>
                 </div>
                 <div class="action-item tsfont-down" :class="showAllStepList?'tsfont-up':'tsfont-down'" @click="showSteplist()">
-                  {{ showAllStepList?'收起所有':'展开所有' }}
+                  {{ showAllStepList? $t('term.deploy.putawayall'): $t('term.deploy.expandall') }}
                 </div>
               </div>
               <div class="action-config">
@@ -85,7 +85,7 @@
                   </div>
                   <div v-show="current==2" class="padding">
                     <div class="pb-nm">
-                      预置参数
+                      {{ $t('term.autoexec.presetparameter') }}
                     </div>
                     <ProfileSetting
                       :appSystemId="appSystemId"
@@ -99,7 +99,7 @@
                   </div>
                   <div v-show="current==3">
                     <div class="pt-nm pl-nm pr-nm">
-                      场景设置
+                      {{ $t('term.deploy.scenesetting') }}
                     </div>
                     <ScenarioSetting
                       :currentScenarioList="scenarioList"
@@ -125,20 +125,20 @@
               ghost
               class="ml-nm"
               @click="$back()"
-            >取消</Button>
+            >{{ $t('button.cancel') }}</Button>
             <Button
               v-if="current > 0"
               type="primary"
               ghost
               class="ml-nm"
               @click=" current -= 1"
-            >上一步</Button>
+            >{{ $t('page.previousstep') }}</Button>
             <Button
               v-if="current < stepTextList.length - 1"
               type="primary"
               class="ml-nm"
               @click="nextStep(current + 1)"
-            >下一步</Button>
+            >{{ $t('page.thenextstep') }}</Button>
             <Button
               v-if="current == stepTextList.length-1"
               type="primary"
@@ -184,12 +184,12 @@ export default {
       appModuleId: null,
       envId: null,
       current: 0,
-      stepTextList: ['选择工具', '编辑流水线', '预置参数', '场景设置', '执行用户', '执行器'],
+      stepTextList: [this.$t('term.deploy.selectiontool'), this.$t('page.edittarget', {target: this.$t('term.autoexec.pipeline')}), this.$t('term.autoexec.presetparameter'), this.$t('term.deploy.scenesetting'), this.$t('page.executeuser'), this.$t('term.deploy.actuator')],
       formConfig: [
         {
           type: 'select',
           name: 'actionId',
-          label: '组合工具',
+          label: this.$t('term.deploy.combinationtool'),
           dynamicUrl: '/api/rest/autoexec/combop/list',
           params: {isActive: 1},
           rootName: 'tbodyList',
@@ -275,7 +275,7 @@ export default {
         return;
       }
       if (index === 4 && !this.scenarioList.length) {
-        this.$Notice.error({title: '至少添加一个场景'});
+        this.$Notice.error({title: this.$t('term.deploy.addatleastonescene')});
         return;
       }
       if (index === 5 && this.$refs.executeSetting && this.$refs.executeSetting.getValidList().length) {
@@ -557,7 +557,7 @@ export default {
       let stepList = this.stepList;
       if (!stepList.length) {
         //至少有一个阶段
-        validList = [{ text: '至少选择一个阶段', type: 'error', current: 1 }];
+        validList = [{ text: this.$t('term.deploy.chooseatleastonephase'), type: 'error', current: 1 }];
       } else {
         stepList.forEach(v => {
           //校验至少一个脚本+输入参数如果必填需要有值
@@ -580,7 +580,7 @@ export default {
       }
       //至少需要设置一个场景
       if (!this.scenarioList.length) {
-        validList.push({ text: '至少添加一个场景', type: 'error', current: 3 });
+        validList.push({ text: this.$t('term.deploy.addatleastonescene'), type: 'error', current: 3 });
       }
       //执行用户
       if (this.$refs.executeSetting) {
@@ -596,7 +596,7 @@ export default {
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
-              text: '阶段' + step.name + '设置：【' + p.operationName + '】请输入条件',
+              text: this.$t('term.deploy.phasesetcondition', {stepname: step.name, operationname: p.operationName}),
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,
@@ -631,7 +631,7 @@ export default {
                 });
                 if (!isPass) {
                   validList.push({
-                    text: '阶段' + step.name + '设置：【' + p.operationName + '】输入参数数据填写不完整',
+                    text: this.$t('term.deploy.phasesetinputparamtip', {stepname: step.name, operationname: p.operationName}),
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
@@ -649,7 +649,7 @@ export default {
                 });
                 if (!isPassArgument) {
                   validList.push({
-                    text: '阶段' + step.name + '设置：【' + p.operationName + '】自由参数数据填写不完整',
+                    text: this.$t('term.deploy.phasesetfreeparamtip', {stepname: step.name, operationname: p.operationName}),
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
@@ -661,7 +661,7 @@ export default {
               //预置参数集校验
               if (p.config.isActive && !p.config.profileId) {
                 validList.push({
-                  text: '阶段' + step.name + '设置：【' + p.operationName + '】请选择预置参数集',
+                  text: this.$t('term.deploy.phaseselectpresetparamtip', {stepname: step.name, operationname: p.operationName}),
                   type: 'error',
                   stepUuid: step.uuid,
                   operationUuid: p.uuid,
@@ -672,7 +672,7 @@ export default {
             }
           } else {
             validList.push({
-              text: '阶段' + step.name + '工具【' + p.operationName + '】已被删除，请清理该工具后保存',
+              text: this.$t('term.deploy.phasetooldeletetip', {stepname: step.name, operationname: p.operationName}),
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,

@@ -16,12 +16,12 @@
 <template>
   <div class="step-group">
     <div v-if="currentGroupConfig" class="pb-nm">
-      阶段组
+      {{ $t('term.autoexec.stagegroup') }}
       <span class="text-tip">{{ currentGroupConfig.sort+1 }}</span>
     </div>
     <TsFormItem 
       v-if="!(!appModuleId && !envId)"
-      label="继承"
+      :label="$t('page.inherit')"
       :labelWidth="80"
       itemWidth="70%"
       labelPosition="left"
@@ -33,7 +33,7 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem
-      label="执行策略"
+      :label="$t('term.deploy.executivestrategy')"
       :required="true"
       :labelWidth="80"
       itemWidth="70%"
@@ -50,7 +50,7 @@
     </TsFormItem>
     <div v-if="envId && groupPolicy == 'grayScale'" class="grayscale-detail">
       <div class="item-list">
-        <div class="item-label text-title">预设目标</div>
+        <div class="item-label text-title">{{ $t('term.deploy.presettarget') }}</div>
         <div class="item-text">
           <template v-if="canEdit && !$utils.isEmpty(groupConfig.config)">
             <div class="tsfont-edit text-action" @click="editTarget()"></div>
@@ -60,12 +60,12 @@
             type="primary"
             ghost
             @click="addTarget()"
-          ><span class="tsfont-plus btn-icon">执行目标</span>
+          ><span class="tsfont-plus btn-icon">{{ $t('term.deploy.executetarget') }}</span>
           </Button>
         </div>
       </div>
       <template v-if="groupConfig.config.executeConfig && !$utils.isEmpty(groupConfig.config.executeConfig)">
-        <TsFormItem label="执行目标" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('term.deploy.executetarget')" labelWidth="80" labelPosition="left">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.executeNodeConfig)">
             <template v-if="groupConfig.config.executeConfig.executeNodeConfig.filter">
               <Filters
@@ -75,7 +75,7 @@
                 :showSearchNumber="2"
                 class="nopadding"
               ></Filters>
-              <div class="text-right text-tip-active" @click="moreVisible=true">查看详情</div>
+              <div class="text-right text-tip-active" @click="moreVisible=true">{{ $t('page.viewdetails') }}</div>
             </template>
             <template v-else-if="groupConfig.config.executeConfig.executeNodeConfig.selectNodeList">
               <NodeView :list="groupConfig.config.executeConfig.executeNodeConfig.selectNodeList"></NodeView>
@@ -84,7 +84,7 @@
               <NodeView :list="groupConfig.config.executeConfig.executeNodeConfig.inputNodeList"></NodeView>
             </template>
             <template v-else-if="groupConfig.config.executeConfig.executeNodeConfig.paramList">
-              <span class="text-tip nopadding">引用输入参数</span>
+              <span class="text-tip nopadding">{{ $t('term.deploy.referenceinputparameter') }}</span>
               <div class="param-view">
                 <TsRow :gutter="8">
                   <Col
@@ -100,19 +100,19 @@
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem label="白名单" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('page.whitelist')" labelWidth="80" labelPosition="left">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.whitelist)">
             <NodeView :list="groupConfig.config.executeConfig.whitelist"></NodeView>
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem label="黑名单" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('page.blacklist')" labelWidth="80" labelPosition="left">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.blacklist)">
             <NodeView :list="groupConfig.config.executeConfig.blacklist"></NodeView>
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem label="连接协议" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('page.protocol')" labelWidth="80" labelPosition="left">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.protocolId)">
             <TsFormSelect 
               v-bind="executeForm.itemList.protocolId" 
@@ -122,13 +122,13 @@
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem label="执行用户" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('page.executeuser')" labelWidth="80" labelPosition="left">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.executeUser)">
             {{ groupConfig.config.executeConfig.executeUser }}
           </div>
           <div v-else>-</div>
         </TsFormItem>
-        <TsFormItem label="分批数量" labelWidth="80" labelPosition="left">
+        <TsFormItem :label="$t('term.autoexec.batchquantity')" labelWidth="80" labelPosition="left">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.roundCount)">
             {{ getRoundCountText(groupConfig.config.executeConfig.roundCount) }}
           </div>
@@ -139,7 +139,7 @@
     <TsDialog
       v-if="isShowDialog"
       :isShow="isShowDialog"
-      title="执行目标"
+      :title="$t('term.autoexec.executetarget')"
       type="slider"
       width="large"
       @on-close="close()"
@@ -147,7 +147,7 @@
       <template v-slot>
         <div class="pl-nm pr-nm">
           <Divider orientation="start">
-            <span>执行目标</span>
+            <span>{{ $t('term.autoexec.executetarget') }}</span>
             <i class="text-tip-active pr-sm" :class="isShowExecute? 'tsfont-up' : 'tsfont-down'" @click="isShowExecute=!isShowExecute"></i>
           </Divider>
           <div v-show="isShowExecute">
@@ -171,7 +171,7 @@
        
           <div>
             <Divider orientation="start">
-              <span>白名单</span>
+              <span>{{ $t('page.whitelist') }}</span>
               <i class="text-tip-active pr-sm" :class="isShowWhitelist? 'tsfont-up' : 'tsfont-down'" @click="isShowWhitelist=!isShowWhitelist"></i>
             </Divider>
             <NodeList
@@ -183,7 +183,7 @@
           </div>
           <div>
             <Divider orientation="start">
-              <span>黑名单</span>
+              <span>{{ $t('page.blacklist') }}</span>
               <i class="text-tip-active pr-sm" :class="isShowBlacklist? 'tsfont-up' : 'tsfont-down'" @click="isShowBlacklist=!isShowBlacklist"></i>
             </Divider>
             <NodeList
@@ -196,13 +196,13 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
         <Button
           type="primary"
           ghost
           @click="valid()"
-        >校验</Button>
-        <Button type="primary" @click="okSave()">确定</Button>
+        >{{ $t('button.validate') }}</Button>
+        <Button type="primary" @click="okSave()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
     <TsDialog
@@ -210,7 +210,7 @@
       type="slider"
       :isShow="moreVisible"
       width="medium"
-      title="详情"
+      :title="$t('page.details')"
       :hasFooter="false"
       :maskClose="true"
       @on-close="moreVisible = false"
@@ -266,7 +266,7 @@ export default {
         itemList: {
           protocolId: {
             type: 'select',
-            label: ' 连接协议',
+            label: this.$t('page.protocol'),
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             multiple: false,
             rootName: 'tbodyList',
@@ -278,14 +278,14 @@ export default {
           },
           executeUser: {
             type: 'text',
-            label: '执行用户'
+            label: this.$t('page.executeuser')
           },
           roundCount: {
             type: 'select',
             value: null,
             transfer: true,
-            label: '分批数量',
-            desc: '将执行目标按数量等分为N个批次，先后执行，阶段组设置的分批数量优先级高于组合工具或作业中设置的分批数',
+            label: this.$t('term.autoexec.batchquantity'),
+            desc: this.$t('term.deploy.executetargetdesc'),
             dataList: this.$utils.getRoundCountList()
           }
         }
@@ -446,7 +446,7 @@ export default {
             this.isValid = false;
             this.isShowTargetValid = true;
           } else if (isMessage) {
-            this.$Message.success('校验成功');
+            this.$Message.success(this.$t('message.content.validatesuccess'));
           }
         }
       });
@@ -489,9 +489,9 @@ export default {
       return (val) => {
         let text = val;
         if (val === 0) {
-          text = '全部串行';
+          text = this.$t('page.fulllist');
         } else if (val === 1) {
-          text = '全部并行';
+          text = this.$t('page.allparallel');
         }
         return text;
       };

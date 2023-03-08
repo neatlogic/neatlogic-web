@@ -79,7 +79,7 @@ export default {
           maxLength: 30
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'isLock'
         },
         {
