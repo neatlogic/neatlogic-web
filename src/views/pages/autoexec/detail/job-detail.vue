@@ -402,7 +402,7 @@ export default {
     takeoverFn() {
       this.$createDialog({
         title: this.$t('term.autoexec.takeoverjob'),
-        content: this.$t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job')}),
+        content: this.$t('dialog.content.takeoverjobconfirm', {target: this.$t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job
             .takeoverJob({ jobId: this.jobData.id })
