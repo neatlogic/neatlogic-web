@@ -39,22 +39,22 @@ export default {
           type: 'text',
           label: this.$t('page.classifytarget', {target: this.$t('page.menu')}),
           maxlength: 50,
-          desc: '作为左侧菜单显示时的分类名称，不设置则归类到默认分类：工单中心'
+          desc: this.$t('term.process.workordercentertypedes')
         },
         type: {
           type: 'radio',
           label: this.$t('page.type'),
           dataList: [
             {
-              text: '个人分类',
+              text: this.$t('page.classifytarget', {target: this.$t('page.personal')}),
               value: 'custom'
             },
             {
-              text: '系统分类',
+              text: this.$t('page.classifytarget', {target: this.$t('page.system')}),
               value: 'system'
             }
           ],
-          validateList: [{ name: 'required', message: '请选择类型' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }],
           onChange: (val) => {
             if (val == 'system') {
               this.formConfig.authList.isHidden = false;
@@ -65,7 +65,7 @@ export default {
         },
         support: {
           type: 'select',
-          label: '使用范围',
+          label: this.$t('page.limituser'),
           transfer: true,
           defaultValueIsFirst: true,
           url: '/api/rest/universal/enum/get',
@@ -77,15 +77,15 @@ export default {
           isHidden: true,
           label: this.$t('page.auth'),
           transfer: true,
-          validateList: [{ name: 'required', message: '请授权给用户、分组或角色' }], 
+          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam') }], 
           groupList: ['user', 'role', 'common']
         },
         isShowTotal: {
           type: 'switch',
-          label: '显示总数',
+          label: this.$t('page.showtotal'),
           trueValue: 1,
           falseValue: 0,
-          desc: '左侧工单分类是否显示总数,默认为否,显示待办数'
+          desc: this.$t('term.process.workordertypenumdes')
         }
       }
     };
