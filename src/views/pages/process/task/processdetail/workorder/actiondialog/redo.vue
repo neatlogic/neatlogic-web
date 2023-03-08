@@ -39,7 +39,12 @@ export default {
   props: {
     processTaskConfig: {type: Object},
     isShow: {type: Boolean, default: false},
-    title: {type: String, default: '回退'}
+    title: {
+      type: String, 
+      default() {
+        return this.$t('term.process.fallback');
+      }
+    }
     
   },
   data() {

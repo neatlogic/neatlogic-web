@@ -246,7 +246,7 @@ export default {
     abortJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.abort')}),
+        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.abort'), name: this.$t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job.abortJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -261,7 +261,7 @@ export default {
     pauseJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.pause')}),
+        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.pause'), name: this.$t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job.pauseJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -276,7 +276,7 @@ export default {
     executeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.execute')}),
+        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.execute'), name: this.$t('term.autoexec.job')}),
         'on-ok': vnode => {
           this.$api.autoexec.job.executeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {

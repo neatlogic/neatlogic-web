@@ -35,23 +35,23 @@
             <Tag style="margin-top: 0px;margin-left:6px" :closable="!readonly" @on-close="removeCondition(condition)">
               <span>{{ condition.label }}：</span>
               <span v-if="condition.expression != 'is-null' && condition.expression != 'is-not-null'">{{ condition.text }}</span>
-              <span v-else-if="condition.expression == 'is-null'">为空</span>
-              <span v-else-if="condition.expression == 'is-not-null'">不为空</span>
+              <span v-else-if="condition.expression == 'is-null'">{{ $t('term.expression.empty') }}</span>
+              <span v-else-if="condition.expression == 'is-not-null'">{{ $t('term.expression.notempty') }}</span>
             </Tag>
             <span v-if="conditionGroup.conditionRelList.length > 0 && cindex < conditionGroup.conditionList.length - 1">
-              <span v-if="conditionGroup.conditionRelList[cindex].joinType == 'and'" class="text-info fz10">且</span>
-              <span v-else-if="conditionGroup.conditionRelList[cindex].joinType == 'or'" class="text-info fz10">或</span>
+              <span v-if="conditionGroup.conditionRelList[cindex].joinType == 'and'" class="text-info fz10">{{ $t('term.expression.and') }}</span>
+              <span v-else-if="conditionGroup.conditionRelList[cindex].joinType == 'or'" class="text-info fz10">{{ $t('term.expression.or') }}</span>
             </span>
           </span>
           <span v-if="conditionGroup.conditionList.length > 1" class="text-grey fz10 mr-xs">)</span>
           <span v-if="workcenterConditionData.conditionGroupRelList.length > 0 && index < workcenterConditionData.conditionGroupList.length - 1">
-            <span v-if="workcenterConditionData.conditionGroupRelList[index].joinType == 'and'" class="text-info fz10">且</span>
-            <span v-else-if="workcenterConditionData.conditionGroupRelList[index].joinType == 'or'" class="text-info fz10">或</span>
+            <span v-if="workcenterConditionData.conditionGroupRelList[index].joinType == 'and'" class="text-info fz10">{{ $t('term.expression.and') }}</span>
+            <span v-else-if="workcenterConditionData.conditionGroupRelList[index].joinType == 'or'" class="text-info fz10">{{ $t('term.expression.or') }}</span>
           </span>
         </span>
       </span>
       <span v-if="workcenterConditionData.conditionGroupList && workcenterConditionData.conditionGroupList.length > 0 && workcenterConditionData.keywordConditionList && workcenterConditionData.keywordConditionList.length > 0" class="text-grey fz10 mr-xs">)</span>
-      <span v-if="workcenterConditionData.conditionGroupList && workcenterConditionData.conditionGroupList.length > 0 && workcenterConditionData.keywordConditionList && workcenterConditionData.keywordConditionList.length > 0" class="text-info fz10">且</span>
+      <span v-if="workcenterConditionData.conditionGroupList && workcenterConditionData.conditionGroupList.length > 0 && workcenterConditionData.keywordConditionList && workcenterConditionData.keywordConditionList.length > 0" class="text-info fz10">{{ $t('term.expression.and') }}</span>
       <span v-if="workcenterConditionData.keywordConditionList && workcenterConditionData.keywordConditionList.length > 0">
         <span v-if="workcenterConditionData.conditionGroupList && workcenterConditionData.conditionGroupList.length > 0 && workcenterConditionData.keywordConditionList.length > 1" class="text-grey fz10 ml-xs">(</span>
         <span v-for="(keywordCondition, index) in workcenterConditionData.keywordConditionList" :key="index">
@@ -62,7 +62,7 @@
               <span v-if="vindex < keywordCondition.valueList.length - 1"><Divider type="vertical" /></span>
             </span>
           </Tag>
-          <span v-if="index < workcenterConditionData.keywordConditionList.length - 1" class="text-info fz10">且</span>
+          <span v-if="index < workcenterConditionData.keywordConditionList.length - 1" class="text-info fz10">{{ $t('term.expression.and') }}</span>
         </span>
         <span v-if="workcenterConditionData.conditionGroupList && workcenterConditionData.conditionGroupList.length > 0 && workcenterConditionData.keywordConditionList.length > 1" class="text-grey fz10 mr-xs">)</span>
       </span>

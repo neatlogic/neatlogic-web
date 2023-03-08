@@ -17,7 +17,7 @@ export default {
     return {
       prevPath: {
         router: '/task-overview',
-        name: '工单中心'
+        name: this.$t('term.process.workordercenter')
       },
       startHandler: 'omnipotent', //开始节点的类型：omnipotent(普通节点)、changecreate(变更创建)
       handler: 'omnipotent', //处理节点类型
@@ -149,7 +149,7 @@ export default {
           name: 'content',
           value: '',
           width: '100%',
-          label: '原因',
+          label: this.$t('page.reason'),
           validateList: ['required']
         }
       ],
@@ -259,7 +259,7 @@ export default {
     if (this.allClassifyData && this.allClassifyData.length) {
       this.prevPath = {
         router: '/task-overview-' + this.allClassifyData[0].uuid,
-        name: '工单中心'
+        name: this.$t('term.process.workordercenter')
       };
     }
   },
@@ -644,7 +644,7 @@ export default {
         if (this.assignableWorkerStepList[i].isRequired == 1 && !this.assignableWorkerStepList[i].value.length) {
           isSave = false;
           this.$Notice.error({
-            title: '请选择步骤处理人',
+            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.stepuser')}),
             duration: 1.5
           });
           break;

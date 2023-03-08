@@ -427,9 +427,9 @@ export default {
       let joinText = '';
       let joinType = relList[index].joinType;
       if (joinType == 'or') {
-        joinText = '或者';
+        joinText = this.$t('page.or');
       } else {
-        joinText = '而且';
+        joinText = this.$t('page.and');
       }
       return joinText;
     }

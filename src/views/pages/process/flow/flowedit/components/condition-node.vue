@@ -95,7 +95,7 @@
             ></TsForm>
           </div>
           <div v-if="isShowRule" class="edit-condition">
-            <div class="text-href add-btn tsfont-plus" @click="addGroup()">组合条件</div>
+            <div class="text-href add-btn tsfont-plus" @click="addGroup()">{{ $t('page.combinedcondition') }}</div>
             <div v-for="(item,groupIndex) in editRuleConfig.conditionGroupList" :key="groupIndex" class="group-border">
               <div class="group-content bg-op radius-md">
                 <div v-for="(conItem,conIdex) in item.conditionList" :key="conIdex" class="condition-content">
@@ -291,11 +291,11 @@ export default {
       ruleConditionConfig: {}, //每个条件对应的数据
       relList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ]
@@ -540,10 +540,10 @@ export default {
     },
     getConditionJoinType(relList, index) {
       //页面条件展示
-      let joinText = '而且';
+      let joinText = this.$t('page.and');
       let joinType = relList[index].joinType;
       if (joinType == 'or') {
-        joinText = '或者';
+        joinText = this.$t('page.or');
       }
       return joinText;
     },

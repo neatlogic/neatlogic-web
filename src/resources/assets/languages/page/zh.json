@@ -342,5 +342,15 @@
   "displaysetting": "显示设置",
   "customtemplate": "自定义模板",
   "updatetime": "更新时间",
+  "combinedcondition": "组合条件",
+  "basicatr": "基础属性",
+  "formattr": "表单属性",
+  "menu": "菜单",
+  "personal": "个人",
+  "system": "系统",
+  "authuserroleteam": "请授权给用户、分组或角色",
+  "showtotal": "显示总数",
+  "integratedtargetstars": "综合{target}星",
+  "custom": "自定义",
   "sort": "排序"
 }
