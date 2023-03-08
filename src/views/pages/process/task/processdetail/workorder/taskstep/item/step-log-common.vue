@@ -73,7 +73,7 @@ export default {
         transfer: '转交',
         comment: '回复',
         createsubtask: '创建子任务',
-        back: '回退',
+        back: this.$t('term.process.fallback'),
         pocesstaskview: '查看',
         urge: '催办',
         pause: '暂停',

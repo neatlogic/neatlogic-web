@@ -34,7 +34,7 @@ export default {
       this.$emit('update:visible', false);
     },
     deleteLayer() {
-      this.$confirm(this.$t('term.report.describe.confirmdeletelayer'), this.$t('page.tip'), {
+      this.$confirm(this.$t('dialog.content.deleteconfirm', {target:this.$t('term.report.selectedlayer')}), this.$t('page.tip'), {
         confirmButtonText: this.$t('button.confirm'),
         cancelButtonText: this.$t('button.cancel'),
         type: 'warning'

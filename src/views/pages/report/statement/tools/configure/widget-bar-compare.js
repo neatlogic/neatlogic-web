@@ -6,25 +6,27 @@
  * @LastEditors: qianlishi
  * @LastEditTime: 2021-09-28 14:09:58
  */
+import Vue from "vue";
+
 export const widgetBarCompare = {
   code: 'widgetBarCompareChart',
   type: 'chart',
-  label: '柱状对比图',
+  label: Vue.prototype.i18n.t('term.report.columncomparisonchart.name'),
   icon: 'iconduibitupu',
   options: {
     // 配置
     setup: [
       {
         type: 'el-input-text',
-        label: '图层名称',
+        label: Vue.prototype.i18n.t('term.report.layername'),
         name: 'layerName',
         required: false,
         placeholder: '',
-        value: '柱状对比图'
+        value: Vue.prototype.i18n.t('term.report.columncomparisonchart.name')
       },
       {
         type: 'vue-color',
-        label: '背景颜色',
+        label: Vue.prototype.i18n.t('page.backgroundcolor'),
         name: 'background',
         required: false,
         placeholder: '',
@@ -32,11 +34,11 @@ export const widgetBarCompare = {
       },
       [
         {
-          name: '柱体设置',
+          name: Vue.prototype.i18n.t('term.report.columncomparisonchart.columnsetting'),
           list: [
             {
               type: 'el-slider',
-              label: '最大宽度',
+              label: Vue.prototype.i18n.t('term.report.columncomparisonchart.maxwidth'),
               name: 'maxWidth',
               required: false,
               placeholder: '',
@@ -44,7 +46,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-slider',
-              label: '圆角',
+              label: Vue.prototype.i18n.t('term.report.columncomparisonchart.radius'),
               name: 'radius',
               require: false,
               placeholder: '',
@@ -53,11 +55,11 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: '标题设置',
+          name: Vue.prototype.i18n.t('term.report.titlesetting'),
           list: [
             {
               type: 'el-switch',
-              label: '标题',
+              label: Vue.prototype.i18n.t('page.title'),
               name: 'isNoTitle',
               required: false,
               placeholder: '',
@@ -65,7 +67,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-text',
-              label: '标题',
+              label: Vue.prototype.i18n.t('page.title'),
               name: 'titleText',
               required: false,
               placeholder: '',
@@ -73,7 +75,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'textColor',
               required: false,
               placeholder: '',
@@ -81,21 +83,21 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-select',
-              label: '字体粗细',
+              label: Vue.prototype.i18n.t('term.report.fontweight.name'),
               name: 'textFontWeight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             },
             {
               type: 'el-input-number',
-              label: '字体大小',
+              label: Vue.prototype.i18n.t('page.fontsize'),
               name: 'textFontSize',
               required: false,
               placeholder: '',
@@ -103,25 +105,25 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-select',
-              label: '字体位置',
+              label: Vue.prototype.i18n.t('term.report.textalign.name'),
               name: 'textAlign',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'center', name: '居中'},
-                {code: 'left', name: '左对齐'},
-                {code: 'right', name: '右对齐'}
+                {code: 'center', name: Vue.prototype.i18n.t('term.report.textalign.center')},
+                {code: 'left', name: Vue.prototype.i18n.t('term.report.textalign.left')},
+                {code: 'right', name: Vue.prototype.i18n.t('term.report.textalign.right')}
               ],
               value: 'center'
             }
           ]
         },
         {
-          name: '图例操作',
+          name: Vue.prototype.i18n.t('term.report.legendaction'),
           list: [
             {
               type: 'el-switch',
-              label: '图例显示',
+              label: Vue.prototype.i18n.t('term.report.legenddisplay'),
               name: 'isShowLegend',
               required: false,
               placeholder: '',
@@ -129,15 +131,15 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-text',
-              label: '图例名称',
+              label: Vue.prototype.i18n.t('term.report.legendname'),
               name: 'legendName',
               required: false,
-              placeholder: '多值以' | '隔开',
+              placeholder: Vue.prototype.i18n.t('term.report.legendnameplaceholder'),
               value: ''
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'lengedColor',
               required: false,
               placeholder: '',
@@ -145,7 +147,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '字体字号',
+              label: Vue.prototype.i18n.t('page.fontsize'),
               name: 'lengedFontSize',
               required: false,
               placeholder: '',
@@ -153,7 +155,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '图例宽度',
+              label: Vue.prototype.i18n.t('term.report.legendwidth'),
               name: 'lengedWidth',
               required: false,
               placeholder: '',
@@ -161,49 +163,49 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-select',
-              label: '横向位置',
+              label: Vue.prototype.i18n.t('term.report.horizontalposition'),
               name: 'lateralPosition',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'center', name: '居中'},
-                {code: 'left', name: '左对齐'},
-                {code: 'right', name: '右对齐'}
+                {code: 'center', name: Vue.prototype.i18n.t('term.report.textalign.center')},
+                {code: 'left', name: Vue.prototype.i18n.t('term.report.textalign.left')},
+                {code: 'right', name: Vue.prototype.i18n.t('term.report.textalign.right')}
               ],
               value: 'center'
             },
             {
               type: 'el-select',
-              label: '纵向位置',
+              label: Vue.prototype.i18n.t('term.report.verticalposition'),
               name: 'longitudinalPosition',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'top', name: '顶部'},
-                {code: 'bottom', name: '底部'}
+                {code: 'top', name: Vue.prototype.i18n.t('page.top')},
+                {code: 'bottom', name: Vue.prototype.i18n.t('page.bottom')}
               ],
               value: 'top'
             },
             {
               type: 'el-select',
-              label: '布局前置',
+              label: Vue.prototype.i18n.t('term.report.layoutFront'),
               name: 'layoutFront',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'vertical', name: '竖排'},
-                {code: 'horizontal', name: '横排'}
+                {code: 'vertical', name: Vue.prototype.i18n.t('term.report.vertical')},
+                {code: 'horizontal', name: Vue.prototype.i18n.t('term.report.horizontal')}
               ],
               value: 'horizontal'
             }
           ]
         },
         {
-          name: '左X轴设置',
+          name: Vue.prototype.i18n.t('term.report.axis.xleftsetting'),
           list: [
             {
               type: 'el-switch',
-              label: '显示',
+              label: Vue.prototype.i18n.t('page.display'),
               name: 'hideXLeft',
               required: false,
               placeholder: '',
@@ -211,7 +213,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '数值间隔',
+              label: Vue.prototype.i18n.t('term.report.axis.splitnumber'),
               name: 'splitNumberLeft',
               required: false,
               placeholder: '',
@@ -219,7 +221,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '数值颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.valuecolor'),
               name: 'XcolorLeft',
               required: false,
               placeholder: '',
@@ -227,7 +229,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '数值字号',
+              label: Vue.prototype.i18n.t('term.report.axis.valuefontsize'),
               name: 'fontSizeXLeft',
               required: false,
               placeholder: '',
@@ -235,7 +237,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '刻度线',
+              label: Vue.prototype.i18n.t('term.report.axis.tickline'),
               name: 'tickLineLeft',
               require: false,
               placeholder: '',
@@ -243,7 +245,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: 'X轴线',
+              label: Vue.prototype.i18n.t('term.report.axis.xaxis'),
               name: 'xLineLeft',
               require: false,
               placeholder: '',
@@ -251,7 +253,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '轴颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.axiscolor'),
               name: 'lineColorXLeft',
               required: false,
               placeholder: '',
@@ -259,7 +261,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '竖分割线',
+              label: Vue.prototype.i18n.t('term.report.axis.verticaldividingline'),
               name: 'SplitLineLeft',
               require: false,
               placeholder: '',
@@ -267,7 +269,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '分割线颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.dividinglinecolor'),
               name: 'SplitLineColorLeft',
               required: false,
               placeholder: '',
@@ -275,7 +277,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '分割线宽度',
+              label: Vue.prototype.i18n.t('term.report.axis.dividinglinewidth'),
               name: 'SplitLinefontSizeLeft',
               required: false,
               placeholder: '',
@@ -283,7 +285,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '边框线',
+              label: Vue.prototype.i18n.t('term.report.axis.borderline'),
               name: 'frameLineLeft',
               require: false,
               placeholder: '',
@@ -292,11 +294,11 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: '右X轴设置',
+          name: Vue.prototype.i18n.t('term.report.axis.xrightsetting'),
           list: [
             {
               type: 'el-switch',
-              label: '显示',
+              label: Vue.prototype.i18n.t('page.display'),
               name: 'hideXRight',
               required: false,
               placeholder: '',
@@ -304,7 +306,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '数值间隔',
+              label: Vue.prototype.i18n.t('term.report.axis.splitnumber'),
               name: 'splitNumberRight',
               required: false,
               placeholder: '',
@@ -312,7 +314,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '数值颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.valuecolor'),
               name: 'XcolorRight',
               required: false,
               placeholder: '',
@@ -320,7 +322,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '数值字号',
+              label: Vue.prototype.i18n.t('term.report.axis.valuefontsize'),
               name: 'fontSizeXRight',
               required: false,
               placeholder: '',
@@ -328,7 +330,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '刻度线',
+              label: Vue.prototype.i18n.t('term.report.axis.tickline'),
               name: 'tickLineRight',
               require: false,
               placeholder: '',
@@ -336,7 +338,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: 'X轴线',
+              label: Vue.prototype.i18n.t('term.report.axis.xaxis'),
               name: 'xLineRight',
               require: false,
               placeholder: '',
@@ -344,7 +346,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '轴颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.axiscolor'),
               name: 'lineColorXRight',
               required: false,
               placeholder: '',
@@ -352,7 +354,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '竖分割线',
+              label: Vue.prototype.i18n.t('term.report.axis.verticaldividingline'),
               name: 'SplitLineRight',
               require: false,
               placeholder: '',
@@ -360,7 +362,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '分割线颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.dividinglinecolor'),
               name: 'SplitLineColorRight',
               required: false,
               placeholder: '',
@@ -368,7 +370,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '分割线宽度',
+              label: Vue.prototype.i18n.t('term.report.axis.dividinglinewidth'),
               name: 'SplitLinefontSizeRight',
               required: false,
               placeholder: '',
@@ -376,7 +378,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: '边框线',
+              label: Vue.prototype.i18n.t('term.report.axis.borderline'),
               name: 'frameLineRight',
               require: false,
               placeholder: '',
@@ -385,11 +387,11 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: 'Y轴设置',
+          name: Vue.prototype.i18n.t('term.report.axis.ysetting'),
           list: [
             {
               type: 'el-switch',
-              label: '显示',
+              label: Vue.prototype.i18n.t('page.display'),
               name: 'hideY',
               required: false,
               placeholder: '',
@@ -397,7 +399,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '数值颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.valuecolor'),
               name: 'colorY',
               required: false,
               placeholder: '',
@@ -405,7 +407,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '数值字号',
+              label: Vue.prototype.i18n.t('term.report.axis.valuefontsize'),
               name: 'fontSizeY',
               required: false,
               placeholder: '',
@@ -413,20 +415,20 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-select',
-              label: '数值对齐',
+              label: Vue.prototype.i18n.t('term.report.axis.valuealign'),
               name: 'textAlign',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'center', name: '居中'},
-                {code: 'left', name: '左对齐'},
-                {code: 'right', name: '右对齐'}
+                {code: 'center', name: Vue.prototype.i18n.t('term.report.textalign.center')},
+                {code: 'left', name: Vue.prototype.i18n.t('term.report.textalign.left')},
+                {code: 'right', name: Vue.prototype.i18n.t('term.report.textalign.right')}
               ],
               value: 'center'
             },
             {
               type: 'el-switch',
-              label: '刻度线',
+              label: Vue.prototype.i18n.t('term.report.axis.tickline'),
               name: 'tickLineY',
               require: false,
               placeholder: '',
@@ -434,7 +436,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-switch',
-              label: 'Y轴线',
+              label: Vue.prototype.i18n.t('term.report.axis.yaxis'),
               name: 'lineY',
               require: false,
               placeholder: '',
@@ -442,7 +444,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '轴颜色',
+              label: Vue.prototype.i18n.t('term.report.axis.axiscolor'),
               name: 'lineColorY',
               required: false,
               placeholder: '',
@@ -451,11 +453,11 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: '数值设定',
+          name: Vue.prototype.i18n.t('term.report.valuesetting'),
           list: [
             {
               type: 'el-switch',
-              label: '显示',
+              label: Vue.prototype.i18n.t('page.display'),
               name: 'isShow',
               required: false,
               placeholder: '',
@@ -463,7 +465,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-input-number',
-              label: '字体大小',
+              label: Vue.prototype.i18n.t('page.fontsize'),
               name: 'fontSize',
               required: false,
               placeholder: '',
@@ -471,7 +473,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'subTextColor',
               required: false,
               placeholder: '',
@@ -479,26 +481,26 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-select',
-              label: '字体粗细',
+              label: Vue.prototype.i18n.t('term.report.fontweight.name'),
               name: 'fontWeight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             }
           ]
         },
         {
-          name: '提示语设置',
+          name: Vue.prototype.i18n.t('term.report.tipsetting'),
           list: [
             {
               type: 'el-input-number',
-              label: '字体大小',
+              label: Vue.prototype.i18n.t('page.fontsize'),
               name: 'tipsFontSize',
               required: false,
               placeholder: '',
@@ -506,7 +508,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'lineColor',
               required: false,
               placeholder: ''
@@ -514,11 +516,11 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: '坐标轴边距设置',
+          name: Vue.prototype.i18n.t('term.report.axis.axismarginsetting'),
           list: [
             {
               type: 'el-slider',
-              label: '左右边距(像素)',
+              label: Vue.prototype.i18n.t('term.report.axis.marginleftright'),
               name: 'marginLeftRight',
               required: false,
               placeholder: '',
@@ -526,7 +528,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-slider',
-              label: '顶边距(像素)',
+              label: Vue.prototype.i18n.t('term.report.axis.margintop'),
               name: 'marginTop',
               required: false,
               placeholder: '',
@@ -534,7 +536,7 @@ export const widgetBarCompare = {
             },
             {
               type: 'el-slider',
-              label: '底边距(像素)',
+              label: Vue.prototype.i18n.t('term.report.axis.marginbottom'),
               name: 'marginBottom',
               required: false,
               placeholder: '',
@@ -543,7 +545,7 @@ export const widgetBarCompare = {
           ]
         },
         {
-          name: '自定义配色',
+          name: Vue.prototype.i18n.t('term.report.customcolor'),
           list: [
             {
               type: 'customColor',
@@ -560,7 +562,7 @@ export const widgetBarCompare = {
     data: [
       {
         type: 'el-radio-group',
-        label: '数据类型',
+        label: Vue.prototype.i18n.t('term.report.datatype.name'),
         name: 'dataType',
         require: false,
         placeholder: '',
@@ -568,18 +570,18 @@ export const widgetBarCompare = {
         selectOptions: [
           {
             code: 'staticData',
-            name: '静态数据'
+            name: Vue.prototype.i18n.t('term.report.datatype.staticdata')
           },
           {
             code: 'dynamicData',
-            name: '动态数据'
+            name: Vue.prototype.i18n.t('term.report.datatype.dynamicdata')
           }
         ],
         value: 'staticData'
       },
       {
         type: 'el-input-number',
-        label: '刷新时间(毫秒)',
+        label: Vue.prototype.i18n.t('term.report.datatype.refreshTime'),
         name: 'refreshTime',
         relactiveDom: 'dataType',
         relactiveDomValue: 'dynamicData',
@@ -587,7 +589,7 @@ export const widgetBarCompare = {
       },
       {
         type: 'el-button',
-        label: '静态数据',
+        label: Vue.prototype.i18n.t('term.report.datatype.staticdata'),
         name: 'staticData',
         required: false,
         placeholder: '',
@@ -623,7 +625,7 @@ export const widgetBarCompare = {
     position: [
       {
         type: 'el-input-number',
-        label: '左边距',
+        label: Vue.prototype.i18n.t('term.report.position.left'),
         name: 'left',
         required: false,
         placeholder: '',
@@ -631,7 +633,7 @@ export const widgetBarCompare = {
       },
       {
         type: 'el-input-number',
-        label: '上边距',
+        label: Vue.prototype.i18n.t('term.report.position.top'),
         name: 'top',
         required: false,
         placeholder: '',
@@ -639,18 +641,18 @@ export const widgetBarCompare = {
       },
       {
         type: 'el-input-number',
-        label: '宽度',
+        label: Vue.prototype.i18n.t('page.width'),
         name: 'width',
         required: false,
-        placeholder: '该容器在1920px大屏中的宽度',
+        placeholder: Vue.prototype.i18n.t('term.report.position.widthplaceholder'),
         value: 500
       },
       {
         type: 'el-input-number',
-        label: '高度',
+        label: Vue.prototype.i18n.t('page.width'),
         name: 'height',
         required: false,
-        placeholder: '该容器在1080px大屏中的高度',
+        placeholder: Vue.prototype.i18n.t('term.report.position.heightplaceholder'),
         value: 250
       }
     ]

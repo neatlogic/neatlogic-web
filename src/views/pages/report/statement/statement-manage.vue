@@ -2,7 +2,7 @@
   <div>
     <TsContain> 
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addStatement()">{{ $t('term.report.monitor') }}</span>
+        <span class="text-action tsfont-plus" @click="addStatement()">{{ $t('term.report.screen') }}</span>
       </template>
       <template slot="topRight">
         <InputSearcher
@@ -25,8 +25,8 @@
             {{ row.width }} * {{ row.height }}
           </template>
           <template v-slot:isActive="{ row }">
-            <span v-if="row.isActive" class="text-success">是</span>
-            <span v-else class="text-grey">否</span>
+            <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -69,18 +69,18 @@ export default {
     return {
       theadList: [
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: '画布大小',
+          title: this.$t('term.report.canvassize'),
           key: 'area'},
         {
-          title: '是否激活',
+          title: this.$t('term.report.isactive'),
           key: 'isActive'
         },
         {
-          title: '说明',
+          title: this.$t('page.explain'),
           key: 'description'
         },
         {
@@ -133,7 +133,7 @@ export default {
     deleteReport(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '是否确认删除报表：' + row.name + '?',
+        content: this.$t('dialog.content.deleteconfirm2', {target1: this.$t('term.report.report')}, {target2: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(row.id).then(res => {

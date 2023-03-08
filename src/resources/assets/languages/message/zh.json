@@ -19,6 +19,7 @@
     "commitsuccess": "提交成功",
     "refreshsuccess": "刷新成功",
     "copysuccess": "复制成功",
+    "pastesuccess": "粘贴成功",
     "uploadsuccess": "上传成功",
     "uploadfailed": "上传失败",
     "validatesuccess": "校验成功",
@@ -49,6 +50,9 @@
     },
     "knowledge": {
       "notcatalog": "无文本目录"
+    },
+    "report":{
+      "addreportwidget":"请添加报表组件"
     }
   }
 }

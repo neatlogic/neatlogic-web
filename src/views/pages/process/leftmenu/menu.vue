@@ -94,7 +94,6 @@ export default {
     return {
       isShowWorkOrderDialog: false,
       showMode: 'table',
-      showModeText: '卡片展示',
       timer: null, //定时器
       workcenterList: null, //左侧列表
       editRenameDialog: false, //重命名弹框

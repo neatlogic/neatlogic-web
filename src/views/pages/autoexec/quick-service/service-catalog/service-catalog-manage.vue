@@ -54,7 +54,7 @@
                           <div class="content">
                             <div class="title">{{ item.name }}</div>
                             <Tooltip
-                              class="tooltip-wrap"
+                              class="tooltip-wrap mt-xs"
                               transfer
                               placement="bottom-start"
                               max-width="300"
@@ -326,7 +326,7 @@ export default {
         }
         .list {
           margin: 8px 0;
-          height: 100px;
+          height: 110px;
           padding: 0 40px 0 24px;
           overflow: hidden;
           position: relative;
@@ -370,7 +370,7 @@ export default {
             }
           }
           .content {
-            padding: 16px 0 16px 0;
+            padding: 24px 0;
             overflow: hidden;
             .title {
               font-size: 14px;

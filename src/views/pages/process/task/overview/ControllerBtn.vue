@@ -100,17 +100,14 @@ export default {
           })
           .then(res => {
             if (res.Status === 'OK') {
-              this.$Notice.success({
-                title: data.text + '成功',
-                desc: ''
-              });
+              this.$Message.success(this.$t('message.content.executesuccess'));
             }
           });
       } else if (data.name === 'abortprocessTask' || data.name === 'recoverprocessTask') {
         // 取消
         this.$createDialog({
-          title: data.text + '确认',
-          content: `是否确认${data.text}该工单？`,
+          title: this.$t('dialog.title.updateconfirm'),
+          content: this.$t('dialog.content.tipconfirm', {target: data.text, name: this.$t('term.process.task')}),
           'on-ok': vnode => {
             if (data.name === 'recoverprocessTask') {
               this.$api.process.processtask
@@ -119,10 +116,7 @@ export default {
                 })
                 .then(res => {
                   if (res.Status === 'OK') {
-                    this.$Notice.success({
-                      title: data.text + '成功',
-                      desc: ''
-                    });
+                    this.$Message.success(this.$t('message.content.executesuccess'));
                     vnode.isShow = false;
                     this.$emit('refresh', data.config.taskid);
                     // this.tbodyList.splice(bindex, 1);
@@ -135,10 +129,7 @@ export default {
                 })
                 .then(res => {
                   if (res.Status === 'OK') {
-                    this.$Notice.success({
-                      title: data.text + '成功',
-                      desc: ''
-                    });
+                    this.$Message.success(this.$t('message.content.executesuccess'));
                     vnode.isShow = false;
                     this.$emit('refresh', data.config.taskid);
                     // this.tbodyList.splice(bindex, 1);
@@ -150,32 +141,26 @@ export default {
       } else if (data.name === 'hide') {
         this.$https.post(data.config.interfaceurl).then(res => {
           if (res.Status === 'OK') {
-            this.$Notice.success({
-              title: data.text + '成功'
-            });
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.$emit('refresh', data.config.taskid);
           }
         });
       } else if (data.name === 'show') {
         this.$https.post(data.config.interfaceurl).then(res => {
           if (res.Status === 'OK') {
-            this.$Notice.success({
-              title: data.text + '成功'
-            });
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.$emit('refresh', data.config.taskid);
           }
         });
       } else if (data.name === 'delete') {
         this.$createDialog({
-          title: data.text + '确认',
-          content: `是否确认${data.text}该工单？`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.process.task')}),
           btnType: 'error',
           'on-ok': vnode => {
             this.$https.post(data.config.interfaceurl).then(res => {
               if (res.Status === 'OK') {
-                this.$Notice.success({
-                  title: data.text + '成功'
-                });
+                this.$Message.success(this.$t('message.content.executesuccess'));
                 this.$emit('delete', data.config.taskid);
               }
             }).finally(() => {
@@ -188,9 +173,7 @@ export default {
     moreActionClick(item) {
       this.$https.post(item.config.interfaceurl).then(res => {
         if (res.Status === 'OK') {
-          this.$Notice.success({
-            title: item.text + '成功'
-          });
+          this.$Message.success(this.$t('message.content.executesuccess'));
         }
       });
     },
