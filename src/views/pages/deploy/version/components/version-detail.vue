@@ -2,18 +2,18 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/version-center-manage')">{{ $getFromPage('版本中心') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/version-center-manage')">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>{{ title }}</template>
       <template v-slot:content>
         <Tabs v-model="tabValue" :animated="false">
-          <TabPane label="发布状态" name="deployStatus">
+          <TabPane :label="$t('term.deploy.publishstatus')" name="deployStatus">
             <DeployStatusOverview v-if="tabValue == 'deployStatus'" :envId="envId" :versionId="versionId"></DeployStatusOverview>
           </TabPane>
-          <TabPane label="单元测试" name="unitTest">
+          <TabPane :label="$t('page.unittest')" name="unitTest">
             <UnitTestOverview v-if="tabValue == 'unitTest'" :versionId="versionId"></UnitTestOverview>
           </TabPane>
-          <TabPane label="代码扫描" name="codeScan">
+          <TabPane :label="$t('page.codescan')" name="codeScan">
             <CodeScanOverview v-if="tabValue == 'codeScan'" :versionId="versionId"></CodeScanOverview>
           </TabPane>
         </Tabs>

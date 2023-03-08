@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="新建版本"
+      :title="$t('page.newversion')"
       type="modal"
       :isShow="true"
       :okText="$t('button.save')"
@@ -72,7 +72,7 @@ export default {
           disabledHoverTitle: ''
         },
         {
-          label: '版本号',
+          label: this.$t('page.versions'),
           type: 'text',
           name: 'version',
           maxlength: 50,
@@ -80,12 +80,12 @@ export default {
             name: 'searchUrl', 
             url: '/api/rest/deploy/version/save', 
             key: 'version', 
-            message: '版本已存在', 
+            message: this.$t('form.validate.repeat', {target: this.$t('page.versions')}), 
             params: {} 
           }]
         },
         {
-          label: '封版',
+          label: this.$t('term.deploy.sealplate'),
           type: 'switch',
           name: 'isFreeze',
           falseValue: 0,
@@ -93,7 +93,7 @@ export default {
           value: 0
         },
         {
-          label: '描述',
+          label: this.$t('page.description'),
           type: 'textarea',
           name: 'description',
           maxlength: 1024,
@@ -138,7 +138,7 @@ export default {
       for (let key = 0; key < this.formList.length; key++) {
         if (this.formList[key]['name'] == 'appModuleId') {
           this.formList[key]['params']['appSystemIdList'] = appSystemId ? [appSystemId] : [];
-          this.formList[key]['disabledHoverTitle'] = appSystemId ? '' : '请先选择应用';
+          this.formList[key]['disabledHoverTitle'] = appSystemId ? '' : this.$t('form.placeholder.pleaseselect', {target: this.$t('page.application')});
           this.formList[key]['disabled'] = !appSystemId;
           break;
         }

@@ -30,7 +30,7 @@
         >
           <div class="bg-op radius-lg padding chart-height">
             <PieChart
-              title="最新一次代码问题"
+              :title="$t('term.deploy.thelatestcodeproblem')"
               :axiosParams="{ versionId: versionId, name: 'code_scan',
                               chart: 'last_code_issue' }"
             ></PieChart>
@@ -46,7 +46,7 @@
         >
           <div class="bg-op radius-lg padding chart-height">
             <LineChart
-              title="最新五次注释率统计(%)"
+              :title="$t('term.deploy.latestfifthcommentratestatistics')"
               :axiosParams="{versionId: versionId, name: 'code_scan',
                              chart: 'last_five_annotation_rate'}"
             ></LineChart>
@@ -62,7 +62,7 @@
         >
           <div class="bg-op radius-lg padding chart-height">
             <BarChart
-              title="最新五次代码统计"
+              :title="$t('term.deploy.thelatestfivecodestatistics')"
               :axiosParams="{versionId: versionId, name: 'code_scan',
                              chart: 'last_five_code_statistics'}"
             ></BarChart>
@@ -80,7 +80,7 @@
         >
           <div class="bg-op radius-lg padding chart-height">
             <LineChart
-              title="bug/漏洞/代码异味趋势图"
+              :title="$t('term.deploy.codequalitytrend')"
               :axiosParams="{versionId: versionId, name: 'code_scan',
                              chart: 'code_quality_trend'}"
             ></LineChart>
@@ -96,7 +96,7 @@
         >
           <div class="bg-op radius-lg padding chart-height">
             <LineChart
-              title="重复度趋势图"
+              :title="$t('term.deploy.coderepeatability')"
               :axiosParams="{versionId: versionId, name: 'code_scan',
                              chart: 'code_repeatability'}"
             ></LineChart>
@@ -125,107 +125,107 @@ export default {
       lastCodeTestResult: '', // 最新一次代码测试结果
       textList: [
         {
-          label: '执行时间',
+          label: this.$t('term.deploy.executiontime'),
           textName: 'buildTime',
           value: ''
         },
         {
-          label: '质量阀',
+          label: this.$t('term.deploy.massvalve'),
           textName: 'alertStatus',
           value: ''
         },
         {
-          label: '总体问题(阻断/严重/主要)',
+          label: this.$t('term.deploy.totalproblem'),
           textName: 'totalProblem',
           value: ''
         },
         {
-          label: '新增问题(阻断/严重/主要)',
+          label: this.$t('term.deploy.newaddproblem'),
           textName: 'newAddProblem',
           value: ''
         },
         {
-          label: '总体Bugs',
+          label: this.$t('term.deploy.bugs'),
           textName: 'bugs',
           value: ''
         },
         {
-          label: '新增Bugs',
+          label: this.$t('term.deploy.newbugs'),
           textName: 'newBugs',
           value: ''
         },
         {
-          label: '新代码可靠率',
+          label: this.$t('term.deploy.newreliabilityrating'),
           textName: 'newReliabilityRating',
           value: ''
         },
         {
-          label: '总体漏洞',
+          label: this.$t('term.deploy.overallvulnerability'),
           textName: 'vulnerabilities',
           value: ''
         },
         {
-          label: '总体漏洞',
+          label: this.$t('term.deploy.overallvulnerability'),
           textName: 'newVulnerabilities',
           value: ''
         },
         {
-          label: '债务',
+          label: this.$t('term.deploy.debt'),
           textName: 'sqaleIndex',
           value: ''
         },
         {
-          label: '新增债务',
+          label: this.$t('term.deploy.newdebt'),
           textName: 'newTechnicalDebt',
           value: ''
         },
         {
-          label: '新代码可维护率',
+          label: this.$t('term.deploy.maintainablerateofnewcode'),
           textName: 'newMaintainabilityRating',
           value: ''
         },
         {
-          label: '总体代码味道',
+          label: this.$t('term.deploy.overallcodeflavor'),
           textName: 'codeSmells',
           value: ''
         },
         {
-          label: '总体安全热点',
+          label: this.$t('term.deploy.overallsecurityhotspot'),
           textName: 'securityHotspots',
           value: ''
         },
         {
-          label: '新增代码异味',
+          label: this.$t('term.deploy.newcodeodor'),
           textName: 'newCodeSmells',
           value: ''
         },
         {
-          label: '新增安全热点',
+          label: this.$t('term.deploy.newsecurityhotspot'),
           textName: 'newSecurityHotspots',
           value: ''
         },
         {
-          label: '新增代码行数',
+          label: this.$t('term.deploy.numberofnewlinesofcode'),
           textName: 'newLines',
           value: ''
         },
         {
-          label: '代码总行数',
+          label: this.$t('term.deploy.totallinesofcode'),
           textName: 'lines',
           value: ''
         },
         {
-          label: '代码有效行',
+          label: this.$t('term.deploy.validlineofcode'),
           textName: 'ncloc',
           value: ''
         },
         {
-          label: '行注释率',
+          label: this.$t('term.deploy.linecommentrate'),
           textName: 'commentLinesDensity',
           value: ''
         },
         {
-          label: 'API注释率',
+          label: this.$t('term.deploy.apicommentrate'),
           textName: 'publicDocumentedApiDensity',
           value: ''
         }
@@ -257,7 +257,7 @@ export default {
                 if (item.textName == 'buildTime') {
                   this.$set(item, 'value', this.$utils.getDateByFormat(testRecordConfig[item.textName]));
                 } else if (item.textName == 'alertStatus') {
-                  this.$set(item, 'value', testRecordConfig[item.textName] == 'ERROR' ? '错误' : '正常');
+                  this.$set(item, 'value', testRecordConfig[item.textName] == 'ERROR' ? this.$t('page.error') : this.$t('page.normal'));
                 } else if (addPercentFieldList.includes(item.textName)) {
                   this.$set(item, 'value', testRecordConfig[item.textName] + '%');
                 } else {

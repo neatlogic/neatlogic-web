@@ -55,7 +55,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 1; i <= 5; i++) {
-        this.data.push({colorField: '数据' + i, angleField: Math.floor(Math.random() * 100) + 1});
+        this.data.push({colorField: this.$t('page.data') + i, angleField: Math.floor(Math.random() * 100) + 1});
       }
     },
     createPlot() {
