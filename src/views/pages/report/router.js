@@ -131,7 +131,7 @@ export default [
     name: 'statement-edit',
     component: statementEdit,
     meta: {
-      title: 'router.report.monitordesign',
+      title: 'router.report.screendesign',
       icon: 'tsfont-db',
       ismenu: false,
       authority: ['REPORT_STATEMENT_MODIFY']
@@ -142,7 +142,7 @@ export default [
     name: 'statement-view',
     component: statementView,
     meta: {
-      title: 'router.report.monitordetail',
+      title: 'router.report.screendetail',
       ismenu: false,
       authority: ['REPORT_BASE']
     }
@@ -152,7 +152,7 @@ export default [
     name: 'statement-manage',
     component: statementManage,
     meta: {
-      title: 'router.report.monitormanage',
+      title: 'router.report.screenmanage',
       icon: 'tsfont-agent',
       ismenu: true,
       type: 'statementmanage',
