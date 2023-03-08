@@ -6,25 +6,27 @@
  * @LastEditors: qianlishi
  * @LastEditTime: 2021-09-28 14:10:01
  */
+import Vue from "vue";
+
 export const widgetAirbubbleMap = {
   code: 'widgetAirBubbleMap',
   type: 'chart',
-  label: '气泡地图',
+  label: Vue.prototype.i18n.t('term.report.bubblemap'),
   icon: 'iconzhongguoditu',
   options: {
     // 配置
     setup: [
       {
         type: 'el-input-text',
-        label: '图层名称',
+        label: Vue.prototype.i18n.t('term.report.layername'),
         name: 'layerName',
         required: false,
         placeholder: '',
-        value: '气泡地图'
+        value: Vue.prototype.i18n.t('term.report.bubblemap')
       },
       {
         type: 'vue-color',
-        label: '背景颜色',
+        label: Vue.prototype.i18n.t('page.backgroundcolor'),
         name: 'background',
         required: false,
         placeholder: '',
@@ -32,11 +34,11 @@ export const widgetAirbubbleMap = {
       },
       [
         {
-          name: '标题设置',
+          name: Vue.prototype.i18n.t('term.report.titlesetting'),
           list: [
             {
               type: 'el-switch',
-              label: '标题',
+              label: Vue.prototype.i18n.t('page.title'),
               name: 'isNoTitle',
               required: false,
               placeholder: '',
@@ -44,7 +46,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-input-text',
-              label: '标题',
+              label: Vue.prototype.i18n.t('page.title'),
               name: 'titleText',
               required: false,
               placeholder: '',
@@ -52,7 +54,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'textColor',
               required: false,
               placeholder: '',
@@ -60,21 +62,21 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-select',
-              label: '字体粗细',
-              name: 'textFontWeight',
+              label: Vue.prototype.i18n.t('term.report.fontweight.name'),
+              name: 'fontweight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             },
             {
               type: 'el-input-number',
-              label: '字体大小',
+              label:  Vue.prototype.i18n.t('page.fontsize'),
               name: 'textFontSize',
               required: false,
               placeholder: '',
@@ -82,20 +84,20 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-select',
-              label: '字体位置',
+              label: Vue.prototype.i18n.t('term.report.textalign.name'),
               name: 'textAlign',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'center', name: '居中'},
-                {code: 'left', name: '左对齐'},
-                {code: 'right', name: '右对齐'}
+                {code: 'center', name: Vue.prototype.i18n.t('term.report.textalign.center')},
+                {code: 'left', name: Vue.prototype.i18n.t('term.report.textalign.left')},
+                {code: 'right', name: Vue.prototype.i18n.t('term.report.textalign.right')}
               ],
               value: 'left'
             },
             {
               type: 'el-input-text',
-              label: '副标题',
+              label: Vue.prototype.i18n.t('page.subtitle'),
               name: 'subText',
               required: false,
               placeholder: '',
@@ -103,7 +105,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '字体颜色',
+              label: Vue.prototype.i18n.t('page.fontcolor'),
               name: 'subTextColor',
               required: false,
               placeholder: '',
@@ -111,21 +113,21 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-select',
-              label: '字体粗细',
-              name: 'subTextFontWeight',
+              label: Vue.prototype.i18n.t('term.report.fontweight.name'),
+              name: 'subfontweight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             },
             {
               type: 'el-input-number',
-              label: '字体大小',
+              label: Vue.prototype.i18n.t('page.fontsize'),
               name: 'subTextFontSize',
               required: false,
               placeholder: '',
@@ -134,11 +136,11 @@ export const widgetAirbubbleMap = {
           ]
         },
         {
-          name: '字体设置',
+          name: Vue.prototype.i18n.t('term.report.fontsetting.name'),
           list: [
             {
               type: 'el-input-number',
-              label: '文字大小',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.textsize'),
               name: 'fontTextSize',
               required: false,
               placeholder: '',
@@ -146,7 +148,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '文字颜色',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.color'),
               name: 'fontTextColor',
               required: false,
               placeholder: '',
@@ -154,21 +156,21 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-select',
-              label: '文字粗细',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.textweight'),
               name: 'fontTextWeight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             },
             {
               type: 'el-input-number',
-              label: '数值大小',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.fontdatasize'),
               name: 'fontDataSize',
               required: false,
               placeholder: '',
@@ -176,7 +178,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '数值颜色',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.fontdatasize'),
               name: 'fontDataColor',
               required: false,
               placeholder: '',
@@ -184,26 +186,26 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-select',
-              label: '数值粗细',
+              label: Vue.prototype.i18n.t('term.report.fontsetting.fontdataweight'),
               name: 'fontDataWeight',
               required: false,
               placeholder: '',
               selectOptions: [
-                {code: 'normal', name: '正常'},
-                {code: 'bold', name: '粗体'},
-                {code: 'bolder', name: '特粗体'},
-                {code: 'lighter', name: '细体'}
+                {code: 'normal', name: Vue.prototype.i18n.t('term.report.fontweight.normal')},
+                {code: 'bold', name: Vue.prototype.i18n.t('term.report.fontweight.bold')},
+                {code: 'bolder', name: Vue.prototype.i18n.t('term.report.fontweight.bolder')},
+                {code: 'lighter', name: Vue.prototype.i18n.t('term.report.fontweight.lighter')}
               ],
               value: 'normal'
             }
           ]
         },
         {
-          name: '气泡设置',
+          name: Vue.prototype.i18n.t('term.report.bubblesetting.name'),
           list: [
             {
               type: 'el-input-number',
-              label: '最小半径',
+              label: Vue.prototype.i18n.t('term.report.bubblesetting.fontminsize4pin'),
               name: 'fontminSize4Pin',
               required: false,
               placeholder: '',
@@ -211,7 +213,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'el-input-number',
-              label: '最大半径',
+              label: Vue.prototype.i18n.t('term.report.bubblesetting.fontmaxsize4pin'),
               name: 'fontmaxSize4Pin',
               required: false,
               placeholder: '',
@@ -228,11 +230,11 @@ export const widgetAirbubbleMap = {
           ]
         },
         {
-          name: '地图块颜色',
+          name: Vue.prototype.i18n.t('term.report.mapcolor.name'),
           list: [
             {
               type: 'vue-color',
-              label: '0%处颜色',
+              label: Vue.prototype.i18n.t('term.report.mapcolor.font0precolor'),
               name: 'font0PreColor',
               required: false,
               placeholder: '',
@@ -240,7 +242,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '100%颜色',
+              label: Vue.prototype.i18n.t('term.report.mapcolor.font100precolor'),
               name: 'font100PreColor',
               required: false,
               placeholder: '',
@@ -248,7 +250,7 @@ export const widgetAirbubbleMap = {
             },
             {
               type: 'vue-color',
-              label: '高亮渐变色',
+              label: Vue.prototype.i18n.t('term.report.mapcolor.fonthighlightcolor'),
               name: 'fontHighlightColor',
               required: false,
               placeholder: '',
@@ -261,7 +263,7 @@ export const widgetAirbubbleMap = {
     data: [
       {
         type: 'el-radio-group',
-        label: '数据类型',
+        label: Vue.prototype.i18n.t('term.report.datatype.name'),
         name: 'dataType',
         require: false,
         placeholder: '',
@@ -269,18 +271,18 @@ export const widgetAirbubbleMap = {
         selectOptions: [
           {
             code: 'staticData',
-            name: '静态数据'
+            name: Vue.prototype.i18n.t('term.report.datatype.staticdata')
           },
           {
             code: 'dynamicData',
-            name: '动态数据'
+            name: Vue.prototype.i18n.t('term.report.datatype.dynamicdata')
           }
         ],
         value: 'staticData'
       },
       {
         type: 'el-input-number',
-        label: '刷新时间(毫秒)',
+        label: Vue.prototype.i18n.t('term.report.datatype.refreshTime'),
         name: 'refreshTime',
         relactiveDom: 'dataType',
         relactiveDomValue: 'dynamicData',
@@ -288,48 +290,48 @@ export const widgetAirbubbleMap = {
       },
       {
         type: 'el-button',
-        label: '静态数据',
+        label: Vue.prototype.i18n.t('term.report.datatype.staticdata'),
         name: 'staticData',
         required: false,
         placeholder: '',
         relactiveDom: 'dataType',
         relactiveDomValue: 'staticData',
         value: [
-          {'name': '南海诸岛', 'value': 1},
-          {'name': '北京', 'value': 524},
-          {'name': '天津', 'value': 14},
-          {'name': '上海', 'value': 150},
-          {'name': '重庆', 'value': 75},
-          {'name': '河北', 'value': 13},
-          {'name': '河南', 'value': 83},
-          {'name': '云南', 'value': 11},
-          {'name': '辽宁', 'value': 19},
-          {'name': '黑龙江', 'value': 15},
-          {'name': '湖南', 'value': 69},
-          {'name': '安徽', 'value': 260},
-          {'name': '山东', 'value': 39},
-          {'name': '新疆', 'value': 4},
-          {'name': '江苏', 'value': 31},
-          {'name': '浙江', 'value': 104},
-          {'name': '江西', 'value': 36},
-          {'name': '湖北', 'value': 1052},
-          {'name': '广西', 'value': 33},
-          {'name': '甘肃', 'value': 347},
-          {'name': '山西', 'value': 8},
-          {'name': '内蒙古', 'value': 157},
-          {'name': '陕西', 'value': 22},
-          {'name': '吉林', 'value': 4},
-          {'name': '福建', 'value': 36},
-          {'name': '贵州', 'value': 39},
-          {'name': '广东', 'value': 996},
-          {'name': '青海', 'value': 27},
-          {'name': '西藏', 'value': 31},
-          {'name': '四川', 'value': 46},
-          {'name': '宁夏', 'value': 16},
-          {'name': '海南', 'value': 22},
-          {'name': '台湾', 'value': 6},
-          {'name': '香港', 'value': 2},
-          {'name': '澳门', 'value': 9}]
+          {'name': Vue.prototype.i18n.t('term.report.datatype.nanhaiislands'), 'value': 1},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.beijing'), 'value': 524},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.tianjin'), 'value': 14},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.shanghai'), 'value': 150},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.chongqing'), 'value': 75},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.hebei'), 'value': 13},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.henan'), 'value': 83},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.yunnan'), 'value': 11},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.liaoning'), 'value': 19},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.heilongjiang'), 'value': 15},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.hunan'), 'value': 69},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.anhui'), 'value': 260},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.shandong'), 'value': 39},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.xinjiang'), 'value': 4},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.jiangsu'), 'value': 31},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.zhejiang'), 'value': 104},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.jiangxi'), 'value': 36},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.hubei'), 'value': 1052},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.guangxi'), 'value': 33},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.gansu'), 'value': 347},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.shanxi'), 'value': 8},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.neimenggu'), 'value': 157},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.shaanxi'), 'value': 22},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.jilin'), 'value': 4},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.fujian'), 'value': 36},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.guizhou'), 'value': 39},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.guangdong'), 'value': 996},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.qinghai'), 'value': 27},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.tibet'), 'value': 31},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.sichuan'), 'value': 46},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.ningxia'), 'value': 16},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.hainan'), 'value': 22},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.taiwan'), 'value': 6},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.hongkong'), 'value': 2},
+          {'name': Vue.prototype.i18n.t('term.report.datatype.macao'), 'value': 9}]
       },
       {
         type: 'dycustComponents',
@@ -347,7 +349,7 @@ export const widgetAirbubbleMap = {
     position: [
       {
         type: 'el-input-number',
-        label: '左边距',
+        label: Vue.prototype.i18n.t('term.report.position.left'),
         name: 'left',
         required: false,
         placeholder: '',
@@ -355,7 +357,7 @@ export const widgetAirbubbleMap = {
       },
       {
         type: 'el-input-number',
-        label: '上边距',
+        label: Vue.prototype.i18n.t('term.report.position.top'),
         name: 'top',
         required: false,
         placeholder: '',
@@ -363,18 +365,18 @@ export const widgetAirbubbleMap = {
       },
       {
         type: 'el-input-number',
-        label: '宽度',
+        label: Vue.prototype.i18n.t('page.width'),
         name: 'width',
         required: false,
-        placeholder: '该容器在1920px大屏中的宽度',
+        placeholder: Vue.prototype.i18n.t('term.report.position.widthplaceholder'),
         value: 600
       },
       {
         type: 'el-input-number',
-        label: '高度',
+        label: Vue.prototype.i18n.t('page.height'),
         name: 'height',
         required: false,
-        placeholder: '该容器在1080px大屏中的高度',
+        placeholder: Vue.prototype.i18n.t('term.report.position.heightplaceholder'),
         value: 400
       }
     ]

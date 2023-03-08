@@ -241,7 +241,7 @@ export default {
       const { id, name } = row;
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: `${this.$t('term.report.describe.confirmDeleteTemplate')}：${name}?`,
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.report.reporttemplate')}),
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReport({ id });
