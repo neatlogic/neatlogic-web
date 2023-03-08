@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="选择服务目录"
+      :title="$t('term.process.catalogmanage')"
       type="slider"
       width="large"
       :hasFooter="false"
@@ -21,13 +21,12 @@
                   change-on-select
                   class="select bg-op radius-sm"
                   :render-format="format"
-                  placeholder="请选择服务目录"
+                  :placeholder="$t('form.placeholder.pleaseselect', {target:$t('term.process.catalogmanage')})"
                 ></Cascader>
               </Col>
               <Col span="10">
                 <TsFormInput
                   v-model="searchText"
-                  placeholder="请输入关键字"
                   search
                   clearable
                   class="bg-op radius-sm"

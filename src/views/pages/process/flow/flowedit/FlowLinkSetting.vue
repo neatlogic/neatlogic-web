@@ -1,7 +1,7 @@
 <template>
   <form class="flowSetting setting-box">
     <div class="flow-panel name">
-      <p class="panel-title">线名称</p>
+      <p class="panel-title">{{ $t('term.process.linename') }}</p>
       <div class="panel-contain input-border">
         <TsFormInput
           ref="name"
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="flow-panel paddinglr">
-      <span class="panel-title">类型：</span><span>{{ typeLabel }}</span>
+      <span class="panel-title">{{ $t('page.type') }}：</span><span>{{ typeLabel }}</span>
     </div>
   </form>
 </template>
@@ -40,13 +40,13 @@ export default {
   },
   computed: {
     typeLabel() {
-      let label = '流转';
+      let label = this.$t('term.process.circulation');
       switch (this.config.type) {
         case 'forward':
-          label = '流转';
+          label = this.$t('term.process.circulation');
           break;
         case 'backward':
-          label = '回退';
+          label = this.$t('term.process.fallback');
           break;
       }
       return label;

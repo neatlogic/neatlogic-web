@@ -31,5 +31,6 @@
   "revocation": "撤回",
   "savecompare": "保存并对比",
   "savetest": "保存并测试",
-  "continueexecute": "继续执行"
+  "continueexecute": "继续执行",
+  "retry": "重试"
 }

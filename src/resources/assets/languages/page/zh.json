@@ -327,5 +327,7 @@
   "personal": "个人",
   "system": "系统",
   "authuserroleteam": "请授权给用户、分组或角色",
-  "showtotal": "显示总数"
+  "showtotal": "显示总数",
+  "integratedtargetstars": "综合{target}星",
+  "custom": "自定义"
 }
