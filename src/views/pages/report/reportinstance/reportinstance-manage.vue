@@ -72,7 +72,7 @@ export default {
       reportSelectConfig: {
         search: true,
         value: null,
-        label: this.$.t('page.status'),
+        label: this.$t('page.status'),
         valueName: 'id',
         textName: 'name',
         dynamicUrl: '/api/rest/report/list',
@@ -167,7 +167,7 @@ export default {
       const { id, name } = row;
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: `${this.$t('term.report.describe.confirmdeletereport')}：${name}?`,
+        content: this.$t('dialog.content.deleteconfirm2', {target1: this.$t('term.report.report')}, {target2: row.name}),
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReportInstance({ id });

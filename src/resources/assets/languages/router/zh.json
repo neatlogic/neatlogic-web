@@ -174,8 +174,8 @@
     "reportsnstancedetail": "@:router.report.reportDetail",
     "sendplan": "发送计划",
     "editsendplan": "编辑发送计划",
-    "monitordesign": "大屏设计器",
-    "monitordetail": "大屏详情",
-    "monitormanage": "大屏管理"
+    "screendesign": "大屏设计器",
+    "screendetail": "大屏详情",
+    "screenmanage": "大屏管理"
   }
 }
