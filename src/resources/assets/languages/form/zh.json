@@ -40,7 +40,8 @@
     "required": "{target}(必填)",
     "notrequired": "{target}(非必填)",
     "checkrule": "校验规则",
-    "inputcolor": "请输入颜色"
+    "inputcolor": "请输入颜色",
+    "searchtarget": "搜索{target}"
   },
   "validate": {
     "required": "{target}不能为空",

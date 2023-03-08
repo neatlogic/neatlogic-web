@@ -99,7 +99,7 @@
               >{{ actionConfig.recover }}</span>
               <!-- 查看流程图_start -->
               <span v-if="!pocesstaskview" class="action-item" @click="lookSitemap">
-                <Tooltip content="查看流程图" theme="light">
+                <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
                   <i class="ts-sitemap"></i>
                 </Tooltip>
               </span>
@@ -109,10 +109,10 @@
                 class="action-item"
                 @click="updateFocus"
               >
-                <Tooltip v-if="processTaskConfig.isFocus" content="取消关注" theme="light">
+                <Tooltip v-if="processTaskConfig.isFocus" :content="$t('term.process.notfocustask')" theme="light">
                   <i :class="['text-danger', 'ts-heart-s']"></i>
                 </Tooltip>
-                <Tooltip v-else content="关注工单" theme="light">
+                <Tooltip v-else :content="$t('term.process.focustask')" theme="light">
                   <i :class="['text-danger', 'ts-heart']"></i>
                 </Tooltip>
               </span>
@@ -312,7 +312,7 @@
               <TsFormItem
                 v-for="(item, index) in assignableWorkerStepList"
                 :key="index"
-                :label="'指定“' + item.name + '”处理人'"
+                :label="$t('term.process.selectaskuser', {target: item.name})"
                 :validateList="item.isRequired ? validateList : []"
                 class="input-border"
                 labelPosition="top"
@@ -421,7 +421,7 @@
     >
       <template>
         <div class="submitModelBox">
-          <p class="text-grey text-line">选择优先要处理的步骤</p>
+          <p class="text-grey text-line">{{ $t('term.process.pleselectprioritystep') }}</p>
           <div v-for="(st, stindex) in startList" :key="stindex" class="submit-btn-list">
             <Button
               size="large"
@@ -483,7 +483,7 @@
       type="modal"
       :isShow.sync="pausechangeModal"
       :className="stepDialogClass"
-      title="变更暂停"
+      :title="$t('term.process.changesuspension')"
       @on-ok="okPausechange"
     >
       <template>
@@ -538,7 +538,7 @@ export default {
   data() {
     return {   
       // taskForm: null, //工单表单查看权限
-      completeDialogtitle: '流转',
+      completeDialogtitle: this.$t('term.process.circulation'),
       //变更
       actionStepconfig: {
         editchangestep: null, //"编辑"
@@ -561,7 +561,7 @@ export default {
           name: 'content',
           value: '',
           width: '95%',
-          label: '原因',
+          label: this.$t('page.reason'),
           validateList: ['required']
         }
       ],
@@ -623,9 +623,9 @@ export default {
       let val = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getTaskStepContent() : null;
       this.completeList[0].value = val;
       if (this.changeCompletetype == 'succeedchange') {
-        this.completeDialogtitle = '确认成功并流转';
+        this.completeDialogtitle = this.$t('term.process.successcirculation');
       } else if (this.changeCompletetype == 'failedchange') {
-        this.completeDialogtitle = '确认失败并流转';
+        this.completeDialogtitle = this.$t('term.process.failedcirculation');
       } else if (this.isStepRequired === 0) {
         this.completeList[0].validateList = [];
       }
@@ -646,7 +646,7 @@ export default {
           if (this.assignableWorkerStepList[i].isRequired == 1 && !this.assignableWorkerStepList[i].value.length) {
             isSave = false;
             this.$Notice.error({
-              title: '请选择步骤处理人',
+              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.stepuser')}),
               duration: 1.5
             });
             break;

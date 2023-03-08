@@ -2,7 +2,7 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <div>{{ $t('dialog.content.tipconfirm', {target: $t('page.reexecute')}) }}</div>
+        <div>{{ $t('dialog.content.tipconfirm', {target: $t('page.reexecute'), name: $t('term.autoexec.job')}) }}</div>
         <TsFormRadio v-model="redoType" :vertical="true" :dataList="dataList"></TsFormRadio>
       </template>
       <template v-slot:footer>

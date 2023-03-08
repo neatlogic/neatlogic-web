@@ -18,9 +18,9 @@
           :trueValue="true"
           :falseValue="false"
           @on-change="toggleForm"
-        >表单过滤</TsFormSwitch>
+        >{{ $t('term.process.formfilter') }}</TsFormSwitch>
       </div>
-      <div v-if="!(value instanceof Array && value.length > 1)"><span class="text-grey">表单过滤</span></div>
+      <div v-if="!(value instanceof Array && value.length > 1)"><span class="text-grey">{{ $t('term.process.formfilter') }}</span></div>
     </div>
     <label v-if="isFilterForm && !(value instanceof Array && value.length > 1) && formConditionList && formConditionList.length > 0" class="text-grey">属性</label>
     <div v-if="isFilterForm && !(value instanceof Array && value.length > 1) && formConditionList && formConditionList.length > 0">

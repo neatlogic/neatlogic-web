@@ -1,8 +1,12 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
+  <TsDialog
+    v-bind="dialogConfig"
+    @on-close="closeDialog"
+    @on-ok="save"
+  >
     <template v-slot>
       <div>
-        <label>基础属性</label>
+        <label>{{ $t('page.basicatr') }}</label>
         <div class="padding bg-op radius-md mt-md mb-md">
           <Tag
             v-for="(condition, index) in conditionList"
@@ -17,9 +21,9 @@
             {{ condition.handlerName }}
           </Tag>
         </div>
-        <label>表单属性</label>
+        <label>{{ $t('page.formattr') }}</label>
         <div class="form-grid padding bg-op radius-md mt-md">
-          <div class="text-grey"><span>服务</span></div>
+          <div class="text-grey"><span>{{ $t('term.process.catalog') }}</span></div>
           <div>
             <TsFormSelect
               :value="channelUuidList"
@@ -32,7 +36,7 @@
               @on-change="changeChannel"
             ></TsFormSelect>
           </div>
-          <div v-if="formConditionList.length>0" class="text-grey"><span>属性</span></div>
+          <div v-if="formConditionList.length>0" class="text-grey"><span>{{ $t('page.attribute') }}</span></div>
           <div v-if="formConditionList.length>0">
             <Tag
               v-for="(condition, index) in formConditionList"
@@ -48,7 +52,7 @@
             </Tag>
           </div>
         </div>
-        <Divider v-if="selectedAttributeList.length > 0" orientation="left" style="font-size:14px">已选属性（拖动修改排序）</Divider>
+        <Divider v-if="selectedAttributeList.length > 0" orientation="left" style="font-size:14px">{{ $t('term.process.attrdragtip') }}</Divider>
         <div v-if="selectedAttributeList.length > 0" class="padding bg-op">
           <draggable
             :animation="150"
@@ -65,10 +69,6 @@
           </Tag></draggable>
         </div>
       </div>
-    </template>
-    <template v-slot:footer>
-      <Button @click="closeDialog()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
     </template>
   </TsDialog>
 </template>
@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '添加条件',
+        title: this.$t('dialog.title.addtarget', {target: this.$t('page.condition')}),
         type: 'modal',
         maskClose: false,
         isShow: true,

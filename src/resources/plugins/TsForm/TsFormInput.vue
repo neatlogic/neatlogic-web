@@ -95,7 +95,7 @@ export default {
     placeholder: {
       type: String,
       default() {
-        return this.$t('form.placeholder.keyword');
+        return this.$t('form.placeholder.pleaseinput', {target: ''});
       }
     },
     onChange: Function, //改变时触发

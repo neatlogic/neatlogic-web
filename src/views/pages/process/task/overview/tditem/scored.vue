@@ -4,7 +4,7 @@
       <div v-if="Object.keys(row.score).length > 0" class="score-container">
         <div>
           <Rate v-model="row.score.value" disabled show-text>
-            <span>综合{{ row.score.value }}星</span>
+            <span>{{ $t('page.integratedtargetstars',{target:row.score.value}) }}</span>
           </Rate>
         </div>
         <div v-if="row.score.content" class="small text-tip score-content" v-html="row.score.content"></div>
