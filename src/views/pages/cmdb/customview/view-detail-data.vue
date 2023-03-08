@@ -167,10 +167,18 @@ export default {
   filter: {},
   computed: {
     hasData() {
-      if ((!this.filtedAttrList || this.filtedAttrList.length == 0) && (!this.filtedRefCiList || this.filtedRefCiList.length == 0)) {
-        return false;
+      if (this.filtedAttrList && this.filtedAttrList.length > 0) {
+        return true;
       }
-      return true;
+      if (this.filtedRefCiList && this.filtedRefCiList.length > 0) {
+        for (let i = 0; i < this.filtedRefCiList.length; i++) {
+          const ci = this.filtedRefCiList[i];
+          if (this.getDisplayColumnList(ci).length > 0) {
+            return true;
+          }
+        }
+      }
+      return false;
     },
     filtedRefCiList() {
       let filtedRelCiList = [];

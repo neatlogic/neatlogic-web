@@ -79,11 +79,11 @@
               :key="index"
               class="text-action mb-sm customview-item"
               :class="{ 'text-href': showContent == 'customview' && customView.id == customViewId }"
-              @click="showCustomViewData(customView.id)"
+              @click="showCustomViewData(customView)"
             >
-              <i class="mr-xs tsfont-blocklist"></i>
+              <i class="mr-xs" :class="customView.icon || 'tsfont-blocklist'"></i>
               <span>{{ customView.name }}</span>
-              <span v-if="ciEntityData && ciEntityData.authData && ciEntityData.authData.cimanage" class="edit-view tsfont-edit text-action" @click.stop="editCustomView(customView.id)"></span>
+              <span v-if="customView.type === 'scene' && ciEntityData && ciEntityData.authData && ciEntityData.authData.cimanage" class="edit-view tsfont-edit text-action" @click.stop="editCustomView(customView.id)"></span>
             </div>
           </div>
         </div>
@@ -313,15 +313,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    showCustomViewData(customViewId) {
-      this.customViewId = customViewId;
-      //this.$router.push({path: '/view-detail/' + customViewId + '/' + this.ciEntityId});
-      this.showContent = 'customview';
+    showCustomViewData(customView) {
+      this.customViewId = customView.id;
+      if (customView.type === 'scene') {
+        this.showContent = 'customview';
+      } else {
+        this.$router.push({path: '/view-detail/' + this.customViewId + '/' + this.ciEntityId});
+      }
     },
-    getCustomViewList() {
-      const params = { ciId: this.ciId };
-      this.$api.cmdb.customview.searchSceneCustomView(params).then(res => {
-        this.customViewList = res.Return.tbodyList;
+    async getCustomViewList() {
+      this.customViewList = [];
+      await this.$api.cmdb.customview.searchSceneCustomView({ ciId: this.ciId, needPage: false }).then(res => {
+        this.customViewList = this.customViewList.concat(res.Return.tbodyList);
+      });
+      await this.$api.cmdb.customview.searchCustomView({ startCiId: this.ciId, needPage: false }).then(res => {
+        this.customViewList = this.customViewList.concat(res.Return.tbodyList);
       });
     },
     closeCustomViewDialog(needRefresh) {

@@ -1,5 +1,5 @@
 <template>
-  <div style="height:95%">
+  <div>
     <div class="pt-md pl-md mt-md">
       <InputSearcher
         v-model="searchParam.keyword"

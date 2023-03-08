@@ -36,14 +36,10 @@
   </div>
 </template>
 <script>
-import AttrViewer from '../cientity/attr-viewer.vue';
-import CiEntityList from '../cientity/cientity-list.vue';
 import ViewCiEntityList from './view-cientity-list.vue';
 export default {
   name: '',
   components: {
-    //AttrViewer,
-    //CiEntityList,
     ViewCiEntityList,
     ViewDetailData: resolve => require(['./view-detail-data.vue'], resolve),
     CustomViewTopo: resolve => require(['./view-topo.vue'], resolve)

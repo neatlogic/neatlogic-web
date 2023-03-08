@@ -375,7 +375,8 @@ export default {
               this.currentCi.ciRelList.forEach(rel => {
                 //设置对应分组的uuid
                 rel.groupUuid = node.group.getUuid();
-                const relnode = relNodeList.find(n => n.getConfig()['relId'] == rel.id);
+
+                const relnode = relNodeList.find(n => n.getConfig()['relId'] === rel.id && n.getConfig()['direction'] === rel.direction);
                 if (relnode) {
                   rel.uuid = relnode.getUuid();
                   rel.isChecked = true;
