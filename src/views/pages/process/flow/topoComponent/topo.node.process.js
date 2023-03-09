@@ -1,4 +1,5 @@
 import ViewUI from 'techsure-ui/iview/index.js';
+import Vue from 'vue';
 (function(global, factory) {
   factory((global.Process = global.Process || {}), global);
 }(window, function(exports, global) {
@@ -14,7 +15,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
       const nodeList = this.getNextNodes('forward');
       let find = nodeList.find(item => item.getUuid() == sourceNode.getConfig().uuid);
       if (this.__config.handler == 'timer' && (find || sourceNode.getType() == 'end')) { //定时节点不能连回退线
-        ViewUI.Message.warning({ content: '定时节点不能连回退线！', duration: 3, closable: true });
+        ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timernodenobacklink'), duration: 3, closable: true });
         return false;
       }
       return true;
@@ -29,13 +30,13 @@ import ViewUI from 'techsure-ui/iview/index.js';
         if (set.has(this)) { //如果当前节点已经是目标节点的后置节点，则要用回退线
           //判断是否有连线
           if (sourceNode.getConfig().handler == 'timer') { //定时节点不能连回退线
-            ViewUI.Message.warning({ content: '定时节点不能连回退线！', duration: 3, closable: true });
+            ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timernodenobacklink'), duration: 3, closable: true });
             return false;
           }
           const backwardSet = new Set(this.getNextNodes('backward'));
           if (!backwardSet.has(targetNode) && targetNode.isAllowConnected(this)) {
             if (targetNode.getConfig().handler == 'timer') {
-              ViewUI.Message.warning({ content: '定时节点不能连回退线！', duration: 3, closable: true });
+              ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timernodenobacklink'), duration: 3, closable: true });
               return false;
             }
             this.canvas.addLink({
@@ -51,7 +52,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
           const forwardSet = new Set(this.getNextNodes('forward'));
           if (!forwardSet.has(targetNode) && targetNode.isAllowConnected(this)) {
             if (sourceNode.getConfig().handler == 'timer' && this.getNextNodes('forward') && this.getNextNodes('forward').length > 0) { //定时节点只能有一个后置节点
-              ViewUI.Message.warning({ content: '定时节点只能有一根线连出！', duration: 3, closable: true });
+              ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timerhasonelink'), duration: 3, closable: true });
               return false;
             }
             this.canvas.addLink({
@@ -68,7 +69,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
     specialConnect(targetNode, sourceNode) {
       if (targetNode.getType() === 'end' && sourceNode.getConfig().handler === 'changecreate') { //穿件变革节点不能在结束节点前面
         ViewUI.Message.warning({
-          content: '变更创建节点不允许直接连结束！',
+          content: Vue.prototype.i18n.t('message.content.process.changecrenotendnode'),
           duration: 3,
           closable: true
         });
@@ -79,13 +80,13 @@ import ViewUI from 'techsure-ui/iview/index.js';
     valid(nodeConfig) {
       let validList = [];
       if (this.links.length <= 0) {
-        validList.push({name: `节点被孤立`});
+        validList.push({name: Vue.prototype.i18n.t('message.content.process.nodeorphaned')});
       } else {
         if (this.getPrevNodes('forward') <= 0) {
-          validList.push({name: `节点没有前置节点`});
+          validList.push({name: Vue.prototype.i18n.t('message.content.process.nodenofrontnode')});
         }
         if (this.getNextNodes('forward') <= 0) {
-          validList.push({name: `节点没有后置节点`});
+          validList.push({name: Vue.prototype.i18n.t('message.content.process.nodenopostnode')});
         }
       }
       return validList;

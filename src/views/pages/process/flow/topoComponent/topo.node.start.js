@@ -1,4 +1,5 @@
 import ViewUI from 'techsure-ui/iview/index.js';
+import Vue from 'vue';
 (function(global, factory) {
   factory((global.Start = global.Start || {}), global);
 })(window, function(exports, global) {
@@ -29,7 +30,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
       //开始节点只能有一个后置节点
       let targetConfig = targetNode.getConfig();
       if (targetConfig.isAllowStart != 1) {
-        ViewUI.Message.warning({ content: '此节点不能和开始节点相连！', duration: 3, closable: true });
+        ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.nodecannotbeconnectedstartnode'), duration: 3, closable: true });
       } else if (nodeList.length <= 0 && targetNode.isAllowConnected(this)) {
         this.canvas.addLink({
           type: 'forward',
@@ -39,13 +40,13 @@ import ViewUI from 'techsure-ui/iview/index.js';
           tAnchor: targetAnchor
         });
       } else {
-        ViewUI.Message.warning({ content: '开始节点只能有一根线连出！', duration: 3, closable: true });
+        ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.startnodeonlyoneline'), duration: 3, closable: true });
       }
     }
     valid(nodeConfig) {
       let validList = [];
       if (this.links.length <= 0) {
-        validList.push({ name: '节点必须有连出线' });
+        validList.push({ name: Vue.prototype.i18n.t('message.content.process.nodemusthaveoutgoingline') });
       }
       return validList;
     }

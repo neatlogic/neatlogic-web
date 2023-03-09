@@ -688,7 +688,7 @@ export default {
           {
             type: 'slot',
             name: 'slot',
-            label: '时效设置',
+            label: this.$t('term.process.effectivenesstimesetting'),
             validateList: [{ name: 'required' }]
           },
           {

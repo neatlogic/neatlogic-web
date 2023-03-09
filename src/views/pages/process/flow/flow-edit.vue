@@ -2,7 +2,7 @@
   <div class="flow-edit">
     <TsContain :rightWidth="340" border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/flow-overview')">{{ $getFromPage('流程列表') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/flow-overview')">{{ $getFromPage('router.process.flowmanage') }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ processConfig.name }}</span>
@@ -65,7 +65,7 @@
         <div class="col-right-contain col-contain">
           <!-- 20200213_zqp_调整:value为v-model实现数据双向绑定以监听activeTab的变化-->
           <Tabs v-model="activeTab" class="block-tabs" :animated="false">
-            <TabPane label="流程设置" name="flowsetting">
+            <TabPane :label="$t('term.process.flowsetting')" name="flowsetting">
               <FlowSetting 
                 v-if="isInit" 
                 ref="flowSetting"
@@ -81,7 +81,7 @@
               >
               </FlowSetting>            
             </TabPane>
-            <TabPane label="时效设置" name="tacticssetting">
+            <TabPane :label="$t('term.process.effectivenesstimesetting')" name="tacticssetting">
               <TacticsSetting 
                 ref="slaSetting"
                 :slaListPorps="slaList" 
@@ -92,14 +92,14 @@
                 @slaOut="nodesHighlight([])"
               ></TacticsSetting>
             </TabPane>
-            <TabPane label="评分设置" name="scoresetting" class="tab-content">
+            <TabPane :label="$t('term.process.scoresetting')" name="scoresetting" class="tab-content">
               <ScoreSetting 
                 ref="scoreSetting" 
                 :scoreConfig="scoreConfig" 
                 :canvasNodeList="stepList"
               ></ScoreSetting>
             </TabPane>
-            <TabPane v-if="nodeConfig" label="节点设置" name="nodesetting">
+            <TabPane v-if="nodeConfig" :label="$t('term.process.nodesetting')" name="nodesetting">
               <FlownodeSetting 
                 :key="nodeConfig.uuid" 
                 ref="nodeSetting" 
@@ -117,7 +117,7 @@
                 @updateNode="updateNode"
               ></FlownodeSetting>
             </TabPane>
-            <TabPane v-if="linkConfig" label="线条设置" name="linksetting">
+            <TabPane v-if="linkConfig" :label="$t('term.process.linksetting')" name="linksetting">
               <FlowLinkSetting :config="linkConfig" @setlinkname="setLinkName"></FlowLinkSetting>
             </TabPane>
           </Tabs>
@@ -160,6 +160,7 @@ import draggable from 'vuedraggable';
 import {valid as FlowValid, setInitData} from './flow-valid.js';
 import {store, mutations} from './flowedit/floweditState.js';
 import '@/views/pages/process/flow/topoComponent/index.js';
+import Vue from 'vue';
 let Vm, TopoVm;
 let viewOpts = {
   'node.selectedFn'(d, selectNodeList) {
@@ -223,7 +224,7 @@ let startEndNode = [
     y: 360,
     stroke: 'RGBA(129, 213, 83, .1)',
     fill: 'RGBA(129, 213, 83, .1)',
-    name: '开始'
+    name: Vue.prototype.i18n.t('page.begin')
   },
   {
     type: 'end',
@@ -234,7 +235,7 @@ let startEndNode = [
     y: 360,
     stroke: 'RGBA(255, 98, 90, .1)',
     fill: 'RGBA(255, 98, 90, .1)',
-    name: '结束'
+    name: Vue.prototype.i18n.t('page.finish')
   }
 ];
 
@@ -246,7 +247,7 @@ function nodeValid(allNode) {
   if (flowSettingData) {
     validList.push({
       type: !flowSettingData.isValid ? 'error' : 'success',
-      msg: '【流程设置】' + flowSettingData.validMessage,
+      msg: '【' + Vue.prototype.i18n.t('term.process.flowsetting') + '】' + flowSettingData.validMessage,
       focus() {
         Vm.activeTab = 'flowsetting';
       }
@@ -284,7 +285,7 @@ function nodeValid(allNode) {
     } else { //校验通过
       validList.push({
         type: 'success',
-        msg: `【${nodeConfig.name}】节点验证通过`,
+        msg: `【${nodeConfig.name}】` + Vue.prototype.i18n.t('term.process.nodevalidpassed'),
         focus() {
           var otherNodes = allNode.filter(d => d !== vm);
           vm.select();
@@ -370,11 +371,11 @@ export default {
       draftModel: false,
       draftKey: [
         {
-          title: '自动保存日期/时间',
+          title: this.$t('term.process.autosavedatetime'),
           key: 'fcd'
         },
         {
-          title: '文件名',
+          title: this.$t('page.filename'),
           key: 'name'
         }
       ],
@@ -471,7 +472,7 @@ export default {
           });
           this.nodeList.push(...nodesData);
         } else {
-          Vm.$Message.warning({content: '节点列表数据获取失败！', duration: 3, closable: true});
+          Vm.$Message.warning({content: this.$t('message.content.process.cannotnodelist'), duration: 3, closable: true});
         }
       });
     },
@@ -501,7 +502,7 @@ export default {
     deleteFlow() {
       // 删除流程图
       if (this.isNew) {
-        this.$Message.error('该流程还未保存！');
+        this.$Message.error(this.$t('message.content.process.notsaveflow'));
         return;
       }
       this.$createDialog({
@@ -565,15 +566,11 @@ export default {
                 this.initTopo(data, action);
               } else {
                 Vm.$Message.warning({
-                  content: '初始化获取数据失败！',
+                  content: this.$t('message.content.process.notinitdata'),
                   duration: 3,
                   closable: true
                 });
               }
-            })
-            .catch(error => {
-              console.log(error);
-              this.$Message.error('草稿列表接口有误！');
             });
         } else {
           await this.$api.process.process.getProcess({ uuid: this.processConfig.uuid }).then(res => {
@@ -585,18 +582,11 @@ export default {
               this.initTopo(data, action);
             } else {
               Vm.$Message.warning({
-                content: '初始化获取数据失败！',
+                content: this.$t('message.content.process.notinitdata'),
                 duration: 3,
                 closable: true
               });
             }
-          }).catch(error => {
-            console.log(error);
-            Vm.$Message.warning({
-              content: '初始化接口有误！',
-              duration: 3,
-              closable: true
-            });
           });
         }
       } else {
@@ -784,7 +774,7 @@ export default {
           }
         } else {
           Vm.$Message.warning({
-            content: '保存失败！',
+            content: this.$t('message.content.savefailed'),
             duration: 3,
             closable: true
           });
@@ -945,10 +935,6 @@ export default {
             this.initTopo(config, this.$utils.setUuid());
             this.selectNodeByStepUuid();
           }
-        })
-        .catch(error => {
-          this.$Message.error('草稿获取接口有误！');
-          console.error(error);
         });
     },
     async draftAdd() {
@@ -967,8 +953,6 @@ export default {
           if (res.Status == 'OK') {
             this.draftPrevData = draftData;
           }
-        }).catch(error => {
-          this.$Message.error('草稿添加接口有误！');
         });
       }
     },

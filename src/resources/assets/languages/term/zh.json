@@ -260,7 +260,12 @@
     "currentnodewillflowtime":"当前节点将于{time}流转，",
     "distanceflow": "距离流转",
     "originaltask": "原工单",
-    "effectivenesstimesetting": "时效设置"
+    "effectivenesstimesetting": "时效设置",
+    "flowsetting": "流程设置",
+    "scoresetting": "评分设置",
+    "nodesetting": "节点设置",
+    "linksetting" : "线条设置",
+    "nodevalidpassed": "节点验证通过"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

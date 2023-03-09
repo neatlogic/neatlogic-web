@@ -7,7 +7,7 @@
     <div v-if="formUuid == ''">
       <div class="text-tip">
         流程未关联表单，无法配置组合条件，请前往
-        <a href="javascript:void(0);" @click="tabSetting">流程设置</a>进行关联
+        <a href="javascript:void(0);" @click="tabSetting">{{ $t('term.process.flowsetting') }}</a>进行关联
       </div>
     </div>
     <div v-if="moveonConfigList && moveonConfigList.length > 0">
