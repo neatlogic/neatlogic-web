@@ -265,7 +265,9 @@
     "scoresetting": "评分设置",
     "nodesetting": "节点设置",
     "linksetting" : "线条设置",
-    "nodevalidpassed": "节点验证通过"
+    "nodevalidpassed": "节点验证通过",
+    "poliyuser": "分派处理人",
+    "erroruser": "异常处理人"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
