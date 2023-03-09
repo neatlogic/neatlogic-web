@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="isShowModal"
-      title="转交"
+      :title="$t('page.transfer')"
       :okBtnDisable="disabledTransferring"
       className="task-step"
       @on-ok="transferOk"
@@ -61,7 +61,7 @@ export default {
           //步骤
           type: 'slot',
           name: 'processTaskStepId',
-          label: '步骤列表',
+          label: this.$t('term.process.processsteplist'),
           validateList: ['required'],
           value: ''
         },
@@ -69,7 +69,7 @@ export default {
           type: 'ckeditor',
           name: 'reason',
           value: '',
-          label: '回复',
+          label: this.$t('page.reply'),
           width: '100%',
           validateList: ['required']
         }

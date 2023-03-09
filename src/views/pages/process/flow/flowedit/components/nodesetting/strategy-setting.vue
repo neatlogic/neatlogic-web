@@ -28,8 +28,8 @@
           >
             <template v-slot:num-label>
               <span>子任务策略
-                <span class="tsfont-edit icon text-tip-active" title="编辑" @click="edit"></span>
-                <span class="tsfont-rotate-right reply-icon text-tip-active" title="刷新" @click="refresh() "></span>
+                <span class="tsfont-edit icon text-tip-active" :title="$t('page.edit')" @click="edit"></span>
+                <span class="tsfont-rotate-right reply-icon text-tip-active" :title="$t('page.refresh')" @click="refresh() "></span>
               </span>
             </template>
             <template v-slot:num>

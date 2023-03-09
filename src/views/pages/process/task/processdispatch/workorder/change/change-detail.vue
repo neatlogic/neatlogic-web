@@ -249,8 +249,8 @@ export default {
       visible: false,
       validateList: {
         user: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
-        template: [{ name: 'required', message: '请选择模板' }],
-        paramInput: [{ name: 'required', message: '请输入' }]
+        template: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('page.template')}) }],
+        paramInput: ['required']
       },
       newChangeStepList: [],
       stepConfig: null, //步骤信息
@@ -261,7 +261,7 @@ export default {
           type: 'userselect',
           name: 'authority',
           value: '',
-          label: '分组',
+          label: this.$t('page.group'),
           width: '90%',
           multiple: false,
           groupList: ['team'],
@@ -275,7 +275,7 @@ export default {
           type: 'select',
           name: 'type',
           value: '',
-          label: '类型',
+          label: this.$t('page.type'),
           width: '90%',
           transfer: true,
           dataList: [],
@@ -287,7 +287,7 @@ export default {
         {
           type: 'slot',
           name: 'template',
-          label: '模板',
+          label: this.$t('page.template'),
           validateList: ['required']
         }
       ],
@@ -328,8 +328,8 @@ export default {
     clearSetting() {
       //删除条件节点规则
       this.$createDialog({
-        title: '清空',
-        content: '确定清除当前配置？',
+        title: this.$t('dialog.title.clearconfirm'),
+        content: this.$t('dialog.content.clearconfirm', {target: this.$t('page.config')}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;
@@ -426,10 +426,10 @@ export default {
     editsStep(type, obj, index) {
       this.dialogParentUuid = null;
       if (type == 'edit') {
-        this.dialogStepTitle = '编辑步骤';
+        this.dialogStepTitle = this.$t('dialog.title.edittarget', {target: this.$t('term.process.step')});
         this.stepConfig = obj || null;
       } else {
-        this.dialogStepTitle = '添加步骤';
+        this.dialogStepTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
         this.dialogParentUuid = obj.parentUuid;
         this.stepIndex = index - 0 + 1;
       }

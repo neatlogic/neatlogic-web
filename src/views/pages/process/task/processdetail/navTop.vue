@@ -65,7 +65,7 @@ export default {
         this.$emit('changeTitle', title);
       } else {
         this.$Notice.error({
-          title: this.$t('message.content.required', {target: this.$t(page.title)})
+          title: this.$t('message.content.required', {target: this.$t('page.title')})
         });
         this.$nextTick(() => {
           this.$refs.titleInput.focus();

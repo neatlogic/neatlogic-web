@@ -84,7 +84,7 @@
             </div>
             <div v-show="cd.isActive == 0 || (cd.isAfterStartDate == 1 && cd.isInWindow == 1)" class="time-block">
               <div v-if="cd.status != 'pending'">
-                <div class="text-grey" title="实际开始">实际开始</div>
+                <div class="text-grey" :title="$t('term.process.actualstarttime')">{{ $t('term.process.actualstarttime') }}</div>
                 <div v-if="cd.startTime" class="overflow" :title="cd.startTime | formatDate">
                   {{ cd.startTime | formatDate }}
                 </div>
@@ -100,7 +100,7 @@
             </div>
             <div v-show="cd.isActive == 0 || (cd.isAfterStartDate == 1 && cd.isInWindow == 1)" class="time-block">
               <div v-if="cd.status != 'pending'">
-                <div class="text-grey" title="实际结束">实际结束</div>
+                <div class="text-grey" :title="$t('term.process.actualendtime')">{{ $t('term.process.actualendtime') }}</div>
                 <div v-if="cd.endTime" class="overflow" :title="cd.endTime | formatDate">
                   {{ cd.endTime | formatDate }}
                 </div>
@@ -199,7 +199,7 @@
                   :multiple="uploadMultiple"
                 ></TsUpLoad>
                 <div class="comment-click">
-                  <Button type="primary" @click="commentOk(cd, index)">回复</Button>
+                  <Button type="primary" @click="commentOk(cd, index)">{{ $t('button.reply') }}</Button>
                 </div>
               </div>
               <div v-if="cd.commentList && cd.commentList.length > 0" class="order-list bg-block" stype="margin:0;">
@@ -250,7 +250,7 @@
                           @remove="res => handleSuccess(res, comment)"
                         ></TsUpLoad>
                         <div class="comment-btn">
-                          <Button size="small" @click="completeComment(comment, cd)">完成</Button>
+                          <Button size="small" @click="completeComment(comment, cd)">{{ $t('page.complete') }}</Button>
                           <Button size="small" @click="cancelComment(comment)">{{ $t('button.cancel') }}</Button>
                         </div>
                       </div>
@@ -259,7 +259,7 @@
                   </div>
                 </div>
               </div>
-              <div v-if="!getActionValue(cd.actionList) && cd.commentList.length == 0" class="text-grey">暂无回复</div>
+              <div v-if="!getActionValue(cd.actionList) && cd.commentList.length == 0" class="text-grey">{{ $t('page.notarget',{target:$t('page.reply')}) }}</div>
             </div>
           </div>
         </div>
@@ -318,9 +318,9 @@ export default {
       stepdialogType: 'EditStep',
       processTaskId: null,
       processTaskStepId: null,
-      title: '变更步骤',
+      title: this.$t('term.process.changestep'),
       stepDialog: false,
-      dialogStepTitle: '添加步骤',
+      dialogStepTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')}),
       ChangeStepConfig: {}, //添加步骤数据
       selectId: null,
       worker: '', //批量处理人
@@ -339,7 +339,7 @@ export default {
           isCount: false
         },
         {
-          title: '回复',
+          title: this.$t('page.reply'),
           isCount: true
         }
       ],

@@ -9,7 +9,7 @@
             class="tip"
             :class="isActive ==1?'text-tip':'text-href'"
             @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'auth')"
-          >{{ isActive ==1?'自定义':'引用全局' }}</span>
+          >{{ isActive ==1? $t('page.custom'): $t('page.referenceglobal') }}</span>
           <span style="display: inline-block;">
             <TsFormSwitch
               v-model="isActive"

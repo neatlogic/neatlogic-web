@@ -9,16 +9,16 @@
             @on-change="notifySelectChange"
           >
             <template v-slot:first-ul>
-              <li class="tsfont-plus text-href first-slot" @click="gotoAddNotify">策略</li>
+              <li class="tsfont-plus text-href first-slot" @click="gotoAddNotify">{{ $t('term.process.policy') }}</li>
             </template>
           </TsFormSelect>
         </Col>
         <Col span="6">
-          <span class="tsfont-rotate-right notify-icon text-tip-active" title="刷新" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
+          <span class="tsfont-rotate-right notify-icon text-tip-active" :title="$t('page.refresh')" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
           <span
             v-if="notifyPolicyConfig.policyId"
             class="tsfont-edit notify-icon text-tip-active"
-            title="编辑"
+            :title="$t('page.edit')"
             @click="editNotify(notifyPolicyConfig.policyId)"
           ></span>
         </Col>

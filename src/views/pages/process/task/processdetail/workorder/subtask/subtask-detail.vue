@@ -40,13 +40,13 @@
               </Col>
               <Col v-if="subStep.statusVo" span="10">
                 <div class="sub-label overflow">
-                  <span class="text-grey sub-title">任务状态</span>
+                  <span class="text-grey sub-title">{{ $t('term.process.taskstatus') }}</span>
                   <span :style="{ color: subStep.statusVo.color }">{{ subStep.statusVo.text }}</span>
                 </div>
               </Col>
               <Col v-if="subStep.targetTime" span="10">
                 <div class="sub-label overflow">
-                  <span class="text-grey sub-title">期望完成时间</span>
+                  <span class="text-grey sub-title">{{ $t('term.process.targettime') }}</span>
                   <span>{{ subStep.targetTime | formatDate }}</span>
                 </div>
               </Col>
@@ -58,7 +58,7 @@
               </Col>
               <Col v-if="subStep.endTime" span="10">
                 <div class="sub-label overflow">
-                  <span class="text-grey sub-title">完成时间</span>
+                  <span class="text-grey sub-title">{{ $t('page.completiontime') }}</span>
                   <span>{{ subStep.endTime | formatDate }}</span>
                 </div>
               </Col>
@@ -82,7 +82,7 @@
                   <template v-if="replaceableTextConfig['replaceable_subtask']">
                     {{ replaceableTextConfig['replaceable_subtask'].value || replaceableTextConfig['replaceable_subtask'].text }}
                   </template>
-                  <template v-else>子任务</template>
+                  <template v-else>{{ $t('term.process.subtask') }}</template>
                 </span>
                 <span class="text-grey text-primary">·{{ scomment.fcd | formatDate }}</span>
               </div>
@@ -93,7 +93,6 @@
             <TsFormInput
               :ref="`subCommentInput${subIndex}`"
               v-model="subStep.contentVal"
-              placeholder="请输入内容"
               class="input-text"
             ></TsFormInput>
             <div class="overflow">
@@ -147,17 +146,17 @@ export default {
     return {
       stepList: [],
       actionType: {
-        editsubtask: '修改',
-        completesubtask: '完成',
-        redosubtask: '重做',
-        abortsubtask: '取消',
+        editsubtask: this.$t('page.revise'),
+        completesubtask: this.$t('page.complete'),
+        redosubtask: this.$t('page.redo'),
+        abortsubtask: this.$t('page.cancel'),
         createsubtask: this.$t('page.build'),
-        commentsubtask: '回复',
-        startprocess: '提交',
-        completablesubtask: '完成'
+        commentsubtask: this.$t('page.reply'),
+        startprocess: this.$t('page.submit'),
+        completablesubtask: this.$t('page.complete')
       },
       subContentModal: false,
-      subTaskContentTitle: '完成',
+      subTaskContentTitle: this.$t('page.complete'),
       subContentList: [
         {
           type: 'ckeditor',
@@ -192,7 +191,7 @@ export default {
       //子任务重做
       this.processTaskStepSubtaskId = id;
       this.subContentList[0].value = '';
-      this.subTaskContentTitle = '重做';
+      this.subTaskContentTitle = this.$t('page.redo');
       this.issubTaskComplete = false;
       this.subContentModal = true;
     },
@@ -208,8 +207,8 @@ export default {
       let _this = this;
       let subTaskText = this.replaceableTextConfig['replaceable_subtask'] ? this.replaceableTextConfig['replaceable_subtask'].value || this.replaceableTextConfig['replaceable_subtask'].text : '子任务';
       this.$createDialog({
-        title: '提示',
-        content: '确定取消当前' + subTaskText + '？',
+        title: this.$t('dialog.title.cancelconfirm'),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.cancel'), name: subTaskText }),
         'on-ok': vnode => {
           this.$api.process.processtask.subAbortable(data).then(res => {
             if (res.Status == 'OK') {
@@ -234,7 +233,7 @@ export default {
       //子任务完成按钮
       this.processTaskStepSubtaskId = id;
       this.subContentList[0].value = '';
-      this.subTaskContentTitle = '完成';
+      this.subTaskContentTitle = this.$t('page.complete');
       this.issubTaskComplete = true;
       this.subContentModal = true;
     },
@@ -301,7 +300,7 @@ export default {
       }
     },
     getActionType(val) {
-      let text = '处理';
+      let text = this.$t('page.handle');
       if (this.actionType[val]) {
         text = this.actionType[val];
       }

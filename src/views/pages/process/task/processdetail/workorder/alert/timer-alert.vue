@@ -17,7 +17,8 @@
   <div class="task-alert bg-op radius-sm align-center">
     <div class="tsfont-danger-o icon-tip text-primary"></div>
     <div v-if="triggerTime" class="alert-main">
-      当前节点将于{{ triggerTime | formatDate }}流转，距离流转
+      {{ $t('term.process.currentnodewillflowtime',{time: $utils.getDateByFormat(triggerTime)}) }}
+      {{ $t('term.process.distanceflow') }}
       <span v-if="newDataTime(triggerTime)" class="text-primary">{{ newDataTime(triggerTime)|formatTimeCost({maxUnit:'hour',language:'zh'}) }}</span>
     </div>
   </div>

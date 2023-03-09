@@ -38,6 +38,9 @@
     "invokerecoverconfirm": "当前事务还关联了另外<b class=\"text-primary\">{count}</b>个事务，确认一起恢复？",
     "rebuildrelation": "确认重建当前关系所有级联关系？确认后重建工作将会再后台自动进行。",
     "saveconfirm": "是否保存当前修改？",
-    "cancelconfirm": "是否确认取消编辑？"
+    "cancelconfirm": "是否确认取消编辑？",
+    "disassociatedialog": "确定解除与该工单的关联？",
+    "unbindconfirm": "确定解除绑定？",
+    "surepublishthenewversion": "确定发布新版本？"
   }
 }

@@ -396,7 +396,7 @@ export default {
         },
         {
           type: 'assign',
-          name: '自定义',
+          name: this.$t('page.custom'),
           isChecked: 0,
           config: {
             workerList: []

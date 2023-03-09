@@ -246,7 +246,7 @@ export default {
             },
             {
               value: 'optional',
-              text: '自定义'
+              text: this.$t('page.custom')
             }
           ],
           onChange: function(val) {

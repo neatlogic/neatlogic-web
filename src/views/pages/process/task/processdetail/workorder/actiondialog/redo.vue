@@ -61,7 +61,7 @@ export default {
           name: 'content',
           value: '',
           width: '95%',
-          label: '回复',
+          label: this.$t('page.reply'),
           validateList: ['required']
         }
       ],

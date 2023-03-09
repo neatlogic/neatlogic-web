@@ -1,7 +1,7 @@
 <template>
   <div class="TacticsSetting">
     <div class="sla_add border-color" @click="slaDiashow()">
-      <i class="tsfont-plus">策略</i>
+      <i class="tsfont-plus">{{ $t('term.process.policy') }}</i>
     </div>
     <div
       v-for="(item, index) in slaList"
@@ -85,7 +85,7 @@
             </div>
             <div v-else>
               <div class="time_block text-default">
-                <span class="title text-grey">时效</span>
+                <span class="title text-grey">{{ $t('psge.effectivenesstime') }}</span>
                 <span>{{ citem.time }}</span>
                 <span>{{ timeArray[citem.unit] }}</span>
               </div>
@@ -122,7 +122,7 @@
               <span>{{ citem.time }}</span>
               <span>{{ timeArray[citem.unit] }}</span>
               <span class="line">—</span>
-              <span>转交</span>
+              <span>{{ $t('page.transfer') }}</span>
             </div>
             <div class="object border-color">
               <span class="title text-grey">转交对象</span>
@@ -161,8 +161,8 @@
           model="formRight"
         >
           <template v-slot:slot-label>
-            <span>时效设置</span>
-            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">时效</div>
+            <span>{{ $t('term.process.effectivenesstimesetting') }}</span>
+            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">{{ $t('psge.effectivenesstime') }}</div>
           </template>
           <template v-slot:slot>
             <div class="tactics">
@@ -182,7 +182,7 @@
                           <div
                             class="opera_item toggle"
                             :class="!item.isshow ? 'hide' : ''"
-                            :title="item.isshow ? '收起' : '展开'"
+                            :title="item.isshow ? $t('page.clickandputaway') : $t('page.clicktoexpand')"
                             @click="operaToggle(item, index)"
                           >
                             <Icon type="ios-arrow-down" />
@@ -371,7 +371,7 @@
                         <div v-else class="time_wrapper bg-op radius-sm">
                           <TsRow>
                             <Col span="2">
-                              <span>时效</span>
+                              <span>{{ $t('psge.effectivenesstime') }}</span>
                             </Col>
                             <Col span="11">
                               <div class="time_item">
@@ -403,7 +403,7 @@
           </template>
           <template v-slot:notice-label>
             <span>通知策略</span>
-            <div class="addTactics text-href tsfont-plus" @click="noticeAdd()">策略</div>
+            <div class="addTactics text-href tsfont-plus" @click="noticeAdd()">{{ $t('term.process.policy') }}</div>
           </template>
           <template v-slot:notice>
             <div class="tactics">
@@ -502,7 +502,7 @@
           </template>
           <template v-slot:overtime-label>
             <span>转交策略</span>
-            <div class="addTactics text-href tsfont-plus" @click="overtimeAdd()">策略</div>
+            <div class="addTactics text-href tsfont-plus" @click="overtimeAdd()">{{ $t('term.process.policy') }}</div>
           </template>
           <template v-slot:overtime>
             <div class="tactics">

@@ -17,7 +17,7 @@
     <table v-else class="empty-tips">
       <tbody>
         <tr>
-          <td>暂无数据</td>
+          <td>{{ $t('page.nodata') }}</td>
         </tr>
       </tbody>
     </table>

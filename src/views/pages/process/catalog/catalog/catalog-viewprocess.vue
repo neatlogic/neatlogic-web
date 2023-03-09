@@ -84,7 +84,7 @@
                   </div>
                   <div v-else>
                     <div class="time_block text-default">
-                      <span class="title text-grey">时效</span>
+                      <span class="title text-grey">{{ $t('page.effectivenesstime') }}</span>
                       <span>{{ citem.time }}</span>
                       <span>{{ timeArray[citem.unit] }}</span>
                     </div>
@@ -114,7 +114,7 @@
                   <span>{{ citem.time }}</span>
                   <span>{{ timeArray[citem.unit] }}</span>
                   <span class="line">—</span>
-                  <span>转交</span>
+                  <span>{{ $t('page.transfer') }}</span>
                 </div>
                 <div class="object border-color text-default">
                   <span class="title text-grey">转交对象</span>
@@ -141,7 +141,7 @@
       </div>
       <div v-else>
         <div class="text-center">
-          <span>暂无时效</span>
+          <span>{{ $t('page.notarget',{target:$t('psge.effectivenesstime')}) }}</span>
         </div>
       </div>
     </div>

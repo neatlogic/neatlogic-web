@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div v-else>暂无模型</div>
+    <div v-else>{{ $t('page.notarget',{target:$t('page.model')}) }}</div>
     <EditCi
       v-if="!readonly && isEditCiDialogShow"
       :ciId="editCiId"

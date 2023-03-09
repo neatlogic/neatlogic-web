@@ -106,7 +106,7 @@
               type="primary"
               ghost
               @click="clearAll"
-            >清空所有</Button>
+            >{{ $t('page.clearall') }}</Button>
           </div>
         </template>
       </TsDialog>
