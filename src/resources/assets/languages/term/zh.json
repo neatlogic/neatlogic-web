@@ -297,7 +297,8 @@
     "autoscoring": "自动评分",
     "enablescoring": "启用评分",
     "flowcannotdelete": "流程被引用不可删除",
-    "scoringtemplate": "评分模板"
+    "scoringtemplate": "评分模板",
+    "disablecommettip": "回复框或附件不为空时允许点击"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

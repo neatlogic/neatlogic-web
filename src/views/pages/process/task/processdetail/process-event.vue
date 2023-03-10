@@ -219,6 +219,9 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   @update="update"
+                  @changeDisableCommet="(val)=>{
+                    isDisableCommet = val
+                  }"
                 >
                   <template v-slot:event>
                     <EventEdit
@@ -238,9 +241,11 @@
                       :backStepList="backStepList"
                       :selectBackConfig="selectBackConfig"
                       :currentProcessTaskStep="processTask.currentProcessTaskStep"
+                      :isDisableCommet="isDisableCommet"
                       @completeTask="completeTask"
                       @completeStep="completeStep"
                       @backTask="backTask"
+                      @comment="comment"
                     ></FooterOperationBtn>
                   </div>
                 </CenterDetail>

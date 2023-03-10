@@ -228,6 +228,9 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   @update="update"
+                  @changeDisableCommet="(val)=>{
+                    isDisableCommet = val
+                  }"
                 >
                   <template v-slot:changehandle>
                     <div v-if="startProcessTaskStep.handler != 'changecreate'" id="changeInfo">
@@ -261,10 +264,12 @@
                       :disabledConfig="changeDisableConfig"
                       :backStepList="backStepList"
                       :selectBackConfig="selectBackConfig"
+                      :isDisableCommet="isDisableCommet"
                       @startchange="startchange"
                       @succeedchange="succeedchange"
                       @failedchange="failedchange"
                       @backTask="backTask"
+                      @comment="comment"
                     ></FooterOperationBtn>
                   </div>
                 </CenterDetail>
