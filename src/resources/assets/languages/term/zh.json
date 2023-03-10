@@ -296,7 +296,8 @@
     "limitationconditions": "时效条件",
     "autoscoring": "自动评分",
     "enablescoring": "启用评分",
-    "flowcannotdelete": "流程被引用不可删除"
+    "flowcannotdelete": "流程被引用不可删除",
+    "scoringtemplate": "评分模板"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

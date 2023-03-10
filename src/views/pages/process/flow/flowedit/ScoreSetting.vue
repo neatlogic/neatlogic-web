@@ -6,7 +6,7 @@
     </div>
     <template v-if="scoreConfig.isActive">
       <div class="score-template">
-        <span class="title">评分模板</span>
+        <span class="title">{{ $t('term.process.scoringtemplate') }}</span>
         <i class="icon text-tip-active tsfont-eye" @click="viewScoreTemplate"></i>
         <i class="icon text-tip-active tsfont-edit" @click="toScoreTemplateManagePage('edit')"></i>
         <i class="icon text-tip-active tsfont-rotate-right" :class="{'refreshing': isRefreshing}" @click="refresh"></i>
