@@ -2,7 +2,7 @@
   <div class="padding">
     <TsRow class="pb-nm">
       <Col span="12" class="mt-xs">
-        <span class="text-action tsfont-plus" @click="addPipeline()">超级流水线</span>
+        <span class="text-action tsfont-plus" @click="addPipeline()">{{ $t('term.deploy.superpipeline') }}</span>
       </Col>
       <Col span="12">
         <InputSearcher
@@ -23,9 +23,9 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li class="tsfont-list" @click="showJobList(row)">作业列表</li>
-            <li class="tsfont-plus" @click="addBatchJob(row)">批量作业</li>
-            <li class="tsfont-trash-o" @click="deletePipeline(row)">删除</li>
+            <li class="tsfont-list" @click="showJobList(row)">{{ $t('term.deploy.joblist') }}</li>
+            <li class="tsfont-plus" @click="addBatchJob(row)">{{ $t('term.deploy.batchjob') }}</li>
+            <li class="tsfont-trash-o" @click="deletePipeline(row)">{{ $t('button.delete') }}</li>
           </ul>
         </div>
       </template>
@@ -49,9 +49,9 @@ export default {
   data() {
     return {
       theadList: [
-        { key: 'name', title: this.$t('page.name') },
+        { title: this.$t('page.name'), key: 'name'},
         { title: this.$t('page.fcu'), key: 'lcu', type: 'user'},
-        { key: 'lcd', title: '最后修改时间', type: 'time' },
+        { title: this.$t('term.deploy.lastrevisiontime'), key: 'lcd', type: 'time' },
         { key: 'action' }],
       isAddDeployJobDialogShow: false,
       isListDeployJobDialogShow: false,
@@ -115,7 +115,7 @@ export default {
     deletePipeline(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '确认删除超级流水线：' + row.name + '？',
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.deploy.pipeline

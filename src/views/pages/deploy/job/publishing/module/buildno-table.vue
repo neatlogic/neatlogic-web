@@ -18,19 +18,19 @@
     </div>
     <div v-else>
       <div class="version-top pb-nm">
-        <div class="tsfont-plus text-action" @click="addVersion">版本</div>
+        <div class="tsfont-plus text-action" @click="addVersion">{{ $t('page.versions') }}</div>
         <div class="search-box">
           <TimeSelect
             v-model="searchParam.startTimeRange"
             border="border"
-            placeholder="编译时间"
+            :placeholder="$t('term.deploy.compiletime')"
             transfer
             class="pr-sm time-select"
             @change="searchVersionBuildno(1)"
           ></TimeSelect>
           <InputSearcher
             v-model="searchParam.keyword"
-            placeholder="版本号"
+            :placeholder="$t('page.versions')"
             border="border"
             @change="searchVersionBuildno(1)"
           ></InputSearcher>
@@ -90,7 +90,7 @@ export default {
           multiple: false
         },
         {
-          title: '版本号',
+          title: this.$t('page.versions'),
           key: 'version'
         },
         {
@@ -98,7 +98,7 @@ export default {
           key: 'status'
         },
         {
-          title: '封版',
+          title: this.$t('term.deploy.sealplate'),
           key: 'versionIsFreeze'
         },
         {
@@ -106,7 +106,7 @@ export default {
           key: 'buildNo'
         },
         {
-          title: '编译时间',
+          title: this.$t('term.deploy.compiletime'),
           key: 'compileStartTime',
           type: 'time'
         }
@@ -115,11 +115,11 @@ export default {
       buildType: 'add',
       buildTypeList: [
         {
-          text: '新建BiuldNo',
+          text: this.$t('term.deploy.addbuildno'),
           value: 'add'
         },
         {
-          text: '选择BiuldNo',
+          text: this.$t('term.deploy.selectbuildno'),
           value: 'selected'
         }
       ],
@@ -134,7 +134,7 @@ export default {
         border: 'border',
         dealDataByUrl: this.dealDataByUrl,
         firstSelect: false,
-        firstText: '版本',
+        firstText: this.$t('page.versions'),
         firstLi: true
 
       }
@@ -162,9 +162,9 @@ export default {
       nodeList.forEach(v => {
         let text = v.version;
         if (v.isFreeze) {
-          text += '(已封版)';
+          text += this.$t('term.deploy.sealedplate');
         } else {
-          text += '(未封版)';
+          text += this.$t('term.deploy.unsealedversion');
         }
         columlist.push(
           {

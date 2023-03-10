@@ -9,15 +9,15 @@
       <template v-slot>
         <div v-for="(item,index) in resultList" :key="index" class="pb-sm">
           <div v-if="item.jobId">
-            <span class="text-success">创建成功</span>
-            <span>应用模块{{ item.appModuleName }}创建成功，</span>
-            <span class="text-href" @click="gotoDetail(item)">请点击跳转</span>
+            <span class="text-success">{{ $t('term.deploy.createsuccess') }}</span>
+            <span>{{ $t('term.deploy.appmodulecreatesuccess', {target: item.appModuleName}) }}</span>
+            <span class="text-href" @click="gotoDetail(item)">{{ $t('term.deploy.clickredirect') }}</span>
           </div>
           <div v-else-if="item.errorMsg">
-            <span class="text-error">创建失败：</span>
-            <span>应用模块{{ item.appModuleName }}{{ item.errorMsg }}</span>
+            <span class="text-error">{{ $t('term.deploy.createfail') }}</span>
+            <span>{{ $t('term.deploy.applymodule') }}{{ item.appModuleName }}{{ item.errorMsg }}</span>
           </div>
-          <div v-else>{{ item.appModuleName }}创建作业失败</div>
+          <div v-else>{{ $t('term.deploy.moduleaddjobfail', {target: item.appModuleName}) }}</div>
         </div>
       </template>
     </TsDialog>

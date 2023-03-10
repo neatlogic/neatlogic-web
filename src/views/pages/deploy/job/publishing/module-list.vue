@@ -8,7 +8,7 @@
         :indeterminate="allModuleInteterminate"
         :disabled="disabled"
         @on-change="checkAllModule"
-      >全选</Checkbox>
+      >{{ $t('page.selectall') }}</Checkbox>
       <div
         v-for="(item, index) in appModuleListLocal"
         :id="'appModule_' + item.id"
@@ -38,10 +38,10 @@
                 ghost
                 :disabled="disabled"
                 @click="selectVersion(item, index)"
-              >选择版本</Button>
+              >{{ $t('term.deploy.selectversion') }}</Button>
             </div>
             <div class="text-tip-active pl-nm">
-              <TsFormItem label="实例筛选" labelWidth="70">
+              <TsFormItem :label="$t('term.deploy.instancefiltering') " labelWidth="70">
                 <TsFormSwitch
                   v-model="item.isSelectInstance"
                   :falseValue="false"
@@ -68,7 +68,7 @@
                     }
                   "
                 >
-                  <span>全选</span>
+                  <span>{{ $t('page.selectall') }}</span>
                 </Checkbox>
               </div>
               <div class="instance-ul">
@@ -90,14 +90,14 @@
                 </Row>
               </div>
             </div>
-            <div v-else class="text-tip">{{ item.name }}模块在{{ envName }}环境下没有实例</div>
+            <div v-else class="text-tip">{{ $t('term.deploy.moduleenvnotinstance', {modulename: item.name, envname: envName}) }}</div>
           </div>
         </div>
         <div v-if="item.canSelectModule && !item.isHasRunner" class="runner-tip pt-sm text-tip">
           <i class="tsfont-danger-o text-warning pr-xs"></i>
-          <span>当前模块未配置执行器，无法创建作业，</span>
-          <span class="text-href" @click="addRunner(item)">点击添加</span>
-          <span>执行器</span>
+          <span>{{ $t('term.deploy.currentmodulenotsetexecutetip') }}</span>
+          <span class="text-href" @click="addRunner(item)">{{ $t('term.deploy.clickadd') }}</span>
+          <span>{{ $t('term.deploy.actuator') }}</span>
         </div>
       </div>
     </div>
@@ -105,7 +105,7 @@
       v-if="showDialog"
       type="modal"
       :isShow.sync="showDialog"
-      title="选择版本"
+      :title="$t('term.deploy.selectversion')"
       :width="isHasBuildTypeTool ? 'small' : 'medium'"
       @on-ok="okVersion"
       @on-close="closeVersion"
@@ -308,7 +308,7 @@ export default {
       });
       if (!moduleList.length) {
         validList.push({
-          text: '模块设置：至少选择一个模块',
+          text: this.$t('term.deploy.atleastselectamodule'),
           type: 'error',
           id: '#appModuleList'
         });
@@ -316,7 +316,7 @@ export default {
         moduleList.forEach(m => {
           if (!m.version && (m.isHasBuildTypeTool || m.isHasDeployTypeTool)) {
             validList.push({
-              text: '模块设置：【' + m.name + '】请选择版本',
+              text: this.$t('term.deploy.moduleconfigselectversion', {target: m.name}),
               type: 'error',
               id: '#appModule_' + m.id
             });
@@ -327,7 +327,7 @@ export default {
             });
             if (!selectNodeList.length) {
               validList.push({
-                text: '模块设置：【' + m.name + '】至少选择一个实例',
+                text: this.$t('term.deploy.moduleconfigatleastselectainstance', {target: m.name}),
                 type: 'error',
                 id: '#appModule_' + m.id
               });

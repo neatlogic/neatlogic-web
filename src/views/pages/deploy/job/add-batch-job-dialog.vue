@@ -20,9 +20,9 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button v-if="createMethod === 'pipeline'" type="primary" @click="save()">确定</Button>
-        <Button v-if="createMethod === 'custom'" type="primary" @click="nextStep()">下一步</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button v-if="createMethod === 'pipeline'" type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
+        <Button v-if="createMethod === 'custom'" type="primary" @click="nextStep()">{{ $t('page.thenextstep') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -43,15 +43,15 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'medium',
-        title: '添加批量作业'
+        title: this.$t('term.deploy.addbatchjob')
       },
       formConfig: {
         createMethod: {
           type: 'radio',
-          label: '创建方式',
+          label: this.$t('term.deploy.creationmode'),
           dataList: [
-            { value: 'custom', text: '直接创建' },
-            { value: 'pipeline', text: '超级流水线' }
+            { value: 'custom', text: this.$t('term.deploy.directcreation') },
+            { value: 'pipeline', text: this.$t('term.deploy.superpipeline') }
           ],
           value: 'custom',
           validateList: ['required'],
@@ -70,7 +70,7 @@ export default {
         },
         pipelineId: {
           type: 'select',
-          label: '超级流水线',
+          label: this.$t('term.deploy.superpipeline'),
           value: null,
           transfer: true,
           isHidden: true,

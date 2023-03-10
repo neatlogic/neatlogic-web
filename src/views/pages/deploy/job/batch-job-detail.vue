@@ -22,21 +22,21 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <span v-if="canEdit" class="action-item tsfont-edit" @click="toEdit()">编辑</span>
+          <span v-if="canEdit" class="action-item tsfont-edit" @click="toEdit()">{{ $t('button.edit') }}</span>
           <span v-if="canVerify" class="action-item">
-            <Button type="error" @click="refuseJob()">驳回</Button>
+            <Button type="error" @click="refuseJob()">{{ $t('page.reject') }}</Button>
           </span>
           <span v-if="canVerify" class="action-item">
-            <Button type="success" @click="accessJob()">通过</Button>
+            <Button type="success" @click="accessJob()">{{ $t('page.passed') }}</Button>
           </span>
           <span v-if="canValid" class="action-item">
-            <Button type="success" @click="validJob()">验证</Button>
+            <Button type="success" @click="validJob()">{{ $t('page.verify') }}</Button>
           </span>
           <span v-if="canRun" class="action-item">
-            <Button type="primary" @click="runJob()">执行</Button>
+            <Button type="primary" @click="runJob()">{{ $t('page.execute') }}</Button>
           </span>
           <span v-if="canTakeOver" class="action-item">
-            <Button type="primary" @click="takeOverJob()">接管</Button>
+            <Button type="primary" @click="takeOverJob()">{{ $t('page.takeover') }}</Button>
           </span>
         </div>
       </template>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="mb-xs">
                       <span>{{ job.envName }}</span>
-                      <span v-if="job.version" class="ml-md text-grey">版本:{{ job.version }}</span>
+                      <span v-if="job.version" class="ml-md text-grey">{{ $t('page.versions') }}:{{ job.version }}</span>
                     </div>
                     <div class="mb-xs">{{ job.appSystemAbbrName }}</div>
                     <div class="mb-xs">{{ job.appModuleAbbrName }}</div>
@@ -203,8 +203,8 @@ export default {
     },
     refuseJob() {
       this.$createDialog({
-        title: '驳回确认',
-        content: '确认驳回当前批量作业？',
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('term.deploy.rejectbatchjobconfirm'),
         'on-ok': vnode => {
           this.$api.deploy.job.saveReviewStatus(this.jobData.id, 'failed').then(res => {
             if (res.Status == 'OK') {
@@ -218,8 +218,8 @@ export default {
     },
     accessJob() {
       this.$createDialog({
-        title: '通过确认',
-        content: '确认通过当前批量作业？',
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('term.deploy.passbatchjobconfirm'),
         'on-ok': vnode => {
           this.$api.deploy.job.saveReviewStatus(this.jobData.id, 'passed').then(res => {
             if (res.Status == 'OK') {

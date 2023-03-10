@@ -50,7 +50,7 @@ export default {
       } else if (this.baseParams.type == 'pipeline') {
         if (!this.$refs.pipelineParams.valid()) {
           validList.push({
-            text: '至少选择一个应用模块并且填写版本',
+            text: this.$t('term.deploy.atleastaapplymoduleandwriteversion'),
             type: 'error',
             id: '#pipelineParams'
           });

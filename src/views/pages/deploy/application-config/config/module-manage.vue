@@ -2,30 +2,30 @@
   <div>
     <ModuleInfo v-if="!isLoading" v-bind="params"></ModuleInfo>
     <div class="pb-xs pt-xs">
-      <span class="pr-nm">执行器组分配</span>
-      <span v-show="hasEditConfigAuth" class="tsfont-edit text-action text-href" @click="openModuleInfoEdit">编辑</span>
+      <span class="pr-nm">{{ $t('term.deploy.actuatorgroupallocation') }}</span>
+      <span v-show="hasEditConfigAuth" class="tsfont-edit text-action text-href" @click="openModuleInfoEdit">{{ $t('button.edit') }}</span>
     </div>
     <div v-if="!moduleInfo && hasEditConfigAuth" class="bg-op radius-lg padding" style="height: 200px;">
-      <div class="pt-xs pb-xs pl-nm pr-nm bg-error-grey radius-sm">当前模块未配置runner组，将导致发布作业无法运行，点击<span class="text-href" @click="openModuleInfoEdit">配置runner组</span></div>
+      <div class="pt-xs pb-xs pl-nm pr-nm bg-error-grey radius-sm">{{ $t('term.deploy.modulenotconfigrunnergroup') }}<span class="text-href" @click="openModuleInfoEdit">{{ $t('term.deploy.configrunnergroup') }}</span></div>
     </div>
     <div v-else class="module-content-box bg-op radius-lg pt-nm pb-nm pr-lg pl-lg">
       <TsRow>
         <Col :span="10">
           <div>
-            <div class="text-grey pb-xs">执行器组</div>
+            <div class="text-grey pb-xs">{{ $t('term.deploy.actuatorgroup') }}</div>
             <div class="overflow">{{ runnerGroupInfo ? runnerGroupInfo.name : '' }}</div>
           </div>
         </Col>
         <Col :span="14">
           <div>
-            <div class="text-grey pb-xs">描述</div>
+            <div class="text-grey pb-xs">{{ $t('page.description') }}</div>
             <div class="overflow">{{ runnerGroupInfo ? runnerGroupInfo.description : '' }}</div>
           </div>
         </Col>
       </TsRow>
 
       <div class="runner-table-box pt-nm">
-        <div class="text-grey pb-xs">关联runner</div>
+        <div class="text-grey pb-xs">{{ $t('term.deploy.associatedrunner') }}</div>
       </div>
       <TsTable
         v-bind="tableConfig"
@@ -77,23 +77,23 @@ export default {
         },
         {
           key: 'authType', 
-          title: '连接方式'
+          title: this.$t('term.deploy.connectionmode')
         },
         {
           key: 'host', 
-          title: 'IP'
+          title: this.$t('page.ip')
         },
         {
           key: 'protocol', 
-          title: '协议'
+          title: this.$t('page.protocol')
         },
         {
           key: 'port', 
-          title: '命令端口'
+          title: this.$t('term.deploy.commandport')
         },
         {
           key: 'nettyPort', 
-          title: '心跳端口'
+          title: this.$t('term.deploy.heartbeatport')
         }
       ]
 

@@ -64,28 +64,28 @@ export default {
           type: 'radio',
           label: this.$t('page.status'),
           dataList: [
-            { value: 1, text: '启用' },
-            { value: 0, text: '禁用' }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ],
           validateList: ['required'],
           disabled: this.disabled
         },
         cron: {
           type: 'quartz',
-          label: '定时计划',
+          label: this.$t('term.autoexec.timingplan'),
           validateList: ['required'],
           showType: this.disabled ? 'read' : 'edit'
         },
         beginTime: {
           type: 'datetime',
-          label: '计划开始时间',
+          label: this.$t('term.autoexec.planstarttime'),
           value: '',
           transfer: true,
           disabled: this.disabled
         },
         endTime: {
           type: 'datetime',
-          label: '计划结束时间',
+          label: this.$t('term.autoexec.planendtime'),
           value: '',
           transfer: true,
           options: {
@@ -102,7 +102,7 @@ export default {
         },
         type: {
           type: 'radio',
-          label: '作业类型',
+          label: this.$t('term.deploy.jobtype'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'ScheduleType' },
           validateList: ['required'],
@@ -120,7 +120,7 @@ export default {
           rootName: 'tbodyList',
           border: 'border',
           transfer: true,
-          disabledHoverTitle: '当前应用未配置',
+          disabledHoverTitle: this.$t('term.deploy.currentapplynotconfig'),
           onChange: (val) => {
             this.handleModuleParams(val);
           }
@@ -136,7 +136,7 @@ export default {
           border: 'border',
           transfer: true,
           disabled: true,
-          disabledHoverTitle: '请先选择应用'
+          disabledHoverTitle: this.$t('term.deploy.pleaseselectapply')
         }
       },
       pipelineFormConfig: {
@@ -218,19 +218,19 @@ export default {
       let text = false;
       if (!item.isHasAllAuthority && item.isConfigAuthority) {
         if (!item.authActionSet.includes('operation#edit') && !item.authActionSet.includes('operation#all')) {
-          text = '您没有当前应用的编辑配置权限';
+          text = this.$t('term.deploy.notapplyeditconfigauth');
         } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
-          text = '您没有当前应用所有场景的执行权限';
+          text = this.$t('term.deploy.notapplyallsceneexecuteauth');
         } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
-          text = '您没有当前应用所有环境的执行权限';
+          text = this.$t('term.deploy.notapplyallenvexecuteauth');
         }
       } else if (!item.isConfig) {
-        text = '当前应用未配置流水线';
+        text = this.$t('term.deploy.applynotconfigpipeline');
       } else if (type == 'app' && !item.isHasModule) {
-        text = '当前应用未配置模块';
+        text = this.$t('term.deploy.applynotconfigmodule');
       } else if (!item.isHasEnv) {
-        type == 'app' && (text = '当前应用未配置环境');
-        type == 'module' && (text = '当前模块未配置环境');
+        type == 'app' && (text = this.$t('term.deploy.applynotconfigenv'));
+        type == 'module' && (text = this.$t('term.deploy.modulenotconfigenv'));
       }
       return text;
     },

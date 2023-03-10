@@ -32,7 +32,7 @@ export default {
           inherit: {
             type: 'switch',
             name: 'inherit',
-            label: '继承',
+            label: this.$t('page.inherit'),
             isHidden: !this.appModuleId && !this.envId,
             disabled: !this.canEdit,
             onChange: (val) => {
@@ -43,7 +43,7 @@ export default {
           protocolId: {
             type: 'select',
             name: 'protocolId',
-            label: ' 连接协议',
+            label: this.$t('page.protocol'),
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             dealDataByUrl: this.dealDataByUrl || null,
             multiple: false,
@@ -61,7 +61,7 @@ export default {
           executeUser: {
             type: 'text',
             name: 'executeUser',
-            label: '执行用户',
+            label: this.$t('page.executeuser'),
             value: '',
             validateList: ['required'],
             readonly: !this.canEdit || !!this.defaultExecuteConfig.inherit,
@@ -115,7 +115,7 @@ export default {
       if (!this.$refs.executeConfig.valid()) {
         if (!this.executeConfig.protocolId) {
           validList.push({
-            text: '请选择连接协议',
+            text: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.protocol')}),
             type: 'error',
             current: 4, //定位step
             component: 'executeSetting' //定位tab
@@ -123,7 +123,7 @@ export default {
         }
         if (!this.executeConfig.executeUser) {
           validList.push({
-            text: '请输入执行用户',
+            text: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.executeuser')}),
             type: 'error',
             current: 4,
             component: 'executeSetting'

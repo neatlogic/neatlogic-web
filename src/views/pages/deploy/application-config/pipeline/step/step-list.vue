@@ -26,7 +26,7 @@
               class="stepIndex border-color tsfont bg-op"
               :class="{'text-primary border-primary':ary.find(item=>item.uuid==currentStep.uuid)}"
               :data-index="sindex + 1"
-              :title="canEdit?'拖拽改变顺序':''"
+              :title="canEdit?$t('term.deploy.dragtochangetheorder'):''"
               @click.stop
             ></span>
             <ul>
@@ -42,7 +42,7 @@
                     <Tooltip
                       theme="light"
                       transfer
-                      :content="step.isShow?'点击收起':'点击展开'"
+                      :content="step.isShow? $t('page.clickandputaway') :$t('page.clicktoexpand')"
                       :style="{'width': '100%'}"
                     >
                       <div class="step-content-top" @click="showStep(step)">
@@ -51,13 +51,13 @@
                           <template v-if="appModuleId || envId">
                             <CommonStatus
                               v-if="step.hasOwnProperty('override') && step.override"
-                              statusName="重载"
+                              :statusName="$t('page.heavyload')"
                               statusValue="running"
                               class="pl-sm"
                             ></CommonStatus>
                             <CommonStatus
                               v-if="step.hasOwnProperty('isActive') && !step.isActive"
-                              statusName="禁用"
+                              :statusName="$t('page.disable')"
                               statusValue="aborted"
                               class="pl-sm"
                             ></CommonStatus>
@@ -81,12 +81,12 @@
                       <div class="inherit bg-op radius-lg padding">
                         <div class="tsfont-jicheng inherit-title border-color">{{ step.source }}</div>
                         <div class="pr-nm">
-                          <span class="pr-xs">重载</span>
+                          <span class="pr-xs">{{ $t('page.heavyload') }}</span>
                           <span class="inline-block"><TsFormSwitch v-model="step.override" :disabled="!canEdit" @change="(val)=>{ changeOverride(val, step) }"></TsFormSwitch></span>
                           
                         </div>
                         <div>
-                          <span class="pr-xs">启用</span>
+                          <span class="pr-xs">{{ $t('page.enable') }}</span>
                           <span class="inline-block"><TsFormSwitch v-model="step.isActive" :disabled="step.hasOwnProperty('parentIsActive') && !step.parentIsActive ? true : !canEdit"></TsFormSwitch></span>
                         </div>
                       </div>
@@ -117,7 +117,7 @@
       @click="addStep()"
     >
       <i class="tsfont-plus bg-op btn-add"></i>
-      {{ !stepList || !stepList.length ? '添加阶段' : '' }}
+      {{ !stepList || !stepList.length ? $t('page.addtarget', {target: $t('term.autoexec.phase')}) : '' }}
     </div>
     <StepEdit
       v-if="isShow"
@@ -315,8 +315,8 @@ export default {
     },
     delStep(config, oindex) {
       this.$createDialog({
-        title: this.$i18n.t('page.warning'),
-        content: '确认删除阶段：' + config.name + '?',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: config.name}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

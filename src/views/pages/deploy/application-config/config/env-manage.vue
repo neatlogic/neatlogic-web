@@ -1,7 +1,7 @@
 <template>
   <div>
     <Tabs v-model="tabActive" class="block-tabs">
-      <TabPane label="DB配置">
+      <TabPane :label="$t('term.deploy.dbconfig')">
         <EnvDbConfigList
           v-if="tabActive == 0"
           :params="params"
@@ -9,7 +9,7 @@
           @close="close"
         ></EnvDbConfigList>
       </TabPane>
-      <TabPane label="配置文件适配">
+      <TabPane :label="$t('term.deploy.configurationfileadaptation')">
         <EnvAutoConfigList
           v-if="tabActive == 1"
           :params="params"
@@ -17,7 +17,7 @@
           @close="close"
         ></EnvAutoConfigList>
       </TabPane>
-      <TabPane label="实例列表">
+      <TabPane :label="$t('term.deploy.instancelist')">
         <EnvInstanceList
           v-if="tabActive == 2"
           :params="params"

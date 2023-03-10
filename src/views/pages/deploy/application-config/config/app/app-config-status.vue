@@ -1,13 +1,13 @@
 <template>
   <div>
     <Poptip placement="bottom-start" transfer>
-      <span class="tsfont-layer">层级切换</span>
+      <span class="tsfont-layer">{{ $t('term.deploy.hierarchyswitching') }}</span>
       <div slot="content">
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <Alert show-icon>
           <div class="status-alert">
-            <span class="pr-sm"><span class="status-icon bg-warning mr-xs"></span>存在禁用阶段</span>
-            <span><span class="status-icon bg-info mr-xs"></span>存在重载阶段</span>
+            <span class="pr-sm"><span class="status-icon bg-warning mr-xs"></span>{{ $t('term.deploy.existdisablephase') }}</span>
+            <span><span class="status-icon bg-info mr-xs"></span>{{ $t('term.deploy.existheavyloadphase') }}</span>
           </div>
         </Alert>
         <div v-if="appConfig" class="app-main">
