@@ -87,7 +87,7 @@ export default {
         protocolId: {
           type: 'select',
           width: '100%',
-          label: '协议端口',
+          label: '协议',
           placeholder: this.$t('common.selectProtocol'),
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
@@ -104,11 +104,10 @@ export default {
           }],
           transfer: true,
           onChangelabel: (label) => {
-            this.protocol = this.getProtocalName(label);
+            this.protocol = label;
           },
           onChange: (val, objectValue) => {
-            let protocalPort = objectValue ? objectValue.text : '';
-            this.protocol = this.getProtocalName(protocalPort);
+            this.protocol = objectValue ? objectValue.text : '';
             if (!this.validAccountProtocalUnique()) {
               this.$set(this.formConfig['protocolId'], 'errorMessage', '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。');
             } else {
@@ -163,7 +162,7 @@ export default {
   destroyed() {},
   methods: {
     getProtocalName(protocalPort) {
-      let protocolName = protocalPort && protocalPort.includes('(') ? (protocalPort.split('(') && protocalPort.split('(').length > 0 ? protocalPort.split('(')[0] : '') : (protocalPort || '');
+      let protocolName = protocalPort;
       return protocolName;
     },
     validAccountProtocalUnique(account) {
@@ -248,7 +247,7 @@ export default {
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach((item) => {
           dataList.push({
-            text: item.name ? (item.port ? `${item.name}(${item.port})` : item.name) : (item.port || ''),
+            text: item.name,
             value: item.id,
             _disabled: item.id == '445524809146368'
           });
