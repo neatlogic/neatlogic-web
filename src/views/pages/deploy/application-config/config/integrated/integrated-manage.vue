@@ -2,12 +2,12 @@
   <div class="padding">
     <TsRow class="pb-nm">
       <Col span="12" class="mt-xs">
-        <span class="text-action tsfont-plus" @click="gotoAddConfig">配置</span>
+        <span class="text-action tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
       </Col>
       <Col span="12">
         <InputSearcher
           v-model="searchParams.keyword"
-          placeholder="名称"
+          :placeholder="$t('page.name')"
           @change="searchIntegrated(1)"
         ></InputSearcher>
       </Col>
@@ -31,8 +31,8 @@
       <template slot="action" slot-scope="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li class="tsfont-history" @click="viewExecuteRecord(row)">执行记录</li>
-            <li class="tsfont-trash-o" @click="delRow(row.id, row.name)">删除</li>
+            <li class="tsfont-history" @click="viewExecuteRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
+            <li class="tsfont-trash-o" @click="delRow(row.id, row.name)">{{ $t('button.delete') }}</li>
           </ul>
         </div>
       </template>
@@ -79,12 +79,12 @@ export default {
         { title: this.$t('page.name'), key: 'name'},
         { title: this.$t('page.enable'), key: 'isActive'},
         { title: this.$t('term.deploy.module'), key: 'appModuleAbbrName'},
-        { title: '仓库类型', key: 'repoType'},
-        { title: '仓库服务器地址', key: 'repoServerAddress'},
-        { title: '仓库名称', key: 'repoName'},
-        { title: '分支', key: 'branchFilter'},
-        { title: '关联事件', key: 'event'},
-        { title: '动作', key: 'actionName'},
+        { title: this.$t('term.deploy.warehousetype'), key: 'repoType'},
+        { title: this.$t('term.deploy.warehouseserveraddress'), key: 'repoServerAddress'},
+        { title: this.$t('term.deploy.warehousename'), key: 'repoName'},
+        { title: this.$t('page.branch'), key: 'branchFilter'},
+        { title: this.$t('term.deploy.associatedevent'), key: 'event'},
+        { title: this.$t('term.deploy.action'), key: 'actionName'},
         { title: this.$t('page.fcu'), key: 'fcuVo', type: 'user'},
         { title: this.$t('page.fcd'), key: 'lcd', type: 'time'},
         { title: '', key: 'action'}
@@ -164,7 +164,7 @@ export default {
       if (id) {
         this.$api.deploy.integrated.updateActive({id: id, isActive: isActive}).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(isActive ? '激活成功' : '禁用成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
           }
         });
       }
@@ -176,7 +176,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: `确定删除：${name || ''}？`,
+        content: this.$t('dialog.content.deleteconfirm', {target: name}),
         okText: this.$t('page.delete'),
         btnType: 'error',
         'on-ok': vnode => {

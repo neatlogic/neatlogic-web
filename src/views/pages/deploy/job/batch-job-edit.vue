@@ -18,14 +18,14 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">权限</span>
+          <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">{{ $t('page.authority') }}</span>
           <span v-if="canEdit" class="action-item tsfont-save" @click="save()">{{ $t('button.save') }}</span>
-          <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">删除</span>
+          <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">{{ $t('button.delete') }}</span>
           <span v-if="canEdit && $AuthUtils.hasRole(['BATCHDEPLOY_VERIFY'])" class="action-item">
-            <Button type="primary" @click="submit()">提交</Button>
+            <Button type="primary" @click="submit()">{{ $t('page.submit') }}</Button>
           </span>
           <span v-if="canEdit && !$AuthUtils.hasRole(['BATCHDEPLOY_VERIFY'])" class="action-item">
-            <Button type="primary" @click="submit()">提交审核</Button>
+            <Button type="primary" @click="submit()">{{ $t('page.submitaudit') }}</Button>
           </span>
         </div>
       </template>
@@ -62,7 +62,7 @@
                 <div>
                   <div class="grouptitle-grid">
                     <div class="pl-sm text-info">#{{ gindex + 1 }}</div>
-                    <div class="pr-sm text-href" style="text-align:right" @click="showJobDialog(lane, group)"><span class="tsfont-plus">作业</span></div>
+                    <div class="pr-sm text-href" style="text-align:right" @click="showJobDialog(lane, group)"><span class="tsfont-plus">{{ $t('term.autoexec.job') }}</span></div>
                   </div>
                   <draggable
                     v-model="group.jobList"
@@ -78,7 +78,7 @@
                         <span class="cursor tsfont-close-o remove-job-btn text-grey" @click="removeJob(lane, group, job)"></span>
                         <div class="mb-xs">
                           <span>{{ job.envName }}</span>
-                          <span v-if="job.version" class="ml-md text-grey">版本:{{ job.version }}</span>
+                          <span v-if="job.version" class="ml-md text-grey">{{ $t('page.versions') }}:{{ job.version }}</span>
                         </div>
                         <div class="mb-xs">{{ job.appSystemAbbrName }}</div>
                         <div class="mb-xs">{{ job.appModuleAbbrName }}</div>
@@ -93,7 +93,7 @@
         </div>
         <div class="mt-nm item-selected padding-sm radius-md cursor" style="text-align:center;width:400px;" @click="addLane()">
           <span class="tsfont-plus"></span>
-          <span>批量通道</span>
+          <span>{{ $t('term.deploy.batchchannel') }}</span>
         </div>
       </template>
     </TsContain>
@@ -101,7 +101,7 @@
     <AuthDialog v-if="isAuthDialogShow" :authList="jobData.authList" @close="closeAuthDialog"></AuthDialog>
     <TsDialog
       v-if="isCommitDialogShow"
-      title="提交审核"
+      :title="$t('page.submitaudit')"
       type="modal"
       :isShow="true"
       @on-close="closeCommitDialog"
@@ -112,8 +112,8 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="closeCommitDialog()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="closeCommitDialog()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -146,25 +146,25 @@ export default {
       },
       formConfig: {
         triggerType: {
-          label: '执行方式',
+          label: this.$t('term.autoexec.executionmode'),
           type: 'radio',
           validateList: ['required'],
           dataList: [
-            { value: 'manual', text: '人工触发' },
-            { value: 'auto', text: '自动执行' }
+            { value: 'manual', text: this.$t('term.deploy.manualtrigger') },
+            { value: 'auto', text: this.$t('term.deploy.automaticexecution') }
           ],
           onChange: val => {
             this.$set(this.jobData, 'triggerType', val);
           }
         },
         planStartTime: {
-          label: '计划时间',
+          label: this.$t('page.plantime'),
           transfer: true,
           isHidden: false,
           type: 'datetime',
           valueType: 'timestamp',
           format: 'yyyy-MM-dd HH:mm',
-          desc: '为防止任务刚提交就过期，只允许选择5分钟后的时间',
+          desc: this.$t('term.deploy.tasktimelimitfiveminutes'),
           selectableRange: () => {
             const now = new Date().getTime();
             return [now + 5 * 60 * 1000, 0];
@@ -338,7 +338,7 @@ export default {
         const inputName = this.$refs['inputName'];
         if (inputName && inputName.valid()) {
           if (this.jobIdList.length == 0) {
-            this.$Message.info('请至少添加一个作业');
+            this.$Message.info(this.$t('term.deploy.atleastaddajob'));
             return fales;
           }
           this.$api.deploy.job.saveBatchDeployJob(this.jobData).then(res => {
@@ -356,7 +356,7 @@ export default {
     deleteJob() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '确认删除当前批量作业？',
+        content: this.$t('term.deploy.deletebatchjobconfirm'),
         'on-ok': vnode => {
           this.$api.deploy.job.deleteJob(this.jobData.id).then(res => {
             if (res.Status == 'OK') {

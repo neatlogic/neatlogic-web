@@ -44,7 +44,7 @@
               >
                 <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.scenarioName }}</div>
                 <div slot="content">
-                  <div>您没有[{{ item.scenarioName }}]场景权限，请联系管理员授权</div>
+                  <div>{{ $t('term.deploy.notsceneauth', {target: item.scenarioName}) }}</div>
                 </div>
               </Tooltip>
             </Col>
@@ -80,7 +80,7 @@
               >
                 <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.envName }}</div>
                 <div slot="content">
-                  <div>您没有[{{ item.envName }}]环境权限，请联系管理员授权</div>
+                  <div>{{ this.$t('term.deploy.notenvauth', {target: item.envName}) }}</div>
                 </div>
               </Tooltip>
             </Col>
@@ -95,7 +95,7 @@
               :indeterminate="indeterminate"
               :value="checkAll"
               @click.prevent.native="handleCheckAll"
-            >全选</Checkbox>
+            >{{ $t('page.selectall') }}</Checkbox>
             <CheckboxGroup v-model="formValue.instanceFilterList" @on-change="changeCheckboxGroup">
               <Row :gutter="16">
                 <Col
@@ -115,7 +115,7 @@
               </Row>
             </CheckboxGroup>
           </template>
-          <div v-else class="text-tip">模块在{{ envName }}环境下没有实例</div>
+          <div v-else class="text-tip">{{ $t('term.deploy.envnotexample', {target: envName}) }}</div>
         </div>
       </template>
       <template v-slot:jobParam>
@@ -177,7 +177,7 @@ export default {
         {
           name: 'scenes',
           type: 'slot',
-          label: '场景',
+          label: this.$t('page.scene'),
           dataList: []
         },
         {
@@ -189,12 +189,12 @@ export default {
         {
           name: 'versionRule',
           type: 'slot',
-          label: '版本号'
+          label: this.$t('page.versions')
         },
         {
           name: 'instanceFilter',
           type: 'switch',
-          label: '实例筛选',
+          label: this.$t('term.deploy.instancefiltering'),
           trueValue: 1,
           falseValue: 0,
           onChange: (isTrue) => {
@@ -213,45 +213,45 @@ export default {
         {
           name: 'roundCount',
           type: 'select',
-          label: '分批数量',
-          desc: '将执行目标按数量等分为N个批次，先后执行',
+          label: this.$t('term.autoexec.batchquantity'),
+          desc: this.$t('term.autoexec.roundcountdescrition'),
           dataList: this.$utils.getRoundCountList(),
           filterName: 'text'
         },
         {
           name: 'jobParam',
           type: 'slot',
-          label: '作业参数'
+          label: this.$t('term.autoexec.jobparam')
         }
       ],
       versionFormList: [
         {
           name: 'versionPrefix',
           type: 'text',
-          label: '版本前缀',
+          label: this.$t('term.deploy.versionprefix'),
           maxlength: 64,
-          desc: '指定要创建版本的前缀，可不填'
+          desc: this.$t('term.deploy.versionprefixdesc')
         },
         {
           name: 'versionRegex',
           type: 'text',
-          label: '截取规则',
+          label: this.$t('term.deploy.interceptionrule'),
           validateList: ['required'],
-          desc: '正则表达式，指定使用分支的哪个部分作为主版本，不给定或正则表达式匹配失败，则使用分支名。合法的正则表达式必须包含成对的"("、")"，示例：develop(\d+(\.\d+)*\.\d+)提取develop1.2.3分支中的1.2.3作为主版本号'
+          desc: this.$t('term.deploy.versionruledesc')
         },
         {
           name: 'useCommitId',
           type: 'select',
-          label: '拼接commitID',
+          label: this.$t('term.deploy.splicingcommitid'),
           validateList: ['required'],
-          desc: '在版本号中拼接最近一次提交的 commit ID',
+          desc: this.$t('term.deploy.splicingcommitiddesc'),
           dataList: [
             {
-              text: '不拼接',
+              text: this.$t('term.deploy.unspliced'),
               value: 0
             },
             {
-              text: '拼接',
+              text: this.$t('term.deploy.splicing'),
               value: 1
             }
           ]

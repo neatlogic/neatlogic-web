@@ -36,8 +36,8 @@ export default {
       dialogSetting: {
         type: 'modal',
         isShow: true,
-        title: '复制模块',
-        okText: '确认',
+        title: this.$t('term.deploy.copymodule'),
+        okText: this.$t('button.confirm'),
         width: 'medium'
       },
       formValue: {
@@ -48,14 +48,14 @@ export default {
         {
           name: 'actionType',
           type: 'radio',
-          label: '复制策略',
+          label: this.$t('term.deploy.copystrategy'),
           dataList: [
             {
-              text: '添加模块',
+              text: this.$t('page.addtarget', {target: this.$t('page.module')}),
               value: 'add'
             },
             {
-              text: '复制到现有模块',
+              text: this.$t('term.deploy.copytoexistingmodule'),
               value: 'copy'
             }
           ],
@@ -78,7 +78,7 @@ export default {
         {
           name: 'abbrName',
           type: 'text',
-          label: '简称',
+          label: this.$t('term.deploy.abbreviation'),
           validateList: ['required', 'key-special'],
           maxlength: 50
         },
@@ -91,7 +91,7 @@ export default {
         {
           name: 'stateIdList',
           type: 'select',
-          label: '使用状态',
+          label: this.$t('term.deploy.useofstate'),
           url: '/api/rest/deploy/app/attr/search',
           params: {attrName: 'state', ciName: 'APPComponent'},
           textName: 'name',
@@ -101,7 +101,7 @@ export default {
         {
           name: 'ownerIdList',
           type: 'select',
-          label: '负责人',
+          label: this.$t('page.responsibleperson'),
           url: '/api/rest/deploy/app/attr/search',
           params: {attrName: 'owner', ciName: 'APPComponent'},
           textName: 'name',
@@ -114,20 +114,20 @@ export default {
           name: 'maintenanceWindow',
           type: 'timerange',
           format: 'HH:mm:ss',
-          label: '维护期',
+          label: this.$t('term.autoexec.maintenanceperiod'),
           transfer: true
         },
         {
           name: 'description',
           type: 'textarea',
-          label: '备注',
+          label: this.$t('page.memo'),
           maxlength: 500
         }
       ],
       existedFormList: [ // 现有模块
         {
           name: 'toAppModuleIdList',
-          label: '目标模块',
+          label: this.$t('term.deploy.objectmodule'),
           type: 'select',
           multiple: true,
           transfer: true,
@@ -136,7 +136,7 @@ export default {
           textName: 'abbrName',
           valueName: 'id',
           url: '/api/rest/deploy/app/config/without/config/module/list',
-          desc: '仅支持将模块配置信息复制到未配置或已清空配置的模块'
+          desc: this.$t('term.deploy.objectmoduledesc')
         }
       ]
     };

@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="配置Runner组"
+      :title="$t('term.deploy.configrunnergroup')"
       type="modal"
       :isShow="true"
       :ok-text="$t('button.save')"
@@ -41,7 +41,7 @@ export default {
         {
           name: 'runnerGroupId',
           type: 'select',
-          label: 'Runner组',
+          label: this.$t('term.deploy.runnergroup'),
           validateList: ['required'],
           url: '/api/rest/runnergroup/search',
           transfer: true,

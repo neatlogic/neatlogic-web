@@ -94,7 +94,7 @@ export default {
       lastCodeTestResult: '', // 最新一次代码测试结果
       textList: [
         {
-          label: this.$t('term.deploy.executiontime'),
+          label: this.$t('term.autoexec.executiontime'),
           textName: 'buildTime',
           value: ''
         },

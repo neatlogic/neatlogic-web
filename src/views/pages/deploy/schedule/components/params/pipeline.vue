@@ -72,8 +72,8 @@ export default {
         },
         { key: 'appSystemAbbrName', title: this.$t('term.deploy.application') },
         { key: 'appModuleAbbrName', title: this.$t('term.deploy.module') },
-        { key: 'envScenario', title: '环境（场景）' },
-        { key: 'version', title: '版本', width: 250 }
+        { key: 'envScenario', title: this.$t('term.deploy.envscene') },
+        { key: 'version', title: this.$t('page.versions'), width: 250 }
       ],
       appSystemModuleEnvList: [],
       valueList: [],
@@ -142,7 +142,7 @@ export default {
         search: true,
         dealDataByUrl: this.dealDataFilter,
         firstSelect: false,
-        firstText: '版本',
+        firstText: this.$t('page.versions'),
         firstLi: true
       };
     },
@@ -152,7 +152,7 @@ export default {
       nodeList.forEach(v => {
         let text = v.version;
         if (v.isFreeze) {
-          text += '（已封版）';
+          text += this.$t('term.deploy.sealededition');
         } else {
           text;
         }

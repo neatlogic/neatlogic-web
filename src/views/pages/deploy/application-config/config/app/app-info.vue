@@ -39,7 +39,7 @@ export default {
     return {
       appInfoList: [
         {
-          text: '简称',
+          text: this.$t('term.deploy.abbreviation'),
           value: '-',
           name: 'abbrName'
         },
@@ -49,27 +49,27 @@ export default {
           name: 'name'
         },
         {
-          text: '显示系统名',
+          text: this.$t('term.deploy.displaysystemname'),
           value: '-',
           name: 'systemDisplayName'
         },
         {
-          text: '使用状态',
+          text: this.$t('term.deploy.useofstate'),
           value: '-',
           name: 'state'
         },
         {
-          text: '负责人',
+          text: this.$t('page.responsibleperson'),
           value: '-',
           name: 'owner'
         },
         {
-          text: '维护期',
+          text: this.$t('term.autoexec.maintenanceperiod'),
           value: '-',
           name: 'maintenance_window'
         },
         {
-          text: '备注',
+          text: this.$t('page.memo'),
           value: '-',
           name: 'description'
         }

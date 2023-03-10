@@ -4,11 +4,11 @@
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
-      <template v-slot:topLeft>添加定时作业</template>
+      <template v-slot:topLeft>{{ $t('page.addtarget', {target: $t('term.autoexec.timingjob')}) }}</template>
       <template v-slot:topRight>
         <div class="action-group">
           <span v-if="current == 0" class="action-item">
-            <Button type="primary" ghost @click="next(current+1)">下一步</Button>
+            <Button type="primary" ghost @click="next(current+1)">{{ $t('page.thenextstep') }}</Button>
           </span>
           <template v-if="current > 0">
             <span class="action-item">
@@ -17,7 +17,7 @@
                 class="mr-md"
                 ghost
                 @click="next(current -= 1)"
-              >上一步</Button>
+              >{{ $t('page.previousstep') }}</Button>
             </span>
             <span class="action-item">
               <Button type="primary" @click="saveTimeJob()">{{ $t('button.save') }}</Button>
@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       current: 0,
-      stepList: [this.$t('page.basicinfo'), '作业参数'],
+      stepList: [this.$t('page.basicinfo'), this.$t('term.autoexec.jobparam')],
       baseParams: {},
       isShowValidDialog: false,
       validList: []
@@ -106,7 +106,7 @@ export default {
       this.validList = [];
       if (this.$refs.jobBaseinfo && !this.$refs.jobBaseinfo.valid()) {
         this.validList.push({
-          text: '当前基本信息未填写完整',
+          text: this.$t('term.deploy.basicinfonotwaritecompletevalid'),
           type: 'error',
           id: '#jobBaseinfo',
           current: 'basicInfo'

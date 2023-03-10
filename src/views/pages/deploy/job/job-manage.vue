@@ -6,7 +6,7 @@
           <template v-if="canEditAuth">
             <template v-if="searchParam.appSystemId">
               <template v-if="canAddJob">
-                <span class="tsfont-plus text-action action-item" @click="addJob">作业</span>
+                <span class="tsfont-plus text-action action-item" @click="addJob">{{ $t('term.autoexec.job') }}</span>
               </template>
               <template v-else>
                 <Tooltip
@@ -14,25 +14,25 @@
                   placement="right"
                   transfer
                 >
-                  <span class="tsfont-plus text-disabled action-item">作业</span>
+                  <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
                   <ul slot="content">
-                    <li v-if="!selectedApp.isConfig">当前应用尚未配置，点击<span class="text-href" @click="toPipeline()">添加配置</span></li>
-                    <li v-else-if="!selectedApp.isHasModule">当前应用未配置任何模块，点击<span class="text-href" @click="addModule()">添加模块</span></li>
+                    <li v-if="!selectedApp.isConfig">{{ $t('term.deploy.currentapplynoconfig') }}<span class="text-href" @click="toPipeline()">{{ $t('page.addtarget', {target: $t('page.config')}) }}</span></li>
+                    <li v-else-if="!selectedApp.isHasModule">{{ $t('term.deploy.applynoconfigmodule') }}<span class="text-href" @click="addModule()">{{ $t('page.addtarget', {target: $t('page.module')}) }}</span></li>
                     <li v-else-if="selectedApp.isHasModule && !selectedApp.isHasEnv">
                       <div v-for="item in moduleList" :key="item.id" class="pb-sm">
-                        <span>{{ selectedApp.name }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}未配置环境信息，点击</span>
-                        <span class="text-href" @click="addEnv(item.id)">添加环境</span>
+                        <span>{{ selectedApp.name }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>
+                        <span class="text-href" @click="addEnv(item.id)">{{ $t('page.addtarget', {target: $t('page.environment')}) }}</span>
                       </div>
                     </li>
                     <li v-else-if="selectedModule && !selectedModule.isHasEnv">
-                      <span>{{ selectedApp.name }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}未配置环境信息，点击</span>
-                      <span class="text-href" @click="addEnv(selectedModule.id)">添加环境</span>
+                      <span>{{ selectedApp.name }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>
+                      <span class="text-href" @click="addEnv(selectedModule.id)">{{ $t('page.addtarget', {target: $t('page.environment')}) }}</span>
                     </li>
                     <li v-else-if="!hasScenarioAuth">
-                      <div>您没有配置“场景权限”，点击<span class="text-href" @click="openAuthDialog">添加授权</span></div>
+                      <div>{{ $t('term.deploy.noconfigscenauth') }}<span class="text-href" @click="openAuthDialog">{{ $t('page.addtarget', {target: $t('page.auth')}) }}</span></div>
                     </li>
                     <li v-else-if="!hasEnvAuth">
-                      <div>您没有配置“环境权限”，点击<span class="text-href" @click="openAuthDialog">添加授权</span></div>
+                      <div>{{ $t('term.deploy.noconfigenvauth') }}<span class="text-href" @click="openAuthDialog">{{ $t('page.addtarget', {target: $t('page.auth')}) }}</span></div>
                     </li>
                   </ul>
                 </Tooltip>
@@ -40,12 +40,12 @@
             </template>
             <Tooltip
               v-else
-              content="请选中应用或模块后再创建作业"
+              :content="$t('term.deploy.pleaseselectmoduleenvaddjob')"
               max-width="400"
               placement="right"
               transfer
             >
-              <span class="tsfont-plus text-disabled action-item">作业</span>
+              <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
             </Tooltip>
           </template>
           <template v-else>
@@ -54,15 +54,15 @@
               placement="right"
               transfer
             >
-              <span class="tsfont-plus text-disabled action-item">作业</span>
+              <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
               <ul slot="content">
-                <li v-if="!searchParam.appSystemId">请选中应用或模块后再创建作业</li>
-                <li v-else-if="!canEditAuth">您没有当前应用的“编辑配置权限”，请联系管理员授权</li>
+                <li v-if="!searchParam.appSystemId">{{ $t('term.deploy.pleaseselectmoduleenvaddjob') }}</li>
+                <li v-else-if="!canEditAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
               </ul>
             </Tooltip>
           </template>
-          <span v-auth="'BATCHDEPLOY_MODIFY'" class="tsfont-plus text-action action-item" @click="addBatchJob">批量作业</span>
-          <span v-if="isHasResourceLock" class="tsfont-lock text-action action-item" @click="globalLockShow">资源锁</span>
+          <span v-auth="'BATCHDEPLOY_MODIFY'" class="tsfont-plus text-action action-item" @click="addBatchJob">{{ $t('term.deploy.batchjob') }}</span>
+          <span v-if="isHasResourceLock" class="tsfont-lock text-action action-item" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -133,8 +133,8 @@
                 <span class="tsfont-warning-o text-warn"></span>
                 <template v-slot:content>
                   <div>
-                    <div v-if="row.warnCount > 0">日志中存在告警信息</div>
-                    <div v-if="row.isHasIgnored > 0">阶段中存在状态为'已忽略'的执行节点</div>
+                    <div v-if="row.warnCount > 0">{{ $t('term.autoexec.loghaswarninfo') }}</div>
+                    <div v-if="row.isHasIgnored > 0">{{ $t('term.deploy.phaseexistignorenode') }}</div>
                   </div>
                 </template>
               </Tooltip>
@@ -151,11 +151,11 @@
             <template v-slot:startTime="{ row }">
               <div v-if="row.startTime" class="fz10">
                 <span>{{ row.startTime | formatDate }}</span>
-                <span class="text-grey ml-xs">开始</span>
+                <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
               </div>
               <div v-if="row.endTime" class="fz10">
                 <span>{{ row.endTime | formatDate }}</span>
-                <span class="text-grey ml-xs">结束</span>
+                <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
               </div>
             </template>
             <template slot="completionRate" slot-scope="{ row }">
@@ -255,15 +255,15 @@ export default {
           {
             type: 'daterange',
             name: 'startTimeRange',
-            label: '执行时间',
+            label: this.$t('term.autoexec.executiontime'),
             format: 'yyyy-MM-dd',
             transfer: true,
-            placeholder: '请选择时间段'
+            placeholder: this.$t('term.deploy.pleaseselecttimeperiod')
           },
           {
             type: 'userselect',
             name: 'execUserList',
-            label: '执行人',
+            label: this.$t('term.deploy.executor'),
             groupList: ['user'],
             multiple: true,
             transfer: true
@@ -288,7 +288,7 @@ export default {
           key: 'name'
         },
         {
-          title: '场景',
+          title: this.$t('page.scene'),
           key: 'scenarioName'
         },
         {
@@ -296,35 +296,35 @@ export default {
           key: 'status'
         },
         {
-          title: '耗时',
+          title: this.$t('page.timeconsuming'),
           key: 'costTime'
         },
         {
-          title: '执行用户',
+          title: this.$t('page.executeuser'),
           key: 'execUserVo',
           type: 'user',
           uuid: 'uuid'
         },
         {
-          title: '来源',
+          title: this.$t('page.source'),
           key: 'sourceName'
         },
         {
-          title: '计划时间',
+          title: this.$t('page.plantime'),
           key: 'planStartTime',
           type: 'time'
         },
         {
-          title: '起止时间',
+          title: this.$t('page.startstoptime'),
           key: 'startTime',
           keyend: 'endTime'
         },
         {
-          title: '触发方式',
+          title: this.$t('term.autoexec.triggertype'),
           key: 'triggerTypeName'
         },
         {
-          title: '执行情况',
+          title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         }
       ],
@@ -544,9 +544,6 @@ export default {
       this.searchJob(1);
     },
     getSelectedApp(app) {
-      //console.log(JSON.stringify(node, null, 2));
-      //this.selectedTreeNodeConfig = node;
-      // console.log(JSON.stringify(app, null, 2));
       this.selectedApp = app;
       this.authList = (app && app.authActionSet && app.authActionSet.length > 0) ? app.authActionSet : [];
       if (app) {

@@ -52,7 +52,7 @@ export default {
           name: 'typeName',
           value: '',
           maxlength: 50,
-          label: '工具分类',
+          label: this.$t('term.autoexec.toolclassification'),
           width: '100%',
           readonly: true
         },

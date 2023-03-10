@@ -1,6 +1,6 @@
 <template>
   <div class="config-info-box">
-    <div v-if="isShowTitle" class="pb-sm">模块信息</div>
+    <div v-if="isShowTitle" class="pb-sm">{{ $t('term.deploy.moduleinformation') }}</div>
     <ul class="bg-op padding-lg radius-lg mb-md ul-box">
       <li v-for="(item, index) in moduleInfoList" :key="index" class="li-box pb-nm pr-nm">
         <span class="text-grey pb-xs">{{ item.text }}</span>
@@ -43,7 +43,7 @@ export default {
       moduleInfoList: [
         {
           name: 'abbrName',
-          text: '简称',
+          text: this.$t('term.deploy.abbreviation'),
           value: '-'
         },
         {
@@ -53,22 +53,22 @@ export default {
         },
         {
           name: 'state',
-          text: '使用状态',
+          text: this.$t('term.deploy.useofstate'),
           value: '-'
         },
         {
           name: 'owner',
-          text: '负责人',
+          text: this.$t('page.responsibleperson'),
           value: '-'
         },
         {
           name: 'maintenance_window',
-          text: '维护期',
+          text: this.$t('term.autoexec.maintenanceperiod'),
           value: '-'
         },
         {
           name: 'description',
-          text: '备注',
+          text: this.$t('page.memo'),
           value: '-'
         }
       ]

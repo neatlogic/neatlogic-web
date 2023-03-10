@@ -6,8 +6,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="appModuleId">编辑模块</div>
-        <div v-else>添加模块</div>
+        <div v-if="appModuleId">{{ $t('page.edittarget', {target: $t('page.module')}) }}</div>
+        <div v-else>{{ $t('page.addtarget', {target: $t('page.module')}) }}</div>
       </template>
       <template v-slot>
         <div>
@@ -52,7 +52,7 @@ export default {
         type: 'modal',
         isShow: true,
         width: 'medium',
-        okText: '确认'
+        okText: this.$t('button.confirm')
       },
       attrNameList: ['abbrName', 'name', 'state', 'owner', 'maintenanceWindow', 'description'],
       formConfig: [

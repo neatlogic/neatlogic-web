@@ -19,7 +19,7 @@
               <ul>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">操作权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.operationauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.operationAuthList"
                       :appSystemId="params.appSystemId"
@@ -30,7 +30,7 @@
                 </li>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">环境权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.envAuthList"
                       :appSystemId="params.appSystemId"
@@ -41,7 +41,7 @@
                 </li>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">场景权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.scenarioAuthList"
                       :appSystemId="params.appSystemId"
@@ -51,7 +51,7 @@
                   </div>
                 </li>
               </ul>
-              <span v-if="authRequired" class="text-danger">请至少选择一项权限</span>
+              <span v-if="authRequired" class="text-danger">{{ $t('term.deploy.pleaseselectatleastonepermission') }}</span>
             </template>
           </TsForm>
         </div>
@@ -87,14 +87,14 @@ export default {
       },
       dialogSetting: {
         type: 'slider',
-        title: '批量编辑权限',
+        title: this.$t('term.deploy.batcheditpermission'),
         isShow: true,
         width: 'medium',
-        okText: '保存'
+        okText: this.$t('button.save')
       },
       formConfig: {
         authorityStrList: {
-          label: '用户',
+          label: this.$t('page.user'),
           type: 'userselect',
           validateList: ['required'],
           multiple: true,
@@ -102,7 +102,7 @@ export default {
           groupList: ['user', 'team', 'role', 'common']
         },
         actionList: {
-          label: '权限',
+          label: this.$t('page.authority'),
           type: 'slot',
           value: [],
           validateList: ['required']
