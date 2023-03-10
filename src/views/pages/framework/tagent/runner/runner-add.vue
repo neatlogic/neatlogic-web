@@ -82,7 +82,7 @@ export default {
         },
         host: {
           type: 'text',
-          label: 'IP',
+          label: 'HOST',
           value: '',
           validateList: ['required']
         },
