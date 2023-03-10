@@ -13,7 +13,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="main">
+        <div class="main" :class="tableConfig.rowNum > 0 ? 'main-position' : ''">
           <div v-if="unreadCount > 0" class="top-container flex-start">
             <i class="tsfont-mark-all text-action" @click="readAll">全部标记已读</i>
           </div>
@@ -330,6 +330,8 @@ export default {
     width: 100%;
     height: 100%;
     overflow: hidden;
+  }
+  .main-position {
     position: relative;
   }
   .top-container {
