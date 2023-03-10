@@ -84,9 +84,7 @@ export default {
           type: 'text',
           label: 'IP',
           value: '',
-          validateList: ['required',
-            {name: 'ip', pattern: '^[a-z]+$', message: '请输入正确的IP地址' }
-          ]
+          validateList: ['required']
         },
         protocol: {
           type: 'select',
