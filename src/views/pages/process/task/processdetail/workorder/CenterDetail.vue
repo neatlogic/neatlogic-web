@@ -188,7 +188,7 @@
                           </div>
                         </div>
                       </div>
-                      <div v-if="actionConfig.comment" class="center-detail-upload-wrap">
+                      <div v-if="actionConfig.complete || actionConfig.comment" class="center-detail-upload-wrap">
                         <span class="attachment-text title">{{ $t('page.accessory') }}</span>
                         <TsUpLoad
                           ref="uploadFileComment"
@@ -202,7 +202,7 @@
                           @remove="removeCommentFile"
                         ></TsUpLoad>
                       </div>
-                      <div v-if="actionConfig.comment" class="reply-template-position-box">
+                      <div v-if="actionConfig.complete || actionConfig.comment" class="reply-template-position-box">
                         <div class="reply-template-position">
                           <!-- 回复模板start -->
                           <div class="content-template">
@@ -226,7 +226,7 @@
                         </div>
                       </div>
                      
-                      <div v-if="actionConfig.comment">
+                      <div v-if="actionConfig.complete || actionConfig.comment">
                         <div>
                           <TsCkeditor
                             ref="taskStepContent"
@@ -237,16 +237,15 @@
                             @change="commentContent"
                           ></TsCkeditor>
                         </div>
-                        <!-- <div class="comment-save">
-                          <Button v-if="actionConfig.save" @click="saveTaskD()">{{ actionConfig.save }}</Button>
+                        <div v-if="actionConfig.comment" class="comment-save">
+                          <!-- <Button v-if="actionConfig.save" @click="saveTaskD()">{{ actionConfig.save }}</Button> -->
                           <Button
-                            v-if="actionConfig.comment"
                             type="primary"
                             :disabled="isDisableCommet"
                             :title="isDisableCommet ? '回复框或附件不为空时允许点击' : null"
                             @click="comment"
                           >{{ actionConfig.comment }}</Button>
-                        </div> -->
+                        </div>
                       </div> 
                     </div>
                     <!-- 回复 end-->
