@@ -85,7 +85,7 @@
             </div>
             <div v-else>
               <div class="time_block text-default">
-                <span class="title text-grey">{{ $t('psge.effectivenesstime') }}</span>
+                <span class="title text-grey">{{ $t('page.effectivenesstime') }}</span>
                 <span>{{ citem.time }}</span>
                 <span>{{ timeArray[citem.unit] }}</span>
               </div>
@@ -162,7 +162,7 @@
         >
           <template v-slot:slot-label>
             <span>{{ $t('term.process.effectivenesstimesetting') }}</span>
-            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">{{ $t('psge.effectivenesstime') }}</div>
+            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">{{ $t('page.effectivenesstime') }}</div>
           </template>
           <template v-slot:slot>
             <div class="tactics">
@@ -365,13 +365,13 @@
                             </TsRow>
                           </div>
                           <div v-if="item.priorityList && item.priorityList.length < 1" class="time_add border-color" @click="timeAdd(index)">
-                            <i class="tsfont-plus">优先级时效</i>
+                            <i class="tsfont-plus">{{ $t('term.process.priorityaging') }}</i>
                           </div>
                         </div>
                         <div v-else class="time_wrapper bg-op radius-sm">
                           <TsRow>
                             <Col span="2">
-                              <span>{{ $t('psge.effectivenesstime') }}</span>
+                              <span>{{ $t('page.effectivenesstime') }}</span>
                             </Col>
                             <Col span="11">
                               <div class="time_item">
@@ -411,7 +411,7 @@
                 <div v-for="(item, index) in slaData.notifyPolicyList" :key="index" class="notice">
                   <span class="tsfont-close-s btn-removerule text-tip" @click="noticeDel(index)"></span>
                   <div class="block_condition">
-                    <div class="label require-label">触发条件</div>
+                    <div class="label require-label">{{ $t('page.triggercondition') }}</div>
                     <div class="content">
                       <div class="item">
                         <!-- <Select v-model="item.expression">

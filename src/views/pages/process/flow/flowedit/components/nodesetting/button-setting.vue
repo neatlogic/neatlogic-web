@@ -99,7 +99,7 @@ export default {
           isShowButton: true
         }, 
         replaceableTextList: {
-          text: this.$t('psge.others'),
+          text: this.$t('page.others'),
           dataList: [],
           isShowButton: true
         }

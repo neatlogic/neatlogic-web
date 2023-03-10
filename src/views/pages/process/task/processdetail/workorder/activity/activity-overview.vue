@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="order-content bg-block text-grey">{{ $t('psge.notarget',{target:$t('page.activitylist')}) }}</div>
+    <div v-else class="order-content bg-block text-grey">{{ $t('page.notarget',{target:$t('page.activitylist')}) }}</div>
   </div>
 </template>
 <script>

@@ -408,5 +408,6 @@
   "computationrules": "计算规则",
   "aftertimeout": "超时后",
   "beforetimeout":"超时前",
-  "positiveinteger": "正整数"
+  "positiveinteger": "正整数",
+  "triggercondition": "触发条件"
 }

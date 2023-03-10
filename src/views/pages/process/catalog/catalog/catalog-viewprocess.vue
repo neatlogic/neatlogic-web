@@ -141,7 +141,7 @@
       </div>
       <div v-else>
         <div class="text-center">
-          <span>{{ $t('page.notarget',{target:$t('psge.effectivenesstime')}) }}</span>
+          <span>{{ $t('page.notarget',{target:$t('page.effectivenesstime')}) }}</span>
         </div>
       </div>
     </div>

@@ -287,7 +287,8 @@
     "relpriority": "关联优先级",
     "duration": "时长",
     "circulationpath": "流转路径",
-    "slatip": "时效标签"
+    "slatip": "时效标签",
+    "priorityaging": "优先级时效"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
