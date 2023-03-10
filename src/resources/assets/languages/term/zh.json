@@ -288,7 +288,8 @@
     "duration": "时长",
     "circulationpath": "流转路径",
     "slatip": "时效标签",
-    "priorityaging": "优先级时效"
+    "priorityaging": "优先级时效",
+    "disablecommettip": "回复框或附件不为空时允许点击"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

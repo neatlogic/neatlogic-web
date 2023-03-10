@@ -235,6 +235,9 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   @update="update"
+                  @changeDisableCommet="(val)=>{
+                    isDisableCommet = val
+                  }"
                 >
                   <template v-slot:autoexec>
                     <!-- 自动化作业 -->
@@ -251,9 +254,11 @@
                       :currentProcessTaskStep="processTask.currentProcessTaskStep"
                       :completeAuth="completeAuth"
                       :completeErrorText="completeErrorText"
+                      :isDisableCommet="isDisableCommet"
                       @completeTask="completeTask"
                       @completeStep="completeStep"
                       @backTask="backTask"
+                      @comment="comment"
                     ></FooterOperationBtn>
                   </div>
                 </CenterDetail>

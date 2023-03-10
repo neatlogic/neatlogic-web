@@ -80,7 +80,7 @@ export default {
     newTab(e, menu, path) {
       //鼠标右键打开新标签页
       let base = this.$router.options.base;
-      let replaceStr = `<a href="${base}#${path}" class="cursor ${menu.icon}">${menu.name}</a>`;
+      let replaceStr = `<a href="${base}#${path}" class="cursor ${menu.icon}">${this.$t(menu.name)}</a>`;
       e.currentTarget.innerHTML = replaceStr;
     },
     goTo(path) {
