@@ -82,11 +82,9 @@ export default {
         },
         host: {
           type: 'text',
-          label: 'IP',
+          label: 'HOST',
           value: '',
-          validateList: ['required',
-            {name: 'ip', pattern: '^[a-z]+$', message: '请输入正确的IP地址' }
-          ]
+          validateList: ['required']
         },
         protocol: {
           type: 'select',
