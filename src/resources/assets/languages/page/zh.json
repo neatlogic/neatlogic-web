@@ -409,5 +409,10 @@
   "aftertimeout": "超时后",
   "beforetimeout":"超时前",
   "positiveinteger": "正整数",
-  "triggercondition": "触发条件"
+  "triggercondition": "触发条件",
+  "executionmode": "执行方式",
+  "interval": "间隔",
+  "hour": "小时",
+  "day": "天",
+  "object": "对象"
 }

@@ -209,8 +209,10 @@ export default {
             this.flowData.cardList.map(v => {
               v.btnList = [
                 {name: this.$t('term.process.relcatalog'), value: 'referenceCount', icon: 'tsfont-tool', type: 'referenceCount', key: 'referenceCount'},
-                {name: this.$t('button.delete'), type: 'dropdown', menuArr: [{name: this.$t('button.copy'), value: 'copy', type: 'text'}, 
-                  {name: this.$t('button.export'), value: 'export', type: 'download'}]}
+                {name: this.$t('button.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('term.process.flowcannotdelete'), key: 'referenceCount'},
+                {name: '多个', value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: this.$t('button.copy'), value: 'copy', type: 'text'}, 
+                  {name: this.$t('button.export'), value: 'export', type: 'download'}]
+                }
               ];
             });
           }

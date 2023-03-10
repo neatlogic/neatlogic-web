@@ -1,7 +1,7 @@
 <template>
   <div class="score-setting">
     <div class="active-status">
-      <span>启用评分</span>
+      <span>{{ $t('term.process.enablescoring') }}</span>
       <span><TsFormSwitch v-model="scoreConfig.isActive" @on-change="clearAuto"></TsFormSwitch></span>
     </div>
     <template v-if="scoreConfig.isActive">
@@ -13,12 +13,12 @@
       </div>
       <TsFormSelect ref="select" v-model="scoreConfig.scoreTemplateId" v-bind="selectConfig">
         <template v-slot:first-ul>
-          <li class="tsfont-plus text-href first-slot" @click="toScoreTemplateManagePage('add')">模板</li>
+          <li class="tsfont-plus text-href first-slot" @click="toScoreTemplateManagePage('add')">{{ $t('page.template') }}</li>
         </template>
       </TsFormSelect>
       <div class="auto-score">
         <div>
-          <span>自动评分</span>
+          <span>{{ $t('term.process.autoscoring') }}</span>
           <Tooltip
             theme="light"
             transfer
@@ -53,7 +53,7 @@
       <div class="template-detail">
         <div class="header">
           <span class="name-header text-title">{{ $t('term.process.scoringdimension') }}</span>
-          <span class="desc-header text-title">说明</span>
+          <span class="desc-header text-title">{{ $t('page.explain') }}</span>
         </div>
         <ul>
           <li v-for="item in dimensionList" :key="item.id" class="dimension-item">

@@ -288,7 +288,14 @@
     "duration": "时长",
     "circulationpath": "流转路径",
     "slatip": "时效标签",
-    "priorityaging": "优先级时效"
+    "priorityaging": "优先级时效",
+    "singleexecution": "单次执行",
+    "periodicexecution": "周期执行",
+    "handoverstrategy": "转交策略",
+    "timeoutpolicy": "超时策略",
+    "limitationconditions": "时效条件",
+    "autoscoring": "自动评分",
+    "enablescoring": "启用评分"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
