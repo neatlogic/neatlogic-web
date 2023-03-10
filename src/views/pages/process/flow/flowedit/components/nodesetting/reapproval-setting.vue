@@ -17,7 +17,7 @@
   <div class="control-box">
     <div class="control-setting">
       <span class="label">
-        <span>重审</span>
+        <span>{{ $t('page.reapproval') }}</span>
       </span>
       <span class="control-btn">
         <TsFormSwitch

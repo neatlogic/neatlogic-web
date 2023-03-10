@@ -45,7 +45,7 @@
       <div class="control-box">
         <div class="control-setting">
           <span class="label">
-            <span>默认回复</span>
+            <span>{{ $t('page.defaultcontent') }}</span>
           </span>
           <span class="control-btn">
             <i-switch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></i-switch>
@@ -84,7 +84,7 @@
     <div class="settingList">
       <div id="changeStep" class="control-box">
         <div class="control-setting">
-          <span class="label require-label">关联变更</span>
+          <span class="label require-label">{{ $t('term.process.relchange') }}</span>
         </div>
       </div>
       <div class="permission-list">
@@ -106,7 +106,7 @@
     <div class="settingList">
       <div id="changeStep" class="control-box">
         <div class="control-setting">
-          <span class="label require-label">变更步骤设为待办</span>
+          <span class="label require-label">{{ $t('term.process.changesteptodotip') }}</span>
         </div>
       </div>
       <div class="permission-list">
@@ -124,8 +124,8 @@
                   >
                     <b class="tsfont-info-o text-href"></b>
                     <div slot="content">
-                      <p v-if="c.value == 'changeStepActive'">即变更（sop）步骤激活时，将该步骤设为待办</p>
-                      <p v-else>即变更处理节点激活时，将所有变更步骤设为待办</p>
+                      <p v-if="c.value == 'changeStepActive'">{{ $t('term.process.changestepsoptip') }}</p>
+                      <p v-else>{{ $t('term.process.enablechangetodotip') }}</p>
                     </div>
                   </Tooltip>
                 </span>
@@ -193,11 +193,11 @@ export default {
       changeStepVisibleList: [
         {
           value: 'changeStepActive',
-          text: '变更步骤激活时'
+          text: this.$t('term.process.enablechange')
         },
         {
           value: 'processTaskStepActive',
-          text: '变更就绪时'
+          text: this.$t('term.process.readychange')
         }
       ],
       tagList: []

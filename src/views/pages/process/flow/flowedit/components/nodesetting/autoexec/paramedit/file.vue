@@ -56,12 +56,12 @@
       </div>
       <template v-if="uploadList.length > showNumber">
         <div class="file-more text-tip-active" @click="lookFileList">
-          查看所有
+          {{ $t('page.viewall') }}
         </div>
       </template>
       <TsDialog :isShow.sync="showDialog" @on-close="close">
         <template v-slot:header>
-          查看所有
+          {{ $t('page.viewall') }}
         </template>
         <template v-slot>
           <div class="all-file input-border">

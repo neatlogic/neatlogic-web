@@ -46,7 +46,7 @@
                         v-show="item.effectiveAuthority"
                         class="action-item active"
                         :class="item.support == 'mobile'?'disable':''"
-                        :title="item.support == 'mobile'?'该服务仅支持移动端上报':''"
+                        :title="item.support == 'mobile'?$t('term.process.mobilereporttip'):''"
                         @click="toWorkorder(item)"
                       > {{ $t('term.process.submittask') }}</span>
                       <span class="action-item active" @click="alterServe(item.uuid)"> {{ $t('page.edittarget',{target:$t('term.process.catalog')}) }}</span>

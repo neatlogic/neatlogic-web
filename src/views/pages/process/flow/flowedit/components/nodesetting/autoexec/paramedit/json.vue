@@ -77,7 +77,7 @@ export default {
         setting.validateList = [].concat(setting.validateList || []);
         setting.validateList.push({
           name: 'json',
-          message: '请输入正确的json',
+          message: this.$t('message.content.pleaseentertruetarget', {target: 'json'}),
           trigger: 'blur',
           validator(rule, value, _this) {
             let isValid = true;

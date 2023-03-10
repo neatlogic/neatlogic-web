@@ -17,7 +17,7 @@
   <div class="timerNode">
     <Loading :loading-show="loadingShow" type="fix"></Loading>
     <div class="permission-list require-label text-grey">
-      流转时间
+      {{ $t('term.process.circulationtime') }}
     </div>
     <div class="permission-list">
       <template>
@@ -32,7 +32,7 @@
           :firstSelect="false"
         ></TsFormSelect>
       </template>
-      <div class="fz10 tsfont-info-o text-tip tip-time">请选择表单中设置为必填的日期组件</div>
+      <div class="fz10 tsfont-info-o text-tip tip-time">{{ $t('term.process.circulationtimetip') }}</div>
     </div>
     <!-- 初步处理人 -->
     <div class="pt-md">

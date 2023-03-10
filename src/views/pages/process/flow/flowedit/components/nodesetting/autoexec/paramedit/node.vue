@@ -18,7 +18,7 @@
     <div class="node-main">
       <div v-if="!readonly" class="node-select" @click="selectList">
         <Button type="primary" ghost>
-          选择节点
+          {{ $t('term.autoexec.selectnode') }}
         </Button>
       </div>
       <div v-if="nodeList.length > 0" class="node-box overflow">
@@ -33,7 +33,7 @@
       </div>
       <template v-if="nodeList.length > showNumber">
         <div class="text-tip-active" @click="lookNodeList">
-          查看所有
+          {{ $t('page.viewall') }}
         </div>
       </template>
     </div>
@@ -147,7 +147,7 @@ export default {
     valid() {
       let isValid = true;
       if (this.dataConfig && this.dataConfig.validateList && this.dataConfig.validateList.includes('required') && this.nodeList.length == 0) {
-        this.validMesage = '请添加节点';
+        this.validMesage = this.$t('term.process.pleaddnode');
         isValid = false;
       }
       return isValid;

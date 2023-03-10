@@ -4,8 +4,8 @@
     <div class="control-box">
       <div class="control-setting">
         <span class="label">
-          <span>动作设置</span>
-          <div v-if="isActive == 1" class="add-btn tsfont-plus click-tag" @click.stop="editAction('add')">动作</div>
+          <span>{{ $t('term.process.actionsetting') }}</span>
+          <div v-if="isActive == 1" class="add-btn tsfont-plus click-tag" @click.stop="editAction('add')">{{ $t('term.process.action') }}</div>
         </span>
         <span class="control-btn">
           <!-- <span class="tip">{{ isActive ? '自定义' : '引用全局' }}</span> -->
@@ -29,17 +29,17 @@
             </div>
             <div class="contain">
               <div class="form-block">
-                <div class="block-left">外部调用：</div>
+                <div class="block-left">{{ $t('term.process.externalcall') }}：</div>
                 <div class="block-right text">{{ setIntegration(action.integrationUuid) || '-' }}</div>
               </div>
               <div v-if="action.paramMappingList && action.paramMappingList.length > 0" class="form-block">
-                <div class="block-left">参数值：</div>
+                <div class="block-left">{{ $t('term.autoexec.paramsvalue') }}：</div>
                 <div class="block-right text">
                   <div v-for="(param, pindex) in action.paramMappingList" :key="pindex">{{ param.name }}<span class="text-tip"> = </span>{{ setParam(param.value) }}</div>
                 </div>
               </div>
               <div v-if="action.successCondition && action.successCondition.name" class="form-block">
-                <div class="block-left">成功判断：</div>
+                <div class="block-left">{{ $t('page.successjudgment') }}：</div>
                 <div class="block-right text">
                   {{ action.successCondition.name || '-' }}
                   <span class="text-icon">{{ setExpress(action.successCondition.expression) || '-' }}</span>

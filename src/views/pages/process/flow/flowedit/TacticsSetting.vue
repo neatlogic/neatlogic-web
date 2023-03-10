@@ -463,34 +463,34 @@
                     </div>
                   </div>
                   <div class="block_mode">
-                    <div class="label require-label">执行方式</div>
+                    <div class="label require-label">{{ $t('page.executionmode') }}</div>
                     <div class="content">
                       <div class="item">
                         <Select v-model="item.executeType" transfer @on-change="executeChange(item)">
-                          <Option value="once">单次执行</Option>
-                          <Option value="loop">周期执行</Option>
+                          <Option value="once">{{ $t('term.process.singleexecution') }}</Option>
+                          <Option value="loop">{{ $t('term.process.periodicexecution') }}</Option>
                         </Select>
                       </div>
                     </div>
                   </div>
                   <div v-if="item.executeType == 'loop'" class="block_interval">
-                    <div class="label require-label">间隔</div>
+                    <div class="label require-label">{{ $t('page.interval') }}</div>
                     <div class="content">
                       <div class="item">
                         <TsFormInput
                           ref="numberInput"
                           v-model="item.intervalTime"
                           type="number"
-                          placeholder="间隔时间"
+                          :placeholder="$t('page.timeinterval')"
                           :validateList="validateSetting.number"
                           width="100%"
                         />
                       </div>
                       <div class="item">
                         <Select v-model="item.intervalUnit" transfer>
-                          <Option value="minute">分钟</Option>
-                          <Option value="hour">小时</Option>
-                          <Option value="day">天</Option>
+                          <Option value="minute">{{ $t('page.minute') }}</Option>
+                          <Option value="hour">{{ $t('page.hour') }}</Option>
+                          <Option value="day">{{ $t('page.day') }}</Option>
                         </Select>
                       </div>
                     </div>
@@ -501,7 +501,7 @@
             </div>
           </template>
           <template v-slot:overtime-label>
-            <span>转交策略</span>
+            <span>{{ $t('term.process.handoverstrategy') }}</span>
             <div class="addTactics text-href tsfont-plus" @click="overtimeAdd()">{{ $t('term.process.policy') }}</div>
           </template>
           <template v-slot:overtime>
@@ -510,7 +510,7 @@
                 <div v-for="(item, index) in slaData.transferPolicyList" :key="index" class="notice">
                   <span class="tsfont-close-s btn-removerule text-tip" @click="transferDel(index)"></span>
                   <div class="block_condition">
-                    <div class="label require-label">触发条件</div>
+                    <div class="label require-label">{{ $t('page.triggercondition') }}</div>
                     <div class="content">
                       <div class="item">
                         <!-- <Select v-model="item.expression">
@@ -545,7 +545,7 @@
                     </div>
                   </div>
                   <div class="block_object">
-                    <div class="label require-label">对象</div>
+                    <div class="label require-label">{{ $t('page.object') }}</div>
                     <div class="content">
                       <div class="item">
                         <UserSelect
@@ -631,15 +631,15 @@ export default {
           { name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.duration')})},
           { name: 'integer_p', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.positiveinteger')})}
         ],
-        required: [{ name: 'required', message: '请填写完整' }]
+        required: [{ name: 'required', message: this.$t('message.content.completerequired', {target: ''})}]
       },
       timeArray: {
-        day: '天',
-        hour: '小时',
-        minute: '分钟'
+        day: this.$t('page.day'),
+        hour: this.$t('page.hour'),
+        minute: this.$t('page.minute')
       },
       slaDialog: {
-        title: '添加策略',
+        title: this.$t('dialog.title.addtarget', {target: this.$t('term.process.policy') }),
         show: false,
         className: 'slaDialog',
         labelPosition: 'top',
@@ -694,12 +694,12 @@ export default {
           {
             type: 'slot',
             name: 'notice',
-            label: '通知策略'
+            label: this.$t('page.notificationstrategy')
           },
           {
             type: 'slot',
             name: 'overtime',
-            label: '超时策略'
+            label: this.$t('term.process.timeoutpolicy')
           }
         ],
         condition: {},
@@ -710,15 +710,15 @@ export default {
           selectRight: [
             {
               value: 'day',
-              label: '天'
+              label: this.$t('page.day')
             },
             {
               value: 'hour',
-              label: '小时'
+              label: this.$t('page.hour')
             },
             {
               value: 'minute',
-              label: '分钟'
+              label: this.$t('page.minute')
             }
           ]
         }
@@ -859,7 +859,7 @@ export default {
       if (uuid && uuid != undefined) {
         let stepArray = this.slaData.processStepUuidList; //关键步骤数组处理
         if (uuid && uuid != undefined) {
-          this.slaDialog.title = '编辑策略';
+          this.slaDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('term.process.policy') });
           this.isMultipleStep(this.slaData.calculateHandler); // 设置关键步骤是否是多选
           let slaObj = {
             'name': this.slaData.name, // 时效标签
@@ -1132,11 +1132,11 @@ export default {
           }
         });
       if (noticeList.length > 0) {
-        this.$Message.error('通知策略填写完整');
+        this.$Message.error(this.$t('message.content.completerequired', {target: this.$t('page.notificationstrategy')}));
         return;
       }
       if (voildList.length > 0) {
-        this.$Message.error('时效条件请填写完整');
+        this.$Message.error(this.$t('message.content.completerequired', {target: this.$t('term.process.limitationconditions')}));
         return;
       }
 
@@ -1467,7 +1467,7 @@ export default {
   watch: {
     'slaDialog.show': function() {
       if (this.slaDialog.show === false) {
-        this.slaDialog.title = '添加策略';
+        this.slaDialog.title = this.$t('dialog.title.addtarget', {target: this.$t('term.process.policy') });
         this.$refs.slaForm.clearForm();
         this.slaData = {
           name: '',
