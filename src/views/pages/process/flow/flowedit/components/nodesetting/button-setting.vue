@@ -56,7 +56,9 @@ export default {
   props: {
     title: {
       type: String,
-      default: '文案修改'
+      default() {
+        return this.$t('page.edittext');
+      }
     },
     defaultIsActive: {
       type: [String, Number],

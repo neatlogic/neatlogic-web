@@ -17,14 +17,14 @@
   <div class="control-box">
     <div class="control-setting">
       <span class="label">
-        <span>自动审批</span>
+        <span>{{ $t('term.process.autoapproval') }}</span>
         <Tooltip
           theme="light"
           transfer
           max-width="300px"
         >
           <i class="fz10 tsfont-info-o text-href"></i>
-          <div slot="content" class="tooltip-content">把下游节点分派的处理人看作一个数组（不管是单人还是多人），当下游处理人数组，包含上游的实际处理人时，下游自动审批</div>
+          <div slot="content" class="tooltip-content">{{ $t('term.process.autoapprovaltip') }}</div>
         </Tooltip>
       </span>
       <span class="control-btn">

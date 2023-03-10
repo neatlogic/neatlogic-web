@@ -273,6 +273,7 @@
   "selectTag": "请选择标签",
   "condition": "条件",
   "filtercondition": "过滤条件",
+  "default": "默认",
   "defaultvalue": "默认值",
   "batchedit": "批量编辑",
   "move": "移动",
@@ -433,5 +434,17 @@
   "interval": "间隔",
   "hour": "小时",
   "day": "天",
-  "object": "对象"
+  "object": "对象",
+  "naturalday": "自然日",
+  "weekday": "工作日",
+  "constant": "常量",
+  "externaldata" :"外部数据",
+  "noticesetting": "通知设置",
+  "edittext": "文案修改",
+  "formparams": "表单参数",
+  "authsetting": "权限设置",
+  "mousedragsort": "鼠标拖动排序",
+  "usertype": "用户类型",
+  "teamtype": "组类型",
+  "roletype": "角色类型"
 }

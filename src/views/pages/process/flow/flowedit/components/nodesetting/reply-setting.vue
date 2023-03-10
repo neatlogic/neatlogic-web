@@ -38,7 +38,7 @@ export default {
       },
       replySelectConfig: {
         transfer: true,
-        firstText: '回复模板',
+        firstText: this.$t('page.replytemplate'),
         firstLi: true,
         dynamicUrl: 'api/rest/process/comment/system/template/search/forselect',
         rootName: 'tbodyList',

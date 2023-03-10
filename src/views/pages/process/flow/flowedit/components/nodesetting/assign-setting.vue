@@ -5,8 +5,8 @@
         <TsRow>
           <Col span="12">
             <div class="title">
-              <div class="text-grey require-label">分配处理人</div>
-              <div class="text-tip overflow">鼠标拖动排序</div>
+              <div class="text-grey require-label">{{ $t('term.process.poliyuser') }}</div>
+              <div class="text-tip overflow">{{ $t('page.mousedragsort') }}</div>
             </div>
           </Col>
           <Col span="12">
@@ -38,7 +38,7 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">前置步骤</div>
+                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.prestep') }}</div>
                     <div class="text custom-select">
                       <div class="input-border">
                         <TsFormSelect
@@ -56,7 +56,7 @@
                     </div>
                   </div>
                   <div class="text-list">
-                    <div class="title text-left text-tip form-label">指派目标</div>
+                    <div class="title text-left text-tip form-label">{{ $t('term.process.assigngoals') }}</div>
                     <div class="text custom-select">
                       <TsFormSelect
                         v-model="item.config.groupList"
@@ -68,7 +68,7 @@
                     </div>
                   </div>
                   <div class="text-list">
-                    <div class="title text-left text-tip form-label">指派范围</div>
+                    <div class="title text-left text-tip form-label">{{ $t('term.process.assignscope') }}</div>
                     <div class="text custom-select">
                       <div class="input-border">
                         <UserSelect
@@ -81,7 +81,7 @@
                     </div>
                   </div>
                   <div class="text-list">
-                    <div class="title text-left text-tip">是否必填</div>
+                    <div class="title text-left text-tip">{{ $t('page.isrequired') }}</div>
                     <div class="text custom-select">
                       <div class="text-right">
                         <i-switch v-model="item.config.isRequired" :true-value="1" :false-value="0"></i-switch>
@@ -105,7 +105,7 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">前置步骤</div>
+                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.prestep') }}</div>
                     <div class="text custom-select">
                       <div class="input-border">
                         <TsFormSelect
@@ -139,17 +139,17 @@
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
                     <div v-if="!formUuid" class="text-tip">
-                      当前流程未关联任何表单，请前往
+                      {{ $t('term.process.norelformtip') }}
                       <a class="text-href" href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
-                      关联表单
+                      {{ $t('term.process.relform') }}
                     </div>
                     <div v-else-if="!formItemList || formItemList.length == 0" class="text-tip">
-                      当前关联表单无可选组件（用户选择器或者下拉框），请前往
+                      {{ $t('term.process.nouserformitemtip') }}
                       <a href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
-                      修改关联表单
+                      {{ $t('term.process.reviserelform') }}
                     </div>
                     <div v-else>
-                      <div class="title text-left require-label text-tip form-label">表单值</div>
+                      <div class="title text-left require-label text-tip form-label">{{ $t('term.process.formvalue') }}</div>
                       <div class="text input-border custom-select">
                         <TsFormSelect
                           ref="dealValue"
@@ -184,7 +184,7 @@
                 <div v-if="item.isChecked == 1" class="content">
                   <div>
                     <div class="text-list">
-                      <div class="title text-left require-label text-tip form-label">分派器</div>
+                      <div class="title text-left require-label text-tip form-label">{{ $t('term.process.dispatcher') }}</div>
                       <div class="text custom-select">
                         <div class="input-border">
                           <TsFormSelect
@@ -221,9 +221,9 @@
                                 transfer
                               ></TsFormSelect>
                               <div v-if="!formUuid" class="text-tip">
-                                当前流程未关联任何表单，请前往
+                                {{ $t('term.process.norelformtip') }}
                                 <span class="text-href" @click="toSetting">{{ $t('term.process.flowsetting') }}</span>
-                                关联表单
+                                {{ $t('term.process.relform') }}
                               </div>
                             </div>
                             <!-- 处理人领导分派器 -->
@@ -295,7 +295,7 @@
     <div id="defaultWorker" class="settingList">
       <div class="control-box">
         <div class="control-setting">
-          <span class="label require-label">异常处理人</span>
+          <span class="label require-label">{{ $t('term.process.erroruser') }}</span>
         </div>
       </div>
       <div class="input-border permission-list">
@@ -348,17 +348,17 @@ export default {
       executeModeList: [
         {
           value: 'batch',
-          text: '全部匹配'
+          text: this.$t('term.process.matchall')
         },
         {
           value: 'sort',
-          text: '顺序匹配'
+          text: this.$t('term.process.matchsort')
         }
       ],
       workerPolicyConfig: { executeMode: 'batch', policyList: [] },
       policyList: [
         {
-          name: '由前置步骤处理人指定',
+          name: this.$t('term.process.preuserappoint'),
           type: 'prestepassign',
           isChecked: 0,
           config: {
@@ -370,7 +370,7 @@ export default {
         },
         {
           type: 'copy',
-          name: '复制前置步骤处理人',
+          name: this.$t('term.process.copypreuser'),
           isChecked: 0,
           config: {
             processStepUuid: []
@@ -378,7 +378,7 @@ export default {
         },
         {
           type: 'form',
-          name: '表单值',
+          name: this.$t('term.process.formvalue'),
           isChecked: 0,
           config: {
             attributeUuidList: []
@@ -386,7 +386,7 @@ export default {
         },
         {
           type: 'automatic',
-          name: '分派器',
+          name: this.$t('term.process.dispatcher'),
           isChecked: 0,
           config: {
             handler: '',
@@ -407,15 +407,15 @@ export default {
       automaticFormValue: [], //分派器表单值
       dataGroupList: [ //指派目标类型
         {
-          text: '用户类型',
+          text: this.$t('page.usertype'),
           value: 'user'
         },
         {
-          text: '组类型',
+          text: this.$t('page.teamtype'),
           value: 'team'
         },
         {
-          text: '角色类型',
+          text: this.$t('page.roletype'),
           value: 'role'
         }
       ],

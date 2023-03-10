@@ -17,7 +17,7 @@
   <div class="control-box">
     <div class="control-setting">
       <span class="label">
-        <span>自动流转</span>
+        <span>{{ $t('term.process.autocirculation') }}</span>
       </span>
       <span class="control-btn">
         <TsFormSwitch

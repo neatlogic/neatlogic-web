@@ -26,7 +26,7 @@
             placement="bottom-start"
           >
             <i class="fz10 tsfont-info-o text-href"></i>
-            <div slot="content" class="tooltip-content">未在指定时间段内评分，系统自动好评</div>
+            <div slot="content" class="tooltip-content">{{ $t('term.process.scorefavourable') }}</div>
           </Tooltip>
         </div>
         <div>
@@ -38,7 +38,7 @@
         <InputNumber
           v-model="scoreConfig.config.autoTime"
           :min="1"
-          :formatter="value => `${value} 天`"
+          :formatter="value => `${value}`+$t('page.day')"
         ></InputNumber>
       </div>
     </template>
@@ -46,7 +46,7 @@
     <TsDialog
       :hasFooter="false"
       :isShow.sync="isDialogShow"
-      title="评分模板"
+      :title="$t('term.process.scoringtemplate')"
       transfer
       className="score-template-dialog"
     >
@@ -102,8 +102,8 @@ export default {
         clearable: false,
         defaultValueIsFirst: true,
         dataList: [
-          {value: 'naturalDay', text: '自然日'},
-          {value: 'workDay', text: '工作日'}
+          {value: 'naturalDay', text: this.$t('page.naturalday')},
+          {value: 'workDay', text: this.$t('page.weekday')}
         ],
        
         validateList: ['required']

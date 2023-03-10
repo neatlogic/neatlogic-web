@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="templateMadol"
-      title="编辑模板"
+      :title="$t('dialog.title.edittarget',{target: $t('page.template')})"
       width="large"
       @on-close="close"
       @on-ok="saveTemplate"
@@ -32,7 +32,7 @@
                   placement="right"
                   width="650"
                   :transfer="true"
-                  title="Freemarker语法帮助"
+                  :title="'Freemarker'+ $t('page.help')"
                 >
                   <a href="javascript:void(0)"><i class="tsfont-info-o text-href" style="padding-right:8px;vertical-align: baseline;"></i>语法帮助</a>
                   <div slot="content">

@@ -23,14 +23,14 @@
       </div>
       <template v-if="fileList.length > showNumber">
         <div class="text-tip-active list" @click="lookData">
-          查看所有
+          {{ $t('page.viewall') }}
         </div>
       </template>
     </template>
     <template v-else>-</template>
     <TsDialog
       :isShow.sync="showDialog"
-      :title="查看所有"
+      :title="$t('page.viewall')"
       :hasFooter="false"
       :maskClose="true"
     >
