@@ -6,8 +6,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="id">编辑DB配置</div>
-        <div v-else>添加DB配置</div>
+        <div v-if="id">{{ $t('page.edittarget', {target: $t('term.deploy.dbconfig')}) }}</div>
+        <div v-else>{{ $t('page.addtarget', {target: $t('term.deploy.dbconfig')}) }}</div>
       </template>
       <template v-slot>
         <Loading :loadingShow="isLoading" type="fix"></Loading>
@@ -22,7 +22,7 @@
                 <span class="tsfont-rotate-right text-tip-active" @click="refreshAccountList"></span>
                 <span class="tsfont-edit text-tip-active pl-md" @click="toAssetManageEditAccount"></span>
               </div>
-              <TsFormItem label="帐号" :required="true">
+              <TsFormItem :label="$t('page.accounts')" :required="true">
                 <TsFormSelect
                   ref="formSelect"
                   v-model="formValue.accountId"
@@ -70,7 +70,7 @@ export default {
       dialogSetting: {
         isShow: true,
         type: 'modal',
-        okText: '保存',
+        okText: this.$t('button.save'),
         width: 'medium'
       },
       formValue: {
@@ -80,14 +80,14 @@ export default {
       accountSetting: {
         transfer: true,
         multiple: false,
-        firstText: '绑定帐号',
+        firstText: this.$t('term.deploy.bindaccount'),
         firstLi: true,
         dataList: [],
         params: {protocol: 'database'},
         needCallback: false,
         errorMessage: '',
         disabled: !this.id,
-        disabledHoverTitle: !this.id ? '请先选择帐号' : '',
+        disabledHoverTitle: !this.id ? this.$t('form.placeholder.pleaseselect', {target: this.$t('page.accounts')}) : '',
         validateList: ['required'],
         firstSelect: false
       },
@@ -100,20 +100,20 @@ export default {
         {
           name: 'dbSchema',
           type: 'text',
-          label: '数据库schema',
+          label: this.$t('term.deploy.databaseschema'),
           maxlength: 50,
           validateList: [
             'required', 
             'key-special', 
             {
               name: 'regex', 
-              message: '输入格式不规范，请输入：dbname.username',
+              message: this.$t('term.deploy.inputformatisnotstandardpleaseenter'),
               pattern: /^[A-Za-z\d_-]+[.]+[A-Za-z\d_-]+$/
             },
             {
               name: 'custom',
               trigger: 'change',
-              message: 'dbname.username,有且只有一个点号', 
+              message: this.$t('term.deploy.thereisoneandonlyonedot'), 
               validator: (rule, value) => {
                 // 验证有且只有一个点号
                 let potsNumber = value ? value.split('.').length : 0; 
@@ -124,16 +124,16 @@ export default {
               name: 'searchUrl', 
               url: '/api/rest/deploy/app/config/env/db/config/save', 
               key: 'dbSchema', 
-              message: '数据库schema已存在',
+              message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.databaseschema')}),
               params: {id: this.id, ...this.params}
             }
           ],
-          desc: 'schema输入格式：dbname.username'
+          desc: this.$t('term.deploy.schemaformatdesc')
         },
         {
           name: 'dbResourceId',
           type: 'select',
-          label: '数据库',
+          label: this.$t('page.database'),
           validateList: ['required'],
           dynamicUrl: '/api/rest/deploy/app/config/env/database/search',
           params: {...this.params},
@@ -152,7 +152,7 @@ export default {
             } else {
               this.dbResourceId = null;
               this.$set(this.accountSetting, 'disabled', true);
-              this.$set(this.accountSetting, 'disabledHoverTitle', '请先选择数据库');
+              this.$set(this.accountSetting, 'disabledHoverTitle', this.$t('form.placeholder.pleaseselect', {target: this.$t('page.database')}));
               this.$set(this.accountSetting.params, 'resourceId', null);
               this.$set(this.formValue, 'accountId', null); // 清空帐号
             }
@@ -167,7 +167,7 @@ export default {
         {
           name: 'config',
           type: 'switch',
-          label: '高级设置',
+          label: this.$t('page.advancedsettings'),
           falseValue: 0,
           trueValue: 1,
           onChange: (isOpen) => {
@@ -185,13 +185,13 @@ export default {
         {
           name: 'custom',
           type: 'text',
-          label: '自定义参数',
+          label: this.$t('term.deploy.customparameter'),
           maxlength: 256
         },
         {
           name: 'logonTimeout',
           type: 'text',
-          label: '连接超时(秒)',
+          label: this.$t('term.deploy.connectiontimeout'),
           maxlength: 256
         },
         {
@@ -204,21 +204,21 @@ export default {
         {
           name: 'fileCharset',
           type: 'text',
-          label: '文件编码',
+          label: this.$t('page.filecoding'),
           maxlength: 256
         },
         {
           name: 'autocommit',
           type: 'select',
-          label: '自动提交',
+          label: this.$t('term.deploy.autocommit'),
           transfer: true,
           dataList: [
             {
-              text: '是',
+              text: this.$t('page.yes'),
               value: 1
             },
             {
-              text: '否',
+              text: this.$t('page.no'),
               value: 0
             }
           ]
@@ -226,19 +226,19 @@ export default {
         {
           name: 'dbVersion',
           type: 'text',
-          label: 'DB版本',
+          label: this.$t('term.deploy.dbversion'),
           maxlength: 256
         },
         {
           name: 'ignoreErrors',
           type: 'text',
-          label: '忽略报错',
+          label: this.$t('term.deploy.ignoreerrors'),
           maxlength: 256
         },
         {
           name: 'dbaRole',
           type: 'text',
-          label: 'DBA角色',
+          label: this.$t('term.deploy.dbarole'),
           maxlength: 256
         }
       ],
@@ -250,11 +250,11 @@ export default {
           transfer: true,
           dataList: [
             {
-              text: '是',
+              text: this.$t('page.yes'),
               value: 1
             },
             {
-              text: '否',
+              text: this.$t('page.no'),
               value: 0
             }
           ]
@@ -349,7 +349,7 @@ export default {
       let form = this.$refs.form;
       if ((form && !form.valid()) || (this.formValue && !this.formValue.accountId)) {
         if (this.formValue && !this.formValue.accountId) {
-          this.$set(this.accountSetting, 'errorMessage', '请输入内容');
+          this.$set(this.accountSetting, 'errorMessage', this.$t('form.validate.pleaseenterthecontent'));
         }
         return false;
       }
@@ -438,7 +438,7 @@ export default {
       this.getAccountList();
     },
     refreshSuccess() {
-      this.$Message.success('刷新成功');
+      this.$Message.success(this.$t('message.content.refreshsuccess'));
       this.$set(this.accountSetting, 'needCallback', false);
       if (this.accountSetting.params && this.accountSetting.params.hasOwnProperty('refreshUuid')) {
         delete this.accountSetting.params.refreshUuid;

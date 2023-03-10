@@ -563,7 +563,7 @@ export default {
           //校验至少一个脚本+输入参数如果必填需要有值
           if (!v.config || !v.config.phaseOperationList || !v.config.phaseOperationList.length) {
             validList.push({
-              text: '阶段' + v.name + '设置：至少选择一个工具',
+              text: this.$t('term.deploy.phaseatleastonetool', {target: v.name}),
               type: 'error',
               stepUuid: v.uuid,
               id: '#step_' + v.uuid,

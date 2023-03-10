@@ -3,9 +3,9 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/schedule-job-manage')">{{ $getFromPage('定时作业') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/schedule-job-manage')">{{ $getFromPage('term.autoexec.timingjob') }}</span>
       </template>
-      <template v-slot:topLeft>编辑定时作业</template>
+      <template v-slot:topLeft>{{ $t('page.edittarget', {target: $t('term.autoexec.timingjob')}) }}</template>
       <template v-slot:topRight>
         <Button v-if="initData.editable" type="primary" @click="saveTimeJob()">{{ $t('button.save') }}</Button>
       </template>
@@ -35,7 +35,7 @@
               </div>
             </TabPane>
             <TabPane
-              label="作业参数"
+              :label="$t('term.autoexec.jobparam')"
               name="jobParam"
               tab="content"
             >
@@ -143,7 +143,7 @@ export default {
       this.validList = [];
       if (this.$refs.jobBaseinfo && !this.$refs.jobBaseinfo.valid()) {
         this.validList.push({
-          text: '当前基本信息未填写完整',
+          text: this.$t('term.deploy.basicinfonotwaritecompletevalid'),
           type: 'error',
           id: '#jobBaseinfo',
           current: 'basicInfo'

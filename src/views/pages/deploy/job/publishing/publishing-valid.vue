@@ -1,7 +1,7 @@
 <template>
   <div v-if="visible" class="valid-main">
     <Card v-if="validList && validList.length>0 " :padding="0">
-      <p slot="title">校验</p>
+      <p slot="title">{{ $t('button.validate') }}</p>
       <span slot="extra" class="tsfont-close remove text-grey" @click="close"></span>
       <div class="contain">
         <div

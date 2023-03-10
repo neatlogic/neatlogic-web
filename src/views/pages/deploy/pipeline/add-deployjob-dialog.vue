@@ -10,8 +10,8 @@
         </AddDeployJobForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -32,7 +32,7 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'medium',
-        title: '添加批量作业'
+        title: this.$t('term.deploy.addbatchjob')
       }
     };
   },

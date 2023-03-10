@@ -9,7 +9,7 @@
       class="tsfont-plus text-action mt-nm pl-md text-href"
       style="margin-bottom: -5px;"
       @click="openAppEdit"
-    >应用</div>
+    >{{ $t('page.application') }}</div>
     <div ref="scroll">
       <Scroll :on-reach-bottom="handleReachBottom" :loading-text="loadingTip" :height="scrollHeight">
         <Tree
@@ -96,7 +96,7 @@ export default {
     return {
       scrollHeight: 0,
       keyword: '',
-      loadingTip: '加载中',
+      loadingTip: this.$t('page.loading'),
       pageCount: 0,
       currentPage: 1,
       pageSize: 20,
@@ -213,7 +213,7 @@ export default {
         treeList = this.$utils.deepClone(this.treeList);
         this.treeList = [];
         this.treeList.unshift({
-          title: '所有',
+          title: this.$t('page.all'),
           configType: 'all',
           expand: true,
           selected: true,
@@ -263,7 +263,7 @@ export default {
         setTimeout(() => {
           resolve();
           if (this.currentPage > 1 && this.treeList.length >= this.rowNum) {
-            this.loadingTip = '到底了';
+            this.loadingTip = this.$t('page.loadfinish');
             return;
           } else {
             this.getTreeList();
@@ -349,7 +349,7 @@ export default {
         };
         this.$api.deploy.applicationConfig.saveAppFavorite(params).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(params.isFavorite ? '收藏成功' : '取消成功');
+            this.$Message.success(params.isFavorite ? this.$t('message.content.collectionsuccess') : this.$t('message.content.cancelsuccess'));
             this.$set(node, 'isFavorite', params.isFavorite);
           }
         });

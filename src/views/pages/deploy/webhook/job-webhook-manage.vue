@@ -67,7 +67,7 @@
           <template slot="action" slot-scope="{row, index}">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-history" @click.stop="openExecutionRecord(row)">{{ $t('term.deploy.executionrecord') }}</li>
+                <li class="tsfont-history" @click.stop="openExecutionRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
                 <li class="tsfont-trash-o" @click.stop="delJobWebhook(row, index)">{{ $t('page.delete') }}</li>
               </ul>
             </div>

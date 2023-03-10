@@ -10,7 +10,7 @@
     >
       <template v-slot:header>
         <div class="action-group">
-          <span>{{ selectedApp.name }} - 资源锁</span>
+          <span>{{ selectedApp.name }} - {{ $t('term.autoexec.resourcelock') }}</span>
         </div>
       </template>
       <template v-slot>
@@ -28,13 +28,13 @@
               >{{ row.jobName }}</span>
             </template>
             <template v-slot:isLock="{row}">
-              {{ row.isLock == 1 ? "已锁定":"等待" }}
+              {{ row.isLock == 1 ? $t('page.locked'): $t('page.wait') }}
             </template>
             <template v-slot:action="{row}">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li v-if="row.isLock != 1" class="tsfont-edit" @click="deleteLock('cancel',row)">取消等待</li>
-                  <li v-if="row.isLock == 1" class="tsfont-yunweishenjishebei" @click="deleteLock('unlock',row)">强制解锁</li>
+                  <li v-if="row.isLock != 1" class="tsfont-edit" @click="deleteLock('cancel',row)">{{ $t('term.deploy.cancelwait') }}</li>
+                  <li v-if="row.isLock == 1" class="tsfont-yunweishenjishebei" @click="deleteLock('unlock',row)">{{ $t('term.deploy.forceunlock') }}</li>
                 </ul>
               </div>
             </template>
@@ -74,7 +74,7 @@ export default {
     return {
       theadList: [
         {
-          title: '资源',
+          title: this.$t('page.resources'),
           key: 'lockTarget',
           maxLength: 30
         },
@@ -83,7 +83,7 @@ export default {
           key: 'isLock'
         },
         {
-          title: '上锁作业',
+          title: this.$t('term.deploy.lockingoperation'),
           key: 'jobName'
         },
         {
@@ -91,11 +91,11 @@ export default {
           key: 'jobStatus'
         },
         {
-          title: '锁定时长',
+          title: this.$t('term.deploy.lockingduration'),
           key: 'lockCostTime'
         },
         {
-          title: '锁定时间',
+          title: this.$t('term.deploy.locktime'),
           key: 'fcd',
           type: 'time'
         },
@@ -148,7 +148,7 @@ export default {
     deleteLock(buttonType, row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '作业 "' + row.jobName + '" 未执行完成，' + (buttonType === 'cancel' ? '取消等待' : '强制解锁') + '可能导致作业执行失败，是否继续?',
+        content: this.$t('term.deploy.jobnotexecutefinish', {target: row.jobName}) + (buttonType === 'cancel' ? this.$t('term.deploy.cancelwait') : this.$t('term.deploy.forceunlock')) + this.$t('term.deploy.jobexecutionmayfailconfirm'),
         btnType: 'info',
         'on-ok': vnode => {
           let data = { 
@@ -159,7 +159,7 @@ export default {
           this.$api.framework.globallock.lock(data).then(res => {
             if (res.Status == 'OK') {
               this.searchData(1);
-              this.$Message.success((buttonType === 'cancel' ? '取消等待' : '强制解锁') + '成功');
+              this.$Message.success((buttonType === 'cancel' ? this.$t('term.deploy.cancelwait') : this.$t('term.deploy.forceunlock')) + this.$t('page.success'));
             }
           });
           vnode.isShow = false;

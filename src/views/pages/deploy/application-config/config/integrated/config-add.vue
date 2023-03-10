@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage('', '配置列表') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage('', 'term.deploy.configurationlist') }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="tsfont-question-s text-action" @click="openConfigAddHelpDialog">{{ $t('page.help') }}</span>
@@ -22,7 +22,7 @@
             ></TsForm>
           </li>
           <li>
-            <Divider orientation="start">模块</Divider>
+            <Divider orientation="start">{{ $t('page.module') }}</Divider>
             <TsForm
               ref="moduleForm"
               v-model="formValue"
@@ -30,7 +30,7 @@
             ></TsForm>
           </li>
           <li>
-            <Divider orientation="start">仓库</Divider>
+            <Divider orientation="start">{{ $t('term.deploy.warehouse') }}</Divider>
             <TsForm
               ref="storehouseForm"
               v-model="formValue"
@@ -38,7 +38,7 @@
             ></TsForm>
           </li>
           <li>
-            <Divider orientation="start">动作</Divider>
+            <Divider orientation="start">{{ $t('term.deploy.action') }}</Divider>
             <TsForm
               ref="actionForm"
               v-model="formValue"
@@ -98,7 +98,7 @@ export default {
       loadingShow: false,
       isShowConfigAddHelpDialog: false,
       appSystemId: null,
-      branchFilterSvnTooltip: '1、*：匹配单层目录内任意数量的字符。\n如 /Projects/Branches/* 匹配 /Projects/Branches/v1.2.3/，但不匹配 /Projects/Branches/v1.2.3/Java/\n2、**：匹配任意数量的字符。\n如 /Projects/Branches/** 匹配 /Projects/Branches/v1.2.3/、/Projects/Branches/v1.2.3/Java/ 和 /Projects/Branches/v1.2.3/Java/Spring/\n3、?：匹配单个字符。\n如 /Projects/Branches/v?.?.? 匹配 /Projects/Branches/v1.2.3/，但不匹配 /Projects/Branches/v1.2.3.4/\n4、{pattern1, pattern2,...patternN}：只匹配给定的模式。\n如 /Projects/Branches/{v1.2.3, v1.2.4, v1.2.5} 只匹配 /Projects/Branches/ 下的 v1.2.3, v1.2.4, v1.2.5\n5、方括号模式指定单个匹配的字符集。\n如 [0-9] 匹配单个数字，[a-z, A-Z] 匹配任意一个字母，/Projects/Branches/v[0-9.]* 匹配 /Projects/Branches/v1.2.3/、/Projects/Branches/v1.2.3.4/\n6、要匹配特殊字符需用 “\” 转义，如 /Projects/Branches/v\[ 匹配 /Projects/Branches/v[/',
+      branchFilterSvnTooltip: this.$t('term.deploy.branchfiltersvntooltip1') + '\n' + this.$t('term.deploy.branchfiltersvntooltip2') + '\n' + this.$t('term.deploy.branchfiltersvntooltip3') + '\n' + this.$t('term.deploy.branchfiltersvntooltip4') + '\n' + this.$t('term.deploy.branchfiltersvntooltip5') + '\n' + this.$t('term.deploy.branchfiltersvntooltip6') + '\n' + this.$t('term.deploy.branchfiltersvntooltip7') + '\n' + this.$t('term.deploy.branchfiltersvntooltip8') + '\n' + this.$t('term.deploy.branchfiltersvntooltip9') + '\n' + this.$t('term.deploy.branchfiltersvntooltip10') + '\n' + this.$t('term.deploy.branchfiltersvntooltip11') + '\n',
       dataList: [],
       actionFormValue: {},
       initData: {}, // 初始值，用于离开页面的时候，对比
@@ -168,7 +168,7 @@ export default {
         {
           name: 'repoType',
           type: 'select',
-          label: '仓库类型',
+          label: this.$t('term.deploy.warehousetype'),
           validateList: ['required'],
           defaultValueIsFirst: true,
           url: '/api/rest/universal/enum/get',
@@ -181,14 +181,14 @@ export default {
         {
           name: 'gitlabUsername',
           type: 'text',
-          label: '用户名',
+          label: this.$t('page.username'),
           validateList: ['required'],
           maxlength: 64
         },
         {
           name: 'gitlabPassword',
           type: 'password',
-          label: '密码',
+          label: this.$t('page.password'),
           validateList: ['required'],
           maxlength: 64,
           showPassword: false,
@@ -197,62 +197,62 @@ export default {
         {
           name: 'repoServerAddress',
           type: 'text',
-          label: '服务地址',
+          label: this.$t('term.deploy.serviceaddress'),
           validateList: ['required', 'url'],
           maxlength: 256
         },
         {
           name: 'repoName',
           type: 'text',
-          label: '仓库名',
+          label: this.$t('term.deploy.warehousename'),
           validateList: ['required'],
           maxlength: 128
         },
         {
           name: 'branchFilter',
           type: 'text',
-          label: '分支',
+          label: this.$t('page.branch'),
           maxlength: 128
         },
         {
           name: 'event',
           type: 'select',
-          label: '事件',
+          label: this.$t('page.event'),
           validateList: ['required'],
           dataList: [],
-          desc: '分支上发生此事件时触发集成动作'
+          desc: this.$t('term.deploy.branchactiondesc')
         }
       ],
       actionFormList: [
         {
           name: 'action',
           type: 'select',
-          label: '动作类型',
+          label: this.$t('term.deploy.actiontype'),
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.deploy.constvalue.DeployCiActionType' },
-          desc: '动作修改之后，动作对应的配置信息将会清空',
+          desc: this.$t('term.deploy.actiontypedesc'),
           onChange: () => {
             this.actionFormValue = {};
           }
         }, {
           type: 'slot',
           name: 'triggerType',
-          label: '触发方式',
+          label: this.$t('term.autoexec.triggertype'),
           validateList: ['required']
         },
         {
           name: 'triggerTime',
           type: 'time',
           isHidden: true,
-          label: '计划时间',
+          label: this.$t('page.plantime'),
           validateList: ['required']
         },
         {
           name: 'delayTime',
           type: 'number',
           isHidden: true,
-          label: '延迟时间(s)',
+          label: this.$t('term.deploy.delaytime(s)'),
           validateList: ['required']
         }
       ],
@@ -426,15 +426,15 @@ export default {
             this.$set(this.formValue, 'event', 'post-receive');
             this.$set(item, 'dataList', this.dataList.filter((item) => item.value == 'post-receive'));
           } else if (item.name == 'repoServerAddress') {
-            this.$set(item, 'desc', '如果修改了仓库服务器地址或仓库名称，原有仓库的gitlab webhook将被删除');
+            this.$set(item, 'desc', this.$t('term.deploy.updatewarehousewillbedelete'));
           } else if (item.name == 'repoName') {
             // 仓库名称
-            this.$set(item, 'placeholder', '示例：projects/moduleName');
-            this.$set(item, 'desc', '如果修改了仓库服务器地址或仓库名称，原有仓库的gitlab webhook将被删除');
+            this.$set(item, 'placeholder', this.$t('term.deploy.reponamedesc'));
+            this.$set(item, 'desc', this.$t('term.deploy.updatewarehousewillbedelete'));
           } else if (item.name == 'branchFilter') {
             // 分支
-            this.$set(item, 'placeholder', '分支名称，支持通配符');
-            this.$set(item, 'desc', '此分支上的事件会触发集成，如果不填所有分支都会触发');
+            this.$set(item, 'placeholder', this.$t('term.deploy.branchnamewildcardcharactersaresupported'));
+            this.$set(item, 'desc', this.$t('term.deploy.branchtriggerintegrationdesc'));
           }
         });
         if (repoTypeConfig && repoTypeConfig.hasOwnProperty('config')) {
@@ -451,12 +451,12 @@ export default {
             this.$set(item, 'dataList', this.dataList.filter((item) => item.value == 'post-commit'));
           } else if (item.name == 'repoName') {
             // 仓库名称
-            this.$set(item, 'placeholder', '示例：/www/svn/demo_repo');
-            this.$set(item, 'desc', '仓库名称的完整路径名称，示例：/home/app/svn/repoName');
+            this.$set(item, 'placeholder', this.$t('term.deploy.addressexample'));
+            this.$set(item, 'desc', this.$t('term.deploy.warehousecompletepath'));
           } else if (item.name == 'branchFilter') {
             // 分支
-            this.$set(item, 'placeholder', '示例：branches/v1.0.0');
-            this.$set(item, 'desc', '仓库下的分支名称，此分支内容的变化将会触发持续集成。如果填“/”，则repo的任何分支变更都会触发持续集成.支持使用通配符');
+            this.$set(item, 'placeholder', this.$t('term.deploy.branchexample'));
+            this.$set(item, 'desc', this.$t('term.deploy.branchchangedesc'));
             this.$set(item, 'tooltip', this.branchFilterSvnTooltip);
           }
         });

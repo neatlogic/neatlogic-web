@@ -30,7 +30,7 @@
                       class="tsfont-download download-script-box text-op cursor"
                       style="top: 10px;right: 10px;"
                       @click="downloadScript(t.desc)"
-                    >下载脚本</span>
+                    >{{ $t('term.deploy.downloadscript') }}</span>
                     <div v-for="(n, index) in t.desc" :key="index">
                       {{ n }}
                     </div>
@@ -57,64 +57,64 @@ export default {
       dataList: [
         {
           uuid: this.$utils.setUuid(),
-          title: '功能概述',
+          title: this.$t('term.deploy.functionoverview'),
           detailList: [
             {
               title: '',
-              desc: '代码仓库合并代码后（如GitLab的post-receive事件、SVN的post-commit事件），调用本系统接口，创建发布作业，或创建发布批量作业。'
+              desc: this.$t('term.deploy.gitdesc')
             }
           ]
         },
         {
           uuid: this.$utils.setUuid(),
-          title: 'GitLab仓库配置方式',
+          title: this.$t('term.deploy.gitlabconfigmode'),
           detailList: [
             {
-              title: '1.填写仓库信息',
-              desc: '需要填写仓库信息，包括GitLab服务地址、用户名、密码、仓库名、分支信息'
+              title: '1.' + this.$t('term.deploy.writewarehouseinfo'),
+              desc: this.$t('term.deploy.writewarehouseinfodesc')
             },
             {
-              title: ' 2.动作配置',
-              desc: '绑定动作，如创建作业、创建批量作业，并填写动作参数，如发布作业的版本号等'
+              title: ' 2.' + this.$t('term.deploy.actionconfig'),
+              desc: this.$t('term.deploy.actionconfigdesc')
             },
             {
-              title: '3.GitLab创建Hook',
-              desc: '本系统将根据第1步中的仓库信息，调用GitLab接口，自动创建指定分支范围内，由post-receive事件触发的Hook'
+              title: '3.' + this.$t('term.deploy.gitlabcreatehook'),
+              desc: this.$t('term.deploy.gitlabcreatehookdesc')
             },
             {
-              title: '4.生效',
-              desc: ' 配置完成后，当第1步中指定的仓库及分支发生post-receive事件时，GitLab将通过接口访问本系统，根据第2步中的作业参数，在本系统创建发布作业'
+              title: '4.' + this.$t('term.deploy.takeeffect'),
+              desc: this.$t('term.deploy.takeeffectdesc')
             }
           ]
         },
         {
-          title: 'SVN仓库配置方式',
+          title: this.$t('term.deploy.svnwarehouseconfig'),
           detailList: [
             {
-              title: '1.填写仓库信息',
-              desc: '需要填写仓库信息，包括SVN服务地址、仓库名、分支信息'
+              title: '1.' + this.$t('term.deploy.writewarehouseinfo'),
+              desc: this.$t('term.deploy.writesvnwarehouseinfodesc')
 
             },
             {
-              title: '2.动作配置',
-              desc: '绑定动作，如创建作业、创建批量作业，并填写动作参数，如发布作业的版本号等'
+              title: '2.' + this.$t('term.deploy.actionconfig'),
+              desc: this.$t('term.deploy.actionconfigdesc')
             },
             {
-              title: '3.SVN创建Hook',
-              desc: 'SVN仓库，需要用户自行登陆SVN服务器，修改Hook脚本',
+              title: '3.' + this.$t('term.deploy.svncreatehook'),
+              desc: this.$t('term.deploy.svnwarehousesetting'),
               innerList: [
                 {
-                  title: '1）进入hooks目录',
+                  title: '1）' + this.$t('term.deploy.enterhooksdirectory'),
                   type: 'script',
                   desc: ['[root@centos ~]#cd /svndata/doc/hooks', '[root@centos hooks]#ll', 'total 40', '-rw-r--r-- 1 root root 1977 Jun  8 23:50 post-commit.tmpl', '-rw-r--r-- 1 root root 1638 Jun  8 23:50 post-lock.tmpl', '-rw-r--r-- 1 root root 2289 Jun  8 23:50 post-revprop-change.tmpl', '-rw-r--r-- 1 root root 1567 Jun  8 23:50 post-unlock.tmpl', '-rw-r--r-- 1 root root 3426 Jun  8 23:50 pre-commit.tmpl', '-rw-r--r-- 1 root root 2410 Jun  8 23:50 pre-lock.tmpl', '-rw-r--r-- 1 root root 2786 Jun  8 23:50 pre-revprop-change.tmpl', '-rw-r--r-- 1 root root 2100 Jun  8 23:50 pre-unlock.tmpl', '-rw-r--r-- 1 root root 2780 Jun  8 23:50 start-commit.tmpl']
                 },
                 {
-                  title: '2）基于post-commit模板文件，创建post-commit文件并作执行授权',
+                  title: '2）' + this.$t('term.deploy.createpostcommit'),
                   type: 'script',
                   desc: ['[root@centos hooks]#cp post-commit.tmpl post-commit', '[root@centos hooks]#chmod +x post-commit']
                 },
                 {
-                  title: '3）修改post-commit脚本，在脚本中调用本系统创建作业接口(需要修改下方脚本中DEPLOYURL参数的接口地址)',
+                  title: '3）' + this.$t('term.deploy.updatepostcommit'),
                   type: 'script',
                   desc: [
                     '#!/bin/sh -x',
@@ -141,7 +141,7 @@ export default {
                     'added=""',
                     'modified=""',
                     'deleted=""',
-                    '# 如果提交信息中没有 --autodeploy，不执行后续持续集成动作',
+                    '#' + this.$t('term.deploy.notautodeploynotcontinue'),
                     '#if [ -z `svnlook log $REPOS -r $REV | grep -o "\--autodeploy"` ]; then',
                     '  # exit 0',
                     '#fi',
@@ -188,7 +188,7 @@ export default {
                     '    done',
                     'fi',
 
-                    '# 格式化数据',
+                    '#' + this.$t('term.deploy.formatteddata'),
                     'added=${added%,}',
                     'modified=${modified%,}',
                     'deleted=${deleted%,}',
@@ -208,8 +208,8 @@ export default {
 
                 },
                 {
-                  title: '4.生效',
-                  desc: ' 配置完成后，当第1步中指定的仓库及分支发生post-commit事件时，SVN将执行post-commit脚本，调用本系统接口，根据第2步中的作业参数，在本系统创建发布作业'
+                  title: '4.' + this.$t('term.deploy.takeeffect'),
+                  desc: this.$t('term.deploy.svntakeeffectdesc')
                 }
               ]
             }
@@ -249,7 +249,7 @@ export default {
     downloadScript(data) {
       // 下载脚本
       let downLoadData = '';
-      let fileName = 'post-commit脚本.txt';
+      let fileName = this.$t('term.deploy.postcommitscript');
       if (!data) {
         return;
       }

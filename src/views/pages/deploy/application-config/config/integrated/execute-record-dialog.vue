@@ -27,7 +27,7 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="tsfont-file-single" @click="viewLogDetail(row)">日志详情</li>
+                  <li class="tsfont-file-single" @click="viewLogDetail(row)">{{ $t('page.logdetails') }}</li>
                 </ul>
               </div>
             </template>
@@ -75,11 +75,11 @@ export default {
       },
       theadList: [
         {
-          title: '提交ID',
+          title: this.$t('term.deploy.commitid'),
           key: 'commitId'
         },
         {
-          title: '触发动作',
+          title: this.$t('term.deploy.triggeraction'),
           key: 'actionName'
         },
         {

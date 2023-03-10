@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain enableCollapse :siderWidth="220">
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="addTimeJob">定时作业</span>
+        <span class="tsfont-plus text-action" @click="addTimeJob">{{ $t('term.autoexec.timingjob') }}</span>
       </template>
       <template v-slot:topRight>
         <div>
@@ -36,8 +36,8 @@
               </span>
             </template>
             <template v-slot:isActive="{ row }">
-              <span v-if="row.isActive">启用</span>
-              <span v-else>禁用</span>
+              <span v-if="row.isActive">{{ $t('page.enable') }}</span>
+              <span v-else>{{ $t('page.disable') }}</span>
             </template>
             <template slot="cron" slot-scope="{ row }">
               <div>
@@ -47,11 +47,11 @@
             <template v-slot:beginTime="{ row }">
               <div v-if="row.beginTime" class="fz10">
                 <span>{{ row.beginTime | formatDate }}</span>
-                <span class="text-grey ml-xs">开始</span>
+                <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
               </div>
               <div v-if="row.endTime" class="fz10">
                 <span>{{ row.endTime | formatDate }}</span>
-                <span class="text-grey ml-xs">结束</span>
+                <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
               </div>
             </template>
             <template v-slot:appSystemAbbrName="{ row }">
@@ -72,7 +72,7 @@
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li :title="!row.editable ? '无权限，请联系管理员！': ''" @click.stop>
+                  <li :title="!row.editable ? $t('page.notauthrelationadmin'): ''" @click.stop>
                     <TsFormSwitch
                       v-model="row.isActive"
                       :true-value="1"
@@ -84,11 +84,11 @@
                   </li>
                   <li
                     class="tsfont-trash-o"
-                    :title="!row.deletable ?'无权限，请联系管理员！':''"
+                    :title="!row.deletable ? $t('page.notauthrelationadmin'):''"
                     :class="{ disable: !row.deletable }"
                     @click.stop="deleteSchedule(row)"
                   >
-                    删除
+                    {{ $t('page.delete') }}
                   </li>
                 </ul>
               </div>
@@ -131,19 +131,19 @@ export default {
           key: 'isActive'
         },
         {
-          title: '定时计划',
+          title: this.$t('term.autoexec.timingplan'),
           key: 'cron'
         },
         {
-          title: '起止时间',
+          title: this.$t('page.startstoptime'),
           key: 'beginTime'
         },
         {
-          title: '作业类型',
+          title: this.$t('term.deploy.jobtype'),
           key: 'typeName'
         },
         {
-          title: '超级流水线',
+          title: this.$t('term.deploy.superpipeline'),
           key: 'pipelineName'
         },
         {
@@ -151,7 +151,7 @@ export default {
           key: 'appSystemAbbrName'
         },
         {
-          title: '执行记录',
+          title: this.$t('term.autoexec.executionrecord'),
           key: 'execCount'
         },
         {
@@ -230,7 +230,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '是否确认删除该定时任务?',
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.autoexec.scheduledtask')}),
         btnType: 'error',
         'on-ok': vnode => {
           let params = {

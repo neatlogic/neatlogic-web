@@ -127,7 +127,7 @@ export default {
       selectedNode: null,
       appSystemList: [],
       scrollHeight: 0,
-      loadingTip: '加载中...',
+      loadingTip: this.$t('page.loading'),
       selectedApp: null,
       selectedModule: null,
       selectedEnv: null,
@@ -166,7 +166,7 @@ export default {
         };
         this.$api.deploy.applicationConfig.saveAppFavorite(params).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success(params.isFavorite ? '收藏成功' : '取消成功');
+            this.$Message.success(params.isFavorite ? this.$t('message.content.collectionsuccess') : this.$t('message.content.cancelsuccess'));
             this.$set(app, 'isFavorite', params.isFavorite);
             this.searchAppSystem();
           }
@@ -559,7 +559,6 @@ export default {
     value: {
       async handler(val) {
         this.returnValue = val || {};
-        //console.log('watch', JSON.stringify(this.returnValue, null, 2), this.selectedApp);
         await this.reSelectNode();
       },
       deep: true

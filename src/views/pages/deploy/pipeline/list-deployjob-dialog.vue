@@ -50,8 +50,8 @@
                   <span class="tsfont-warning-o text-warn"></span>
                   <template v-slot:content>
                     <div>
-                      <div v-if="row.warnCount > 0">日志中存在告警信息</div>
-                      <div v-if="row.isHasIgnored > 0">阶段中存在状态为'已忽略'的执行节点</div>
+                      <div v-if="row.warnCount > 0">{{ $t('term.autoexec.loghaswarninfo') }}</div>
+                      <div v-if="row.isHasIgnored > 0">{{ $t('term.deploy.phaseexistignorenode') }}</div>
                     </div>
                   </template>
                 </Tooltip>
@@ -68,11 +68,11 @@
               <template v-slot:startTime="{ row }">
                 <div v-if="row.startTime" class="fz10">
                   <span>{{ row.startTime | formatDate }}</span>
-                  <span class="text-grey ml-xs">开始</span>
+                  <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
                 </div>
                 <div v-if="row.endTime" class="fz10">
                   <span>{{ row.endTime | formatDate }}</span>
-                  <span class="text-grey ml-xs">结束</span>
+                  <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
                 </div>
               </template>
               <template slot="completionRate" slot-scope="{ row }">
@@ -120,15 +120,15 @@ export default {
           {
             type: 'daterange',
             name: 'startTimeRange',
-            label: '执行时间',
+            label: this.$t('term.autoexec.executiontime'),
             format: 'yyyy-MM-dd',
             transfer: true,
-            placeholder: '请选择时间段'
+            placeholder: this.$t('term.deploy.pleaseselecttimeperiod')
           },
           {
             type: 'userselect',
             name: 'execUserList',
-            label: '执行人',
+            label: this.$t('term.deploy.executor'),
             groupList: ['user'],
             multiple: true,
             transfer: true
@@ -146,7 +146,7 @@ export default {
       },
       searchParam: {pipelineId: this.id, invokeIdList: this.invokeIdList},
       dialogConfig: {
-        title: '作业列表',
+        title: this.$t('term.deploy.joblist'),
         type: 'slider',
         maskClose: true,
         isShow: true,
@@ -160,7 +160,7 @@ export default {
           key: 'name'
         },
         {
-          title: '场景',
+          title: this.$t('page.scene'),
           key: 'scenarioName'
         },
         {
@@ -168,35 +168,35 @@ export default {
           key: 'status'
         },
         {
-          title: '耗时',
+          title: this.$t('term.autoexec.costtime'),
           key: 'costTime'
         },
         {
-          title: '执行用户',
+          title: this.$t('page.executeuser'),
           key: 'execUserVo',
           type: 'user',
           uuid: 'uuid'
         },
         {
-          title: '来源',
+          title: this.$t('page.source'),
           key: 'sourceName'
         },
         {
-          title: '计划时间',
+          title: this.$t('page.plantime'),
           key: 'planStartTime',
           type: 'time'
         },
         {
-          title: '起止时间',
+          title: this.$t('page.startstoptime'),
           key: 'startTime',
           keyend: 'endTime'
         },
         {
-          title: '触发方式',
+          title: this.$t('term.autoexec.triggertype'),
           key: 'triggerTypeName'
         },
         {
-          title: '执行情况',
+          title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         }
       ]

@@ -41,7 +41,7 @@
             @getSelected="getSelected"
           >
             <template slot-scope="{ row }">
-              <div :title="row.type && row.type == 'script' ? $t('autoexec.script') : $t('autoexec.tool')">
+              <div :title="row.type && row.type == 'script' ? $t('term.autoexec.customtool') : $t('term.autoexec.tool')">
                 <div class="risk-level" :style="{ color: row.riskVo.color, background: row.riskVo.color+'20'}">{{ row.riskVo.name }}</div>
                 <div class="operation-li">
                   <div class="name-title overflow" :class="row.type && row.type == 'script' ? 'tsfont-script' : 'tsfont-tool'">
@@ -87,7 +87,7 @@ export default {
         width: 'large',
         type: 'slider',
         bgOp: true,
-        title: '添加工具'
+        title: this.$t('page.addtarget', {target: this.$t('term.autoexec.tool')})
       },
       selectOperation: [], //选中的uk列表
       selectedItem: [], //选中的列表完整数据
@@ -111,21 +111,21 @@ export default {
       isAutoAddFlag: false, // 用于判断，选择工具目录时，默认勾选自定义工具
       searchConfig: {
         search: true,
-        placeholder: '工具名称、描述',
+        placeholder: this.$t('term.autoexec.toolnamedescription'),
         searchList: [
           {
             type: 'radio',
             name: 'type',
             value: '',
-            label: '类别',
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.category'),
+            placeholder: this.$i18n.t('page.select1'),
             dataList: [
               {
-                text: '自定义工具',
+                text: this.$t('term.autoexec.customtool'),
                 value: 'script'
               },
               {
-                text: '工具',
+                text: this.$t('term.autoexec.tool'),
                 value: 'tool'
               }
             ],
@@ -135,8 +135,8 @@ export default {
             type: 'select',
             name: 'typeIdList',
             value: '',
-            label: '工具分类',
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.toolclassification'),
+            placeholder: this.$i18n.t('page.select1'),
             search: true,
             multiple: true,
             dynamicUrl: '/api/rest/deploy/type/search',
@@ -150,9 +150,9 @@ export default {
             name: 'catalogId',
             value: '',
             dataList: [],
-            label: '工具目录',
+            label: this.$t('term.autoexec.directorytool'),
             multiple: false,
-            placeholder: this.$i18n.t('common.select1'),
+            placeholder: this.$i18n.t('page.select1'),
             search: false,
             textName: 'name',
             valueName: 'id',
@@ -163,8 +163,8 @@ export default {
             type: 'select',
             name: 'riskIdList',
             value: '',
-            label: '操作级别',
-            placeholder: this.$i18n.t('common.select1'),
+            label: this.$t('term.autoexec.operationlevel'),
+            placeholder: this.$i18n.t('page.select1'),
             multiple: true,
             dynamicUrl: '/api/rest/autoexec/risk/list',
             transfer: true

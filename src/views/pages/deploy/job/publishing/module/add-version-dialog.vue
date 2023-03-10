@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="新建版本"
+      :title="$t('page.addtarget', {target: $t('page.versions')})"
       type="modal"
       :isShow="true"
       @on-ok="okDialog"
@@ -67,7 +67,7 @@ export default {
           disabled: true
         },
         {
-          label: '版本号',
+          label: this.$t('page.versions'),
           type: 'text',
           name: 'version',
           maxlength: 50,
@@ -86,7 +86,7 @@ export default {
           ]
         },
         {
-          label: '封版',
+          label: this.$t('term.deploy.sealplate'),
           type: 'switch',
           name: 'isFreeze',
           falseValue: 0,

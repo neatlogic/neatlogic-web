@@ -3,8 +3,8 @@
     <TsDialog
       type="modal"
       :isShow="true"
-      title="添加实例"
-      ok-text="确认"
+      :title="$t('page.addtarget', {target: $t('page.example')})"
+      :ok-text="$t('button.confirm')"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -46,14 +46,14 @@ export default {
         {
           name: 'instance',
           type: 'radio',
-          label: '实例',
+          label: this.$t('page.example'),
           dataList: [
             {
-              text: '添加实例',
+              text: this.$t('page.addtarget', {target: this.$t('page.example')}),
               value: 1
             },
             {
-              text: '选择现有实例',
+              text: this.$t('term.deploy.selectexistexample'),
               value: 2
             }
           ],
@@ -77,7 +77,7 @@ export default {
         {
           name: 'ciId',
           type: 'select',
-          label: '配置模型',
+          label: this.$t('term.deploy.configurationmodel'),
           validateList: ['required'],
           multiple: false,
           transfer: true,
@@ -89,7 +89,7 @@ export default {
       existingFormList: [ // 现有实例
         {
           name: 'instanceIdList',
-          label: '选择实例',
+          label: this.$t('term.deploy.selectexample'),
           type: 'select',
           multiple: true,
           transfer: true,

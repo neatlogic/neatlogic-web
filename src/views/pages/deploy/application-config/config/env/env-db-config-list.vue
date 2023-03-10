@@ -1,16 +1,16 @@
 <template>
   <div class="env-db-config-list">
     <ul class="pl-nm add-text-box">
-      <li v-if="hasEditConfigAuth" class="tsfont-plus text-href" @click="openDbConfigEdit">添加</li>
+      <li v-if="hasEditConfigAuth" class="tsfont-plus text-href" @click="openDbConfigEdit">{{ $t('page.add') }}</li>
       <template v-else>
-        <li v-if="!hasEditConfigAuth">您没有当前应用的“编辑配置权限”，请联系管理员授权</li>
+        <li v-if="!hasEditConfigAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
       </template>
     </ul>
     <div class="content-box bg-op">
       <ul v-if="!hasDbConfig && hasEditConfigAuth" class="flex-center">
         <li>
-          <span>当前模块未添加DB配置，点击</span>
-          <span class="text-href" @click="openDbConfigEdit">添加DB配置</span></li>
+          <span>{{ $t('term.deploy.currentmodulenotadddbconfig') }}</span>
+          <span class="tsfont-plus text-href" @click="openDbConfigEdit">{{ $t('term.deploy.dbconfig') }}</span></li>
       </ul>
       <template v-if="hasDbConfig">
         <div
@@ -21,7 +21,7 @@
         >
           <header class="header-box pl-nm pr-nm" :class="item.isShow ? 'pb-nm' : ''">
             <div>
-              <span class="text-grey title">数据库schema</span>
+              <span class="text-grey title">{{ $t('term.deploy.databaseschema') }}</span>
               <span>{{ item.dbSchema }}</span>
             </div>
             <div class="action-group">
@@ -32,7 +32,7 @@
           </header>
           <ul v-if="item.isShow" class="ul-box pl-nm pr-nm">
             <li class="pb-nm">
-              <span class="text-grey title">数据库</span>
+              <span class="text-grey title">{{ $t('page.database') }}</span>
               <span class="db-user-text-box">
                 <TsFormSelect
                   v-model="item.dbResourceId"
@@ -41,7 +41,7 @@
               </span>
             </li>
             <li class="pb-nm flex-box">
-              <span class="text-grey title">帐号</span>
+              <span class="text-grey title">{{ $t('page.accounts') }}</span>
               <span class="db-user-text-box">
                 <TsFormSelect
                   v-model="item.accountId"
@@ -107,14 +107,14 @@ export default {
         dealDataByUrl: this.$utils.getAccountNodeList
       },
       advancedConfig: {
-        custom: '自定义参数',
-        logonTimeout: '连接超时(秒)',
+        custom: this.$t('term.deploy.customparameter'),
+        logonTimeout: this.$t('term.deploy.connectiontimeout'),
         locale: 'DBLocale',
-        fileCharset: '文件编码',
-        autocommit: '自动提交',
-        dbVersion: 'DB版本',
-        ignoreErrors: '忽略报错',
-        dbaRole: 'DBA角色',
+        fileCharset: this.$t('page.filecoding'),
+        autocommit: this.$t('term.deploy.autocommit'),
+        dbVersion: this.$t('term.deploy.dbversion'),
+        ignoreErrors: this.$t('term.deploy.ignoreerrors'),
+        dbaRole: this.$t('term.deploy.dbarole'),
         oraWallet: 'oraWallet',
         db2SqlTerminator: 'db2SqlTerminator',
         db2ProcTerminator: 'db2ProcTerminator'
@@ -196,7 +196,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '确认删除当前DB配置？',
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.dbconfig')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.deploy.env.delEnvDbConfigById({id: item.id}).then((res) => {
@@ -217,7 +217,7 @@ export default {
     handleShowText(key, value) {
       let textName = '';
       if (key == 'autocommit' || key == 'oraWallet') {
-        textName = value ? '是' : '否';
+        textName = value ? this.$t('page.yes') : this.$t('page.no');
       } else {
         textName = value;
       }

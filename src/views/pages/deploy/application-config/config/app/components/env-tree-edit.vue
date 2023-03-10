@@ -7,8 +7,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="isEdit">编辑环境</div>
-        <div v-else>添加环境</div>
+        <div v-if="isEdit">{{ $t('page.edittarget', {target: $t('page.environment')}) }}</div>
+        <div v-else>{{ $t('page.addtarget', {target: $t('page.environment')}) }}</div>
       </template>
       <template v-slot>
         <div>

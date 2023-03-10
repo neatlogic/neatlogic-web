@@ -6,8 +6,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="instanceId">编辑实例差异</div>
-        <div v-else>添加实例差异</div>
+        <div v-if="instanceId">{{ $t('page.edittarget', {target: $t('term.deploy.casedifference')}) }}</div>
+        <div v-else>{{ $t('page.addtarget', {target: $t('term.deploy.casedifference')}) }}</div>
       </template>
       <template v-slot>
         <div>
@@ -38,7 +38,7 @@
             </template>
             <template slot="isEmpty" slot-scope="{row, index}">
               <div class="flex-center" style="width: 150px;">
-                <span class="pr-xs">设为空</span>
+                <span class="pr-xs">{{ $t('page.settonull') }}</span>
                 <TsFormSwitch
                   v-model="row.isEmpty"
                   :falseValue="0"
@@ -62,7 +62,7 @@
               </div>
             </template>
           </TsTable>
-          <span class="variable-text tsfont-plus text-href pt-nm" @click="addVariable">变量</span>
+          <span class="variable-text tsfont-plus text-href pt-nm" @click="addVariable">{{ $t('page.variable') }}</span>
         </div>
       </template>
     </TsDialog>
@@ -95,7 +95,7 @@ export default {
       dialogSetting: {
         type: 'modal',
         isShow: true,
-        okText: '保存',
+        okText: this.$t('button.save'),
         width: 'medium'
       },
       formValue: {
@@ -105,7 +105,7 @@ export default {
         {
           name: 'instanceId',
           type: 'select',
-          label: '实例',
+          label: this.$t('page.example'),
           dynamicUrl: 'api/rest/deploy/app/module/env/auto/config/instance/search',
           params: {appSystemId, appModuleId, envId, isAutoConfig: 0},
           labelPosition: 'top',
@@ -117,7 +117,7 @@ export default {
       ],
       theadList: [
         {
-          title: '变量名',
+          title: this.$t('page.variablename'),
           key: 'key',
           headerIcon: 'require-label'
         },
@@ -126,7 +126,7 @@ export default {
           key: 'isEmpty'
         },
         {
-          title: '变量值',
+          title: this.$t('page.variablevalue'),
           key: 'value'
         },
         {
@@ -277,7 +277,7 @@ export default {
       if (!this.isRepeat()) {
         for (let index = 0; index < this.tableData.tbodyList.length; index++) {
           if (this.tableData.tbodyList[index].key == currentValue) {
-            this.tableData.tbodyList[index].errorMessage = `变量名${currentValue}已存在`;
+            this.tableData.tbodyList[index].errorMessage = this.$t('form.validate.repeat', {target: currentValue});
           }
         }
       } else {
@@ -311,7 +311,7 @@ export default {
       if (currentValue) {
         this.$set(this.tableData.tbodyList, index, {...row, valueErrorMessage: ''});
       } else if (row.key && !row.isEmpty) {
-        this.$set(this.tableData.tbodyList, index, {...row, valueErrorMessage: '请输入内容'});
+        this.$set(this.tableData.tbodyList, index, {...row, valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
       }
     },
     validValueIsEmpty() {
@@ -319,7 +319,7 @@ export default {
       let isValid = true;
       for (let index = 0; index < this.tableData.tbodyList.length; index++) {
         if (this.tableData.tbodyList[index].key && this.tableData.tbodyList[index].isEmpty == 0 && !this.tableData.tbodyList[index].value) {
-          this.$set(this.tableData.tbodyList, index, {...this.tableData.tbodyList[index], valueErrorMessage: '请输入内容'});
+          this.$set(this.tableData.tbodyList, index, {...this.tableData.tbodyList[index], valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
           isValid = false;
         }
       }

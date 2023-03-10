@@ -1,7 +1,7 @@
 <template>
   <div class="version-main">
     <div class="version-top pb-nm">
-      <div class="tsfont-plus text-action" @click="addVersion">版本</div>
+      <div class="tsfont-plus text-action" @click="addVersion">{{ $t('page.versions') }}</div>
       <div class="search-box">
         <TimeSelect
           v-model="searchParam.startTimeRange"
@@ -72,16 +72,16 @@ export default {
           multiple: false
         },
         {
-          title: '版本号',
+          title: this.$t('page.versions'),
           key: 'version'
         },
         {
-          title: '创建时间',
+          title: this.$t('page.creatTime'),
           type: 'time',
           key: 'fcd'
         },
         {
-          title: '封版',
+          title: this.$t('term.deploy.sealplate'),
           key: 'isFreeze'
         },
        

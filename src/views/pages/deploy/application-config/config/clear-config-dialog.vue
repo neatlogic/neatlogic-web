@@ -7,32 +7,32 @@
       <template v-slot>
         <div>
           <ul v-if="configType == 'app'">
-            <li class="mb-xs">当前操作将清理：</li>
-            <li class="pl-nm mb-xs">1）当前应用流水线配置</li>
-            <li class="pl-nm mb-xs">2）当前应用权限配置</li>
-            <li class="pl-nm mb-xs">3）所有模块配置</li>
-            <li class="pl-nm mb-xs">4）所有环境配置</li>
-            <li class="mt-xs">且清理后不支持撤销，需重新配置，是否继续？</li>
+            <li class="mb-xs">{{ $t('term.deploy.currentoperationwillclear') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentpipelineconfig') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentappauthconfig') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.allmoduleconfig') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.allenvconfig') }}</li>
+            <li class="mt-xs">{{ $t('term.deploy.deleteconfirm') }}</li>
           </ul>
           <ul v-if="configType == 'module'">
-            <li class="mb-xs">当前操作将清理：</li>
-            <li class="pl-nm mb-xs">1）当前模块的流水线相关的重载数据</li>
-            <li class="pl-nm mb-xs">2）当前模块的执行器配置</li>
-            <li class="pl-nm mb-xs">3）当前模块下所有环境的配置</li>
-            <li class="mt-xs">且清理后，当前模块及模块的所有环境，均继承应用配置；清理后不支持撤销，是否继续？</li>
+            <li class="mb-xs">{{ $t('term.deploy.currentoperationwillclear') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentmoduledatareset') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentmoduleexecuteconfig') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentmoduleallenvconfig') }}</li>
+            <li class="mt-xs">{{ $t('term.deploy.moduleenvdeleteconfirm') }}</li>
           </ul>
           <ul v-if="configType == 'env'">
-            <li class="mb-xs">当前操作将清理：</li>
-            <li class="pl-nm mb-xs">1）当前环境的流水线的相关重载数据</li>
-            <li class="pl-nm mb-xs">2）当前环境的配置文件适配数据</li>
-            <li class="pl-nm mb-xs">3）当前环境的DB配置</li>
-            <li class="mt-xs">且清理后，当前环境配置均继承模块配置；清理后不支持撤销，是否继续？</li>
+            <li class="mb-xs">{{ $t('term.deploy.currentoperationwillclear') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentenvdatareset') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentenvfileconfig') }}</li>
+            <li class="pl-nm mb-xs">{{ $t('term.deploy.currentenvdbconfig') }}</li>
+            <li class="mt-xs">{{ $t('term.deploy.envdeleteconfirm') }}</li>
           </ul>
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="closeDialog()">取消</Button>
-        <Button type="error" @click="okDialog()">删除</Button>
+        <Button @click="closeDialog()">{{ $t('button.cancel') }}</Button>
+        <Button type="error" @click="okDialog()">{{ $t('button.delete') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       dialogSetting: {
-        title: '清空配置',
+        title: this.$t('term.deploy.clearconfig'),
         isShow: true,
         type: 'modal'
       },
@@ -114,7 +114,7 @@ export default {
       if (params) {
         this.$api.deploy.applicationConfig.clearConfigApp(params).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success('清空配置成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
             node.isConfig = !node.isConfig;
             this.closeDialog(true, this.configType);
           }
@@ -126,7 +126,7 @@ export default {
       if (params) {
         this.$api.deploy.applicationConfig.clearConfigModule(params).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success('清空配置成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
             node.isConfig = !node.isConfig;
             this.closeDialog(true, this.configType);
           }
@@ -138,7 +138,7 @@ export default {
       if (params) {
         this.$api.deploy.applicationConfig.clearConfigEnv(params).then(res => {
           if (res && res.Status == 'OK') {
-            this.$Message.success('清空配置成功');
+            this.$Message.success(this.$t('message.content.updatesuccess'));
             node.isConfig = !node.isConfig;
             this.closeDialog(true, this.configType);
           }

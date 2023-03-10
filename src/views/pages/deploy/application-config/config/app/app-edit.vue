@@ -6,8 +6,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="isEdit">编辑权限</div>
-        <div v-else>添加权限</div>
+        <div v-if="isEdit">{{ $t('page.edittarget', {target: $t('page.authority')}) }}</div>
+        <div v-else>{{ $t('page.addtarget', {target: $t('page.authority')}) }}</div>
       </template>
       <template v-slot>
         <div>
@@ -22,7 +22,7 @@
               <ul>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">操作权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.operationauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.operationAuthList"
                       :appSystemId="params.appSystemId"
@@ -33,7 +33,7 @@
                 </li>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">环境权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.envAuthList"
                       :appSystemId="params.appSystemId"
@@ -44,7 +44,7 @@
                 </li>
                 <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
-                    <div class="text-grey auth-text">场景权限</div>
+                    <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.scenarioAuthList"
                       :appSystemId="params.appSystemId"
@@ -54,7 +54,7 @@
                   </div>
                 </li>
               </ul>
-              <span v-if="authRequired" class="text-danger">请至少选择一项权限</span>
+              <span v-if="authRequired" class="text-danger">{{ $t('term.deploy.pleaseselectatleastonepermission') }}</span>
             </template>
           </TsForm>
         </div>
@@ -84,7 +84,7 @@ export default {
         type: 'slider',
         isShow: true,
         width: 'medium',
-        okText: '保存'
+        okText: this.$t('button.save')
       },
       authConfig: {
         authorityStrList: [],
@@ -99,14 +99,14 @@ export default {
       defaultenvAuthList: [],
       formConfig: {
         authorityStrList: {
-          label: '用户',
+          label: this.$t('page.user'),
           type: 'userselect',
           validateList: ['required'],
           multiple: true,
           groupList: ['user', 'team', 'role', 'common']
         },
         actionList: {
-          label: '权限',
+          label: this.$t('page.authority'),
           type: 'slot',
           value: [],
           validateList: ['required']

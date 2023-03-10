@@ -6,7 +6,7 @@
       class="block-tabs"
       @on-click="tabClick"
     >
-      <TabPane label="应用信息" name="appConfig">
+      <TabPane :label="$t('term.deploy.applicationinformation')" name="appConfig">
         <AppInfoManage
           v-if="tabValue == 'appConfig'"
           :appSystemId="appSystemId"
@@ -14,10 +14,10 @@
           @updateAuth="updateAuth"
         ></AppInfoManage>
       </TabPane>
-      <TabPane v-if="hasEditConfigAuth" label="持续集成" name="integrated">
+      <TabPane v-if="hasEditConfigAuth" :label="$t('term.deploy.continuousintegration')" name="integrated">
         <IntegratedManage v-if="tabValue == 'integrated'" :appSystemId="appSystemId"></IntegratedManage>
       </TabPane>
-      <TabPane v-if="hasEditPipelineAuth" label="超级流水线" name="pipeline">
+      <TabPane v-if="hasEditPipelineAuth" :label="$t('term.deploy.superpipeline')" name="pipeline">
         <AppPipeline
           v-if="tabValue == 'pipeline'"
           type="appsystem"

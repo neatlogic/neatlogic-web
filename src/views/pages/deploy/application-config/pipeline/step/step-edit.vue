@@ -26,7 +26,7 @@
           <div class="mt-lg">
             <TsFormItem
               v-if="(groupConfig && groupConfig.policy=='grayScale') && (editConfig.execMode && (editConfig.execMode == 'runner' || editConfig.execMode == 'sqlfile'))"
-              label="执行策略"
+              :label="$t('term.deploy.executivestrategy')"
               labelPosition="left"
               :labelWidth="115"
               :required="true"
@@ -43,7 +43,7 @@
           </div>
           <div v-if="envId && editConfig.execMode !='runner' && editConfig.execMode !='sqlfile' && (!groupConfig || groupConfig.policy !='grayScale')" class="mt-lg">
             <TsFormItem
-              label="预设执行目标"
+              :label="$t('term.deploy.presetexecutiontarget')"
               labelPosition="left"
               :labelWidth="115"
               :tooltip="executeTooltip"
@@ -75,14 +75,14 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="closeDialog()">取消</Button>
+        <Button @click="closeDialog()">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="envId && editConfig.execMode !='runner' && editConfig.execMode !='sqlfile' && (!groupConfig || groupConfig.policy !='grayScale')"
           type="primary"
           ghost
           @click="valid()"
-        >校验</Button>
-        <Button type="primary" @click="okDialog()">确定</Button>
+        >{{ $t('button.validate') }}</Button>
+        <Button type="primary" @click="okDialog()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
     <TargetValid
@@ -147,7 +147,7 @@ export default {
         execMode: {
           type: 'slot',
           name: 'execMode',
-          label: '执行方式',
+          label: this.$t('term.autoexec.executionmode'),
           validateList: ['required'],
           disabled: this.scriptLength > 0 || !!this.appModuleId || !!this.envId,
           list: this.execModeList,
@@ -160,7 +160,7 @@ export default {
         {
           type: 'select',
           name: 'protocolId',
-          label: '连接协议', //添加阶段
+          label: this.$t('page.protocol'), //添加阶段
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           multiple: false,
           rootName: 'tbodyList',
@@ -173,19 +173,19 @@ export default {
         {
           type: 'text',
           name: 'executeUser',
-          label: '执行用户',
+          label: this.$t('page.executeuser'),
           value: '',
           transfer: true,
           disabled: !this.canEdit,
-          tooltip: '若此处不填用户，当前阶段默认继承组合工具执行用户，若此处填写用户，当前阶段将采用此处填写的执行用户；执行时，不可修改执行用户'
+          tooltip: this.$t('term.autoexec.nowriteusertooltip')
         },
         {
           type: 'select',
           name: 'roundCount',
           value: null,
           transfer: true,
-          label: '分批数量',
-          desc: '将执行目标按数量等分为N个批次，先后执行，阶段设置的分批数量优先级高于组合工具或作业中设置的分批数',
+          label: this.$t('term.autoexec.batchquantity'),
+          desc: this.$t('term.autoexec.batchcountprioritydesc'),
           dataList: this.$utils.getRoundCountList(),
           disabled: !this.canEdit
         }
@@ -200,7 +200,7 @@ export default {
       resultList: [], //执行目标校验结果
       isValid: true, //校验结果通过
       isShowTargetValid: false,
-      executeTooltip: '若此处不填写执行目标，当前阶段默认继承组合工具执行目标，若此处填写执行目标，当前阶段将采用此处填写的执行目标；执行时，不可修改阶段的执行目标'
+      executeTooltip: this.$t('term.autoexec.executeTooltip')
     };
   },
   beforeCreate() {},
@@ -266,7 +266,7 @@ export default {
         }
       }
       if (isExist) {
-        this.$set(this.formItem.name, 'errorMessage', '名称重复，请重新输入');
+        this.$set(this.formItem.name, 'errorMessage', this.$t('form.validate.repeat', {target: this.$t('page.name')}));
       } else {
         this.$set(this.formItem.name, 'errorMessage', '');
       }
@@ -321,7 +321,7 @@ export default {
             this.isValid = false;
             this.isShowTargetValid = true;
           } else if (isMessage) {
-            this.$Message.success('校验成功');
+            this.$Message.success(this.$t('message.content.validatesuccess'));
           }
         }
       });
@@ -351,9 +351,9 @@ export default {
       return (config) => {
         let title = '';
         if (config && config.name) {
-          title = this.canEdit ? '编辑阶段:' + config.name : '查看阶段:' + config.name;
+          title = this.canEdit ? this.$t('term.deploy.editphasetarget', {target: config.name}) : this.$t('term.deploy.viewphasetarget', {target: config.name});
         } else {
-          title = '添加阶段';
+          title = this.$t('page.addtarget', {target: this.$t('term.autoexec.phase')});
         }
         return title;
       };
