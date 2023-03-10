@@ -511,7 +511,7 @@ export default {
       if (this.scenarioId) {
         this.$set(data, 'scenarioId', this.scenarioId);
       }
-      if (this.dataConfig.needRoundCount) { //是否需要设置分批数量
+      if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
         this.$set(data, 'roundCount', this.roundCount);
       }
       if (this.$refs.param) {
