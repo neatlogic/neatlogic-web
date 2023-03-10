@@ -306,14 +306,8 @@ export default {
       // 处理默认值的数据结构
       let columlist = [];           
       nodeList.forEach(v => {
-        let text = '';
-        if (v.port) {
-          text = v.name + '(' + v.port + ')';
-        } else {
-          text = v.name;
-        }
         columlist.push(
-          {text: text, value: v.id}
+          {text: v.name, value: v.id}
         );
       });
       return columlist;
