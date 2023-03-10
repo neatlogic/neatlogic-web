@@ -307,7 +307,7 @@ export default {
       formDataList: [],
       mappingModeDataList: [
         {
-          text: this.$t('term.autoexec.constant'),
+          text: this.$t('page.constant'),
           value: 'constant'
         }
       ],
@@ -402,7 +402,7 @@ export default {
             this.formUuid = !!uuid;
             if (uuid) {
               this.mappingModeDataList = [{
-                text: this.$t('term.autoexec.constant'),
+                text: this.$t('page.constant'),
                 value: 'constant'
               }, {
                 text: this.$t('term.autoexec.formparameter'),
@@ -413,7 +413,7 @@ export default {
             } else {
               this.mappingModeDataList = [
                 {
-                  text: this.$t('term.autoexec.constant'),
+                  text: this.$t('page.constant'),
                   value: 'constant'
                 }
               ];
@@ -485,7 +485,7 @@ export default {
       });
       this.mappingModeDataList = [
         {
-          text: this.$t('term.autoexec.constant'),
+          text: this.$t('page.constant'),
           value: 'constant'
         }
       ];
@@ -599,7 +599,7 @@ export default {
           this.formUuid = itemValue.formUuid;
           if (itemValue.formUuid) {
             this.mappingModeDataList = [{
-              text: this.$t('term.autoexec.constant'),
+              text: this.$t('page.constant'),
               value: 'constant'
             }, {
               text: this.$t('term.autoexec.formparameter'),
@@ -609,7 +609,7 @@ export default {
           } else {
             this.mappingModeDataList = [
               {
-                text: this.$t('term.autoexec.constant'),
+                text: this.$t('page.constant'),
                 value: 'constant'
               }
             ];

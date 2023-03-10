@@ -177,7 +177,7 @@ export default {
               { value: 1, text: this.$t('page.yes') },
               { value: 0, text: this.$t('page.no') }
             ],
-            label: '是否库文件',
+            label: this.$t('term.autoexec.islibraryfile'),
             transfer: true
           },
           {

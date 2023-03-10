@@ -16,7 +16,7 @@
 <template>
   <div class="content-main">
     <Tabs v-model="tabValue" class="tab-contain block-tabs2" :animated="false">
-      <TabPane label="标准输出" class="padding" name="standardOutput">
+      <TabPane :label="$t('term.autoexec.standardoutput')" class="padding" name="standardOutput">
         <div style="display:grid;grid-template-columns:186px auto">
           <div>
             <div v-if="operationList && operationList.length">
@@ -51,7 +51,7 @@
           </div>
         </div>
       </TabPane>
-      <TabPane label="SQL清单" name="sqlfileList">
+      <TabPane :label="$t('term.autoexec.sqlmanifest')" name="sqlfileList">
         <SqlFileList
           :jobData="jobData"
           :phaseData="phaseData"
@@ -60,7 +60,7 @@
           @refresh="refresh"
         ></SqlFileList>
       </TabPane>
-      <TabPane label="运行记录" class="padding" name="record">
+      <TabPane :label="$t('term.autoexec.runrecord')" class="padding" name="record">
         <Record v-if="tabValue == 'record'" :nodeData="nodeData" :phaseData="phaseData"></Record>
       </TabPane>
     </Tabs>

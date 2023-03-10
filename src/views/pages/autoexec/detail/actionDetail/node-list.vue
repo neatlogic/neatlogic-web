@@ -28,10 +28,10 @@
       </div>
       <div v-if="selectNodeList.length > showNumber">
         <span class="text-tip-active tips" style="padding-right: 16px;" @click="isMoreNode = true">
-          查看所有{{ selectNodeList.length }}个目标
+          {{ $t('term.autoexec.viewalltarget', {target: selectNodeList.length}) }}
         </span>
         <span class="text-href" @click="clearAll">
-          清空
+          {{ $t('page.clear') }}
         </span>
       </div>
     </div>
@@ -109,7 +109,7 @@ export default {
       searchVal: {},
       theadList: [
         {key: 'selection'},
-        { title: 'ip', key: 'ip'},
+        { title: this.$t('page.ip'), key: 'ip'},
         { title: this.$t('page.port'), key: 'port'},
         { title: this.$t('page.name'), key: 'name'},
         { title: this.$t('page.tag'), key: 'tagList', type: 'tag'},

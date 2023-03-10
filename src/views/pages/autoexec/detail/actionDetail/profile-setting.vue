@@ -16,8 +16,8 @@
       <div v-if="!item.isHide" class="params-list pt-md">
         <div v-if="item.profileParamVoList && item.profileParamVoList.length > 0">
           <TsRow class="pb-sm">
-            <Col span="12" class="text-tip">参数名</Col>
-            <Col span="12" class="text-tip">参数值</Col>
+            <Col span="12" class="text-tip">{{ $t('term.autoexec.paramsname') }}</Col>
+            <Col span="12" class="text-tip">{{ $t('term.autoexec.paramsvalue') }}</Col>
           </TsRow>
           <TsRow v-for="p in item.profileParamVoList" :key="p.key" class="params-text">
             <Col span="12">

@@ -11,7 +11,7 @@ export default {
     return {
       theadList: [
         {
-          title: '文件名',
+          title: this.$t('page.filename'),
           key: 'sqlFile'
         },
         {
@@ -19,7 +19,7 @@ export default {
           key: 'host'
         },
         {
-          title: '节点名称',
+          title: this.$t('term.process.nodename'),
           key: 'nodeName'
         },
         {

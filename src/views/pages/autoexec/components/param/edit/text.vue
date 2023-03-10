@@ -62,15 +62,15 @@ export default {
           value: 'number'
         },
         {
-          text: this.$t('term.autoexec.lettersandnumbers'),
+          text: this.$t('page.lettersandnumbers'),
           value: 'enchar'
         },
         {
-          text: this.$t('term.autoexec.emailaddress'),
+          text: this.$t('page.emailaddress'),
           value: 'mail'
         },
         {
-          text: this.$t('term.autoexec.phonenumber'),
+          text: this.$t('page.phonenumber'),
           value: 'phone'
         },
         {

@@ -2,7 +2,7 @@
   <div class="time-job-detail">
     <TsContain v-if="isShow" border="border">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/time-job-list')">{{ $getFromPage('定时任务') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/time-job-list')">{{ $getFromPage('term.autoexec.scheduledtask') }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ id==null? $t('page.newtarget', {target: $t('term.autoexec.timingjob')}): $t('page.edittarget', {target: $t('term.autoexec.timingjob')}) }}</span>

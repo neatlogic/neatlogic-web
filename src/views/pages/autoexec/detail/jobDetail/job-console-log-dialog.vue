@@ -25,7 +25,7 @@
           name="tab"
         >
           <TabPane
-            label="标准输出"
+            :label="$t('term.autoexec.standardoutput')"
             name="consoleLog"
             class="tab-content"
             tab="tab"
@@ -40,7 +40,7 @@
             </div>
           </TabPane>
           <TabPane
-            label="运行记录"
+            :label="$t('term.autoexec.runrecord')"
             name="record"
             class="tab-content"
             tab="tab"

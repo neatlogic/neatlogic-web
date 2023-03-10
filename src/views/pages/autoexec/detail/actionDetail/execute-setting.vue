@@ -44,7 +44,7 @@
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtime'" class="execute-main">
           <div class="target-detail">
-            <Filters ref="runtimeFilter" tipText="设置过滤器后，执行时只能在过滤器范围内选择执行目标" :defaultValue="runtimeFilter"></Filters>
+            <Filters ref="runtimeFilter" :tipText="$t('term.autoexec.setfilterexecutelimitdesc')" :defaultValue="runtimeFilter"></Filters>
           </div>
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
@@ -60,14 +60,14 @@
         </div>
       </div>
       <template v-slot:footer>
-        <Button @click="closeSetting()">取消</Button>
+        <Button @click="closeSetting()">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="settingConfig.whenToSpecify == 'now'"
           type="primary"
           ghost
           @click="validSetting()"
-        >校验</Button>
-        <Button type="primary" @click="okSetting()">确定</Button>
+        >{{ $t('button.validate') }}</Button>
+        <Button type="primary" @click="okSetting()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
     <TargetValid
@@ -201,10 +201,10 @@ export default {
           if (!this.nodeTypeParamList.length) {
             let config = this.form.whenToSpecify.dataList.find(item => item.value == 'runtimeparam');
             this.$set(config, 'disabled', true);
-            this.$set(config, 'description', '作业参数中未设置【节点信息】类型的参数');
+            this.$set(config, 'description', this.$t('term.autoexec.jobparamnotconfignodeinfoparamdesc'));
           }
           let runtimeConfig = this.form.whenToSpecify.dataList.find(item => item.value == 'runtime');
-          this.$set(runtimeConfig, 'description', '若所有阶段均已配置目标,创建作业时用户无需再指定目标');
+          this.$set(runtimeConfig, 'description', this.$t('term.autoexec.allphasesetconfigtargetaddjobdesc'));
         }
       });
     },
@@ -250,7 +250,7 @@ export default {
           _this.resultList.length && (_this.isValid = true);
           if (!_this.isValid) {
             if (!type) {
-              this.$Message.success('校验成功');
+              this.$Message.success(this.$t('message.content.validatesuccess'));
             } else {
               _this.save();
             }

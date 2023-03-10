@@ -4,7 +4,7 @@
       <div class="div-content">
         <!-- 作业参数作为执行目标 -->
         <template v-if="paramList.length">
-          <span class="text-tip nopadding">引用输入参数</span>
+          <span class="text-tip nopadding">{{ $t('term.deploy.referenceinputparameter') }}</span>
           <span v-for="(p,pindex) in paramList" :key="`p_${pindex}`" class="item border-color bg-op">{{ getParamText(p.text) }}</span>
         </template>
         <!-- 过滤器 -->
@@ -86,14 +86,14 @@
         ></TargetView>
       </div>
       <template v-slot:footer>
-        <Button @click="onOkUpdateList(false)">取消</Button>
+        <Button @click="onOkUpdateList(false)">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="canEdit && type=='runtime'"
           type="primary"
           ghost
           @click="validSetting()"
-        >校验</Button>
-        <Button type="primary" @click="okTarget()">确定</Button>
+        >{{ $t('button.validate') }}</Button>
+        <Button type="primary" @click="okTarget()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
     <NodeDetail
@@ -348,7 +348,7 @@ export default {
           _this.resultList.length && (_this.isValidDialog = true);
           if (!_this.isValidDialog) {
             if (!type) {
-              this.$Message.success('校验成功');
+              this.$Message.success(this.$t('message.content.validatesuccess'));
             }
           }
         }
