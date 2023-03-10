@@ -3,7 +3,7 @@
     <div v-if="showTitle" class="control-box">
       <div class="control-setting">
         <span class="label">
-          <span>通知设置</span>
+          <span>{{ $t('page.noticesetting') }}</span>
         </span>
         <span class="control-btn">
           <span
@@ -47,7 +47,7 @@
               </Col>
             </TsRow>
             <span v-if="notifyPolicyConfig.policyId" class="text-primary show-text" @click="showNotify()">
-              {{ controlShow ? '显示已匹配参数': '隐藏已匹配参数' }}
+              {{ controlShow ? $t('term.process.showparams'): $t('term.process.hideparams') }}
             </span>
             <div class="wrapper">
               <div
@@ -150,7 +150,7 @@ export default {
       paramTypeConfig: {}, //不同参数类型来面可选右边数据
       paramList: [], //参数列表
       controlShow: true, //是否隐藏参数
-      firstText: '策略',
+      firstText: this.$t('term.process.policy'),
       firstLi: true,
       notifySelectConfig: {
         dynamicUrl: '/api/rest/notify/policy/search',

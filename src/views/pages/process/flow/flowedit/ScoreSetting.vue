@@ -1,24 +1,24 @@
 <template>
   <div class="score-setting">
     <div class="active-status">
-      <span>启用评分</span>
+      <span>{{ $t('term.process.enablescoring') }}</span>
       <span><TsFormSwitch v-model="scoreConfig.isActive" @on-change="clearAuto"></TsFormSwitch></span>
     </div>
     <template v-if="scoreConfig.isActive">
       <div class="score-template">
-        <span class="title">评分模板</span>
+        <span class="title">{{ $t('term.process.scoringtemplate') }}</span>
         <i class="icon text-tip-active tsfont-eye" @click="viewScoreTemplate"></i>
         <i class="icon text-tip-active tsfont-edit" @click="toScoreTemplateManagePage('edit')"></i>
         <i class="icon text-tip-active tsfont-rotate-right" :class="{'refreshing': isRefreshing}" @click="refresh"></i>
       </div>
       <TsFormSelect ref="select" v-model="scoreConfig.scoreTemplateId" v-bind="selectConfig">
         <template v-slot:first-ul>
-          <li class="tsfont-plus text-href first-slot" @click="toScoreTemplateManagePage('add')">模板</li>
+          <li class="tsfont-plus text-href first-slot" @click="toScoreTemplateManagePage('add')">{{ $t('page.template') }}</li>
         </template>
       </TsFormSelect>
       <div class="auto-score">
         <div>
-          <span>自动评分</span>
+          <span>{{ $t('term.process.autoscoring') }}</span>
           <Tooltip
             theme="light"
             transfer
@@ -26,7 +26,7 @@
             placement="bottom-start"
           >
             <i class="fz10 tsfont-info-o text-href"></i>
-            <div slot="content" class="tooltip-content">未在指定时间段内评分，系统自动好评</div>
+            <div slot="content" class="tooltip-content">{{ $t('term.process.scorefavourable') }}</div>
           </Tooltip>
         </div>
         <div>
@@ -38,7 +38,7 @@
         <InputNumber
           v-model="scoreConfig.config.autoTime"
           :min="1"
-          :formatter="value => `${value} 天`"
+          :formatter="value => `${value}`+$t('page.day')"
         ></InputNumber>
       </div>
     </template>
@@ -46,14 +46,14 @@
     <TsDialog
       :hasFooter="false"
       :isShow.sync="isDialogShow"
-      title="评分模板"
+      :title="$t('term.process.scoringtemplate')"
       transfer
       className="score-template-dialog"
     >
       <div class="template-detail">
         <div class="header">
           <span class="name-header text-title">{{ $t('term.process.scoringdimension') }}</span>
-          <span class="desc-header text-title">说明</span>
+          <span class="desc-header text-title">{{ $t('page.explain') }}</span>
         </div>
         <ul>
           <li v-for="item in dimensionList" :key="item.id" class="dimension-item">
@@ -102,8 +102,8 @@ export default {
         clearable: false,
         defaultValueIsFirst: true,
         dataList: [
-          {value: 'naturalDay', text: '自然日'},
-          {value: 'workDay', text: '工作日'}
+          {value: 'naturalDay', text: this.$t('page.naturalday')},
+          {value: 'workDay', text: this.$t('page.weekday')}
         ],
        
         validateList: ['required']

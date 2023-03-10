@@ -2,7 +2,7 @@
   <div class="settingList">
     <div class="control-box">
       <div class="control-setting">
-        <span class="label">权限设置</span>
+        <span class="label">{{ $t('page.authsetting') }}</span>
         <span class="control-btn">
           <span
             v-if="hasGlobal"

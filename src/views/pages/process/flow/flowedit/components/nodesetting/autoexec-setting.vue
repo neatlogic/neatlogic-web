@@ -17,7 +17,7 @@
   <div id="autoexecConfig">
     <div class="permission-list">
       <div class="list">
-        <div class="second-title text-grey">工具分类</div>
+        <div class="second-title text-grey">{{ $t('term.autoexec.toolclassification') }}</div>
         <div>
           <TsFormSelect
             v-model="autoexecConfig.autoexecTypeId"
@@ -30,15 +30,15 @@
     <div id="autoexecCombop" class="permission-list">
       <div class="list">
         <div class="second-title text-grey">
-          <span class="require-label">组合工具</span>
+          <span class="require-label">{{ $t('term.autoexec.combinationtool') }}</span>
           <div class="float-right">
             <span
               v-if="autoexecConfig.autoexecCombopId"
               class="tsfont-edit text-tip-active"
-              title="编辑组合工具"
+              :title="$t('dialog.title.edittarget',{target: $t('term.autoexec.combinationtool')})"
               @click="editCombop()"
             ></span>
-            <span class="tsfont-refresh text-tip-active pl8" title="刷新组合工具" @click="refreshCombop()"></span>
+            <span class="tsfont-refresh text-tip-active pl8" :title="$t('page.refresh')" @click="refreshCombop()"></span>
           </div>
         </div>
         <div>
@@ -53,13 +53,13 @@
     </div>
     <div v-if="autoexecConfig.autoexecCombopId" class="permission-list">
       <div class="params-top">
-        <div class="text-grey">参数映射</div>
+        <div class="text-grey">{{ $t('term.process.paramsMapping') }}</div>
         <div class="text-href" @click="editParams()">{{ $t('button.add') }}</div>
       </div>
       <div class="bg-op params-box" :class="{'border-error':!isValid}">
         <div v-if="autoexecConfig.executeParamList.length > 0" class="param-type-list">
           <div class="title">
-            <span>目标参数赋值</span>
+            <span>{{ $t('term.process.targetparamsvalue') }}</span>
             <span>
               <Tooltip
                 max-width="300"
@@ -68,7 +68,7 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  <p>若选中的组合工具已预设执行目标、连接协议、执行用户、分批数量，此处不可修改已预设的参数</p>
+                  <p>{{ $t('term.process.targetparamsvaluetip') }}</p>
                 </div>
               </Tooltip>
             </span></div>
@@ -93,7 +93,7 @@
           </div>
         </div>
         <div v-if="autoexecConfig.runtimeParamList.length > 0" class="param-type-list">
-          <div class="title">作业参数赋值</div>
+          <div class="title">{{ $t('term.process.jobparamsvalue') }}</div>
           <div v-for="(r,rindex) in autoexecConfig.runtimeParamList" :key="'run_'+rindex" class="param-list">
             <div class="text-grey param-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
             <div v-if="r.mappingMode == 'form'" class="text-right">{{ paramText(r.value,'form') }}</div>
@@ -112,7 +112,7 @@
         </div>
         <div id="autoexecParams" class="param-type-list">
           <div class="title">
-            <span>表单赋值</span>
+            <span>{{ $t('term.process.formparamsvalue') }}</span>
             <span>
               <Tooltip
                 max-width="300"
@@ -121,7 +121,7 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  <p>将当前自动化编排中，[native/setenv]工具导出的参数，赋值到表单中，以便下游点引用</p>
+                  <p>{{ $t('term.process.formparamsvaluetip') }}</p>
                 </div>
               </Tooltip>
             </span>
@@ -134,7 +134,7 @@
       </div>
     </div>
     <TsDialog
-      title="参数映射"
+      :title="$t('term.process.paramsMapping')"
       :isShow="isShow"
       height="400px"
       @on-ok="saveParams()"
@@ -143,7 +143,7 @@
       <div class="dialog-params">
         <div v-if="executeParamList.length > 0">
           <div class="title">
-            <span>目标参数赋值</span>
+            <span>{{ $t('term.process.targetparamsvalue') }}</span>
             <span>
               <Tooltip
                 placement="right"
@@ -153,7 +153,7 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  <p>若选中的组合工具已预设执行目标、连接协议、执行用户、分批数量，此处不可修改已预设的参数</p>
+                  <p>{{ $t('term.process.targetparamsvaluetip') }}</p>
                 </div>
               </Tooltip>
             </span>
@@ -220,7 +220,7 @@
           </TsRow>
         </div>
         <div v-if="runtimeParamList.length > 0">
-          <div class="title">作业参数赋值</div>
+          <div class="title">{{ $t('term.process.jobparamsvalue') }}</div>
           <div class="param-list">
             <TsRow
               v-for="(r,rindex) in runtimeParamList"
@@ -289,7 +289,7 @@
         </div>
         <div>
           <div class="title">
-            <span>表单赋值</span>
+            <span>{{ $t('term.process.formparamsvalue') }}</span>
             <span>
               <Tooltip
                 placement="right"
@@ -299,7 +299,7 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  <p>将当前自动化编排中，[native/setenv]工具导出的参数，赋值到表单中，以便下游点引用</p>
+                  <p>{{ $t('term.process.formparamsvaluetip') }}</p>
                 </div>
               </Tooltip>
             </span>
@@ -308,10 +308,10 @@
             <div class="param-list text-title">
               <TsRow :gutter="8">
                 <Col span="12">
-                  <div>表单参数</div>
+                  <div>{{ $t('page.formparams') }}</div>
                 </Col>
                 <Col span="12">
-                  <div>[native/setenv]导出参数</div>
+                  <div>{{ $t('term.process.exportparameters') }}</div>
                 </Col>
               </TsRow>
             </div>
@@ -347,7 +347,7 @@
             ghost
             @click="addFormParam()"
           >
-            <span class="tsfont-plus pr4"></span><span>参数</span>
+            <span class="tsfont-plus pr4"></span><span>{{ $t('page.param') }}</span>
           </Button>
         </div>
       </div>
@@ -425,15 +425,15 @@ export default {
       formAttributeList: [],
       mappingModeList: [
         {
-          text: '常量',
+          text: this.$t('page.constant'),
           value: 'constant'
         },
         {
-          text: '表单参数',
+          text: this.$t('page.formparams'),
           value: 'form'
         },
         {
-          text: '上游出参',
+          text: this.$t('term.process.prestepexportparam'),
           value: 'prestepexportparam'
         }
       ],

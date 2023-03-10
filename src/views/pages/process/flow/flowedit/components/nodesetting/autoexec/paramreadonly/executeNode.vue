@@ -18,7 +18,7 @@
     <!-- 过滤器 -->
     <template v-if="executeNodeConfig.filter">
       <FilterSearch :defaultValue="executeNodeConfig.filter" :readonly="true" class="search"></FilterSearch>
-      <span class="look-btn text-tip-active" @click="lookDetail('filter')">查看详情</span>
+      <span class="look-btn text-tip-active" @click="lookDetail('filter')">{{ $t('page.viewdetails') }}</span>
     </template>
     <!-- 选择节点 -->
     <template v-else-if="executeNodeConfig.selectNodeList && executeNodeConfig.selectNodeList.length > 0">
@@ -30,7 +30,7 @@
           :title="targetText(data)"
         >{{ targetText(data) }}</span>
       </template>
-      <span class="look-btn text-tip-active" @click="lookDetail('selectNodeList')">查看详情</span>
+      <span class="look-btn text-tip-active" @click="lookDetail('selectNodeList')">{{ $t('page.viewdetails') }}</span>
     </template>
     <!-- 输入节点 -->
     <template v-else-if="executeNodeConfig.inputNodeList && executeNodeConfig.inputNodeList.length > 0">
@@ -42,7 +42,7 @@
           :title="targetText(data)"
         >{{ targetText(data) }}</span>
       </template>
-      <span v-if="executeNodeConfig.inputNodeList.length > showNumber" class="look-btn text-tip-active" @click="lookDetail('inputNodeList')">查看详情</span>
+      <span v-if="executeNodeConfig.inputNodeList.length > showNumber" class="look-btn text-tip-active" @click="lookDetail('inputNodeList')">{{ $t('page.viewdetails') }}</span>
     </template>
     <!-- 参数 -->
     <template v-else-if="executeNodeConfig.paramList && executeNodeConfig.paramList.length > 0">
@@ -54,13 +54,13 @@
           :title="getParamText(data)"
         >{{ getParamText(data) }}</span>
       </template>
-      <span v-if="executeNodeConfig.paramList.length > showNumber" class="look-btn text-tip-active" @click="lookDetail('paramList')">查看详情</span>
+      <span v-if="executeNodeConfig.paramList.length > showNumber" class="look-btn text-tip-active" @click="lookDetail('paramList')">{{ $t('page.viewdetails') }}</span>
     </template>
     <TsDialog
       v-if="moreVisible"
       :isShow="moreVisible"
       width="medium"
-      title="执行目标详情"
+      :title="$t('page.viewdetails')"
       height="500px"
       :hasFooter="false"
       :maskClose="true"
@@ -70,7 +70,7 @@
       <SelectnodeDetail v-else-if="lookType=='selectNodeList'" :config="value"></SelectnodeDetail>
       <InputnodeDetail v-else-if="lookType=='inputNodeList'" :config="value"></InputnodeDetail>
       <template v-else-if="lookType=='paramList'">
-        <span class="text-tip nopadding">引用输入参数</span>
+        <span class="text-tip nopadding">{{ $t('term.process.referinputparams') }}</span>
         <span v-for="(p,pindex) in paramList" :key="pindex" class="item border-color bg-op">{{ getParamText(p) }}</span>
       </template>
     </TsDialog>

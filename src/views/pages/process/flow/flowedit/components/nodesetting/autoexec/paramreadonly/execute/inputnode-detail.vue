@@ -20,7 +20,7 @@
         v-model="keyword"
         style="width:240px"
         search
-        placeholder="请输入ip"
+        placeholder="ip"
         @on-search="filterData"
       />
     </div>
