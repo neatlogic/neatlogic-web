@@ -19,7 +19,7 @@
           </table>
         </div>
       </div>
-      <template v-else>暂无数据</template>
+      <template v-else>{{ $t('page.nodata') }}</template>
     </div>
     <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
   </div>

@@ -29,8 +29,7 @@
               v-if="isView"
               class="text-href pt6"
               @click="viewMoreContent"
-              v-text="maxheight=='200px'?'查看更多':'收起'"
-            ></div>
+            >{{ maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway') }}</div>
           </div>
         </div>
         <div v-if="dataConfig.fileList.length > 0" class="report-content">
@@ -223,7 +222,7 @@ export default {
       isShow: false,
       dataDialog: {
         type: 'slider',
-        title: '修改',
+        title: this.$t('page.revise'),
         width: 'large'
       },
       omnipotentConfig: {
@@ -266,11 +265,11 @@ export default {
           search: false,
           dataList: [
             {
-              text: '开启',
+              text: this.$t('page.open'),
               value: 1
             },
             {
-              text: '关闭',
+              text: this.$t('page.close'),
               value: 0
             }
           ]
@@ -278,7 +277,7 @@ export default {
         planStartEndTime: {
           name: 'planStartEndTime',
           value: [],
-          label: '计划起止时间',
+          label: this.$t('term.process.planStartEndTime'),
           type: 'datetimerange',
           format: 'yyyy-MM-dd HH:mm',
           validateList: ['required']
@@ -499,7 +498,7 @@ export default {
         this.validConfig.planStartEndTime = false;
         let o = {
           focus: '#taskReport',
-          msg: '计划起止时间不能为空'
+          msg: this.$t('message.content.required', {target: this.$t('term.process.planStartEndTime')})
         };
         validList.push(o);
       } else {
@@ -508,7 +507,7 @@ export default {
       if (!this.changecreateConfig.owner) {
         let o = {
           focus: '#taskReport',
-          msg: '变更经理不能为空'
+          msg: this.$t('message.content.required', {target: this.$t('term.process.changeowner')})
         };
         this.validConfig.ownerChange = false;
         validList.push(o);

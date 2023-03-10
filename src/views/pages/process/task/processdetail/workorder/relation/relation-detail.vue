@@ -3,18 +3,18 @@
     <div v-if="isShowTip" class="tip-block">
       <div class="bg-info-grey padding-sm radius-sm">
         <span class="tsfont-danger-o text-primary btn-icon"></span>
-        <span>当前工单所在服务未配置任何关系类型，无法手动关联其他工单，如需添加，请联系管理员!</span>
+        <span>{{ $t('term.process.relationtip') }}</span>
       </div>
     </div>
     <div v-if="!isShowTip" class="add-top">
-      <span class="tsfont-plus text-href" @click="relatedTask">关联</span>
+      <span class="tsfont-plus text-href" @click="relatedTask">{{ $t('page.relevance') }}</span>
     </div>
     <div v-if="processTaskRelationList && processTaskRelationList.length >0">
       <div v-for="(item,index) in processTaskRelationList" :key="index" class="relation-list border-color">
         <div class="relation-detail">
-          <div v-if="item.isDeletable !=1" class="tranferReport-tip bg-warning">转</div>
+          <div v-if="item.isDeletable !=1" class="tranferReport-tip bg-warning">{{ $t('term.process.transfer') }}</div>
           <div class="item-box overflow">
-            <span class="text-grey fz10">工单标题</span>
+            <span class="text-grey fz10">{{ $t('term.process.tasktitle') }}</span>
             <span class="text-href overflow" :title="item.title" @click="toTaskdetail(item.processTaskId)">{{ item.title }}</span>
           </div>
           <div class="item-box overflow">
@@ -28,7 +28,7 @@
           </div>
           <div class="item-box overflow">
             <span class="text-grey fz10">
-              关系类型
+              {{ $t('term.process.relationshiptype') }}
             </span>
             <span class="overflow" :title="item.channelTypeRelationName">{{ item.channelTypeRelationName }}</span>
           </div>
@@ -41,9 +41,9 @@
           <div
             class="del-relation tsfont-unbind bg-block"
             :class="item.isDeletable !=1?'text-disabled':'text-action'"
-            :title="item.isDeletable !=1?'转报自动关联无法解除':''"
+            :title="item.isDeletable !=1? $t('term.process.canotunbindtip') : ''"
             @click="delTaskRelation(item)"
-          >解除关联</div>
+          >{{ $t('term.process.disassociate') }}</div>
         </div>
       </div>
     </div>
@@ -125,8 +125,8 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
-        content: '确定解除与该工单的关联？',
+        title: this.$t('page.warning'),
+        content: this.$t('dialog.content.disassociatedialog'),
         btnType: 'error',
         'on-ok': function(vnode) {
           let data = {

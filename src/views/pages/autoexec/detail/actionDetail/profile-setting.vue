@@ -40,7 +40,7 @@
             </Col>
           </TsRow>
         </div>
-        <div v-else class="text-tip">暂无输入参数</div>
+        <div v-else class="text-tip">{{ $t('page.notarget',{target:$t('page.inputparam')}) }}</div>
       </div>
     </div>
     <ToolProfileEdit 

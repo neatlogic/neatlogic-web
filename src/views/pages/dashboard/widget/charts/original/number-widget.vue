@@ -21,7 +21,7 @@
     <div class="float-left" style="position:relative" :style="containerStyle(0, 1)">
       <div v-if="widget.config.backgroundImage" :style="backgroundImageStyle"></div>
       <div v-if="widget.config.backgroundColor" :style="backgroundColorStyle"></div>
-      <div :style="numberStyle">暂无数据</div>
+      <div :style="numberStyle">{{ $t('page.nodata') }}</div>
     </div>
   </div>
 </template>

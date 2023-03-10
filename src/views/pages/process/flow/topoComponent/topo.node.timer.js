@@ -1,4 +1,5 @@
 import ViewUI from 'techsure-ui/iview/index.js';
+import Vue from 'vue';
 (function(global, factory) {
   factory((global.Timer = global.Timer || {}), global);
 }(window, function(exports, global) {
@@ -14,7 +15,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
       const nodeList = this.getNextNodes('forward');
       let find = nodeList.find(item => item.getUuid() == sourceNode.getConfig().uuid);
       if (find || sourceNode.getType() == 'end') { //不能连回退线
-        ViewUI.Message.warning({ content: '定时节点不能连回退线！', duration: 3, closable: true });
+        ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timernodenobacklink'), duration: 3, closable: true });
         return false;
       }
       return true;
@@ -31,19 +32,19 @@ import ViewUI from 'techsure-ui/iview/index.js';
           tAnchor: targetAnchor
         });
       } else {
-        ViewUI.Message.warning({ content: '定时节点只能有一根线连出！', duration: 3, closable: true });
+        ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.timerhasonelink'), duration: 3, closable: true });
       }
     }
     valid(nodeConfig) {
       let validList = [];
       if (this.links.length <= 0) {
-        validList.push({ name: `节点被孤立` });
+        validList.push({ name: Vue.prototype.i18n.t('message.content.process.nodeorphaned') });
       } else {
         if (this.getPrevNodes('forward') <= 0) {
-          validList.push({ name: `节点没有前置节点` });
+          validList.push({ name: Vue.prototype.i18n.t('message.content.process.nodenofrontnode') });
         }
         if (this.getNextNodes('forward') <= 0) {
-          validList.push({ name: `节点没有后置节点` });
+          validList.push({ name: Vue.prototype.i18n.t('message.content.process.nodenopostnode') });
         }
       }
       return validList;

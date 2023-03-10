@@ -92,7 +92,7 @@ export default {
       this.$emit('selectStep', this.nextStepId);
       let assignWorkerList = [];
       if (this.nextstepList.length > 1 && !this.nextStepId) {
-        this.$Message.warning('请选择流转路径');
+        this.$Message.warning(this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.circulationpath')}));
         return;
       }
       if (this.$refs.assignableWorkerStepForm) {

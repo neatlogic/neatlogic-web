@@ -11,8 +11,7 @@
           </Col>
           <Col span="12">
             <TsFormSelect
-              v-model="workerPolicyConfig.executeMode"
-              placeholder="请选择"
+              v-model="workerPolicyConfig.executeMode"              
               :dataList="executeModeList"
               :clearable="false"
               border="border"
@@ -141,12 +140,12 @@
                   <div class="text-list">
                     <div v-if="!formUuid" class="text-tip">
                       当前流程未关联任何表单，请前往
-                      <a class="text-href" href="javascript:void(0);" @click="toSetting">流程设置</a>
+                      <a class="text-href" href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
                       关联表单
                     </div>
                     <div v-else-if="!formItemList || formItemList.length == 0" class="text-tip">
                       当前关联表单无可选组件（用户选择器或者下拉框），请前往
-                      <a href="javascript:void(0);" @click="toSetting">流程设置</a>
+                      <a href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
                       修改关联表单
                     </div>
                     <div v-else>
@@ -223,7 +222,7 @@
                               ></TsFormSelect>
                               <div v-if="!formUuid" class="text-tip">
                                 当前流程未关联任何表单，请前往
-                                <span class="text-href" @click="toSetting">流程设置</span>
+                                <span class="text-href" @click="toSetting">{{ $t('term.process.flowsetting') }}</span>
                                 关联表单
                               </div>
                             </div>
@@ -396,7 +395,7 @@ export default {
         },
         {
           type: 'assign',
-          name: '自定义',
+          name: this.$t('page.custom'),
           isChecked: 0,
           config: {
             workerList: []

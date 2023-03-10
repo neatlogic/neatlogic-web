@@ -1,6 +1,6 @@
 <template>
   <div class="score-edit border-color padding">
-    <div class="title">用户评分</div>
+    <div class="title">{{ $t('page.userrating') }}</div>
     <ul class="score-list clearfix">
       <li v-for="item in dimensionList" :key="item.id" class="score-item">
         <div class="item-name overflow">
@@ -28,12 +28,12 @@
         :value="content"
         width="100%"
         :showIconToggle="true"
-        placeholder="您对本工单的建议.."
+        :placeholder="$t('term.process.workordersuggestion')"
         @on-change="content = $event"
       ></TsCkeditor>
     </div>
     <div class="score-btn">
-      <Button type="primary" @click="submit">提交</Button>
+      <Button type="primary" @click="submit">{{ $t('button.submit') }}</Button>
       <Button v-if="actionConfig.redo" @click="redoTask">{{ actionConfig.redo }}</Button>
     </div>
   </div>

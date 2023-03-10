@@ -24,45 +24,45 @@
           </Col>
           <Col v-if="initAudit.typeName" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">回调策略</span>
+              <span class="text-grey lable">{{ $t('term.process.callbackstrategy') }}</span>
               <span>{{ initAudit.typeName }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.interval" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">轮询间隔</span>
-              <span>{{ initAudit.interval }}分钟</span>
+              <span class="text-grey lable">{{ $t('term.process.pollinginterval') }}</span>
+              <span>{{ initAudit.interval }}{{ $t('page.minute') }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.integrationName" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">外部调用</span>
+              <span class="text-grey lable">{{ $t('term.process.externalcall') }}</span>
               <span>{{ initAudit.integrationName }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.failPolicyName" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">失败策略</span>
+              <span class="text-grey lable">{{ $t('page.failurestrategy') }}</span>
               <span>{{ initAudit.failPolicyName }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.successConfig" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">成功判断</span>
+              <span class="text-grey lable">{{ $t('page.successjudgment') }}</span>
               <span v-if="initAudit.successConfig.default">{{ initAudit.successConfig.default }}</span>
               <span v-else>{{ initAudit.successConfig.name }} {{ initAudit.successConfig.expressionName || '-' }} {{ initAudit.successConfig.value || '-' }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.failConfig" span="12">
             <div class="auto-data">
-              <span class="text-grey lable">失败判断</span>
+              <span class="text-grey lable">{{ $t('page.failurejudgment') }}</span>
               <span v-if="initAudit.failConfig.default">{{ initAudit.failConfig.default }}</span>
               <span v-else>{{ initAudit.failConfig.name }} {{ initAudit.failConfig.expressionName || '-' }} {{ initAudit.failConfig.value || '-' }}</span>
             </div>
           </Col>
           <Col v-if="initAudit.nextFireTime" span="12">
             <div class="auto-data">
-              <span class="text-grey pr-nm">下次激活时间</span>
+              <span class="text-grey pr-nm">{{ $t('page.nextactivationtime') }}</span>
               <span>{{ initAudit.nextFireTime | formatDate }}</span>
             </div>
           </Col>
@@ -81,7 +81,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="resultModal"
-      title="查看原始结果"
+      :title="$t('page.originalresults')"
       :hasFooter="false"
       width="large"
     >
@@ -97,7 +97,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="failedModal"
-      title="查看失败原因"
+      :title="$t('page.failreason')"
       :hasFooter="false"
       width="large"
     >

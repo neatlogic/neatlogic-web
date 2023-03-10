@@ -17,7 +17,7 @@
   <div v-if="step" class="script-detail">
     <div class="pt-nm pb-sm text-title tips">
       <span>
-        {{ $t('term.autoexec.failurestrategy') }}
+        {{ $t('page.failurestrategy') }}
       </span>
       <Tooltip
         placement="top"

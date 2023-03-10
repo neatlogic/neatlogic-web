@@ -18,7 +18,7 @@
             <UserSelect :value="cd.worker" :multiple="false" :readonly="true"></UserSelect>
           </div>
           <div class="data-block">
-            <div class="text-grey">实际开始</div>
+            <div class="text-grey">{{ $t('term.process.actualstarttime') }}</div>
             <div v-if="cd.planStartDate">
               <TsFormDatePicker
                 :value="cd.planStartDate"
@@ -31,7 +31,7 @@
           </div>
           <div class="time-block">
             <div>
-              <div class="text-grey">实际结束</div>
+              <div class="text-grey">{{ $t('term.process.actualendtime') }}</div>
               <div v-if="cd.planEndDate">
                 <TsFormDatePicker
                   :value="cd.planEndDate"
@@ -105,7 +105,7 @@
                 @getFileList="res => handleSuccess(res, pindex)"
               ></TsUpLoad>
               <div class="comment-btn">
-                <Button size="small">回复</Button>
+                <Button size="small">{{ $t('button.reply') }}</Button>
                 <Button size="small">{{ $t('button.cancel') }}</Button>
               </div>
             </div>

@@ -1,7 +1,7 @@
 <template>
   <TabPane
     v-if="fileTable && fileTable.tbodyList && fileTable.tbodyList.length"
-    label="附件清单"
+    :label="$t('term.process.accessorieslist')"
     name="file"
     class="padding tab-content"
     tab="tab1"
@@ -19,7 +19,7 @@
             <li
               v-download="downurl(row.id)"
               class="icon tsfont-download"
-            >下载</li>
+            >{{ $t('page.download') }}</li>
           </ul>
         </div>
       </template>
@@ -43,16 +43,16 @@ export default {
       theadList: [
         {
           key: 'name',
-          title: '附件名称'
+          title: this.$t('page.attachmentname')
         },
         {
           key: 'fcuVo',
-          title: '上传人',
+          title: this.$t('page.uploaduser'),
           type: 'user'
         },
         {
           key: 'uploadTime',
-          title: '上传时间',
+          title: this.$t('page.uploadtime'),
           type: 'time'
         },
         {

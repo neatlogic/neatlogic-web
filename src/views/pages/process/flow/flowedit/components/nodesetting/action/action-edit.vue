@@ -17,7 +17,6 @@
                   v-bind="integrationConfig"
                   search
                   transfer
-                  placeholder="请选择"
                   :selectItemList.sync="integrationItemList"
                   @change="clearIntegrationrelation"
                 >
@@ -44,7 +43,6 @@
               v-model="trigger"
               search
               transfer
-              placeholder="请选择"
               :dataList="triggerList"
               valueName="trigger"
               textName="triggerName"
@@ -66,7 +64,6 @@
                   v-bind="integrationConfig"
                   search
                   transfer
-                  placeholder="请选择"
                   :selectItemList.sync="integrationItemList"
                   @change="clearIntegrationrelation"
                 >
@@ -101,7 +98,6 @@
                     v-model="paramMappingList[pindex].value"
                     search
                     transfer
-                    placeholder="请选择"
                     :dataList="paraConditionList"
                     textName="label"
                     valueName="name"
@@ -149,7 +145,6 @@
                 <Col span="8">
                   <TsFormSelect
                     v-model="successCondition.name"
-                    placeholder="请选择"
                     transfer
                     :dataList="outputParamList"
                     textName="name"
@@ -160,7 +155,6 @@
                 <Col span="6">
                   <TsFormSelect
                     v-model="successCondition.expression"
-                    placeholder="请选择"
                     transfer
                     :dataList="getExpression(successCondition.name)"
                     textName="expressionName"
@@ -168,7 +162,7 @@
                   > </TsFormSelect>
                 </Col>
                 <Col span="10">
-                  <TsFormInput v-model="successCondition.value" placeholder="请输入" maxlength="50"> </TsFormInput>
+                  <TsFormInput v-model="successCondition.value" maxlength="50"> </TsFormInput>
                 </Col>
               </TsRow>
             </div>

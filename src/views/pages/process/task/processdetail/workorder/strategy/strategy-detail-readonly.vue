@@ -20,7 +20,7 @@
       <div v-for="(item) in processTaskStepTaskList" :key="item.id" class="item-list border-color">
         <TsRow class="mb-xs">
           <Col span="8">
-            <span class="text-title">策略</span>
+            <span class="text-title">{{ $t('term.process.policy') }}</span>
             <span class="text-default">{{ item.taskConfigPolicyName }}</span>
           </Col>
           <Col span="12" class="time">
@@ -95,11 +95,11 @@ export default {
           uuid: 'userUuid'
         },
         {
-          title: '回复时间',
+          title: this.$t('page.replytime'),
           key: 'endTime',
           type: 'time'
         }, {
-          title: '回复意见',
+          title: this.$t('page.reply'),
           key: 'content',
           type: 'html',
           maxLength: '50'

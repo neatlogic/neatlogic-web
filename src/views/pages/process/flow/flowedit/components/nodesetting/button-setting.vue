@@ -4,7 +4,7 @@
       <div class="control-setting">
         <span class="label">{{ title }}</span>
         <span class="control-btn">
-          <span class="tip" :class="isActive == 1?'text-tip':'text-href'" @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'button')">{{ isActive == 1 ? '自定义' : '引用全局' }}</span>
+          <span class="tip" :class="isActive == 1?'text-tip':'text-href'" @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'button')">{{ isActive == 1 ? $t('page.custom') : $t('page.referenceglobal') }}</span>
           <span style="display: inline-block;">
             <TsFormSwitch
               v-model="isActive"
@@ -32,7 +32,7 @@
               <span class="status-right input-border">
                 <TsFormInput
                   v-model="item.value"
-                  placeholder="引用全局"
+                  :placeholder="$t('page.referenceglobal')"
                   border="border"
                   @on-change="changeValue"
                 />
@@ -89,17 +89,17 @@ export default {
       isActive: 0,
       config: {
         customButtonList: {
-          text: '按钮',
+          text: this.$t('page.button'),
           dataList: [],
           isShowButton: true
         }, 
         customStatusList: {
-          text: '节点状态',
+          text: this.$t('page.process.nodestatus'),
           dataList: [],
           isShowButton: true
         }, 
         replaceableTextList: {
-          text: '其它',
+          text: this.$t('page.others'),
           dataList: [],
           isShowButton: true
         }

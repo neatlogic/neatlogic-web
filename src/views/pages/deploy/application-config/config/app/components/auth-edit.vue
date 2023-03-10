@@ -26,7 +26,7 @@
         </Checkbox>
       </CheckboxGroup>
     </template>
-    <span v-else class="text-grey">暂无数据</span>
+    <span v-else class="text-grey">{{ $t('page.nodata') }}</span>
   </div>
 </template>
 <script>

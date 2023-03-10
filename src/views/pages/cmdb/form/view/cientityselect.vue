@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div v-else>暂无模型</div>
+    <div v-else>{{ $t('page.notarget',{target:$t('page.model')}) }}</div>
     <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
     <transition name="fade">
       <span v-if="validMesage != ''" class="form-error-tip">{{ validMesage }}</span>

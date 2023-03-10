@@ -22,11 +22,11 @@
       icon="tsfont-plus"
       ghost
       @click="add"
-    >新增</Button>
+    >{{ $t('button.add') }}</Button>
     <div v-if="processTaskStepTaskList && processTaskStepTaskList.length" class="item-main">
       <div v-for="(item, index) in processTaskStepTaskList" :key="item.id" class="item-list border-color padding">
         <TsRow class="mb-xs">
-          <Col span="8"><span class="text-title">策略</span><span class="text-default">{{ item.taskConfigPolicyName }}</span></Col>
+          <Col span="8"><span class="text-title">{{ $t('term.process.policy') }}</span><span class="text-default">{{ item.taskConfigPolicyName }}</span></Col>
           <Col span="12" class="time">
             <span class="text-title">{{ $t('page.starttime') }}</span>
             <span class="text-default">{{ item.createTime | formatDate }}</span>
@@ -59,7 +59,7 @@
                   :initType="row.userVo.initType"
                 ></UserCard>
                 <template v-if="row.originalUserUuid">
-                  （代<UserCard :uuid="row.originalUserUuid" hideAvatar></UserCard>）
+                  （{{ $t('term.process.act') }}<UserCard :uuid="row.originalUserUuid" hideAvatar></UserCard>）
                 </template>
               </div>
             </template>
@@ -106,7 +106,7 @@
               type="primary"
               :disabled="isDisableCommet"
               @click="editCkeditor(item)"
-            >编辑</Button>
+            >{{ $t('button.edit') }}</Button>
             <template v-else>
               <template v-if="customButtonList.length > 0">
                 <div>
@@ -124,9 +124,9 @@
                 v-else
                 type="primary"
                 :disabled="isDisableCommet"
-                :title="isDisableCommet ? '回复框不为空时允许点击' : null"
+                :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
                 @click="comment(item)"
-              >回复</Button>
+              >{{ $t('button.reply') }}</Button>
             </template>
           </div>
         </div>
@@ -186,11 +186,11 @@ export default {
           uuid: 'userUuid'
         },
         {
-          title: '回复时间',
+          title: this.$t('page.replytime'),
           key: 'endTime',
           type: 'time'
         }, {
-          title: '回复意见',
+          title: this.$t('page.reply'),
           key: 'content',
           type: 'html',
           maxLength: '50'
@@ -205,13 +205,12 @@ export default {
       processTaskStepTaskId: null,
       subTaskForm: {
         userList: {
-          placeholder: '请选择',
           type: 'userselect',
           name: 'userList',
           label: this.$t('term.process.dealwithuser'),
           groupList: ['user'],
           rangeList: [],
-          validateList: [{name: 'required', message: '请选择'}],
+          validateList: [{name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: ''})}],
           transfer: true
         },
         content: {
@@ -248,9 +247,9 @@ export default {
       this.subTaskForm.userList.rangeList = this.stepConfig.rangeList;
       this.num = this.stepConfig.num;
       if (this.num == -1) {
-        this.subTaskForm.userList.placeholder = '请选择用户';
+        this.subTaskForm.userList.placeholder = this.$t('form.placeholder.pleaseselect', {target: this.$t('page.user')});
       } else {
-        this.subTaskForm.userList.placeholder = '请选择' + this.num + '位用户';
+        this.subTaskForm.userList.placeholder = this.$t('term.process.pleusernum', {target: this.num});
       }
       this.processTaskStepTaskList.forEach(item => {
         let contentobj = {};
@@ -295,7 +294,7 @@ export default {
     },
     add() {
       this.editType = 'add';
-      this.subTaskContentTitle = '新增' + this.stepConfig.name;
+      this.subTaskContentTitle = this.$t('dialog.title.addtarget', {target: this.stepConfig.name});
       this.processTaskStepTaskId = null;
       this.subTaskContent.userList = null;
       this.subTaskContent.content = null;
@@ -320,8 +319,8 @@ export default {
     },
     del(item, index) {
       this.$createDialog({
-        title: '警告',
-        content: '确认删除当前任务？',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.title.deleteconfirm', {target: this.$t('page.task')}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.process.process
@@ -427,8 +426,7 @@ export default {
       } 
       if (!isValid) {
         this.$Notice.warning({
-          title: '提示',
-          desc: '回复意见不能为空'
+          title: this.$t('form.validate.required', {target: this.$t('page.reply')})
         });
         return;
       } 

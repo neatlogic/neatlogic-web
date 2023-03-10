@@ -102,7 +102,7 @@
               @on-select-change="onSelectChange"
               @on-check-change="onCheckChange"
             ></Tree>
-            <li v-else class="ivu-dropdown-item"><span class="text-tip">暂无数据</span></li>
+            <li v-else class="ivu-dropdown-item"><span class="text-tip">{{ $t('page.nodata') }}</span></li>
           </DropdownMenu>
         </Dropdown>
       </div>

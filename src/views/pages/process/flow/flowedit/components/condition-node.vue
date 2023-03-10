@@ -7,7 +7,7 @@
     <div v-if="formUuid == ''">
       <div class="text-tip">
         流程未关联表单，无法配置组合条件，请前往
-        <a href="javascript:void(0);" @click="tabSetting">流程设置</a>进行关联
+        <a href="javascript:void(0);" @click="tabSetting">{{ $t('term.process.flowsetting') }}</a>进行关联
       </div>
     </div>
     <div v-if="moveonConfigList && moveonConfigList.length > 0">
@@ -208,7 +208,7 @@ export default {
           type: 'select',
           name: 'targetStepList',
           value: '',
-          placeholder: '请选择节点',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')}),
           width: 320,
           maxlength: 30,
           label: '流转到',
@@ -218,7 +218,7 @@ export default {
           validateList: [
             {
               name: 'required',
-              message: '请选择节点'
+              message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')})
             },
             {
               name: 'name-special'
@@ -246,7 +246,7 @@ export default {
             },
             {
               value: 'optional',
-              text: '自定义'
+              text: this.$t('page.custom')
             }
           ],
           onChange: function(val) {
@@ -493,7 +493,7 @@ export default {
                       if (key == 'valueList' && Array.isArray(val)) {
                         if (val.length == 0) {
                           this.$Notice.error({
-                            title: '请选择条件',
+                            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                             duration: 1.5
                           });
                           isValue = false;
@@ -501,7 +501,7 @@ export default {
                         } else {
                           if (val[0] == '') {
                             this.$Notice.error({
-                              title: '请选择条件',
+                              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                               duration: 1.5
                             });
                             isValue = false;
@@ -510,7 +510,7 @@ export default {
                         }
                       } else if (!val) {
                         this.$Notice.error({
-                          title: '请选择条件',
+                          title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                           duration: 1.5
                         });
                         isValue = false;

@@ -160,7 +160,7 @@
                                 </TsRow>
                               </div>
                               <div v-if="pcomment.isDeletable == 1 || pcomment.isEditable == 1" class="comment-btn">
-                                <Button v-if="pcomment.isEditable == 1" size="small" @click="editComment(pcomment)">{{ $t('button.add') }}</Button>
+                                <Button v-if="pcomment.isEditable == 1" size="small" @click="editComment(pcomment)">{{ $t('button.edit') }}</Button>
                                 <Button v-if="pcomment.isDeletable == 1" size="small" @click="delComment(pcomment.id)">{{ $t('button.delete') }}</Button>
                               </div>
                               <div class="text-grey fz10 comment-time">{{ pcomment.fcd | formatDate }}</div>

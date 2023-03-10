@@ -57,7 +57,7 @@
             @updateScrollTop="oldScroll"
           >
             <template v-slot:top>
-              <div class="top-content">{{ $t('term.knowledge.updatebefore') }}</div>
+              <div class="top-content">{{ $t('page.beforeedit') }}</div>
             </template>
           </ComparisonDetail>
         </div>
@@ -72,7 +72,7 @@
             @updateScrollTop="newScroll"
           >
             <template v-slot:top>
-              <div class="top-content">{{ $t('term.knowledge.updateafter') }}</div>
+              <div class="top-content">{{ $t('page.afteredit') }}</div>
             </template>
           </ComparisonDetail>
         </div>

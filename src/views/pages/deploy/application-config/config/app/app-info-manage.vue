@@ -112,7 +112,7 @@
               </template>
               <template v-else>
                 <tr class="text-center">
-                  <td :colspan="tableConfig.theadList.length">暂无数据</td>
+                  <td :colspan="tableConfig.theadList.length">{{ $t('page.nodata') }}</td>
                 </tr>
               </template>
             </tbody>

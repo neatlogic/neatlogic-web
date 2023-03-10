@@ -24,7 +24,7 @@
               <div class="tooltip-title">{{ stepTooltip.name }}</div>
               <ul class="tooltip-content">
                 <li v-if="stepTooltip.statusVo" class="tooltip-list">
-                  <span class="label">状态</span>
+                  <span class="label">{{ $t('page.status') }}</span>
                   <span :style="{ color: stepTooltip.statusVo.color }">{{ stepTooltip.statusVo.text }}</span>
                 </li>
                 <li v-if="stepTooltip.startTime" class="tooltip-list">

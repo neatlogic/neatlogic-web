@@ -10,7 +10,7 @@
         <div slot="content" class="submit-style">
           <div>
             <i class="tsfont-check-s text-success" style="font-size:40px"></i>
-            <span class="success-fz">提交成功</span>
+            <span class="success-fz">{{ $t('message.title.commitsuccess') }}</span>
           </div>
           <div class="submit-btn-list">
             <Button
@@ -18,10 +18,10 @@
               type="primary"
               style="width:190px;"
               @click="togoDocument('submit')"
-            >查看文档</Button>
+            >{{ $t('term.knowledge.viewdoc') }}</Button>
           </div>
           <div class="submit-btn-list">
-            <Button size="large" style="width:190px;" @click="close">留着当前页</Button>
+            <Button size="large" style="width:190px;" @click="close">{{ $t('page.keepthecurrentpage') }}</Button>
           </div>
         </div>
       </template>
@@ -38,9 +38,9 @@
         <div slot="content">
           <div>
             <i class="tsfont-check-s text-success icon-fz"></i>
-            <span class="success-fz">提交成功</span>
+            <span class="success-fz">{{ $t('message.title.commitsuccess') }}</span>
           </div>
-          <div class="text-tip content-tip">确定发布新版本？</div>
+          <div class="text-tip content-tip">{{ $t('dialog.content.surepublishthenewversion') }}</div>
         </div>
       </template>
     </TsDialog>

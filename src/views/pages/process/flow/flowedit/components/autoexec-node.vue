@@ -72,7 +72,6 @@
           <TsFormSelect
             ref="failPolicy"
             v-model="failPolicy"
-            placeholder="请选择"
             :dataList="failPolicyList"
             :validateList="validateList"
             border="border"

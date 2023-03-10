@@ -186,7 +186,7 @@ export default {
       groupList: ['user'],
       validateList: {
         owner: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
-        planStartEndTime: [{ name: 'required', message: '请选择时间' }]
+        planStartEndTime: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('page.time')}) }]
       }
     };
   },
@@ -253,7 +253,7 @@ export default {
         this.validConfig.planStartEndTime = false;
         let o = {
           focus: '#planStartEndTime',
-          msg: '计划起止时间不能为空'
+          msg: this.$t('message.content.required', {target: this.$t('term.process.planStartEndTime')})
         };
         validList.push(o);
       } else {
@@ -262,7 +262,7 @@ export default {
       if (!this.changeReport.owner) {
         let o = {
           focus: '#owner',
-          msg: '变更经理不能为空'
+          msg: this.$t('message.content.process.required', {target: this.$t('term.process.changeowner')})
         };
         this.validConfig.ownerChange = false;
         validList.push(o);

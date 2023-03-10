@@ -18,6 +18,7 @@
         :actionList="actionList"
         :isMoreStep="isMoreStep"
         :replaceableTextConfig="replaceableTextConfig"
+        class="tasknodedetail"
         @getTastHeight="getTastHeight"
         @updateMenu="updateMenu"
       >
