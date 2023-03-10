@@ -219,7 +219,8 @@ export default {
       sessionName: 'task-detail',
       tabValue: 'report', //默认展示tab：当前节点信息（上报信息、步骤信息）
       processTaskStepRemindList: [], //顶部提示
-      priorityList: [] //当前服务优先级列表
+      priorityList: [], //当前服务优先级列表
+      isDisableCommet: false
     };
   },
   created() {
@@ -1230,6 +1231,9 @@ export default {
           this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet.initContainerWidth();
         }
       }, 300);//动画有延迟
+    },
+    comment() {
+      this.$refs.TaskCenterDetail.comment();
     }
   },
   computed: {
