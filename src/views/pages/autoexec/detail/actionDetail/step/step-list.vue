@@ -53,7 +53,7 @@
                     </div>
                   </div>
                   <div v-else-if="!canEdit || isRunner" class="stepBtn" @click.stop>
-                    <div class="tsfont-eye pt-xs pb-xs radius-lg text-action" :class="step.uuid == value ?'bg-selected':'bg-grey'" @click.stop="editStep(step)">
+                    <div class="tsfont-eye pt-xs pb-xs radius-lg text-action" :class="step.uuid == value ?'bg-selected':'bg-grey'" @click.stop="editStep(step, null, step.groupUuid)">
                       查看
                     </div>
                   </div>
