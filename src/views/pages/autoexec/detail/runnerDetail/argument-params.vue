@@ -24,7 +24,7 @@
     >
       <div>
         <TsFormItem
-          label="常量"
+          :label="$t('page.constant')"
           class="param-item"
           :labelWidth="100"
           labelPosition="left"

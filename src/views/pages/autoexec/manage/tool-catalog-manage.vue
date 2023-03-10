@@ -90,7 +90,7 @@ export default {
       selectTreeSetting: {
         name: 'id',
         value: '',
-        placeholder: '请选择目录名称',
+        placeholder: this.$t('term.autoexec.pleaseselectdirectoryname'),
         search: true,
         multiple: false,
         width: '100%',

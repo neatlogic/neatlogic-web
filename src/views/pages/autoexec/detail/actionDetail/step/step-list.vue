@@ -27,7 +27,7 @@
               class="stepIndex border-color tsfont bg-op"
               :class="{ 'text-primary border-primary': ary.find(item => item.uuid == value) }"
               :data-index="sindex + 1"
-              :title="canEdit ? '拖拽改变顺序' : ''"
+              :title="canEdit ? $t('term.deploy.dragtochangetheorder') : ''"
               @click.stop
             ></span>
             <ul>
@@ -47,14 +47,14 @@
                   </div>
                   <div v-if="canEdit" class="stepBtn" @click.stop>
                     <div class="action-group line radius-lg" :class="step.uuid == value ?'bg-selected':'bg-grey'">
-                      <span class="tsfont-plus action-item" @click="editStep(null, sindex, step.groupUuid)">阶段</span>
-                      <span class="tsfont-edit action-item" @click="editStep(step, null, step.groupUuid)">编辑</span>
-                      <span class="tsfont-trash-o action-item" @click="delStep(step, sindex)">删除</span>
+                      <span class="tsfont-plus action-item" @click="editStep(null, sindex, step.groupUuid)">{{ $t('page.phase') }}</span>
+                      <span class="tsfont-edit action-item" @click="editStep(step, null, step.groupUuid)">{{ $t('button.edit') }}</span>
+                      <span class="tsfont-trash-o action-item" @click="delStep(step, sindex)">{{ $t('button.delete') }}</span>
                     </div>
                   </div>
                   <div v-else-if="!canEdit || isRunner" class="stepBtn" @click.stop>
                     <div class="tsfont-eye pt-xs pb-xs radius-lg text-action" :class="step.uuid == value ?'bg-selected':'bg-grey'" @click.stop="editStep(step, null, step.groupUuid)">
-                      查看
+                      {{ $t('page.view') }}
                     </div>
                   </div>
                 </div>
@@ -71,7 +71,7 @@
       @click="editStep()"
     >
       <i class="tsfont-plus bg-op btn-add"></i>
-      {{ !stepList || !stepList.length ? '添加阶段' : '' }}
+      {{ !stepList || !stepList.length ? $t('page.addtarget', {target: $t('page.phase')}) : '' }}
     </div>
     <StepEdit
       v-if="isEdit"
@@ -178,7 +178,7 @@ export default {
       let _this = this;
       _this.$createDialog({
         title: _this.$i18n.t('page.warning'),
-        content: '确认删除阶段：' + config.name + '?',
+        content: this.$t('dialog.content.deleteconfirm', {target: config.name}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

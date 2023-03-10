@@ -88,7 +88,7 @@ export default {
       searchVal: {},
       defaultSearchValue: null,
       theadList: [
-        { title: 'ip', key: 'ip'},
+        { title: this.$t('page.port'), key: 'ip'},
         { title: this.$t('page.port'), key: 'port'},
         { title: this.$t('page.name'), key: 'name'},
         { title: this.$t('page.tag'), key: 'tagList', type: 'tag'},

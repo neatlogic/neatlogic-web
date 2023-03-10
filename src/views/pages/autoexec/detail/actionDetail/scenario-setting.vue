@@ -1,11 +1,11 @@
 <template>
   <div class="padding">
-    <div v-if="canEdit" class="tsfont-plus text-href" @click="addScenario">场景</div>
+    <div v-if="canEdit" class="tsfont-plus text-href" @click="addScenario">{{ $t('page.scene') }}</div>
     <ul class="scenario-ul">
       <li v-for="(item, index) in scenarioList" :key="index" class="scenario-li border-color">
         <div class="text-tip pb-xs">
           {{ item.scenarioName }}
-          <template v-if="item.scenarioId == defaultScenarioId">[默认场景]</template>
+          <template v-if="item.scenarioId == defaultScenarioId">[{{ $t('page.defaultscenario') }}]</template>
         </div>
         <div class="overflow">{{ getScenarioText(item.combopPhaseNameList) }}</div>
         <div v-if="canEdit" class="btn-list">
@@ -25,7 +25,7 @@
     >
       <div class="pl-nm">
         <TsFormItem
-          label="场景名称"
+          :label="$t('term.autoexec.scenarioname')"
           labelPosition="left"
           :labelWidth="100"
           required
@@ -37,7 +37,7 @@
             transfer
           ></TsFormSelect>
         </TsFormItem>
-        <TsFormItem label="设为默认场景" labelPosition="left" :labelWidth="100">
+        <TsFormItem :label="$t('term.autoexec.settodefaultscenario')" labelPosition="left" :labelWidth="100">
           <TsFormSwitch v-model="isActive"></TsFormSwitch>
         </TsFormItem>
         <div>
@@ -107,12 +107,12 @@ export default {
         width: '80%',
         validateList: ['required'],
         dealDataByUrl: _this.dealDataByUrl,
-        disabledHoverTitle: '此场景已配置',
+        disabledHoverTitle: this.$t('term.autoexec.thisscenariohasconfigured'),
         onChangelabel: (text) => {
           _this.scenarioName = text;
         }
       },
-      title: '新增场景',
+      title: this.$t('page.addtarget', {target: this.$t('page.scene')}),
       editScenarioConfig: null, //编辑：场景数据
       scenarioId: null,
       scenarioName: '',
@@ -188,13 +188,13 @@ export default {
       return list;
     },
     addScenario() {
-      this.title = '新增场景';
+      this.title = this.$t('page.addtarget', {target: this.$t('page.scene')});
       this.isActive = 0;
       this.clearScenarioData();
       this.isShow = true;
     },
     editScenario(item, index) {
-      this.title = '编辑场景';
+      this.title = this.$t('page.edittarget', {target: this.$t('page.scene')});
       this.editScenarioConfig = item;
       this.selectIndex = index;
       this.scenarioId = item.scenarioId;
@@ -221,7 +221,7 @@ export default {
       if (!this.combopPhaseNameList.length) {
         isValid = false;
         this.$Notice.info({
-          title: '请至少选择一个阶段'
+          title: this.$t('term.autoexec.pleaseselectatleastonephase')
         });
       }  
       return isValid;

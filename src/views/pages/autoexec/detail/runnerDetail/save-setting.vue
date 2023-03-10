@@ -18,7 +18,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="showDialog"
-      title="保存作业"
+      :title="$t('term.autoexec.savejob')"
       @on-ok="onOk"
     >
       <TsForm

@@ -26,10 +26,10 @@
     >
       <template v-slot:header>
         <div v-if="config && config.name">
-          <span v-html="canEdit?'编辑':'查看'"></span><span>阶段:{{ config.name }}</span>
+          <span v-html="canEdit?$t('page.edit'):$t('page.view')"></span><span>{{ $t('page.phase') }}:{{ config.name }}</span>
         </div>
         <div v-else>
-          添加阶段
+          {{ $t('page.addtarget', {target: $t('page.phase')}) }}
         </div>
       </template>
       <template v-slot>
@@ -52,7 +52,7 @@
           <div class="mt-lg">
             <TsFormItem
               v-if="(groupConfig && groupConfig.policy=='grayScale') && (editConfig.execMode && (editConfig.execMode == 'runner' || editConfig.execMode == 'sqlfile'))"
-              label="执行策略"
+              :label="$t('term.deploy.executivestrategy')"
               labelPosition="left"
               :labelWidth="115"
               :required="true"
@@ -69,7 +69,7 @@
           </div>
           <div v-if="editConfig.execMode !='runner' && editConfig.execMode !='sqlfile' && (!groupConfig || groupConfig.policy !='grayScale')" class="mt-lg">
             <TsFormItem
-              label="预设执行目标"
+              :label="$t('term.deploy.presetexecutiontarget')"
               labelPosition="left"
               :labelWidth="115"
               :tooltip="executeTooltip"
@@ -104,14 +104,14 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="editConfig.execMode !='runner'"
           type="primary"
           ghost
           @click="validSetting()"
-        >校验</Button>
-        <Button type="primary" @click="ok()">确定</Button>
+        >{{ $t('button.validate') }}</Button>
+        <Button type="primary" @click="ok()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
     <TargetValid

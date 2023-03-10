@@ -59,7 +59,7 @@ export default {
         owner: {
           type: 'slot',
           name: 'owner',
-          label: '维护人'
+          label: this.$t('term.autoexec.maintainer')
         },
         viewAuthorityList: {
           type: 'slot',

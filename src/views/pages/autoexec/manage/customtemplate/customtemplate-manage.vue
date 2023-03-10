@@ -25,8 +25,8 @@
               <span class="text-href" @click="editCustomTemplate(row.id)">{{ row.name }}</span>
             </template>
             <template v-slot:isActive="{ row }">
-              <span v-if="row.isActive" class="text-success">是</span>
-              <span v-else class="text-grey">否</span>
+              <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-grey">{{ $t('page.no') }}</span>
             </template>
             <template v-slot:referenceCount="{row}">
               <ReferenceSelect
