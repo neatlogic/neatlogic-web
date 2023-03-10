@@ -11,8 +11,7 @@
           </Col>
           <Col span="12">
             <TsFormSelect
-              v-model="workerPolicyConfig.executeMode"
-              placeholder="请选择"
+              v-model="workerPolicyConfig.executeMode"              
               :dataList="executeModeList"
               :clearable="false"
               border="border"

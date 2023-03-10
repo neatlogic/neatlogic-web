@@ -42,7 +42,7 @@ let valid = {
     if (nodeData && nodeData.workerPolicyConfig && nodeData.workerPolicyConfig.policyList) {
       let policyList = nodeData.workerPolicyConfig.policyList;
       let isChecked = policyList && policyList.find(p => p.isChecked == 1) ? 1 : 0; //判断分配处理人是否有选中的项
-      let errorText = Vue.prototype.i18n.t('message.content.required', { target: this.$t('term.process.poliyuser') });
+      let errorText = Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
           'prestepassign': { value: 'processStepUuidList', text: Vue.prototype.i18n.t('term.process.prestepassignvalid')}, //由前置步骤处理人指定
@@ -95,7 +95,7 @@ let valid = {
                       let val = row[key];
                       if (that.$utils.isEmpty(val)) {
                         isChecked = 0;
-                        errorText = '分配处理人：分派器必填';
+                        errorText = Vue.prototype.i18n.t('term.process.assignconfigvalid');
                         break;
                       } 
                     }
@@ -118,7 +118,7 @@ let valid = {
       }
       if (!nodeData.workerPolicyConfig.defaultWorker || nodeData.workerPolicyConfig.defaultWorker == '') {
         validList.push({
-          name: '异常处理人必选',
+          name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.erroruser') }),
           href: '#assignData'
         });
       }
@@ -135,13 +135,13 @@ let valid = {
     if (nodeConfig.handler === 'automatic') {
       if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.integrationUuid) {
         validList.push({
-          name: '外部调用必选',
+          name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.externalcall')}),
           href: '#requestIntegration'
         });
       }
       if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.failPolicy) {
         validList.push({
-          name: '失败策略必选',
+          name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('page.failurestrategy')}),
           href: '#failPolicy'
         });
       }
@@ -150,13 +150,13 @@ let valid = {
         if (callbackConfig) {
           if (!callbackConfig.integrationUuid) {
             validList.push({
-              name: '外部调用必选',
+              name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.externalcall') }),
               href: '#callbackintegration'
             });
           }
           if (!callbackConfig.interval) {
             validList.push({
-              name: '时间间隔必填',
+              name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('page.timeinterval') }),
               href: '#callbackInterval'
             });
           }
@@ -173,7 +173,7 @@ let valid = {
       let haveChangehandle = allNextNodes.filter(p => p.getConfig() && p.getConfig().handler === 'changehandle');
       if (haveChangehandle.length == 0) {
         validList.push({
-          name: '变更创建与变更处理节点必须成对存在'
+          name: Vue.prototype.i18n.t('term.process.changeexistinpairsvalid') 
         });
       } else {
         let selectChangeList = haveChangehandle.filter(c => {
@@ -182,11 +182,11 @@ let valid = {
         });
         if (selectChangeList.length == 0) {
           validList.push({
-            name: '不允许存在未关联的变更创建'
+            name: Vue.prototype.i18n.t('term.process.notselectchangelistvalid') 
           });
         } else if (selectChangeList.length > 1) {
           validList.push({
-            name: '变更创建节点只允许被一个变更处理节点关联'
+            name: Vue.prototype.i18n.t('term.process.changeonlyonerelvalid')
           });
         }
       }
@@ -201,11 +201,11 @@ let valid = {
       let haveChangecreate = allPrevNodes.filter(p => p.getConfig() && p.getConfig().handler === 'changecreate');
       if (haveChangecreate.length == 0) {
         validList.push({
-          name: '变更创建与变更处理节点必须成对存在'
+          name: Vue.prototype.i18n.t('term.process.changeexistinpairsvalid') 
         });
       } else if (haveChangecreate.length > 0 && !nodeData.linkedChange) {
         validList.push({
-          name: '必须选择关联的变更创建',
+          name: Vue.prototype.i18n.t('term.process.selectchangevalid'),
           href: '#changeStep'
         });
       }
@@ -220,7 +220,7 @@ let valid = {
       //校验配置项同步的关联表单组件
       if (!nodeData || !nodeData.handlerList || nodeData.handlerList.length == 0) {
         validList.push({
-          name: '至少选择一个关联表单组件',
+          name: Vue.prototype.i18n.t('term.process.selectformitemvalid'),
           href: '#handlerList'
         });
       } else if (nodeData && nodeData.handlerList && nodeData.handlerList.length > 0) {
@@ -229,7 +229,7 @@ let valid = {
           if (!findFormitem) {
             nodeData.handlerList = [];
             validList.push({
-              name: '至少选择一个关联表单组件',
+              name: Vue.prototype.i18n.t('term.process.selectformitemvalid'),
               href: '#handlerList'
             });
             break;
@@ -246,13 +246,13 @@ let valid = {
     if (nodeConfig.handler === 'autoexec') {
       if (!autoexecConfig.failPolicy) {
         validList.push({
-          name: '失败策略必选',
+          name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('page.failurestrategy') }),
           href: '#failPolicy'
         });
       }
       if (!autoexecConfig.autoexecCombopId) {
         validList.push({
-          name: '组合工具必选',
+          name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.autoexec.combinationtool') }),
           href: '#autoexecCombop'
         });
       }
@@ -265,7 +265,7 @@ let valid = {
             if (paramsList[i].isRequired) {
               if (that.$utils.isEmpty(paramsList[i].value)) {
                 validList.push({
-                  name: '参数映射填写完整',
+                  name: Vue.prototype.i18n.t('message.content.completerequired', { target: Vue.prototype.i18n.t('term.process.paramsMapping') }),
                   href: '#autoexecCombop'
                 });
                 break;
@@ -274,7 +274,7 @@ let valid = {
                   let findForm = that.allFormitemList.find(f => f.uuid == paramsList[i].value);
                   if (!findForm) {
                     validList.push({
-                      name: '参数映射填写完整',
+                      name: Vue.prototype.i18n.t('message.content.completerequired', { target: Vue.prototype.i18n.t('term.process.paramsMapping') }),
                       href: '#autoexecCombop'
                     });
                     break;
@@ -289,7 +289,7 @@ let valid = {
                   let findExport = nodeExportParamList.find(e => e.value == paramsList[i].value);
                   if (!findExport) {
                     validList.push({
-                      name: '参数映射填写完整',
+                      name: Vue.prototype.i18n.t('message.content.completerequired', { target: Vue.prototype.i18n.t('term.process.paramsMapping') }),
                       href: '#autoexecCombop'
                     });
                     break;
@@ -306,16 +306,16 @@ let valid = {
   timer(nodeConfig, d, that) { //定时节点
     let validList = [];
     let validObj = {
-      name: '必须选择流转时间',
+      name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.circulationtime') }),
       href: '#timerAttributeUuid'
     };
     let nodeData = nodeConfig.stepConfig || {};
     if (nodeConfig.handler === 'timer') {
       if (!nodeData.attributeUuid) {
-        validObj.name = '必须选择流转时间';
+        validObj.name = Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.circulationtime') });
         validList.push(validObj);
       } else if (nodeData.attributeUuid) {
-        validObj.name = '表单组件已被修改，请重新选择流转时间';
+        validObj.name = Vue.prototype.i18n.t('term.process.formupdateselecttimevalid');
         if (that.allFormitemList && that.allFormitemList.length > 0) {
           let attributeUuid = that.allFormitemList.find(f => f.uuid == nodeData.attributeUuid);
           !attributeUuid && (nodeData.attributeUuid = '') && validList.push(validObj);

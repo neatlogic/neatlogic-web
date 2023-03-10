@@ -20,12 +20,12 @@
           <div class="content">
             <div class="bg-block bg-border-radius">
               <div class="step border-color">
-                <span class="title text-grey">关联步骤</span>
+                <span class="title text-grey">{{ $t('term.process.associatedsteps') }}</span>
                 <span v-for="(citem, cindex) in item.processStepUuidList" :key="cindex" class="name text-default">{{ correlationList[citem] }}</span>
               </div>
 
               <div class="step border-color overflow">
-                <span class="title text-grey">计算规则</span>
+                <span class="title text-grey">{{ $t('page.computationrules') }}</span>
                 <span :title="getCalculateHandlerName(item.calculateHandler)">{{ getCalculateHandlerName(item.calculateHandler) }}</span>
               </div>
             </div>
@@ -97,7 +97,7 @@
             <div class="bg-block bg-border-radius">
               <div v-for="(citem, cindex) in item.notifyPolicyList" :key="cindex" class="notice border-color">
                 <div class="condition border-color text-default">
-                  <span v-html="citem.expression == 'after' ? '超时后' : '超时前'"></span>
+                  <span v-html="citem.expression == 'after' ? $t('page.aftertimeout') : $t('page.beforetimeout')"></span>
                   <span>{{ citem.time }}</span>
                   <span>{{ timeArray[citem.unit] }}</span>
                   <span class="line">—</span>
@@ -110,14 +110,14 @@
             <div class="bg-block bg-border-radius">
               <div v-for="(citem, cindex) in item.transferPolicyList" :key="cindex" class="notice">
                 <div class="condition border-color text-default">
-                  <span v-html="citem.expression == 'after' ? '超时后' : '超时前'"></span>
+                  <span v-html="citem.expression == 'after' ? $t('page.aftertimeout') : $t('page.beforetimeout')"></span>
                   <span>{{ citem.time }}</span>
                   <span>{{ timeArray[citem.unit] }}</span>
                   <span class="line">—</span>
                   <span>{{ $t('page.transfer') }}</span>
                 </div>
                 <div class="object border-color text-default">
-                  <span class="title text-grey">转交对象</span>
+                  <span class="title text-grey">{{ $t('term.process.transferuser') }}</span>
                   <span class="item">
                     <div class="usertxt-ul">
                       <!-- <span class="usertxt-li">

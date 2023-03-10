@@ -208,7 +208,7 @@ export default {
           type: 'select',
           name: 'targetStepList',
           value: '',
-          placeholder: '请选择节点',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')}),
           width: 320,
           maxlength: 30,
           label: '流转到',
@@ -218,7 +218,7 @@ export default {
           validateList: [
             {
               name: 'required',
-              message: '请选择节点'
+              message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')})
             },
             {
               name: 'name-special'
@@ -493,7 +493,7 @@ export default {
                       if (key == 'valueList' && Array.isArray(val)) {
                         if (val.length == 0) {
                           this.$Notice.error({
-                            title: '请选择条件',
+                            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                             duration: 1.5
                           });
                           isValue = false;
@@ -501,7 +501,7 @@ export default {
                         } else {
                           if (val[0] == '') {
                             this.$Notice.error({
-                              title: '请选择条件',
+                              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                               duration: 1.5
                             });
                             isValue = false;
@@ -510,7 +510,7 @@ export default {
                         }
                       } else if (!val) {
                         this.$Notice.error({
-                          title: '请选择条件',
+                          title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                           duration: 1.5
                         });
                         isValue = false;

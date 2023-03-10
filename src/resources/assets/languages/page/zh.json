@@ -403,5 +403,10 @@
   "referenceglobal": "引用全局",
   "comefrom": "来自",
   "activitylist": "活动列表",
-  "effectivenesstime": "时效"
+  "effectivenesstime": "时效",
+  "timeinterval": "时间间隔",
+  "computationrules": "计算规则",
+  "aftertimeout": "超时后",
+  "beforetimeout":"超时前",
+  "positiveinteger": "正整数"
 }

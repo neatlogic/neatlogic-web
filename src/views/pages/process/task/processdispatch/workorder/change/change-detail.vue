@@ -157,7 +157,6 @@
                 v-model="param.value"
                 :data-param="param.name"
                 :validateList="validateList.paramInput"
-                placeholder="请输入"
                 size="small"
                 :readonly="isComplete?false:true"
               />

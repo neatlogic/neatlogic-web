@@ -38,7 +38,7 @@
           type="timerange"
           transfer
           format="HH:mm"
-          placeholder="请选择时间段"
+          :placeholder="$t('form.placeholder.pleaseselect', {target: $t('page.timerange')})"
           border="border"
         ></TsFormDatePicker>
       </div>
@@ -46,7 +46,7 @@
     <div class="settingList">
       <div id="requestIntegration" class="control-box">
         <div class="control-setting">
-          <span class="label require-label">外部调用</span>
+          <span class="label require-label">{{ $t('term.process.externalcall') }}</span>
           <span class="control-btn">
             <span class="tip">
               <span
@@ -74,7 +74,6 @@
             transfer
             :search="true"
             :selectItemList.sync="selectItemList"
-            placeholder="请选择"
             :validateList="validateSetting.required"
             :dynamicUrl="dynamicUrl"
             rootName="tbodyList"
@@ -158,7 +157,6 @@
               <Col span="8">
                 <TsFormSelect
                   v-model="requestSuccessConfig.name"
-                  placeholder="请选择"
                   :dataList="requestOutputParamList"
                   textName="name"
                   valueName="name"
@@ -167,7 +165,6 @@
               <Col span="8">
                 <TsFormSelect
                   v-model="requestSuccessConfig.expression"
-                  placeholder="请选择"
                   :dataList="getExpressionList(requestSuccessConfig.name,'request')"
                   valueName="expression"
                   textName="expressionName"
@@ -176,7 +173,6 @@
               <Col span="8">
                 <TsFormInput
                   v-model="requestSuccessConfig.value"
-                  placeholder="请输入"
                   maxlength="50"
                   :title="requestSuccessConfig.value"
                 > </TsFormInput>
@@ -193,7 +189,6 @@
           <TsFormSelect
             ref="failPolicy"
             v-model="requestConfig.failPolicy"
-            placeholder="请选择"
             :dataList="failPolicyList"
             :validateList="validateSetting.required"
             border="border"
@@ -254,7 +249,7 @@
                   <TsFormInput
                     ref="callbackInterval"
                     v-model="callbackConfig.config.interval"
-                    placeholder="请输入时长"
+                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.duration')})"
                     type="number"
                     :validateList="validateSetting.number"
                     border="border"
@@ -295,7 +290,6 @@
                 :validateList="validateSetting.required"
                 :search="true"
                 :selectItemList.sync="callbackSelectItemList"
-                placeholder="请选择"
                 :dynamicUrl="dynamicUrl"
                 rootName="tbodyList"
                 textName="name"
@@ -375,7 +369,6 @@
                   <Col span="8">
                     <TsFormSelect
                       v-model="callbackSuccessConfig.name"
-                      placeholder="请选择"
                       :dataList="callbackOutputParamList"
                       textName="name"
                       valueName="name"
@@ -384,14 +377,13 @@
                   <Col span="8">
                     <TsFormSelect
                       v-model="callbackSuccessConfig.expression"
-                      placeholder="请选择"
                       :dataList="getExpressionList(callbackSuccessConfig.name,'callback')"
                       valueName="expression"
                       textName="expressionName"
                     > </TsFormSelect>
                   </Col>
                   <Col span="8">
-                    <TsFormInput v-model="callbackSuccessConfig.value" placeholder="请输入" maxlength="50"> </TsFormInput>
+                    <TsFormInput v-model="callbackSuccessConfig.value" maxlength="50"> </TsFormInput>
                   </Col>
                 </TsRow>
               </div>
@@ -430,7 +422,6 @@
                   <Col span="8">
                     <TsFormSelect
                       v-model="callbackFailConfig.name"
-                      placeholder="请选择"
                       :dataList="callbackOutputParamList"
                       textName="name"
                       valueName="name"
@@ -439,14 +430,13 @@
                   <Col span="8">
                     <TsFormSelect
                       v-model="callbackFailConfig.expression"
-                      placeholder="请选择"
                       :dataList="getExpressionList(callbackFailConfig.name,'callback')"
                       valueName="expression"
                       textName="expressionName"
                     > </TsFormSelect>
                   </Col>
                   <Col span="8">
-                    <TsFormInput v-model="callbackFailConfig.value" placeholder="请输入" maxlength="50"> </TsFormInput>
+                    <TsFormInput v-model="callbackFailConfig.value" maxlength="50"> </TsFormInput>
                   </Col>
                 </TsRow>
               </div>
@@ -537,10 +527,10 @@ export default {
       },
       validateSetting: {
         number: [
-          { name: 'required', message: '请输入时长' },
+          { name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.duration')}) },
           { name: 'integer_p', message: '请输入正整数' }
         ],
-        required: [{ name: 'required', message: '请选择' }]
+        required: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: ''}) }]
       },
       firstData: true,
       templateType: 'request',

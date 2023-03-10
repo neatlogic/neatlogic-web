@@ -32,6 +32,7 @@
     "failed": "{target}获取失败",
     "cannotrepeat": "{target}不能重复",
     "nameexists": "名称已存在",
+    "completerequired": "{target}填写完整",
     "cmdb": {
       "diffci": "已选择的配置项不属于同一个模型，请重新选择",
       "hasnoauth": "您没有权限编辑配置项:{target}"

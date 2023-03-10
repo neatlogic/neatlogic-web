@@ -91,7 +91,7 @@ export default {
           textName: 'name',
           value: [],
           dataList: [],
-          validateList: [{ name: 'required', message: '请选择子任务策略' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.subtaskpolicy')}) }],
           border: 'border',
           firstText: '添加子任务策略',
           firstLi: true,
