@@ -62,7 +62,7 @@
                   </Poptip>
                 </div>
                 <div class="action-item tsfont-down" :class="showAllStepList?'tsfont-up':'tsfont-down'" @click="showSteplist()">
-                  {{ showAllStepList? $t('term.deploy.putawayall'): $t('term.deploy.expandall') }}
+                  {{ showAllStepList? $t('page.putawayall'): $t('page.expandall') }}
                 </div>
               </div>
               <div class="action-config">
