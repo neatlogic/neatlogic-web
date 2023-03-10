@@ -30,7 +30,7 @@
                 </ul>
               </div>
             </template>
-            <div v-if="!hasDataList && !isLoad" class="text-grey">暂无数据</div>
+            <div v-if="!hasDataList && !isLoad" class="text-grey">{{ $t('page.nodata') }}</div>
             <div v-if="isLoad" class="text-grey"><i class="ts-rotate-right"></i>数据加载中</div>
           </div>
         </transition>

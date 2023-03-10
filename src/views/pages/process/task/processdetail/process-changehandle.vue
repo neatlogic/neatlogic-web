@@ -126,11 +126,6 @@
                       {{ actionConfig.retreat }}
                     </DropdownItem>
                     <!-- 撤回_end -->
-                    <!-- <DropdownItem >
-                                    <div @click="buildSubProcess">
-                                        创建子流程
-                                    </div>
-                    </DropdownItem>-->
                     <!-- 添加子任务_start -->
                     <DropdownItem v-if="actionConfig.createsubtask" :disabled="disabledConfig.subtasking" @click.native="addAssist">
                       {{ actionConfig.createsubtask }}

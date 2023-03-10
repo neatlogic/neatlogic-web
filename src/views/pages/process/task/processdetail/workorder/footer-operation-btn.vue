@@ -150,7 +150,9 @@ export default {
     },
     completeErrorText: {
       type: String,
-      default: '无法人工流转'
+      default() {
+        return this.$t('term.process.ccompleteerror');
+      }
     }
   },
   data() {

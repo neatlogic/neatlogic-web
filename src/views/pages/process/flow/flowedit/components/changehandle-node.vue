@@ -184,7 +184,7 @@ export default {
       whenChangeStepUserVisible: '',
       processStepUuidList: '', //前置步骤值
       validateSetting: {
-        required: [{ name: 'required', message: '请选择' }]
+        required: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: ''}) }]
       },
       taskisStrategy: {
         isStrategy: 0 //子任务节点是否开启，如果说有子任务节点id就开启，没有就关闭

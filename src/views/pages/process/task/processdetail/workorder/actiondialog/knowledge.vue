@@ -22,7 +22,7 @@
                 width="100%"
               ></Tsform>
               <div class="nav-box">
-                <div class="list-tip text-tip">请勾选需要保存的内容，支持拖动排序</div>
+                <div class="list-tip text-tip">{{ $t('term.process.tranknowledgetip') }}</div>
                 <vuedraggable v-model="list" :options="{ chosenClass: 'choose', animation: '150', handle: '.move' }">
                   <div v-for="item in list" :key="item.handler">
                     <div class="nav-li dividing-color">
@@ -104,11 +104,11 @@ export default {
   data() {
     return {
       isShowModal: false,
-      title: '工单保存为知识',
+      title: this.$t('term.process.tasksaveknow'),
       formItemConfig: {
         title: {
           type: 'text',
-          label: '标题',
+          label: this.$t('page.title'),
           value: null,
           maxlength: 50,
           validateList: [
@@ -192,7 +192,7 @@ export default {
         let formConfig = config.formConfig;
         if (formConfig.controllerList && formConfig.controllerList.length > 0) {
           let obj = {
-            title: '表单',
+            title: this.$t('term.process.form'),
             handler: 'form',
             isChecked: 1,
             formConfig: formConfig,
@@ -203,7 +203,7 @@ export default {
       }
       if (this.commentList.length > 0) {
         let obj = {
-          title: '回复',
+          title: this.$t('page.reply'),
           handler: 'comment',
           isChecked: 1,
           list: []

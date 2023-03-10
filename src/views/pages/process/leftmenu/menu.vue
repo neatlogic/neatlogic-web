@@ -37,7 +37,7 @@
                         <div>{{ $t('button.add') }}</div>
                       </DropdownItem>
                       <DropdownItem v-if="childrenItem.isCanRole === 1" @click.native="editAuthorization(childrenItem)">
-                        <div>授权</div>
+                        <div>{{ $t('page.auth') }}</div>
                       </DropdownItem>
                       <DropdownItem v-if="childrenItem.isCanEdit === 1" @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
                         <div>{{ $t('button.delete') }}</div>

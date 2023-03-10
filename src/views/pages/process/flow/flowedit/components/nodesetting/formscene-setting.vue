@@ -26,7 +26,7 @@
     </TsFormSelect>
     <div v-if="$utils.isEmpty(formConfig.uuid)" class="text-tip mt-xs">
       当前流程未关联表单，请先到
-      <a href="javascript:void(0);" @click="toSetting">流程设置</a>
+      <a href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
       关联表单
     </div>
     <div v-else-if="!$utils.isEmpty(formConfig.uuid)" class="text-tip mt-xs">

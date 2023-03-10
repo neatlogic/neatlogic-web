@@ -37,14 +37,14 @@
                   </span>
                 </Tooltip>
               </span>
-              <span v-if="item.detail" class="text-href detail-btn" @click="lookDetail(item)">点击详情</span>
+              <span v-if="item.detail" class="text-href detail-btn" @click="lookDetail(item)">{{ $t('page.viewdetails') }}</span>
             </div>
           </li>
         </ul>
       </template>
       <!-- 转报 -->
       <div v-if="processTaskVo" class="forwarding-detail" :class="list.length > 0?'forwarding-border border-color':''">
-        <div class="tip-text bg-grey-select">原工单</div>
+        <div class="tip-text bg-grey-select">{{ $t('term.process.originaltask') }}</div>
         <div class="default-detail">
           <div class="tranferReport-list">
             <div class="item-box">
@@ -71,7 +71,7 @@
             </div>
             <div class="item-box">
               <div class="text-grey fz10">
-                关系类型
+                {{ $t('term.process.relationshiptype') }}
               </div>
               <div class="overflow" :title="processTaskVo.channelTypeRelationName">{{ processTaskVo.channelTypeRelationName || '-' }}</div>
             </div>
@@ -124,7 +124,7 @@ export default {
   },
   data() {
     return {
-      title: '详情',
+      title: this.$t('page.details'),
       lookModel: false,
       detailContent: null,
       processTaskList: [],

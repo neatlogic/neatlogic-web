@@ -80,7 +80,7 @@
       type="modal"
       :isShow.sync="draftModel"
       :title="$t('term.process.restoredrafts')"
-      okText="$t('button.recover')"
+      :okText="$t('button.recover')"
       :cancelText="$t('button.cancel')"
       @on-ok="draftOk"
       @on-close="draftCancle"

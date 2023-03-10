@@ -70,7 +70,9 @@ export default {
   props: {
     dialogTitle: {
       type: String,
-      default: '添加步骤'
+      default() {
+        return this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
+      }
     },
     isShow: {
       type: Boolean,

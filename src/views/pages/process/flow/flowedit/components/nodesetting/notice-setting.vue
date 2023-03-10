@@ -11,7 +11,7 @@
             class="tip"
             :class="isActive == 1?'text-tip':'text-href'"
             @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'inform')"
-          >{{ isActive==1?'自定义':'引用全局' }}</span>
+          >{{ isActive==1?$t('page.custom'):$t('page.referenceglobal') }}</span>
           <i-switch
             v-model="isActive"
             :true-value="1"
@@ -37,11 +37,11 @@
                 </TsFormSelect>
               </Col>
               <Col span="6">
-                <span class="tsfont-rotate-right notify-icon text-tip-active" title="刷新" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
+                <span class="tsfont-rotate-right notify-icon text-tip-active" :title="$t('page.refresh')" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
                 <span
                   v-if="notifyPolicyConfig.policyId"
                   class="tsfont-edit notify-icon text-tip-active"
-                  title="编辑"
+                  :title="$t('page.edit')"
                   @click="gotoAddNotify(notifyPolicyConfig.policyId)"
                 ></span>
               </Col>

@@ -576,7 +576,7 @@ export default {
       }
     },
     initRightHeight() {
-      this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 16;
+      this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 18;
     }
   },
   computed: {

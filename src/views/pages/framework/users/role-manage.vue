@@ -103,7 +103,7 @@ export default {
       this.searchParams.pageSize = historyData['pageSize'];
     },
     changeCurrent(current) {
-      this.tableData.currentPage = current;
+      this.searchParams.currentPage = current;
       this.getTableList();
     },
     changePageSize(pageSize) {

@@ -46,7 +46,7 @@
               @getFileList="res => handleSuccess(res, pindex)"
             ></TsUpLoad>
             <div class="comment-btn">
-              <Button size="small" @click="completeComment(pcomment, pindex)">完成</Button>
+              <Button size="small" @click="completeComment(pcomment, pindex)">{{ $t('page.complete') }}</Button>
               <Button size="small" @click="cancelComment(pcomment,pindex)">{{ $t('button.cancel') }}</Button>
             </div>
           </div>
@@ -104,11 +104,11 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  更换解决方案后，会自动覆盖富文本框中的所有内容
+                  {{ $t('term.process.solutiontip') }}
                 </div>
               </Tooltip>
             </span>
-            <span class="text-grey">解决方案</span>
+            <span class="text-grey">{{ $t('term.process.solution') }}</span>
             <span
               v-if="actionConfig.complete && eventSolutionId"
               class="text-tip-active tsfont-edit"
@@ -149,11 +149,11 @@
         </div>
       </div>
       <div v-else>
-        <div class="text-grey">回复</div>
+        <div class="text-grey">{{ $t('page.reply') }}</div>
         <div v-if="commentObj.content">
           <div v-html="commentObj.content"></div>
         </div>
-        <div v-else class="text-tip">暂无</div>
+        <div v-else class="text-tip">{{ $t('page.notarget',{target:''}) }}</div>
       </div>
     </div>
     <div v-if="actionConfig.comment" class="list-btn">
@@ -162,7 +162,7 @@
         ghost
         :disabled="!isShowSaveSolution"
         @click="saveSolution()"
-      >保存解决方案</Button>
+      >{{ $t('term.process.savesolution') }}</Button>
       <!-- <Button
         v-if="actionConfig.save"
         type="primary"
@@ -180,7 +180,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="eventModal"
-      title="解决方案"
+      :title="$t('term.process.solution')"
       @on-ok="okSolution"
     >
       <template>
@@ -249,7 +249,7 @@ export default {
           type: 'tree',
           name: 'eventTypeList',
           value: '',
-          label: '归档类型',
+          label: this.$t('term.process.archivedtype'),
           width: '100%',
           transfer: true,
           multiple: true,
@@ -551,7 +551,7 @@ export default {
         this.validConfig.eventTypeId = false;
         let o = {
           focus: '#event',
-          msg: '请选择归档类型'
+          msg: this.$t('message.content.required', {target: this.$t('term.process.archivedtype') })
         };
         validList.push(o);
       }
@@ -559,7 +559,7 @@ export default {
         if (!this.$refs.taskStepContent.valid()) {
           let o = {
             focus: '#event',
-            msg: '请输入内容'
+            msg: this.$t('message.content.required', {target: this.$t('page.content') })
           };
           validList.push(o);
         }

@@ -346,9 +346,10 @@ export default {
           const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Graph' && d.getConfig().id == graphid);
           if (node) {
             if (!alert) {
+              const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
-              node.setStroke(null);
-              node.setIconcolor(null);
+              node.setStroke(nData.stroke);
+              node.setIconcolor(nData.iconcolor);
             } else {
               node.setAnimate('breath');
               node.setStroke(alert.levelColor);
@@ -367,9 +368,10 @@ export default {
           const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Cientity' && d.getConfig().id == cientityid);
           if (node) {
             if (!alert) {
+              const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
-              node.setStroke(null);
-              node.setIconcolor(null);
+              node.setStroke(nData.stroke);
+              node.setIconcolor(nData.iconcolor);
             } else {
               node.setAnimate('breath');
               node.setStroke(alert.levelColor);

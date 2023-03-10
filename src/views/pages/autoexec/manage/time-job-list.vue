@@ -80,7 +80,7 @@
                 <span>{{ row.jobStatus.lastFinishTime | formatDate }}</span>
               </div>
               <div v-if="row.jobStatus.nextFireTime != null">
-                <span class="text-grey">{{ $t('term.autoexec.nextactivationtime') }}：</span>
+                <span class="text-grey">{{ $t('page.nextactivationtime') }}：</span>
                 <span>{{ row.jobStatus.nextFireTime | formatDate }}</span>
               </div>
             </div>

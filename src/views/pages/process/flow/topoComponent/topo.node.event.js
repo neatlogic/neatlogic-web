@@ -1,3 +1,4 @@
+import Vue from 'vue';
 (function(global, factory) {
   factory((global.Process = global.Process || {}), global);
 }(window, function(exports, global) {
@@ -46,13 +47,13 @@
     valid(nodeConfig) {
       let validList = [];
       if (this.links.length <= 0) {
-        validList.push({name: `节点被孤立`});
+        validList.push({name: Vue.prototype.i18n.t('message.content.process.nodeorphaned')});
       } else {
         if (this.getPrevNodes('forward') <= 0) {
-          validList.push({name: `节点没有前置节点`});
+          validList.push({name: Vue.prototype.i18n.t('message.content.process.nodenofrontnode')});
         }
         if (this.getNextNodes('forward') <= 0) {
-          validList.push({name: `节点没有后置节点`});
+          validList.push({name: Vue.prototype.i18n.t('message.content.process.nodenopostnode')});
         }
       }
       return validList;
