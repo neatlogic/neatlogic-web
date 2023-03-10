@@ -1,16 +1,17 @@
 import utils from '@/resources/assets/js/util.js';
+import Vue from 'vue';
 let valid = {
   common(nodeConfig, d, that) { //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
     if (!nodeConfig.name) {
       validList.push({
-        name: '节点名称必填',
+        name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.nodename') }),
         href: '#nodeName'
       });
     }
     if (!that.$utils.nameRegularValid(nodeConfig.name)) {
       validList.push({
-        name: '节点不符合规则',
+        name: Vue.prototype.i18n.t('term.process.noderultvalid'),
         href: '#nodeName'
       });
     }
@@ -30,24 +31,24 @@ let valid = {
     let extendsHandlerList = ['condition', 'distributary', 'changehandle', 'timer'];
     if (!nodeData.workerPolicyConfig && extendsHandlerList.indexOf(nodeConfig.handler) < 0) { //分派处理人必填
       validList.push({
-        name: '分配处理人必选',
+        name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.poliyuser') }),
         href: '#assignData'
       });
       validList.push({
-        name: '异常处理人必选',
+        name: Vue.prototype.i18n.t('message.content.required', { target: Vue.prototype.i18n.t('term.process.erroruser') }),
         href: '#assignData'
       });
     }
     if (nodeData && nodeData.workerPolicyConfig && nodeData.workerPolicyConfig.policyList) {
       let policyList = nodeData.workerPolicyConfig.policyList;
       let isChecked = policyList && policyList.find(p => p.isChecked == 1) ? 1 : 0; //判断分配处理人是否有选中的项
-      let errorText = '分配处理人必选';
+      let errorText = Vue.prototype.i18n.t('message.content.required', { target: this.$t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
-          'prestepassign': {value: 'processStepUuidList', text: '分配处理人：由前置步骤处理人指定必填'}, //由前置步骤处理人指定
-          'copy': {value: 'processStepUuid', text: '分配处理人：复制前置步骤处理人必填'}, //复制前置步骤处理人
-          'form': { value: 'attributeUuidList', text: '分配处理人：表单值必填'}, //表单值
-          'assign': {value: 'workerList', text: '分配处理人：自定义必填'}//自定义
+          'prestepassign': { value: 'processStepUuidList', text: Vue.prototype.i18n.t('term.process.prestepassignvalid')}, //由前置步骤处理人指定
+          'copy': { value: 'processStepUuid', text: Vue.prototype.i18n.t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
+          'form': { value: 'attributeUuidList', text: Vue.prototype.i18n.t('term.process.formworkerpolicyvalid') }, //表单值
+          'assign': { value: 'workerList', text: Vue.prototype.i18n.t('term.process.assignworkerpolicyvalid') }//自定义
         };
         for (let i = 0; i < policyList.length; i++) {
           if (policyList[i].isChecked == 1) {

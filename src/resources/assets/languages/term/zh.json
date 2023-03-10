@@ -267,7 +267,11 @@
     "linksetting" : "线条设置",
     "nodevalidpassed": "节点验证通过",
     "poliyuser": "分派处理人",
-    "erroruser": "异常处理人"
+    "erroruser": "异常处理人",
+    "prestepassignvalid": "分配处理人：由前置步骤处理人指定必填",
+    "copyworkerpolicyvalid": "分配处理人：复制前置步骤处理人必填",
+    "formworkerpolicyvalid": "分配处理人：表单值必填",
+    "assignworkerpolicyvalid": "分配处理人：自定义必填"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
