@@ -164,7 +164,15 @@
 .taskDetail {
   //工单处理
   position: relative;
-
+  .tasknodedetail {
+    .ivu-layout.ivu-layout-has-sider {
+      height: 100%;
+    }
+  
+    /deep/ .tscontain-body {
+      overflow-y: hidden;
+    }
+  }
   .workorder-task {
     position: relative;
     width: 100%;
