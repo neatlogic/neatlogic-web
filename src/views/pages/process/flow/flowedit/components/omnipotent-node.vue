@@ -49,7 +49,7 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.autostart') }}</span>
           <span class="control-btn">
-            <span class="tip">仅处理人唯一时有效</span>
+            <span class="tip">{{ $t('term.process.autostarttip') }}</span>
             <i-switch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></i-switch>
           </span>
         </div>
@@ -60,7 +60,7 @@
     <div v-if="isStart" class="settingList">
       <div class="control-box">
         <div class="control-setting">
-          <span class="label">启用附件</span>
+          <span class="label">{{ $t('term.process.enableattachments') }}</span>
           <span class="control-btn">
             <i-switch v-model="configData.stepConfig.isNeedUploadFile" :true-value="1" :false-value="0"></i-switch>
           </span>
@@ -70,7 +70,7 @@
     <div v-if="isStart" class="settingList">
       <div class="control-box">
         <div class="control-setting">
-          <span class="label">启用描述</span>
+          <span class="label">{{ $t('term.process.enabledesc') }}</span>
           <span class="control-btn">
             <i-switch v-model="configData.stepConfig.isNeedContent" :true-value="1" :false-value="0"></i-switch>
           </span>
@@ -80,7 +80,7 @@
     <div v-if="showIsRequired" class="settingList">
       <div class="control-box">
         <div class="control-setting">
-          <span class="label">{{ isStart? '描述必填' : '回复必填' }}</span>
+          <span class="label">{{ isStart? $t('form.placeholder.required',{target: $t('page.description')}) : $t('form.placeholder.required',{target: $t('page.reply')}) }}</span>
           <span class="control-btn">
             <i-switch v-model="configData.stepConfig.isRequired" :true-value="1" :false-value="0"></i-switch>
           </span>
@@ -91,7 +91,7 @@
       <div class="control-box">
         <div class="control-setting">
           <span class="label">
-            <span>默认回复</span>
+            <span>{{ $t('page.defaultcontent') }}</span>
           </span>
           <span class="control-btn">
             <i-switch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></i-switch>

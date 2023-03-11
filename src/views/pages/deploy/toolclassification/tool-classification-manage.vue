@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:topLeft>
-        <span v-if="$AuthUtils.hasRole('AUTOEXEC_MODIFY')" class="tsfont-plus text-action" @click="toTypeManage">{{ $t('term.deploy.toolclassification') }}</span>
+        <span v-if="$AuthUtils.hasRole('AUTOEXEC_MODIFY')" class="tsfont-plus text-action" @click="toTypeManage">{{ $t('term.autoexec.toolclassification') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher

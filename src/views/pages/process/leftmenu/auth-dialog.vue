@@ -26,7 +26,7 @@ export default {
     const _this = this;
     return {
       dialogConfig: {
-        title: '编辑授权',
+        title: this.$t('dialog.title.edittarget', {target: this.$t('page.auth')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -36,16 +36,16 @@ export default {
       formConfig: {
         type: {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           value: 'custom',
           isHidden: true,
           dataList: [
             {
-              text: '自定义分类', // 个人分类
+              text: this.$t('page.classifytarget', {target: this.$t('page.custom')}), // 个人分类
               value: 'custom'
             },
             {
-              text: '系统分类',
+              text: this.$t('page.classifytarget', {target: this.$t('page.system')}),
               value: 'system'
             }
           ],
@@ -56,7 +56,7 @@ export default {
         authList: {
           type: 'userselect',
           value: _this.defaultAuthList,
-          label: '授权',
+          label: this.$t('page.auth'),
           isHidden: true,
           transfer: true,
           groupList: ['role', 'user', 'common'],
@@ -64,7 +64,7 @@ export default {
         }, 
         support: {
           type: 'select',
-          label: '使用范围',
+          label: this.$t('page.limituser'),
           transfer: true,
           isHidden: true,
           value: _this.defaultSupport,

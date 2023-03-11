@@ -1,7 +1,7 @@
 <template>
   <div class="formscene-setting-wrap pl-nm pr-nm">
     <div class="flex pb-xs">
-      <span class="text-title">表单场景</span>
+      <span class="text-title">{{ $t('term.process.formscene') }}</span>
       <div v-if="$utils.isEmpty(formConfig.uuid) ? false : true" class="action-group text-title">
         <span class="action-item tsfont-circulation-s" @click="openPreview"></span>
         <span v-if="canEditScene" class="action-item tsfont-edit" @click="toEditFormScene"></span>
@@ -18,19 +18,19 @@
       @change="changeFormSelect"
     >
       <template v-slot:first-ul>
-        <li class="text-href tsfont-plus text-center" @click="toAddFormScene">表单场景</li>
+        <li class="text-href tsfont-plus text-center" @click="toAddFormScene">{{ $t('term.process.formscene') }}</li>
       </template>
       <template v-slot:option="{item}">
         <div>{{ item.text }}</div>
       </template>
     </TsFormSelect>
     <div v-if="$utils.isEmpty(formConfig.uuid)" class="text-tip mt-xs">
-      当前流程未关联表单，请先到
-      <a href="javascript:void(0);" @click="toSetting">流程设置</a>
-      关联表单
+      {{ $t('term.process.norelformtip') }}
+      <a href="javascript:void(0);" @click="toSetting">{{ $t('term.process.flowsetting') }}</a>
+      {{ $t('term.process.relform') }}
     </div>
     <div v-else-if="!$utils.isEmpty(formConfig.uuid)" class="text-tip mt-xs">
-      未选择表单场景时，使用默认场景
+      {{ $t('term.process.noformscenetip') }}
     </div>
     <FormPreview v-if="isPreviewShow" :data="formPreviewContent" @close="closePreview"></FormPreview>
   </div>

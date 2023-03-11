@@ -4,9 +4,9 @@
       <TsRow>
         <Col :span="12">
           <ul>
-            <li v-if="hasEditConfigAuth" class="tsfont-plus text-href mt-sm" @click="openEnvInstanceEdit">实例</li>
+            <li v-if="hasEditConfigAuth" class="tsfont-plus text-href mt-sm" @click="openEnvInstanceEdit">{{ $t('page.example') }}</li>
             <template v-else>
-              <li>您没有当前应用的“编辑配置权限”，请联系管理员授权</li>
+              <li>{{ $t('page.noconfigauthtip') }}</li>
             </template>
           </ul>
         </Col>
@@ -14,7 +14,7 @@
           <InputSearcher
             v-if="hasInstance"
             v-model="keyword"
-            placeholder="IP、名称"
+            :placeholder="$t('term.deploy.ipname')"
             @change="searchData"
           ></InputSearcher>
         </Col>
@@ -23,8 +23,8 @@
     <div style="min-height: 200px;">
       <ul v-if="!hasInstance && hasEditConfigAuth" class="flex-center">
         <li>
-          <span>未添加实例，点击 </span>
-          <span class="text-href" @click="openEnvInstanceEdit">添加实例</span>
+          <span>{{ $t('term.deploy.notaddexampletip') }} </span>
+          <span class="text-href" @click="openEnvInstanceEdit">{{ $t('page.addtarget', {target: $t('page.example')}) }}</span>
         </li>
       </ul>
       <TsTable
@@ -76,15 +76,15 @@ export default {
           key: 'name'
         },
         {
-          title: 'IP',
+          title: this.$t('page.ip'),
           key: 'ip'
         },
         {
-          title: '端口',
+          title: this.$t('page.port'),
           key: 'port'
         },
         {
-          title: '维护窗口',
+          title: this.$t('term.deploy.maintenancewindow'),
           key: 'maintenanceWindow'
         }
       ]

@@ -97,19 +97,21 @@
             class="pr-sm form-li-width"
             :validateList="['required']"
           ></TsFormSelect>
-          <AddTarget
-            v-else
-            :id="combopId"
-            ref="executeTarget"
-            :value="executeConfig ? executeConfig.executeNodeConfig:{}"
-            :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
-            :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
-            :executeConfig="executeValue"
-            :runtimeParamList="paramsList"
-            :needBorder="needExecuteUser|| needProtocol"
-            :filterSearchValue="filterSearchValue"
-            :isRequired="hasFormUuid"
-          ></AddTarget>
+          <div v-else style="width: 100%;">
+            <AddTarget
+              v-if="!loadingShow"
+              :id="combopId"
+              ref="executeTarget"
+              :value="executeConfig ? executeConfig.executeNodeConfig:{}"
+              :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
+              :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
+              :executeConfig="executeValue"
+              :runtimeParamList="paramsList"
+              :needBorder="needExecuteUser|| needProtocol"
+              :filterSearchValue="filterSearchValue"
+              :isRequired="hasFormUuid"
+            ></AddTarget>
+          </div>
         </div>
       </TsFormItem>
     </div>
@@ -305,7 +307,7 @@ export default {
       formDataList: [],
       mappingModeDataList: [
         {
-          text: this.$t('term.autoexec.constant'),
+          text: this.$t('page.constant'),
           value: 'constant'
         }
       ],
@@ -400,7 +402,7 @@ export default {
             this.formUuid = !!uuid;
             if (uuid) {
               this.mappingModeDataList = [{
-                text: this.$t('term.autoexec.constant'),
+                text: this.$t('page.constant'),
                 value: 'constant'
               }, {
                 text: this.$t('term.autoexec.formparameter'),
@@ -411,7 +413,7 @@ export default {
             } else {
               this.mappingModeDataList = [
                 {
-                  text: this.$t('term.autoexec.constant'),
+                  text: this.$t('page.constant'),
                   value: 'constant'
                 }
               ];
@@ -483,7 +485,7 @@ export default {
       });
       this.mappingModeDataList = [
         {
-          text: this.$t('term.autoexec.constant'),
+          text: this.$t('page.constant'),
           value: 'constant'
         }
       ];
@@ -597,7 +599,7 @@ export default {
           this.formUuid = itemValue.formUuid;
           if (itemValue.formUuid) {
             this.mappingModeDataList = [{
-              text: this.$t('term.autoexec.constant'),
+              text: this.$t('page.constant'),
               value: 'constant'
             }, {
               text: this.$t('term.autoexec.formparameter'),
@@ -607,7 +609,7 @@ export default {
           } else {
             this.mappingModeDataList = [
               {
-                text: this.$t('term.autoexec.constant'),
+                text: this.$t('page.constant'),
                 value: 'constant'
               }
             ];

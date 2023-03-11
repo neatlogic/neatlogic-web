@@ -1,32 +1,32 @@
 <template>
   <div>
-    <div class="text-tip pb-xs">IF-Block条件语法说明：</div>
+    <div class="text-tip pb-xs">{{ $t('term.autoexec.ifblockconditiongramdescription') }}</div>
     <div class="pb-xs">
-      <span class="text-tip">比较支持：</span>
+      <span class="text-tip">{{ $t('term.autoexec.comparativesupport') }}</span>
       <span>==,  !=, contanins, startswith</span>
     </div>
     <div class="pb-xs">
-      <span class="text-tip">文件检测：</span>
-      <span>-f, -d, -e, -l（对应文件、目录、存在、软连接判断）</span>
+      <span class="text-tip">{{ $t('term.autoexec.filedetection') }}</span>
+      <span>-f, -d, -e, -l{{ $t('term.autoexec.filedelink') }}</span>
     </div>
     <div class="pb-xs">
-      <span class="text-tip">逻辑操作：</span>
+      <span class="text-tip">{{ $t('term.autoexec.logicaloperation') }}</span>
       <span>not, and, or</span>
     </div>
     <div class="pb-xs">
-      <div class="text-tip">可用的环境变量：</div>
+      <div class="text-tip">{{ $t('term.autoexec.availableenvironmentvariables') }}</div>
       <div>
-        $SYS_NAME(应用名), $MODULE_NAME(模块名), $ENV_NAME(环境名)
+        $SYS_NAME({{ $t('term.autoexec.applyname') }}), $MODULE_NAME({{ $t('term.autoexec.modulename') }}), $ENV_NAME({{ $t('term.autoexec.envname') }})
       </div>
       <div>
-        $INS_NAME(实例名), $INS_HOST(实例IP), $INS_PORT(实例端口)
+        $INS_NAME({{ $t('term.deploy.instancename') }}), $INS_HOST({{ $t('term.autoexec.instanceip') }}), $INS_PORT({{ $t('term.autoexec.instanceport') }})
       </div>
       <div>
-        $INS_PROTOCOL_PORT(实例协议端口）
+        $INS_PROTOCOL_PORT({{ $t('term.autoexec.instanceprotocolport') }}）
       </div>
     </div>
     <pre>
-$DATA_PATH: 版本制品目录
+$DATA_PATH: {{ $t('term.autoexec.versioncatalog') }}
 ├── artifact
 │ ├── mirror                  # $MIRROR_ROOT
 │ │ ├── SIT
@@ -55,7 +55,7 @@ $DATA_PATH: 版本制品目录
     ├── build
     └── project               # $PRJ_PATH</pre>
     <div class="">
-      <span class="text-tip">例子：</span>
+      <span class="text-tip">{{ $t('term.autoexec.forexample') }}</span>
       $ENV_NAME==“UAT” and ( -f “$DIST_ROOT/target.war” and -e “$DIST_ROOT/dist.txt”)
     </div>     
   </div>

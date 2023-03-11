@@ -15,13 +15,13 @@
             :disabled="disabledBtn"
             @click="saveSetting('save')"
           >{{ $t('button.save') }}</Button>
-          <Button type="primary" :disabled="disabledBtn" @click="saveSetting('execute')">立即执行</Button>
+          <Button type="primary" :disabled="disabledBtn" @click="saveSetting('execute')">{{ $t('term.autoexec.immediateexecution') }}</Button>
         </div>
       </template>
       <template v-slot:content>
         <div class="contain">
           <div v-if="initData.scenarioList && initData.scenarioList.length > 0" id="scenario" class="box-block">
-            <Divider orientation="start">场景</Divider>
+            <Divider orientation="start">{{ $t('page.scene') }}</Divider>
             <div class="li-box">
               <Row :gutter="16">
                 <Col
@@ -50,7 +50,7 @@
                   >
                     <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.scenarioName }}</div>
                     <div slot="content">
-                      <div>您没有[{{ item.scenarioName }}]场景权限，请联系管理员授权</div>
+                      <div>{{ $t('term.deploy.notsceneauth', {target: item.scenarioName}) }}</div>
                     </div>
                   </Tooltip>
                 </Col>
@@ -58,7 +58,7 @@
             </div>
           </div>
           <div v-if="initData.envList && initData.envList.length" id="env" class="box-block">
-            <Divider orientation="start">环境</Divider>
+            <Divider orientation="start">{{ $t('page.environment') }}</Divider>
             <div class="li-box">
               <Row :gutter="16">
                 <Col
@@ -87,7 +87,7 @@
                   >
                     <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.name }}</div>
                     <div slot="content">
-                      <div>您没有[{{ item.name }}]环境权限，请联系管理员授权</div>
+                      <div>{{ $t('term.deploy.notenvauth', {target: item.name}) }}</div>
                     </div>
                   </Tooltip>
                 </Col>
@@ -96,7 +96,7 @@
           </div>
           <!-- 模块 -->
           <div v-if="envId" class="box-block">
-            <Divider orientation="start">模块</Divider>
+            <Divider orientation="start">{{ $t('page.module') }}</Divider>
             <ModuleList
               ref="moduleList"
               :appSystemId="appSystemId"
@@ -108,7 +108,7 @@
             ></ModuleList>
           </div>
           <div id="roundCount" class="box-block">
-            <Divider orientation="start">分批设置</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.batchsetting') }}</Divider>
             <div>
               <TsFormItem
                 label="分批数量"
@@ -124,7 +124,7 @@
             </div>
           </div>
           <div v-if="runtimeParamList && runtimeParamList.length > 0" id="param" class="box-block">
-            <Divider orientation="start">作业参数</Divider>
+            <Divider orientation="start">{{ $t('term.autoexec.jobparam') }}</Divider>
             <div>
               <SetParam
                 ref="param"
@@ -178,14 +178,14 @@ export default {
       appModuleList: [],
       roundCount: 2,
       roundCountForm: {
-        placeholder: '选择或输入',
+        placeholder: this.$t('page.selectinput'),
         border: 'border',
         dataList: this.$utils.getRoundCountList(),
         filterName: 'text',
         allowCreate: true,
         search: true,
         transfer: true,
-        desc: '将执行目标按数量等分为N个批次，先后执行',
+        desc: this.$t('term.autoexec.roundcountdescrition'),
         validateList: ['required', 'maxNum']
       },
       runtimeParamList: [], //作业参数
@@ -395,14 +395,14 @@ export default {
       let isValid = true;
       if (!this.envId) { //没有权限时不能选择环境
         this.validList.push({
-          text: '当前暂无可选的环境',
+          text: this.$t('term.deploy.noselecttarget', {target: this.$t('page.environment')}),
           type: 'error',
           id: '#env'
         });
       }
       if (!this.scenarioId) { //没有权限时不能选择场景
         this.validList.push({
-          text: '当前暂无可选的场景',
+          text: this.$t('term.deploy.noselecttarget', {target: this.$t('page.scene')}),
           type: 'error',
           id: '#scenario'
         });
@@ -416,7 +416,7 @@ export default {
         isValid = this.$refs.roundCountForm.valid() && isValid;
         if (!this.$refs.roundCountForm.valid()) {
           this.validList.push({
-            text: '分批设置：请选择或输入正确的数字',
+            text: this.$t('term.deploy.roundcountvalidate'),
             type: 'error',
             id: '#roundCount'
           });
@@ -426,7 +426,7 @@ export default {
         isValid = this.$refs.param.valid() && isValid;
         if (!this.$refs.param.valid()) {
           this.validList.push({
-            text: '作业参数：数据填写不完整或者错误',
+            text: this.$t('term.deploy.jobparamvalid'),
             type: 'error',
             id: '#param'
           });
@@ -475,7 +475,7 @@ export default {
           this.isShowResultDialog = true;
         }
       } else {
-        this.$Notice.error({ title: '创建作业失败' });
+        this.$Notice.error({ title: this.$t('term.deploy.moduleaddjobfail', {target: ''}) });
       }
     },
     jumpToItem(obj) { //定位参数，校验定位

@@ -33,11 +33,11 @@
           <template v-slot:startTime="{ row }">
             <div v-if="row.startTime" class="fz10">
               <span>{{ row.startTime | formatDate }}</span>
-              <span class="text-grey ml-xs">开始</span>
+              <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
             </div>
             <div v-if="row.endTime" class="fz10">
               <span>{{ row.endTime | formatDate }}</span>
-              <span class="text-grey ml-xs">结束</span>
+              <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
             </div>
           </template>
           <template slot="completionRate" slot-scope="{ row }">
@@ -47,8 +47,8 @@
       </div>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
+      <Button @click="close()">{{ $t('button.cancel') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -67,7 +67,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '选择作业',
+        title: this.$t('term.deploy.selectjob'),
         width: 'large',
         type: 'slider',
         isShow: true
@@ -79,21 +79,21 @@ export default {
           {
             type: 'daterange',
             name: 'planStartTimeRange',
-            label: '计划时间',
+            label: this.$t('page.plantime'),
             format: 'yyyy-MM-dd',
             transfer: true
           },
           {
             type: 'daterange',
             name: 'startTimeRange',
-            label: '开始时间',
+            label: this.$t('page.starttime'),
             format: 'yyyy-MM-dd',
             transfer: true
           },
           {
             type: 'daterange',
             name: 'endTimeRange',
-            label: '结束时间',
+            label: this.$t('page.endtime'),
             format: 'yyyy-MM-dd',
             transfer: true
           }
@@ -107,16 +107,16 @@ export default {
           key: 'name'
         },
         {
-          title: '来源类目',
+          title: this.$t('term.autoexec.sourcecategory'),
           key: 'operationType'
         },
         {
-          title: '计划时间',
+          title: this.$t('page.plantime'),
           key: 'planStartTime',
           type: 'time'
         },
         {
-          title: '起止时间',
+          title: this.$t('page.startstoptime'),
           key: 'startTime',
           keyend: 'endTime'
         },
@@ -125,19 +125,19 @@ export default {
           key: 'status'
         },
         {
-          title: '触发方式',
+          title: this.$t('term.autoexec.triggertype'),
           key: 'triggerTypeName'
         },
         {
-          title: '执行情况',
+          title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         },
         {
-          title: '耗时',
+          title: this.$t('page.timeconsuming'),
           key: 'costTime'
         },
         {
-          title: '执行用户',
+          title: this.$t('page.executeuser'),
           key: 'execUserVo',
           type: 'user',
           uuid: 'uuid'

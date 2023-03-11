@@ -214,7 +214,7 @@ export default {
         this.$emit('close', this.selectedIcon);
       } else {
         this.$Notice.error({
-          title: '请选择图标'
+          title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.icon')})
         });
       }
     },

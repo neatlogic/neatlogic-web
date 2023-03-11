@@ -32,5 +32,6 @@
   "savecompare": "保存并对比",
   "savetest": "保存并测试",
   "continueexecute": "继续执行",
-  "retry": "重试"
+  "retry": "重试",
+  "reply": "回复"
 }

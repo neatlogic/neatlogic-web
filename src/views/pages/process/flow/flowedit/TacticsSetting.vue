@@ -1,7 +1,7 @@
 <template>
   <div class="TacticsSetting">
     <div class="sla_add border-color" @click="slaDiashow()">
-      <i class="tsfont-plus">策略</i>
+      <i class="tsfont-plus">{{ $t('term.process.policy') }}</i>
     </div>
     <div
       v-for="(item, index) in slaList"
@@ -15,18 +15,18 @@
           <div class="overflow" :title="item.name">{{ item.name }}</div>
         </div>
         <div class="operation">
-          <i class="tsfont-setting text-tip-active" title="设置" @click="slaDiashow(item.uuid, item)"></i>
-          <i class="tsfont-close text-tip-active" title="删除" @click="slaDelete(item.uuid, item.name)"></i>
+          <i class="tsfont-setting text-tip-active" :title="$t('page.setting')" @click="slaDiashow(item.uuid, item)"></i>
+          <i class="tsfont-close text-tip-active" title="$t('page.delete')" @click="slaDelete(item.uuid, item.name)"></i>
         </div>
       </div>
       <div class="content radius-sm bg-grey-hover">
         <div class="step border-color overflow">
-          <span class="title text-grey">关联步骤</span>
+          <span class="title text-grey">{{ $t('term.process.associatedsteps') }}</span>
           <span v-for="(citem, cindex) in item.processStepUuidList" :key="cindex" class="name text-default">{{ correlationList[citem] }}</span>
         </div>
 
         <div class="step border-color overflow">
-          <span class="title text-grey">计算规则</span>
+          <span class="title text-grey">{{ $t('page.computationrules') }}</span>
           <span :title="getCalculateHandlerName(item.calculateHandler)">{{ getCalculateHandlerName(item.calculateHandler) }}</span>
         </div>
 
@@ -85,7 +85,7 @@
             </div>
             <div v-else>
               <div class="time_block text-default">
-                <span class="title text-grey">时效</span>
+                <span class="title text-grey">{{ $t('page.effectivenesstime') }}</span>
                 <span>{{ citem.time }}</span>
                 <span>{{ timeArray[citem.unit] }}</span>
               </div>
@@ -98,7 +98,7 @@
         <div class="bg-grey-hover radius-sm">
           <div v-for="(citem, cindex) in item.notifyPolicyList" :key="cindex" class="notice border-color">
             <div class="condition border-color">
-              <span v-html="citem.expression == 'after' ? '超时后' : '超时前'"></span>
+              <span v-html="citem.expression == 'after' ? $t('page.aftertimeout') : $t('page.beforetimeout')"></span>
               <span>{{ citem.time }}</span>
               <span>{{ timeArray[citem.unit] }}</span>
               <span class="line">—</span>
@@ -118,14 +118,14 @@
         <div class="bg-grey-hover radius-sm">
           <div v-for="(citem, cindex) in item.transferPolicyList" :key="cindex" class="notice">
             <div class="condition border-color">
-              <span v-html="citem.expression == 'after' ? '超时后' : '超时前'"></span>
+              <span v-html="citem.expression == 'after' ? $t('page.aftertimeout') : $t('page.beforetimeout')"></span>
               <span>{{ citem.time }}</span>
               <span>{{ timeArray[citem.unit] }}</span>
               <span class="line">—</span>
-              <span>转交</span>
+              <span>{{ $t('page.transfer') }}</span>
             </div>
             <div class="object border-color">
-              <span class="title text-grey">转交对象</span>
+              <span class="title text-grey">{{ $t('term.process.transferuser') }}</span>
               <span class="item">
                 <UserSelect
                   v-model="citem.transferTo"
@@ -161,8 +161,8 @@
           model="formRight"
         >
           <template v-slot:slot-label>
-            <span>时效设置</span>
-            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">时效</div>
+            <span>{{ $t('term.process.effectivenesstimesetting') }}</span>
+            <div class="addTactics text-href tsfont-plus" @click="tacticsAdd()">{{ $t('page.effectivenesstime') }}</div>
           </template>
           <template v-slot:slot>
             <div class="tactics">
@@ -182,7 +182,7 @@
                           <div
                             class="opera_item toggle"
                             :class="!item.isshow ? 'hide' : ''"
-                            :title="item.isshow ? '收起' : '展开'"
+                            :title="item.isshow ? $t('page.clickandputaway') : $t('page.clicktoexpand')"
                             @click="operaToggle(item, index)"
                           >
                             <Icon type="ios-arrow-down" />
@@ -203,7 +203,7 @@
                             :true-value="1"
                             :false-value="0"
                             @on-change="priorityChange(item)"
-                          >关联优先级</Checkbox>
+                          >{{ $t('term.process.relpriority') }}</Checkbox>
                         </div>
                       </div>
                       <div v-show="item.isshow" class="block_condition rule-condition">
@@ -314,7 +314,7 @@
                           </div>
                         </div>
                         <div v-if="item.conditionGroupList && item.conditionGroupList.length < 1" class="con_add border-color text-icon" @click="conAddNew(item)">
-                          <i class="tsfont-plus">条件</i>
+                          <i class="tsfont-plus">{{ $t('page.condition') }}</i>
                         </div>
                       </div>
                       <div v-show="item.isshow" class="block_time">
@@ -340,7 +340,7 @@
                                   <TsFormInput
                                     ref="numberInput"
                                     v-model="citem.time"
-                                    placeholder="请输入时长"
+                                    :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.duration')})"
                                     type="number"
                                     :validateList="validateSetting.number"
                                     width="100%"
@@ -365,20 +365,20 @@
                             </TsRow>
                           </div>
                           <div v-if="item.priorityList && item.priorityList.length < 1" class="time_add border-color" @click="timeAdd(index)">
-                            <i class="tsfont-plus">优先级时效</i>
+                            <i class="tsfont-plus">{{ $t('term.process.priorityaging') }}</i>
                           </div>
                         </div>
                         <div v-else class="time_wrapper bg-op radius-sm">
                           <TsRow>
                             <Col span="2">
-                              <span>时效</span>
+                              <span>{{ $t('page.effectivenesstime') }}</span>
                             </Col>
                             <Col span="11">
                               <div class="time_item">
                                 <TsFormInput
                                   ref="numberInput"
                                   v-model="item.time"
-                                  placeholder="请输入时长"
+                                  :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.duration')})"
                                   type="number"
                                   :validateList="validateSetting.number"
                                   width="100%"
@@ -402,8 +402,8 @@
             </div>
           </template>
           <template v-slot:notice-label>
-            <span>通知策略</span>
-            <div class="addTactics text-href tsfont-plus" @click="noticeAdd()">策略</div>
+            <span>{{ $t('page.notificationstrategy') }}</span>
+            <div class="addTactics text-href tsfont-plus" @click="noticeAdd()">{{ $t('term.process.policy') }}</div>
           </template>
           <template v-slot:notice>
             <div class="tactics">
@@ -411,7 +411,7 @@
                 <div v-for="(item, index) in slaData.notifyPolicyList" :key="index" class="notice">
                   <span class="tsfont-close-s btn-removerule text-tip" @click="noticeDel(index)"></span>
                   <div class="block_condition">
-                    <div class="label require-label">触发条件</div>
+                    <div class="label require-label">{{ $t('page.triggercondition') }}</div>
                     <div class="content">
                       <div class="item">
                         <!-- <Select v-model="item.expression">
@@ -433,7 +433,7 @@
                         <TsFormInput
                           ref="numberInput"
                           v-model="item.time"
-                          placeholder="请输入时长"
+                          :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.duration')})"
                           type="number"
                           :validateList="validateSetting.number"
                           width="100%"
@@ -447,7 +447,7 @@
                     </div>
                   </div>
                   <div class="block_action">
-                    <div class="label require-label">通知策略</div>
+                    <div class="label require-label">{{ $t('page.notificationstrategy') }}</div>
                     <div class="content">
                       <div class="item">
                         <noticeSetting
@@ -463,34 +463,34 @@
                     </div>
                   </div>
                   <div class="block_mode">
-                    <div class="label require-label">执行方式</div>
+                    <div class="label require-label">{{ $t('page.executionmode') }}</div>
                     <div class="content">
                       <div class="item">
                         <Select v-model="item.executeType" transfer @on-change="executeChange(item)">
-                          <Option value="once">单次执行</Option>
-                          <Option value="loop">周期执行</Option>
+                          <Option value="once">{{ $t('term.process.singleexecution') }}</Option>
+                          <Option value="loop">{{ $t('term.process.periodicexecution') }}</Option>
                         </Select>
                       </div>
                     </div>
                   </div>
                   <div v-if="item.executeType == 'loop'" class="block_interval">
-                    <div class="label require-label">间隔</div>
+                    <div class="label require-label">{{ $t('page.interval') }}</div>
                     <div class="content">
                       <div class="item">
                         <TsFormInput
                           ref="numberInput"
                           v-model="item.intervalTime"
                           type="number"
-                          placeholder="间隔时间"
+                          :placeholder="$t('page.timeinterval')"
                           :validateList="validateSetting.number"
                           width="100%"
                         />
                       </div>
                       <div class="item">
                         <Select v-model="item.intervalUnit" transfer>
-                          <Option value="minute">分钟</Option>
-                          <Option value="hour">小时</Option>
-                          <Option value="day">天</Option>
+                          <Option value="minute">{{ $t('page.minute') }}</Option>
+                          <Option value="hour">{{ $t('page.hour') }}</Option>
+                          <Option value="day">{{ $t('page.day') }}</Option>
                         </Select>
                       </div>
                     </div>
@@ -501,8 +501,8 @@
             </div>
           </template>
           <template v-slot:overtime-label>
-            <span>转交策略</span>
-            <div class="addTactics text-href tsfont-plus" @click="overtimeAdd()">策略</div>
+            <span>{{ $t('term.process.handoverstrategy') }}</span>
+            <div class="addTactics text-href tsfont-plus" @click="overtimeAdd()">{{ $t('term.process.policy') }}</div>
           </template>
           <template v-slot:overtime>
             <div class="tactics">
@@ -510,7 +510,7 @@
                 <div v-for="(item, index) in slaData.transferPolicyList" :key="index" class="notice">
                   <span class="tsfont-close-s btn-removerule text-tip" @click="transferDel(index)"></span>
                   <div class="block_condition">
-                    <div class="label require-label">触发条件</div>
+                    <div class="label require-label">{{ $t('page.triggercondition') }}</div>
                     <div class="content">
                       <div class="item">
                         <!-- <Select v-model="item.expression">
@@ -532,7 +532,7 @@
                         <TsFormInput
                           ref="numberInput"
                           v-model="item.time"
-                          placeholder="请输入时长"
+                          :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.duration')})"
                           type="number"
                           :validateList="validateSetting.required"
                         />
@@ -545,7 +545,7 @@
                     </div>
                   </div>
                   <div class="block_object">
-                    <div class="label require-label">对象</div>
+                    <div class="label require-label">{{ $t('page.object') }}</div>
                     <div class="content">
                       <div class="item">
                         <UserSelect
@@ -566,7 +566,7 @@
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button type="default" style="margin-right:10px" @click="slaDialog.show = false">关闭</Button>
+        <Button type="default" style="margin-right:10px" @click="slaDialog.show = false">{{ $t('page.close') }}</Button>
         <Button type="primary" @click="submit()">{{ $t('button.save') }}</Button>
       </template>
     </TsDialog>
@@ -628,18 +628,18 @@ export default {
       nodeList: [],
       validateSetting: {
         number: [
-          { name: 'required', message: '请输入时长' },
-          { name: 'integer_p', message: '请输入正整数' }
+          { name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.duration')})},
+          { name: 'integer_p', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.positiveinteger')})}
         ],
-        required: [{ name: 'required', message: '请填写完整' }]
+        required: [{ name: 'required', message: this.$t('message.content.completerequired', {target: ''})}]
       },
       timeArray: {
-        day: '天',
-        hour: '小时',
-        minute: '分钟'
+        day: this.$t('page.day'),
+        hour: this.$t('page.hour'),
+        minute: this.$t('page.minute')
       },
       slaDialog: {
-        title: '添加策略',
+        title: this.$t('dialog.title.addtarget', {target: this.$t('term.process.policy') }),
         show: false,
         className: 'slaDialog',
         labelPosition: 'top',
@@ -650,17 +650,17 @@ export default {
             name: 'name',
             value: '',
             border: 'border',
-            placeholder: '请输入时效标签',
+            placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.slatip')}),
             maxlength: 30,
-            label: '时效标签',
+            label: this.$t('term.process.slatip'),
             width: '80%',
-            validateList: [{ name: 'required', message: '请输入时效标签' }, { name: 'name-special' }]
+            validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.positiveinteger')}) }, { name: 'name-special' }]
           },
           {
             type: 'select',
             name: 'calculateHandler',
             value: '',
-            label: '计算规则',
+            label: this.$t('page.computationrules'),
             border: 'border',
             width: '80%',
             tooltip: '',
@@ -675,7 +675,7 @@ export default {
           {
             type: 'select',
             name: 'step',
-            label: '关联步骤',
+            label: this.$t('term.process.associatedsteps'),
             multiple: true,
             border: 'border',
             valueName: 'uuid',
@@ -683,23 +683,23 @@ export default {
             width: '80%',
             value: '',
             dataList: [],
-            validateList: [{ name: 'required', message: '请选择关联步骤' }]
+            validateList: [{ name: 'required', message: this.$t('form.validate.required', {target: this.$t('term.process.associatedsteps')}) }]
           },
           {
             type: 'slot',
             name: 'slot',
-            label: '时效设置',
+            label: this.$t('term.process.effectivenesstimesetting'),
             validateList: [{ name: 'required' }]
           },
           {
             type: 'slot',
             name: 'notice',
-            label: '通知策略'
+            label: this.$t('page.notificationstrategy')
           },
           {
             type: 'slot',
             name: 'overtime',
-            label: '超时策略'
+            label: this.$t('term.process.timeoutpolicy')
           }
         ],
         condition: {},
@@ -710,15 +710,15 @@ export default {
           selectRight: [
             {
               value: 'day',
-              label: '天'
+              label: this.$t('page.day')
             },
             {
               value: 'hour',
-              label: '小时'
+              label: this.$t('page.hour')
             },
             {
               value: 'minute',
-              label: '分钟'
+              label: this.$t('page.minute')
             }
           ]
         }
@@ -738,11 +738,11 @@ export default {
       triggerCondition: [
         {
           value: 'after',
-          name: '超时后'
+          name: this.$t('page.aftertimeout')
         },
         {
           value: 'before',
-          name: '超时前'
+          name: this.$t('page.beforetimeout')
         }
       ],
       formAllData: [], //表单列表
@@ -859,7 +859,7 @@ export default {
       if (uuid && uuid != undefined) {
         let stepArray = this.slaData.processStepUuidList; //关键步骤数组处理
         if (uuid && uuid != undefined) {
-          this.slaDialog.title = '编辑策略';
+          this.slaDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('term.process.policy') });
           this.isMultipleStep(this.slaData.calculateHandler); // 设置关键步骤是否是多选
           let slaObj = {
             'name': this.slaData.name, // 时效标签
@@ -1132,11 +1132,11 @@ export default {
           }
         });
       if (noticeList.length > 0) {
-        this.$Message.error('通知策略填写完整');
+        this.$Message.error(this.$t('message.content.completerequired', {target: this.$t('page.notificationstrategy')}));
         return;
       }
       if (voildList.length > 0) {
-        this.$Message.error('时效条件请填写完整');
+        this.$Message.error(this.$t('message.content.completerequired', {target: this.$t('term.process.limitationconditions')}));
         return;
       }
 
@@ -1467,7 +1467,7 @@ export default {
   watch: {
     'slaDialog.show': function() {
       if (this.slaDialog.show === false) {
-        this.slaDialog.title = '添加策略';
+        this.slaDialog.title = this.$t('dialog.title.addtarget', {target: this.$t('term.process.policy') });
         this.$refs.slaForm.clearForm();
         this.slaData = {
           name: '',

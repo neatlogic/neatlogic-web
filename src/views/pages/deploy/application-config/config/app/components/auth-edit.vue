@@ -5,7 +5,7 @@
         :indeterminate="indeterminate"
         :value="checkAll"
         @click.prevent.native="handleCheckAll"
-      >所有</Checkbox>
+      >{{ $t('page.all') }}</Checkbox>
       <CheckboxGroup v-model="authList" @on-change="checkAllGroupChange">
         <Checkbox
           v-for="(item,index ) in checkboxList"
@@ -26,7 +26,7 @@
         </Checkbox>
       </CheckboxGroup>
     </template>
-    <span v-else class="text-grey">暂无数据</span>
+    <span v-else class="text-grey">{{ $t('page.nodata') }}</span>
   </div>
 </template>
 <script>

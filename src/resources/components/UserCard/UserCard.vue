@@ -60,7 +60,7 @@
                     </div>
                   </Col>
                 </TsRow>
-                <div v-else class="text-center">暂无数据</div>
+                <div v-else class="text-center">{{ $t('page.nodata') }}</div>
               </div>
               <div v-if="(initType === 'team' || initType === 'role') && !multiple" class="ts-angle-left text-href userlist-wrap" @click.stop="backtoList">
                 用户列表

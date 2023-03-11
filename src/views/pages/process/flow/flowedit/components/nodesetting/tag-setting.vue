@@ -17,7 +17,7 @@
   <div class="settingList">
     <div class="control-box">
       <div class="control-setting">
-        <span class="label">标签</span>
+        <span class="label">{{ $t('page.tag') }}</span>
         <span class="control-btn">
           <TsFormSwitch
             v-model="isActive"
@@ -62,7 +62,7 @@ export default {
     return {
       isActive: 0,
       selectConfig: {
-        placeholder: '添加标签',
+        placeholder: this.$t('page.addtarget', {target: this.$t('page.tag')}),
         border: 'border',
         search: true,
         allowCreate: true,

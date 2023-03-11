@@ -44,7 +44,7 @@
                   change-on-select
                   class="select"
                   :render-format="format"
-                  placeholder="请选择服务目录"
+                  :placeholder="$t('form.placeholder.pleaseselect', {target:$t('term.process.catalogmanage')})"
                   transfer
                   @on-change="changeService"
                 ></Cascader>
@@ -53,7 +53,6 @@
                 <TsFormInput
                   v-model="keyword"
                   search
-                  placeholder="输入搜索内容"
                   clearable
                   @on-enter="getCalalogroute(1)"
                   @on-clear="getCalalogroute(1)"
@@ -115,7 +114,7 @@ export default {
       preRelarelationList: [], //可见关系
       moreRelarelationList: [], //下拉更多关系
       moreSelectValue: null,
-      moreSelectText: '更多',
+      moreSelectText: this.$t('page.more'),
       serviceData: [],
       serviceId: [],
       keyword: null,
@@ -242,7 +241,7 @@ export default {
     },
     changeRelationId(obj) {
       this.channelTypeRelationId = obj.value;
-      this.moreSelectText = '更多';
+      this.moreSelectText = this.$t('page.more');
       this.moreSelectValue = null;
       this.clearSelectData();
     },

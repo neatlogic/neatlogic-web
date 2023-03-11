@@ -120,6 +120,13 @@
         </Tooltip>
       </template>
     </div>
+    <Button
+      v-if="actionConfig.comment"
+      type="primary"
+      :disabled="isDisableCommet"
+      :title="isDisableCommet ? $t('term.process.disablecommettip') : null"
+      @click="comment"
+    >{{ actionConfig.comment }}</Button>
   </div>
 </template>
 <script>
@@ -150,7 +157,13 @@ export default {
     },
     completeErrorText: {
       type: String,
-      default: '无法人工流转'
+      default() {
+        return this.$t('term.process.ccompleteerror');
+      }
+    },
+    isDisableCommet: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -205,6 +218,9 @@ export default {
           }
         });
       }
+    },
+    comment() {
+      this.$emit('comment');
     }
   },
   computed: {},

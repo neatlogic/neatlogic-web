@@ -71,8 +71,8 @@ export default {
         },
         { key: 'appSystemAbbrName', title: this.$t('term.deploy.application') },
         { key: 'appModuleAbbrName', title: this.$t('term.deploy.module') },
-        { key: 'envScenario', title: '环境（场景）' },
-        { key: 'version', title: '版本', width: 250 }
+        { key: 'envScenario', title: this.$t('term.deploy.envscene') },
+        { key: 'version', title: this.$t('page.versions'), width: 250 }
       ],
       appSystemModuleEnvList: [],
       pipelineData: {},
@@ -85,10 +85,10 @@ export default {
         },
         triggerType: {
           type: 'radio',
-          label: '触发方式',
+          label: this.$t('term.autoexec.executionmode'),
           dataList: [
-            { value: 'manual', text: '人工触发' },
-            { value: 'auto', text: '自动执行' }
+            { value: 'manual', text: this.$t('term.deploy.manualtrigger') },
+            { value: 'auto', text: this.$t('term.deploy.automaticexecution') }
           ],
           validateList: ['required'],
           onChange: val => {
@@ -96,13 +96,13 @@ export default {
           }
         },
         planStartTime: {
-          label: '计划时间',
+          label: this.$t('page.plantime'),
           transfer: true,
           type: 'datetime',
           isHidden: false,
           valueType: 'timestamp',
           format: 'yyyy-MM-dd HH:mm',
-          desc: '为防止任务刚提交就过期，只允许选择5分钟后的时间',
+          desc: this.$t('term.deploy.tasktimelimitfiveminutes'),
           selectableRange: () => {
             const now = new Date().getTime();
             return [now + 5 * 60 * 1000, 0];
@@ -183,7 +183,7 @@ export default {
       nodeList.forEach(v => {
         let text = v.version;
         if (v.isFreeze) {
-          text += '（已封版）';
+          text += this.$t('term.deploy.sealededition');
         } else {
           text;
         }
@@ -228,12 +228,11 @@ export default {
     async submitForm() {
       await this.$api.deploy.pipeline.addBatchJob(this.jobData).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('成功');
+          this.$Message.success(this.$t('message.content.savesuccess'));
         }
       });
     },
     getVersionValidateList(row) {
-      //console.log(row._selected);
       return ['required'];
     }
   },

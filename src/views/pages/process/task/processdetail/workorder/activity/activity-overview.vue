@@ -37,13 +37,13 @@
               style="display: inline-block;"
             ></UserCard>
             <span v-if="item.originalUserVo">
-              <span style="vertical-align: bottom;">（代</span>
+              <span style="vertical-align: bottom;">（{{ $t('term.process.act') }}</span>
               <UserCard v-bind="item.originalUserVo" hideAvatar style="vertical-align: bottom;"></UserCard>
               <span style="vertical-align: bottom;">）</span>
             </span>
             <span v-html="item.description"></span>
             <span class="text-grey">·{{ item.actionTime | formatDate }}</span>
-            <span v-show="item.sourceName" class="text-grey pl-nm">来自{{ item.sourceName }}</span>
+            <span v-show="item.sourceName" class="text-grey pl-nm">{{ $t('page.comefrom') }}{{ item.sourceName }}</span>
           </div>
           <div v-if="item.auditDetailList && item.auditDetailList.length > 0" class="content-list">
             <Timeline>
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="order-content bg-block text-grey">暂无活动列表</div>
+    <div v-else class="order-content bg-block text-grey">{{ $t('page.notarget',{target:$t('page.activitylist')}) }}</div>
   </div>
 </template>
 <script>

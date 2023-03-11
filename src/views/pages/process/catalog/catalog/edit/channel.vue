@@ -347,7 +347,7 @@ export default {
           name: 'support',
           clearable: false,
           validateList: ['required'],
-          label: this.$t('term.process.limituser'),
+          label: this.$t('page.limituser'),
           value: '',
           defaultValueIsFirst: true,
           url: '/api/rest/universal/enum/get',

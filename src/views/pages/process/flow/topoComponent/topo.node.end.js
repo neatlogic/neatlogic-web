@@ -1,4 +1,5 @@
 import ViewUI from 'techsure-ui/iview/index.js';
+import Vue from 'vue';
 (function(global, factory) {
   factory((global.End = global.End || {}), global);
 }(window, function(exports, global) {
@@ -36,7 +37,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
         if (prevNodeList.has(targetNode) && !backNode.has(targetNode)) {
           let scoreConfig = this.canvas.containerVue.scoreConfig;
           if (!scoreConfig.isActive) {
-            ViewUI.Message.warning({ content: '请启动评分设置！', duration: 3, closable: true });
+            ViewUI.Message.warning({ content: Vue.prototype.i18n.t('message.content.process.pleasestartscoringsetting'), duration: 3, closable: true });
             return;
           }
           this.canvas.addLink({
@@ -52,7 +53,7 @@ import ViewUI from 'techsure-ui/iview/index.js';
     valid(nodeConfig) {
       let validList = [];
       if (this.links.length <= 0) {
-        validList.push({name: '【结束】节点必须有连进线'});
+        validList.push({ name: Vue.prototype.i18n.t('message.content.process.nodemusthaveinputgoingline') });
       }
       return validList;
     }

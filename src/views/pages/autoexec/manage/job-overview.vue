@@ -30,7 +30,7 @@ export default {
     return {
       prevPath: {
         router: '/job-manage',
-        name: '返回',
+        name: this.$t('page.back'),
         query: {
           handler: 'tool'
         }

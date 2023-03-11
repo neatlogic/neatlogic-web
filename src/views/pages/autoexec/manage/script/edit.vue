@@ -88,7 +88,7 @@ export default {
           dataList: [],
           label: this.$i18n.t('page.type'),
           multiple: false,
-          placeholder: '请选择分类',
+          placeholder: this.$t('term.autoexec.pleaseselectcategory'),
           validateList: ['required'],
           search: true,
           dynamicUrl: '/api/rest/autoexec/type/search',

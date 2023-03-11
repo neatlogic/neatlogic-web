@@ -37,8 +37,8 @@
     <TsDialog
       v-else-if="params.operation === 'authorize'"
       :isShow="isShow"
-      title="授权"
-      okText="保存"
+      :title="$t('page.auth')"
+      :okText="$t('page.save')"
       className="auth-dialog"
       @on-ok="confirmAuth(params)"
       @on-close="close"
@@ -81,7 +81,7 @@
             <span class="name">{{ item.name }}</span>
           </li>
         </ol>
-        <div v-else class="no-data">暂无数据</div>
+        <div v-else class="no-data">{{ $t('page.nodata') }}</div>
       </div>
     </TsDialog>
 

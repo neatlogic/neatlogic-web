@@ -23,7 +23,7 @@
       </li>
     </ul>
     <div class="score-comment">
-      <div class="score-title">评价：</div>
+      <div class="score-title">{{ $t('page.valuation') }}：</div>
       <div class="score-content" v-html="setData(config.newContent).content"></div>
     </div>
   </div>

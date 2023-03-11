@@ -160,7 +160,7 @@
                                 </TsRow>
                               </div>
                               <div v-if="pcomment.isDeletable == 1 || pcomment.isEditable == 1" class="comment-btn">
-                                <Button v-if="pcomment.isEditable == 1" size="small" @click="editComment(pcomment)">{{ $t('button.add') }}</Button>
+                                <Button v-if="pcomment.isEditable == 1" size="small" @click="editComment(pcomment)">{{ $t('button.edit') }}</Button>
                                 <Button v-if="pcomment.isDeletable == 1" size="small" @click="delComment(pcomment.id)">{{ $t('button.delete') }}</Button>
                               </div>
                               <div class="text-grey fz10 comment-time">{{ pcomment.fcd | formatDate }}</div>
@@ -237,15 +237,15 @@
                             @change="commentContent"
                           ></TsCkeditor>
                         </div>
-                        <div v-if="actionConfig.comment" class="comment-save">
-                          <!-- <Button v-if="actionConfig.save" @click="saveTaskD()">{{ actionConfig.save }}</Button> -->
-                          <Button
+                        <!--<div v-if="actionConfig.comment" class="comment-save">
+                          <Button v-if="actionConfig.save" @click="saveTaskD()">{{ actionConfig.save }}</Button>
+                           <Button
                             type="primary"
                             :disabled="isDisableCommet"
                             :title="isDisableCommet ? '回复框或附件不为空时允许点击' : null"
                             @click="comment"
                           >{{ actionConfig.comment }}</Button>
-                        </div>
+                        </div> -->
                       </div> 
                     </div>
                     <!-- 回复 end-->
@@ -1400,6 +1400,12 @@ export default {
         }
       },
       deep: true
+    },
+    isDisableCommet: {
+      handler(val) {
+        this.$emit('changeDisableCommet', val);
+      },
+      immediate: true
     }
   }
 };
@@ -1455,9 +1461,9 @@ function getParent(node) {
   }
 }
 
-.reply-box-margin-bottom {
-  margin-bottom: 14px !important;
-}
+// .reply-box-margin-bottom {
+//   margin-bottom: 14px !important;
+// }
 .comment-box{
   .comment-tip {
     padding-bottom: 10px;

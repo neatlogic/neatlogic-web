@@ -34,8 +34,8 @@ export default {
   },
   data() {
     return {
-      inputColumns: ['名称', '类型', '是否必填', '说明'],
-      outputColumns: ['名称', '类型', '说明'],
+      inputColumns: [this.$t('page.name'), this.$t('page.type'), this.$t('page.isrequired'), this.$t('page.explain')],
+      outputColumns: [this.$t('page.name'), this.$t('page.type'), this.$t('page.explain')],
       transData: []
     };
   },

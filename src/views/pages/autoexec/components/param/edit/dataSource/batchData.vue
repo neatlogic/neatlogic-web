@@ -89,7 +89,7 @@ export default {
       }
 
       if (!validMessage) {
-        strArray.length > 500 && (validMessage = '数组长度不可大于500');
+        strArray.length > 500 && (validMessage = this.$t('term.autoexec.batchedittip3'));
       }
 
       if (validMessage) {

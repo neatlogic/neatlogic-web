@@ -40,6 +40,9 @@
     "rebuildrelation": "确认重建当前关系所有级联关系？确认后重建工作将会再后台自动进行。",
     "saveconfirm": "是否保存当前修改？",
     "cancelconfirm": "是否确认取消编辑？",
-    "clearextend":"清空继承关系后，系统会删除所有父模型中属于当前模型的配置项数据，是否确认继续？"
+    "clearextend":"清空继承关系后，系统会删除所有父模型中属于当前模型的配置项数据，是否确认继续？",
+    "disassociatedialog": "确定解除与该工单的关联？",
+    "unbindconfirm": "确定解除绑定？",
+    "surepublishthenewversion": "确定发布新版本？"
   }
 }

@@ -4,8 +4,8 @@
       <TsForm v-model="policyData" v-bind="formConfig"></TsForm>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="confirm()">确定</Button>
+      <Button @click="close()">{{ $t('button.cancel') }}</Button>
+      <Button type="primary" @click="confirm()">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '执行策略',
+        title: this.$t('term.deploy.executivestrategy'),
         width: 'small',
         type: 'modal',
         maskClose: false,
@@ -38,34 +38,34 @@ export default {
         itemList: {
           isGoon: {
             type: 'radio',
-            label: '自动执行后续组',
+            label: this.$t('term.deploy.automaticallyexecutesubsequentgroups'),
             vertical: true,
             isHidden: this.action != 'group',
-            desc: '当前组下的所有作业执行完毕后，是否自动执行后续组',
+            desc: this.$t('term.deploy.automaticalexecutegroupdesc'),
             value: 1,
             dataList: [
-              { value: 1, text: '是' },
-              { value: 0, text: '否' }
+              { value: 1, text: this.$t('page.yes') },
+              { value: 0, text: this.$t('page.no') }
             ]
           },
           batchJobAction: {
             type: 'radio',
-            label: '批量作业执行策略',
+            label: this.$t('term.deploy.batchjobexecutestrategy'),
             vertical: true,
             value: 'refireAll',
             dataList: [
-              { value: 'refireAll', text: '跳过所有已完成的子作业' },
-              { value: 'refireResetAll', text: '执行所有子作业' }
+              { value: 'refireAll', text: this.$t('term.deploy.skipallfinishedchildjob') },
+              { value: 'refireResetAll', text: this.$t('term.deploy.executeallchildjob') }
             ]
           },
           jobAction: {
             type: 'radio',
-            label: '子作业执行策略',
+            label: this.$t('term.deploy.childjobexecutestrategy'),
             vertical: true,
             value: 'refireAll',
             dataList: [
-              { value: 'refireAll', text: '跳过所有已完成、已忽略的节点' },
-              { value: 'refireResetAll', text: '执行所有节点' }
+              { value: 'refireAll', text: this.$t('term.deploy.skipfinishedignorenode') },
+              { value: 'refireResetAll', text: this.$t('term.deploy.executeallnode') }
             ]
           }
         }
@@ -90,21 +90,21 @@ export default {
       if (this.action === 'job') {
         this.$api.deploy.job.executeBatchDeployJob(this.policyData).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('执行成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.close(true);
           }
         });
       } else if (this.action === 'group') {
         this.$api.deploy.job.executeBatchDeployGroup(this.policyData).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('执行成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.close(true);
           }
         });
       } else if (this.action === 'resumegroup') {
         this.$api.deploy.job.resumeGroup(this.policyData).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('执行成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.close(true);
           }
         });

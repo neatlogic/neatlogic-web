@@ -52,14 +52,14 @@ export default {
           name: 'typeName',
           value: '',
           maxlength: 50,
-          label: '工具分类',
+          label: this.$t('term.autoexec.toolclassification'),
           width: '100%',
           readonly: true
         },
         owner: {
           type: 'slot',
           name: 'owner',
-          label: '维护人'
+          label: this.$t('term.autoexec.maintainer')
         },
         viewAuthorityList: {
           type: 'slot',

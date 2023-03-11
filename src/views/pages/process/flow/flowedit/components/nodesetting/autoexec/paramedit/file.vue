@@ -47,7 +47,7 @@
               <i
                 v-if="!disabled"
                 class="tsfont-close file-del text-action"
-                title="删除"
+                title="$t('page.delete')"
                 @click="handleRemove(item)"
               ></i>
             </div>
@@ -56,48 +56,46 @@
       </div>
       <template v-if="uploadList.length > showNumber">
         <div class="file-more text-tip-active" @click="lookFileList">
-          查看所有
+          {{ $t('page.viewall') }}
         </div>
       </template>
       <TsDialog :isShow.sync="showDialog" @on-close="close">
         <template v-slot:header>
-          查看所有
+          {{ $t('page.viewall') }}
         </template>
         <template v-slot>
           <div class="all-file input-border">
             <div class="search">
               <div style="width:240px">
-                <Input
+                <TsFormInput
                   v-model="keyword"
                   search
-                  placeholder="请输入"
                   @on-search="searchKeyWord"
-                />
+                ></TsFormInput>
+              </div>
+              <div class="file-content">
+                <TsRow v-if="searchList && searchList.length > 0">
+                  <Col
+                    v-for="(item, index) in searchList"
+                    :key="index"
+                    span="12"
+                    :class="item.isHide?'hide':''"
+                  >
+                    <div class="file-detail overflow">
+                      <span class="tsfont-attachment overflow file-name">{{ item.name }}</span>
+                      <i
+                        v-if="!disabled"
+                        class="tsfont-close file-del text-action"
+                        title="$t('page.delete')"
+                        @click="dialogRemove(item)"
+                      ></i>
+                    </div>
+                  </Col>
+                </TsRow>
+                <NoData v-else-if="!searchList || !searchList.length"></NoData>
               </div>
             </div>
-            <div class="file-content">
-              <TsRow v-if="searchList && searchList.length > 0">
-                <Col
-                  v-for="(item, index) in searchList"
-                  :key="index"
-                  span="12"
-                  :class="item.isHide?'hide':''"
-                >
-                  <div class="file-detail overflow">
-                    <span class="tsfont-attachment overflow file-name">{{ item.name }}</span>
-                    <i
-                      v-if="!disabled"
-                      class="tsfont-close file-del text-action"
-                      title="删除"
-                      @click="dialogRemove(item)"
-                    ></i>
-                  </div>
-                </Col>
-              </TsRow>
-              <NoData v-else-if="!searchList || !searchList.length"></NoData>
-            </div>
-          </div>
-        </template>
+          </div></template>
         <template v-slot:footer>
           <div class="footer-btn-contain">
             <Button @click="close">{{ $t('button.cancel') }}</Button>
@@ -106,7 +104,7 @@
               type="primary"
               ghost
               @click="clearAll"
-            >清空所有</Button>
+            >{{ $t('page.clearall') }}</Button>
           </div>
         </template>
       </TsDialog>
@@ -128,7 +126,9 @@ import comMixin from './editmixin.js';
 
 export default {
   name: 'File',
-  components: {},
+  components: {
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+  },
   filters: {},
   mixins: [comMixin],
   props: {

@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow.sync="relatedTaskModal"
-      title="关联工单"
+      :title="$t('term.process.reltask')"
       width="medium"
       height="500px"
       @on-ok="relatedTaskOk"
@@ -40,7 +40,6 @@
               <TsFormInput
                 v-model="keyword"
                 search
-                placeholder="输入搜索内容"
                 clearable
                 @on-enter="searchTask(1)"
                 @on-clear="searchTask(1)"
@@ -73,11 +72,7 @@
               </template>
             </TsTable>
             <div v-if="relationProcessTaskIdList.length > 0" class="number-box" :class="tableData.pageCount && tableData.pageCount > 1?'select-number':''">
-              <div>
-                已选择
-                <span class="text-primary">{{ relationProcessTaskIdList.length }}</span>
-                项
-              </div>
+              <div v-html="$t('term.process.selecteditemsnum',{target:relationProcessTaskIdList.length})"></div>
             </div>
           </div>
         </div>
@@ -118,7 +113,7 @@ export default {
       preRelarelationList: [], //可见关系
       moreRelarelationList: [], //下拉更多关系
       moreSelectValue: null,
-      moreSelectText: '更多',
+      moreSelectText: this.$t('page.more'),
       pageSize: 20,
       theadList: [
         {
@@ -148,7 +143,7 @@ export default {
       tableData: {},
       relationProcessTaskIdList: [], //选择被关联的工单列表
       relatedKeyword: null, //关联工单过滤条件
-      noDataText: '请确认您要找的工单是否符合当前关系类型？ 如需增加,请联系管理员！'
+      noDataText: this.$t('term.process.selectrelationdialogtip')
     };
   },
   beforeCreate() {},
@@ -218,7 +213,7 @@ export default {
     },
     changeRelationId(obj) {
       this.channelTypeRelationId = obj.value;
-      this.moreSelectText = '更多';
+      this.moreSelectText = this.$t('page.more');
       this.moreSelectValue = null;
       this.updateTable();
     },

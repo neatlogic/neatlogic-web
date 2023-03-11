@@ -70,7 +70,9 @@ export default {
   props: {
     dialogTitle: {
       type: String,
-      default: '添加步骤'
+      default() {
+        return this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
+      }
     },
     isShow: {
       type: Boolean,
@@ -94,10 +96,10 @@ export default {
         {
           type: 'text',
           name: 'code',
-          label: '编码',
+          label: this.$t('term.process.encoded'),
           maxlength: 50,
           width: '90%',
-          validateList: [{ name: 'required', message: '请输入' }, { name: 'stepindex' }]
+          validateList: ['required', { name: 'stepindex' }]
         },
         {
           type: 'text',
@@ -105,7 +107,7 @@ export default {
           label: this.$t('page.name'),
           maxlength: 50,
           width: '90%',
-          validateList: [{ name: 'required', message: '请输入名称' }, { name: 'name-special' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.name') }, { name: 'name-special' }]
         },
         {
           type: 'textarea',

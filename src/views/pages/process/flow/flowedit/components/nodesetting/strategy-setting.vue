@@ -4,8 +4,7 @@
       <div class="control-box">
         <div class="control-setting">
           <span class="label">
-            <span>创建子任务
-            </span>
+            <span>{{ $t('term.process.createsubtask') }}</span>
           </span>
           <span class="control-btn">
             <i-switch
@@ -27,9 +26,9 @@
             class="FormBox"
           >
             <template v-slot:num-label>
-              <span>子任务策略
-                <span class="tsfont-edit icon text-tip-active" title="编辑" @click="edit"></span>
-                <span class="tsfont-rotate-right reply-icon text-tip-active" title="刷新" @click="refresh() "></span>
+              <span>{{ $t('term.process.subtaskpolicy') }}
+                <span class="tsfont-edit icon text-tip-active" :title="$t('page.edit')" @click="edit"></span>
+                <span class="tsfont-rotate-right reply-icon text-tip-active" :title="$t('page.refresh')" @click="refresh() "></span>
               </span>
             </template>
             <template v-slot:num>
@@ -42,7 +41,7 @@
               </TsFormSelect>
             </template>
           </TsForm>          
-          <div class="text-title text">处理人过滤</div>
+          <div class="text-title text">{{ $t('term.process.userfilter') }}</div>
           <UserSelect
             ref="defaultWorker"
             v-model="strategySetting.taskConfig.rangeList"
@@ -50,7 +49,7 @@
             :groupList="['user', 'role', 'team']"
             border="border"
           ></UserSelect>
-          <div class="text">不填写时，不限制处理人范围</div>
+          <div class="text">{{ $t('term.process.emptynotlimitusertip') }}</div>
         </div>
       </div>
     </div>
@@ -76,7 +75,7 @@ export default {
       relationDialogForm: {
         num: {
           type: 'slot',
-          label: '子任务策略',
+          label: this.$t('term.process.subtaskpolicy'),
           width: '100%',
           transfer: true,
           url: '/api/rest/task/search',
@@ -91,9 +90,9 @@ export default {
           textName: 'name',
           value: [],
           dataList: [],
-          validateList: [{ name: 'required', message: '请选择子任务策略' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.subtaskpolicy')}) }],
           border: 'border',
-          firstText: '添加子任务策略',
+          firstText: this.$t('page.addtarget', {target: this.$t('term.process.subtaskpolicy')}),
           firstLi: true,
           onChange: function(val) {
             _this.strategySetting.taskConfig.idList = val;

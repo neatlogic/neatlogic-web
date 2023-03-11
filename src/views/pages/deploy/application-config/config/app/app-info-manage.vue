@@ -4,7 +4,7 @@
     <AppInfo :appSystemId="appSystemId"></AppInfo>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
-      <span class="pl-nm">通知</span>
+      <span class="pl-nm">{{ $t('page.notify') }}</span>
     </div>
     <div class="mb-nm">
       <TsForm
@@ -15,25 +15,25 @@
     </div>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
-      <span class="pl-nm">权限</span>
+      <span class="pl-nm">{{ $t('page.authority') }}</span>
     </div>
     <div class="pt-nm pl-nm pr-nm">
       <TsRow class="pb-sm">
         <Col span="10">
           <div class="action-group mt-xs">
-            <span v-show="hasEditConfigAuth" class="action-item tsfont-plus text-href" @click="openAuthDialog">添加</span>
+            <span v-show="hasEditConfigAuth" class="action-item tsfont-plus text-href" @click="openAuthDialog">{{ $t('page.add') }}</span>
             <span
               v-show="hasEditConfigAuth"
               class="action-item tsfont-edit"
               :class="!selectedAuthList || selectedAuthList.length == 0 ? 'disable' : ''"
               @click="batchEdit"
-            >编辑</span>
+            >{{ $t('button.edit') }}</span>
             <span
               v-show="hasEditConfigAuth"
               class="action-item tsfont-trash-o"
               :class="!selectedAuthList || selectedAuthList.length == 0 ? 'disable' : ''"
               @click="batchDeleteAuth"
-            >删除</span>
+            >{{ $t('button.delete') }}</span>
           </div>
         </Col>
         <Col span="6">
@@ -42,7 +42,7 @@
             transfer
             :multiple="false"
             :dataList="authList"
-            placeholder="权限"
+            :placeholder="$t('page.authority')"
             @on-change="searchAuth(1)"
           ></TsFormSelect>
         </Col>
@@ -51,7 +51,7 @@
             v-model="authorityStrList"
             :multiple="false"
             :transfer="true"
-            placeholder="用户"
+            :placeholder="$t('page.user')"
             :groupList="['user', 'role', 'team']"
             @on-change="searchAuth(1)"
           ></UserSelect>
@@ -105,14 +105,14 @@
                     <span v-else :class="item && item[innerItem.name] ? 'tsfont-check text-success' : 'tsfont-close text-grey'"></span>
                   </td>
                   <div :class="item.isShow ? 'show-operation bg-selected' : 'hide-operation'" :style="item.isShow && topRightWidth ? {right: `${topRightWidth}px`} : ''">
-                    <span v-show="hasEditConfigAuth" class="tsfont-edit text-action cursor pr-sm" @click.stop="editAuth(item)">编辑</span>
-                    <span v-show="hasEditConfigAuth" class="tsfont-trash-s text-action cursor" @click.stop="delAuth(item)">删除</span>
+                    <span v-show="hasEditConfigAuth" class="tsfont-edit text-action cursor pr-sm" @click.stop="editAuth(item)">{{ $t('button.edit') }}</span>
+                    <span v-show="hasEditConfigAuth" class="tsfont-trash-s text-action cursor" @click.stop="delAuth(item)">{{ $t('button.delete') }}</span>
                   </div>
                 </tr>
               </template>
               <template v-else>
                 <tr class="text-center">
-                  <td :colspan="tableConfig.theadList.length">暂无数据</td>
+                  <td :colspan="tableConfig.theadList.length">{{ $t('page.nodata') }}</td>
                 </tr>
               </template>
             </tbody>
@@ -183,7 +183,7 @@ export default {
       formList: [
         {
           type: 'select',
-          label: '通知策略',
+          label: this.$t('page.notificationstrategy'),
           name: 'notifyPolicyId',
           dynamicUrl: 'api/rest/notify/policy/search',
           params: {handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler'},
@@ -300,12 +300,12 @@ export default {
         };
         let userInfoList = await this.$api.common.getUserRoleTeam({groupList: [row.authType], valueList: [`${row.authType}#${row.authUuid}`]});
         this.$createDialog({
-          title: '删除权限',
-          content: `确认删除${row.authUuid == 'alluser' ? '所有人' : (userInfoList.Return && userInfoList.Return[0] ? userInfoList.Return[0].dataList[0].text : '')}的所有权限？`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: row.authUuid == 'alluser' ? this.$t('term.deploy.deleteallauthconfirm') : this.$t('term.deploy.deleteallauthconfirmtarget', {target: userInfoList.Return && userInfoList.Return[0] ? userInfoList.Return[0].dataList[0].text : ''}),
           btnType: 'error',
           btnList: [
             {
-              text: '取消',
+              text: this.$t('button.cancel'),
               type: 'default',
               ghost: true,
               fn: vnode => {
@@ -421,12 +421,12 @@ export default {
           uuidList
         };
         this.$createDialog({
-          title: '批量删除权限',
-          content: `批量删除被选中权限？`,
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('term.deploy.batchdeleteselectedauthconfirm'),
           btnType: 'error',
           btnList: [
             {
-              text: '取消',
+              text: this.$t('button.cancel'),
               type: 'default',
               ghost: true,
               fn: vnode => {

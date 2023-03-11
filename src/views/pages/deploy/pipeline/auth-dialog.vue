@@ -9,8 +9,8 @@
       ></TsForm>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
+      <Button @click="close()">{{ $t('button.cancel') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '作业授权',
+        title: this.$t('term.deploy.jobauthorization'),
         width: 'small',
         isShow: true,
         maskClose: false
@@ -35,9 +35,9 @@ export default {
         authList: { 
           type: 'userselect',
           isMultiple: true,
-          label: '授权用户', 
+          label: this.$t('term.deploy.authorizeduser'), 
           transfer: true,
-          desc: '被授权的用户可执行当前批量作业',
+          desc: this.$t('term.deploy.authorizedusercanexecutebatchjob'),
           groupList: ['user'],
           onChange: val => {
             this.localAuthList = val;

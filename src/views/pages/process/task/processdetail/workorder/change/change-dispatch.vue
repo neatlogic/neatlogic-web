@@ -176,7 +176,7 @@ export default {
       isTaskSave: true, //是否回复（上报内容无修改不能回复）
       validateList: {
         owner: [{ name: 'required', message: this.$t('form.placeholde.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
-        planStartEndTime: [{ name: 'required', message: '请选择时间' }]
+        planStartEndTime: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.time')}) }]
       }
     };
   },

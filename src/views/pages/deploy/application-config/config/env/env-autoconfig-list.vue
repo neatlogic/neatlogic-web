@@ -1,9 +1,9 @@
 <template>
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
     <ul class="pt-nm pl-nm">
-      <li v-if="hasAutoConfig && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">编辑</li>
+      <li v-if="hasAutoConfig && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('button.edit') }}</li>
       <template v-else>
-        <li v-if="!hasEditConfigAuth">您没有当前应用的“编辑配置权限”，请联系管理员授权</li>
+        <li v-if="!hasEditConfigAuth">{{ $t('term.deploy.noeditconfigauthtip') }}</li>
       </template>
     </ul>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
@@ -14,25 +14,25 @@
         @changePageSize="changePageSizeAutoConfig"
       >
         <template slot="value" slot-scope="{row}">
-          <span>{{ row.hasOwnProperty('value') && !row.value ? '设为空' :(row.value || '-') }}</span>
+          <span>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
         </template>
       </TsTable>
     </div>
     <ul v-else class="autocfg-box flex-center">
       <li v-show="hasEditConfigAuth" class="text-grey">
-        <span>未配置配置文件适配，点击</span>
-        <span class="text-href" @click="openEnvEdit">添加配置</span></li>
+        <span>{{ $t('term.deploy.notconfigfiletip') }}</span>
+        <span class="tsfont-plus text-href" @click="openEnvEdit">{{ $t('page.config') }}</span></li>
     </ul>
     <div class="border-bottom border-color"></div>
     <div class="padding">
       <div v-show="hasEditConfigAuth" class="pb-xs">
-        <span class="pr-nm">配置文件实例差异</span>
-        <span class="tsfont-plus text-href" @click="openEnvDifferenceEdit">添加</span>
+        <span class="pr-nm">{{ $t('term.deploy.configfilecasedifference') }}</span>
+        <span class="tsfont-plus text-href" @click="openEnvDifferenceEdit">{{ $t('page.add') }}</span>
       </div>
       <ul v-if="!hasInstance && hasEditConfigAuth" class="flex-center" style="height: 128px;">
         <li class="text-grey">
-          <span>未配置实例差异，点击</span>
-          <span class="text-href pl-xs" @click="openEnvDifferenceEdit">添加</span></li>
+          <span>{{ $t('term.deploy.notconfigdifftip') }}</span>
+          <span class="text-href pl-xs" @click="openEnvDifferenceEdit">{{ $t('page.add') }}</span></li>
       </ul>
       <div v-for="(item, index) in instanceAutoConfigList" :key="index" class="pb-nm">
         <div class="operation-box pb-xs">
@@ -48,7 +48,7 @@
           :tbodyList="item.keyValueList"
         >
           <template slot="value" slot-scope="{row}">
-            <span>{{ row.hasOwnProperty('value') && !row.value ? '设为空' : (row.value || '-') }}</span>
+            <span>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') : (row.value || '-') }}</span>
           </template>
         </TsTable>
       </div>
@@ -100,11 +100,11 @@ export default {
       instanceAutoConfigList: [],
       envTheadList: [
         {
-          title: '变量名',
+          title: this.$t('page.variablename'),
           key: 'key'
         },
         {
-          title: '变量值',
+          title: this.$t('page.variablevalue'),
           key: 'value'
         }
       ]
@@ -181,8 +181,8 @@ export default {
           instanceId: item.instanceId
         };
         this.$createDialog({
-          title: '温馨提示',
-          content: '确认删除工具该实例差异?',
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.casedifference')}),
           btnType: 'error',
           'on-ok': vnode => {
             vnode.isShow = false;

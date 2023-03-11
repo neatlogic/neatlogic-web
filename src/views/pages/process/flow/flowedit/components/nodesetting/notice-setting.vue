@@ -3,7 +3,7 @@
     <div v-if="showTitle" class="control-box">
       <div class="control-setting">
         <span class="label">
-          <span>通知设置</span>
+          <span>{{ $t('page.noticesetting') }}</span>
         </span>
         <span class="control-btn">
           <span
@@ -11,7 +11,7 @@
             class="tip"
             :class="isActive == 1?'text-tip':'text-href'"
             @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'inform')"
-          >{{ isActive==1?'自定义':'引用全局' }}</span>
+          >{{ isActive==1?$t('page.custom'):$t('page.referenceglobal') }}</span>
           <i-switch
             v-model="isActive"
             :true-value="1"
@@ -37,17 +37,17 @@
                 </TsFormSelect>
               </Col>
               <Col span="6">
-                <span class="tsfont-rotate-right notify-icon text-tip-active" title="刷新" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
+                <span class="tsfont-rotate-right notify-icon text-tip-active" :title="$t('page.refresh')" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
                 <span
                   v-if="notifyPolicyConfig.policyId"
                   class="tsfont-edit notify-icon text-tip-active"
-                  title="编辑"
+                  :title="$t('page.edit')"
                   @click="gotoAddNotify(notifyPolicyConfig.policyId)"
                 ></span>
               </Col>
             </TsRow>
             <span v-if="notifyPolicyConfig.policyId" class="text-primary show-text" @click="showNotify()">
-              {{ controlShow ? '显示已匹配参数': '隐藏已匹配参数' }}
+              {{ controlShow ? $t('term.process.showparams'): $t('term.process.hideparams') }}
             </span>
             <div class="wrapper">
               <div
@@ -150,7 +150,7 @@ export default {
       paramTypeConfig: {}, //不同参数类型来面可选右边数据
       paramList: [], //参数列表
       controlShow: true, //是否隐藏参数
-      firstText: '策略',
+      firstText: this.$t('term.process.policy'),
       firstLi: true,
       notifySelectConfig: {
         dynamicUrl: '/api/rest/notify/policy/search',

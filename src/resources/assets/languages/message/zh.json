@@ -32,6 +32,9 @@
     "failed": "{target}获取失败",
     "cannotrepeat": "{target}不能重复",
     "nameexists": "名称已存在",
+    "completerequired": "{target}请填写完整",
+    "targetvalidfailed": "{target}验证失败",
+    "pleaseentertruetarget": "请输入正确的{target}",
     "cmdb": {
       "diffci": "已选择的配置项不属于同一个模型，请重新选择",
       "hasnoauth": "您没有权限编辑配置项:{target}",
@@ -56,7 +59,21 @@
       "required": "【{target}】不能为空",
       "complete": "【{target}】请填写完整",
       "success": "【{target}】验证成功",
-      "prioritymsg": "【{target}表单联动导致优先级为空"
+      "prioritymsg": "【{target}表单联动导致优先级为空",
+      "cannotnodelist": "节点列表数据获取失败！",
+      "notsaveflow": "该流程还未保存！",
+      "notinitdata": "初始化获取数据失败！",
+      "timernodenobacklink": "定时节点不能连回退线！",
+      "timerhasonelink": "定时节点只能有一根线连出！",
+      "nodeorphaned": "节点被孤立",
+      "nodenofrontnode":"节点没有前置节点",
+      "nodenopostnode":"节点没有后置节点",
+      "nodemusthaveoutgoingline": "节点必须有连出线",
+      "nodemusthaveinputgoingline": "节点必须有连进线",
+      "nodecannotbeconnectedstartnode": "此节点不能和开始节点相连！",
+      "startnodeonlyoneline": "开始节点只能有一根线连出！",
+      "changecrenotendnode": "变更创建节点不允许直接连结束！",
+      "pleasestartscoringsetting": "请启动评分设置！"
     },
     "autoexec": {
       "savedeadlinenolimit": "不设置代表保存期限不限制",

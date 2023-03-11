@@ -100,11 +100,6 @@
                       {{ actionConfig.retreat }}
                     </DropdownItem>
                     <!-- 撤回_end -->
-                    <!-- <DropdownItem >
-                                    <div @click="buildSubProcess">
-                                        创建子流程
-                                    </div>
-                    </DropdownItem>-->
                     <!-- 添加子任务_start -->
                     <DropdownItem v-if="actionConfig.createsubtask" @click.native="addAssist">
                       {{ actionConfig.createsubtask }}
@@ -240,6 +235,9 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   @update="update"
+                  @changeDisableCommet="(val)=>{
+                    isDisableCommet = val
+                  }"
                 >
                   <template v-slot:autoexec>
                     <!-- 自动化作业 -->
@@ -256,9 +254,11 @@
                       :currentProcessTaskStep="processTask.currentProcessTaskStep"
                       :completeAuth="completeAuth"
                       :completeErrorText="completeErrorText"
+                      :isDisableCommet="isDisableCommet"
                       @completeTask="completeTask"
                       @completeStep="completeStep"
                       @backTask="backTask"
+                      @comment="comment"
                     ></FooterOperationBtn>
                   </div>
                 </CenterDetail>
@@ -347,25 +347,6 @@
           <TsForm
             ref="assistForm"
             :itemList="assistList"
-            type="type"
-            labelPosition="right"
-          ></TsForm>
-        </div>
-      </template>
-    </TsDialog>
-    <!-- 创建子流程 -->
-    <TsDialog
-      type="modal"
-      :isShow.sync="buildSubProcessModal"
-      title="创建子流程"
-      :className="stepDialogClass"
-      @on-ok="subProcessOk"
-    >
-      <template>
-        <div class="related-task">
-          <TsForm
-            ref="subProcesstForm"
-            :itemList="subProcesstForm"
             type="type"
             labelPosition="right"
           ></TsForm>

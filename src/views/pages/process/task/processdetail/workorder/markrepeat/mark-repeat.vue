@@ -16,13 +16,13 @@
 <template>
   <div class="task-markrepeat" :style="setContentHeight(contentHeight)">
     <div v-if="actionConfig.markrepeat" class="add-top">
-      <span class="tsfont-plus text-href" @click="addItem()">重复事件</span>
+      <span class="tsfont-plus text-href" @click="addItem()">{{ $t('term.process.repeatedevent') }}</span>
     </div>
     <div v-if="list.length >0">
       <div v-for="(item,index) in list" :key="index" class="item-list border-color">
         <div class="item-detail">
           <div class="item-box overflow">
-            <span class="text-grey fz10">工单标题</span>
+            <span class="text-grey fz10">{{ $t('term.process.tasktitle') }}</span>
             <span class="text-href overflow" :title="item.title" @click="toTaskdetail(item.id)">{{ item.title }}</span>
           </div>
           <div class="item-box overflow">
@@ -40,7 +40,7 @@
             </span>
             <span>{{ item.statusVo.text }}</span>
           </div>
-          <div class="del-relation tsfont-unbind bg-block text-action" @click="deleteItem(item)">解除绑定</div>
+          <div class="del-relation tsfont-unbind bg-block text-action" @click="deleteItem(item)">{{ $t('term.process.unbind') }}</div>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
       :isShow.sync="showDialog"
       type="slider"
       width="large"
-      title="重复事件"
+      :title="$t('term.process.repeatedevent')"
       :okBtnDisable="okBtnDisable"
       @on-ok="saveData()"
       @on-close="close()"
@@ -58,7 +58,7 @@
           <div class="float-right">
             <TsFormInput
               v-model="keyword"
-              placeholder="工单标题"
+              :placeholder="$t('term.process.tasktitle')"
               search
               clearable
               border="border"
@@ -96,14 +96,14 @@
     <TsDialog
       :isShow.sync="validDialog"
       width="medium"
-      title="重复事件"
+      :title="$t('term.process.repeatedevent')"
       :fixedHeader="false"
       @on-ok="saveOk"
     >
       <div class="dialog-box">
         <div class="tip-block">
           <span class="tsfont-danger-o text-primary btn-icon"></span>
-          <span>被选中的工单中，包含已被标记为重复事件的工单。以下工单将被标记为同一重复事件。</span>
+          <span>{{ $t('term.process.repeatedeventtip') }}</span>
         </div>
         <TsTable :theadList="showthead(theadList)" :tbodyList="validRepeatList" :fixedHeader="false">
           <template slot="ownerName" slot-scope="{ row }">
@@ -219,8 +219,8 @@ export default {
     deleteItem(item) {
       let _this = this;
       this.$createDialog({
-        title: '警告',
-        content: '确定解除绑定？',
+        title: this.$t('page.warning'),
+        content: this.$t('dialog.content.unbindconfirm'),
         btnType: 'error',
         'on-ok': function(vnode) {
           let data = {

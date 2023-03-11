@@ -10,11 +10,11 @@
         ></TsFormSelect>
       </Col>
       <Col span="6">
-        <span class="tsfont-rotate-right reply-icon text-tip-active" title="刷新" @click="refreshReply(replyConfig.commentTemplateId) "></span>
+        <span class="tsfont-rotate-right reply-icon text-tip-active" :title="$t('page.refresh')" @click="refreshReply(replyConfig.commentTemplateId) "></span>
         <span
           v-if="replyConfig.commentTemplateId"
           class="tsfont-edit reply-icon text-tip-active"
-          title="编辑"
+          :title="$t('page.edit')"
           @click="editreply(replyConfig.commentTemplateId)"
         ></span>
       </Col>
@@ -38,7 +38,7 @@ export default {
       },
       replySelectConfig: {
         transfer: true,
-        firstText: '回复模板',
+        firstText: this.$t('page.replytemplate'),
         firstLi: true,
         dynamicUrl: 'api/rest/process/comment/system/template/search/forselect',
         rootName: 'tbodyList',

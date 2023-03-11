@@ -39,8 +39,8 @@ export default {
       dialogSetting: {
         type: 'modal',
         isShow: true,
-        title: '复制环境',
-        okText: '确认',
+        title: this.$t('term.deploy.copyenv'),
+        okText: this.$t('button.confirm'),
         width: 'medium'
       },
       formList: [],
@@ -48,14 +48,14 @@ export default {
         {
           name: 'actionType',
           type: 'radio',
-          label: '复制策略',
+          label: this.$t('term.deploy.copystrategy'),
           dataList: [
             {
-              text: '添加环境',
+              text: this.$t('page.addtarget', {target: this.$t('page.environment')}),
               value: 'add'
             },
             {
-              text: '复制到现有环境',
+              text: this.$t('term.deploy.copytotheexistingenvironment'),
               value: 'copy'
             }
           ],
@@ -78,7 +78,7 @@ export default {
         {
           name: 'toEnvIdList',
           type: 'select',
-          label: '目标环境',
+          label: this.$t('term.deploy.targetenvironment'),
           validateList: ['required'],
           multiple: true,
           transfer: true,
@@ -91,7 +91,7 @@ export default {
       existingFormList: [ // 现有环境
         {
           name: 'toEnvIdList',
-          label: '目标环境',
+          label: this.$t('term.deploy.targetenvironment'),
           type: 'select',
           multiple: true,
           transfer: true,
@@ -100,7 +100,7 @@ export default {
           valueName: 'id',
           params: {...this.params},
           url: '/api/rest/deploy/app/config/without/config/env/list',
-          desc: '仅支持将环境配置信息复制到未配置或已清空配置的环境'
+          desc: this.$t('term.deploy.notconfigenvdesc')
         }
       ]
     };

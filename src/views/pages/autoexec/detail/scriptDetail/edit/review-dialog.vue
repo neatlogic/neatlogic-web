@@ -41,7 +41,7 @@
             <i class="tsfont-check-s text-success icon-fz"></i>
             <span class="success-fz">{{ $t('message.content.commitsuccess') }}</span>
           </div>
-          <div class="text-tip content-tip">{{ $t('term.autoexec.surepublishthenewversion') }}</div>
+          <div class="text-tip content-tip">{{ $t('dialog.content.surepublishthenewversion') }}</div>
         </div>
       </template>
     </TsDialog>

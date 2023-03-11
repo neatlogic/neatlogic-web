@@ -78,7 +78,7 @@
         />
       </div>
       <template v-else-if="isReadonly">-</template>
-      <template v-else>暂无数据</template>
+      <template v-else>{{ $t('page.nodata') }}</template>
       <transition name="fade">
         <span v-if="validMesage != ''" class="form-error-tip">{{ validMesage }}</span>
       </transition>

@@ -49,7 +49,7 @@ export default {
         {
           name: 'pipelineId',
           type: 'select',
-          label: '超级流水线',
+          label: this.$t('term.deploy.superpipeline'),
           multiple: false,
           search: true,
           firstSelect: false,
@@ -63,38 +63,38 @@ export default {
         {
           name: 'versionRule',
           type: 'slot',
-          label: '版本号'
+          label: this.$t('page.versions')
         }
       ],
       versionFormList: [
         {
           name: 'versionPrefix',
           type: 'text',
-          label: '版本前缀',
+          label: this.$t('term.deploy.versionprefix'),
           maxlength: 64,
-          desc: '指定要创建版本的前缀，可不填'
+          desc: this.$t('term.deploy.versionprefixdesc')
         },
         {
           name: 'versionRegex',
           type: 'text',
-          label: '截取规则',
+          label: this.$t('term.deploy.interceptionrule'),
           validateList: ['required'],
           maxlength: 256,
-          desc: '正则表达式，指定使用分支的哪个部分作为主版本，不给定或正则表达式匹配失败，则使用分支名。合法的正则表达式必须包含成对的"("、")"，示例：develop(\d+(\.\d+)*\.\d+)提取develop1.2.3分支中的1.2.3作为主版本号'
+          desc: this.$t('term.deploy.versionruledesc')
         },
         {
           name: 'useCommitId',
           type: 'select',
-          label: '拼接commitID',
+          label: this.$t('term.deploy.splicingcommitid'),
           validateList: ['required'],
-          desc: '在版本号中拼接最近一次提交的 commit ID',
+          desc: this.$t('term.deploy.splicingcommitiddesc'),
           dataList: [
             {
-              text: '不拼接',
+              text: this.$t('term.deploy.unspliced'),
               value: 0
             },
             {
-              text: '拼接',
+              text: this.$t('term.deploy.splicing'),
               value: 1
             }
           ]

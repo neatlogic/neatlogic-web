@@ -82,23 +82,23 @@ export default {
       iconConfig: {
         text: {
           icon: 'tsfont-forminput',
-          text: '文本'
+          text: this.$t('page.text')
         }, //文本输入
         password: {
           icon: 'tsfont-lock',
-          text: '密码'
+          text: this.$t('page.password')
         }, //密码
         file: {
           icon: 'tsfont-wenjian',
-          text: '文件'
+          text: this.$t('page.file')
         }, //文件
         date: {
           icon: 'tsfont-calendar',
-          text: '日期'
+          text: this.$t('page.date')
         }, //日期
         datetime: {
           icon: 'tsfont-riqishijian',
-          text: '日期时间'
+          text: this.$t('page.dateandtime')
         }, //日期时间
         json: {
           icon: 'tsfont-json',
@@ -106,66 +106,66 @@ export default {
         }, //json
         select: {
           icon: 'tsfont-formselect',
-          text: '下拉单选'
+          text: this.$t('page.dropdownanoption')
         }, //下拉单选
         multiselect: {
           icon: 'tsfont-formselectcascader',
-          text: '下拉多选'
+          text: this.$t('page.dropdownmultipleselection')
         }, //下拉多选
         time: {
           icon: 'tsfont-formtime',
-          text: '时间'
+          text: this.$t('page.time')
         }, //时间
         radio: {
           icon: 'tsfont-circle-o',
-          text: '单选'
+          text: this.$t('page.singleoption')
         }, //单选
         checkbox: {
           icon: 'tsfont-check-square',
-          text: '复选'
+          text: this.$t('page.check')
         }, //复选
         node: {
           icon: 'tsfont-blocks',
-          text: '节点'
+          text: this.$t('page.node')
         }, //节点
         account: {
           icon: 'tsfont-userinfo',
-          text: '帐号'
+          text: this.$t('page.accounts')
         }, //帐号
         filepath: {
           icon: 'tsfont-wenjian',
-          text: '文件路径'
+          text: this.$t('page.filepath')
         },
         textarea: {
           icon: 'tsfont-formtextarea',
-          text: '文本域'
+          text: this.$t('page.textfield')
         },
         phase: {
           icon: 'tsfont-stage',
-          text: '阶段'
+          text: this.$t('page.phase')
         },
         switch: {
           icon: 'tsfont-canvas',
-          text: '开关'
+          text: this.$t('page.switch')
         },
         userselect: {
           icon: 'tsfont-group',
-          text: '用户选择器'
+          text: this.$t('page.userselector')
         }
       },
       multipleList: ['multiselect', 'checkbox'],
       validConfig: {
-        'unique_ident': '字母',
-        'lowercase': '小写字母',
-        'uppercase': '大写字母',
-        'number': '数字',
-        'enchar': '字母和数字',
-        'mail': '邮箱地址',
-        'phone': '电话号码',
-        'ip': 'IP地址',
+        'unique_ident': this.$t('page.letter'),
+        'lowercase': this.$t('page.lowercaseletter'),
+        'uppercase': this.$t('page.capitalletter'),
+        'number': this.$t('page.figure'),
+        'enchar': this.$t('page.lettersandnumbers'),
+        'mail': this.$t('page.emailaddress'),
+        'phone': this.$t('page.phonenumber'),
+        'ip': this.$t('page.ipaddress'),
         'port': this.$t('page.port'),
         'url': 'URL',
-        'integer_p': '正整数'
+        'integer_p': this.$t('page.positiveinteger')
       }
     };
   },

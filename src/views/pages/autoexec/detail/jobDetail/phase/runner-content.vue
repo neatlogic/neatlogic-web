@@ -3,7 +3,7 @@
     <div v-if="runnerData" class="pl-nm pr-nm pt-nm text-right runner-action">
       <div class="action-group line">
         <span v-if="phaseData.warnCount > 0" class="action-item">
-          <span>告警信息</span>
+          <span>{{ $t('page.warningmessage') }}</span>
           <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
         </span>
         <span
@@ -11,27 +11,27 @@
           class="action-item tsfont-minus-o"
           :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
           @click="ignorePhase()"
-        >忽略
+        >{{ $t('page.ignore') }}
         </span>
         <span
           v-if="jobData.isCanExecute"
           class="action-item tsfont-run"
           :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
           @click="refirePhase()"
-        >执行
+        >{{ $t('page.execute') }}
         </span>
         <span class="action-item">
           <Poptip transfer placement="bottom">
             <span class="text-action">
-              <i class="tsfont-adapter pr-icon"></i><span>执行器信息</span> 
+              <i class="tsfont-adapter pr-icon"></i><span>{{ $t('term.autoexec.actuatorinformation') }}</span> 
             </span>
             <div slot="content">
               <div>
-                <span class="text-title">名称</span>
+                <span class="text-title">{{ $t('page.name') }}</span>
                 <p class="text-default">{{ runnerData.name }}</p>
               </div>
               <div>
-                <span class="text-title">配置</span>
+                <span class="text-title">{{ $t('page.config') }}</span>
                 <p class="text-default">{{ runnerData.port }}</p>
               </div>
             </div>

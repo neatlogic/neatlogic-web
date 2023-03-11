@@ -126,11 +126,6 @@
                       {{ actionConfig.retreat }}
                     </DropdownItem>
                     <!-- 撤回_end -->
-                    <!-- <DropdownItem >
-                                    <div @click="buildSubProcess">
-                                        创建子流程
-                                    </div>
-                    </DropdownItem>-->
                     <!-- 添加子任务_start -->
                     <DropdownItem v-if="actionConfig.createsubtask" :disabled="disabledConfig.subtasking" @click.native="addAssist">
                       {{ actionConfig.createsubtask }}
@@ -233,6 +228,9 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   @update="update"
+                  @changeDisableCommet="(val)=>{
+                    isDisableCommet = val
+                  }"
                 >
                   <template v-slot:changehandle>
                     <div v-if="startProcessTaskStep.handler != 'changecreate'" id="changeInfo">
@@ -266,10 +264,12 @@
                       :disabledConfig="changeDisableConfig"
                       :backStepList="backStepList"
                       :selectBackConfig="selectBackConfig"
+                      :isDisableCommet="isDisableCommet"
                       @startchange="startchange"
                       @succeedchange="succeedchange"
                       @failedchange="failedchange"
                       @backTask="backTask"
+                      @comment="comment"
                     ></FooterOperationBtn>
                   </div>
                 </CenterDetail>

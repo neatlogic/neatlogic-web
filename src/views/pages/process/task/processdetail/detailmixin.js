@@ -29,7 +29,7 @@ export default {
       processTaskConfig: {}, //所有基本信息
       processTaskStepConfig: null, //步骤基本信息
       formConfig: {}, //表单数据
-      sitemapTitle: '流程图', //流程图弹框名称
+      sitemapTitle: this.$t('term.process.viewflowchart'), //流程图弹框名称
       processConfig: null, //流程图数据
       lookSitemapModel: false, //流程图显示隐藏
       tsDialoglookSitemap: {//流程图显示隐藏
@@ -88,7 +88,7 @@ export default {
           name: 'targetTime',
           value: '',
           width: '100%',
-          label: '期望完成时间',
+          label: this.$t('term.process.targettime'),
           valueType: 'timestamp',
           transfer: true
         },
@@ -102,27 +102,10 @@ export default {
         }
       ],
       assignableWorkerStepList: [], //需指派的步骤列表
-      assignTitle: '指定步骤处理人',
+      assignTitle: this.$t('term.process.assigntitle'),
       assignModal: false,
       assignGroupList: ['user', 'team', 'role'],
       nestStepId: null, //下一个节点id
-      buildSubProcessModal: false, //创建子流程弹框
-      subProcesstForm: [ //子流程
-        {
-          type: 'select',
-          name: 'serve',
-          label: '选择服务',
-          width: 320,
-          value: '',
-          dataList: [
-            {
-              value: 'as',
-              text: '121'
-            }
-          ],
-          validateList: ['required']
-        }
-      ],
       validCardOpen: false, //校验
       validList: [], //校验列表展示
       valieTypeStyle: [
@@ -164,7 +147,7 @@ export default {
           name: 'content',
           value: '',
           width: '100%',
-          label: '回复',
+          label: this.$t('page.reply'),
           validateList: ['required']
         }
       ],
@@ -173,7 +156,7 @@ export default {
           //撤回步骤
           type: 'slot',
           name: 'processTaskStepId',
-          label: '步骤列表',
+          label: this.$t('term.process.processsteplist'),
           validateList: ['required'],
           value: ''
         },
@@ -182,7 +165,7 @@ export default {
           type: 'ckeditor',
           name: 'content',
           value: '',
-          label: '回复',
+          label: this.$t('page.reply'),
           width: '100%',
           validateList: ['required']
         }
@@ -236,7 +219,8 @@ export default {
       sessionName: 'task-detail',
       tabValue: 'report', //默认展示tab：当前节点信息（上报信息、步骤信息）
       processTaskStepRemindList: [], //顶部提示
-      priorityList: [] //当前服务优先级列表
+      priorityList: [], //当前服务优先级列表
+      isDisableCommet: false
     };
   },
   created() {
@@ -456,7 +440,7 @@ export default {
       this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
-        this.sitemapTitle = '流程图';// + this.processConfig.process.processConfig.name;
+        // this.sitemapTitle = '流程图';// + this.processConfig.process.processConfig.name;
         this.initTopo(data.Return);
       }
     },
@@ -704,9 +688,9 @@ export default {
       let _this = this;
       this.$createDialog({
         type: 'modal',
-        title: '提示',
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.cancel'), name: this.$t('term.process.task') }),
         maskClose: true,
-        content: '是否确定取消该工单？',
         'on-ok': function(vnode) {
           vnode.isShow = false;
           if (!_this.disabledConfig.aborting) {
@@ -863,13 +847,6 @@ export default {
     retreatStep(item) {
       //选择撤回步骤
       this.retreatId = item.id;
-    },
-    //创建子流程
-    buildSubProcess() {
-      this.buildSubProcessModal = true;
-    },
-    subProcessOk() {
-      this.buildSubProcessModal = false;
     },
     validItemClick(selector) {
       this.$refs.TaskCenterDetail.tabValue = 'report';
@@ -1039,7 +1016,7 @@ export default {
         this.$api.process.processtask.urgeProcesssTask(data).then(res => {
           this.disabledConfig.urging = false;
           if (res.Status == 'OK') {
-            this.$Message.success('催办成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
         }).catch(error => {
           this.disabledConfig.urging = false;
@@ -1158,7 +1135,7 @@ export default {
         if (changeValidList.length == 0) {
           let o = Object.assign({}, this.validTypeList[0]);
           o.focus = '#changeInfo';
-          o.msg = '【变更信息】验证成功';
+          o.msg = this.$t('message.content.process.success', { target: this.$t('term.process.changeinfor')});
           this.validList.push(o);
         } else {
           let o = Object.assign({}, this.validTypeList[1]);
@@ -1166,9 +1143,6 @@ export default {
             let o = Object.assign(e, this.validTypeList[1]);
             this.validList.push(o);
           });
-          // o.focus = '#changeInfo';
-          // o.msg = '【变更信息】请填写完整';
-          // this.validList.push(o);
           this.validCardOpen = true;
           isComplete = false;
         }
@@ -1204,7 +1178,7 @@ export default {
         focus: '#content',
         icon: 'tsfont-close-o',
         iconColor: '#FF625A',
-        msg: '【回复】回复必填',
+        msg: this.$t('message.content.process.required', { target: this.$t('page.reply') }),
         type: 'error'
       };
       if (this.isStepRequired && this.handler != 'event') {
@@ -1257,18 +1231,12 @@ export default {
           this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet.initContainerWidth();
         }
       }, 300);//动画有延迟
+    },
+    comment() {
+      this.$refs.TaskCenterDetail.comment();
     }
   },
   computed: {
-    // typeTip() {
-    //   return function(color) {
-    //     return {
-    //       'background-color': color + '23',
-    //       color: color,
-    //       'border-color': color
-    //     };
-    //   };
-    // },
     allClassifyData() {
       return this.$store.state.leftMenu.workcenterList;
     }

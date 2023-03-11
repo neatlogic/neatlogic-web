@@ -1,13 +1,13 @@
 <template>
   <div class="condition-setting permission-list">
     <div class="control-setting">
-      <span>流转规则</span>
-      <span class="tsfont-plus add-btn" @click="addRule()">规则</span>
+      <span>{{ $t('term.process.flowrult') }}</span>
+      <span class="tsfont-plus add-btn" @click="addRule()">{{ $t('page.rule') }}</span>
     </div>
     <div v-if="formUuid == ''">
       <div class="text-tip">
-        流程未关联表单，无法配置组合条件，请前往
-        <a href="javascript:void(0);" @click="tabSetting">流程设置</a>进行关联
+        {{ $t('term.process.flowrulttip') }}
+        <a href="javascript:void(0);" @click="tabSetting">{{ $t('term.process.flowsetting') }}</a>{{ $t('page.relevance') }}
       </div>
     </div>
     <div v-if="moveonConfigList && moveonConfigList.length > 0">
@@ -15,7 +15,7 @@
         <div class="list">
           <div class="top">
             <div class="text-grey overflow">
-              <span v-html="item.type=='negative'?'不流转':'流转到'"></span>
+              <span v-html="item.type=='negative'? $t('term.process.nottransfer') : $t('term.process.transferto')"></span>
               “
               <span :title="getTargetStepList(item.targetStepList)">{{ getTargetStepList(item.targetStepList) }}</span>”
             </div>
@@ -82,7 +82,7 @@
       @on-close="ruleModel= false"
     >
       <template v-slot:header>
-        <div>流转规则</div>
+        <div>{{ $t('term.process.flowrult') }}</div>
       </template>
       <template>
         <div class="rule-condition">
@@ -208,17 +208,17 @@ export default {
           type: 'select',
           name: 'targetStepList',
           value: '',
-          placeholder: '请选择节点',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')}),
           width: 320,
           maxlength: 30,
-          label: '流转到',
+          label: this.$t('term.process.transferto'),
           multiple: true,
           valueName: 'uuid',
           textName: 'name',
           validateList: [
             {
               name: 'required',
-              message: '请选择节点'
+              message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')})
             },
             {
               name: 'name-special'
@@ -231,22 +231,22 @@ export default {
           name: 'type',
           value: '',
           defaultValue: 'optional', //默认值
-          label: '触发条件',
+          label: this.$t('page.triggercondition'),
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
             {
               value: 'always',
-              text: '直接流转'
+              text: this.$t('term.process.alwaystransfer')
             },
             {
               value: 'negative',
-              text: '不流转'
+              text: this.$t('term.process.nottransfer')
             },
             {
               value: 'optional',
-              text: '自定义'
+              text: this.$t('page.custom')
             }
           ],
           onChange: function(val) {
@@ -493,7 +493,7 @@ export default {
                       if (key == 'valueList' && Array.isArray(val)) {
                         if (val.length == 0) {
                           this.$Notice.error({
-                            title: '请选择条件',
+                            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                             duration: 1.5
                           });
                           isValue = false;
@@ -501,7 +501,7 @@ export default {
                         } else {
                           if (val[0] == '') {
                             this.$Notice.error({
-                              title: '请选择条件',
+                              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                               duration: 1.5
                             });
                             isValue = false;
@@ -510,7 +510,7 @@ export default {
                         }
                       } else if (!val) {
                         this.$Notice.error({
-                          title: '请选择条件',
+                          title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
                           duration: 1.5
                         });
                         isValue = false;

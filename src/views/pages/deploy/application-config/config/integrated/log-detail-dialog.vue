@@ -40,7 +40,7 @@ export default {
         hasFooter: false,
         type: 'modal',
         width: 'medium',
-        title: '日志详情'
+        title: this.$t('page.logdetails')
       }
     };
   },

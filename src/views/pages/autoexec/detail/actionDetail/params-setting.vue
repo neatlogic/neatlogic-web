@@ -101,7 +101,7 @@ export default {
       if (!this.validParamList()) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: '编辑参数英文名或删除参数时，将解除所有引用关系，是否继续？',
+          content: this.$t('term.deploy.deleteallcite'),
           btnType: 'error',
           'on-ok': vnode => {
             this.saveParamList();

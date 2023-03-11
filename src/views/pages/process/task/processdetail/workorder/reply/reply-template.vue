@@ -4,13 +4,12 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topLeft">
-        <div class="text-action tsfont-plus" @click="addRow()">回复模板</div>
+        <div class="text-action tsfont-plus" @click="addRow()">{{ $t('page.replytemplate') }}</div>
       </template>
       <template slot="topRight">
         <TsFormInput
           v-model="searchParam.keyword"
           search
-          placeholder="关键字"
           clearable
           @on-enter="getTableDataSearch(1)"
           @on-clear="getTableDataSearch(1)"
@@ -80,7 +79,7 @@ export default {
       },
       theadList: [
         {
-          title: '回复内容',
+          title: this.$t('page.replycontent'),
           key: 'content'
         },
         {
@@ -98,14 +97,14 @@ export default {
         },
         {
           type: 'textarea',
-          label: '回复内容',
+          label: this.$t('page.replycontent'),
           name: 'content',
           validateList: ['required']
         },
         {
           type: 'userselect',
           name: 'authList',
-          label: '授权',
+          label: this.$t('page.auth'),
           groupList: ['user', 'role', 'team'],
           validateList: ['required'],
           transfer: true
@@ -147,14 +146,14 @@ export default {
   methods: {
     addRow() {
       this.editTsDialog.isShow = true;
-      this.editTsDialog.title = '添加模板';
+      this.editTsDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('page.template')});
       this.editForm[2].isHidden = true;
       this.replyType = 'custom';
     },
     editRow(data) {
       this.getData(data.id);
       this.editTsDialog.isShow = true;
-      this.editTsDialog.title = '编辑模板';
+      this.editTsDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('page.template')});
     },
     getData(id) {
       const data = {
@@ -189,13 +188,6 @@ export default {
                 this.$Message.success(this.$t('message.content.deletesuccess'));
                 this.getTableDataSearch();
                 vnode.isShow = false;
-              }
-            })
-            .catch(error => {
-              if (error.data.Message) {
-                this.$Message.error('删除失败：' + error.data.Message);
-              } else {
-                this.$Message.error('接口请求错误');
               }
             });
         }

@@ -21,18 +21,18 @@
     >
       <span class="cursor-pointer">
         <CommonStatus v-if="specifyVersion.status" :statusValue="adjustStatusValue(specifyVersion.status, specifyVersion.isActive)" :statusName="getStatusText(specifyVersion.status, specifyVersion.isActive)"></CommonStatus>
-        <span v-if="specifyVersion.status=='passed'" class="top-title">版本{{ specifyVersion.version }}</span>
+        <span v-if="specifyVersion.status=='passed'" class="top-title">{{ $t('page.versions') }}{{ specifyVersion.version }}</span>
         <span v-else class="top-title">{{ specifyVersion.name }}</span>
         <i class="tsfont-down"></i>
       </span>
       <div slot="content" class="version-main">
         <div v-if="currentVersion" class="version-list">
           <div class="version-title text-title fz10">
-            当前版本
+            {{ $t('page.curversions') }}
           </div>
           <div class="currentVersion-content border-color radius-sm cursor-pointer card-hover-shadow" @click="switchVersion(currentVersion)">
             <div class="version-content-top">
-              <div class="title">版本{{ currentVersion.version }}</div>
+              <div class="title">{{ $t('page.versions') }}{{ currentVersion.version }}</div>
               <div class="version-status">
                 <CommonStatus v-if="currentVersion.status" :statusValue="adjustStatusValue(currentVersion.status, currentVersion.isActive)" :statusName="getStatusText(currentVersion.status, currentVersion.isActive)"></CommonStatus>
               </div>
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div v-if="notPassedConfig.tbodyList.length > 0" class="version-list">
-          <div class="version-title text-title fz10">未审核版本</div>
+          <div class="version-title text-title fz10">{{ $t('page.unapprovedversion') }}</div>
           <TsCard
             v-model="combopId"
             v-bind="notPassedConfig"
@@ -75,7 +75,7 @@
           </TsCard>
         </div>
         <div v-if="historicalConfig.tbodyList.length > 0" class="version-list">
-          <div class="version-title text-title fz10">历史版本</div>
+          <div class="version-title text-title fz10">{{ $t('page.hisversions') }}</div>
           <TsCard
             v-model="combopId"
             v-bind="historicalConfig"
@@ -88,7 +88,7 @@
             <template slot-scope="{ row }">
               <div class="version-content cursor-pointer" @click="switchVersion(row)">
                 <div class="version-content-top">
-                  <div>版本{{ row.version }}</div>
+                  <div>{{ $t('page.versions') }}{{ row.version }}</div>
                 </div>
                 <div class="text-tip fz10">
                   <span class="user overflow">
@@ -221,17 +221,17 @@ export default {
     },
     getStatusText(status, isActive) {
       if (status == 'draft') {
-        return '草稿';
+        return this.$t('page.draft');
       } else if (status == 'submitted') {
-        return '待审核';
+        return this.$t('page.submitted');
       } else if (status == 'passed') {
         if (isActive == 1) {
-          return '激活';
+          return this.$t('page.enable');
         } else {
-          return '历史';
+          return this.$t('page.history');
         }
       } else if (status == 'rejected') {
-        return '已驳回';
+        return this.$t('page.rejected');
       } 
       return '';
     }

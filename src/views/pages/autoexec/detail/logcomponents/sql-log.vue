@@ -51,7 +51,7 @@ export default {
           param.logPos = logPos;
         }
         if (param.direction == 'down') {
-          this.descText = '加载最新数据中';
+          this.descText = this.$t('page.loading');
           //向下滚动才需要中断自动刷新
           if (this.timmer) {
             clearTimeout(this.timmer);
@@ -90,7 +90,7 @@ export default {
           .finally(() => {
             this.isLoading = false;
             if (param.direction == 'down' && this.logData && this.logData.isRefresh == 0) {
-              this.descText = '数据加载完成';
+              this.descText = this.$t('page.dataloadingcompleted');
             }
             if (param.direction == 'down' && this.isAutoScroll) {
               if (this.logContentList.length > 0) {

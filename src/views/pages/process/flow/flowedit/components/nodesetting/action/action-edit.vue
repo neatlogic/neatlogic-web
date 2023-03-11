@@ -17,7 +17,6 @@
                   v-bind="integrationConfig"
                   search
                   transfer
-                  placeholder="请选择"
                   :selectItemList.sync="integrationItemList"
                   @change="clearIntegrationrelation"
                 >
@@ -28,8 +27,8 @@
                   </template>
                 </TsFormSelect>
               </Col>
-              <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-edit btn-tointegration text-action" title="编辑数据源" @click="toIntegration(integrationUuid)"></i></Col>
-              <Col v-if="integrationUuid" span="2" class="text-right"><i class="ts-rotate-right btn-tointegration text-action" title="刷新数据源" @click="refreshIntegration(integrationUuid)"></i></Col>
+              <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-edit btn-tointegration text-action" :title="$t('page.edit')" @click="toIntegration(integrationUuid)"></i></Col>
+              <Col v-if="integrationUuid" span="2" class="text-right"><i class="ts-rotate-right btn-tointegration text-action" :title="$t('page.refresh')" @click="refreshIntegration(integrationUuid)"></i></Col>
             </Row>
           </div>
         </template>
@@ -44,7 +43,6 @@
               v-model="trigger"
               search
               transfer
-              placeholder="请选择"
               :dataList="triggerList"
               valueName="trigger"
               textName="triggerName"
@@ -66,7 +64,6 @@
                   v-bind="integrationConfig"
                   search
                   transfer
-                  placeholder="请选择"
                   :selectItemList.sync="integrationItemList"
                   @change="clearIntegrationrelation"
                 >
@@ -83,7 +80,7 @@
           </div>
         </div> -->
         <div v-if="integrationUuid && paramMappingList && paramMappingList.length>0 && inputParamList.length > 0" class="form-block">
-          <span class="block-left">参数值</span>
+          <span class="block-left">{{ $t('term.autoexec.paramsvalue') }}</span>
           <div clss="block-right">
             <div class="bg-op block-interg">
               <TsRow
@@ -101,7 +98,6 @@
                     v-model="paramMappingList[pindex].value"
                     search
                     transfer
-                    placeholder="请选择"
                     :dataList="paraConditionList"
                     textName="label"
                     valueName="name"
@@ -126,14 +122,14 @@
               >
                 <b class="tsfont-info-o text-href"></b>
                 <div slot="content">
-                  <p>默认按状态码判断，2xx和3xx表示成功</p>
+                  <p>{{ $t('term.process.successjudgmenttip') }}</p>
                 </div>
               </Tooltip>
             </span>
-            <span>成功判断</span>
+            <span>{{ $t('page.successjudgment') }}</span>
           </span>
           <div clss="block-right">
-            <div style="padding:6px 0;" :title="outputParamList.length > 0?'':'外部调用没有回参，不允许自定义'">
+            <div style="padding:6px 0;" :title="outputParamList.length > 0?'':$t('term.process.extcallnoparamtip')">
               <span style="display: inline-block;">
                 <TsFormSwitch
                   v-model="isSuccessactive"
@@ -142,14 +138,13 @@
                   :disabled="outputParamList.length > 0 ? false : true"
                 ></TsFormSwitch>
               </span>
-              <span :class="outputParamList.length > 0?'tip':'tip text-tip'" style="margin-left:4px;">{{ isSuccessactive == "1" ? "自定义" : "默认" }}</span>
+              <span :class="outputParamList.length > 0?'tip':'tip text-tip'" style="margin-left:4px;">{{ isSuccessactive == "1" ? $t('page.custom'): $t('page.default') }}</span>
             </div>
             <div v-if="isSuccessactive =='1'" class="bg-op block-interg" style="width:100%;">
               <TsRow :gutter="6">
                 <Col span="8">
                   <TsFormSelect
                     v-model="successCondition.name"
-                    placeholder="请选择"
                     transfer
                     :dataList="outputParamList"
                     textName="name"
@@ -160,7 +155,6 @@
                 <Col span="6">
                   <TsFormSelect
                     v-model="successCondition.expression"
-                    placeholder="请选择"
                     transfer
                     :dataList="getExpression(successCondition.name)"
                     textName="expressionName"
@@ -168,7 +162,7 @@
                   > </TsFormSelect>
                 </Col>
                 <Col span="10">
-                  <TsFormInput v-model="successCondition.value" placeholder="请输入" maxlength="50"> </TsFormInput>
+                  <TsFormInput v-model="successCondition.value" maxlength="50"> </TsFormInput>
                 </Col>
               </TsRow>
             </div>

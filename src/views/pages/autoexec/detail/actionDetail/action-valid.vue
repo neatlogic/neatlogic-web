@@ -1,7 +1,7 @@
 <template>
   <div v-if="visible" class="valid-div">
     <Card v-if="validList && validList.length>0 " :padding="0">
-      <p slot="title">校验</p>
+      <p slot="title">{{ $t('button.validate') }}</p>
       <span slot="extra" class="tsfont-close remove text-grey" @click="onClose"></span>
       <CellGroup class="contain">
         <Cell
@@ -33,7 +33,7 @@ export default {
     },
     validList: {//校验列表
       type: Array,
-      default: () => [{text: '校验不通过', type: 'error'}, {text: '校验通过', type: 'success'}]
+      default() { return [{text: this.$t('form.validate.validatefailed'), type: 'error'}, {text: this.$t('form.validate.validatesuccess'), type: 'success'}]; }
     }
   },
   data() {

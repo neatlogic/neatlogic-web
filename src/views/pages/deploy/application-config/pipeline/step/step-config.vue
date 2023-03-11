@@ -17,8 +17,8 @@
       ></ScriptList>
     </div>
     <div v-if="canEdit" class="add-bar">
-      <span class="text-href tsfont-plus" @click="addOperation">
-        添加工具 
+      <span class="text-href tsfont-plus" @click="addOperation"> 
+        {{ $t('page.addtarget', {target: $t('term.autoexec.tool')}) }}
       </span>
     </div>
     <AddOperation
@@ -165,7 +165,7 @@ export default {
     },
     valid() {
       if (!this.phaseOperationList || !this.phaseOperationList.length) {
-        return this.$i18n.t('autoexec.warning.empty.operation');
+        return this.$t('term.deploy.chooseatleastonetool');
       } else {
         if (this.$refs.list) {
           return this.$refs.list.valid();

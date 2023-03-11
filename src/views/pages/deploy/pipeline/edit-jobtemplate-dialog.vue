@@ -2,7 +2,7 @@
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
       <div>
-        <Divider orientation="start" class="divier">应用系统</Divider>
+        <Divider orientation="start" class="divier">{{ $t('term.deploy.applicationsystem') }}</Divider>
         <div v-if="!jobTemplateData.id && !jobTemplateData.uuid">
           <TsFormSelect
             v-bind="appSystemConfig"
@@ -14,7 +14,7 @@
       <div v-if="jobTemplateData.appSystemId">
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
         <div>
-          <Divider orientation="start" class="divier">场景</Divider>
+          <Divider orientation="start" class="divier">{{ $t('page.scene') }}</Divider>
           <div>
             <Row :gutter="16">
               <Col
@@ -33,7 +33,7 @@
           </div>
         </div>
         <div>
-          <Divider orientation="start" class="divier">环境</Divider>
+          <Divider orientation="start" class="divier">{{ $t('page.environment') }}</Divider>
           <div>
             <Row :gutter="16">
               <Col
@@ -52,7 +52,7 @@
           </div>
         </div>
         <div>
-          <Divider orientation="start" class="divier">模块</Divider>
+          <Divider orientation="start" class="divier">{{ $t('page.module') }}</Divider>
           <div>
             <ModuleList
               ref="moduleList"
@@ -66,7 +66,7 @@
           </div>
         </div>
         <div>
-          <Divider orientation="start" class="divier">分批设置</Divider>
+          <Divider orientation="start" class="divier">{{ $t('term.autoexec.batchsetting') }}</Divider>
           <div class="pr-nm pl-nm pb-nm">
             <Slider
               :value="roundIndex"
@@ -84,7 +84,7 @@
           </div>
         </div>
         <div>
-          <Divider v-if="runtimeParamList && runtimeParamList.length > 0" orientation="start" class="divier">作业参数</Divider>
+          <Divider v-if="runtimeParamList && runtimeParamList.length > 0" orientation="start" class="divier">{{ $t('term.autoexec.jobparam') }}</Divider>
           <div v-if="runtimeParamList && runtimeParamList.length > 0">
             <SetParam
               ref="param"
@@ -97,8 +97,8 @@
       </div>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
+      <Button @click="close()">{{ $t('button.cancel') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -108,7 +108,6 @@ export default {
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     ModuleList: resolve => require(['@/views/pages/deploy/job/publishing/module-list'], resolve),
-    //TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     SetParam: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/param.vue'], resolve)
   },
   props: {
@@ -128,7 +127,7 @@ export default {
       combopPhaseList: [],
       isModuleLoading: false,
       dialogConfig: {
-        title: '添加作业',
+        title: this.$t('page.addtarget', {target: this.$t('term.autoexec.job')}),
         type: 'modal',
         width: 'large',
         isShow: true
@@ -204,7 +203,6 @@ export default {
           if (res.Status == 'OK') {
             this.scenarioList = res.Return.scenarioList;
             this.envList = res.Return.envList;
-            //this.appModuleList = res.Return.appModuleList;
             if (this.scenarioList && this.scenarioList.length > 0) {
               if (!this.jobTemplateData.scenarioId || !this.scenarioList.find(d => d.scenarioId === this.jobTemplateData.scenarioId)) {
                 this.selectScenario(this.scenarioList[0]);
@@ -292,7 +290,7 @@ export default {
           });
           this.$emit('insert', jobTemplateList);
         } else {
-          this.$Message.info('请选择模块');
+          this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')}));
         }
       } else {
         const moduleList = this.$refs?.moduleList.getData() || [];
@@ -301,7 +299,7 @@ export default {
           this.jobTemplateData.config.selectNodeList = module.selectNodeList;
           this.$emit('update', this.jobTemplateData);
         } else {
-          this.$Message.info('请选择模块');
+          this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')}));
         }
       }
     },

@@ -1,7 +1,7 @@
 <template>
   <form class="flowSetting setting-box">
     <div class="flow-panel name">
-      <p class="panel-title text-title">流程名称</p>
+      <p class="panel-title text-title">{{ $t('term.process.flowname') }}</p>
       <div class="panel-contain input-border">
         <keep-alive>
           <TsFormInput
@@ -17,21 +17,21 @@
     <div class="flow-panel permission-list">
       <div class="list list-bottom">
         <div class="panel-title text-title">
-          关联表单
+          {{ $t('term.process.relform') }}
           <div class="title-btn-contain action-group">
             <span
               v-if="relateList.uuid"
               class="ts-eye text-tip-active action-item"
-              title="预览已选表单"
+              :title="$t('page.preview')"
               @click="previewForm"
             ></span>
             <span
               v-if="relateList.uuid"
               class="tsfont-edit text-tip-active action-item"
-              title="编辑已选表单"
+              :title="$t('page.edit')"
               @click="editForm"
             ></span>
-            <span class="ts-refresh text-tip-active action-item" title="刷新表单列表" @click="refreshRelateList()"></span>
+            <span class="ts-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
           </div>
         </div>
         <div class="panel-contain input-border">
@@ -42,7 +42,7 @@
           >
             <template slot="first-ul">
               <li style="text-align:center;" @click.stop="stopPropagation($event)">
-                <a class="tsfont-plus text-href add-integration" href="javascript:void(0);" @click="gotoFormEdit">表单</a>
+                <a class="tsfont-plus text-href add-integration" href="javascript:void(0);" @click="gotoFormEdit">{{ $t('term.process.form') }}</a>
               </li>
             </template>
           </TsFormSelect>
@@ -78,7 +78,7 @@
     <div class="control-box">
       <div class="control-setting">
         <span class="label">
-          <span>标记重复事件</span>
+          <span>{{ $t('term.process.markrepeat') }}</span>
         </span>
         <span class="control-btn">
           <TsFormSwitch v-model="activeSetting.enableMarkRepeat" :true-value="1" :false-value="0"></TsFormSwitch>
@@ -94,7 +94,7 @@
       width="1000px"
       :bgOp="true"
     >
-      <div slot="header">预览</div>
+      <div slot="header">{{ $t('page.preview') }}</div>
       <div>
         
         <TsSheet
@@ -287,7 +287,7 @@ export default {
           uuid: ''
         },
         isValid: !(this.$refs.name && this.$refs.name.validMesage),
-        validMessage: '校验通过'
+        validMessage: this.$t('message.content.validatesuccess')
       };
       if (this.relateList.uuid) {
         Object.assign(json, {
@@ -296,7 +296,7 @@ export default {
           }
         });
       }
-      json.isValid == false && (json.validMessage = '流程名称验证不通过');
+      json.isValid == false && (json.validMessage = this.$t('message.content.targetvalidfailed', {target: this.$t('term.process.flowname')}));
       return JSON.parse(JSON.stringify(json));
     },
     stopPropagation(event) {

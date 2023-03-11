@@ -5,16 +5,16 @@
       <Col :span="16">
         <div class="div-btn-contain action-group no-line">
           <template v-if="jobData.isCanExecute && nodeData">
-            <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 }" @click="ignoreNode()">忽略</span>
-            <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 }" @click="resetNode()">重置</span>
-            <span class="action-item tsfont-restart" @click="resetAllNode()">重置所有</span>
-            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">执行</span>
+            <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 }" @click="ignoreNode()">{{ $t('page.ignore') }}</span>
+            <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 }" @click="resetNode()">{{ $t('page.reset') }}</span>
+            <span class="action-item tsfont-restart" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
+            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.execute') }}</span>
           </template>
           <template v-if="canExportNode">
-            <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-export">导出节点</span>
+            <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-export">{{ $t('term.autoexec.exportnode') }}</span>
             <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
               <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-              导出节点
+              {{ $t('term.autoexec.exportnode') }}
             </span>
           </template>
         </div>
@@ -187,7 +187,7 @@ export default {
       currentNodeId: null, //当前选中节点
       actionParam: null, //执行忽略、重置等事件时的参数
       searchConfig: {
-        placeholder: '请输入节点名称或ip',
+        placeholder: this.$t('term.autoexec.enterthenodenameoripaddress'),
         searchList: [
           {
             type: 'select',
@@ -203,7 +203,7 @@ export default {
             type: 'radio',
             name: 'isDelete',
             value: '',
-            label: '是否删除',
+            label: this.$t('page.deleteornot'),
             valueName: 'value',
             textName: 'text',
             dataList: [
@@ -231,7 +231,7 @@ export default {
           key: 'host'
         },
         {
-          title: '节点名称',
+          title: this.$t('term.process.nodename'),
           key: 'nodeName'
         },
         {
@@ -266,12 +266,12 @@ export default {
           fn: _this.refireNode
         },
         ignore: {
-          text: '忽略',
+          text: this.$t('page.ignore'),
           icon: 'tsfont-minus-o',
           fn: _this.ignoreNode
         },
         reset: {
-          text: '重置',
+          text: this.$t('page.reset'),
           icon: 'tsfont-restart',
           fn: _this.resetNode
         }
@@ -360,8 +360,8 @@ export default {
         sqlIdList: [node.id]
       };
       this.$createDialog({
-        title: '重新执行确认',
-        content: '跳过所有已成功操作，继续执行其它操作?',
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('term.autoexec.skipallsuccessoperationcontinue'),
         'on-ok': vnode => {
           this.$api.autoexec.job
             .redoNode(params)

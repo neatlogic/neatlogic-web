@@ -67,12 +67,11 @@
     </div>
     <div id="failPolicy" class="permission-list">
       <div class="list">
-        <div class="second-title text-grey require-label">失败策略</div>
+        <div class="second-title text-grey require-label">{{ $t('page.failurestrategy') }}</div>
         <div class="input-border">
           <TsFormSelect
             ref="failPolicy"
             v-model="failPolicy"
-            placeholder="请选择"
             :dataList="failPolicyList"
             :validateList="validateList"
             border="border"

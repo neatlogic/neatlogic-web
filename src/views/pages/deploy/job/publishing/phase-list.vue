@@ -1,7 +1,7 @@
 <template>
   <div class="box-block">
     <Divider orientation="start">
-      <span>流水线</span>
+      <span>{{ $t('term.autoexec.pipeline') }}</span>
       <i class="text-tip-active pr-sm" :class="isShowStepList? 'tsfont-up' : 'tsfont-down'" @click="isShowStepList=!isShowStepList"></i>
     </Divider>
     <div v-show="isShowStepList" class="step-main">

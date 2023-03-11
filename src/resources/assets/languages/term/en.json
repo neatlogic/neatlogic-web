@@ -311,7 +311,6 @@
     "tool": "工具",
     "freeparameter": "自由参数",
     "phase": "阶段",
-    "failurestrategy": "失败策略",
     "failurestopinfo": "失败停止：任一目标执行当前工具失败后，该目标停止执行后续工具，其他目标正常执行当前阶段的所有工具后，停止执行下一阶段",
     "failurecontinueinfo": "失败继续：任一目标执行当前工具失败后，该目标跳过当前工具继续执行后续工具及阶段，其他目标不受影响",
     "outputparameter": "输出参数",

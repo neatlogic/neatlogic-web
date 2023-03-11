@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       isReady: false,
-      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name是数据中的属性\n\t\t}\n\t}\n}',
+      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name' + this.$t('term.autoexec.isdataproperties') + '\n\t\t}\n\t}\n}',
       dialogConfig: {
         title: this.id ? this.$t('button.edittarget', {target: this.$t('page.template')}) : this.$t('button.addtarget', {target: this.$t('page.template')}), 
         type: 'modal',

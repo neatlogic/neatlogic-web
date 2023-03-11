@@ -8,7 +8,7 @@
         ></TsFormSelect>
       </TsFormItem>
     </div>
-    <div v-else class="text-center pt-nm">当前应用未添加模块，无需设置</div>
+    <div v-else class="text-center pt-nm">{{ $t('term.deploy.applynoaddmoduletip') }}</div>
   </div>
 </template>
 <script>

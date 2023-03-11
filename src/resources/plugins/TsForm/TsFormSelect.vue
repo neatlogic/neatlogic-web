@@ -186,7 +186,7 @@
               <li class="ivu-dropdown-item"><span class="text-tip"> <Icon type="ios-loading" size="16" class="loading"></Icon>数据加载中...</span></li>
             </template>
             <template v-else-if="handleNoData()">
-              <li class="ivu-dropdown-item"><span class="text-tip">暂无数据</span></li>
+              <li class="ivu-dropdown-item"><span class="text-tip">{{ $t('page.nodata') }}</span></li>
             </template>
           </DropdownMenu>
           <DropdownMenu
@@ -250,7 +250,7 @@
               <li class="ivu-dropdown-item"><span class="text-tip"> <Icon type="ios-loading" size="16" class="loading"></Icon>数据加载中...</span></li>
             </template>
             <template v-else-if="handleNoData()">
-              <li class="ivu-dropdown-item"><span class="text-tip">暂无数据</span></li>
+              <li class="ivu-dropdown-item"><span class="text-tip">{{ $t('page.nodata') }}</span></li>
             </template>
           </DropdownMenu>
         </Dropdown>
