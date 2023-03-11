@@ -102,26 +102,6 @@
                         {{ ciEntityData.name }}
                         <sup style="font-weight:normal" class="fz10">{{ ciEntityData.ciLabel }}({{ ciEntityData.ciName }})</sup>
                       </div>
-                      <div v-if="attrGroupList && attrGroupList.length > 0">
-                        <!-- <ButtonGroup size="small" shape="circle">
-                              <Button v-for="(group,index) in attrGroupList" :key="index" :type="activedGroup==group?'primary':'default'" @click="activedGroup = (activedGroup == group?'':group)">{{ group }}</Button>
-                            </ButtonGroup> -->
-                        <!--<div v-if="activedPanel == 'attr' || activedPanel == ''" class="group">
-                              <div
-                                v-if="attrGroupList && attrGroupList.length > 0"
-                                :class="activedGroup == '#all' ? 'text-primary' : ''"
-                                class="item text-action"
-                                @click="activedGroup = activedGroup == '#all' ? '' : '#all'"
-                              >全部</div>
-                              <div
-                                v-for="(group, index) in attrGroupList"
-                                :key="index"
-                                class="item text-action"
-                                :class="activedGroup == group ? 'text-primary' : ''"
-                                @click="activedGroup = activedGroup == group ? '' : group"
-                              >{{ group }}</div>
-                            </div>-->
-                      </div>
                     </div>
                     <div>
                       <div v-if="activedPanel == 'attr' || activedPanel == ''">
@@ -314,20 +294,33 @@ export default {
   destroyed() {},
   methods: {
     showCustomViewData(customView) {
-      this.customViewId = customView.id;
-      if (customView.type === 'scene') {
-        this.showContent = 'customview';
-      } else {
-        this.$router.push({path: '/view-detail/' + this.customViewId + '/' + this.ciEntityId});
+      if (customView._type === 'data') {
+        if (customView.type === 'scene') {
+          this.customViewId = customView.id;
+          this.showContent = 'customview';
+        } else {
+          this.$router.push({path: '/view-detail/' + customView.id + '/' + this.ciEntityId});
+        }
+      } else if (customView._type === 'topo') {
+        this.$router.push({path: '/graph-data/' + customView.id});
       }
     },
     async getCustomViewList() {
       this.customViewList = [];
       await this.$api.cmdb.customview.searchSceneCustomView({ ciId: this.ciId, needPage: false }).then(res => {
-        this.customViewList = this.customViewList.concat(res.Return.tbodyList);
+        res.Return.tbodyList.forEach(d => {
+          this.customViewList.push({...d, _type: 'data'});
+        });
       });
       await this.$api.cmdb.customview.searchCustomView({ startCiId: this.ciId, needPage: false }).then(res => {
-        this.customViewList = this.customViewList.concat(res.Return.tbodyList);
+        res.Return.tbodyList.forEach(d => {
+          this.customViewList.push({...d, _type: 'data'});
+        });
+      });
+      await this.$api.cmdb.graph.searchGraph({ciEntityId: this.ciEntityId, needPage: false}).then(res => {
+        res.Return.tbodyList.forEach(d => {
+          this.customViewList.push({...d, _type: 'topo'});
+        });
       });
     },
     closeCustomViewDialog(needRefresh) {

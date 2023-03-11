@@ -16,7 +16,7 @@
           <template v-slot:inputType>
             <div>
               <i-switch v-model="attrData.inputType" :true-value="'at'" :false-value="'mt'"></i-switch>
-              <div class="text-tip tips">激活了自动采集的属性才能在采集映射管理中配置</div>
+              <div class="text-tip tips">{{ $t('message.content.cmdb.autoattr') }}</div>
             </div>
           </template>
           <template v-slot:type>
@@ -33,7 +33,7 @@
                   <span>{{ attr.label }}</span>
                 </Radio>
               </RadioGroup>
-              <div v-if="isTypeError" class="text-error">请选择类型</div>
+              <div v-if="isTypeError" class="text-error">{{ $t('form.placeholder.pleaseselect',{target:$t('page.type')}) }}</div>
             </div>
           </template>
           <template v-slot:attrConfig>
@@ -52,8 +52,8 @@
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>

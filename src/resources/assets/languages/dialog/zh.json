@@ -17,7 +17,8 @@
     "logsavedeadline": "日志保存期限",
     "rollbacktarget": "回退{target}",
     "versioncomparison": "版本对比",
-    "copytarget": "复制{target}"
+    "copytarget": "复制{target}",
+    "authsetting": "授权设置"
   },
   "content": {
     "deleteconfirm": "是否确认删除当前{target}？",
@@ -38,6 +39,7 @@
     "invokerecoverconfirm": "当前事务还关联了另外<b class=\"text-primary\">{count}</b>个事务，确认一起恢复？",
     "rebuildrelation": "确认重建当前关系所有级联关系？确认后重建工作将会再后台自动进行。",
     "saveconfirm": "是否保存当前修改？",
-    "cancelconfirm": "是否确认取消编辑？"
+    "cancelconfirm": "是否确认取消编辑？",
+    "clearextend":"清空继承关系后，系统会删除所有父模型中属于当前模型的配置项数据，是否确认继续？"
   }
 }

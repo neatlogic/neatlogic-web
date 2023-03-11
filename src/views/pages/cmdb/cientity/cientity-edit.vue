@@ -5,7 +5,7 @@
       :mode="mode"
     >
       <template v-if="mode != 'dialog'" v-slot:navigation>
-        <span v-if="$hasBack()" class="text-action ts-angle-left" @click="$back('/ci-view/'+ciId)">{{ $getFromPage('配置项列表') }}</span>
+        <span v-if="$hasBack()" class="text-action ts-angle-left" @click="$back('/ci-view/'+ciId)">{{ $getFromPage($t('term.cmdb.cientitylist')) }}</span>
       </template>
       <template v-slot:topLeft>
         <div v-if="ciEntityData && ciEntityData.id" class="action-group">
@@ -15,7 +15,7 @@
       <div slot="content" class="content border-color">
         <Loading
           v-if="isLoading"
-          text="数据保存中..."
+          :text="$t('page.saving')"
           :loadingShow="isLoading"
           type="fix"
         ></Loading>
@@ -156,7 +156,7 @@ export default {
             newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {valueList: [
               {
                 'ciEntityUuid': currentCiEntity.uuid,
-                'ciEntityName': '来源配置项',
+                'ciEntityName': this.$t('term.cmdb.fromcientity'),
                 'ciId': ciId,
                 'type': 'from'
               }
@@ -182,7 +182,7 @@ export default {
                 '_attrType': attrType,
                 '_attrConfig': attrConfig,
                 'rootCiId': this.propRootCiId,
-                'name': '新的配置项',
+                'name': this.$t('term.cmdb.newcientity'),
                 'ciId': ciId,
                 'ciName': ci.name,
                 'ciLabel': ci.label,
@@ -209,7 +209,7 @@ export default {
             const newRelEntity = {
               '_relId': cientity['_relId'],
               'ciEntityUuid': cientity.uuid,
-              'ciEntityName': '新的配置项',
+              'ciEntityName': this.$t('term.cmdb.newcientity'),
               'ciId': cientity.ciId,
               'type': 'new'
             };
@@ -367,9 +367,9 @@ export default {
               this.ciEntityQueue = [cientity];
             } else {
               if (ci.isVirtual == 1) {
-                this.error = '当前模型是虚拟模型，不能添加配置项。';
+                this.error = this.$t('message.content.cmdb.virtualmodel');
               } else if (ci.isAbstract == 1) {
-                this.error = '当前模型是抽象模型，不能直接添加配置项。';
+                this.error = this.$t('message.content.cmdb.abstractmodel');
               }
             }
           }
@@ -488,9 +488,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.padl4{
-  padding: 0 4px!important;
-}
 /deep/.ivu-alert-with-desc{
   padding:6px;
 }

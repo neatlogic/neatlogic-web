@@ -38,16 +38,16 @@
         </Poptip>
       </template>
       <template slot="isUnique" slot-scope="{ row }">
-        <div v-if="row.isUnique" class="text-success">是</div>
-        <div v-else class="text-grey">否</div>
+        <div v-if="row.isUnique" class="text-success">{{ $t('page.yes') }}</div>
+        <div v-else class="text-grey">{{ $t('page.no') }}</div>
       </template>
       <template slot="isRequired" slot-scope="{ row }">
-        <div v-if="row.isRequired" class="text-success">是</div>
-        <div v-else class="text-grey">否</div>
+        <div v-if="row.isRequired" class="text-success">{{ $t('page.yes') }}</div>
+        <div v-else class="text-grey">{{ $t('page.no') }}</div>
       </template>
       <template slot="inputType" slot-scope="{ row }">
-        <div v-if="row.inputType=='at'" class="text-success">是</div>
-        <div v-else class="text-grey">否</div>
+        <div v-if="row.inputType=='at'" class="text-success">{{ $t('page.yes') }}</div>
+        <div v-else class="text-grey">{{ $t('page.no') }}</div>
       </template>
       <template slot="typeText" slot-scope="{ row }">
         {{ row.typeText }}

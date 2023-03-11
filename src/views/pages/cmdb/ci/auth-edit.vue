@@ -1,16 +1,12 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>授权设置</div>
-      </template>
       <template v-slot>
-        <TsForm ref="form" :item-list="formConfig">
-        </TsForm>
+        <TsForm ref="form" :item-list="formConfig"></TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -23,17 +19,18 @@ export default {
   components: {
     TsForm
   },
-  props: { 
+  props: {
     ciId: {
       type: Number
     }
   },
   data() {
     var _this = this;
-    return { 
+    return {
       authList: [],
       dialogConfig: {
         type: 'modal',
+        title: this.$t('dialog.title.authsetting'),
         maskClose: false,
         isShow: true,
         width: 'medium'
@@ -42,9 +39,9 @@ export default {
         {
           type: 'userselect',
           name: 'cimanage',
-          label: '管理模型',
+          label: this.$t('term.cmdb.cimanage'),
           transfer: true,
-          desc: '拥有此权限则自动拥有关于当前模型的所有权限。',
+          desc: this.$t('message.content.cmdb.cimanage'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cimanage', name);
@@ -53,9 +50,9 @@ export default {
         {
           type: 'userselect',
           name: 'cientityinsert',
-          label: '新增配置项',
+          label: this.$t('term.cmdb.newcientity'),
           transfer: true,
-          desc: '拥有此权限可以新增配置项，如果没有事务管理权限则不能提交生效。',
+          desc: this.$t('message.content.cmdb.newcientity'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cientityinsert', name);
@@ -64,9 +61,9 @@ export default {
         {
           type: 'userselect',
           name: 'cientityupdate',
-          label: '编辑配置项',
+          label: this.$t('term.cmdb.editcientity'),
           transfer: true,
-          desc: '拥有此权限可以编辑配置项，如果没有事务管理权限则不能提交生效。',
+          desc: this.$t('message.content.cmdb.editcientity'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cientityupdate', name);
@@ -75,9 +72,9 @@ export default {
         {
           type: 'userselect',
           name: 'cientitydelete',
-          label: '删除配置项',
+          label: this.$t('term.cmdb.deletecientity'),
           transfer: true,
-          desc: '拥有此权限可以删除配置项，如果没有事务管理权限则不能提交生效。',
+          desc: this.$t('message.content.cmdb.deletecientity'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cientitydelete', name);
@@ -86,9 +83,9 @@ export default {
         {
           type: 'userselect',
           name: 'cientityrecover',
-          label: '恢复配置项',
+          label: this.$t('term.cmdb.recovercientity'),
           transfer: true,
-          desc: '拥有此权限可以恢复已删除的配置项。',
+          desc: this.$t('message.content.cmdb.recovercientity'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cientityrecover', name);
@@ -97,19 +94,20 @@ export default {
         {
           type: 'userselect',
           name: 'cientityquery',
-          label: '查看配置项',
+          label: this.$t('term.cmdb.viewcientity'),
           transfer: true,
-          desc: '拥有此权限可以查询配置项。',
+          desc: this.$t('message.content.cmdb.viewcientity'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('cientityquery', name);
           }
-        }, {
+        },
+        {
           type: 'userselect',
           name: 'transactionmanage',
-          label: '管理事务',
+          label: this.$t('term.cmdb.transactionmanage'),
           transfer: true,
-          desc: '拥有此权限可以提交未生效的事务或删除未提交的事务，并且自动拥有新增，修改和删除配置项的权限',
+          desc: this.$t('message.content.cmdb.transactionmanage'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('transactionmanage', name);
@@ -118,9 +116,9 @@ export default {
         {
           type: 'userselect',
           name: 'passwordview',
-          label: '查看密码字段',
+          label: this.$t('term.cmdb.viewpassword'),
           transfer: true,
-          desc: '拥有此权限可以查看当前模型下所有配置项的密码字段。',
+          desc: this.$t('message.content.cmdb.viewpassword'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.setData('passwordview', name);
@@ -132,7 +130,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() { this.getAuthData(); },
+  mounted() {
+    this.getAuthData();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -161,7 +161,7 @@ export default {
     getAuthData: function() {
       if (this.ciId) {
         this.$api.cmdb.ci.getCiAuthByCiId(this.ciId).then(res => {
-          this.authList = res.Return; 
+          this.authList = res.Return;
           this.formConfig.forEach(element => {
             element.value = [];
             if (this.authList && this.authList.length > 0) {
@@ -170,13 +170,13 @@ export default {
                   element.value.push(auth.authType + '#' + auth.authUuid);
                 }
               });
-            } 
+            }
           });
         });
       }
     },
     save: function() {
-      this.$api.cmdb.ci.saveCiAuth({ciId: this.ciId, authList: this.authList}).then(res => {
+      this.$api.cmdb.ci.saveCiAuth({ ciId: this.ciId, authList: this.authList }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.content.savesuccess'));
           this.close();
@@ -189,9 +189,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

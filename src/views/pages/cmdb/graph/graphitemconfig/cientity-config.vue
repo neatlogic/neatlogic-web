@@ -2,11 +2,7 @@
   <div>
     <TsFormItem :label="$t('form.label.name')" labelPosition="top">
       <div class="padding-sm radius-sm">
-        <TsFormInput
-          v-model="config.name"
-          border="border"
-          :maxlength="50"
-        ></TsFormInput>
+        <TsFormInput v-model="config.name" border="border" :maxlength="50"></TsFormInput>
       </div>
     </TsFormItem>
     <TsFormItem :label="$t('form.label.icon')" labelPosition="top">
@@ -28,6 +24,7 @@
             val => {
               setConfig('iconcolor', val);
               setConfig('stroke', val);
+              setConfig('labelcolor', val);
             }
           "
         />
