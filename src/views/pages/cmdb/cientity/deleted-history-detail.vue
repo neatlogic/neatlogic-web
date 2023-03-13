@@ -5,14 +5,16 @@
       v-bind="dialogConfig"
       @on-close="close"
     >
-      <template v-slot:header>
-        <div>详情</div>
-      </template>
       <template v-slot>
-        <TsTable v-if="historyData" v-bind="historyData" :border="false">
+        <TsTable
+          v-if="historyData"
+          v-bind="historyData"
+          :border="false"
+          :fixedHeader="false"
+        >
           <template slot="type" slot-scope="{ row }">
-            <span v-if="row.type=='attr'">属性</span>
-            <span v-else-if="row.type='rel'">关系</span>
+            <span v-if="row.type=='attr'">{{ $t('page.attribute') }}</span>
+            <span v-else-if="row.type='rel'">{{ $t('page.relation') }}</span>
           </template>
           <template slot="oldValueList" slot-scope="{ row }">
             <div v-if="row.type == 'attr' && row.oldValue">
@@ -31,7 +33,7 @@
             </div>
           </template>
         </TsTable>
-        <Divider v-if="transactionData.description" orientation="left">备注</Divider>
+        <Divider v-if="transactionData.description" orientation="left">{{ $t('page.memo') }}</Divider>
         <div v-if="transactionData.description" class="fz10 text-grey">{{ transactionData.description }}</div>
       </template>
     </TsDialog>
@@ -53,11 +55,12 @@ export default {
     return {
       transactionData: {},
       dialogConfig: {
+        title: this.$t('page.details'),
         type: 'modal',
         maskClose: true,
         isShow: true,
         hasFooter: false,
-        width: '900px'
+        width: 'medium'
       },
       historyData: {},
       theadList: Object.freeze([
@@ -67,10 +70,10 @@ export default {
           width: 150
         }, {
           key: 'type',
-          title: '类型'
+          title: this.$t('page.type')
         }, {
           key: 'oldValueList', 
-          title: '值'
+          title: this.$t('page.value') 
         }
       ])
     };

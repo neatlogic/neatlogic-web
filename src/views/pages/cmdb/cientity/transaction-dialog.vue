@@ -1,9 +1,6 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>未提交事务</div>
-      </template>
       <template v-slot>
         <div><TransactionList
           :needCheck="true"
@@ -14,7 +11,7 @@
         ></TransactionList></div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -32,6 +29,7 @@ export default {
   data() {
     return { 
       dialogConfig: { 
+        title: this.$t('term.cmdb.uncommittransaction'),
         type: 'modal',
         maskClose: false,
         isShow: true,

@@ -33,5 +33,8 @@
   "savetest": "保存并测试",
   "continueexecute": "继续执行",
   "retry": "重试",
-  "reply": "回复"
+  "reply": "回复",
+  "deleteandcommit": "删除并提交",
+  "savetransaction": "保存事务",
+  "savecommittransaction": "保存事务并提交"
 }

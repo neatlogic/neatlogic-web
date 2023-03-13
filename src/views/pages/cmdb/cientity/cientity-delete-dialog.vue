@@ -1,18 +1,17 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>删除警告</div>
-      </template>
       <template v-slot>
-        <div><div>是否确认删除所有选中配置项？</div>
+        <div>
+          <div>{{ $t('dialog.content.deleteconfirm', { target: $t('term.cmdb.selectedcientity') }) }}</div>
           <Divider />
           <div>
             <TsFormInput v-model="description" type="textarea" maxlength="500"></TsFormInput>
-          </div></div>
+          </div>
+        </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="allowDelete"
           class="ml-md"
@@ -20,14 +19,14 @@
           :loading="loading"
           ghost
           @click="deleteCiEntity(false, 'del')"
-        >删除</Button>
+        >{{ $t('button.delete') }}</Button>
         <Button
           v-if="allowDelete"
           class="ml-md"
           :loading="allLoading"
           type="error"
           @click="deleteCiEntity(true, 'delCi')"
-        >删除并提交</Button>
+        >{{ $t('button.deleteandcommit') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -36,18 +35,19 @@
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 export default {
   name: '',
-  components: {TsFormInput},
+  components: { TsFormInput },
   props: {
-    allowDelete: {type: Boolean, default: false},
-    allowCommit: {type: Boolean, default: false},
-    ciEntityList: {type: Array, default: () => []},
-    ciEntityId: {type: Number, default: null}
+    allowDelete: { type: Boolean, default: false },
+    allowCommit: { type: Boolean, default: false },
+    ciEntityList: { type: Array, default: () => [] },
+    ciEntityId: { type: Number, default: null }
   },
   data() {
     return {
       loading: false,
       allLoading: false,
-      dialogConfig: { 
+      dialogConfig: {
+        title: this.$t('dialog.title.deleteconfirm'),
         type: 'modal',
         maskClose: false,
         isShow: true,

@@ -56,29 +56,20 @@
       </div>
       <div v-if="currentLink || currentCi.uuid" class="padding-md shadow bg-op radius-md prop-container">
         <div v-if="currentLink">
-          <!--<div v-if="currentLink" class="mb-md">
-          连线名称
-        </div>
-        <div v-if="currentLink" class="mb-md">
-          <TsFormInput :value="currentLink.name" maxlength="50" @change="changeLinkName"></TsFormInput>
-        </div>-->
-          <div v-if="currentLink" class="mb-xs">
-            {{ $t('page.linktype') }}
-          </div>
-          <div v-if="currentLink" class="mb-xs">
+          <TsFormItem v-if="currentLink" :label="$t('page.linktype')" labelPosition="top">
             <RadioGroup v-model="currentLink.type" vertical @on-change="changeLinkType">
               <Radio label="Join">{{ $t('term.cmdb.fulljoin') }}</Radio>
               <Radio label="Leftjoin">{{ $t('term.cmdb.leftjoin') }}</Radio>
               <Radio label="Rightjoin">{{ $t('term.cmdb.rightjoin') }}</Radio>
             </RadioGroup>
-          </div>
+          </TsFormItem>
         </div>
         <div v-if="currentCi.uuid">
           <TsFormItem
             v-if="!currentCi.isStart"
-            tooltip="查看视图详情时，当前模型是否在关系中隐藏"
+            labelPosition="left"
+            contentAlign="right"
             :label="$t('page.ishidden')"
-            labelPosition="top"
           >
             <TsFormSwitch
               v-model="currentCi.isHidden"
@@ -87,48 +78,47 @@
               @on-change="changeCiIsShow"
             ></TsFormSwitch>
           </TsFormItem>
-          <div v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="mb-xs">
-            {{ $t('term.cmdb.attributelist') }}
-          </div>
-          <div class="tstable-container">
-            <table v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="tstable-body">
-              <colgroup>
-                <col />
-                <col />
-                <col width="80%" />
-              </colgroup>
-              <tbody>
-                <tr v-for="(constattr, cindex) in currentCi.constList" :key="'constattr_' + cindex">
-                  <td style="vertical-align:top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
-                  <td style="vertical-align:top"><i title="内部属性" class="tsfont-type"></i></td>
-                  <td>
-                    <div>{{ constattr.label }}</div>
-                    <div class="text-grey">{{ constattr.name }}</div>
-                  </td>
-                </tr>
-                <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
-                  <td style="vertical-align:top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
-                  <td style="vertical-align:top"><i title="属性" class="tsfont-blocklist"></i></td>
-                  <td>
-                    <div>{{ attr.label }}</div>
-                    <div class="text-grey">{{ attr.name }}</div>
-                  </td>
-                </tr>
-                <tr v-for="(rel, rindex) in currentCi.ciRelList" :key="'rel_' + rindex">
-                  <td style="vertical-align:top"><Checkbox v-model="rel.isChecked" disabled></Checkbox></td>
-                  <td style="vertical-align:top"><i :title="rel.direction == 'from' ? '下游关系' : '上游关系'" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
-                  <td v-if="rel.direction == 'from'">
-                    <div>{{ rel.toLabel }}</div>
-                    <div class="text-grey">{{ rel.toName }}</div>
-                  </td>
-                  <td v-else>
-                    <div>{{ rel.fromLabel }}</div>
-                    <div class="text-grey">{{ rel.fromName }}</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <TsFormItem v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" labelPosition="top" :label="$t('term.cmdb.attributelist')">
+            <div class="tstable-container">
+              <table v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="tstable-body">
+                <colgroup>
+                  <col />
+                  <col />
+                  <col width="80%" />
+                </colgroup>
+                <tbody>
+                  <tr v-for="(constattr, cindex) in currentCi.constList" :key="'constattr_' + cindex">
+                    <td style="vertical-align:top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
+                    <td style="vertical-align:top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
+                    <td>
+                      <div>{{ constattr.label }}</div>
+                      <div class="text-grey">{{ constattr.name }}</div>
+                    </td>
+                  </tr>
+                  <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
+                    <td style="vertical-align:top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
+                    <td style="vertical-align:top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
+                    <td>
+                      <div>{{ attr.label }}</div>
+                      <div class="text-grey">{{ attr.name }}</div>
+                    </td>
+                  </tr>
+                  <tr v-for="(rel, rindex) in currentCi.ciRelList" :key="'rel_' + rindex">
+                    <td style="vertical-align:top"><Checkbox v-model="rel.isChecked" disabled></Checkbox></td>
+                    <td style="vertical-align:top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
+                    <td v-if="rel.direction == 'from'">
+                      <div>{{ rel.toLabel }}</div>
+                      <div class="text-grey">{{ rel.toName }}</div>
+                    </td>
+                    <td v-else>
+                      <div>{{ rel.fromLabel }}</div>
+                      <div class="text-grey">{{ rel.fromName }}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </TsFormItem>
         </div>
       </div>
     </div>
