@@ -57,11 +57,11 @@ export default {
           textValue: 'view'
         },
         {
-          title: this.$i18n.t('common.source') + '类目',
+          title: this.$t('page.sourcecategory'),
           key: 'operationType'
         },
         {
-          title: this.$i18n.t('common.source'),
+          title: this.$t('page.source'),
           key: 'sourceName'
         },
         {

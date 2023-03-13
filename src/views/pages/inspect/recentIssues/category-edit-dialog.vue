@@ -39,7 +39,7 @@ export default {
     return {
       formValue: {},
       dialogSetting: {
-        title: this.id ? '编辑分类' : '新建分类',
+        title: this.id ? this.$t('page.edittarget', {target: this.$t('page.classify')}) : this.$t('page.addtarget', {target: this.$t('page.classify')}),
         type: 'modal',
         isShow: true
       },
@@ -47,12 +47,12 @@ export default {
         name: {
           type: 'text',
           name: 'name',
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: ['required', {
             name: 'searchUrl',
             url: '/api/rest/inspect/new/problem/customview/save',
             key: 'name', // 验证的key值
-            message: '名称已存在', // 错误提示信息
+            message: this.$t('form.validate.repeat', {target: this.$t('page.name')}), // 错误提示信息
             params: { id: this.id }
           }],
           maxlength: 50
@@ -82,7 +82,7 @@ export default {
         // 编辑
         this.$api.inspect.assetsInspect.renameProblemClassification({id: this.id, ...this.formValue}).then((res) => {
           if (res && res.Status == 'OK') {
-            this.$Message.success('编辑成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.closeDialog(true);
           }
         });

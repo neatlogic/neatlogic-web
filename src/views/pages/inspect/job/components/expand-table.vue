@@ -49,18 +49,18 @@ export default {
     return {
       theadList: [
         {
-          title: '级别',
+          title: this.$t('page.level'),
           key: 'levelName',
           type: 'slot',
           width: 60
         },
         {
-          title: '告警提示',
+          title: this.$t('term.inspect.alarmprompt'),
           key: 'name',
           width: 200
         },
         {
-          title: '规则',
+          title: this.$t('page.rule'),
           key: 'rule',
           width: 400
         }

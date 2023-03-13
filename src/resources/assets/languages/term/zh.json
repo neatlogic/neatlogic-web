@@ -533,8 +533,6 @@
     "toolclassification": "工具分类",
     "costtime": "耗时",
     "executeuser": "执行用户",
-    "sourcecategory": "来源类目",
-    "source": "来源",
     "executionsituation": "执行情况",
     "jobstatus": "作业状态",
     "jobsource": "作业来源",
@@ -1284,5 +1282,16 @@
     "applynotconfigmodule": "当前应用未配置模块",
     "applynotconfigenv": "当前应用未配置环境",
     "modulenotconfigenv": "当前模块未配置环境"
+  },
+  "inspect": {
+    "alarmprompt": "告警提示",
+    "alarmobjectvalue": "告警对象值",
+    "alarmobject": "告警对象",
+    "ruleid": "规则ID",
+    "rulename": "规则名称",
+    "applicationofrule": "规则所属应用",
+    "sendanemail": "发送邮件",
+    "latestproblemofinspectiontarget": "巡检最新问题{target}",
+    "sendmaillimitdesc": "单次最多给100人发送邮件，超出100的部分不发送邮件"
   }
 }

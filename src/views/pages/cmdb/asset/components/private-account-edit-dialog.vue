@@ -88,7 +88,7 @@ export default {
           type: 'select',
           width: '100%',
           label: '协议',
-          placeholder: this.$t('common.selectProtocol'),
+          placeholder: this.$t('form.validate.selectprotocol'),
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
           dealDataByUrl: (nodeList) => { return this.dealProtocolIdDataByUrl(nodeList); },

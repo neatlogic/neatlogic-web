@@ -134,7 +134,7 @@ export default {
               },
               {
                 name: 'level',
-                label: '级别',
+                label: this.$t('page.level'),
                 type: 'select',
                 dataList: this.levelList,
                 validateList: ['required'],
@@ -142,7 +142,7 @@ export default {
               },
               {
                 name: 'rule',
-                label: '规则',
+                label: this.$t('page.rule'),
                 type: 'textarea',
                 tooltip: this.ruleTooltips,
                 maxlength: 1000,
@@ -238,7 +238,7 @@ export default {
             },
             {
               name: 'level',
-              label: '级别',
+              label: this.$t('page.level'),
               type: 'select',
               dataList: this.levelList,
               validateList: ['required'],
@@ -246,7 +246,7 @@ export default {
             },
             {
               name: 'rule',
-              label: '规则',
+              label: this.$t('page.rule'),
               type: 'textarea',
               tooltip: this.ruleTooltips,
               maxlength: 1000,
@@ -295,14 +295,14 @@ export default {
           },
           {
             name: 'level',
-            label: '级别',
+            label: this.$t('page.level'),
             type: 'select',
             dataList: this.levelList,
             validateList: ['required']
           },
           {
             name: 'rule',
-            label: '规则',
+            label: this.$t('page.rule'),
             type: 'textarea',
             tooltip: this.ruleTooltips,
             maxlength: 1000,

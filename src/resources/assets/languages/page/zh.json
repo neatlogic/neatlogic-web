@@ -474,5 +474,9 @@
   "mousedragsort": "鼠标拖动排序",
   "usertype": "用户类型",
   "teamtype": "组类型",
-  "roletype": "角色类型"
+  "roletype": "角色类型",
+  "defaultaccount": "默认账号",
+  "assets": "资产",
+  "hide": "隐藏",
+  "sourcecategory": "来源类目"
 }

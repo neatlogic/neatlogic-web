@@ -54,7 +54,7 @@
             <template v-if="currentDataList.length>0">
               <TsRow :gutter="10">
                 <Col :span="24">
-                  <div class="text-href clear-btn" @click="clearAll">{{ $t('common.clear') }}</div>
+                  <div class="text-href clear-btn" @click="clearAll">{{ $t('page.clear') }}</div>
                 </Col>
                 <Col v-for="(data,index) in showDataList(currentDataList)" :key="index" :span="8">
                   <div class="item-span bg-op border-color">
