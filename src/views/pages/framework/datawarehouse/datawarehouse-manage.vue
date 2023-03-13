@@ -233,7 +233,7 @@ export default {
     },
     deleteReportDataSource(row) {
       this.$createDialog({
-        title: '删除警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除当前数据源？',
         btnType: 'error',
         'on-ok': vnode => {

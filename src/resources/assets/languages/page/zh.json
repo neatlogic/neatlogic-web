@@ -120,8 +120,8 @@
   "advancesearch": "高级搜索",
   "saved": "{target}已保存",
   "basesetting": "基本信息",
-  "email": "电子邮箱",
-  "phone": "联系方式",
+  "email": "邮箱",
+  "phone": "电话",
   "width": "宽度",
   "height": "高度",
   "top": "顶部",
@@ -476,5 +476,7 @@
   "defaultaccount": "默认账号",
   "assets": "资产",
   "hide": "隐藏",
-  "sourcecategory": "来源类目"
+  "sourcecategory": "来源类目",
+  "member": "成员",
+  "hierarchy": "层级"
 }

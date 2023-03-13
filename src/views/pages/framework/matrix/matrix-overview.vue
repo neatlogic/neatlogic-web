@@ -111,7 +111,7 @@
                     :class="{ disable: row.referenceCount > 0 || row.type==='private' }"
                     :title="row.type==='private'? '当前矩阵为私有数据源，无法删除' : row.referenceCount > 0 ? '当前矩阵被引用，无法删除' : ''"
                     @click.stop="delMatrix(row)"
-                  >删除</li>
+                  >{{ $t('page.delete') }}</li>
                   <li v-if="row.type === 'custom'">
                     <Dropdown trigger="click" transfer>
                       <span class="padding-text tsfont-option-horizontal hover-color"></span>
@@ -731,7 +731,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该矩阵：' + row.name + '?',
         btnType: 'error',
         'on-ok': vnode => {
@@ -791,7 +791,7 @@ export default {
           .then(res => {
             if (res.Status == 'OK') {
               this.searchMatrix();
-              this.$Message.success('复制成功');
+              this.$Message.success(this.$t('message.content.copysuccess'));
               this.atrixFormDialog = false;
             }
           })
@@ -888,7 +888,7 @@ export default {
     //导入矩阵成功
     uploadSuccess: function(res, file) {
       if ((file.response.Status = 'OK')) {
-        this.$Message.success('导入成功');
+        this.$Message.success(this.$t('message.content.importsuccess'));
         this.getMatrixList();
       }
     },
@@ -966,7 +966,7 @@ export default {
     refreshIntegrationUuidList() {
       this.addAtrixForm.integrationUuid.dynamicUrl = '/api/rest/integration/search?refuuid=' + this.$utils.setUuid();
       this.$nextTick(() => {
-        this.$Message.success('刷新成功');
+        this.$Message.success(this.$t('message.content.refreshsuccess'));
       });
     },
     addIntegration() {

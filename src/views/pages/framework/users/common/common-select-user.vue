@@ -52,7 +52,7 @@ export default {
       selectTreeSetting: {
         name: 'uuid',
         value: '',
-        placeholder: '请选择用户组',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.userteam')}),
         search: true,
         multiple: false,
         width: '100%',

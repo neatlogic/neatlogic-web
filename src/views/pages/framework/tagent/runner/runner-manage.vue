@@ -58,7 +58,7 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="tsfont-trash-o" @click="delRunner(row)">删除</li>
+                  <li class="tsfont-trash-o" @click="delRunner(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>
             </template>

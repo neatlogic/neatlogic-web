@@ -346,7 +346,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该策略：' + obj.name + '?',
         btnType: 'error',
         'on-ok': vnode => {
@@ -355,7 +355,7 @@ export default {
           };
           this.$api.framework.tactics.delNotify(data).then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('刪除成功');
+              this.$Message.success(this.$t('message.content.deletesuccess'));
               vnode.isShow = false;
               this.search(1);
             }
@@ -375,7 +375,7 @@ export default {
           };
           this.$api.framework.tactics.copyNotify(data).then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('复制成功');
+              this.$Message.success(this.$t('message.content.copysuccess'));
               this.tacticsDialog = false;
               this.search(1);
             }

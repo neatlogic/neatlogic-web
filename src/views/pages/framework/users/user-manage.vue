@@ -71,7 +71,7 @@
                     ></i-switch>
                     <span class="actionText" v-html="row.isActive == 1 ? $t('page.enable') : $t('page.disable')"></span>
                   </li>
-                  <!-- <li class="tsfont-edit" @click="authDialog(row);getAuthSelect(row)">授权</li> -->
+                  <!-- <li class="tsfont-edit" @click="authDialog(row);getAuthSelect(row)">{{ $t('page.auth') }}</li> -->
                   <li class="tsfont-edit icon" @click.stop="editUser(row, 'user')">{{ $t('button.edit') }}</li>
                   <li class="ts-permission icon" @click.stop="editUser(row, 'auth')">{{ $t('button.accredit') }}</li>
                   <li class="tsfont-trash-o icon" @click.stop="deleteData(row)">{{ $t('button.delete') }}</li>
@@ -87,30 +87,6 @@
         </div>-->
       </div>
     </TsContain>
-    <TsDialog
-      v-if="showEdit"
-      type="modal"
-      :isShow.sync="showEdit"
-      width="small"
-    >
-      <template v-slot:header>
-        <div>{{ modelTitle }}</div>
-      </template>
-      <template v-slot>
-        <div>
-          <TsForm ref="userForm" :itemList="formData" :labelWidth="80"></TsForm>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="drawer-footer">
-          <div class="footer-left">
-            <Checkbox v-model="isImmediately">{{ $t('term.framework.roleauth') }}</Checkbox>
-          </div>
-          <Button style="margin-left: 8px" @click="showEdit = false">{{ $t('button.cancel') }}</Button>
-          <Button type="primary" @click="submitAdduser()">{{ $t('button.save') }}</Button>
-        </div>
-      </template>
-    </TsDialog>
     <TsDialog
       v-if="showAuth"
       type="modal"
@@ -149,7 +125,6 @@ export default {
   name: 'UserManage',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     CommonAuth: resolve => require(['./common/common-auth.vue'], resolve)
@@ -203,7 +178,6 @@ export default {
       tabledata: null, //table的正文数据
       select: null, //选中哪些
       vipLevel: null, //VIP等级
-      showEdit: false, //为true时弹窗打开、false弹窗关闭
       formSetting: [], //弹窗表单对应的数组
       isImmediately: true, //立即授权
       isBatch: false, //是否批量授权
@@ -334,7 +308,7 @@ export default {
       let param = {
         userUuidList: userUuidList
       };
-      let content = userUuidList.length > 1 ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row.map(r => { return r.userName; }).join('、')}) : key ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row[0].userName}) : this.$t('dialog.content.deleteconfirm', this.$t('page.user') + '：' + row.userName);
+      let content = userUuidList.length > 1 ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row.map(r => { return r.userName; }).join('、')}) : key ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row[0].userName}) : this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row.userName});
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: content,
@@ -350,52 +324,9 @@ export default {
                 this.select = [];
                 this.getTable();
               }
-            })
-            .catch(error => { 
-              this.$Message.error('删除失败');
             });
         }
       });
-    },
-    submitAdduser: function() {
-      let data = this.$refs.userForm.getFormValue();
-      this.userKey = true;
-      if (!this.$refs.userForm.valid()) {
-        return;
-      }
-      if (data.password !== data.confirmpwd) {
-        this.$Notice.error({
-          title: '两次密码前后输入不一致',
-          duration: 1.5
-        });
-        return;
-      }
-      if (this.user && this.user.userId != undefined) {
-        this.userKey = true;
-      } else {
-        this.allUserList.forEach(item => {
-          if (item.userId == data.userId) {
-            this.$Message.error('不能输入相同用户ID');
-            this.userKey = false;
-          }
-        });
-      }
-      if (this.userKey) {
-        data.password = '{MD5}' + this.$md5(data.password);
-        delete data.confirmpwd;
-        this.$api.framework.user
-          .saveUser(data)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.content.savesuccess'));
-              this.showEdit = false;
-              this.initTable();
-            }
-          })
-          .catch(error => {
-            this.$Notice.error({ title: error.data.Message });
-          });
-      }
     },
     //获取用户组下拉列表
     getUserList: function() {
@@ -528,7 +459,7 @@ export default {
           .saveAuth(data)
           .then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('授权成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               this.showAuth = false;
               this.initTable();
             }
@@ -601,11 +532,6 @@ export default {
   },
   computed: {},
   watch: {
-    showEdit: function() {
-      if (this.showEdit == false) {
-        this.$refs.userForm.clearForm();
-      }
-    }
     // $route: {
     //   handler: function(val) {
     //     if (val) {

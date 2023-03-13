@@ -350,7 +350,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             if (type && type == 'refresh') {
-              this.$Message.success('刷新成功');
+              this.$Message.success(this.$t('message.content.refreshsuccess'));
             }
             let template = res.Return.templateList || [];
             this.actionList.forEach(a => {

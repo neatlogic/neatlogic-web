@@ -22,7 +22,7 @@
             <div class="div-btn-contain action-group">
               <span class="action-item ts-eye " @click="getPreviewConfig('notify')">预览</span>
               <span class="action-item ts-save" @click="saveFormJob()">保存</span>
-              <span class="action-item tsfont-trash-o" :class="{ 'text-grey text-disabled': !jobConfig.id }" @click="delJop">删除</span>
+              <span class="action-item tsfont-trash-o" :class="{ 'text-grey text-disabled': !jobConfig.id }" @click="delJop">{{ $t('page.delete') }}</span>
             </div>
           </Col>
         </Row>
@@ -340,7 +340,7 @@ export default {
     delJop() {
       if (!this.jobConfig.id) return;
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该定时任务？',
         btnType: 'error',
         'on-ok': vnode => {

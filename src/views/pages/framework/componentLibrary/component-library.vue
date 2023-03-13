@@ -54,7 +54,7 @@
                 </Col>
                 <Col span="7" class="action">
                   <ul class="action-group">
-                    <li class="tsfont-edit action-item" @click="edit()">编辑</li>
+                    <li class="tsfont-edit action-item" @click="edit()">{{ $t('page.edit') }}</li>
                     <li class="action-item">
                       <Dropdown transfer trigger="click">
                         引用列表
@@ -65,7 +65,7 @@
                         </DropdownMenu>
                       </Dropdown>
                     </li>
-                    <li class="tsfont-trash-o action-item" @click="edit()">删除</li>
+                    <li class="tsfont-trash-o action-item" @click="edit()">{{ $t('page.delete') }}</li>
 
                   </ul>
                 </Col>

@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       groupConfig: {
-        placeholder: '请选择分组',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.group')}),
         url: 'api/rest/groupsearch/list',
         multiple: true,
         border: 'border',

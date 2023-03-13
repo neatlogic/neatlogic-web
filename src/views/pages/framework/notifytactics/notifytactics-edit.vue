@@ -455,7 +455,7 @@ export default {
         };
         this.$api.framework.tactics.cleanHandlerNotify(data).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('清除成功');
+            this.$Message.success(this.$t('message.content.deletesuccess'));
             this.getTacticsData();
           }
         });
@@ -468,7 +468,7 @@ export default {
         };
         this.$api.framework.tactics.delTriggerConfig(data).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('刪除成功');
+            this.$Message.success(this.$t('message.content.deletesuccess'));
             this.getTacticsData();
           }
         });

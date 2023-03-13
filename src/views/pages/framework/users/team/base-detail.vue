@@ -75,8 +75,8 @@ export default {
         },
         level: {
           type: 'select',
-          label: '层级',
-          placeholder: '请选择层级',
+          label: this.$t('page.hierarchy'),
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.hierarchy')}),
           search: true,
           multiple: false,
           url: '/api/rest/team/level/list',

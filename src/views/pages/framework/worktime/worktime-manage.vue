@@ -44,9 +44,9 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">编辑</li> -->
+                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
                 <li class="ts-calendar icon" @click="editCalendar(row.uuid, row.name)">排班</li>
-                <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">删除</li>
+                <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -558,7 +558,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该工作时间窗口：' + name + '?',
         btnType: 'error',
         'on-ok': vnode => {

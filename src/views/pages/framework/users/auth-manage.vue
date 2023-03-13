@@ -35,7 +35,7 @@
                   权限描述
                 </Col>
                 <Col span="2">
-                  用户数量
+                  {{ $t('term.framework.usercount') }}
                 </Col>
                 <Col span="2">
                   角色数量
@@ -75,7 +75,7 @@
                   </Poptip>
                 </Col>
                 <Col span="2">
-                  <li class="ts-user count text-left" title="用户数量">
+                  <li class="ts-user count text-left" :title="$t('term.framework.usercount')">
                     <span>{{ item.userCount }}</span>
                   </li>
                 </Col>
@@ -86,7 +86,7 @@
                 </Col>
                 <Col span="2" class="action">
                   <ul class="tstable-action-ul">
-                    <li class="ts-permission text-action" @click="adduser(item.name)">授权</li>
+                    <li class="ts-permission text-action" @click="adduser(item.name)">{{ $t('page.auth') }}</li>
                   </ul>
                 </Col>
               </TsRow>

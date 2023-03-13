@@ -5,7 +5,7 @@
         <div v-if="children.tbodyList && children.tbodyList.length > 0">
           <div class="card-top text-grey">
             <span class="name">用户组名称</span>
-            <span class="num">用户数量</span>
+            <span class="num">{{ $t('term.framework.usercount') }}</span>
           </div>
           <!-- start搜索时 -->
           <template v-if="search">

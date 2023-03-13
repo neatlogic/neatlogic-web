@@ -16,7 +16,7 @@
               <span class="action-item" :class="isSelectAll?'ts-check-square-o':'ts-minus-square'" @click="allSelect">
                 {{ isSelectAll ? '全选' : '取消全选' }}
               </span>
-              <span class="action-item tsfont-trash-o" @click="batchDel">批量删除</span>
+              <span class="action-item tsfont-trash-o" @click="batchDel">{{ $t('page.batchdelete') }}</span>
             </template>
           </div>
           <InputSearcher
@@ -355,7 +355,7 @@ export default {
       item.name = item.text || item.name;
       if (this.authName) {
         this.$createDialog({
-          title: '警告',
+          title: this.$t('dialog.title.deleteconfirm'),
           content: '确定删除：' + item.name + '?',
           btnType: 'error',
           'on-ok': async vnode => {
@@ -470,7 +470,7 @@ export default {
       if (arrB.length > 0) {
         if (this.authName) {
           this.$createDialog({
-            title: '警告',
+            title: this.$t('dialog.title.deleteconfirm'),
             content: '确定删除选中目标？',
             btnType: 'error',
             'on-ok': async vnode => {
@@ -491,7 +491,7 @@ export default {
                 });
                 _this.batchCancle();
                 _this.$emit('deleteOk');
-                _this.$Message.success('批量删除成功');
+                _this.$Message.success(this.$t('message.content.deletesuccess'));
                 vnode.isShow = false;
               }
             },

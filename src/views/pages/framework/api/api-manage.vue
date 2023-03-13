@@ -70,11 +70,11 @@
                 <li class="tsfont-test" @click="testApi(row)">测试</li>
                 <li class="tsfont-question-o" @click="showApiHelp(row)">帮助</li>
                 <li v-if="row.needAudit" class="ts-page" @click="showCallRecord(row)">调用记录</li>
-                <!-- <li class="tsfont-edit icon" @click="">编辑</li> -->
+                <!-- <li class="tsfont-edit icon" @click="">{{ $t('page.edit') }}</li> -->
                 <li v-if="!row.isPrivate" class="ts-chain icon" @click="showApiForm(row, 'copy')">
                   复制
                 </li>
-                <li v-if="row.isDeletable == 1" class="tsfont-trash-o icon" @click="showApiForm(row, 'delete')">删除</li>
+                <li v-if="row.isDeletable == 1" class="tsfont-trash-o icon" @click="showApiForm(row, 'delete')">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>

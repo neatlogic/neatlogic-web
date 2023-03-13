@@ -345,7 +345,7 @@ export default {
             if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
               this.submitModel = true;
             } else {
-              this.$Message.success('创建角色成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
               let value = data.value;
               switch (value) {
@@ -411,7 +411,7 @@ export default {
         };
         await this.$api.common.saveRoleAuth(data).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('授权成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.roleTabsAuthList = JSON.parse(JSON.stringify(this.$refs.commonAuth.authSelectList));
             this.roleData = this.getData();
             this.defaultAuthUserSelectList = this.$utils.deepClone(authList); // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据

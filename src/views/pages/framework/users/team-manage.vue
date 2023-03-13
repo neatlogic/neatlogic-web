@@ -4,7 +4,7 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group toolbar-right">
-          <span class="action-item tsfont-plus" @click="editTeam(true, 'teamTabs')">分组</span>
+          <span class="action-item tsfont-plus" @click="editTeam(true, 'teamTabs')">{{ $t('page.group') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -26,9 +26,9 @@
         <div class="card-wrapper">
           <div v-if="(!search && children.tbodyList && children.tbodyList.length > 0 ) || (search && searchList.length > 0)">
             <div class="card-top text-grey">
-              <div class="title-block">分组名称</div>
-              <div class="cuont-block">用户数量</div>
-              <div class="btn-list title">操作</div>
+              <div class="title-block">{{ $t('term.framework.teamname') }}</div>
+              <div class="cuont-block">{{ $t('term.framework.usercount') }}</div>
+              <div class="btn-list title">{{ $t('page.action') }}</div>
             </div>
             <!-- start搜索时 -->
             <template v-if="search">
@@ -91,7 +91,7 @@ export default {
       },
       selectTreeSetting: {
         name: 'uuid',
-        placeholder: '请选择分组',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.group')}),
         search: true,
         multiple: false,
         width: '100%',

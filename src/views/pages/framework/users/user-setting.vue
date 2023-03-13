@@ -506,11 +506,8 @@ export default {
         .saveProfile(data)
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('操作成功！');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
-        })
-        .catch(error => {
-          this.$Message.error('操作失败！');
         });
     }
   },

@@ -43,8 +43,8 @@
                   ></i-switch>
                   <span class="actionText" v-html="row.isActive == 1 ? '启用' : '禁用'"></span>
                 </li>
-                <li class="tsfont-edit icon" @click="editRow(row.uuid)">编辑</li>
-                <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">删除</li>
+                <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -283,7 +283,7 @@ export default {
     },
     deleteRow(uuid, name) {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该邮件服务器：' + name + '?',
         btnType: 'error',
         'on-ok': vnode => {

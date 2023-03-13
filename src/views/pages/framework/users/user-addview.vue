@@ -26,7 +26,7 @@
               >创建用户</Button>
             </div>
             <div v-else>
-              <Button v-if="readonly" type="primary" @click="readonly = false">编辑</Button>
+              <Button v-if="readonly" type="primary" @click="readonly = false">{{ $t('page.edit') }}</Button>
               <Button v-else type="primary" @click="editSave()">保存</Button>
             </div>
           </div>
@@ -523,7 +523,7 @@ export default {
             if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
               this.submitModel = true;
             } else {
-              this.$Message.success('创建用户成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
               if (data) {
                 let value = data.value;
@@ -586,7 +586,7 @@ export default {
           .saveAuth(data)
           .then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('授权成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               this.userTabsAuthList = this.$refs.commonAuth ? this.$utils.deepClone(this.$refs.commonAuth.authSelectList) : null;
               this.userData = this.getData();
               this.defaultAuthUserSelectList = this.$utils.deepClone(authList); // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据

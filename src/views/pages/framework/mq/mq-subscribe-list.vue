@@ -99,7 +99,7 @@ export default {
     },
     deleteSubscribe(sub) {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除订阅：' + sub.name + '？',
         btnType: 'error',
         'on-ok': vnode => {

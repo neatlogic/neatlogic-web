@@ -263,7 +263,7 @@ export default {
           .test(data)
           .then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('发送测试邮件成功');
+              this.$Message.success(this.$t('message.content.refreshsuccess'));
             }
             this.disabledTest = false;
           })

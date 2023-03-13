@@ -176,7 +176,7 @@ export default {
             this.delProperty(list);
             ThemeUtils.resetTheme();
             mutations.setLogo('');
-            this.$Message.success('还原成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
         });
       }

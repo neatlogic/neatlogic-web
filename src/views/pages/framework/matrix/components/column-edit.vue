@@ -160,7 +160,7 @@ export default {
           width: '100%',
           url: '/api/rest/universal/enum/get?enumClass=neatlogic.framework.matrix.constvalue.MatrixAttributeType',
           transfer: true,
-          validateList: [{ name: 'required', message: '请选择类型' }, { name: 'name-special' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }, { name: 'name-special' }],
           onChange() {
             _this.dataList = [{ value: '', text: '' }];
           }

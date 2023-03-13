@@ -407,7 +407,7 @@ export default {
           if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
             this.submitModel = true;
           } else {
-            this.$Message.success('创建成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
             let value = data.value;
             switch (value) {

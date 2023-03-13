@@ -96,7 +96,7 @@ export default {
           isShowButton: true
         }, 
         customStatusList: {
-          text: this.$t('page.process.nodestatus'),
+          text: this.$t('term.process.nodestatus'),
           dataList: [],
           isShowButton: true
         }, 

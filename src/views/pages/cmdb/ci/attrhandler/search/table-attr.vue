@@ -24,7 +24,6 @@ export default {
       validateList: [],
       searchConfig: {
         border: 'border',
-        placeholder: '请选择',
         multiple: true,
         search: true,
         width: '100%',

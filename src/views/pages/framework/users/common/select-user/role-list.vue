@@ -46,15 +46,15 @@ export default {
           align: 'center'
         },
         {
-          title: '角色名称',
+          title: this.$t('term.framework.rolename'),
           key: 'name'
         },
         {
-          title: '角色描述',
+          title: this.$t('term.framework.roledesc'),
           key: 'description'
         },
         {
-          title: '用户数量',
+          title: this.$t('term.framework.usercount'),
           key: 'userCount'
         }
       ],

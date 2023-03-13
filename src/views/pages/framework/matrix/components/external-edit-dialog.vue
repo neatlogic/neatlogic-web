@@ -154,7 +154,7 @@ export default {
           if (res.Status == 'OK') {
             this.integrationUuidList = res.Return.tbodyList.filter(item => item.isActive);
             if (isClick) {
-              this.$Message.success('刷新成功');
+              this.$Message.success(this.$t('message.content.refreshsuccess'));
             }
           }
         });

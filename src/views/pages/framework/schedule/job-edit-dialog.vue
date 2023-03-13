@@ -41,7 +41,7 @@
                     <li
                       class="tsfont-trash-o"
                       @click="deleteProp(row)"
-                    >删除</li>
+                    >{{ $t('page.delete') }}</li>
                   </ul>
                 </div>
               </template>-->

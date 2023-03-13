@@ -115,7 +115,7 @@ export default {
                 }
               });
               if (!hasError) {
-                this.$Message.success('导入成功');
+                this.$Message.success(this.$t('message.content.importsuccess'));
                 this.close();
               }
             }
