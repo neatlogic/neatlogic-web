@@ -27,8 +27,8 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="importCi()">导入</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="importCi()">{{ $t('page.import') }}</Button>
       </template>
     </TsDialog>
     <IconDialog
@@ -55,7 +55,7 @@ export default {
       isIconDialogShow: false,
       ciData: { icon: 'tsfont-ci-o', name: '', label: '', file: null },
       dialogConfig: {
-        title: '导入模型',
+        title: this.$t('term.cmdb.importci'),
         type: 'modal',
         isShow: true,
         maskClose: false,
@@ -65,12 +65,12 @@ export default {
         {
           name: 'icon',
           type: 'slot',
-          label: '模型图标'
+          label: this.$t('page.icon')
         },
         {
           name: 'typeId',
           type: 'select',
-          label: '类型',
+          label: this.$t('page.type'),
           width: '100%',
           maxlength: 50,
           url: '/api/rest/cmdb/ci/citype/search',
@@ -84,9 +84,9 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '唯一标识',
+          label: this.$t('page.uniquekey'),
           width: '100%',
-          desc: '保存后不能修改',
+          desc: this.$t('message.content.cmdb.noedit'),
           maxlength: 25,
           validateList: ['required', 'key-special'],
           onChange: (name) => {
@@ -97,14 +97,14 @@ export default {
           name: 'label',
           type: 'text',
           width: '100%',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required'],
           onChange: (name) => {
             this.$set(this.ciData, 'label', name);
           }
         },
-        { type: 'slot', name: 'file', label: '模型文件' }
+        { type: 'slot', name: 'file', label: this.$t('term.cmdb.cifile') }
       ]
     };
   },
@@ -131,12 +131,12 @@ export default {
     importCi() {
       this.upload('/api/binary/cmdb/ci/import', this.ciData, {},
         res => {
-          this.$Message.success('导入成功');
+          this.$Message.success(this.$t('message.content.importsuccess'));
           this.close(true);
         },
         error => {
           this.$Notice.error({
-            title: '导入失败',
+            title: this.$t('message.content.importfailed'),
             desc: error.Message
           });
         });
@@ -165,7 +165,6 @@ export default {
     font-size: 20px;
   }
   &::after {
-    content: '更换';
     left: 44px;
     width: 40px;
     position: absolute;

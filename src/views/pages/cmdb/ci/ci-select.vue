@@ -2,14 +2,13 @@
   <div>
     <TsDialog :is-show="isShow" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>选择模型</div>
+        <div>{{ $t('term.cmdb.chooseci') }}</div>
       </template>
       <template v-slot>
         <div class="padding" style="padding-top:0px">
           <TsFormInput
             border="bottom"
             :search="true"
-            placeholder="请输入关键字"
             @on-change="searchCi"
           ></TsFormInput>
         </div>
@@ -29,14 +28,13 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
-import TsUlList from '@/resources/components/TsUlList/TsUlList.vue';
 export default {
   name: '',
   components: {
@@ -92,10 +90,10 @@ export default {
       this.selectedCi = ci;
     },
     save: function() {
-      if (this.selectedCi) {
+      if (!this.$utils.isEmpty(this.selectedCi)) {
         this.close(this.selectedCi);
       } else {
-        this.$Message.info('请选择关联模型');
+        this.$Message.info(this.$t('message.content.cmdb.selectci'));
       }
     }
   },

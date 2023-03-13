@@ -38,7 +38,7 @@
       @scroll.stop="scroll"
     >
       <slot v-if="!$slots.sider && !$slots.left && !$slots.right" name="content"></slot>
-      <Layout v-else-if="!isDrag">
+      <Layout v-else-if="!isDrag" :style="{ height: '100%' }">
         <Sider
           v-if="$slots.sider"
           v-model="siderHide"
