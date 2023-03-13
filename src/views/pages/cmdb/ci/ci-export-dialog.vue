@@ -7,8 +7,8 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="exportCi()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="exportCi()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -26,7 +26,7 @@ export default {
     const _this = this;
     return {
       dialogConfig: {
-        title: '导出模型',
+        title: this.$t('term.cmdb.exportci'),
         type: 'modal',
         isShow: true,
         maskClose: false,
@@ -37,7 +37,7 @@ export default {
         {
           name: '',
           type: 'tree',
-          label: '模型',
+          label: this.$t('page.model'),
           width: '100%',
           url: 'api/rest/cmdb/ci/listtree',
           params: {},

@@ -10,7 +10,7 @@
         >
           <div v-if="legalValidList && legalValidList.length > 0" slot="left">
             <div class="legalValid">
-              <div :class="!id ? 'text-primary' : ''" @click="editLegalValid()">新建规则</div>
+              <div :class="!id ? 'text-primary' : ''" @click="editLegalValid()">{{ $t('term.cmdb.newrule') }}</div>
               <div
                 v-for="legalValid in legalValidList"
                 :key="legalValid.id"
@@ -41,7 +41,7 @@
               <template v-slot:rule>
                 <div class="edit-condition">
                   <div>
-                    <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup">规则组合</a></span>
+                    <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup">{{ $t('term.cmdb.rulegroup') }}</a></span>
                   </div>
                   <div v-for="(conditionGroup, groupIndex) in legalValidData.rule.conditionGroupList" :key="groupIndex" class="group-border">
                     <div class="group-content bg-op radius-md group-content-position">
@@ -66,7 +66,7 @@
                                 "
                               >
                                 <template v-slot:option="{ item }">
-                                  <span class="text-grey">{{ item.type == 'attr' ? '属性' : '关系' }}·</span>
+                                  <span class="text-grey">{{ item.type == 'attr' ? $t('page.attribute') : $t('page.relation') }}·</span>
                                   <span>{{ item.label }}</span>
                                   <span class="text-grey">({{ item.name }})</span>
                                 </template>
@@ -172,8 +172,8 @@
         </TsContain>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -210,15 +210,15 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'large',
-        title: '合规检查设置'
+        title: this.$t('term.cmdb.legalcheckconfig')
       },
       joinTypeList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ],
@@ -227,7 +227,7 @@ export default {
         name: {
           type: 'text',
           maxlength: 30,
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: ['required'],
           onChange: value => {
             this.legalValidData.name = value;
@@ -235,7 +235,7 @@ export default {
         },
         type: {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           url: 'api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.cmdb.enums.legalvalid.LegalValidType' },
           onChange: value => {
@@ -246,14 +246,14 @@ export default {
               this.formConfig.rule.isHidden = false;
             }
           },
-          desc: '模型规则：不满足模型属性和关系的相关约束的配置项则视为不合规；自定义规则：满足自定义规则的配置项视为不合规。'
+          desc: this.$t('form.help.legalrule')
         },
         isActive: {
           type: 'radio',
-          label: '激活',
+          label: this.$t('page.enable'),
           dataList: [
-            { value: 1, text: '是' },
-            { value: 0, text: '否' }
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
           ],
           validateList: ['required'],
           onChange: value => {
@@ -262,11 +262,11 @@ export default {
         },
         cron: {
           type: 'slot',
-          label: '定时'
+          label: this.$t('page.timer')
         },
         rule: {
           type: 'slot',
-          label: '规则',
+          label: this.$t('page.rule'),
           isHidden: true
         }
       }
@@ -301,8 +301,8 @@ export default {
     },
     delLegalValid(row) {
       this.$createDialog({
-        title: '警告',
-        content: '确定删除规则：' + row.name + '？',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.legalvalid.deleteLegalValid(row.id).then(res => {

@@ -168,7 +168,7 @@ export default {
         } catch (e) {
           const toponame = this.layoutList.find(layout => layout.engine == this.currentLayout);
           if (toponame) {
-            this.error = '当前模型数据无法使用' + toponame.name + '生成拓扑图，请换一种布局。';
+            this.error = this.$t('message.content.cmdb.topoerror', {target: toponame.name});
           }
         }
         this.isloading = false;
