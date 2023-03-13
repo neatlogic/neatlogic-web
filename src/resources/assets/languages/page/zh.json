@@ -478,5 +478,6 @@
   "hide": "隐藏",
   "sourcecategory": "来源类目",
   "member": "成员",
-  "hierarchy": "层级"
+  "hierarchy": "层级",
+  "timequantum":"时间段"
 }

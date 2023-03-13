@@ -202,8 +202,8 @@ export default {
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 1, text: '启用' },
-            { value: 0, text: '禁用' }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ]
         },
         needAudit: {

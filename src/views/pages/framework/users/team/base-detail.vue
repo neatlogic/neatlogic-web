@@ -11,7 +11,7 @@
                 <span class="text-tip">{{ data.title }}</span>
                 <div class="div-btn">
                   <span class="tsfont-edit text-tip-active ml-md" title="编辑" @click="editUserTitle(data,index)"></span>
-                  <span class="tsfont-trash-o text-tip-active ml-md" title="删除" @click="removeUserTitle(index,data)"></span>
+                  <span class="tsfont-trash-o text-tip-active ml-md" :title="$t('page.delete')" @click="removeUserTitle(index,data)"></span>
                 </div>
               </div>
               <div v-if="data.userList && data.userList.length > 0" class="div-content">

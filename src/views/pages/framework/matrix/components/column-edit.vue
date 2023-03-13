@@ -101,7 +101,7 @@
                     <span
                       v-if="dataList.length > 1"
                       class="tsfont-minus-o span-btn btn-remove"
-                      title="删除"
+                      :title="$t('page.delete')"
                       @click="removeOption(index)"
                     ></span>
                     <span v-if="dataList.length > 1" class="ts-bars span-btn btn-move" title="移动"></span>

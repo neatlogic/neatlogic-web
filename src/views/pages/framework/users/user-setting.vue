@@ -181,7 +181,7 @@ export default {
           key: 'text'
         },
         {
-          title: '禁用/启用',
+          title: this.$t('page.disable') + '/' + this.$t('page.enable'),
           key: 'checked'
         },
         {

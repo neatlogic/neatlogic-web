@@ -44,7 +44,7 @@
           @changePageSize="pageSize => getTableConfig({ pageSize })"
         >
           <template v-slot:isActive="{ row }">
-            <div>{{ row.isActive == 1 ? '启用' : '禁用' }}</div>
+            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
           </template>
           <template v-slot:needAudit="{ row }">
             <i-switch

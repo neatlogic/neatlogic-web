@@ -37,8 +37,8 @@
           @changePageSize="changePageSize"
         >
           <template slot="isActive" slot-scope="{ row }">
-            <span v-if="row.isActive == 1" class="text-success">启用</span>
-            <span v-else class="text-grey">禁用</span>
+            <span v-if="row.isActive == 1" class="text-success">{{ $t('page.enable') }}</span>
+            <span v-else class="text-grey">{{ $t('page.disable') }}</span>
           </template>
           <template slot="needAudit" slot-scope="{ row }">
             <span v-if="row.needAudit == 1" class="text-success">是</span>

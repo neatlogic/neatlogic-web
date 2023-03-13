@@ -63,7 +63,7 @@
                   </div>
                   <div v-show="row.isEditable" class="operation text-tip bg-block" :class="row.isDel?'block':''">
                     <i class="tsfont-edit" title="编辑" @click.stop="editSetting(row)"></i>
-                    <i class="tsfont-trash-s" title="删除" @click="delSetting(row)"></i>
+                    <i class="tsfont-trash-s" :title="$t('page.delete')" @click="delSetting(row)"></i>
                   </div>
                   <DelItme
                     v-if="row.isDel"
