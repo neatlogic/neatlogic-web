@@ -14,6 +14,7 @@
     "addtarget": "添加{target}",
     "edittarget": "编辑{target}",
     "deletetarget": "删除{target}",
+    "choosetarget": "选择{target}",
     "logsavedeadline": "日志保存期限",
     "rollbacktarget": "回退{target}",
     "versioncomparison": "版本对比",

@@ -1,14 +1,6 @@
 <template>
   <div>
-    <TsDialog
-      v-if="ciTypeData"
-      v-bind="ciTypeDialogConfig"
-      @on-close="close"
-    >
-      <template v-slot:header>
-        <div v-if="ciTypeData.id">编辑类型</div>
-        <div v-if="!ciTypeData.id">添加类型</div>
-      </template>
+    <TsDialog v-if="ciTypeData" v-bind="ciTypeDialogConfig" @on-close="close">
       <template v-slot>
         <TsForm ref="ciTypeForm" :item-list="ciTypeFormConfig">
           <template v-slot:isMenu>
@@ -16,7 +8,7 @@
               <i-switch v-model="ciTypeData.isMenu" :true-value="1" :false-value="0"></i-switch>
               <!-- <span class="actionText" v-html="ciTypeData.isMenu == 1 ? '是' : '否'"></span> -->
               <div class="text-grey">
-                关键类型会显示在最左侧菜单中
+                {{ $t('message.content.cmdb.keytype') }}
               </div>
             </div>
           </template>
@@ -24,15 +16,15 @@
             <div>
               <i-switch v-model="ciTypeData.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
               <div class="text-grey">
-                开启后此类型才会在拓扑图中显示
+                {{ $t('message.content.cmdb.topotype') }}
               </div>
             </div>
           </template>
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="saveCiType()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="saveCiType()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -45,14 +37,15 @@ export default {
   components: {
     TsForm
   },
-  props: { 
+  props: {
     id: {type: Number},
     isShow: {type: Boolean}
   },
   data() {
     const _this = this;
-    return { 
+    return {
       ciTypeDialogConfig: {
+        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.type')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.type')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -68,7 +61,7 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 30,
           validateList: ['required'],
           width: '100%',
@@ -79,12 +72,12 @@ export default {
         {
           name: 'isMenu',
           type: 'slot',
-          label: '关键类型'
+          label: this.$t('term.cmdb.keytype')
         },
         {
           name: 'isShowInTopo',
           type: 'slot',
-          label: '是否在拓扑显示'
+          label: this.$t('term.cmdb.isshowintopo')
         }
       ]
     };
@@ -134,7 +127,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: { 
+  watch: {
     isShow: {
       handler: function(val) {
         if (val) {
@@ -145,5 +138,4 @@ export default {
   }
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
