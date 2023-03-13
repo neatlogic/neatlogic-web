@@ -274,40 +274,6 @@ export default {
     getSelect(li, selection) {
       this.select = selection;
     },
-    editList(row) {
-      this.showEdit = true;
-      let obj_name = this.formData.find(d => d.name === 'userId');
-      let psd = this.formData.find(d => d.name === 'password');
-      let newpwd = this.formData.find(d => d.name === 'confirmpwd');
-      if (row) {
-        this.modelTitle = '编辑用户';
-        this.user = row;
-        for (let r in row) {
-          this.formData.forEach(item => {
-            if (item.name == r) {
-              item.value = row[r];
-            }
-          });
-        }
-        obj_name.disabled = true;
-        psd.validateList = [
-          {
-            name: 'passcode',
-            message: '请输入长度在8~20之间的字符串，至少有字母、数字、特殊字符其中2种组合'
-          }
-        ];
-        newpwd.validateList = [
-          {
-            name: 'passcode',
-            message: '请输入长度在8~20之间的字符串，至少有字母、数字、特殊字符其中2种组合'
-          }
-        ];
-      } else {
-        this.modelTitle = '添加用户';
-        obj_name.disabled = false;
-        this.user = {};
-      }
-    },
     //启用禁用
     activeData(row) {
       let uuid = [];
@@ -345,7 +311,7 @@ export default {
         .updateActive(data)
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('批量操作成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.$refs.userTable.selectAll(false);
             this.initTable();
           }
@@ -368,9 +334,9 @@ export default {
       let param = {
         userUuidList: userUuidList
       };
-      let content = userUuidList.length > 1 ? '确定删除以下' + userUuidList.length + '个用户：</br>' + row.map(r => { return r.userName; }).join('、') + '?' : key ? '确定删除该用户：' + row[0].userName + '?' : '确定删除该用户：' + row.userName + '?';
+      let content = userUuidList.length > 1 ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row.map(r => { return r.userName; }).join('、')}) : key ? this.$t('dialog.content.deleteconfirm', {target: this.$t('page.user') + '：' + row[0].userName}) : this.$t('dialog.content.deleteconfirm', this.$t('page.user') + '：' + row.userName);
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: content,
         btnType: 'error',
         'on-ok': vnode => {
