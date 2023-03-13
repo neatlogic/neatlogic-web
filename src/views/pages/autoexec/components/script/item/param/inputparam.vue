@@ -241,7 +241,11 @@ export default {
         switch: 'tsfont-canvas' //开关
       },
       isEditRuntimeParam: true,
-      typeList: ['text', 'date', 'time', 'datetime', 'select', 'radio', 'textarea', 'phase', 'password'] //如果自定义工具或工具库的参数类型是是【文本】类型，以下控件类型的作业参数、全局参数均可被引用：文本、日期、时间、时间日期、单选下拉、单选、文本域、阶段、密码
+      paramTypeConfig: { //参数类型引用规则
+        text: ['text', 'date', 'time', 'datetime', 'select', 'radio', 'textarea', 'phase', 'password'], //如果自定义工具或工具库的参数类型是是【文本】类型，以下控件类型的作业参数、全局参数均可被引用：文本、日期、时间、时间日期、单选下拉、单选、文本域、阶段、密码
+        textarea: ['text', 'textarea'],
+        json: ['json', 'node']
+      }
     };
   },
   beforeCreate() {},
@@ -450,8 +454,9 @@ export default {
             li = list;
           } else {
             li = list.filter(l => {
-              if (type == 'textarea') {
-                return l.type == 'text' || l.type == 'textarea';
+              if (this.paramTypeConfig.hasOwnProperty(type)) {
+                let typelist = this.paramTypeConfig[type];
+                return typelist.includes(l.type);
               } else {
                 return l.type == type;
               }
@@ -480,13 +485,10 @@ export default {
       return function(list, type) {
         //需要过滤掉类型不同类的
         if (list && list.length) {
-          if (type == 'text') {
+          if (this.paramTypeConfig.hasOwnProperty(type)) {
+            let typelist = this.paramTypeConfig[type];
             return list.filter(l => {
-              return this.typeList.includes(l.type);
-            });
-          } else if (type == 'textarea') {
-            return list.filter(l => {
-              return l.type == 'text' || l.type == 'textarea';
+              return typelist.includes(l.type);
             });
           } else {
             return list.filter(l => {
@@ -523,10 +525,8 @@ export default {
         let params = {
           typeList: [type]
         };
-        if (type == 'text') {
-          this.$set(params, 'typeList', this.typeList);
-        } else if (type == 'textarea') {
-          this.$set(params, 'typeList', ['textarea', 'text']);
+        if (this.paramTypeConfig.hasOwnProperty(type)) {
+          this.$set(params, 'typeList', this.paramTypeConfig[type]);
         }
         return params;
       };

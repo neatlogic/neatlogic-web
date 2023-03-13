@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="发送邮件"
+      :title="$t('term.inspect.sendanemail')"
       type="modal"
       :isShow.sync="isShowDialog"
       @on-ok="okDialog"
@@ -32,25 +32,24 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       isShowDialog: true,
       formValue: {
         receiverList: [],
-        title: `巡检最新问题${_this.$utils.getCurrenttime('yyyyMMddHHmmss')}`
+        title: this.$t('term.inspect.latestproblemofinspectiontarget', {target: this.$utils.getCurrenttime('yyyyMMddHHmmss')})
       },
       formConfig: {
         receiverList: {
-          label: '收件人',
+          label: this.$t('page.recipient'),
           type: 'userselect',
           transfer: true,
           multiple: true,
           groupList: ['user', 'role', 'team'],
           validateList: ['required'],
-          desc: '单次最多给100人发送邮件，超出100的部分不发送邮件'
+          desc: this.$t('term.inspect.sendmaillimitdesc')
         },
         title: {
-          label: '邮件标题',
+          label: this.$t('page.emailtitle'),
           type: 'textarea',
           maxlength: 256,
           validateList: ['required']
@@ -80,7 +79,7 @@ export default {
       };
       this.$api.inspect.assetsInspect.sendEmail(params).then((res) => {
         if (res && res.Status == 'OK') {
-          this.$Message.success('发送邮件成功');
+          this.$Message.success(this.$t('message.content.executesuccess'));
           this.closeDialog();
         }
       });

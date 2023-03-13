@@ -61,7 +61,6 @@ export default {
           value: '',
           multiple: false,
           transfer: true,
-          // placeholder: this.$i18n.t('common.select1'),
           url: 'api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.cmdb.enums.resourcecenter.Protocol' },
           validateList: [{ name: 'required', message: '请选择协议' }],

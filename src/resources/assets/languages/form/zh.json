@@ -29,7 +29,8 @@
     "downsideunique": "唯一代表下游端只能被上游端引用一次",
     "deleteupside": "删除上游端配置项时，自动删除下游端配置项",
     "deletedownside": "删除下游端配置项时，自动删除上游端配置项",
-    "cascaderrelation": "当前关系数据发生变化时，系统会自动计算级联关系数据并更新。计算出来的级联关系不会再次触发级联关系计算，也不会生成事务数据，因此无法在修改记录里追溯。"
+    "cascaderrelation": "当前关系数据发生变化时，系统会自动计算级联关系数据并更新。计算出来的级联关系不会再次触发级联关系计算，也不会生成事务数据，因此无法在修改记录里追溯。",
+    "legalrule": "模型规则：不满足模型属性和关系的相关约束的配置项则视为不合规；自定义规则：满足自定义规则的配置项视为不合规。"
   },
   "placeholder": {
     "name": "请输入名称",
@@ -59,6 +60,10 @@
     "validatesuccess": "校验成功",
     "validatefailed": "校验失败",
     "pleaseinputscriptcontent": "请输入脚本内容",
-    "requiredname": "不能为空，仅支持汉字、字母、数字和下划线"
+    "requiredname": "不能为空，仅支持汉字、字母、数字和下划线",
+    "inputcorrectport": "请输入正确的端口",
+    "inputtagdescription": "请输入标签描述",
+    "inputtagname": "请输入标签名称",
+    "selectprotocol": "请选择协议"
   }
 }

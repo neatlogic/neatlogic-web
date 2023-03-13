@@ -204,5 +204,30 @@
     "editschedulejob": "编辑定时作业",
     "toolclassification": "工具分类",
     "webhook": "webhook"
+  },
+  "inspect": {
+    "inspectmanage": "巡检管理",
+    "inspectresult": "巡检结果",
+    "latestproblem": "最新问题",
+    "documentchangerecord": "文件变更记录",
+    "inspectiondefinition": "巡检定义",
+    "inspectiondefinitionedit": "巡检定义编辑",
+    "assetinspection": "资产巡检",
+    "applicationinspection": "应用巡检",
+    "applicationlistdetails": "应用清单详情",
+    "applicationinspectiondetails": "应用巡检详情",
+    "inspectionjob": "巡检作业",
+    "inspectionresult": "巡检结果",
+    "problemreport": "问题报告",
+    "compositetooldetails": "组合工具详情",
+    "jobdetails": "作业详情",
+    "configurationitemdetails": "配置项详情",
+    "configurationitemediting": "配置项编辑",
+    "execute": "执行",
+    "librarydetails": "工具库详情",
+    "tooltestpage": "工具测试页面",
+    "configurationfile": "配置文件",
+    "thresholdrule": "阈值规则",
+    "thresholdruledetail": "阈值规则详情"
   }
 }

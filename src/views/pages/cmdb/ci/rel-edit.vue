@@ -112,7 +112,7 @@
               </TsRow>
 
               <TsRow class="form-item">
-                <Col span="4" class="text-grey form-title">名称</Col>
+                <Col span="4" class="text-grey form-title">{{ $t('page.name') }}</Col>
                 <Col span="10" class="form-control">
                   <TsFormInput
                     ref="fromLabel"

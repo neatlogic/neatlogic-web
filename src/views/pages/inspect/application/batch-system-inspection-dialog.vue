@@ -348,7 +348,7 @@ export default {
           if (res.Status == 'OK') {
             flag++;
             if (flag == this.subDataList.length) {
-              this.$Message.success('巡检成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               this.isShowCompobDialog = false;
               this.closeDialog();
             }

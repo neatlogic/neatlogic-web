@@ -133,7 +133,7 @@ export default {
     deleteReport(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm2', {target1: this.$t('term.report.report')}, {target2: row.name}),
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(row.id).then(res => {

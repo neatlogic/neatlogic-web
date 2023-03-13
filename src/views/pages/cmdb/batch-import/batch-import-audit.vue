@@ -27,7 +27,7 @@
         /></span>
       </template>
       <template v-slot:error="{ row, index }">
-        <span v-if="row.error" class="text-href" @click.stop="showHideError(row, index)">{{ row.showFolder ? $t('common.hide') : $t('common.view') }}</span>
+        <span v-if="row.error" class="text-href" @click.stop="showHideError(row, index)">{{ row.showFolder ? $t('page.hide') : $t('page.view') }}</span>
       </template>
       <template v-slot:expand="{ row }">
         <div v-if="row.error" v-html="row.error"></div>
@@ -57,10 +57,10 @@ export default {
         { title: '导入类型', key: 'actionText' },
         { title: '发起时间', key: 'importDate' },
         { title: '完成时间', key: 'finishDate' },
-        { title: this.$i18n.t('common.success'), key: 'successCount' },
-        { title: this.$i18n.t('common.fail'), key: 'failedCount' },
-        { title: this.$i18n.t('common.status'), key: 'statusText' },
-        { title: this.$i18n.t('common.error'), key: 'error' }
+        { title: this.$t('page.success'), key: 'successCount' },
+        { title: this.$t('page.fail'), key: 'failedCount' },
+        { title: this.$t('page.status'), key: 'statusText' },
+        { title: this.$t('page.error'), key: 'error' }
       ],
       tableConfig: {
         tbodyList: [],
