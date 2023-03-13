@@ -4,7 +4,7 @@
     <TsContain border="border" navBorderBottom="none">
       <template v-slot:topLeft>
         <div class="action-group">
-          <div v-auth="'RESOURCECENTER_ACCOUNT_MODIFY'" class="action-item tsfont-plus" @click="addAccount()">{{ $t('common.account') }}</div>
+          <div v-auth="'RESOURCECENTER_ACCOUNT_MODIFY'" class="action-item tsfont-plus" @click="addAccount()">{{ $t('page.accounts') }}</div>
           <div class="action-item tsfont-setting" @click="addHttp()">协议管理</div>
         </div>
       </template>
@@ -107,11 +107,11 @@ export default {
       },
       theadList: [
         { key: 'name', title: this.$t('page.name') },
-        { key: 'account', title: this.$t('common.username') },
-        { key: 'protocol', title: this.$t('common.protocol') },
+        { key: 'account', title: this.$t('page.username') },
+        { key: 'protocol', title: this.$t('page.protocol') },
         { key: 'resourceReferredCount', title: '关联资产' },
-        { key: 'lcu', title: this.$t('common.modifier'), type: 'user' },
-        { key: 'lcd', title: this.$t('common.modifytime'), type: 'time' },
+        { key: 'lcu', title: this.$t('page.fcu'), type: 'user' },
+        { key: 'lcd', title: this.$t('page.fcd'), type: 'time' },
         { key: 'action', title: '' }
       ],
       tableData: {
@@ -121,7 +121,7 @@ export default {
         protocolIdList: []
       },
       protocolConfig: {
-        placeholder: this.$t('common.protocol'),
+        placeholder: this.$t('page.protocol'),
         multiple: true,
         textName: 'text',
         valueName: 'value',
@@ -141,7 +141,7 @@ export default {
   created() {
     if (this.$route.query && this.$route.query.isNewAccountShow) {
       this.isNewAccountShow = true;
-      this.titleAccount = this.$t('common.addAccount');
+      this.titleAccount = this.$t('page.addtarget', {target: this.$t('page.accounts')});
     }
   },
   beforeMount() {},
@@ -210,7 +210,7 @@ export default {
     },
     addAccount() {
       this.id = null;
-      this.titleAccount = this.$t('common.addAccount');
+      this.titleAccount = this.$t('page.addtarget', {target: this.$t('page.accounts')});
       this.isNewAccountShow = true;
       this.isHidden = false;
     },
@@ -219,7 +219,7 @@ export default {
     },
     editAccount(row) {
       this.id = row.id;
-      this.titleAccount = this.$t('common.editAccount');
+      this.titleAccount = this.$t('page.edittarget', {target: this.$t('page.accounts')});
       this.isNewAccountShow = true;
       if (row.protocol == 'tagent') {
         // 协议为tagent隐藏帐号字段

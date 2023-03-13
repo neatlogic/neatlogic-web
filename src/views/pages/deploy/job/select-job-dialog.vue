@@ -107,7 +107,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.autoexec.sourcecategory'),
+          title: this.$t('page.sourcecategory'),
           key: 'operationType'
         },
         {

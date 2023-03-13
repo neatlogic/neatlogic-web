@@ -96,7 +96,7 @@ export default {
           // datalist: [],
           textName: 'name',
           valueName: 'id',
-          validateList: [{ name: 'required', message: this.$t('common.selectTag') }, 'name-special']
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}) }, 'name-special']
         }
       }
     };

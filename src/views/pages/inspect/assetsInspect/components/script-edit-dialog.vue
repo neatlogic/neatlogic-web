@@ -192,7 +192,7 @@ export default {
       }
       this.$api.inspect.assetsInspect.saveScript(params).then((res) => {
         if (res.Status == 'OK') {
-          this.$Message.success('保存脚本成功');
+          this.$Message.success(this.$t('message.content.savesuccess'));
           this.closeDialog();
         }
       });
