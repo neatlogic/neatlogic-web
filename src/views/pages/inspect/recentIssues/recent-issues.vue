@@ -19,16 +19,16 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <span :class="isExpandCollapse ? 'tsfont-up' : 'tsfont-down'" class="action-item" @click="handleExpandCollapse()">
-            <span v-if="isExpandCollapse">收起</span>
-            <span v-else>展开</span>
+            <span v-if="isExpandCollapse">{{ $t('page.clickandputaway') }}</span>
+            <span v-else>{{ $t('page.clicktoexpand') }}</span>
           </span>
-          <span class="action-item tsfont-rotate-right" @click="handleRefresh()">刷新</span>
-          <span v-if="!downloadLoading" v-download="downloadUrl" class="action-item tsfont-download">导出</span>
-          <span v-if="downloadLoading" class="action-item disable" title="正在导出数据，请耐心等候">
+          <span class="action-item tsfont-rotate-right" @click="handleRefresh()">{{ $t('page.refresh') }}</span>
+          <span v-if="!downloadLoading" v-download="downloadUrl" class="action-item tsfont-download">{{ $t('page.export') }}</span>
+          <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-            导出
+            {{ $t('page.export') }}
           </span>
-          <span class="action-item tsfont-mail-unread-o" @click="sendEmail">邮件</span>
+          <span class="action-item tsfont-mail-unread-o" @click="sendEmail">{{ $t('page.mail') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -41,13 +41,13 @@
         >   
           <template v-slot:batchSearchList="{valueConfig}">
             <div>
-              <TsFormItem label="批量搜索" labelPosition="left">
+              <TsFormItem :label="$t('page.batchsearch')" labelPosition="left">
                 <TsFormRadio
                   v-model="valueConfig.searchField"
                   :dataList="[{value: 'ip',text: 'IP'},{value: 'name',text: '名称'}]"
                 ></TsFormRadio>
               </TsFormItem>
-              <TsFormItem label="批量搜索值" labelWidth="0px" labelPosition="left">
+              <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
@@ -61,14 +61,14 @@
           <template slot="action">
             <div class="action-group">
               <div class="action-item">
-                <Button @click="closeCombineSearchPanel">取消</Button>
+                <Button @click="closeCombineSearchPanel">{{ $t('button.cancel') }}</Button>
               </div>
               <div class="action-item">
                 <Button
                   ghost
                   type="primary"
                   @click="saveAsNewCatagory"
-                >另存为新分类</Button>
+                >{{ $t('page.saveasnewcategory') }}</Button>
               </div>
               <div v-if="categoryId" class="action-item">
                 <!-- 编辑时才出现 -->
@@ -76,10 +76,10 @@
                   ghost
                   type="primary"
                   @click="updateNewClass"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
               <div class="action-item">
-                <Button type="primary" @click="searchTableData">搜索</Button>
+                <Button type="primary" @click="searchTableData">{{ $t('button.search') }}</Button>
               </div>
             </div>
           </template>
@@ -118,7 +118,7 @@
             <!-- 监控状态 -->
             <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
               <span :class="[row.monitorStatusJson.cssClass, { 'background-FATAL': row.monitorStatusJson.value == 'FATAL' }]" class="mr-xs">{{ row.monitorStatusJson.text }}</span>
-              <span class="text-title">{{ handleTime(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+              <span class="text-title">{{ handleTime(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
             </span>
             <span v-else>
               <span>-</span>
@@ -137,7 +137,7 @@
             <!-- 巡检状态 -->
             <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
               <span :class="[row.inspectStatusJson.cssClass, { 'background-FATAL': row.inspectStatusJson.value == 'FATAL' }]" class="mr-xs">{{ row.inspectStatusJson.text }}</span>
-              <span class="text-title">{{ handleTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+              <span class="text-title">{{ handleTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
             </span>
             <span v-else>
               <span>-</span>
@@ -149,9 +149,9 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-setting" @click="openRuleThresholdDialog(row)">阈值规则</li>
-                <li class="tsfont-history" @click="openJobDetail(row)">作业详情</li>
-                <li class="tsfont-ci" @click="toCientityView(row)">查看配置项</li>
+                <li class="tsfont-setting" @click="openRuleThresholdDialog(row)">{{ $t('term.inspect.thresholdrule') }}</li>
+                <li class="tsfont-history" @click="openJobDetail(row)">{{ $t('term.inspect.jobdetail') }}</li>
+                <li class="tsfont-ci" @click="toCientityView(row)">{{ $t('term.cmdb.viewcientity') }}</li>
               </ul>
             </div>
           </template>
@@ -237,65 +237,65 @@ export default {
             key: 'showInnerTable'
           },
           {
-            title: 'IP地址',
+            title: this.$t('page.ip'),
             key: 'ip'
           },
           {
-            title: '类型',
+            title: this.$t('page.type'),
             key: 'typeLabel'
           },
           {
-            title: '名称',
+            title: this.$t('page.name'),
             key: 'name'
           },
           {
-            title: '描述',
+            title: this.$t('page.description'),
             key: 'description'
           },
           {
-            title: '监控状态',
+            title: this.$t('term.inspect.monitoringstate'),
             key: 'monitorTime'
           },
           {
-            title: '巡检状态',
+            title: this.$t('term.autoexec.inspectstatus'),
             key: 'inspectTime'
           },
           {
-            title: '巡检作业状态',
+            title: this.$t('term.inspect.inspectionjobstatus'),
             key: 'taskStatus'
           },
           {
-            title: 'IP列表',
+            title: this.$t('term.inspect.iplist'),
             key: 'allIp',
             type: 'tag',
             valueKey: 'ip'
           },
           {
-            title: '所属部门',
+            title: this.$t('term.autoexec.subordinatedepartment'),
             key: 'bgList',
             type: 'tag',
             valueKey: 'bgName'
           },
           {
-            title: '所有者',
+            title: this.$t('page.owner'),
             key: 'ownerList',
             type: 'usercards'
           },
           {
-            title: '资产状态',
+            title: this.$t('term.autoexec.assetstatus'),
             key: 'stateName'
           },
           {
-            title: '网络区域',
+            title: this.$t('page.networkarea'),
             key: 'networkArea'
           },
           {
-            title: '标签',
+            title: this.$t('page.tag'),
             key: 'tagList',
             type: 'tag'
           },
           {
-            title: '维护窗口',
+            title: this.$t('term.deploy.maintenancewindow'),
             key: 'maintenanceWindow'
           },
           {
@@ -309,13 +309,13 @@ export default {
         rowNum: null
       },
       searchConfig: {
-        placeholder: '请输入目标名称、ip',
+        placeholder: this.$t('term.inspect.inputargetnameip'),
         searchMode: 'manual', // 手动搜索
         searchList: [
           {
             type: 'select',
             name: 'appSystemIdList',
-            label: '应用',
+            label: this.$t('page.application'),
             multiple: true,
             value: null,
             dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
@@ -344,7 +344,7 @@ export default {
           {
             type: 'select',
             name: 'appModuleIdList',
-            label: '模块',
+            label: this.$t('page.module'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
             params: { appSystemIdList: null },
@@ -356,7 +356,7 @@ export default {
           {
             type: 'checkbox',
             name: 'envIdList',
-            label: '环境',
+            label: this.$t('page.environment'),
             multiple: true,
             url: '/api/rest/resourcecenter/appenv/list/forselect',
             params: { needPage: false },
@@ -369,7 +369,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectStatusList',
-            label: '巡检状态',
+            label: this.$t('term.autoexec.inspectstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'InspectStatus' },
             dealDataByUrl: (nodeList) => this.dealInspectStatusDataByUrl(nodeList),
@@ -378,7 +378,7 @@ export default {
           },
           {
             type: 'slot',
-            label: '批量搜索',
+            label: this.$t('page.batchsearch'),
             labelWidth: '0px',
             labelPosition: 'left',
             name: 'batchSearchList'
@@ -386,7 +386,7 @@ export default {
           {
             type: 'select',
             name: 'vendorIdList',
-            label: '厂商',
+            label: this.$t('page.manufacturer'),
             multiple: true,
             url: '/api/rest/resourcecenter/vendor/list/forselect',
             params: { needPage: false },
@@ -399,7 +399,7 @@ export default {
           {
             type: 'select',
             name: 'tagIdList',
-            label: '标签',
+            label: this.$t('page.tag'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
             rootName: 'tbodyList',
@@ -411,7 +411,7 @@ export default {
           {
             type: 'select',
             name: 'protocolIdList',
-            label: '连接协议',
+            label: this.$t('page.protocol'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             rootName: 'tbodyList',
@@ -422,7 +422,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectJobPhaseNodeStatusList',
-            label: '作业状态',
+            label: this.$t('page.jobstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobNodeStatus' },
             multiple: true,
@@ -431,7 +431,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: '资产状态',
+            label: this.$t('term.autoexec.assetstatus'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false },

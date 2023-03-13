@@ -32,13 +32,13 @@
         >
           <template v-slot:batchSearchList="{valueConfig,textConfig}">
             <div>
-              <TsFormItem label="批量搜索" labelPosition="left">
+              <TsFormItem :label="$t('page.batchsearch')" labelPosition="left">
                 <TsFormRadio
                   v-model="valueConfig.searchField"
                   :dataList="searchFieldRadioDataList"
                 ></TsFormRadio>
               </TsFormItem>
-              <TsFormItem label="批量搜索值" labelWidth="0px" labelPosition="left">
+              <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
@@ -82,7 +82,7 @@
             <!-- 监控状态 -->
             <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
               <span :class="[row.monitorStatusJson.cssClass, { 'background-FATAL': row.monitorStatusJson.value == 'FATAL' }]" class="vertical mr-xs">{{ row.monitorStatusJson.text }}</span>
-              <span class="text-title fz10">{{ getTimeDiffer(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+              <span class="text-title fz10">{{ getTimeDiffer(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
             </span>
             <span v-else>
               <span>-</span>
@@ -101,7 +101,7 @@
             <!-- 巡检状态 -->
             <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
               <span :class="[row.inspectStatusJson.cssClass, { 'background-FATAL': row.inspectStatusJson.value == 'FATAL' }]" class="vertical mr-xs">{{ row.inspectStatusJson.text }}</span>
-              <span class="text-title fz10">{{ getTimeDiffer(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+              <span class="text-title fz10">{{ getTimeDiffer(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
               <!-- 'cursor':'pointer','color': row.jobPhaseNodeVo.statusVo.color -->
             </span>
             <span v-else>
@@ -198,11 +198,11 @@ export default {
           key: 'description'
         },
         {
-          title: '监控状态',
+          title: this.$t('term.inspect.monitoringstate'),
           key: 'monitorTime'
         },
         {
-          title: '巡检状态',
+          title: this.$t('term.autoexec.inspectstatus'),
           key: 'inspectTime'
         },
         {
@@ -227,7 +227,7 @@ export default {
           type: 'usercards'
         },
         {
-          title: '资产状态',
+          title: this.$t('term.autoexec.assetstatus'),
           key: 'stateName'
         },
         {
@@ -235,7 +235,7 @@ export default {
           key: 'networkArea'
         },
         {
-          title: '标签',
+          title: this.$t('page.tag'),
           key: 'tagList',
           type: 'tag'
         },
@@ -299,7 +299,7 @@ export default {
           {
             type: 'select',
             name: 'appSystemIdList',
-            label: '应用',
+            label: this.$t('page.application'),
             multiple: true,
             value: null,
             dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
@@ -328,7 +328,7 @@ export default {
           {
             type: 'select',
             name: 'appModuleIdList',
-            label: '模块',
+            label: this.$t('page.module'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
             params: { appSystemIdList: null },
@@ -340,7 +340,7 @@ export default {
           {
             type: 'checkbox',
             name: 'envIdList',
-            label: '环境',
+            label: this.$t('page.environment'),
             multiple: true,
             url: '/api/rest/resourcecenter/appenv/list/forselect',
             params: { needPage: false },
@@ -353,7 +353,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectStatusList',
-            label: '巡检状态',
+            label: this.$t('term.autoexec.inspectstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.common.constvalue.InspectStatus' },
             multiple: true,
@@ -361,7 +361,7 @@ export default {
           },
           {
             type: 'slot',
-            label: '批量搜索',
+            label: this.$t('page.batchsearch'),
             labelWidth: '0px',
             labelPosition: 'left',
             name: 'batchSearchList'
@@ -369,7 +369,7 @@ export default {
           {
             type: 'select',
             name: 'vendorIdList',
-            label: '厂商',
+            label: this.$t('page.manufacturer'),
             multiple: true,
             url: '/api/rest/resourcecenter/vendor/list/forselect',
             params: { needPage: false },
@@ -382,7 +382,7 @@ export default {
           {
             type: 'select',
             name: 'tagIdList',
-            label: '标签',
+            label: this.$t('page.tag'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
             rootName: 'tbodyList',
@@ -406,7 +406,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectJobPhaseNodeStatusList',
-            label: '作业状态',
+            label: this.$t('page.jobstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.autoexec.constvalue.JobNodeStatus' },
             multiple: true,
@@ -415,7 +415,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: '资产状态',
+            label: this.$t('term.autoexec.assetstatus'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false },
@@ -439,7 +439,7 @@ export default {
         tagList: {
           type: 'slot',
           name: 'tagList',
-          label: '标签',
+          label: this.$t('page.tag'),
           transfer: true,
           multiple: true,
           tagList: [],
@@ -462,7 +462,7 @@ export default {
         tagList: {
           type: 'slot',
           name: 'tagList',
-          label: '标签',
+          label: this.$t('page.tag'),
           transfer: true,
           multiple: true,
           tagList: [],

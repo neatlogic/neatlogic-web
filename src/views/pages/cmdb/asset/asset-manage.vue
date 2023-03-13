@@ -65,7 +65,7 @@
           >
             <template v-slot:batchSearchList="{valueConfig,textConfig}">
               <div>
-                <TsFormItem label="批量搜索" labelPosition="left">
+                <TsFormItem :label="$t('page.batchsearch')" labelPosition="left">
                   <TsFormRadio
                     v-model="valueConfig.searchField"
                     :dataList="searchFieldRadioDataList"
@@ -364,7 +364,7 @@ export default {
           },
           {
             type: 'slot',
-            label: '批量搜索',
+            label: this.$t('page.batchsearch'),
             labelWidth: '0px',
             labelPosition: 'left',
             name: 'batchSearchList'

@@ -476,5 +476,11 @@
   "defaultaccount": "默认账号",
   "assets": "资产",
   "hide": "隐藏",
-  "sourcecategory": "来源类目"
+  "sourcecategory": "来源类目",
+  "batchsearch": "批量搜索",
+  "batchsearchvalue": "批量搜索值",
+  "saveasnewcategory": "另存为新分类",
+  "jobstatus": "作业状态",
+  "mail": "邮件",
+  "before": "之前"
 }

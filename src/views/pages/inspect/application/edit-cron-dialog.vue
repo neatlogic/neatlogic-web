@@ -43,7 +43,7 @@ export default {
           isHidden: true
         },
         name: {
-          label: '应用',
+          label: this.$t('page.application'),
           type: 'text',
           disabled: true
         },

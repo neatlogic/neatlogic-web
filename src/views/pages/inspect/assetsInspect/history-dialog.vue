@@ -15,7 +15,7 @@
         </template>
         <template v-slot:_report_timeStatus="{ row }">
           <span :class="row.status.cssClass" class="mr-xs">{{ row.status.text }}</span>
-          <span>{{ times(row._report_time) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+          <span>{{ times(row._report_time) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
         </template>
         <template v-slot:_execuser="{ row }">
           <UserCard :initType="row._execuser.initType" :uuid="row._execuser.uuid"></UserCard>
@@ -60,7 +60,7 @@ export default {
           key: 'inspect_resultName'
         },
         {
-          title: '巡检状态',
+          title: this.$t('term.autoexec.inspectstatus'),
           key: '_report_timeStatus'
         },
         {

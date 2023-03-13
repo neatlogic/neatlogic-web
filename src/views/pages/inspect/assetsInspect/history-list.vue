@@ -14,7 +14,7 @@
     <template slot-scope="{ row }">
       <div>
         <span :class="row.status.cssClass" class="mr-xs">{{ row.id }}{{ row.status.text }}</span>
-        <span>{{ times(row._report_time) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+        <span>{{ times(row._report_time) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
       </div>
     </template>
   </TsUlList>
@@ -56,7 +56,7 @@ export default {
           key: 'inspect_resultName'
         },
         {
-          title: '巡检状态',
+          title: this.$t('term.autoexec.inspectstatus'),
           key: '_report_timeStatus'
         },
         {

@@ -138,7 +138,7 @@ export default {
           {
             type: 'select',
             name: 'statusList',
-            label: '作业状态',
+            label: this.$t('page.jobstatus'),
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.autoexec.constvalue.JobStatus' },

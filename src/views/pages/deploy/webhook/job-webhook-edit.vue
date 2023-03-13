@@ -268,7 +268,7 @@ export default {
         {
           name: 'jobStatusList',
           type: 'select',
-          label: this.$t('term.deploy.jobstatus'),
+          label: this.$t('page.jobstatus'),
           multiple: true,
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',
@@ -317,7 +317,7 @@ export default {
         {
           name: 'jobStatusList',
           type: 'select',
-          label: this.$t('term.deploy.jobstatus'),
+          label: this.$t('page.jobstatus'),
           multiple: true,
           validateList: ['required'],
           url: '/api/rest/universal/enum/get',

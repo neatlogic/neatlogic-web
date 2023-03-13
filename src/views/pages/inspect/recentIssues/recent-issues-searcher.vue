@@ -25,7 +25,7 @@
               <TsFormInput
                 v-model="keyword"
                 border="none"
-                placeholder="请输入目标名称、ip"
+                :placeholder="$t('term.inspect.inputargetnameip')"
                 width="250px"
                 @on-enter="enterKeword"
               ></TsFormInput>
@@ -41,13 +41,13 @@
                 >
                   <template slot="batchSearchList">
                     <div>
-                      <TsFormItem label="批量搜索" labelPosition="left">
+                      <TsFormItem :label="$t('page.batchsearch')" labelPosition="left">
                         <TsFormRadio
                           v-model="formValue.searchField"
                           :dataList="searchFieldRadioDataList"
                         ></TsFormRadio>
                       </TsFormItem>
-                      <TsFormItem label="批量搜索值" labelWidth="0px" labelPosition="left">
+                      <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
                         <TsFormInput
                           v-model="formValue.searchValue"
                           type="textarea"
@@ -66,14 +66,14 @@
                   <div class="pt-nm pl-nm pr-nm mb-sm">
                     <div class="action-group">
                       <div class="action-item">
-                        <Button @click="isShowDropdown = false">取消</Button>
+                        <Button @click="isShowDropdown = false">{{ $t('button.cancel') }}</Button>
                       </div>
                       <div class="action-item">
                         <Button
                           ghost
                           type="primary"
                           @click="saveCategory"
-                        >另存为新分类</Button>
+                        >{{ $t('page.saveasnewcategory') }}</Button>
                       </div>
                       <div v-if="id" class="action-item">
                         <!-- 编辑时才出现 -->
@@ -81,10 +81,10 @@
                           ghost
                           type="primary"
                           @click="updateNewClass"
-                        >保存</Button>
+                        >{{ $t('button.save') }}</Button>
                       </div>
                       <div class="action-item">
-                        <Button type="primary" @click="searchNewClass">搜索</Button>
+                        <Button type="primary" @click="searchNewClass">{{ $t('button.search') }}</Button>
                       </div>
                     </div>
                   </div>
@@ -139,11 +139,11 @@ export default {
       searchFieldRadioDataList: [
         {
           value: 'ip',
-          text: 'IP'
+          text: this.$t('page.ip')
         },
         {
           value: 'name',
-          text: '名称'
+          text: this.$t('page.name')
         }
       ],
       formValue: {...this.value},
@@ -157,7 +157,7 @@ export default {
         {
           type: 'select',
           name: 'appSystemIdList',
-          label: '应用',
+          label: this.$t('page.application'),
           multiple: true,
           value: null,
           dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
@@ -187,7 +187,7 @@ export default {
         {
           type: 'select',
           name: 'appModuleIdList',
-          label: '模块',
+          label: this.$t('page.module'),
           multiple: true,
           dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
           params: { appSystemIdList: null },
@@ -202,7 +202,7 @@ export default {
         {
           type: 'checkbox',
           name: 'envIdList',
-          label: '环境',
+          label: this.$t('page.environment'),
           multiple: true,
           url: '/api/rest/resourcecenter/appenv/list/forselect',
           params: { needPage: false },
@@ -218,7 +218,7 @@ export default {
         {
           type: 'checkbox',
           name: 'inspectStatusList',
-          label: '巡检状态',
+          label: this.$t('term.autoexec.inspectstatus'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'InspectStatus' },
           dealDataByUrl: (nodeList) => this.dealInspectStatusDataByUrl(nodeList),
@@ -230,7 +230,7 @@ export default {
         },
         {
           type: 'slot',
-          label: '批量搜索',
+          label: this.$t('page.batchsearch'),
           labelWidth: '0px',
           labelPosition: 'left',
           name: 'batchSearchList'
@@ -238,7 +238,7 @@ export default {
         {
           type: 'select',
           name: 'vendorIdList',
-          label: '厂商',
+          label: this.$t('page.manufacturer'),
           multiple: true,
           url: '/api/rest/resourcecenter/vendor/list/forselect',
           params: { needPage: false },
@@ -254,7 +254,7 @@ export default {
         {
           type: 'select',
           name: 'tagIdList',
-          label: '标签',
+          label: this.$t('page.tag'),
           multiple: true,
           dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
           rootName: 'tbodyList',
@@ -269,7 +269,7 @@ export default {
         {
           type: 'select',
           name: 'protocolIdList',
-          label: '连接协议',
+          label: this.$t('page.protocol'),
           multiple: true,
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
@@ -283,7 +283,7 @@ export default {
         {
           type: 'checkbox',
           name: 'inspectJobPhaseNodeStatusList',
-          label: '作业状态',
+          label: this.$t('page.jobstatus'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'JobNodeStatus' },
           multiple: true,
@@ -295,7 +295,7 @@ export default {
         {
           type: 'checkbox',
           name: 'stateIdList',
-          label: '资产状态',
+          label: this.$t('term.autoexec.assetstatus'),
           multiple: true,
           url: '/api/rest/resourcecenter/state/list/forselect',
           params: { needPage: false },
@@ -334,7 +334,7 @@ export default {
           this.searchConditionList.push({
             uuid: this.$utils.setUuid(),
             name: 'keyword',
-            label: '关键字',
+            label: this.$t('page.keyword'),
             text: keyword
           });
           this.keyword = '';
@@ -384,7 +384,7 @@ export default {
       this.searchConditionList.push({
         uuid: this.$utils.setUuid(),
         name: 'keyword',
-        label: '关键字',
+        label: this.$t('page.keyword'),
         text: ''
       });
       if (this.id) {
