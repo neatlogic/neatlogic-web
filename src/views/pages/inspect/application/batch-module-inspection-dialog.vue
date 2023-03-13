@@ -320,7 +320,7 @@ export default {
             if (res.Status == 'OK') {
               flag++;
               if (flag == paramsList.length) {
-                this.$Message.success('巡检成功');
+                this.$Message.success(this.$t('message.content.executesuccess'));
                 this.loadingShow = false;
                 this.dialogSetting.isShow = false;
                 this.isShowCompobList = false;

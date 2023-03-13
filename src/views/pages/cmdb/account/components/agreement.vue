@@ -170,7 +170,7 @@ export default {
       this.$api.cmdb.accountManage.savelistresourcecenter(item).then(res => {
         if (res.Status == 'OK') {
           item.disabled = true;
-          this.$Message.success(this.$t('common.saveSuccess'));
+          this.$Message.success(this.$t('message.content.savesuccess'));
           this.getlist();
         }
       })

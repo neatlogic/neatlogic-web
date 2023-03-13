@@ -41,33 +41,33 @@ export default {
           width: '100%',
           label: this.$t('page.name'),
           maxlength: 50,
-          validateList: [{ name: 'required', message: this.$t('common.inputAccountName'), url: '/api/rest/resourcecenter/account/save', key: 'name' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.name')}), url: '/api/rest/resourcecenter/account/save', key: 'name' }]
         },
         account: {
           type: 'text',
           name: 'account',
           width: '100%',
-          label: this.$t('common.username'),
+          label: this.$t('page.username'),
           maxlength: 50,
-          validateList: [{ name: 'required', message: this.$t('common.inputAccountUsername') }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')})}],
           isHidden: _this.isHidden
         },
         passwordPlain: {
           type: 'password',
           name: 'passwordPlain',
           width: '100%',
-          label: this.$t('common.password'),
+          label: this.$t('page.password'),
           maxlength: 50
         },
         protocolId: {
           type: 'select',
           width: '100%',
-          label: this.$t('common.protocol'),
-          placeholder: this.$t('common.selectProtocol'),
+          label: this.$t('page.protocol'),
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.protocol')}),
           dynamicUrl: '',
           dataList: [],
           name: 'protocolId',
-          validateList: [{ name: 'required', message: this.$t('common.selectProtocol') }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.protocol')}) }],
           transfer: true,
           onChange: function(val) {
             _this.accountValidate(val);
@@ -79,14 +79,14 @@ export default {
         isDefault: {
           type: 'switch',
           name: 'isDefault',
-          label: _this.$i18n.t('common.defaultaccount'), // 默认帐号
+          label: _this.$t('page.defaultaccount'), // 默认帐号
           validateList: ['required']
         },
         tagIdList: {
           type: 'select',
           name: 'tagIdList',
           width: '100%',
-          label: this.$t('common.tag'),
+          label: this.$t('page.tag'),
           transfer: true,
           multiple: true,
           value: [],
@@ -101,11 +101,11 @@ export default {
         //   type: 'text',
         //   name: 'port',
         //   width: '100%',
-        //   label: this.$t('common.port'),
+        //   label: this.$t('page.port'),
         //   maxlength: 50,
         //   tooltip: '主机帐号需要填写端口，应用帐号无需填写端口',
         //   validateList: [
-        //     { name: 'port', message: this.$t('common.inputRightPort') }
+        //     { name: 'port', message: this.$t('form.validate.inputcorrectport') }
         //   ]
         // }
       }
@@ -135,7 +135,7 @@ export default {
         .saveAccount({...data, type: 'public'})
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success(this.$t('common.saveSuccess'));
+            this.$Message.success(this.$t('message.content.savesuccess'));
             this.close(true);
           }
         })
@@ -143,12 +143,12 @@ export default {
           if (error.data.Message) {
             this.$Message.error(error.data.Message);
           } else {
-            this.$Message.error(this.$t('common.saveSuccess'));
+            this.$Message.error(this.$t('message.content.savesuccess'));
           }
         });
     },
     accountValidate(val) {
-      let requiredData = [{ name: 'required', message: this.$t('common.inputAccountName'), url: '/api/rest/resourcecenter/account/save', key: 'name' }];
+      let requiredData = [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.accounts')}), url: '/api/rest/resourcecenter/account/save', key: 'name' }];
       if (val == '478184378212353') {
         // 如果选择为 tagent 的时候，用户名为非必填
         this.formConfig.account.validateList = [];

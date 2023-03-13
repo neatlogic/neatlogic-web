@@ -190,7 +190,7 @@ export default {
               },
               {
                 name: 'level',
-                label: '级别',
+                label: this.$t('page.level'),
                 type: 'select',
                 readonly: !hasAuth,
                 dataList: this.levelList,
@@ -199,7 +199,7 @@ export default {
               },
               {
                 name: 'rule',
-                label: '规则',
+                label: this.$t('page.rule'),
                 type: 'textarea',
                 readonly: !hasAuth,
                 tooltip: this.ruleTooltips,
@@ -347,7 +347,7 @@ export default {
             },
             {
               name: 'level',
-              label: '级别',
+              label: this.$t('page.level'),
               type: 'select',
               readonly: !hasAuth,
               dataList: this.levelList,
@@ -355,7 +355,7 @@ export default {
             },
             {
               name: 'rule',
-              label: '规则',
+              label: this.$t('page.rule'),
               type: 'textarea',
               readonly: !hasAuth,
               tooltip: this.ruleTooltips,
@@ -376,7 +376,7 @@ export default {
       if (row && row.formValue) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: `确认删除【${row.formValue && row.formValue.name || ''}】阈值规则？`,
+          content: this.$t('dialog.content.deleteconfirm', {target: row.formValue && row.formValue.name ? row.formValue.name : ''}),
           btnType: 'error',
           'on-ok': vnode => {
             this.ruleList.splice(index, 1);
@@ -408,14 +408,14 @@ export default {
           },
           {
             name: 'level',
-            label: '级别',
+            label: this.$t('page.level'),
             type: 'select',
             dataList: this.levelList,
             validateList: ['required']
           },
           {
             name: 'rule',
-            label: '规则',
+            label: this.$t('page.rule'),
             type: 'textarea',
             tooltip: this.ruleTooltips,
             maxlength: 1000,

@@ -189,11 +189,11 @@ export default {
           uuid: 'uuid'
         },
         {
-          title: this.$t('term.autoexec.sourcecategory'),
+          title: this.$t('page.sourcecategory'),
           key: 'operationType'
         },
         {
-          title: this.$t('term.autoexec.source'),
+          title: this.$t('page.source'),
           key: 'sourceName'
         },
         {

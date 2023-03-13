@@ -94,7 +94,7 @@
           </Col>
           <Col :span="13">
             <div class="bg-op node-show radius-sm">
-              <div v-if="newDataList.length>0" class="text-href clear-btn" @click="clearAll('new')">{{ $t('common.clear') }}</div>
+              <div v-if="newDataList.length>0" class="text-href clear-btn" @click="clearAll('new')">{{ $t('page.clear') }}</div>
               <Row :gutter="10">
                 <Col v-for="(data,index) in newDataList" :key="index" :span="8">
                   <div class="item-span bg-op border-color overflow radius-sm">

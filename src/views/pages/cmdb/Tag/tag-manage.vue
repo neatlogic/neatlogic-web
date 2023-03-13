@@ -3,7 +3,7 @@
     <Loading :loadingShow="showLoading" type="fix"></Loading>
     <TsContain>
       <template slot="topLeft">
-        <span v-auth="'RESOURCECENTER_TAG_MODIFY'" class="text-action tsfont-plus" @click="addTag()">{{ $t('common.tag') }}</span>
+        <span v-auth="'RESOURCECENTER_TAG_MODIFY'" class="text-action tsfont-plus" @click="addTag()">{{ $t('page.tag') }}</span>
       </template>
       <template slot="topRight">
         <InputSearcher
@@ -62,17 +62,14 @@ export default {
       selectData: null,
       isNewTagShow: false,
       showLoading: false,
-      searchConfig: {
-        placeholder: this.$t('common.tagname')
-      },
       searchParams: {
         currentPage: 1,
         pageSize: 20
       },
       theadList: [
         { key: 'name', title: this.$t('page.name') },
-        { key: 'assetsCount', title: this.$t('common.asset') },
-        { key: 'description', title: this.$t('common.description') },
+        { key: 'assetsCount', title: this.$t('page.assets') },
+        { key: 'description', title: this.$t('page.description') },
         { key: 'action', title: '' }
       ],
       tableData: {

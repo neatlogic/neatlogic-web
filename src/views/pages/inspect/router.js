@@ -64,7 +64,7 @@ export default [
     name: '404',
     component: page404,
     meta: {
-      title: '页面不存在'
+      title: 'router.common.pagenoexist'
     }
   },
   {
@@ -77,7 +77,7 @@ export default [
     name: 'recent-issues',
     component: recentIssues,
     meta: {
-      title: '最新问题',
+      title: 'router.inspect.latestproblem',
       ismenu: false, // 在InspectResultMenu页面中，统一处理 
       icon: 'tsfont-baobiao',
       authority: 'INSPECT_BASE',
@@ -90,7 +90,7 @@ export default [
     name: 'configfile-list-manage',
     component: configfileListManage,
     meta: {
-      title: '文件变更记录',
+      title: 'router.inspect.documentchangerecord',
       ismenu: false, // 在InspectResultMenu页面中，统一处理
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
@@ -102,7 +102,7 @@ export default [
     name: 'definition-manage',
     component: definitionManage,
     meta: {
-      title: '巡检定义',
+      title: 'router.inspect.inspectiondefinition',
       ismenu: true,
       icon: 'tsfont-adjust',
       authority: 'INSPECT_MODIFY',
@@ -114,7 +114,7 @@ export default [
     name: 'definition-detail',
     component: definitionDetail,
     meta: {
-      title: '巡检定义编辑',
+      title: 'router.inspect.inspectiondefinitionedit',
       ismenu: false,
       authority: 'INSPECT_BASE'
     }
@@ -124,7 +124,7 @@ export default [
     name: 'assets-inspection',
     component: assetsInspection,
     meta: {
-      title: '资产巡检',
+      title: 'router.inspect.assetinspection',
       ismenu: true,
       icon: 'tsfont-ip-list',
       authority: 'INSPECT_BASE',
@@ -136,7 +136,7 @@ export default [
     name: 'assets-inspection-manage',
     component: assetsInspectionManage,
     meta: {
-      title: '资产巡检',
+      title: 'router.inspect.assetinspection',
       ismenu: true,
       icon: 'tsfont-ip-list',
       authority: 'INSPECT_BASE',
@@ -148,7 +148,7 @@ export default [
     name: 'application-manage',
     component: applicationManage,
     meta: {
-      title: '应用巡检',
+      title: 'router.inspect.applicationinspection',
       ismenu: true,
       icon: 'tsfont-app',
       authority: 'INSPECT_BASE',
@@ -160,7 +160,7 @@ export default [
     name: 'application-detail',
     component: applicationDetai,
     meta: {
-      title: '应用清单详情',
+      title: 'router.inspect.applicationlistdetails',
       ismenu: false,
       authority: 'INSPECT_BASE'
     }
@@ -170,7 +170,7 @@ export default [
     name: 'assets-detail',
     component: assetsDetai,
     meta: {
-      title: '应用巡检详情',
+      title: 'router.inspect.applicationinspectiondetails',
       ismenu: false,
       authority: 'INSPECT_BASE'
     }
@@ -180,7 +180,7 @@ export default [
     name: 'job-manage',
     component: jobManage,
     meta: {
-      title: '巡检作业',
+      title: 'router.inspect.inspectionjob',
       ismenu: true,
       icon: 'tsfont-history',
       authority: ['INSPECT_EXECUTE', 'INSPECT_SCHEDULE_EXECUTE'],
@@ -192,7 +192,7 @@ export default [
     name: 'inspect-result',
     component: inspectResult,
     meta: {
-      title: '巡检结果',
+      title: 'router.inspect.inspectionresult',
       ismenu: false,
       icon: '',
       authority: 'INSPECT_BASE',
@@ -204,7 +204,7 @@ export default [
     name: 'question-report',
     component: questionReport,
     meta: {
-      title: '问题报告',
+      title: 'router.inspect.problemreport',
       ismenu: false,
       icon: '',
       authority: 'INSPECT_BASE',
@@ -217,7 +217,7 @@ export default [
     name: 'action-detail',
     component: actionDetail,
     meta: {
-      title: '组合工具详情',
+      title: 'router.inspect.compositetooldetails',
       ismenu: false,
       icon: 'tsfont-history',
       authority: 'INSPECT_BASE'
@@ -228,7 +228,7 @@ export default [
     name: 'job-detail',
     component: jobDetail,
     meta: {
-      title: '作业详情',
+      title: 'router.inspect.jobdetails',
       ismenu: false,
       icon: 'tsfont-history',
       authority: 'INSPECT_BASE'
@@ -239,7 +239,7 @@ export default [
     name: 'script-detail',
     component: scriptDetail,
     meta: {
-      title: '作业详情',
+      title: 'router.inspect.jobdetails',
       ismenu: false,
       icon: 'tsfont-history',
       authority: 'INSPECT_BASE'
@@ -250,7 +250,7 @@ export default [
     name: 'cientity-view',
     component: ciEntityView,
     meta: {
-      title: '配置项详情',
+      title: 'router.inspect.configurationitemdetails',
       ismenu: false,
       authority: 'CMDB_BASE'
     }
@@ -260,7 +260,7 @@ export default [
     name: 'cientity-edit',
     component: ciEntityEdit,
     meta: {
-      title: '配置项编辑',
+      title: 'router.inspect.configurationitemediting',
       ismenu: false,
       authority: 'CMDB_BASE'
     }
@@ -270,7 +270,7 @@ export default [
     name: 'runner-detail',
     component: runnerDetail,
     meta: {
-      title: '执行',
+      title: 'router.inspect.execute',
       ismenu: false,
       authority: ''
     }
@@ -280,7 +280,7 @@ export default [
     name: 'tool-detail',
     component: toolDetail,
     meta: {
-      title: '工具库详情',
+      title: 'router.inspect.librarydetails',
       ismenu: false,
       authority: 'AUTOEXEC_SCRIPT_SEARCH'
     }
@@ -290,7 +290,7 @@ export default [
     name: 'test-detail',
     component: testDetail,
     meta: {
-      title: '工具测试页面',
+      title: 'router.inspect.tooltestpage',
       ismenu: false,
       authority: 'AUTOEXEC_BASE'
     }
@@ -300,7 +300,7 @@ export default [
     name: 'configfile-manage',
     component: configfileManage,
     meta: {
-      title: '配置文件',
+      title: 'router.inspect.configurationfile',
       ismenu: true,
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
@@ -312,7 +312,7 @@ export default [
     name: 'configfile-detail',
     component: configfileDetail,
     meta: {
-      title: '配置文件',
+      title: 'router.inspect.configurationfile',
       ismenu: false,
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
@@ -324,7 +324,7 @@ export default [
     name: 'rule-of-threshold-manage',
     component: RuleOfThresholdManage,
     meta: {
-      title: '阈值规则',
+      title: 'router.inspect.thresholdrule',
       ismenu: false,
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
@@ -336,7 +336,7 @@ export default [
     name: 'rule-of-threshold-detail',
     component: RuleOfThresholdDetail,
     meta: {
-      title: '阈值规则详情',
+      title: 'router.inspect.thresholdruledetail',
       ismenu: false,
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',

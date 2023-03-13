@@ -164,23 +164,23 @@ export default {
       currentTarget: '',
       outlineTheadList: [
         {
-          title: '级别',
+          title: this.$t('page.level'),
           key: 'level'
         },
         {
-          title: '告警提示',
+          title: this.$t('term.inspect.alarmprompt'),
           key: 'desc'
         },
         {
-          title: '规则ID',
+          title: this.$t('term.inspect.ruleid'),
           key: 'ruleSeq'
         },
         {
-          title: '规则名称',
+          title: this.$t('term.inspect.rulename'),
           key: 'ruleName'
         },
         {
-          title: '规则所属应用',
+          title: this.$t('term.inspect.applicationofrule'),
           key: 'ruleBelongtoApp'
         }
       ]
