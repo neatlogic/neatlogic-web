@@ -36,7 +36,7 @@
       <TsFormItem v-show="unfoldAndFold.roundCountForm" :label="$t('term.autoexec.batchquantity')" :required="hasFormUuid">
         <div class="form-wrap-box">
           <TsFormSelect
-            ref="mappingModeForm"
+            ref="roundCountmappingMode"
             v-model="roundCount.mappingMode"
             :dataList="mappingModeDataList"
             :width="100"
@@ -47,7 +47,7 @@
           ></TsFormSelect>
           <TsFormSelect
             v-if="roundCount.mappingMode == 'formattr'"
-            ref="mappingModeForm"
+            ref="roundCountmappingMode"
             v-model="roundCount.value"
             :dataList="formDataList"
             valueName="uuid"
@@ -76,7 +76,7 @@
       <TsFormItem v-show="unfoldAndFold.executeTarget" :label="$t('term.autoexec.executetarget')" :required="hasFormUuid">
         <div class="form-wrap-box">
           <TsFormSelect
-            ref="mappingModeForm"
+            ref="executeNodemappingMode"
             v-model="executeNode.mappingMode"
             :dataList="mappingModeDataList"
             transfer
@@ -87,7 +87,7 @@
           ></TsFormSelect>
           <TsFormSelect
             v-if="executeNode.mappingMode == 'formattr'"
-            ref="mappingModeForm"
+            ref="executeNodemappingMode"
             v-model="executeNode.value"
             :dataList="formDataList"
             valueName="uuid"
@@ -124,7 +124,7 @@
         <TsFormItem :label="$t('page.protocol')" :required="hasFormUuid">
           <div class="form-wrap-box">
             <TsFormSelect
-              ref="mappingModeForm"
+              ref="protocolmappingMode"
               v-model="protocol.mappingMode"
               :dataList="mappingModeDataList"
               transfer
@@ -135,7 +135,7 @@
             ></TsFormSelect>
             <TsFormSelect
               v-if="protocol.mappingMode == 'formattr'"
-              ref="mappingModeForm"
+              ref="protocolmappingMode"
               v-model="protocol.value"
               :dataList="formDataList"
               valueName="uuid"
@@ -158,7 +158,7 @@
         <TsFormItem :label="$t('term.autoexec.executeaccount')" :required="hasFormUuid">
           <div class="form-wrap-box">
             <TsFormSelect
-              ref="mappingModeForm"
+              ref="executeUsermappingMode"
               v-model="executeUser.mappingMode"
               :dataList="mappingModeDataList"
               transfer
@@ -169,7 +169,7 @@
             ></TsFormSelect>
             <TsFormSelect
               v-if="executeUser.mappingMode == 'formattr'"
-              ref="mappingModeForm"
+              ref="executeUsermappingMode"
               v-model="executeUser.value"
               :dataList="formDataList"
               valueName="uuid"
@@ -201,7 +201,7 @@
           <TsFormItem :label="item.name" :required="item.isRequired ? true : false">
             <div class="form-wrap-box">
               <TsFormSelect
-                ref="mappingModeForm"
+                ref="jobParammappingMode"
                 v-model="item.mappingMode"
                 :dataList="mappingModeDataList"
                 :width="100"
@@ -212,7 +212,7 @@
               ></TsFormSelect>
               <TsFormSelect
                 v-if="item.mappingMode == 'formattr'"
-                ref="mappingModeForm"
+                ref="jobParammappingMode"
                 v-model="valueConfig[item.key]"
                 :dataList="formDataList"
                 valueName="uuid"
@@ -462,9 +462,9 @@ export default {
   methods: {
     setRequired(isRequired = false) {
       // 设置必填
-      this.$set(this.executeUserForm, 'validateList', isRequired ? ['required'] : []);
-      this.$set(this.protocolForm, 'validateList', isRequired ? ['required'] : []);
-      this.$set(this.roundCountForm, 'validateList', isRequired ? ['required', 'maxNum'] : []);
+      this.$set(this.executeUserForm, 'validateList', isRequired ? ['required'] : []); // 执行用户
+      this.$set(this.protocolForm, 'validateList', isRequired ? ['required'] : []); // 连接协议
+      this.$set(this.roundCountForm, 'validateList', isRequired ? ['required', 'maxNum'] : []); // 分批数量
     },
     clearMappingMode() {
       // 清空映射关系
@@ -489,6 +489,7 @@ export default {
           value: 'constant'
         }
       ];
+      this.setRequired(false); // 清空必填值
     },
     defaultIniData() {
       // 默认初始值
@@ -669,7 +670,7 @@ export default {
       let isValid = true;
       let formList = ['basicForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm'];
       let jobParamFormList = this.$refs.jobParamForm || [];
-      let mappingModeFormList = this.$refs.mappingModeForm || [];
+      let mappingModeFormList = ['roundCountmappingMode', 'executeNodemappingMode', 'protocolmappingMode', 'executeUsermappingMode', 'jobParammappingMode']; // 映射关系下拉列表
       !this.$utils.isEmpty(formList) && formList.forEach((item) => {
         if (this.$refs[item] && !this.$refs[item].valid()) {
           if (!this.unfoldAndFold[item]) {
@@ -691,9 +692,9 @@ export default {
           isValid = false;
         }
       });
-      !this.$utils.isEmpty(mappingModeFormList) && !this.$utils.isEmpty(mappingModeFormList.$parent) && !this.$utils.isEmpty(mappingModeFormList.$parent.$children) && mappingModeFormList.$parent.$children.forEach((item) => {
+      !this.$utils.isEmpty(mappingModeFormList) && mappingModeFormList.forEach((item) => {
         // 表单映射关系
-        if (item && !item.valid()) {
+        if (this.$refs[item] && !this.$refs[item].valid()) {
           isValid = false;
         }
       });

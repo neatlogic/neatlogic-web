@@ -1,17 +1,14 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>显示设置</div>
-      </template>
       <template v-slot>
         <div>
           <div class="card-head">
-            <div class="block-handler text-grey">排序</div>
-            <div class="block-name text-grey">字段名称</div>
-            <div class="block-type text-grey">字段类型</div>
-            <div class="block-showtype text-grey">显示方式</div>
-            <div v-if="!isVirtual" class="block-allowedit text-grey">允许编辑</div>
+            <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
+            <div class="block-name text-grey">{{ $t('term.cmdb.fieldname') }}</div>
+            <div class="block-type text-grey">{{ $t('term.cmdb.fieldtype') }}</div>
+            <div class="block-showtype text-grey">{{ $t('term.cmdb.displaytype') }}</div>
+            <div v-if="!isVirtual" class="block-allowedit text-grey">{{ $t('page.allowedit') }}</div>
           </div>
           <draggable
             v-bind="dragOptions"
@@ -24,7 +21,7 @@
             @start="moveStart"
             @end="moveEnd"
           >
-            <div v-for="(item,index) in attrRelList" :key="index" class="card-item">
+            <div v-for="(item, index) in attrRelList" :key="index" class="card-item">
               <div class="block-handler"><i class="ts-bars move"></i></div>
               <div class="block-name">{{ item.itemLabel }}</div>
               <div class="block-type">{{ item.typeText }}</div>
@@ -40,9 +37,12 @@
               </div>
               <div v-if="!isVirtual" class="block-allowedit">
                 <TsFormSelect
-                  v-if="item.type!='const'"
+                  v-if="item.type != 'const'"
                   v-model="item.allowEdit"
-                  :dataList="[{value:1,text:'是'},{value:0,text:'否'}]"
+                  :dataList="[
+                    { value: 1, text: $t('page.yes') },
+                    { value: 0, text: $t('page.no') }
+                  ]"
                   :width="100"
                   :clearable="false"
                   border="border"
@@ -54,8 +54,8 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -69,15 +69,16 @@ export default {
     draggable,
     TsFormSelect
   },
-  props: { 
+  props: {
     ciId: {
       type: Number
     },
-    isVirtual: {type: Number}
+    isVirtual: { type: Number }
   },
   data() {
     return {
       dialogConfig: {
+        title: this.$t('page.displaysetting'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -108,12 +109,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    moveStart() {
-
-    },
-    moveEnd() {
-      
-    },
+    moveStart() {},
+    moveEnd() {},
     getShowTypeList() {
       this.$api.cmdb.ci.getShowTypeList().then(res => {
         this.showTypeList = res.Return;
@@ -127,15 +124,17 @@ export default {
       }
     },
     save() {
-      this.$api.cmdb.ci.saveCiView({
-        ciId: this.ciId,
-        ciViewList: this.attrRelList
-      }).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.content.savesuccess'));
-          this.close(true);
-        }
-      });
+      this.$api.cmdb.ci
+        .saveCiView({
+          ciId: this.ciId,
+          ciViewList: this.attrRelList
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.content.savesuccess'));
+            this.close(true);
+          }
+        });
     },
     close(needRefresh) {
       this.$emit('close', needRefresh);
@@ -143,76 +142,75 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: { 
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.card-head{
-  position:relative;
-  height:30px;
-  .block-handler{
-    position:absolute;
-    left:10px;
-    line-height:30px;
+.card-head {
+  position: relative;
+  height: 30px;
+  .block-handler {
+    position: absolute;
+    left: 10px;
+    line-height: 30px;
   }
-  .block-name{
-    position:absolute;
-    left:60px;
-    top:0px;
-    line-height:30px;
+  .block-name {
+    position: absolute;
+    left: 60px;
+    top: 0px;
+    line-height: 30px;
   }
-  .block-type{
-    position:absolute;
-    left:250px;
-    top:0px;
-    line-height:30px;
+  .block-type {
+    position: absolute;
+    left: 250px;
+    top: 0px;
+    line-height: 30px;
   }
-  .block-showtype{
-    position:absolute;
-    left:400px;
-    top:0px;
-    line-height:30px;
+  .block-showtype {
+    position: absolute;
+    left: 400px;
+    top: 0px;
+    line-height: 30px;
   }
-  .block-allowedit{
-    position:absolute;
-    left:550px;
-    top:0px;
-    line-height:30px;
+  .block-allowedit {
+    position: absolute;
+    left: 550px;
+    top: 0px;
+    line-height: 30px;
   }
 }
 .card-item {
-  margin-bottom:10px;
-  position:relative;
-  height:30px;
-  .block-handler{
-    position:absolute;
-    left:10px;
-    line-height:30px;
-    cursor:move;
+  margin-bottom: 10px;
+  position: relative;
+  height: 30px;
+  .block-handler {
+    position: absolute;
+    left: 10px;
+    line-height: 30px;
+    cursor: move;
   }
-  .block-name{
-    position:absolute;
-    left:60px;
-    top:0px;
-    line-height:30px;
+  .block-name {
+    position: absolute;
+    left: 60px;
+    top: 0px;
+    line-height: 30px;
   }
-  .block-type{
-    position:absolute;
-    left:250px;
-    top:0px;
-    line-height:30px;
+  .block-type {
+    position: absolute;
+    left: 250px;
+    top: 0px;
+    line-height: 30px;
   }
-  .block-showtype{
-    position:absolute;
-    left:400px;
-    top:0px;
+  .block-showtype {
+    position: absolute;
+    left: 400px;
+    top: 0px;
   }
-  .block-allowedit{
-    position:absolute;
-    left:550px;
-    top:0px;
+  .block-allowedit {
+    position: absolute;
+    left: 550px;
+    top: 0px;
   }
 }
 </style>

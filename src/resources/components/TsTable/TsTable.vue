@@ -1,6 +1,11 @@
 <template>
   <div v-if="!loading" class="radius-lg bg-op">
-    <div ref="tablecontainer" class="tstable-container" :class="setTableClass">
+    <div
+      ref="tablecontainer"
+      class="tstable-container"
+      :class="setTableClass"
+      style="height:100%"
+    >
       <!-- 用于做固定的表头_start -->
       <div
         v-if="fixedHeader"
@@ -676,7 +681,8 @@ export default {
       this.$emit('checkshow', this.thList, val);
     },
     initTable() {
-      let tableheight = window.innerHeight - (this.$refs.tablemain ? this.$refs.tablemain.getBoundingClientRect().top : 0);
+      const height = window.innerHeight;
+      let tableheight = height - (this.$refs.tablemain ? this.$refs.tablemain.getBoundingClientRect().top : 0);
       if (this.$refs.tablepage) {
         tableheight = tableheight - this.$refs.tablepage.clientHeight;
       }

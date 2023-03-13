@@ -6,17 +6,13 @@
       v-bind="dialogConfig"
       @on-close="close"
     >
-      <template v-slot:header>
-        <div v-if="relGroupData.id">编辑关系分组</div>
-        <div v-if="!relGroupData.id">添加关系分组</div>
-      </template>
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -38,10 +34,11 @@ export default {
     return {
       relGroupData: {},
       dialogConfig: {
+        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('term.cmdb.relationgroup')}) : this.$t('dialog.title.addtarget', {target: this.$t('term.cmdb.relationgroup')}),
         type: 'modal',
         maskClose: false,
         isShow: false,
-        width: '500px'
+        width: 'small'
       },
       formConfig: {
         id: {
@@ -50,7 +47,7 @@ export default {
         },
         name: {
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: ['required'],
           onChange: function(value) {
             _this.$set(_this.relGroupData, 'name', value);

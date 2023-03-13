@@ -33,6 +33,9 @@ const formatDate = (value, format) => {
     if (format == 'm-d hh:mm:ss') {
       result = `${m}-${d}\u00A0\u00A0${h < 10 ? '0' + h : h}:${min < 10 ? '0' + min : min}:${s < 10 ? '0' + s : s}`;
     }
+    if (format === 'yyyy-mm-dd hh:mm') {
+      result = `${y}-${m < 10 ? '0' + m : m}-${d < 10 ? '0' + d : d}  ${h < 10 ? '0' + h : h}:${min < 10 ? '0' + min : min}`;
+    }
   }
 
   return result;

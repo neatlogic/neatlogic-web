@@ -149,7 +149,7 @@
             <TsFormItem :label="$t('page.alias')" labelPosition="top">
               <TsFormInput v-model="currentCi.alias" @change="changeCiAlias"></TsFormInput>
             </TsFormItem>
-            <TsFormItem v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" label="属性列表" labelPosition="top">
+            <TsFormItem v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" :label="$t('term.cmdb.attributelist')" labelPosition="top">
               <div class="tstable-container">
                 <table v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="tstable-body">
                   <colgroup>
