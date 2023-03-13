@@ -1,8 +1,8 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close" @on-ok="save">
     <template v-slot:header>
-      <div v-if="id">{{ $t('common.editTag') }}</div>
-      <div v-if="!id">{{ $t('common.addTag') }}</div>
+      <div v-if="id">{{ $t('page.edittarget', {target: $t('page.tag')}) }}</div>
+      <div v-if="!id">{{ $t('page.addtarget', {target: $t('page.tag')}) }}</div>
     </template>
     <template v-slot>
       <TsForm ref="form" :item-list="formConfig"></TsForm>
@@ -39,15 +39,15 @@ export default {
           label: this.$t('page.name'),
           maxlength: 50,
           width: '100%',
-          validateList: [{ name: 'required', message: this.$t('common.inputTagName'), url: 'api/rest/resourcecenter/tag/save', key: 'name' }, 'name-special']
+          validateList: [{ name: 'required', message: this.$t('form.validate.inputtagname'), url: 'api/rest/resourcecenter/tag/save', key: 'name' }, 'name-special']
         },
         description: {
           type: 'textarea',
           name: 'description',          
-          label: this.$t('common.description'),
+          label: this.$t('page.description'),
           width: '100%',
           maxlength: 50,
-          validateList: [{ name: 'required', message: this.$t('common.inputTagDescription') }]
+          validateList: [{ name: 'required', message: this.$t('form.validate.inputtagdescription') }]
         }
       }
     };
@@ -75,7 +75,7 @@ export default {
         .saveTag(data)
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success(this.$t('common.saveSuccess'));
+            this.$Message.success(this.$t('message.content.savesuccess'));
             this.close(true);
           }
         })

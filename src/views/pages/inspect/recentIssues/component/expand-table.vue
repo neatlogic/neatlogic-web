@@ -46,7 +46,7 @@
         </ul>
       </template>
       <template slot="ruleName" slot-scope="{row}">
-        <Poptip v-if="row.flag == 'internalRule'" title="规则" :content="row.alertRule">
+        <Poptip v-if="row.flag == 'internalRule'" :title="$t('page.rule')" :content="row.alertRule">
           <span class="text-href">{{ row.alertTips }}</span>
         </Poptip>
         <span v-else class="text-href" @click="toInspectionDetail(row)">{{ row.alertTips }}</span>
@@ -75,35 +75,35 @@ export default {
       tbodyList: [],
       theadList: [
         {
-          title: '级别',
+          title: this.$t('page.level'),
           key: 'alertLevel',
           type: 'slot',
           width: 60
         },
         {
-          title: '告警提示',
+          title: this.$t('term.inspect.alarmprompt'),
           key: 'alertTips',
           maxLength: 100
         },
         {
-          title: '告警对象值',
+          title: this.$t('term.inspect.alarmobjectvalue'),
           key: 'alertValue',
           maxLength: 50
         },
         {
-          title: '告警对象',
+          title: this.$t('term.inspect.alarmobject'),
           key: 'alertObject'
         },
         {
-          title: '规则ID',
+          title: this.$t('term.inspect.ruleid'),
           key: 'ruleSeq'
         },
         {
-          title: '规则名称',
+          title: this.$t('term.inspect.rulename'),
           key: 'ruleName'
         },
         {
-          title: '规则所属应用',
+          title: this.$t('term.inspect.applicationofrule'),
           key: 'appSystemName'
         }
       ]

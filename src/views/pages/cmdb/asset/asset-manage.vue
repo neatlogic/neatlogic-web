@@ -531,7 +531,7 @@ export default {
           allowCreate: true,
           dynamicUrl: 'api/rest/resourcecenter/tag/name/list/forselect',
           rootName: 'tbodyList',
-          validateList: [{ name: 'required', message: this.$t('common.selectTag') }, 'name-special']
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}) }, 'name-special']
         }
       },
       dynamicUrl: '',

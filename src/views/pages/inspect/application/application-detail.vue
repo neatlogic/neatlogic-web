@@ -272,7 +272,7 @@ export default {
             params.combopId = data.combop.id;
             this.$api.inspect.applicationInspect.executeInspect(params).then((res) => {
               if (res.Status == 'OK') {
-                this.$Message.success('巡检成功');
+                this.$Message.success(this.$t('message.content.executesuccess'));
               }
             });
           } else {
@@ -344,7 +344,7 @@ export default {
           if (res.Status == 'OK') {
             flag++;
             if (flag == paramList.length) {
-              this.$Message.success('巡检成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               this.dialogSetting.isShow = false;
               this.isShowCompobList = false;
             }
