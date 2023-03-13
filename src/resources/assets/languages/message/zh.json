@@ -36,6 +36,7 @@
     "targetvalidfailed": "{target}验证失败",
     "pleaseentertruetarget": "请输入正确的{target}",
     "cmdb": {
+      "editrelpath": "点击模型可对关系路径进行编辑",
       "selectci": "请选择关联模型",
       "topoerror": "当前模型数据无法使用{target}生成拓扑图，请换一种布局。",
       "diffci": "已选择的配置项不属于同一个模型，请重新选择",

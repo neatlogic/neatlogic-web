@@ -6,7 +6,6 @@
         <TsFormInput
           border="bottom"
           :search="true"
-          placeholder="请输入关键字"
           @on-change="searchCi"
         ></TsFormInput>
       </div>
@@ -53,7 +52,7 @@
         @drop="drop"
       ></div>
       <div v-if="hasAttr" class="setting-container">
-        <span class="tsfont-circulation-o text-href" @click="openDisplaySetting">显示设置</span>
+        <span class="tsfont-circulation-o text-href" @click="openDisplaySetting">{{ $t('page.displaysetting') }}</span>
       </div>
       <div v-if="currentLink || currentCi.uuid" class="padding-md shadow bg-op radius-md prop-container">
         <div v-if="currentLink">
@@ -64,38 +63,32 @@
           <TsFormInput :value="currentLink.name" maxlength="50" @change="changeLinkName"></TsFormInput>
         </div>-->
           <div v-if="currentLink" class="mb-xs">
-            连线类型
+            {{ $t('page.linktype') }}
           </div>
           <div v-if="currentLink" class="mb-xs">
             <RadioGroup v-model="currentLink.type" vertical @on-change="changeLinkType">
-              <Radio label="Join">全连接</Radio>
-              <Radio label="Leftjoin">左连接</Radio>
-              <Radio label="Rightjoin">右连接</Radio>
+              <Radio label="Join">{{ $t('term.cmdb.fulljoin') }}</Radio>
+              <Radio label="Leftjoin">{{ $t('term.cmdb.leftjoin') }}</Radio>
+              <Radio label="Rightjoin">{{ $t('term.cmdb.rightjoin') }}</Radio>
             </RadioGroup>
           </div>
         </div>
         <div v-if="currentCi.uuid">
-          <div v-if="!currentCi.isStart" class="mb-xs">
-            <span>是否隐藏</span>
-            <span>
-              <Tooltip :transfer="true" placement="top">
-                <i class="tsfont-question-o"></i>
-                <div slot="content" style="white-space:normal">
-                  查看视图详情时，当前模型是否在关系中隐藏
-                </div>
-              </Tooltip>
-            </span>
-          </div>
-          <div v-if="!currentCi.isStart" class="mb-xs">
+          <TsFormItem
+            v-if="!currentCi.isStart"
+            tooltip="查看视图详情时，当前模型是否在关系中隐藏"
+            :label="$t('page.ishidden')"
+            labelPosition="top"
+          >
             <TsFormSwitch
               v-model="currentCi.isHidden"
               :true-value="1"
               :false-value="0"
               @on-change="changeCiIsShow"
             ></TsFormSwitch>
-          </div>
+          </TsFormItem>
           <div v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="mb-xs">
-            属性列表
+            {{ $t('term.cmdb.attributelist') }}
           </div>
           <div class="tstable-container">
             <table v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="tstable-body">
@@ -150,6 +143,7 @@ export default {
   name: '',
   components: {
     draggable,
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     //TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),

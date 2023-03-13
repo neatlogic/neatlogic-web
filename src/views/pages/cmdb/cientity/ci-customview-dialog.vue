@@ -13,7 +13,7 @@
                   placement="bottom-start"
                 >
                   <span class="text-href">
-                    共 {{ filtedPathList.length > 99 ? '99+' : filtedPathList.length }} 个关系路径
+                    {{ $t('term.cmdb.relpathcount', { count: filtedPathList.length > 99 ? '99+' : filtedPathList.length }) }}
                     <Icon type="ios-arrow-down"></Icon>
                   </span>
                   <DropdownMenu slot="list">
@@ -37,10 +37,12 @@
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
-                <div v-else-if="!isLoading" class="text-grey"><span>共 0 个关系路径</span></div>
+                <div v-else-if="!isLoading" class="text-grey">
+                  <span>{{ $t('term.cmdb.relpathcount', { count: 0 }) }}</span>
+                </div>
                 <div v-else-if="isLoading" class="text-grey">
                   <span class="text-loading bg-primary"></span>
-                  <span>正在计算关系路径...</span>
+                  <span>{{ $t('term.cmdb.relpathcounting') }}</span>
                 </div>
               </div>
               <div>
@@ -55,7 +57,7 @@
                   transfer
                   multiple
                   border="border"
-                  placeholder="请选择路径必须包含的模型"
+                  :placeholder="$t('term.cmdb.relpathci')"
                   @on-change="changeCiFilter"
                 ></TsFormSelect>
               </div>
@@ -64,7 +66,9 @@
           <template v-slot:activePath>
             <div>
               <div v-if="activePath && activePath.ciRelList && activePath.ciRelList.length > 0">
-                <div class="mb-xs text-grey"><span>帮助：点击模型可对关系路径进行编辑</span></div>
+                <div class="mb-xs text-grey">
+                  <span>{{ $t('page.help') }}{{ $t('page.colon') }}{{ $t('message.content.cmdb.editrelpath') }}</span>
+                </div>
                 <div>
                   <span v-for="(p, pindex) in activePath.ciRelList" :key="pindex">
                     <span class="cursor">
@@ -89,9 +93,9 @@
       </div>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button v-if="viewId" type="error" @click="deleteView()">删除</Button>
-      <Button type="primary" @click="save()">确定</Button>
+      <Button @click="close()">{{ $t('button.cancel') }}</Button>
+      <Button v-if="viewId" type="error" @click="deleteView()">{{ $t('button.delete') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -119,14 +123,14 @@ export default {
         //direction: 'from'
       },
       dialogConfig: {
-        title: '自定义视图配置',
+        title: this.$t('term.cmdb.customviewconfig'),
         type: 'slider',
         width: 'huge',
         isShow: true
       },
       formConfig: {
         name: {
-          label: '名称',
+          label: this.$t('page.name'),
           type: 'text',
           value: this.viewName,
           validateList: ['required']
@@ -147,7 +151,7 @@ export default {
           }
         },*/
         path: {
-          label: '关系路径列表',
+          label: this.$t('term.cmdb.relpathlist'),
           type: 'slot',
           isHidden: !!this.viewId
         },
@@ -160,7 +164,14 @@ export default {
         ciId: this.ciId
         //direction: 'from'
       },
-      theadList: [{ key: 'selection' }, { key: 'name', title: '名称' }, { key: 'type', title: '类型' }, { key: 'ciId', title: '所属模型' }],
+      theadList: [
+        {
+          key: 'selection'
+        },
+        { key: 'name', title: this.$t('page.name') },
+        { key: 'type', title: this.$t('page.type') },
+        { key: 'ciId', title: this.$t('term.cmdb.belongci') }
+      ],
       ciList: [],
       pathList: [],
       activePath: null,
@@ -277,7 +288,7 @@ export default {
           },
           {
             name: 'ciName',
-            label: '模型'
+            label: this.$t('page.model')
           }
         ];
         await this.$api.cmdb.ci.getAttrByCiId(ciId).then(res => {
@@ -304,7 +315,7 @@ export default {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
           type: 'modal',
-          content: '确认删除当前自定义视图？',
+          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.cmdb.customview')}),
           width: 'small',
           'on-ok': vnode => {
             this.$api.cmdb.customview.deleteCustomView(this.viewId).then(res => {

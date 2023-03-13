@@ -10,6 +10,16 @@
     "notempty": "不为空"
   },
   "cmdb": {
+    "attributelist":"属性列表",
+    "relpathci": "请选择路径必须包含的模型",
+    "relpathcount": "共 {count} 个关系路径",
+    "relpathcounting": "正在计算关系路径...",
+    "belongci": "所属模型",
+    "customviewconfig": "自定义视图配置",
+    "relpathlist": "关系路径列表",
+    "fieldname": "字段名称",
+    "fieldtype": "字段类型",
+    "displaytype": "显示方式",
     "relationgroup": "关系分组",
     "legalcheckconfig": "合规检查设置",
     "newrule": "新建规则",
