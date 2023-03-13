@@ -192,7 +192,6 @@ export default {
     let query = this.$route.query;
     if (query && query.id) {
       this.serviceId = parseInt(query.id);
-      console.log(this.serviceId);
     }
   },
   beforeMount() {},
