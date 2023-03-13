@@ -4,28 +4,28 @@
       <span class="action-item">
         <Dropdown placement="bottom-start" @on-click="changeLevel">
           <a href="javascript:void(0)">
-            展开层数
+            {{ $t('term.cmdb.extendlevel') }}
             <b style="margin-left:3px">{{ searchParam.level }}</b>
             <Icon type="ios-arrow-down"></Icon>
           </a>
           <DropdownMenu slot="list">
-            <DropdownItem name="1" :selected="searchParam.level == 1">1层</DropdownItem>
-            <DropdownItem name="2" :selected="searchParam.level == 2">2层</DropdownItem>
-            <DropdownItem name="3" :selected="searchParam.level == 3">3层</DropdownItem>
-            <DropdownItem name="4" :selected="searchParam.level == 4">4层</DropdownItem>
-            <DropdownItem name="5" :selected="searchParam.level == 5">5层</DropdownItem>
-            <DropdownItem name="6" :selected="searchParam.level == 6">6层</DropdownItem>
-            <DropdownItem name="7" :selected="searchParam.level == 7">7层</DropdownItem>
-            <DropdownItem name="8" :selected="searchParam.level == 8">8层</DropdownItem>
-            <DropdownItem name="9" :selected="searchParam.level == 9">9层</DropdownItem>
-            <DropdownItem name="10" :selected="searchParam.level == 10">10层</DropdownItem>
+            <DropdownItem name="1" :selected="searchParam.level == 1">{{ $t('term.cmdb.levelnumber', { level: 1 }) }}</DropdownItem>
+            <DropdownItem name="2" :selected="searchParam.level == 2">{{ $t('term.cmdb.levelnumber', { level: 2 }) }}</DropdownItem>
+            <DropdownItem name="3" :selected="searchParam.level == 3">{{ $t('term.cmdb.levelnumber', { level: 3 }) }}</DropdownItem>
+            <DropdownItem name="4" :selected="searchParam.level == 4">{{ $t('term.cmdb.levelnumber', { level: 4 }) }}</DropdownItem>
+            <DropdownItem name="5" :selected="searchParam.level == 5">{{ $t('term.cmdb.levelnumber', { level: 5 }) }}</DropdownItem>
+            <DropdownItem name="6" :selected="searchParam.level == 6">{{ $t('term.cmdb.levelnumber', { level: 6 }) }}</DropdownItem>
+            <DropdownItem name="7" :selected="searchParam.level == 7">{{ $t('term.cmdb.levelnumber', { level: 7 }) }}</DropdownItem>
+            <DropdownItem name="8" :selected="searchParam.level == 8">{{ $t('term.cmdb.levelnumber', { level: 8 }) }}</DropdownItem>
+            <DropdownItem name="9" :selected="searchParam.level == 9">{{ $t('term.cmdb.levelnumber', { level: 9 }) }}</DropdownItem>
+            <DropdownItem name="10" :selected="searchParam.level == 10">{{ $t('term.cmdb.levelnumber', { level: 10 }) }}</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </span>
       <span class="action-item">
         <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
           <a href="javascript:void(0)">
-            展示关系
+            {{ $t('term.cmdb.showrel') }}
             <Icon type="ios-arrow-down"></Icon>
           </a>
           <DropdownMenu slot="list">
@@ -114,12 +114,12 @@ export default {
       isloading: false,
       currentLayout: 'dot',
       layoutList: [
-        { engine: 'dot', name: '分层布局' },
-        { engine: 'circo', name: '环形布局' },
-        { engine: 'neato', name: '张力布局' },
-        { engine: 'osage', name: '阵列布局' },
-        { engine: 'fdp', name: '无向布局' },
-        { engine: 'twopi', name: '星形布局' }
+        { engine: 'dot', name: this.$t('term.cmdb.topo.dot') },
+        { engine: 'circo', name: this.$t('term.cmdb.topo.circo') },
+        { engine: 'neato', name: this.$t('term.cmdb.topo.neato') },
+        { engine: 'osage', name: this.$t('term.cmdb.topo.osage') },
+        { engine: 'fdp', name: this.$t('term.cmdb.topo.fdp') },
+        { engine: 'twopi', name: this.$t('term.cmdb.topo.twopi') }
       ],
       graph: {},
       data: {},
@@ -258,12 +258,14 @@ export default {
     },
     resizeSVG() {
       const graphEl = document.getElementById('graph');
-      d3.select('#graph')
-        .selectWithoutDataPropagation('svg')
-        .transition()
-        .duration(700)
-        .attr('width', graphEl.offsetWidth)
-        .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+      if (graphEl) {
+        d3.select('#graph')
+          .selectWithoutDataPropagation('svg')
+          .transition()
+          .duration(700)
+          .attr('width', graphEl.offsetWidth)
+          .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+      }
     },
     initGraph() {
       window.setTimeout(() => {
@@ -364,7 +366,7 @@ export default {
           .attr('y', y + 10)
           .text('abc');*/
         } else {
-          this.error = '拓扑图无法显示，请检查当前配置项所属模型类型是否允许展示拓扑';
+          this.error = this.$t('message.content.cmdb.notopo');
         }
         this.isloading = false;
       });

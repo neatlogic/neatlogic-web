@@ -8,8 +8,8 @@
               v-model="isCiTopoShow"
               :true-value="true"
               :false-value="false"
-              trueText="隐藏拓扑"
-              falseText="显示拓扑"
+              :trueText="$t('term.cmdb.hidetopo')"
+              :falseText="$t('term.cmdb.showtopo')"
               showStatus
               style="display:contents"
             ></TsFormSwitch>
@@ -87,21 +87,21 @@
                   </a>
                 </template>
                 <template v-slot:isAbstract="{ row }">
-                  <span v-if="row.isAbstract" class="text-success">是</span>
-                  <span v-else class="text-grey">否</span>
+                  <span v-if="row.isAbstract" class="text-success">{{ $t('page.yes') }}</span>
+                  <span v-else class="text-grey">{{ $t('page.no') }}</span>
                 </template>
                 <template v-slot:isVirtual="{ row }">
-                  <span v-if="row.isVirtual" class="text-success">是</span>
-                  <span v-else class="text-grey">否</span>
+                  <span v-if="row.isVirtual" class="text-success">{{ $t('page.yes') }}</span>
+                  <span v-else class="text-grey">{{ $t('page.no') }}</span>
                 </template>
                 <template v-slot:syncPolicyCount="{ row }">
-                  <span v-if="row.syncPolicyCount" class="text-success">是</span>
-                  <span v-else class="text-grey">否</span>
+                  <span v-if="row.syncPolicyCount" class="text-success">{{ $t('page.yes') }}</span>
+                  <span v-else class="text-grey">{{ $t('page.no') }}</span>
                 </template>
               </TsTable>
             </div>
           </div>
-          <NoData v-if="!isCiTopoShow && ciTypeList.length == 0" text="暂无数据" />
+          <NoData v-if="!isCiTopoShow && ciTypeList.length == 0" :text="$t('page.nodata')" />
           <CiTopo v-if="isCiTopoShow" :searchParam="searchParam" :isShow="isCiTopoShow"></CiTopo>
         </div>
       </div>
@@ -124,13 +124,12 @@ export default {
     return {
       showMode: 'card',
       theadList: [
-        { key: 'name', title: '名称' },
-        { key: 'typeName', title: '分类' },
-        { key: 'parentCiId', title: '父模型' },
-        { key: 'isAbstract', title: '抽象模型？' },
-        { key: 'isVirtual', title: '虚拟模型？' },
-        { key: 'syncPolicyCount', title: '配置同步策略？' },
-        { key: 'description', title: '说明' }
+        { key: 'name', title: this.$t('page.name') },
+        { key: 'typeName', title: this.$t('page.classify') },
+        { key: 'parentCiId', title: this.$t('term.cmdb.parentci') },
+        { key: 'isAbstract', title: this.$t('term.cmdb.abstractci') + '？' },
+        { key: 'isVirtual', title: this.$t('term.cmdb.virtualci') + '？' },
+        { key: 'description', title: this.$t('page.description') }
       ],
       sortList: ['name', 'typeName', 'parentCiId', 'isAbstract', 'isVirtual', 'syncPolicyCount'],
       sortOrder: [],
@@ -144,7 +143,7 @@ export default {
             valueName: 'id',
             textName: 'name',
             url: '/api/rest/cmdb/citype/list',
-            label: '分类',
+            label: this.$t('page.classify'),
             multiple: true,
             transfer: true
           },
@@ -152,19 +151,19 @@ export default {
             type: 'radio',
             name: 'isAbstract',
             dataList: [
-              { value: 1, text: '是' },
-              { value: 0, text: '否' }
+              { value: 1, text: this.$t('page.yes') },
+              { value: 0, text: this.$t('page.no') }
             ],
-            label: '只看抽象模型'
+            label: this.$t('term.cmdb.onlyabstractci')
           },
           {
             type: 'radio',
             name: 'isVirtual',
             dataList: [
-              { value: 1, text: '是' },
-              { value: 0, text: '否' }
+              { value: 1, text: this.$t('page.yes') },
+              { value: 0, text: this.$t('page.no') }
             ],
-            label: '只看虚拟模型'
+            label: this.$t('term.cmdb.onlyvirtualci')
           }
         ]
       },
@@ -182,7 +181,7 @@ export default {
         search: true,
         valueName: 'id',
         textName: 'name',
-        placeholder: '模型类型',
+        placeholder: this.$t('term.cmdb.citype'),
         onChange: function(value) {
           if (!value) {
             _this.searchParam.typeId = null;

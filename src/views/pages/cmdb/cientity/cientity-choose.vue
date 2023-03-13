@@ -4,9 +4,6 @@
       v-bind="dialogConfig"
       @on-close="close"
     >
-      <template v-slot:header>
-        <div>选择配置项</div>
-      </template>
       <template v-slot>
         <CiEntityList
           :ciId="ciId"
@@ -20,8 +17,8 @@
         ></CiEntityList>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="ok()">确定</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="ok()">{{ $t('button.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -42,6 +39,7 @@ export default {
     return {
       selectedCiEntityList: [],
       dialogConfig: {
+        title: this.$t('term.cmdb.selectcientity'),
         type: 'modal',
         maskClose: false,
         isShow: true,
