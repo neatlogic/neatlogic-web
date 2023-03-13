@@ -173,6 +173,9 @@ export default {
         let findItem = this.combopGroupList.find(item => item.uuid == groupUuid);
         findItem && (this.groupConfig = findItem);
       }
+      if (config) {
+        this.selectStep(config);
+      }
     },
     delStep(config, oindex) {
       let _this = this;
