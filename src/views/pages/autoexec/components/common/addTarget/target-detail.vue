@@ -163,6 +163,7 @@ export default {
         description: this.$t('term.autoexec.citeupstreamparamdesc')
       });
     }
+    this.initData();
   },
   beforeMount() {},
   mounted() {},
@@ -210,9 +211,6 @@ export default {
       }
       return data;
     },
-    changeType() {
-     
-    },
     valid() {
       let isValid = true;
       if (!this.$refs.typeList.valid()) {
@@ -234,13 +232,13 @@ export default {
   computed: {
   },
   watch: {
-    config: {
-      handler(val) {
-        this.initData();
-      },
-      immediate: true,
-      deep: true
-    }
+    // config: {
+    //   handler(val) {
+    //     this.initData();
+    //   },
+    //   immediate: true,
+    //   deep: true
+    // }
   }
 };
 </script>

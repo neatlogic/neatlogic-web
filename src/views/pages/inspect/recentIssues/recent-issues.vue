@@ -793,7 +793,8 @@ export default {
     },
     openJobDetail(row) {
       // 打开新的工作详情
-      this.$router.push({path: '/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status});
+      let jobPhaseNodeVo = row.jobPhaseNodeVo || '';
+      this.$router.push({path: '/job-detail?id=' + (jobPhaseNodeVo ? jobPhaseNodeVo.jobId : '') + '&status=' + (jobPhaseNodeVo ? jobPhaseNodeVo.status : '')});
     },
     sendEmail() {
       // 发送邮件
