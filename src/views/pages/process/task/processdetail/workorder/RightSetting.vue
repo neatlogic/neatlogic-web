@@ -27,7 +27,7 @@
     <div ref="rightMain" class="right-setting" :style="setContentHeight(rightHeight)">
       <div class="information-box">
         <div class="bg-op padding radius-lg">
-          <div class="title">{{ $t('page.basesetting') }}</div>
+          <div class="title h4">{{ $t('page.basesetting') }}</div>
           <div v-if="processTaskConfig.ownerVo" class="information-list">
             <div class="infor-left"> <UserCard :uuid="processTaskConfig.ownerVo.uuid" :iconSize="32" hideName></UserCard></div>
             <div class="infor-right">
@@ -185,7 +185,7 @@
       <!-- sla -->
       <div v-if="slaTimeList.length > 0" class="information-box">
         <div class="bg-op padding radius-lg">
-          <div class="title">SLA</div>
+          <div class="title h4">SLA</div>
           <div v-for="(sla, slaIndex) in slaTimeList" :key="slaIndex" class="information-list">
             <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
             <div class="infor-right">
@@ -225,7 +225,7 @@
       <!-- 评分 -->
       <div v-if="processTaskConfig.scoreInfo" class="information-box">
         <div class="bg-op padding radius-lg">
-          <div class="title">{{ $t('page.score') }}</div>
+          <div class="title h4">{{ $t('page.score') }}</div>
           <ScoreDisplay :scoreConfig="JSON.parse(processTaskConfig.scoreInfo)"></ScoreDisplay>
         </div>
       </div>

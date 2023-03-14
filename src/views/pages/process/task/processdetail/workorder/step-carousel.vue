@@ -16,7 +16,7 @@
 <template>
   <div v-if="isShow" class="information-box">
     <div class="bg-op padding radius-lg">
-      <div class="information-title">{{ $t('term.process.currentstep') }}</div>
+      <div class="h4 pb-nm">{{ $t('term.process.currentstep') }}</div>
       <Carousel
         v-if="isShow"
         v-model="value"
