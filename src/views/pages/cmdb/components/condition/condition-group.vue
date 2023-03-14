@@ -1,7 +1,7 @@
 <template>
   <div class="edit-condition">
     <div>
-      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">规则组合</a></span>
+      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a></span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
       <div class="group-content bg-op radius-md">
@@ -26,7 +26,7 @@
                   "
                 >
                   <template v-slot:option="{ item }">
-                    <span class="text-grey">{{ item.type == 'attr' ? '属性' : '关系' }}·</span>
+                    <span class="text-grey">{{ item.type == 'attr' ? $t('page.attribute') : $t('page.relation') }}·</span>
                     <span>{{ item.label }}</span>
                     <span class="text-grey">({{ item.name }})</span>
                   </template>
