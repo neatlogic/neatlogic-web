@@ -140,7 +140,7 @@
     </TsContain>
     <div class="btn-bar">
       <div class="btn-group">
-        <Button type="primary" @click="submitbtn()">保存</Button>
+        <Button type="primary" @click="submitbtn()">{{ $t('button.save') }}</Button>
       </div>
     </div>
   </div>

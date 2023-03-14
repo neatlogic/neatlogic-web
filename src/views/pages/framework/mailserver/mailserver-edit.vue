@@ -30,13 +30,13 @@
             class="mr-sm"
             @click="test()"
           >邮件测试</Button>
-          <Button type="primary" @click="submit()">保存</Button>
+          <Button type="primary" @click="submit()">{{ $t('button.save') }}</Button>
         </div>
       </template>
       <div slot="content" class="content border-color">
         <div class="form">
           <TsForm ref="form" :itemList="formData"></TsForm>
-          <Button type="primary" @click="submit()">保存</Button>
+          <Button type="primary" @click="submit()">{{ $t('button.save') }}</Button>
         </div>
       </div>
     </TsContain>

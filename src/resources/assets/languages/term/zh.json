@@ -686,7 +686,9 @@
     "authname": "权限名称",
     "belongmodule": "所属模块",
     "authdesc": "权限描述",
-    "calendar": "排班"
+    "calendar": "排班",
+    "inheritselected":"继承选中",
+    "selectsubnode": "选中子节点"
   },
   "knowledge": {
     "document": "文档",

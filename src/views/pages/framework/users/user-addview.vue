@@ -27,7 +27,7 @@
             </div>
             <div v-else>
               <Button v-if="readonly" type="primary" @click="readonly = false">{{ $t('page.edit') }}</Button>
-              <Button v-else type="primary" @click="editSave()">保存</Button>
+              <Button v-else type="primary" @click="editSave()">{{ $t('button.save') }}</Button>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
                   :loading="isLoading"
                   class="save"
                   @click="editSave()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
             <TabPane :label="label2" name="auth">
@@ -139,7 +139,7 @@
                   type="primary"
                   :loading="isLoading"
                   @click="editSave()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
           </Tabs>

@@ -99,7 +99,7 @@
         <div class="drawer-footer">
           <span v-if="userCount.number> 0" style="float:left;padding-top:10px"> 共计选中{{ userCount.number }} 个用户 </span>
           <Button style="margin-left: 8px" @click="showAdd = false;">取消</Button>
-          <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">保存</Button>
+          <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">{{ $t('button.save') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -118,8 +118,8 @@
         <div class="drawer-footer">
           <span style="float:left;padding-top:10px"> {{ roleCount.text }}</span>
           <Button style="margin-left: 8px" @click="showAddRole = false">取消</Button>
-          <Button v-if="roleCount.roleUuidList && roleCount.roleUuidList.length > 0" type="primary" @click="submitRole">保存</Button>
-          <Button v-else type="primary" disabled>保存</Button>
+          <Button v-if="roleCount.roleUuidList && roleCount.roleUuidList.length > 0" type="primary" @click="submitRole">{{ $t('button.save') }}</Button>
+          <Button v-else type="primary" disabled>{{ $t('button.save') }}</Button>
         </div>
       </template>
     </TsDialog>

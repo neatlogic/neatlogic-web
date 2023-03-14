@@ -24,10 +24,10 @@
                 :loading="isLoading"
                 class="submitBtn"
                 @click="addSave"
-              >保存</Button>
+              >{{ $t('button.save') }}</Button>
             </div>
             <div v-else>
-              <!-- <Button type="default" @click="saveTeam()">保存</Button> -->
+              <!-- <Button type="default" @click="saveTeam()">{{ $t('button.save') }}</Button> -->
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
                   class="save"
                   :loading="isLoading"
                   @click="saveTeam()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
             <TabPane :label="label2" name="userTabs">
@@ -87,7 +87,7 @@
                   @saveLevel="saveLevel"
                   @deleteOk="deleteOk"
                 ></CommonAdduser>
-                <!-- <Button type="primary" class="save" @click="saveTeam()">保存</Button> -->
+                <!-- <Button type="primary" class="save" @click="saveTeam()">{{ $t('button.save') }}</Button> -->
               </div>
             </TabPane>
           </Tabs>

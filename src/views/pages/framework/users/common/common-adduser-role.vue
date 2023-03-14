@@ -65,7 +65,7 @@
             <div class="drawer-footer">
               <span v-if="userCount.number> 0" style="float:left;padding-top:10px"> 共计选中{{ userCount.number }} 个用户 </span>
               <Button style="margin-left: 8px" @click="showAdd = false;">取消</Button>
-              <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">保存</Button>
+              <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">{{ $t('button.save') }}</Button>
             </div>
           </template>
         </TsDialog>
