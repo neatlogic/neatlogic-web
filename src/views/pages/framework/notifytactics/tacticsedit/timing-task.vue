@@ -77,8 +77,8 @@
           <div class="tstable-action">
             <ul class="tstable-action-ul">
               <li class="ts-page" @click.stop="viewRecord(row)">执行记录</li>
-              <li class="tsfont-edit icon" @click="editRow(row)">编辑</li>
-              <li class="tsfont-trash-o icon" @click="deleteRow(row)">删除</li>
+              <li class="tsfont-edit icon" @click="editRow(row)">{{ $t('page.edit') }}</li>
+              <li class="tsfont-trash-o icon" @click="deleteRow(row)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>
@@ -222,7 +222,7 @@ export default {
     },
     deleteRow(row) {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该定时任务：' + row.name + '？',
         btnType: 'error',
         'on-ok': vnode => {

@@ -312,7 +312,7 @@ export default {
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.datawarehouse.updateDatasourceParamCurrentValue(row.id).then(res => {
-            this.$Message.success('重置成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             vnode.isShow = false;
             this.$set(row, 'currentValue', '');
           });

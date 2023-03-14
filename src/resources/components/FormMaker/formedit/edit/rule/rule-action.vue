@@ -151,7 +151,7 @@ export default {
         clearable: false,
         valueName: 'uuid',
         textName: 'label',
-        placeholder: '请选择组件',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.component')}),
         validateList: ['required']
       },
       dialogConfig: {

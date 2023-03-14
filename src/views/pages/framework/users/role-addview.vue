@@ -21,7 +21,7 @@
               >创建角色</Button>
             </div>
             <div v-else>
-              <Button type="primary" :loading="isLoading" @click="editSave()">保存</Button>
+              <Button type="primary" :loading="isLoading" @click="editSave()">{{ $t('button.save') }}</Button>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@
                   class="save"
                   :loading="isLoading"
                   @click="editSave()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
             <TabPane :label="label2" name="adduser">
@@ -108,7 +108,7 @@
                   class="save"
                   :loading="isLoading"
                   @click="editSave()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
           </Tabs>
@@ -236,7 +236,7 @@ export default {
       leaveName: '', //准备进入tabsname
       tabsaveModel: false,
       submitModel: false,
-      stepList: ['基本信息', '添加成员', '添加分组', '授权'],
+      stepList: ['基本信息', '添加成员', this.$t('page.addtarget', {target: this.$t('page.group')}), '授权'],
       submitMessage: false, //不再提示
       convenienceDetail: null, //个性化设置
       isLoading: false,
@@ -345,7 +345,7 @@ export default {
             if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
               this.submitModel = true;
             } else {
-              this.$Message.success('创建角色成功');
+              this.$Message.success(this.$t('message.content.executesuccess'));
               let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
               let value = data.value;
               switch (value) {
@@ -411,7 +411,7 @@ export default {
         };
         await this.$api.common.saveRoleAuth(data).then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('授权成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.roleTabsAuthList = JSON.parse(JSON.stringify(this.$refs.commonAuth.authSelectList));
             this.roleData = this.getData();
             this.defaultAuthUserSelectList = this.$utils.deepClone(authList); // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据

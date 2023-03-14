@@ -47,10 +47,10 @@
         </div>
         <div class="condition-action">
           <div class="action-btn">
-            <Button @click="editTactics(item)">编辑</Button>
+            <Button @click="editTactics(item)">{{ $t('page.edit') }}</Button>
           </div>
           <div class="action-btn">
-            <Button @click="delCondition(item, index)">删除</Button>
+            <Button @click="delCondition(item, index)">{{ $t('page.delete') }}</Button>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default {
     delCondition(obj, index) {
       //删除条件
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该配置?',
         btnType: 'error',
         'on-ok': vnode => {
@@ -165,7 +165,7 @@ export default {
             .delTriggerConfig(data)
             .then(res => {
               if (res.Status == 'OK') {
-                this.$Message.success('刪除成功');
+                this.$Message.success(this.$t('message.content.deletesuccess'));
                 vnode.isShow = false;
                 this.notifyList.splice(index, 1);
               }

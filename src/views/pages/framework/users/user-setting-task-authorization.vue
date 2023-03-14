@@ -27,7 +27,7 @@
             <li
               class="icon tsfont-trash-o text-href"
               @click.stop="deleteRow"
-            >删除</li>
+            >{{ $t('page.delete') }}</li>
           </ul>
         </div>
 
@@ -357,7 +357,7 @@ export default {
     deleteRow() {
       let that = this;
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该授权吗?',
         btnType: 'error',
         'on-ok': vnode => {

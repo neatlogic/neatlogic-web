@@ -63,7 +63,7 @@
           <template slot="action" slot-scope="{ row , index}">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-trash" @click="delRow(row, index)">删除</li>
+                <li class="ts-trash" @click="delRow(row, index)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -416,7 +416,7 @@ export default {
                       this.$set(this.dialogSetting, 'isShow', false);
                       this.$set(this.itemList.fileId, 'value', null);
                       this.getTableList();
-                      this.$Message.success('替换成功');
+                      this.$Message.success(this.$t('message.content.executesuccess'));
                     }
                   });
                 }

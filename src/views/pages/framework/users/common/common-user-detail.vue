@@ -13,15 +13,15 @@
           <span class="text" :title="userDetail.userId">{{ userDetail.userId || '-' }}</span>
         </div>
         <div class="detail-item overflow">
-          <span class="label text-grey">电话</span>
+          <span class="label text-grey">{{ $t('page.phone') }}</span>
           <span class="text" :title="userDetail.phone">{{ userDetail.phone || '-' }}</span>
         </div>
         <div class="detail-item overflow">
-          <span class="label text-grey">邮箱</span>
+          <span class="label text-grey">{{ $t('page.email') }}</span>
           <span class="text" :title="userDetail.email">{{ userDetail.email || '-' }}</span>
         </div>
         <div class="detail-item overflow">
-          <span class="label text-grey">角色</span>
+          <span class="label text-grey">{{ $t('page.role') }}</span>
           <span class="text" :title="showRole(userDetail.roleList)">{{ showRole(userDetail.roleList) }}</span>
         </div>
       </div>
@@ -38,7 +38,7 @@
           <span class="text username" :title="roleDetail.name">{{ roleDetail.name || '-' }}</span>
         </div>
         <div class="detail-item overflow">
-          <span class="label text-grey">描述</span>
+          <span class="label text-grey">{{ $t('page.description') }}</span>
           <span class="text" :title="roleDetail.description">{{ roleDetail.description || '-' }}</span>
         </div>
       </div>

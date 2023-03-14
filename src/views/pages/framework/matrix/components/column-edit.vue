@@ -101,7 +101,7 @@
                     <span
                       v-if="dataList.length > 1"
                       class="tsfont-minus-o span-btn btn-remove"
-                      title="删除"
+                      :title="$t('page.delete')"
                       @click="removeOption(index)"
                     ></span>
                     <span v-if="dataList.length > 1" class="ts-bars span-btn btn-move" title="移动"></span>
@@ -160,7 +160,7 @@ export default {
           width: '100%',
           url: '/api/rest/universal/enum/get?enumClass=neatlogic.framework.matrix.constvalue.MatrixAttributeType',
           transfer: true,
-          validateList: [{ name: 'required', message: '请选择类型' }, { name: 'name-special' }],
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }, { name: 'name-special' }],
           onChange() {
             _this.dataList = [{ value: '', text: '' }];
           }

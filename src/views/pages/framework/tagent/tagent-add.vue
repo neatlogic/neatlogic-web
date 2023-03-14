@@ -18,7 +18,7 @@
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="tsfont-plus action-item" @click="addGroud()">分组</span>
+          <span class="tsfont-plus action-item" @click="addGroud()">{{ $t('page.group') }}</span>
           <span class="tsfont-proxy action-item" @click="goRunner()">执行器管理</span>
         </div>
       </template>

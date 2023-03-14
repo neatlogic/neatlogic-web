@@ -338,7 +338,7 @@ export default {
           });
         });
         Promise.all(promiseArr).then(() => {
-          this.$Message.success('状态刷新成功');
+          this.$Message.success(this.$t('message.content.refreshsuccess'));
         }).catch(() => {
         });
       }
@@ -470,7 +470,7 @@ export default {
           if (res.Status == 'OK') {
             form.resetForm();
             this.isShowVersionUpdate = false;
-            this.$Message.success('升级成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
         });
       } else {
@@ -570,7 +570,7 @@ export default {
             .then((res) => {
               if (res.Status == 'OK') {
                 this.getTableData(1);
-                this.$Message.success('重启成功');
+                this.$Message.success(this.$t('message.content.executesuccess'));
               }
             }).finally(res => {
               vnode.isShow = false;
@@ -594,7 +594,7 @@ export default {
             .then((res) => {
               if (res.Status == 'OK') {
                 this.getTableData(1);
-                this.$Message.success('重置成功');
+                this.$Message.success(this.$t('message.content.executesuccess'));
               }
             }).finally(res => {
               vnode.isShow = false;

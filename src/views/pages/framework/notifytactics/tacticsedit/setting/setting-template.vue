@@ -55,7 +55,7 @@
                   <div class="operation text-tip" :class="row.isDel?'block':''">
                     <i class="ts-intersect" title="复制" @click="editSetting(row, true)"></i>
                     <i class="tsfont-edit" title="编辑" @click="editSetting(row, false)"></i>
-                    <i class="tsfont-trash-s" title="删除" @click="delSetting(row)"></i>
+                    <i class="tsfont-trash-s" :title="$t('page.delete')" @click="delSetting(row)"></i>
                   </div>
                 </div>
                 <DelItme
@@ -187,7 +187,7 @@
                             </div>
                             <div v-show="row.isEditable" class="operation text-tip bg-block" :class="row.isDel?'block':''">
                               <i class="tsfont-edit" title="编辑" @click.stop="editParam(row)"></i>
-                              <i class="tsfont-trash-s" title="删除" @click.stop="delParamSetting(row)"></i>
+                              <i class="tsfont-trash-s" :title="$t('page.delete')" @click.stop="delParamSetting(row)"></i>
                             </div>
                           </div>
                           <DelItme

@@ -12,7 +12,7 @@
       </div>
       <div slot="topRight" style="text-align:right">
         <div class="bar-top-right action-group">
-          <div v-if="matrixDataSelectList.length > 0" class="action-item tsfont-trash-o cursor-pointer" @click="deleteMatrixData(matrixDataSelectList, 'empty')">批量删除数据</div>
+          <div v-if="matrixDataSelectList.length > 0" class="action-item tsfont-trash-o cursor-pointer" @click="deleteMatrixData(matrixDataSelectList, 'empty')">{{ $t('page.batchdelete') }}</div>
           <div class="action-item">
             <Dropdown trigger="click" transfer>
               <span class="tsfont-cloud">导入/导出</span>
@@ -85,8 +85,8 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-edit icon" @click.stop="editMatrixData(row)">编辑</li>
-                <li class="tsfont-trash-o icon" @click.stop="deleteMatrixData(row)">删除</li>
+                <li class="tsfont-edit icon" @click.stop="editMatrixData(row)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o icon" @click.stop="deleteMatrixData(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -306,7 +306,7 @@ export default {
     //删除矩阵
     delMatrix: function() {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除矩阵：' + this.matrixName + '?',
         btnType: 'error',
         'on-ok': vnode => {

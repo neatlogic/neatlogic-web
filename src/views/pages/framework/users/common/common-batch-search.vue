@@ -10,7 +10,7 @@
       <!-- <transition-group name="list"> -->
       <span v-for="(item, index) in currentValueList" :key="item.value" :class="['span-target', 'border-color', type]">
         {{ item.text }}
-        <i class="tsfont-close text-icon" title="删除" @click="delValue(index)"></i>
+        <i class="tsfont-close text-icon" :title="$t('page.delete')" @click="delValue(index)"></i>
       </span>
       <!-- </transition-group> -->
       <div class="search-contain" @keydown="handleKeydown">

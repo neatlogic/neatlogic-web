@@ -14,7 +14,7 @@
           <Col span="18">
             <InputSearcher
               v-model="keyword"
-              placeholder="关键字"
+              :placeholder="$t('page.keyword')"
               @change="search()"
             ></InputSearcher>
           </Col>
@@ -26,22 +26,22 @@
             <div class="card-top text-grey">
               <TsRow>
                 <Col span="6">
-                  权限名称
+                  {{ $t('term.framework.authname') }}
                 </Col>
                 <Col span="2">
-                  所属模块
+                  {{ $t('term.framework.belongmodule') }}
                 </Col>
                 <Col span="10">
-                  权限描述
+                  {{ $t('term.framework.authdesc') }}
                 </Col>
                 <Col span="2">
-                  用户数量
+                  {{ $t('term.framework.usercount') }}
                 </Col>
                 <Col span="2">
-                  角色数量
+                  {{ $t('term.framework.rolecount') }}
                 </Col>
                 <Col span="2">
-                  操作
+                  {{ $t('page.action') }}
                 </Col>
               </TsRow>
             </div>
@@ -75,18 +75,18 @@
                   </Poptip>
                 </Col>
                 <Col span="2">
-                  <li class="ts-user count text-left" title="用户数量">
+                  <li class="ts-user count text-left" :title="$t('term.framework.usercount')">
                     <span>{{ item.userCount }}</span>
                   </li>
                 </Col>
                 <Col span="2">
-                  <li class="ts-team count text-left" title="角色数量">
+                  <li class="ts-team count text-left" :title="$t('term.framework.rolecount')">
                     <span>{{ item.roleCount }}</span>
                   </li>
                 </Col>
                 <Col span="2" class="action">
                   <ul class="tstable-action-ul">
-                    <li class="ts-permission text-action" @click="adduser(item.name)">授权</li>
+                    <li class="ts-permission text-action" @click="adduser(item.name)">{{ $t('page.auth') }}</li>
                   </ul>
                 </Col>
               </TsRow>

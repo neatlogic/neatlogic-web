@@ -140,7 +140,7 @@
     </TsContain>
     <div class="btn-bar">
       <div class="btn-group">
-        <Button type="primary" @click="submitbtn()">保存</Button>
+        <Button type="primary" @click="submitbtn()">{{ $t('button.save') }}</Button>
       </div>
     </div>
   </div>
@@ -341,7 +341,7 @@ export default {
       menurules: {
         name: [{ required: true, message: '请填写名称', trigger: 'blur' }],
         selectmodule: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
-        icon: [{ required: true, message: '请选择图标', trigger: 'change' }]
+        icon: [{ required: true, message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}), trigger: 'change' }]
       },
       setting: {
         view: {
@@ -508,7 +508,7 @@ export default {
       };
 
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该菜单？',
         btnType: 'error',
         'on-ok': vnode => {

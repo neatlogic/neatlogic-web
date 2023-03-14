@@ -145,7 +145,7 @@ export default {
             .cleanHandlerNotify(data)
             .then(res => {
               if (res.Status == 'OK') {
-                this.$Message.success('清除成功');
+                this.$Message.success(this.$t('message.content.deletesuccess'));
                 vnode.isShow = false;
                 this.getTableData();
               }

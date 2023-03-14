@@ -29,7 +29,7 @@
             <PasswordRow :value="row.password"></PasswordRow>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <div>{{ row.isActive == 1 ? '启用' : '禁用' }}</div>
+            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -41,10 +41,10 @@
                     :false-value="0"
                     @on-change="activeRow(row.isActive,row.uuid)"
                   ></i-switch>
-                  <span class="actionText" v-html="row.isActive == 1 ? '启用' : '禁用'"></span>
+                  <span class="actionText" v-html="row.isActive == 1 ? $t('page.enable') : $t('page.disable')"></span>
                 </li>
-                <li class="tsfont-edit icon" @click="editRow(row.uuid)">编辑</li>
-                <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">删除</li>
+                <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -283,7 +283,7 @@ export default {
     },
     deleteRow(uuid, name) {
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该邮件服务器：' + name + '?',
         btnType: 'error',
         'on-ok': vnode => {
@@ -296,13 +296,6 @@ export default {
                 this.getTableDataSearch();
                 vnode.isShow = false;
               }
-            })
-            .catch(error => {
-              if (error.data.Message) {
-                this.$Message.error('删除失败：' + error.data.Message);
-              } else {
-                this.$Message.error('接口请求错误');
-              }
             });
         }
       });
@@ -313,15 +306,13 @@ export default {
         .active(params)
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success(status ? '启用成功' : '禁用成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             this.getTableDataSearch();
           }
         })
         .catch(error => {
           if (error.data.Message) {
-            this.$Message.error(status ? '启用成功' : '禁用成功' + error.data.Message);
-          } else {
-            this.$Message.error('接口请求错误');
+            this.$Message.error(error.data.Message);
           }
           if (status == 1) {
             status = 0;

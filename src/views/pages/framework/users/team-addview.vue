@@ -24,10 +24,10 @@
                 :loading="isLoading"
                 class="submitBtn"
                 @click="addSave"
-              >保存</Button>
+              >{{ $t('button.save') }}</Button>
             </div>
             <div v-else>
-              <!-- <Button type="default" @click="saveTeam()">保存</Button> -->
+              <!-- <Button type="default" @click="saveTeam()">{{ $t('button.save') }}</Button> -->
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
                   class="save"
                   :loading="isLoading"
                   @click="saveTeam()"
-                >保存</Button>
+                >{{ $t('button.save') }}</Button>
               </div>
             </TabPane>
             <TabPane :label="label2" name="userTabs">
@@ -87,7 +87,7 @@
                   @saveLevel="saveLevel"
                   @deleteOk="deleteOk"
                 ></CommonAdduser>
-                <!-- <Button type="primary" class="save" @click="saveTeam()">保存</Button> -->
+                <!-- <Button type="primary" class="save" @click="saveTeam()">{{ $t('button.save') }}</Button> -->
               </div>
             </TabPane>
           </Tabs>
@@ -407,7 +407,7 @@ export default {
           if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
             this.submitModel = true;
           } else {
-            this.$Message.success('创建成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
             let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
             let value = data.value;
             switch (value) {

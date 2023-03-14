@@ -41,7 +41,7 @@
                     <li
                       class="tsfont-trash-o"
                       @click="deleteProp(row)"
-                    >删除</li>
+                    >{{ $t('page.delete') }}</li>
                   </ul>
                 </div>
               </template>-->
@@ -133,18 +133,18 @@ export default {
           type: 'radio',
           value: 1,
           defaultValue: 1, //默认值
-          label: '状态',
+          label: this.$t('page.status'),
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
             {
               value: 1,
-              text: '启用'
+              text: this.$t('page.enable')
             },
             {
               value: 0,
-              text: '禁用'
+              text: this.$t('page.disable')
             }
           ]
         },

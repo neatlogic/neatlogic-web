@@ -79,7 +79,7 @@
                 ghost
                 @click="next(current -= 1)"
               >上一步</Button>
-              <Button type="primary" @click="saveRunnerGroup()">保存</Button>
+              <Button type="primary" @click="saveRunnerGroup()">{{ $t('button.save') }}</Button>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default {
         // 弹框配置信息
         type: 'modal',
         hasFooter: false,
-        title: '添加分组'
+        title: this.$t('page.addtarget', {target: this.$t('page.group')})
       }
     };
   },

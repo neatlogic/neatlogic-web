@@ -5,12 +5,12 @@
       <template slot="topLeft">
         <div v-if="selectedList && selectedList.length > 0">
           <div class="action-group toolbar-right">
-            <span class="action-item tsfont-trash-o" @click="deleteList(selectedList)">批量删除</span>
+            <span class="action-item tsfont-trash-o" @click="deleteList(selectedList)">{{ $t('page.batchdelete') }}</span>
           </div>
         </div>
         <div v-else>
           <div class="action-group toolbar-right">
-            <span class="action-item tsfont-plus" @click="editRole()">角色</span>
+            <span class="action-item tsfont-plus" @click="editRole()">{{ $t('page.role') }}</span>
           </div>
         </div>
       </template>
@@ -32,11 +32,11 @@
             <template slot="action" slot-scope="{row}">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="tsfont-edit text-action" @click="editRole(row, 'role')">编辑</li>
-                  <li class="tsfont-plus text-action" @click="editRole(row, 'adduser')">成员</li>
-                  <li class="tsfont-plus text-action" @click="editRole(row, 'addgroup')">分组</li>
-                  <li class="ts-permission text-action" @click="editRole(row, 'auth')">授权</li>
-                  <li class="tsfont-trash-o text-action" @click="deleteList(row)">删除</li>
+                  <li class="tsfont-edit text-action" @click="editRole(row, 'role')">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-plus text-action" @click="editRole(row, 'adduser')">{{ $t('page.member') }}</li>
+                  <li class="tsfont-plus text-action" @click="editRole(row, 'addgroup')">{{ $t('page.group') }}</li>
+                  <li class="ts-permission text-action" @click="editRole(row, 'auth')">{{ $t('page.auth') }}</li>
+                  <li class="tsfont-trash-o text-action" @click="deleteList(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>
             </template>
@@ -66,10 +66,10 @@ export default {
         pageSize: 20
       },
       theadList: [
-        { title: '角色名称', key: 'name' },
-        { title: '角色描述', key: 'description' },
-        { title: '用户数量', key: 'userCount' },
-        { title: '分组数量', key: 'teamCount' },
+        { title: this.$t('term.framework.rolename'), key: 'name' },
+        { title: this.$t('term.framework.roledesc'), key: 'description' },
+        { title: this.$t('term.framework.usercount'), key: 'userCount' },
+        { title: this.$t('term.framework.teamcount'), key: 'teamCount' },
         { title: ' ', key: 'action'}
       ]
     };
@@ -128,8 +128,8 @@ export default {
         uuidList: uuidList
       };
       this.$createDialog({
-        title: '警告',
-        content: '确定删除该角色：' + row.name + '?',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.role') + '：' + row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.role
@@ -141,9 +141,6 @@ export default {
                 this.tableData.currentPage = 1;
                 this.getTableList();
               }
-            })
-            .catch(error => {
-              this.$Message.error('删除失败');
             });
         },
         'on-cancel': vnode => {}

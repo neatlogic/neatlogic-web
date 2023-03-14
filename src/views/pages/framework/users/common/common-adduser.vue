@@ -16,7 +16,7 @@
               <span class="action-item" :class="isSelectAll?'ts-check-square-o':'ts-minus-square'" @click="allSelect">
                 {{ isSelectAll ? '全选' : '取消全选' }}
               </span>
-              <span class="action-item tsfont-trash-o" @click="batchDel">批量删除</span>
+              <span class="action-item tsfont-trash-o" @click="batchDel">{{ $t('page.batchdelete') }}</span>
             </template>
           </div>
           <InputSearcher
@@ -99,7 +99,7 @@
         <div class="drawer-footer">
           <span v-if="userCount.number> 0" style="float:left;padding-top:10px"> 共计选中{{ userCount.number }} 个用户 </span>
           <Button style="margin-left: 8px" @click="showAdd = false;">取消</Button>
-          <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">保存</Button>
+          <Button type="primary" :disabled="userCount.number<= 0" @click="submitUser">{{ $t('button.save') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -118,8 +118,8 @@
         <div class="drawer-footer">
           <span style="float:left;padding-top:10px"> {{ roleCount.text }}</span>
           <Button style="margin-left: 8px" @click="showAddRole = false">取消</Button>
-          <Button v-if="roleCount.roleUuidList && roleCount.roleUuidList.length > 0" type="primary" @click="submitRole">保存</Button>
-          <Button v-else type="primary" disabled>保存</Button>
+          <Button v-if="roleCount.roleUuidList && roleCount.roleUuidList.length > 0" type="primary" @click="submitRole">{{ $t('button.save') }}</Button>
+          <Button v-else type="primary" disabled>{{ $t('button.save') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -355,7 +355,7 @@ export default {
       item.name = item.text || item.name;
       if (this.authName) {
         this.$createDialog({
-          title: '警告',
+          title: this.$t('dialog.title.deleteconfirm'),
           content: '确定删除：' + item.name + '?',
           btnType: 'error',
           'on-ok': async vnode => {
@@ -470,7 +470,7 @@ export default {
       if (arrB.length > 0) {
         if (this.authName) {
           this.$createDialog({
-            title: '警告',
+            title: this.$t('dialog.title.deleteconfirm'),
             content: '确定删除选中目标？',
             btnType: 'error',
             'on-ok': async vnode => {
@@ -491,7 +491,7 @@ export default {
                 });
                 _this.batchCancle();
                 _this.$emit('deleteOk');
-                _this.$Message.success('批量删除成功');
+                _this.$Message.success(this.$t('message.content.deletesuccess'));
                 vnode.isShow = false;
               }
             },

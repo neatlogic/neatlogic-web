@@ -670,7 +670,6 @@ export default {
     align-items: flex-start;
     padding-bottom: 16px;
     .infor-left {
-      font-size: 12px;
       line-height: 18px;
       width: 72px;
       text-align: right;

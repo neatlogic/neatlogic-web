@@ -126,8 +126,8 @@
   "advancesearch": "高级搜索",
   "saved": "{target}已保存",
   "basesetting": "基本信息",
-  "email": "电子邮箱",
-  "phone": "联系方式",
+  "email": "邮箱",
+  "phone": "电话",
   "width": "宽度",
   "height": "高度",
   "top": "顶部",
@@ -491,5 +491,8 @@
   "saveasnewcategory": "另存为新分类",
   "jobstatus": "作业状态",
   "mail": "邮件",
-  "before": "之前"
+  "before": "之前",
+  "member": "成员",
+  "hierarchy": "层级",
+  "timequantum":"时间段"
 }

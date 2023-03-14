@@ -202,8 +202,8 @@ export default {
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 1, text: '启用' },
-            { value: 0, text: '禁用' }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ]
         },
         needAudit: {
@@ -343,7 +343,7 @@ export default {
     deleteApi({ token }) {
       this.$emit('on-hide');
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该接口：' + token + '?',
         btnType: 'error',
         'on-ok': vnode => {
