@@ -1,6 +1,6 @@
 <template>
   <TsDialog
-    title="选择图标"
+    :title="$t('dialog.title.choosetarget', { target: $t('page.icon') })"
     width="medium"
     type="modal"
     :isShow="true"
@@ -25,8 +25,8 @@
       </TsRow>
     </template>
     <template v-slot:footer>
-      <Button @click="close">取消</Button>
-      <Button type="primary" @click="confirm">确定</Button>
+      <Button @click="close">{{ $t('button.cancel') }}</Button>
+      <Button type="primary" @click="confirm">{{ $t('button.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>

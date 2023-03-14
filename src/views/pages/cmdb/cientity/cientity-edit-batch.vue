@@ -1,9 +1,6 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>批量编辑</div>
-      </template>
       <template v-slot>
         <div>
           <div class="tsForm tsForm-border-border ivu-form-label-right ">
@@ -56,13 +53,13 @@
                         <span>
                           <a href="javascript:void(0)" :class="!checkData['rel' + e.element.direction + '_' + e.element.id] ? 'text-disabled' : ''" @click="addRelEntity(e.element)">
                             <i class="tsfont-check"></i>
-                            选择
+                            {{ $t('page.choose') }}
                           </a>
                         </span>
                         <span>
                           <a v-if="allowBatchAdd && ((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))" href="javascript:void(0)" @click="addNewRelEntity(e.element)">
                             <i class="tsfont-plus"></i>
-                            添加
+                            {{ $t('page.add') }}
                           </a>
                         </span>
                         <Poptip v-model="isRelPopShow[e.element.id + '_' + e.element.direction]" placement="right">
@@ -91,8 +88,8 @@
                           <TsFormRadio
                             :value="ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] ? ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id].action : 'insert'"
                             :dataList="[
-                              { value: 'insert', text: '追加' },
-                              { value: 'replace', text: '替换' }
+                              { value: 'insert', text: $t('page.append') },
+                              { value: 'replace', text: $t('page.replace') }
                             ]"
                             @change="val => changeRelAction(e.element, val)"
                           ></TsFormRadio>
@@ -120,7 +117,7 @@
                 <div>
                   <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%;">
                     <label class="ivu-form-item-label overflow" style="width: 120px;">
-                      <span>备注</span>
+                      <span>{{ $t('page.description') }}</span>
                     </label>
                     <div class="ivu-form-item-content" style="margin-left: 120px !important;">
                       <TsFormInput v-model="ciEntityData.description" type="textarea" maxlength="500"></TsFormInput>
@@ -128,7 +125,7 @@
                   </div>
                 </div>
               </div>
-              <Divider v-if="ciEntityList && ciEntityList.length > 0">影响配置项</Divider>
+              <Divider v-if="ciEntityList && ciEntityList.length > 0">{{ $t('term.cmdb.affectcientity') }}</Divider>
               <div v-if="ciEntityList && ciEntityList.length > 0">
                 <Tag
                   v-for="cientity in ciEntityList"
@@ -142,20 +139,20 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button class="ml-md" type="default" @click="close">取消</Button>
+        <Button class="ml-md" type="default" @click="close">{{ $t('button.cancel') }}</Button>
         <Button
           v-if="ciData.authData && (ciData.authData.cimanage || ciData.authData.cientityupdate)"
           class="ml-md"
           ghost
           type="primary"
           @click="save(false)"
-        >保存事务</Button>
+        >{{ $t('button.savetransaction') }}</Button>
         <Button
           v-if="ciData.authData && (ciData.authData.cimanage || (ciData.authData.cientityupdate && ciData.authData.transactionmanage))"
           class="ml-md"
           type="primary"
           @click="save(true)"
-        >保存事务并提交</Button>
+        >{{ $t('button.savecommittransaction') }}</Button>
       </template>
     </TsDialog>
     <CiEntityChoose
@@ -185,6 +182,7 @@ export default {
   data() {
     return {
       dialogConfig: {
+        title: this.$t('page.batchedit'),
         type: 'modal',
         maskClose: false,
         isShow: true,

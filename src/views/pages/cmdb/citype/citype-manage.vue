@@ -1,17 +1,14 @@
 <template>
   <div>
     <TsDialog :is-show="true" v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>编辑类型</div>
-      </template>
       <template v-slot>
         <div>
           <div class="card-head">
-            <div class="block-handler text-grey">排序</div>
-            <div class="block-name text-grey">名称</div>
-            <div class="block-key text-grey">关键类型</div>
-            <div class="block-topo text-grey">拓扑中显示</div>
-            <div class="block-type text-grey">模型数量</div>
+            <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
+            <div class="block-name text-grey">{{ $t('page.name') }}</div>
+            <div class="block-key text-grey">{{ $t('term.cmdb.keytype') }}</div>
+            <div class="block-topo text-grey">{{ $t('term.cmdb.showintopo') }}</div>
+            <div class="block-type text-grey">{{ $t('term.cmdb.cicount') }}</div>
             <div class="block-showtype text-grey"></div>
           </div>
           <draggable
@@ -25,7 +22,7 @@
             @start="moveStart"
             @end="moveEnd"
           >
-            <div v-for="(item,index) in ciTypeList" :key="index" class="card-item">
+            <div v-for="(item, index) in ciTypeList" :key="index" class="card-item">
               <div class="block-handler">
                 <div v-if="!item.isDeleted"><i class="ts-bars move"></i></div>
               </div>
@@ -51,8 +48,7 @@
                 </div>
               </div>
               <div class="block-type">
-                <Badge :count="item.ciCount" type="primary">
-                </Badge>
+                <Badge :count="item.ciCount" type="primary"></Badge>
               </div>
               <div class="block-showtype">
                 <div v-if="!item.ciCount">
@@ -91,14 +87,15 @@ export default {
     draggable,
     TsFormInput
   },
-  props: { 
-    id: {type: Number},
-    isShow: {type: Boolean}
+  props: {
+    id: { type: Number },
+    isShow: { type: Boolean }
   },
   data() {
     const _this = this;
-    return { 
+    return {
       dialogConfig: {
+        title: this.$t('dialog.title.edittarget', { target: this.$t('page.type') }),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -117,7 +114,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() { 
+  mounted() {
     this.getCiTypeList();
   },
   beforeUpdate() {},
@@ -134,13 +131,15 @@ export default {
       this.$set(ciType, 'isDeleted', null);
     },
     saveCiType() {
-      this.$api.cmdb.citype.saveAllCiType({
-        ciTypeList: this.ciTypeList
-      }).then(res => {
-        if (res.Status == 'OK') {
-          this.close(true);
-        }
-      });
+      this.$api.cmdb.citype
+        .saveAllCiType({
+          ciTypeList: this.ciTypeList
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.close(true);
+          }
+        });
     },
     getCiTypeList() {
       this.$api.cmdb.citype.listCiType().then(res => {
@@ -148,84 +147,79 @@ export default {
           this.ciTypeList = res.Return;
         }
       });
-    }, 
-    moveStart() {
-
     },
-    moveEnd() {
-      
-    },
+    moveStart() {},
+    moveEnd() {},
     close: function(needRefresh) {
       this.$emit('close', needRefresh);
     }
   },
   filter: {},
-  watch: { 
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.card-head{
-  position:relative;
-  height:30px;
-  line-height:30px;
-  .block-handler{
-    position:absolute;
-    left:10px;
+.card-head {
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  .block-handler {
+    position: absolute;
+    left: 10px;
   }
-  .block-name{
-    position:absolute;
-    left:60px;
+  .block-name {
+    position: absolute;
+    left: 60px;
   }
-  .block-key{
-    position:absolute;
-    left:280px;
+  .block-key {
+    position: absolute;
+    left: 280px;
   }
-  .block-topo{
-    position:absolute;
-    left:350px;
+  .block-topo {
+    position: absolute;
+    left: 350px;
   }
-  .block-type{
-    position:absolute;
-    left:430px;
+  .block-type {
+    position: absolute;
+    left: 430px;
   }
-  .block-showtype{
-    position:absolute;
-    right:0;
+  .block-showtype {
+    position: absolute;
+    right: 0;
     // left:500px;
   }
 }
 .card-item {
-  margin-bottom:10px;
-  position:relative;
-  height:30px;
-  line-height:30px;
-  .block-handler{
-    position:absolute;
-    left:15px;
-    cursor:move;
+  margin-bottom: 10px;
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  .block-handler {
+    position: absolute;
+    left: 15px;
+    cursor: move;
   }
-  .block-name{
-    position:absolute;
-    left:60px;
+  .block-name {
+    position: absolute;
+    left: 60px;
   }
-  .block-key{
-    position:absolute;
-    left:280px;
+  .block-key {
+    position: absolute;
+    left: 280px;
   }
-  .block-topo{
-    position:absolute;
-    left:350px;
+  .block-topo {
+    position: absolute;
+    left: 350px;
   }
-  .block-type{
-    position:absolute;
-    left:445px;
+  .block-type {
+    position: absolute;
+    left: 445px;
   }
-  .block-showtype{
-    position:absolute;
+  .block-showtype {
+    position: absolute;
     // left:500px;
-    right:0;
+    right: 0;
   }
 }
 </style>

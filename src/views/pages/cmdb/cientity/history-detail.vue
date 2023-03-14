@@ -1,29 +1,26 @@
 <template>
   <div>
     <TsDialog v-if="historyData" v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        <div>修改详情</div>
-      </template>
       <template v-slot>
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
         <div v-if="transactionData.inputFrom" class="mb-md" style="text-align:right">
-          <span class="text-grey">修改方式：</span>
+          <span class="text-grey">{{ $t('page.updatefrom') }}：</span>
           <span>{{ transactionData.inputFromText }}</span>
         </div>
         <div class="bg-op radius-md bg-table-header">
           <div class="historyTable">
             <div class="cell border-color"></div>
-            <div class="cell border-color">类型</div>
+            <div class="cell border-color">{{ $t('page.type') }}</div>
             <div class="cell border-color diffHeader">
-              <div>修改前</div>
-              <div>修改后</div>
+              <div>{{ $t('page.beforeedit') }}</div>
+              <div>{{ $t('page.afteredit') }}</div>
             </div>
           </div>
           <div v-for="(row, index) in historyData.tbodyList" :key="index" class="historyTable bg-table-body">
             <div class="cell border-color">{{ row.label }}</div>
             <div class="cell border-color">
-              <span v-if="row.type == 'attr'">属性</span>
-              <span v-else-if="(row.type = 'rel')">关系</span>
+              <span v-if="row.type == 'attr'">{{ $t('page.attribute') }}</span>
+              <span v-else-if="(row.type = 'rel')">{{ $t('page.relation') }}</span>
             </div>
             <div class="cell diffContent border-color">
               <div>
@@ -66,7 +63,7 @@
             </div>
           </div>
         </div>
-        <Divider v-if="transactionData.description" orientation="left">备注</Divider>
+        <Divider v-if="transactionData.description" orientation="left">{{ $t('page.memo') }}</Divider>
         <div v-if="transactionData.description" class="fz10 text-grey">{{ transactionData.description }}</div>
       </template>
     </TsDialog>
@@ -92,6 +89,7 @@ export default {
       attrList: [],
       authData: {},
       dialogConfig: {
+        title: this.$t('page.details'),
         type: 'modal',
         maskClose: true,
         isShow: true,
@@ -99,7 +97,7 @@ export default {
         width: 'large',
         btnList: [
           {
-            text: '恢复',
+            text: this.$t('button.recover'),
             type: 'primary',
             fn: vnode => {
               this.recoverCiEntity();
@@ -115,15 +113,15 @@ export default {
         },
         {
           key: 'type',
-          title: '类型'
+          title: this.$t('page.type')
         },
         {
           key: 'oldValueList',
-          title: '修改前'
+          title: this.$t('page.beforeedit')
         },
         {
           key: 'newValueList',
-          title: '修改后'
+          title: this.$t('page.afteredit')
         }
       ])
     };
@@ -156,22 +154,20 @@ export default {
           brotherTransactionCount = res.Return;
         });
       }
-      let content = '确定恢复当前配置项？';
+      let content = this.$t('dialog.content.recoverconfirm', { target: $t('term.cmdb.cientity') });
       if (brotherTransactionCount > 0) {
-        content = '当前事务还关联了另外<b class="text-primary">' + (brotherTransactionCount) + '</b>个事务，确认一起恢复？';
+        content = this.$t('dialog.content.invokerecoverconfirm', {count: brotherTransactionCount});
       }
       this.$createDialog({
-        title: '提示',
+        title: this.$t('dialog.title.recoverconfirm'),
         content: content,
         btnType: 'success',
         'on-ok': vnode => {
-          this.$api.cmdb.transaction
-            .recoverTransaction(this.transactionData.id)
-            .then(res => {
-              this.$Message.success('恢复成功');
-              vnode.isShow = false;
-              this.close(true);
-            });
+          this.$api.cmdb.transaction.recoverTransaction(this.transactionData.id).then(res => {
+            this.$Message.success(this.$t('message.content.recoversuccess'));
+            vnode.isShow = false;
+            this.close(true);
+          });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;

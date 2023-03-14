@@ -9,7 +9,7 @@
       <template v-slot:content>
         <Loading
           v-if="isLoading"
-          text="数据校验中..."
+          :text="$t('page.validating')"
           :loadingShow="isLoading"
           type="fix"
         ></Loading>
@@ -70,7 +70,7 @@
                         <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
                           <a href="javascript:void(0)" :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)" @click.stop="addRelEntity(e.element)">
                             <i class="tsfont-check"></i>
-                            选择
+                            {{ $t('page.choose') }}
                           </a>
                           <a
                             v-if="allowBatchAdd && ((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))"
@@ -79,7 +79,7 @@
                             @click.stop="addNewRelEntity(e.element)"
                           >
                             <i class="tsfont-plus"></i>
-                            添加
+                            {{ $t('page.append') }}
                           </a>
                           <Poptip
                             v-model="isRelPopShow[e.element.id + '_' + e.element.direction]"
@@ -152,9 +152,9 @@
                 </div>
               </Panel>
               <Panel name="description">
-                备注
+                {{ $t('page.memo') }}
                 <div slot="content" class="pt-lg" style="margin:0 auto;width:80%;">
-                  <TsFormItem label="备注" labelPosition="left">
+                  <TsFormItem :label="$t('page.memo')" labelPosition="left">
                     <TsFormInput
                       v-if="ciEntityData"
                       v-model="ciEntityData.description"
@@ -173,7 +173,7 @@
             style="margin-right:10px"
             type="default"
             @click="cancel()"
-          >取消</Button>
+          >{{ $t('button.cancel') }}</Button>
           <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">确定</Button>
           <Button
             v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
@@ -181,10 +181,10 @@
             ghost
             type="primary"
             @click="save(false)"
-          >保存事务</Button>
-          <Button v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">保存事务并提交</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right:10px" @click="cancel">取消</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">确认</Button>
+          >{{ $t('button.savetransaction') }}</Button>
+          <Button v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('button.savecommittransaction') }}</Button>
+          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right:10px" @click="cancel">{{ $t('button.cancel') }}</Button>
+          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('button.confirm') }}</Button>
         </div>
       </template>
       <div v-if="ciEntityData && ciEntityData.id && saveMode == 'save'" slot="right" class="pl-nm">
@@ -532,13 +532,13 @@ export default {
       if (this.ciEntityData) {
         const uniqueList = this.ciEntityData['_uniqueAttrList'] || [];
         const elementList = this.ciEntityData['_elementList'];
-        const uniqueObj = { type: 'unique', label: '唯一规则', elementList: [], isShow: true };
+        const uniqueObj = { type: 'unique', label: this.$t('term.cmdb.uniquerule'), elementList: [], isShow: true };
         uniqueObj.elementList = elementList.filter(d => d.type === 'attr' && uniqueList.includes(d.element.id));
         typeList.push(uniqueObj);
-        const manualObj = { type: 'manual', label: '人工录入', elementList: [], isShow: false };
+        const manualObj = { type: 'manual', label: this.$t('term.cmdb.manualinput'), elementList: [], isShow: false };
         manualObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'mt');
         typeList.push(manualObj);
-        const autoObj = { type: 'auto', label: '自动采集', elementList: [], isShow: true };
+        const autoObj = { type: 'auto', label: this.$t('page.autocollect'), elementList: [], isShow: true };
         autoObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'at');
         typeList.push(autoObj);
       }

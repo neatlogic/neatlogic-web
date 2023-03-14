@@ -120,7 +120,6 @@ export default {
       leftHeight: 0,
       ciId: this.$route.params['id'],
       ciData: {},
-      leftWidth: 200,
       sessionName: 'civiewbox',
       isLoading: true,
       illegalList: []
@@ -139,12 +138,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    back() {
-      const backPath = this.$route.meta.fromPage && this.$route.meta.fromPage.path && this.$route.meta.fromPage.path != '/' ? this.$route.meta.fromPage.path : '/cientity-manage';
-      this.$router.push({
-        path: backPath
-      });
-    },
     getIconClass() {
       if (this.ciData) {
         if (this.ciData.isVirtual) {
