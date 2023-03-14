@@ -42,7 +42,7 @@
             <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
               <span :class="[row.monitorStatusJson.cssClass, {'background-FATAL': row.monitorStatusJson.value== 'FATAL'}]" class="vertical cursor">{{ row.monitorStatusJson.text }} </span>
               <span class="text-title">
-                {{ handleTimes(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} 之前
+                {{ handleTimes(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
               </span>
             </span>
             <span v-else>
@@ -54,7 +54,7 @@
             <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
               <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical cursor" @click="toInspectStatusDetail(row)">{{ row.inspectStatusJson.text }} </span>
               <span class="text-title">
-                {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} 之前
+                {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
               </span> 
             </span>
             <span v-else>-</span>
@@ -138,9 +138,9 @@ export default {
       theadList: [
         { key: 'ip', title: 'IP地址'},
         { key: 'name', title: '名称'},
-        { key: 'monitorStatus', title: '监控状态'},
-        { key: 'inspectStatus', title: '巡检状态'},
-        { key: 'stateName', title: '资产状态'},
+        { key: 'monitorStatus', title: this.$t('term.inspect.monitoringstate')},
+        { key: 'inspectStatus', title: this.$t('term.autoexec.inspectstatus')},
+        { key: 'stateName', title: this.$t('term.autoexec.assetstatus')},
         { key: 'envName', title: '应用环境'},
         { key: 'clusterName', title: '所在集群'},
         { key: 'dataCenterName', title: '数据中心'},

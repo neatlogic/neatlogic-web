@@ -62,7 +62,7 @@ export default {
             type: 'select',
             name: 'statusList',
             value: '',
-            label: this.$t('term.autoexec.jobstatus'),
+            label: this.$t('page.jobstatus'),
             search: true,
             dynamicUrl: '',
             rootName: 'tbodyList',

@@ -60,7 +60,7 @@
               <!-- 监控状态 -->
               <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
                 <span :class="[row.monitorStatusJson.cssClass, { 'background-FATAL': row.monitorStatusJson.value == 'FATAL' }]" class="mr-xs cursor">{{ row.monitorStatusJson.text }}</span>
-                <span class="text-title">{{ handleTime(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+                <span class="text-title">{{ handleTime(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
               </span>
               <span v-else>
                 <span>-</span>
@@ -79,7 +79,7 @@
               <!-- 巡检状态 -->
               <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
                 <span :class="[row.inspectStatusJson.cssClass, { 'background-FATAL': row.inspectStatusJson.value == 'FATAL' }]" class="mr-xs cursor" @click.stop="toAssetsDetail(row)">{{ row.inspectStatusJson.text }}</span>
-                <span class="text-title">{{ handleTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+                <span class="text-title">{{ handleTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
               </span>
               <span v-else>
                 <span>-</span>
@@ -183,11 +183,11 @@ export default {
           key: 'name'
         },
         {
-          title: '监控状态',
+          title: this.$t('term.inspect.monitoringstate'),
           key: 'monitorTime'
         },
         {
-          title: '巡检状态',
+          title: this.$t('term.autoexec.inspectstatus'),
           key: 'inspectTime'
         },
         {
@@ -212,7 +212,7 @@ export default {
           type: 'usercards'
         },
         {
-          title: '资产状态',
+          title: this.$t('term.autoexec.assetstatus'),
           key: 'stateName'
         },
         {
@@ -220,7 +220,7 @@ export default {
           key: 'networkArea'
         },
         {
-          title: '标签',
+          title: this.$t('page.tag'),
           key: 'tagList',
           type: 'tag'
         },

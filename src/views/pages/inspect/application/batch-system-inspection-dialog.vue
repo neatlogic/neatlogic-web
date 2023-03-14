@@ -37,8 +37,8 @@
       <div v-else class="mt-md">当前应用未找到关联资产</div>
       <template v-slot:footer>
         <div>
-          <Button :ghost="true" @click="closeDialog">取消</Button>
-          <Button v-if="!$utils.isEmpty(envModuleList)" type="primary" @click="okDialog">继续</Button>
+          <Button :ghost="true" @click="closeDialog">{{ $t('button.cancel') }}</Button>
+          <Button v-if="!$utils.isEmpty(envModuleList)" type="primary" @click="okDialog">{{ $t('button.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -56,8 +56,8 @@
       </ul>
       <template v-slot:footer>
         <div>
-          <Button :ghost="true" @click="closeCompobDialog">取消</Button>
-          <Button v-if="hasContinueBtn" type="primary" @click="okCompobDialog">继续</Button>
+          <Button :ghost="true" @click="closeCompobDialog">{{ $t('button.cancel') }}</Button>
+          <Button v-if="hasContinueBtn" type="primary" @click="okCompobDialog">{{ $t('button.continue') }}</Button>
         </div>
       </template>
     </TsDialog>

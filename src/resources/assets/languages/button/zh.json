@@ -34,6 +34,7 @@
   "continueexecute": "继续执行",
   "retry": "重试",
   "reply": "回复",
+  "continue": "继续",
   "deleteandcommit": "删除并提交",
   "savetransaction": "保存事务",
   "savecommittransaction": "保存事务并提交"

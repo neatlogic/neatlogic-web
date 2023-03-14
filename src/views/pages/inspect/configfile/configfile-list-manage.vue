@@ -44,7 +44,7 @@
               </span>
             </template>
             <template v-slot:inspectTime="{ row }">
-              <span v-if="row.inspectTime">{{ getTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}之前</span>
+              <span v-if="row.inspectTime">{{ getTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
               <span v-else>-</span>
             </template>
             <template v-slot:action="{ row }">

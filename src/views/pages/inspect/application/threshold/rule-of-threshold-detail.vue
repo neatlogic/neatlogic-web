@@ -30,7 +30,7 @@
       <template v-slot:topRight>
         <div class="action-group">
           <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="tsfont-copy action-item" @click="copyRuleOfThreshold">复制规则</span>
-          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="action-item"><Button type="primary" @click="saveThresholdRule">保存</Button></span>
+          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="action-item"><Button type="primary" @click="saveThresholdRule">{{ $t('button.save') }}</Button></span>
         </div>
       </template>
       <template v-slot:sider>

@@ -87,7 +87,7 @@ export default {
           key: 'jobName'
         },
         {
-          title: this.$t('term.deploy.jobstatus'),
+          title: this.$t('page.jobstatus'),
           key: 'jobStatus'
         },
         {

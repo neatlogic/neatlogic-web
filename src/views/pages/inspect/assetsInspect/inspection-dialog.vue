@@ -57,7 +57,7 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('button.cancel') }}</Button>
         <Button v-if="comboData && comboData.isHasBindCombop" type="primary" @click="confirm()">执行</Button>
       </template>
     </TsDialog>

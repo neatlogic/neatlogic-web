@@ -149,7 +149,7 @@ export default {
       tbodyList: [],
       theadList: [
         {
-          title: '应用',
+          title: this.$t('page.application'),
           key: 'appSystem'
         },
         {

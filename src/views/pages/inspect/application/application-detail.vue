@@ -56,7 +56,7 @@
                   <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
                     <span :class="[row.monitorStatusJson.cssClass, {'background-FATAL': row.monitorStatusJson.value== 'FATAL'}]" class="vertical">{{ row.monitorStatusJson.text }} </span>
                     <span class="text-title">
-                      {{ handleTimes(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} 之前
+                      {{ handleTimes(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
                     </span>
                   </span>
                   <span v-else>
@@ -68,7 +68,7 @@
                   <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
                     <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical">{{ row.inspectStatusJson.text }} </span>
                     <span class="text-title">
-                      {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} 之前
+                      {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
                     </span> 
                   </span>
                   <span v-else>-</span>
@@ -83,8 +83,8 @@
                 <template v-slot:ownerList="{ row }">
                   <GroupList :dataList="row.ownerList" type="tag" textName="userName"></GroupList>
                 </template>
-                <template slot="action" slot-scope="{ row }" v-auth="'INSPECT_EXECUTE'">
-                  <div class="tstable-action">
+                <template slot="action" slot-scope="{ row }">
+                  <div v-auth="'INSPECT_EXECUTE'" class="tstable-action">
                     <ul class="tstable-action-ul">
                       <li class="tsfont-restart" @click="executeOneInspect(row)">巡检</li>
                     </ul>
@@ -193,10 +193,10 @@ export default {
         { key: 'ip', title: 'IP地址'},
         { key: 'name', title: '名称'},        
         { key: 'description', title: '描述', type: 'text' },
-        { key: 'monitorStatus', title: '监控状态', type: 'text' },
-        { key: 'inspectStatus', title: '巡检状态', type: 'text' },
+        { key: 'monitorStatus', title: this.$t('term.inspect.monitoringstate'), type: 'text' },
+        { key: 'inspectStatus', title: this.$t('term.autoexec.inspectstatus'), type: 'text' },
         { key: 'jobStatus', title: '巡检作业状态', type: 'text' },
-        { key: 'stateName', title: '资产状态', type: 'text' },
+        { key: 'stateName', title: this.$t('term.autoexec.assetstatus'), type: 'text' },
         { key: 'envName', title: '应用环境', type: 'text' },
         { key: 'clusterName', title: '所在集群', type: 'linktext', textValue: 'viewcluster' },
         { key: 'dataCenterName', title: '数据中心', type: 'text' },

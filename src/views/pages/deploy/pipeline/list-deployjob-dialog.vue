@@ -136,7 +136,7 @@ export default {
           {
             type: 'select',
             name: 'statusList',
-            label: this.$t('term.deploy.jobstatus'),
+            label: this.$t('page.jobstatus'),
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },

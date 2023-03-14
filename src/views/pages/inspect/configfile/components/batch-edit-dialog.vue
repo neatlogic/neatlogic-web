@@ -64,13 +64,13 @@ export default {
         }
       ],
       searchConfigText: {
-        protocolIdList: '连接协议',
-        stateIdList: '资产状态',
-        inspectJobPhaseNodeStatusList: '作业状态',
-        envIdList: '环境',
+        protocolIdList: this.$t('page.protocol'),
+        stateIdList: this.$t('term.autoexec.assetstatus'),
+        inspectJobPhaseNodeStatusList: this.$t('page.jobstatus'),
+        envIdList: this.$t('page.environment'),
         appSystemIdList: '系统',
-        appModuleIdList: '模块',
-        tagIdList: '标签',
+        appModuleIdList: this.$t('page.module'),
+        tagIdList: this.$t('page.tag'),
         keyword: '关键字',
         typeId: '模型'
       },

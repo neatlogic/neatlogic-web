@@ -35,8 +35,8 @@
       <div v-else>当前模块未找到关联资产</div>
       <template v-slot:footer>
         <div>
-          <Button :ghost="true" @click="closeDialog">取消</Button>
-          <Button v-if="hasAssets" type="primary" @click="okDialog">继续</Button>
+          <Button :ghost="true" @click="closeDialog">{{ $t('button.cancel') }}</Button>
+          <Button v-if="hasAssets" type="primary" @click="okDialog">{{ $t('button.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -58,8 +58,8 @@
       </ul>
       <template v-slot:footer>
         <div>
-          <Button :ghost="true" @click="closeCompobDialog">取消</Button>
-          <Button v-if="hasContinueBtn" type="primary" @click="handleContinue">继续</Button>
+          <Button :ghost="true" @click="closeCompobDialog">{{ $t('button.cancel') }}</Button>
+          <Button v-if="hasContinueBtn" type="primary" @click="handleContinue">{{ $t('button.continue') }}</Button>
         </div>
       </template>
     </TsDialog>

@@ -240,7 +240,7 @@ export default {
           {
             type: 'select',
             name: 'statusList',
-            label: this.$t('term.autoexec.jobstatus'),
+            label: this.$t('page.jobstatus'),
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.autoexec.constvalue.JobStatus' },

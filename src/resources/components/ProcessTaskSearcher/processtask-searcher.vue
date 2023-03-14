@@ -98,7 +98,7 @@
                     type="primary"
                     ghost
                     @click="openWorkcenterAddDialog"
-                  >{{ $t('term.process.saveasnewcategory') }}</Button>
+                  >{{ $t('page.saveasnewcategory') }}</Button>
                 </div>
                 <div v-if="workcenterData.type!='factory'" class="action-item">
                   <Button

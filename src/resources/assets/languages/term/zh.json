@@ -254,7 +254,6 @@
     "focustask": "关注工单",
     "mytodo": "我的待办",
     "pleaseinputtaskcontent": "标题、工单号或上报内容关键字",
-    "saveasnewcategory": "另存为新分类",
     "formfilter": "表单过滤",
     "attrdragtip": "已选属性（拖动修改排序）",
     "workordercentertypedes": "作为左侧菜单显示时的分类名称，不设置则归类到默认分类：工单中心",
@@ -546,7 +545,6 @@
     "costtime": "耗时",
     "executeuser": "执行用户",
     "executionsituation": "执行情况",
-    "jobstatus": "作业状态",
     "jobsource": "作业来源",
     "operator": "操作人",
     "executiontime": "执行时间",
@@ -965,7 +963,6 @@
     "triggerrange": "触发范围",
     "integratedaction": "集成动作",
     "jobname": "作业名称",
-    "jobstatus": "作业状态",
     "executeresult": "执行结果",
     "appmodule": "应用/模块",
     "action": "动作",
@@ -1316,6 +1313,12 @@
     "applicationofrule": "规则所属应用",
     "sendanemail": "发送邮件",
     "latestproblemofinspectiontarget": "巡检最新问题{target}",
-    "sendmaillimitdesc": "单次最多给100人发送邮件，超出100的部分不发送邮件"
+    "sendmaillimitdesc": "单次最多给100人发送邮件，超出100的部分不发送邮件",
+    "inputargetnameip": "请输入目标名称、ip",
+    "thresholdrule": "阈值规则",
+    "jobdetail": "作业详情",
+    "monitoringstate": "监控状态",
+    "inspectionjobstatus": "巡检作业状态",
+    "iplist": "IP列表"
   }
 }

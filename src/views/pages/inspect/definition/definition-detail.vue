@@ -35,7 +35,7 @@
             导出指标和规则
           </span>
           <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="ts-setting text-action icon-right mr-md action-item" @click="openTargetFilter">指标过滤</span>
-          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="action-item"><Button type="primary" @click="saveRule">保存</Button></span>
+          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="action-item"><Button type="primary" @click="saveRule">{{ $t('button.save') }}</Button></span>
         </div>
       </template>
       <template v-slot:sider>
