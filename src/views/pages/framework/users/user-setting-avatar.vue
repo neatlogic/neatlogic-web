@@ -50,7 +50,7 @@
         <Upload v-bind="uploadConfig">
           <Button>重新上传</Button>
         </Upload>
-        <Button type="primary" class="save-button" @click="save">保存</Button>
+        <Button type="primary" class="save-button" @click="save">{{ $t('button.save') }}</Button>
       </div>
     </TsDialog>
   </div>

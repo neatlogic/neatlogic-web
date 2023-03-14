@@ -73,10 +73,10 @@
             @mouseenter="haveChangeData"
           >激活</span> -->
           <span class="action-item ts-eye " @click="previewForm">预览</span>
-          <!-- <span class="action-item ts-save" @click="handleSaveForm()">保存</span> -->
+          <!-- <span class="action-item ts-save" @click="handleSaveForm()">{{ $t('button.save') }}</span> -->
           <!-- <span v-if="currentVersion.uuid" class="action-item ts-save" @click="saveForm('saveother')">另存为新版本</span> -->
-          <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-trash-o disable">删除</span>
-          <span v-else-if="currentVersion.uuid" class="action-item tsfont-trash-o" @click="delVersionModal(currentVersion.uuid, currentVersion.version)">删除</span>
+          <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
+          <span v-else-if="currentVersion.uuid" class="action-item tsfont-trash-o" @click="delVersionModal(currentVersion.uuid, currentVersion.version)">{{ $t('page.delete') }}</span>
           <span class="action-item" style="padding:0px;">
             <Dropdown trigger="click">
               <span class="tsfont-option-horizontal click-btn action-item last"></span>
@@ -157,7 +157,7 @@
       <template v-slot>是否保存当前修改？</template>
       <template v-slot:footer>
         <Button @click="cancelReturn1"></Button>
-        <Button type="primary" @click="okAddReturn1">保存</Button>
+        <Button type="primary" @click="okAddReturn1">{{ $t('button.save') }}</Button>
       </template>
     </TsDialog>
     <!-- 引用列表弹出框 -->
@@ -387,7 +387,7 @@ export default {
               item.isActive === 1 && (item.isActive = 0);
               item.uuid == uuid && (item.isActive = 1);
             });
-            _this.$Message.success('激活成功');
+            _this.$Message.success(this.$t('message.content.executesuccess'));
             _this.$forceUpdate();
           }
         })

@@ -83,7 +83,7 @@ export default {
         redo: this.$t('term.process.redo'),
         markrepeat: this.$t('term.process.markrepeat'),
         reapproval: this.$t('page.reapproval'),
-        createtask: this.$t('page.process.createtask'),
+        createtask: this.$t('term.process.createtask'),
         retreatcurrentstep: this.$t('page.retreat'),
         startprocess: this.$t('term.process.report')
       }

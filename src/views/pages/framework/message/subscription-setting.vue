@@ -23,7 +23,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-edit icon" @click="showDialog(row)">编辑</li>
+                <li class="tsfont-edit icon" @click="showDialog(row)">{{ $t('page.edit') }}</li>
               </ul>
             </div>
           </template>

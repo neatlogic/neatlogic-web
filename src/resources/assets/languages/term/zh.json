@@ -676,7 +676,19 @@
     "pleaseselectdirectoryname": "请选择目录名称"
   },
   "framework": {
-    "roleauth": "创建完角色立即授权"
+    "roleauth": "创建完角色立即授权",
+    "rolename": "角色名称",
+    "roledesc": "角色描述",
+    "rolecount": "角色数量",
+    "usercount": "用户数量",
+    "teamcount": "分组数量",
+    "teamname": "分组名称",
+    "authname": "权限名称",
+    "belongmodule": "所属模块",
+    "authdesc": "权限描述",
+    "calendar": "排班",
+    "inheritselected":"继承选中",
+    "selectsubnode": "选中子节点"
   },
   "knowledge": {
     "document": "文档",

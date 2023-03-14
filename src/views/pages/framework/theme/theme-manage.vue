@@ -3,7 +3,7 @@
     <template v-slot:topRight>
       <div class="action-group">
         <div class="action-item tsfont-rotate-right" @click="reset">还原</div>
-        <div class="action-item tsfont-save" @click="save">保存</div>
+        <div class="action-item tsfont-save" @click="save">{{ $t('button.save') }}</div>
       </div>
     </template>
     <template v-slot:content>
@@ -176,7 +176,7 @@ export default {
             this.delProperty(list);
             ThemeUtils.resetTheme();
             mutations.setLogo('');
-            this.$Message.success('还原成功');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
         });
       }

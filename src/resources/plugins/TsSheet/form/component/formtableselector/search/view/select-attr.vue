@@ -26,7 +26,6 @@ export default {
       validateList: [],
       searchConfig: {
         border: 'border',
-        placeholder: '请选择',
         search: true,
         width: '100%',
         dynamicUrl: '/api/rest/cmdb/attr/targetci/search?attrId=' + this.attrData.id,

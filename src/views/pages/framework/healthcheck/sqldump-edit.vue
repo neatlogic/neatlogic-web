@@ -32,7 +32,7 @@ export default {
           type: 'radio',
           name: 'action',
           label: '操作',
-          validateList: [{name: 'required', message: '请选择操作'}],
+          validateList: [{name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.action')})}],
           dataList: [
             { value: 'insert', text: '增加监控' },
             { value: 'remove', text: '删除监控' },

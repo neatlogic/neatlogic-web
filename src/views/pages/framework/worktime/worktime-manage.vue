@@ -3,7 +3,7 @@
   <div class="WorktimeManagement">
     <TsContain border="border">
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addRow()">服务窗口</span>
+        <span class="text-action tsfont-plus" @click="addRow()">{{ $t('term.process.serwindow') }}</span>
       </template>
       <template slot="topRight">
         <InputSearcher
@@ -19,8 +19,8 @@
           @changePageSize="changePageSize"
         >
           <template slot="isActive" slot-scope="{ row }">
-            <div v-if="row.isActive == 1" class="text-success">启用</div>
-            <div v-else class="text-danger">禁用</div>
+            <div v-if="row.isActive == 1" class="text-success">{{ $t('page.enable') }}</div>
+            <div v-else class="text-danger">{{ $t('page.disable') }}</div>
           </template>
           <template slot="name" slot-scope="{ row }">
             <span class="text-href" @click.stop="editRow(row.uuid)">{{ row.name }}</span>
@@ -44,16 +44,22 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">编辑</li> -->
-                <li class="ts-calendar icon" @click="editCalendar(row.uuid, row.name)">排班</li>
-                <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">删除</li>
+                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
+                <li class="ts-calendar icon" @click="editCalendar(row.uuid, row.name)">{{ $t('term.framework.calendar') }}</li>
+                <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
         </TsTable>
       </div>
     </TsContain>
-    <TsDialog v-bind="editTsDialog" :isShow.sync="editTsDialog.isShow" @on-close="cancelEditRow">
+    <TsDialog
+      v-bind="editTsDialog"
+      :isShow.sync="editTsDialog.isShow"
+      :okBtnDisable="disabledConfig.rowSaving"
+      @on-ok="saveEditRow"
+      @on-close="cancelEditRow"
+    >
       <template v-slot>
         <div class="editForm">
           <TsForm
@@ -64,9 +70,9 @@
           >
             <template slot="monday">
               <div class="editFormTable input-border">
-                <span title="添加时间段" class="addBtn tsfont-plus text-action" @click="addConfigRow('monday')">
+                <span :title="$t('page.addtarget',{target:$t('page.timequantum')})" class="addBtn tsfont-plus text-action" @click="addConfigRow('monday')">
                 </span>
-                <span title="复制" class="copyBtn text-action ts-pages" @click="copyConfigGroup">
+                <span :title="$('page.copy')" class="copyBtn text-action ts-pages" @click="copyConfigGroup">
                 </span>
                 <Table
                   ref="editFormTable"
@@ -95,9 +101,9 @@
 
             <template v-for="(name,oi) in weekdayList" :slot="name">
               <div :key="oi" class="editFormTable input-border">
-                <span class="addBtn tsfont-plus text-action" title="添加时间段" @click="addConfigRow(name)">
+                <span class="addBtn tsfont-plus text-action" :title="$t('page.addtarget',{target:$t('page.timequantum')})" @click="addConfigRow(name)">
                 </span>
-                <span class="deleteBtn text-action tsfont-trash-o" title="删除" @click="deleteConfigGroup(name)">
+                <span class="deleteBtn text-action tsfont-trash-o" :title="$t('page.delete')" @click="deleteConfigGroup(name)">
                 </span>
                 <Table
                   ref="editFormTable"
@@ -124,12 +130,6 @@
               </div>
             </template>
           </TsForm>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="footer-btn-contain">
-          <Button @click="cancelEditRow">取消</Button>
-          <Button type="primary" :disabled="disabledConfig.rowSaving" @click="saveEditRow">确定</Button>
         </div>
       </template>
     </TsDialog>
@@ -288,13 +288,13 @@ export default {
           name: 'isActive',
           value: 1,
           defaultValue: 1,
-          label: '状态',
+          label: this.$t('page.status'),
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 1, text: '启用' },
-            { value: 0, text: '禁用' }
+            { value: 1, text: this.$t('page.enable') },
+            { value: 0, text: this.$t('page.disable') }
           ]
         },
         {
@@ -558,7 +558,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该工作时间窗口：' + name + '?',
         btnType: 'error',
         'on-ok': vnode => {

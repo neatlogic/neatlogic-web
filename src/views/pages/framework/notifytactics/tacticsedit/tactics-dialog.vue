@@ -74,7 +74,7 @@ export default {
       };
       this.$api.framework.tactics.saveNotify(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('重命名成功');
+          this.$Message.success(this.$t('message.content.refreshsuccess'));
           this.$emit('update:isShow', false);
           this.$emit('updateTactics', data);
         }

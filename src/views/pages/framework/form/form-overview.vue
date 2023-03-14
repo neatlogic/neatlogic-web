@@ -240,18 +240,7 @@ export default {
         .updateData(data)
         .then(res => {
           if (res.Status == 'OK') {
-            if (row.isActive === 1) {
-              this.$Message.success('表单已启用');
-            } else if (row.isActive === 0) {
-              this.$Message.success('表单已禁用');
-            }
-          }
-        })
-        .catch(error => {
-          if (error.data.Message) {
-            this.$Message.error(error.data.Message);
-          } else {
-            this.$Message.error('接口请求错误');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
         });
     },
@@ -262,7 +251,7 @@ export default {
       this.formName = row.name;
       this.formUuid = row.uuid;
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该表单：' + this.formName + '?',
         btnType: 'error',
         'on-ok': vnode => {
@@ -327,7 +316,7 @@ export default {
             _this.formData.cardList.unshift({
               ...res.Return
             });
-            this.$Message.success('复制成功');
+            this.$Message.success(this.$t('message.content.copysuccess'));
             this.searchForm(1);
           }
         });

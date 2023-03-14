@@ -60,7 +60,7 @@
                 <li v-if="row.hasHelp == 1" class="ts-m-problem" @click="integrationHelpUuid = row.uuid">帮助</li>
                 <li class="ts-catalogue" @click="integrationAuditUuid = row.uuid">调用记录</li>
                 <li class="tsfont-download" @click="exportRow(row)">导出</li>
-                <li class="tsfont-trash-o" :class="{ 'text-disabled': row.referenceCount > 0 }" @click="delIntegration(row)">删除</li>
+                <li class="tsfont-trash-o" :class="{ 'text-disabled': row.referenceCount > 0 }" @click="delIntegration(row)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-copy" @click="copyIntegration(row.uuid)">复制</li>
               </ul>
             </div>
@@ -236,7 +236,7 @@ export default {
         return false;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除该集成配置：' + row.name + '？',
         btnType: 'error',
         'on-ok': vnode => {

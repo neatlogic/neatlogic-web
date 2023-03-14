@@ -85,8 +85,8 @@
                   <li v-if="row.hasHelp == 1">
                     <IntegrationHelp :integration="row"></IntegrationHelp>
                   </li>
-                  <li class="tsfont-edittext" @click="editIntegration(row.uuid)">编辑</li>
-                  <li class="tsfont-close-o" @click="delIntegration(row.uuid)">删除</li>
+                  <li class="tsfont-edittext" @click="editIntegration(row.uuid)">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-close-o" @click="delIntegration(row.uuid)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>
             </template>

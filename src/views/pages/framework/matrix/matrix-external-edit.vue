@@ -10,7 +10,7 @@
         ></navTopLeft>
       </div><div slot="topRight">
         <div class="bar-top-right action-group text-right">
-          <span class="action-item tsfont-edit" @click="editMatrix()">编辑</span>
+          <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
             <ReferenceSelect
               :uuid="matrixUuid"
@@ -123,7 +123,7 @@ export default {
         return false;
       }
       this.$createDialog({
-        title: '警告',
+        title: this.$t('dialog.title.deleteconfirm'),
         content: '确定删除矩阵：' + this.matrixName + '?',
         btnType: 'error',
         'on-ok': vnode => {

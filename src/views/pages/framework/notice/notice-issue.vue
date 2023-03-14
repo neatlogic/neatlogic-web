@@ -83,7 +83,7 @@ export default {
         this.issueConfig.startTime = Date.now();
       }
       await this.$api.framework.notice.issue(this.issueConfig);
-      this.$Message.success('下发成功');
+      this.$Message.success(this.$t('message.content.refreshsuccess'));
       this.$emit('on-issue');
       this.$emit('update:isShow', false);
     }

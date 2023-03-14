@@ -2,7 +2,7 @@
   <TsDialog
     type="modal"
     :isShow="true"
-    title="添加分组"
+    :title="$t('page.addtarget',{target: $t('page.group')})"
     width="70%"
     @on-close="onOk(false)"
   >
@@ -12,8 +12,8 @@
           <div v-if="tableData.tbodyList && tableData.tbodyList.length > 0">
             <div class="card-top text-grey">
               <span class="name"></span>
-              <span class="num">继承选中</span>
-              <span class="selectNode">选中子节点</span>
+              <span class="num">{{ $t('term.framework.inheritselected') }}</span>
+              <span class="selectNode">{{ $t('term.framework.selectsubnode') }}</span>
             </div>
             <GroupTreeView
               ref="GroupTreeView"
@@ -39,8 +39,8 @@
     <template v-slot:footer>
       <div class="drawer-footer">
         <span v-if="teamCount.number> 0" style="float:left;padding-top:10px"> 共计选中{{ teamCount.number }} 个分组 </span>
-        <Button style="margin-left: 8px" @click="onOk(false)">取消</Button>
-        <Button type="primary" @click="onOk(true)">保存</Button>
+        <Button style="margin-left: 8px" @click="onOk(false)">{{ $t('button.cancel') }}</Button>
+        <Button type="primary" @click="onOk(true)">{{ $t('button.save') }}</Button>
       </div>
     </template>
   </TsDialog>

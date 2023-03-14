@@ -40,11 +40,11 @@
                   </div>
                 </template>
               </TsForm>
-              <Button class="save" type="primary" @click="save()">保存</Button>
+              <Button class="save" type="primary" @click="save()">{{ $t('button.save') }}</Button>
             </TabPane>
             <TabPane label="修改密码" name="password">
               <TsForm ref="password" :itemList="pwdSetting"></TsForm>
-              <Button class="save" type="primary" @click="save()">保存</Button>
+              <Button class="save" type="primary" @click="save()">{{ $t('button.save') }}</Button>
             </TabPane>
             <TabPane label="个性化" name="convenience">
               <div v-show="paneName === 'convenience'">
@@ -181,7 +181,7 @@ export default {
           key: 'text'
         },
         {
-          title: '禁用/启用',
+          title: this.$t('page.disable') + '/' + this.$t('page.enable'),
           key: 'checked'
         },
         {
@@ -506,11 +506,8 @@ export default {
         .saveProfile(data)
         .then(res => {
           if (res.Status == 'OK') {
-            this.$Message.success('操作成功！');
+            this.$Message.success(this.$t('message.content.executesuccess'));
           }
-        })
-        .catch(error => {
-          this.$Message.error('操作失败！');
         });
     }
   },

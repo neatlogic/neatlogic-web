@@ -629,7 +629,7 @@ export default {
       validateSetting: {
         number: [
           { name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.duration')})},
-          { name: 'integer_p', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.positiveinteger')})}
+          { name: 'integer_p', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.positiveinteger')})}
         ],
         required: [{ name: 'required', message: this.$t('message.content.completerequired', {target: ''})}]
       },
@@ -654,7 +654,7 @@ export default {
             maxlength: 30,
             label: this.$t('term.process.slatip'),
             width: '80%',
-            validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.process.positiveinteger')}) }, { name: 'name-special' }]
+            validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.positiveinteger')}) }, { name: 'name-special' }]
           },
           {
             type: 'select',

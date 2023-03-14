@@ -81,9 +81,9 @@
                 <li class="dividing dividing-bg-color"></li>
                 <li class="action-item text-action tsfont-eye" @click="preview(notice)">预览</li>
                 <li class="dividing dividing-bg-color"></li>
-                <li class="action-item text-action tsfont-edit-s" :class="{'text-disabled': notice.status === 'issued'}" @click="edit(notice)">编辑</li>
+                <li class="action-item text-action tsfont-edit-s" :class="{'text-disabled': notice.status === 'issued'}" @click="edit(notice)">{{ $t('page.edit') }}</li>
                 <li class="dividing dividing-bg-color"></li>
-                <li class="action-item text-action tsfont-trash-s" @click="remove(notice)">删除</li>
+                <li class="action-item text-action tsfont-trash-s" @click="remove(notice)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </li>
@@ -157,7 +157,7 @@ export default {
     },
     async stop(notice) {
       await this.$api.framework.notice.stop(notice.id);
-      this.$Message.success('停用成功');
+      this.$Message.success(this.$t('message.content.refreshsuccess'));
       this.search(this.searchParams);
     },
     async remove(notice) {

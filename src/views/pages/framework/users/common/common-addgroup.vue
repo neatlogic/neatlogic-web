@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="openGroup">分组</span>
+        <span class="text-action tsfont-plus" @click="openGroup">{{ $t('page.group') }}</span>
       </template>
       <template slot="content">
         <div class="team-manage">
@@ -22,7 +22,7 @@
                   trueText="已选中子节点"
                   falseText="未选中子节点"
                 ></TsFormSwitch>
-                <span class="del-text text-action tsfont-trash-o icon-right" @click="delRow(item,index)">删除</span>
+                <span class="del-text text-action tsfont-trash-o icon-right" @click="delRow(item,index)">{{ $t('page.delete') }}</span>
               </div>
             </li>
           </ul>
@@ -113,7 +113,7 @@ export default {
     delRow(row, index) { //删除列表数据
       if (this.roleUuid) {
         this.$createDialog({
-          title: '警告',
+          title: this.$t('dialog.title.deleteconfirm'),
           content: '确定删除' + row.name + '?',
           btnType: 'error',
           'on-ok': vnode => {

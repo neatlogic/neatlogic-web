@@ -18,7 +18,7 @@
               @saveUser="editSave"
               @deleteOk="deleteOk('user')"
             ></CommonAdduser>
-            <!-- <Button type="primary" @click="editSave()">保存</Button> -->
+            <!-- <Button type="primary" @click="editSave()">{{ $t('button.save') }}</Button> -->
           </TabPane>
           <TabPane :label="roleLabel" name="role">
             <CommonAdduser
@@ -29,7 +29,7 @@
               @saveRole="editSave"
               @deleteOk="deleteOk('role')"
             ></CommonAdduser>
-            <!-- <Button type="primary" @click="editSave()">保存</Button> -->
+            <!-- <Button type="primary" @click="editSave()">{{ $t('button.save') }}</Button> -->
           </TabPane>
         </Tabs>
       </div>
