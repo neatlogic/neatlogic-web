@@ -1,0 +1,135 @@
+.form-item {
+  position: relative;
+  .require-tip {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    height: 18px;
+    margin-top: -9px;
+  }
+  .selected {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+  }
+  .editor-mask {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+  .border-top,
+  .border-bottom,
+  .border-left,
+  .border-right,
+  .anthor-top-left,
+  .anthor-top-right,
+  .anthor-bottom-left,
+  .anthor-bottom-right {
+    position: absolute;
+    z-index: 2;
+    font-size: 12px;
+    border-width: 0px;
+    line-height: normal;
+  }
+  .border-top {
+    top: 2px;
+    left: 0px;
+    height: 0px;
+    width: 100%;
+    border-top-width: 2px;
+    border-top-style: dashed;
+  }
+  .border-bottom {
+    bottom: 2px;
+    left: 0px;
+    height: 0px;
+    width: 100%;
+    border-bottom-width: 2px;
+    border-bottom-style: dashed;
+  }
+  .border-left {
+    top: 0px;
+    left: 2px;
+    height: 100%;
+    width: 0px;
+    border-left-width: 2px;
+    border-left-style: dashed;
+  }
+  .border-right {
+    top: 0px;
+    right: 2px;
+    height: 100%;
+    width: 0px;
+    border-right-width: 2px;
+    border-right-style: dashed;
+  }
+  .anthor-top-left {
+    top: -6px;
+    left: -3px;
+  }
+  .anthor-top-right {
+    top: -6px;
+    right: -3px;
+  }
+  .anthor-bottom-left {
+    bottom: -6px;
+    left: -3px;
+  }
+  .anthor-bottom-right {
+    bottom: -6px;
+    right: -3px;
+  }
+  .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 99;
+  }
+  &:hover {
+    .corner-close-icon {
+      display: block;
+    }
+  }
+}
+.corner-icon {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 3;
+}
+.corner-close-icon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 3;
+  display: none;
+}
+.corner-bottom-icon {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  z-index: 3;
+}
+.mask {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.mask::before {
+  content: ' ';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  backdrop-filter: blur(2px);
+  z-index: -1;
+}

@@ -1,0 +1,75 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@success-color, @success-bg-color, @warning-bg-color,@error-color,@error-bg-color,@text){
+  .compare {
+    padding-bottom: 16px;
+    .bg-insert{
+      background:  @success-bg-color;
+      color: @text;
+    }
+    .bg-delete{
+      background: @error-bg-color;
+      color: @text;
+    }
+    .bg-update{
+      background: @warning-bg-color;
+      color: @text;
+    }
+    .bg-fillblank{
+      opacity: 0;
+    }
+    /deep/ .insert {
+      color: @success-color;
+    }
+    /deep/ .delete {
+      color: @error-color;
+    
+    }
+    /deep/ .update {
+      color: @warning-color;
+    }
+    /deep/ .fillblank {
+      opacity: 0;
+      pointer-events: none;
+    }
+    /deep/ tr.insert{
+      background:  @success-bg-color;
+    }
+    /deep/ tr.update{
+      background:  @warning-bg-color;
+    }
+    /deep/ tr.delete{
+      background:  @error-bg-color;
+    }
+    /deep/ .nav-insert {
+      background:  @success-bg-color;
+    }
+    /deep/ .nav-change {
+    background:  @warning-bg-color;
+    }
+    /deep/ .nav-update {
+      background:  @warning-bg-color;
+    }
+    /deep/ .nav-delete {
+      background:  @error-bg-color;
+    }
+    .table-insert {
+      background:  @success-bg-color;
+    }
+    .table-update {
+      background:  @warning-bg-color;
+    }
+    .table-delete {
+      background:  @error-bg-color;
+    }
+    .table-fillblank {
+      opacity: 0;
+    }
+  }
+}
+html {
+  .theme(@default-success-color, @default-success-bg-color, @default-warning-bg-color,@default-error-color,@default-error-bg-color,@default-text);
+
+  &.theme-dark {
+    .theme(@dark-success-color, @dark-success-bg-color, @dark-warning-bg-color,@dark-error-color,@dark-error-bg-color,@dark-text);
+  }
+}

@@ -1,0 +1,44 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@layer-color, @edge-stroke, @node-fill, @node-name, @link-stroke, @anchor-color, @mask-color, @cluster-color) {
+  @node-removeIcon: @link-stroke;
+  .layer text {
+    fill: @layer-color;
+  }
+  .normalnode text {
+    fill: @layer-color;
+  }
+  .selectednode text {
+    fill: @cluster-color !important;
+    text-decoration: underline;
+    font-weight:bold;
+  }
+  .cluster text {
+    fill: @layer-color;
+    font-family: Arial;
+    font-size: 12px;
+  }
+  .cluster polygon {
+    fill: @cluster-color;
+    fill-opacity: 0.1;
+    stroke: @cluster-color;
+    stroke-opacity: 0.1;
+  }
+  .edge path {
+    stroke: @edge-stroke;
+  }
+  .edge polygon {
+    stroke: @edge-stroke;
+    fill: @edge-stroke;
+  }
+  .edge text {
+    fill: @edge-stroke;
+  }
+}
+
+html {
+  .theme(@default-text, @default-bg-code, @default-dividing, @default-title, @default-icon, @default-blockbg, @default-background, @default-primary-color);
+
+  &.theme-dark {
+    .theme(@dark-text, @dark-invert-bg, @dark-dividing, @dark-title, @dark-icon, @dark-blockbg, @dark-background, @dark-primary-color);
+  }
+}

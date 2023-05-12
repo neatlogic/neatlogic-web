@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="Page-Enter" content="revealTrans(duration=2, transition=8)" />
+    <meta http-equiv="Page-Exit" content="revealTrans(duration=2, transition=9)" />
+    <link rel="icon" href="<%= BASE_URL %>resource/tsfavicon.png" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <script src="<%= BASE_URL %>resource/config.js"></script>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      #iframe-container {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body class="border-radius">
+    <div id="index"></div>
+    <script type="text/javascript">
+        window.onload = function() {
+            if (IEVersion() != -1) {
+              var url = location.href.split('//'); // 拿到协议
+              var prefixUrl = url && url[1].split('/'); // 获取域名
+              var fullUrl = url && url[0] + '//' + prefixUrl[0] + '/' + prefixUrl[1];
+              window.location.href = fullUrl + '/iealert.html';
+            }
+        };
+      function IEVersion() {
+        //  判断是否是IE浏览器，如果不是IE浏览器，那就返回一个-1，排除edge浏览器
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
+        var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf('rv:11.0') > -1;
+        if (isIE) {
+          var reIE = new RegExp('MSIE (\\d+\\.\\d+);');
+          reIE.test(userAgent);
+          var fIEVersion = parseFloat(RegExp['$1']);
+          if (fIEVersion == 7) {
+            return 7;
+          } else if (fIEVersion == 8) {
+            return 8;
+          } else if (fIEVersion == 9) {
+            return 9;
+          } else if (fIEVersion == 10) {
+            return 10;
+          } else {
+            return 6; //IE版本<=7F
+          }
+        } else if (isIE11) {
+          return 11; //IE11
+        } else {
+          return -1; //不是ie浏览器
+        }
+      }
+    </script>
+  </body>
+</html>

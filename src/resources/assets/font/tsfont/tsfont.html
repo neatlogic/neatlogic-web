@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>demo for tsfont</title>
+    
+    <style>
+        html {
+            color: #336eff;
+            font-family: '微软雅黑';
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        html,
+        body,
+        div,
+        h6,
+        h1,
+        ul,
+        li,
+        span {
+            padding: 0;
+            margin: 0;
+        }
+
+        h1 {
+            line-height: 80px;
+            height: 80px;
+            color: #000;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .main {
+            width: 98%;
+            margin: 0 auto;
+        }
+
+        .type-block {
+            padding-top: 20px;
+        }
+
+        .type-block:hover {
+            background: #fff;
+            box-shadow: 0 0 4px #ddd;
+        }
+
+        .type-block:not(:last-of-type) {
+            padding-bottom: 20px;
+        }
+
+        .main h6 {
+            font-size: 18px;
+            color: #333;
+            line-height: 24px;
+            height: 24px;
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .main h6 .btn-toggle {
+            position: absolute;
+            top: 4px;
+            left: 0;
+            font-size: 14px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            color: #336eff;
+            cursor: pointer;
+            text-align: center;
+            transition: all .3s linear;
+        }
+
+        .type-block.hide .icon_lists {
+            height: 0;
+            padding-bottom: 0;
+        }
+
+        .type-block.hide h6 .btn-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .icon_lists {
+            width: 100% !important;
+            overflow: hidden;
+            *zoom: 1;
+            padding: 0;
+            margin: 0;
+            padding-bottom: 20px;
+            transition: all .3s linear;
+            height: auto;
+        }
+
+        .icon_lists li {
+            width: 140px;
+            margin-bottom: 5px;
+            text-align: center;
+            list-style: none !important;
+            cursor: default;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .icon_lists li .code-name {
+            line-height: 1.2;
+        }
+
+        .icon_lists .icon {
+            display: block;
+            height: 80px;
+            line-height: 80px;
+            font-size: 30px;
+            margin: 10px auto;
+            color: #333;
+            -webkit-transition: font-size 0.25s linear, width 0.25s linear;
+            -moz-transition: font-size 0.25s linear, width 0.25s linear;
+            transition: font-size 0.25s linear, width 0.25s linear;
+        }
+
+        /*    .icon_lists .icon:hover {
+      font-size: 80px;
+    }*/
+        .icon_lists li .name,
+        .icon_lists li .code-name {
+            color: #666;
+            font-size: 12px;
+        }
+
+        h1,
+        h6 {
+            margin-left: 10px;
+        }
+
+        h1 .ts {
+            font-size: 40px;
+            display: inline-block;
+            margin-right: 20px;
+            color: #346cf6;
+        }
+    </style>
+    <link rel="stylesheet" href="css/ts-code.css">
+</head>
+
+<body>
+    <div class="main">
+        <h1 class="logo"><i class="ts ts-icon-techsure"></i>tsfont v2.9&nbsp;<small>demo</small></h1>
+        <div class="tab-container">
+            <div class="content unicode" id="showdiv">
+            </div>
+        </div>
+    </div>
+    <script>
+        var container = document.getElementById('showdiv');
+        var iconlist = {
+            "palette": "",
+            "acknowledge": "",
+            "alarmsetting": "",
+            "alert": "",
+            "alarmservice": "",
+            "agent": "",
+            "angle-double-down": "",
+            "angle-double-up": "",
+            "align-horizontal": "",
+            "align-vertical": "",
+            "angle-right": "",
+            "angle-double-left": "",
+            "angle-double-right": "",
+            "angle-left": "",
+            "arrows": "",
+            "angle-down": "",
+            "angle-up": "",
+            "bars": "",
+            "backward": "",
+            "batch-ops": "",
+            "bad": "",
+            "block": "",
+            "branch": "",
+            "bell": "",
+            "calendar": "",
+            "caret-left": "",
+            "caret-down": "",
+            "caret-up": "",
+            "centos": "",
+            "caret-right": "",
+            "chain": "",
+            "circle": "",
+            "chat": "",
+            "compress": "",
+            "setting": "",
+            "complete": "",
+            "cisco": "",
+            "check": "",
+            "component": "",
+            "continue-o": "",
+            "cubes": "",
+            "continue": "",
+            "cube": "",
+            "console": "",
+            "database": "",
+            "dedent": "",
+            "debug": "",
+            "download": "",
+            "dictionary": "",
+            "edit": "",
+            "environ-common": "",
+            "edittext": "",
+            "envelope": "",
+            "environ-dev": "",
+            "environ-sit": "",
+            "exagent": "",
+            "excellent": "",
+            "dynamic-text": "",
+            "environ-uat": "",
+            "export": "",
+            "exchange": "",
+            "filter": "",
+            "eye": "",
+            "finish": "",
+            "environ-prd": "",
+            "flowsetting": "",
+            "forbid": "",
+            "forward": "",
+            "file": "",
+            "expand": "",
+            "full": "",
+            "fullscreen": "",
+            "fullpage": "",
+            "bell-off": "",
+            "hand": "",
+            "good": "",
+            "hurry": "",
+            "import": "",
+            "info-s": "",
+            "indent": "",
+            "info": "",
+            "icon": "",
+            "layout": "",
+            "intersect": "",
+            "listsetting": "",
+            "long-arrow-down": "",
+            "minus": "",
+            "location": "",
+            "lock": "",
+            "long-arrow-up": "",
+            "manually": "",
+            "module": "",
+            "normalsize": "",
+            "nodata": "",
+            "notice": "",
+            "number": "",
+            "network-adapter": "",
+            "object-group": "",
+            "one-half": "",
+            "dev-nutanix": "",
+            "one-quarter": "",
+            "openstack": "",
+            "one-third": "",
+            "ordinary": "",
+            "page": "",
+            "pages": "",
+            "pause": "",
+            "parameter": "",
+            "pending": "",
+            "phone": "",
+            "picture": "",
+            "play-s": "",
+            "play": "",
+            "pulse": "",
+            "redo": "",
+            "innercurve": "",
+            "pluginlist": "",
+            "relation": "",
+            "permission": "",
+            "radar": "",
+            "remove-o": "",
+            "remove": "",
+            "plus": "",
+            "report": "",
+            "refresh": "",
+            "resolve": "",
+            "reset-firststep": "",
+            "rotate-right": "",
+            "rotate-left": "",
+            "script": "",
+            "search-minus": "",
+            "round": "",
+            "search": "",
+            "save": "",
+            "send": "",
+            "share-alt": "",
+            "search-plus": "",
+            "singlepoly": "",
+            "shunt": "",
+            "sort": "",
+            "star-s": "",
+            "spinner": "",
+            "star": "",
+            "tablelist": "",
+            "stop-o": "",
+            "stop": "",
+            "sitemap": "",
+            "straightline": "",
+            "tag": "",
+            "tags": "",
+            "subtract": "",
+            "text": "",
+            "three-quarter": "",
+            "textmodule": "",
+            "trash": "",
+            "two-third": "",
+            "typelist": "",
+            "union": "",
+            "unlock": "",
+            "user": "",
+            "templatesetting": "",
+            "viewlist": "",
+            "upload": "",
+            "version": "",
+            "zoom": "",
+            "workflow": "",
+            "warning": "",
+            "viewmodule": "",
+            "vip": "",
+            "dev-apache": "",
+            "dev-aix": "",
+            "dev-app": "",
+            "dev-alicloud": "",
+            "dev-apple": "",
+            "dev-appcube": "",
+            "dev-assets": "",
+            "dev-bin": "",
+            "dev-aws": "",
+            "dev-cfg": "",
+            "dev-business": "",
+            "cloud": "",
+            "cluster": "",
+            "dev-container": "",
+            "dev-controllerinfo": "",
+            "dev-datacenter": "",
+            "dev-dell": "",
+            "dev-diskinfo": "",
+            "dev-docker": "",
+            "dev-diskgroup": "",
+            "dev-db2": "",
+            "dev-domainname-intranet": "",
+            "dev-drawer": "",
+            "dev-drawer-expansion": "",
+            "dev-domainname": "",
+            "dev-drawer-room": "",
+            "dev-exchange": "",
+            "dev-freebsd": "",
+            "dev-firewall": "",
+            "dev-ftp": "",
+            "dev-h3c": "",
+            "dev-ha": "",
+            "dev-hadoop": "",
+            "dev-f5": "",
+            "dev-hba": "",
+            "dev-ibm": "",
+            "dev-hardware": "",
+            "dev-huawei": "",
+            "dev-iis": "",
+            "dev-iplist": "",
+            "dev-hyperflex": "",
+            "dev-java": "",
+            "dev-hp": "",
+            "dev-jboss": "",
+            "dev-juniper": "",
+            "dev-lighttpd": "",
+            "dev-kafka": "",
+            "dev-inspur": "",
+            "dev-line": "",
+            "dev-ldap": "",
+            "dev-loadbalancing": "",
+            "dev-logicaldisk": "",
+            "dev-mysql": "",
+            "dev-linux": "",
+            "dev-middleware": "",
+            "dev-mesos": "",
+            "dev-network-devices": "",
+            "dev-nginx": "",
+            "dev-nic": "",
+            "dev-rack": "",
+            "dev-netarea": "",
+            "dev-oracle": "",
+            "dev-pool": "",
+            "dev-postgresql": "",
+            "dev-port": "",
+            "dev-raid": "",
+            "dev-redis": "",
+            "dev-os": "",
+            "dev-saas": "",
+            "dev-security": "",
+            "dev-router": "",
+            "dev-redhat": "",
+            "dev-storm": "",
+            "dev-root": "",
+            "dev-spark": "",
+            "dev-server": "",
+            "dev-switch": "",
+            "dev-subsystem": "",
+            "dev-tomcat": "",
+            "dev-vsphere": "",
+            "dev-vpn": "",
+            "dev-windows": "",
+            "dev-weblogic": "",
+            "dev-resin": "",
+            "dev-zookeeper": "",
+            "dev-storage": "",
+            "dev-userinfo": "",
+            "m-auth": "",
+            "m-batchdeploy": "",
+            "m-browser": "",
+            "m-certificate": "",
+            "m-callcenter": "",
+            "m-dashboard-job": "",
+            "m-ci": "",
+            "m-deployment": "",
+            "m-dashboard": "",
+            "m-installation": "",
+            "m-cmdb": "",
+            "m-ip": "",
+            "m-home": "",
+            "m-misc": "",
+            "m-metrics": "",
+            "m-myjob": "",
+            "m-monitor": "",
+            "m-plugin": "",
+            "m-octopus": "",
+            "m-project": "",
+            "m-problem": "",
+            "m-request": "",
+            "m-schedulejob": "",
+            "m-playbook": "",
+            "m-server": "",
+            "m-system": "",
+            "m-stack": "",
+            "m-signature": "",
+            "m-urgency": "",
+            "m-template": "",
+            "m-works": "",
+            "m-view": "",
+            "mm-css": "",
+            "mm-bat": "",
+            "mm-cls": "",
+            "mm-cnf": "",
+            "mm-bmp": "",
+            "mm-cmd": "",
+            "mm-gzip": "",
+            "mm-doc": "",
+            "mm-exe": "",
+            "mm-gif": "",
+            "mm-mov": "",
+            "mm-html": "",
+            "mm-mp4": "",
+            "mm-java": "",
+            "mm-jpg": "",
+            "mm-png": "",
+            "mm-pdf": "",
+            "mm-py": "",
+            "mm-pptx": "",
+            "mm-ppt": "",
+            "mm-js": "",
+            "mm-rar": "",
+            "mm-rtf": "",
+            "mm-docx": "",
+            "mm-rpm": "",
+            "mm-unknown": "",
+            "mm-txt": "",
+            "mm-jpeg": "",
+            "mm-sql": "",
+            "mm-sh": "",
+            "mm-zip": "",
+            "mm-tar": "",
+            "mm-vbs": "",
+            "mm-xls": "",
+            "mm-xlsm": "",
+            "mm-xml": "",
+            "mm-xlsx": "",
+            "mm-svg": "",
+            "dev-2cube": "",
+            "tencentcloud": "",
+            "plus-o": "",
+            "minus-o": "",
+            "folder": "",
+            "folder-open": "",
+            "dev-zone": "",
+            "m-apm": "",
+            "cite": "",
+            "integration": "",
+            "eoa": "",
+            "areachart": "",
+            "internet": "",
+            "code": "",
+            "barchart": "",
+            "sop": "",
+            "filedownload": "",
+            "interval": "",
+            "changelist": "",
+            "solution": "",
+            "catalogue": "",
+            "email": "",
+            "list": "",
+            "formlist": "",
+            "handlersort": "",
+            "json": "",
+            "linechart": "",
+            "numberchart": "",
+            "piechart": "",
+            "plotchart": "",
+            "tablechart": "",
+            "problemlist": "",
+            "risklist": "",
+            "relationship": "",
+            "team": "",
+            "timer": "",
+            "toggle-o": "",
+            "toggle": "",
+            "dev-lun": "",
+            "dev-vs": "",
+            "dev-virtualmachine": "",
+            "malfunctionlist": "",
+            "bell-s": "",
+            "pencil-s": "",
+            "trash-s": "",
+            "cog-s": "",
+            "unstar": "",
+            "problem-resource": "",
+            "cone": "",
+            "doublepoly": "",
+            "defect-code": "",
+            "icon-techsure": "",
+            "cogs": "",
+            "option-horizontal": "",
+            "option-vertical": "",
+            "folder-add": "",
+            "eye-close": "",
+            "alert-off": "",
+            "team-s": "",
+            "user-s": "",
+            "remove-s": "",
+            "recycle": "",
+            "link": "",
+            "unlink": "",
+            "alert-o": "",
+            "alert-s": "",
+            "adduser": "",
+            "adduser-s": "",
+            "minus-square-s": "",
+            "check-square-o": "",
+            "minus-square": "",
+            "check-square": "",
+            "round-s": "",
+            "square-o": "",
+            "menuhide": "",
+            "menushow": "",
+            "heart-s": "",
+            "heart": "",
+            "long-arrow-right": "",
+            "long-arrow-left": "",
+            "circle-fill":"",
+            "vertical-middle ":"",
+            "vertical-bottom":"",
+            "horizontal-center":"",
+            "vertical-top":"",
+            "horizontal-justify":"",
+            "horizontal-right":"",
+            "horizontal-left":""
+        };
+        var icondata = [{
+            "type": "操作类图标[action]",
+            "iconlist": ["setting", "cog-s", "cogs", "edit", "pencil-s", "edittext", "trash", "trash-s", "save",
+                "option-horizontal", "option-vertical",
+                "search", "search-minus", "search-plus",
+                "minus", "minus-o", "plus", "plus-o", "remove", "remove-o",
+                "pause", "stop-o", "stop", "play-s", "play", "continue-o", "continue",
+                "redo", "refresh", "rotate-right", "rotate-left", "reset-firststep",
+                "import", "download", "export", "upload", "filedownload",
+                "exchange", "toggle-o", "toggle", "sort", "filter",
+                "lock", "unlock", "eye", "eye-close", "send", "share-alt", "star-s", "star", "unstar",
+                "forward", "backward",
+                "expand", "compress", "normalsize", "fullscreen", "fullpage", "arrows", "zoom",
+                "intersect", "subtract", "union",
+                "acknowledge", "handlersort", "resolve", "remove-s", "link", "unlink", "adduser",
+                "adduser-s", "heart-s", "heart"
+            ]
+        }, {
+            "type": "警示类图标[caution]",
+            "iconlist": ["notice", "alarmsetting",
+                "alert-off", "alert", "alert-o", "alert-s", "alarmservice",
+                "bell", "bell-off", "bell-s",
+                "info-s", "info",
+                "timer", "interval",
+                "warning", "malfunctionlist",
+                "m-problem", "problemlist", "m-urgency"
+            ]
+        }, {
+            "type": "表单类图标[chart]",
+            "iconlist": ["areachart", "barchart", "linechart", "number", "numberchart", "piechart", "plotchart",
+                "tablechart"
+            ]
+        }, {
+            "type": "通用类图标[common]",
+            "iconlist": ["palette", "chain", "chat", "m-request", "hand", "manually", "script", "vip",
+                "dev-security", "m-dashboard-job", "m-schedulejob", "recycle",
+                "bars", "component", "icon", "layout", "tablelist", "m-view", "typelist", "templatesetting",
+                "viewlist", "m-system", "m-template",
+                "file", "dynamic-text", "m-works", "page", "pages", "dev-iplist", "m-playbook", "catalogue",
+                "m-project", "text", "textmodule", "flowsetting", "listsetting", "parameter", "tag", "tags",
+                "changelist", "solution", "email", "json", "risklist", "cone", "defect-code",
+                "viewmodule", "agent", "batch-ops", "branch", "exagent", "module", "nodata", "pluginlist",
+                "list", "formlist", "relation", "permission", "radar", "shunt", "spinner", "m-batchdeploy",
+                "m-stack", "m-signature", "dev-assets",
+                "bad", "excellent", "good", "ordinary", "hurry"
+            ]
+        }, {
+            "type": "文件类型图标[file]",
+            "iconlist": ["mm-css", "mm-bat", "mm-cls", "mm-cnf", "mm-bmp", "mm-cmd", "mm-gzip", "mm-doc",
+                "mm-exe", "mm-gif", "mm-mov", "mm-html", "mm-mp4", "mm-java", "mm-jpg", "mm-png", "mm-pdf",
+                "mm-py", "mm-pptx", "mm-ppt", "mm-js", "mm-rar", "mm-rtf", "mm-docx", "mm-rpm",
+                "mm-unknown", "mm-txt", "mm-jpeg", "mm-sql", "mm-sh", "mm-zip", "mm-tar", "mm-vbs",
+                "mm-xls", "mm-xlsm", "mm-xml", "mm-xlsx", "mm-svg", "folder", "folder-open", "folder-add"
+            ]
+        }, {
+            "type": "LOGO类图标[logo]",
+            "iconlist": ["centos", "cisco", "dev-nutanix", "openstack", "dev-apache", "dev-aix", "dev-alicloud",
+                "dev-apple", "dev-aws", "dev-dell", "dev-docker", "dev-db2", "dev-freebsd", "dev-firewall",
+                "dev-hadoop", "dev-ibm", "dev-huawei", "dev-java", "dev-hp", "dev-jboss", "dev-juniper",
+                "dev-lighttpd", "dev-kafka", "dev-inspur", "dev-mysql", "dev-linux", "dev-mesos",
+                "dev-nginx", "dev-redis", "dev-postgresql", "dev-redhat", "dev-spark", "dev-tomcat",
+                "dev-vsphere", "dev-windows", "dev-resin", "dev-zookeeper", "tencentcloud", "icon-techsure"
+            ]
+        }, {
+            "type": "排版方向类图标[orientation]",
+            "iconlist": ["angle-double-down", "angle-double-up", "angle-double-left", "angle-double-right",
+                "angle-right", "angle-left", "angle-down", "angle-up", "caret-left", "caret-down",
+                "caret-up", "caret-right", "long-arrow-down", "long-arrow-up", "long-arrow-left",
+                "long-arrow-right",
+                "align-horizontal", "align-vertical", "dedent", "indent", "object-group", "block",
+                "full", "one-half", "one-quarter", "one-third", "three-quarter", "two-third",
+                "innercurve", "singlepoly", "straightline", "doublepoly", "menuhide", "menushow","vertical-middle ",
+"vertical-bottom","horizontal-center","vertical-top","horizontal-justify","horizontal-right","horizontal-left"
+            ]
+        }, {
+            "type": "状态类图标[status]",
+            "iconlist": ["complete", "check", "finish", "forbid", "pending", "dev-bin", "circle", "round",
+                "minus-square-s", "check-square-o", "minus-square", "check-square", "round-s", "square-o","circle-fill"
+            ]
+        }, {
+            "type": "专用类图标[terminology]",
+            "iconlist": ["calendar", "console", "debug", "dictionary", "envelope", "location", "phone",
+                "picture", "version", "pulse", "report", "sitemap", "workflow", "user", "user-s", "team",
+                "team-s", "dev-business", "cloud", "dev-userinfo", "m-auth", "m-browser", "m-certificate",
+                "m-callcenter", "m-dashboard", "m-installation", "m-cmdb", "m-ip", "m-home", "m-metrics",
+                "m-myjob", "m-monitor", "m-plugin", "m-octopus", "m-apm", "cite", "integration", "eoa",
+                "internet", "code", "sop", "relationship",
+                "cubes", "cube", "database", "network-adapter", "dev-lun", "dev-virtualmachine",
+                "dev-appcube", "cluster", "dev-container", "dev-drawer", "dev-ha", "dev-f5", "dev-hardware",
+                "dev-loadbalancing", "dev-logicaldisk", "dev-middleware", "dev-network-devices", "dev-nic",
+                "dev-netarea", "dev-port", "dev-os", "dev-router", "dev-storm", "dev-server", "m-server",
+                "dev-switch", "dev-storage", "dev-2cube",
+                "environ-common", "environ-dev", "environ-sit", "environ-uat", "environ-prd",
+                "dev-vs", "dev-app", "dev-cfg", "dev-controllerinfo", "dev-datacenter", "dev-diskinfo",
+                "dev-diskgroup", "dev-domainname-intranet", "dev-drawer-expansion", "dev-domainname",
+                "dev-drawer-room", "dev-exchange", "dev-ftp", "dev-h3c", "dev-hba", "dev-iis",
+                "dev-hyperflex", "dev-line", "dev-ldap", "dev-rack", "dev-oracle", "dev-pool", "dev-raid",
+                "dev-saas", "dev-root", "dev-subsystem", "dev-vpn", "dev-weblogic", "m-ci", "m-deployment",
+                "m-misc", "dev-zone"
+            ]
+        }];
+        var html = '';
+        for (var i in icondata) {
+            var datalist = icondata[i];
+            html += '<div class="type-block">'
+            html += '<h6><i class="ts ts-angle-down btn-toggle"></i>' + datalist.type + '</h6>';
+            html += '<ul class="icon_lists dib-box">';
+
+            for (var j in datalist.iconlist) {
+                var innerdata = datalist.iconlist[j];
+                html += '<li class="dib">';
+                html += '<span class="icon ts">' + iconlist[innerdata] + '</span>';
+                html += '<div class="code-name">ts-' + innerdata + '</div>';
+                html += '</li>';
+            }
+            html += '</ul>';
+            html += '</div>';
+        }
+        container.innerHTML = html;
+
+        var btntoggle = document.getElementsByClassName('btn-toggle');
+        for (var a in btntoggle) {
+            var ckbtn = btntoggle[a];
+            ckbtn.onclick = function () {
+                if (this.parentNode.parentNode.className.indexOf('hide') > -1) {
+                    this.parentNode.parentNode.className = 'type-block';
+                } else {
+                    this.parentNode.parentNode.className = 'type-block hide';
+                }
+
+            }
+        }
+    </script>
+</body>
+
+</html>

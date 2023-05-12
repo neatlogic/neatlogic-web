@@ -1,0 +1,106 @@
+<template>
+  <div
+    style="position:relative"
+    @mouseover.stop="hoverFormItem()"
+    @mouseout.stop="outFormItem()"
+    @click.stop="selectFormItem()"
+  >
+    <div v-if="(mode === 'edit' && formItem._selected) || formItem._hovered" class="selected">
+      <div class="border-top" :class="{ 'border-color-info': formItem._selected, 'border-color-base': formItem._hovered }"></div>
+      <div class="border-bottom" :class="{ 'border-color-info': formItem._selected, 'border-color-base': formItem._hovered }"></div>
+      <div class="border-left" :class="{ 'border-color-info': formItem._selected, 'border-color-base': formItem._hovered }"></div>
+      <div class="border-right" :class="{ 'border-color-info': formItem._selected, 'border-color-base': formItem._hovered }"></div>
+      <span class="anthor-top-left" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
+      <span class="anthor-top-right" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
+      <span class="anthor-bottom-left" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
+      <span class="anthor-bottom-right" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
+      <span v-if="formItem._selected && !disabled" class="remove-btn tsfont-trash-o text-href" @mousedown.stop="removeFormItem"></span>
+    </div>
+    <FormItem
+      :ref="'formitem_' + formItem.uuid"
+      :needLabel="true"
+      :formItem="formItem"
+      :formData="formData"
+      :formItemList="formItemList"
+      :mode="mode"
+      :clearable="false"
+      :disabled="disabled"
+      :readonly="readonly"
+      @resize="$emit('resize')"
+      @emit="
+        val => {
+          $emit('emit', val);
+        }
+      "
+    ></FormItem>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+  },
+  props: {
+    formData: Object,
+    formItem: { type: Object },
+    formItemList: { type: Array },
+    mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
+    disabled: {type: Boolean, default: false},
+    readonly: {type: Boolean, default: false}
+  },
+  data() {
+    return {};
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    removeFormItem() {
+      this.$emit('remove', this.formItem);
+    },
+    hoverFormItem() {
+      if (this.mode === 'edit') {
+        this.formItemList.forEach(item => {
+          if (item._hovered) {
+            this.$delete(item, '_hovered');
+          }
+        });
+        if (!this.formItem._selected) {
+          this.$set(this.formItem, '_hovered', true);
+        }
+      }
+    },
+    outFormItem() {
+      if (this.mode === 'edit') {
+        this.$delete(this.formItem, '_hovered');
+      }
+    },
+    selectFormItem() {
+      if (this.mode === 'edit') {
+        this.$delete(this.formItem, '_hovered');
+        this.formItemList.forEach(element => {
+          if (element._selected) {
+            this.$delete(element, '_selected');
+          }
+        });
+        this.$set(this.formItem, '_selected', true);
+        this.$emit('select', this.formItem);
+      }
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {}
+};
+</script>
+<style lang="less" scoped>
+@import './form-item.less';
+</style>

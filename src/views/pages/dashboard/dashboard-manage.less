@@ -1,0 +1,71 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@blockbg, @colortext) {
+  .dashboard-manage {
+    .dashbord-overview {
+      width: 100%;
+      height: 140px;
+      cursor: pointer;
+      position: relative;
+
+      .slider-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        right: 50%;
+        bottom: 50%;
+        overflow: hidden;
+        transition: all 0.3s linear;
+        border-radius: 2px;
+        z-index: 99999;
+
+        .icon-enter {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 80px;
+          height: 80px;
+          line-height: 80px;
+          font-size: 50px;
+          margin-top: -40px;
+          margin-left: -40px;
+          opacity: 0.3;
+        }
+      }
+    }
+
+    .text-right {
+      div {
+        display: inline-block;
+      }
+
+      .system {
+        padding-left: @space-md;
+      }
+    }
+
+    .dashboard-container {
+      &:hover {
+        .slider-container {
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          padding: 10px;
+          background: @default-mongolia;
+        }
+      }
+    }
+
+    .widget-block {
+      background-color: @blockbg!important;
+    }
+  }
+}
+
+html {
+  .theme(@default-background, @default-text);
+
+  &.theme-dark {
+    .theme(@dark-op, @dark-text);
+  }
+}

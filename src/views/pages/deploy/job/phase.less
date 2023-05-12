@@ -1,0 +1,26 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@pending-text-color,@running-text-color,@success-text-color,@failed-text-color,@warning-text-color) {
+  .phase-item .pending {
+    color: @pending-text-color;
+  }
+  .phase-item .completed {
+    color: @success-text-color;
+  }
+  .phase-item .running {
+    color: @running-text-color;
+  }
+  .phase-item .failed {
+    color: @failed-text-color;
+  }
+  .phase-item .waitInput {
+    color: @warning-text-color;
+  }
+}
+
+html {
+  .theme(@default-title, @info-color, @success-color, @error-color, @default-warning-color);
+
+  &.theme-dark {
+    .theme(@dark-title, @dark-info-color, @dark-success-color, @dark-error-color, @dark-warning-color);
+  }
+}

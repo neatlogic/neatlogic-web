@@ -1,0 +1,11 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@success-color) {
+ 
+}
+
+html {
+  .theme(@default-success-color);
+  &.theme-dark {
+    .theme(@dark-success-color);
+  }
+}

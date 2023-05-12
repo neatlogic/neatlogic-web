@@ -1,0 +1,138 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+// 分组管理
+.team-manage {
+  .tscontain-body > .tscontain-header {
+    border-top: 1px solid;
+  }
+  .top {
+    .bar-top {
+      .bar-top-left {
+        .batch {
+          margin-left: 16px;
+        }
+      }
+      .bar-top-right {
+        width: 400px;
+      }
+    }
+  }
+  .card-wrapper {
+    position: relative;
+    .card-top {
+      position: relative;
+      padding: 0 20px 8px 20px;
+      .action {
+        text-align: center;
+      }
+    }
+    .card-item {
+      height: 56px;
+      line-height: 56px;
+      padding: 0 20px;
+      margin-bottom: 8px;
+      &:hover {
+        .action {
+          display: block;
+        }
+      }
+      .action {
+        display: none;
+        cursor: pointer;
+      }
+      .cuont {
+        > span {
+          margin-left: 5px;
+        }
+      }
+    }
+    .title-block {
+      padding-right: 620px;
+      .move {
+        cursor: move;
+      }
+    }
+    .cuont-block {
+      position: absolute;
+      right: 400px;
+      top: 0;
+      width: 200px;
+      text-align: left;
+    }
+    .btn-list {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 400px;
+    }
+  }
+  .dataSource-ul {
+    //拖拽排序
+    position: relative;
+
+    .block-container {
+      position: relative;
+    }
+
+    .sub-line {
+      display: none;
+    }
+
+    .item-sub {
+      position: relative;
+
+      &::before {
+        content: '';
+        display: block;
+        width: 0;
+        position: absolute;
+        top: -7px;
+        bottom: 0;
+        left: -33px;
+        margin-bottom: 26px;
+        border-left: 1px dotted @default-border;
+      }
+
+      .sub-line {
+        position: absolute;
+        display: inline-block;
+
+        &::before {
+          content: '';
+          display: block;
+          width: 28px;
+          height: 0;
+          border-top: 1px dotted @default-border;
+          position: absolute;
+          top: 29px;
+          left: -30px;
+        }
+      }
+    }
+  }
+}
+.team-addview {
+  .content {
+    height: 100%;
+    .step {
+      width: 50%;
+      margin: 0 auto;
+      padding: 40px 0;
+    }
+    .form {
+      width: 40%;
+      margin: 0 auto;
+      button {
+        margin-left: 120px;
+      }
+    }
+    .btn {
+      button {
+        margin-right: @space-xs;
+      }
+    }
+  }
+  .ivu-tabs-bar {
+    border: none;
+  }
+}

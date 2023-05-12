@@ -1,0 +1,264 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+@default-pending: #8c8c8c; //未开始
+@default-saved: @default-gray; //未提交
+@default-running: @default-info-color; //进行中
+@default-draft: @default-info-color; //草稿
+@default-completed: @default-success-color; //已完成
+@default-succeed: @default-success-color; //已成功
+@default-passed: @default-success-color; //已通过,current激活
+@default-scored: @default-success-color; //已评分
+@default-checked: @default-success-active-color; //已验证
+@default-pausing: @default-warning-color; //暂停中
+@default-paused: @default-warning-color; //已暂停
+@default-aborting: @default-warning-color; //中止中
+@default-aborted: @default-warning-color; //已终止
+@default-ignored: @default-warning-color; //已忽略
+@default-submitted: @default-warning-color; //审核中
+@default-failed: @default-error-color; //已失败
+@default-rejected: @default-error-color; //已驳回
+@default-hang: @default-warning-color; //已挂起
+@default-default: #e8e8e8; //默认的颜色
+@default-waitInput: @default-warning-color; // 待输入
+@default-releasing: @default-info-color; // 释放中
+@default-released: @default-success-color; // 已释放
+@default-release-failed: @default-error-color; // 释放失败
+@default-waitCompile: @default-info-color; // 待编译
+@default-compiling: @default-info-color; // 编译中
+@default-compiled: @default-info-color; // 已编译
+@default-compile-failed: @default-error-color; // 编辑失败
+
+@dark-saved: @dark-gray; //未提交
+@dark-pending: #8c8c8c; //未开始
+@dark-running: @dark-info-color; //进行中
+@dark-draft: @dark-info-color; //草稿
+@dark-completed: @dark-success-color; //已完成
+@dark-succeed: @dark-success-color; //已成功
+@dark-passed: @dark-success-color; //已通过
+@dark-scored: @default-success-color; //已评分
+@dark-checked: @dark-success-active-color; //已验证
+@dark-pausing: @dark-warning-color; //暂停中
+@dark-paused: @dark-warning-color; //已暂停
+@dark-aborting: @dark-warning-color; //中止中
+@dark-aborted: @dark-warning-color; //已终止
+@dark-ignored: @dark-warning-color; //已忽略
+@dark-submitted: @dark-warning-color; //审核中
+@dark-failed: @dark-error-color; //已失败
+@dark-rejected: @dark-error-color; //已驳回
+@dark-hang: @dark-warning-color; //已挂起
+@dark-default: #999999; //默认的颜色
+@dark-waitInput: @dark-warning-color; // 待输入
+@dark-releasing: @default-info-color; // 释放中
+@dark-released: @default-success-color; // 已释放
+@dark-release-failed: @default-error-color; // 释放失败
+@dark-waitCompile: @default-info-color; // 待编译
+@dark-compiling: @default-info-color; // 编译中
+@dark-compiled: @default-info-color; // 已编译
+@dark-compile-failed: @default-error-color; // 编辑失败
+
+.theme(@saved,@pending,@running,@pausing,@paused,@aborting,@aborted,@completed,@failed,@succeed,@ignored,@default,@passed,@draft,@rejected,@submitted,@hang,@info-bg-color,@success-bg-color,@warning-bg-color,@error-bg-color,@pending-info) {
+  .com-status {
+    > [class*='bg-'] {
+      background-color: @default;
+    }
+    .bg-pending,
+    .progress-pending .ivu-progress-bg {
+      //progress为进度条的颜色
+      background-color: @pending-info;
+    }
+    .bg-running,
+    .progress-running .ivu-progress-bg {
+      background-color: @info-bg-color;
+    }
+    .bg-waiting,
+    .bg-pausing,
+    .progress-pausing .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-paused,
+    .progress-paused .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-aborting,
+    .progress-aborting .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-aborted,
+    .progress-aborted .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-checked,
+    .bg-succeed,
+    .bg-completed,
+    .progress-checked .ivu-progress-bg,
+    .progress-completed .ivu-progress-bg,
+    .progress-succeed .ivu-progress-bg {
+      background-color: @success-bg-color;
+    }
+    .bg-passed,
+    .progress-passed .ivu-progress-bg,
+    .bg-current {
+      background-color: @success-bg-color;
+    }
+    .bg-failed,
+    .progress-failed .ivu-progress-bg {
+      background-color: @error-bg-color;
+    }
+    .bg-ignored,
+    .progress-ignored .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-draft,
+    .progress-draft .ivu-progress-bg {
+      background-color: @info-bg-color;
+    }
+    .bg-rejected,
+    .progress-rejected .ivu-progress-bg {
+      background-color: @error-bg-color;
+    }
+    .bg-submitted,
+    .progress-submitted .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-scored,
+    .progress-scored .ivu-progress-bg {
+      background-color: @success-bg-color;
+    }
+    .bg-hang,
+    .progress-hang .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-waitInput,
+    .progress-waitInput,
+    .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-released,
+    .progress-released,
+    .ivu-progress-bg {
+      background-color: @success-bg-color;
+    }
+    .bg-compile-failed,
+    .progress-compile-failed,
+    .ivu-progress-bg {
+      background-color: @error-bg-color;
+    }
+    .bg-release-failed,
+    .progress-release-failed,
+    .ivu-progress-bg {
+      background-color: @error-bg-color;
+    }
+    .bg-releasing,
+    .progress-releasing,
+    .bg-compiling,
+    .progress-compiling,
+    .bg-compiled,
+    .progress-compiled,
+    .bg-waitCompile,
+    .progress-waitCompile,
+    .ivu-progress-bg {
+      background-color: @info-bg-color;
+    }
+    &.text- {
+      color: @default;
+    }
+    &.text-saved,
+    .text-saved,
+    &.text-pending,
+    .text-pending {
+      color: @pending;
+    }
+    &.text-running,
+    .text-running,
+    &.text-releasing,
+    .text-releasing,
+    &.text-waitCompile,
+    .text-waitCompile,
+    &.text-compiling,
+    .text-compiling,
+    &.text-compiled,
+    .text-compiled {
+      color: @running;
+    }
+    &.text-pausing,
+    .text-pausing {
+      color: @pausing;
+    }
+    &.text-paused,
+    .text-paused {
+      color: @paused;
+    }
+    &.text-aborting,
+    .text-aborting {
+      color: @aborting;
+    }
+    &.text-waiting,
+    .text-waiting,
+    &.text-warn,
+    .text-warn,
+    &.text-aborted,
+    .text-aborted {
+      color: @aborted;
+    }
+    &.text-completed,
+    .text-completed {
+      color: @completed;
+    }
+    &.text-checked,
+    .text-checked,
+    &.text-succeed,
+    .text-succeed,
+    &.text-released,
+    .text-released {
+      color: @succeed;
+    }
+    &.text-passed,
+    .text-passed,
+    &.text-current,
+    .text-current {
+      color: @passed;
+    }
+    &.text-failed,
+    .text-failed,
+    &.text-compile-failed,
+    .text-compile-failed,
+    &.text-release-failed,
+    .text-release-failed {
+      color: @failed;
+    }
+    &.text-ignored,
+    .text-ignored {
+      color: @ignored;
+    }
+    &.text-draft,
+    .text-draft {
+      color: @draft;
+    }
+    &.text-rejected,
+    .text-rejected {
+      color: @rejected;
+    }
+    &.text-submitted,
+    .text-submitted {
+      color: @submitted;
+    }
+    &.text-scored,
+    .text-scored {
+      color: @succeed;
+    }
+    &.text-hang,
+    .text-hang {
+      color: @hang;
+    }
+    &.text-waitInput,
+    .text-waitInput {
+      color: @ignored;
+    }
+  }
+}
+
+html {
+  .theme(@default-saved, @default-pending, @default-running, @default-pausing, @default-paused, @default-aborting, @default-aborted, @default-completed, @default-failed, @default-succeed, @default-ignored, @default-default, @default-passed, @default-draft, @default-rejected, @default-submitted, @default-hang, @default-info-bg-color, @default-success-bg-color, @default-warning-bg-color, @default-error-bg-color, @default-input-border);
+  &.theme-dark {
+    .theme(@dark-saved, @dark-pending, @dark-running, @dark-pausing, @dark-paused, @dark-aborting, @dark-aborted, @dark-completed, @dark-failed, @dark-succeed, @dark-ignored, @dark-default, @dark-passed, @dark-draft, @dark-rejected, @dark-submitted, @dark-hang, @dark-info-bg-color, @dark-success-bg-color, @dark-warning-bg-color, @dark-error-bg-color, @dark-input-border);
+  }
+}

@@ -1,0 +1,49 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@primary-color){
+  .staticListSetting {
+    .dataSource-ul {
+      > li {
+        .imitate-radio {
+          &:after {
+            background: @primary-color;
+            border: 1px solid @primary-color;
+          }
+          &:hover {
+            &:before {
+              border-color: @primary-color !important;
+            }
+          }
+          &.selected {
+            &:before {
+              border-color: @primary-color !important;
+            }
+          }
+        }
+      }
+      &.multiple-ul {
+        > li {
+          .imitate-radio {
+            &:after {
+              border-color: #fff;
+            }
+            &.selected {
+              &:before {
+                background: @primary-color;
+              }
+            }
+          }
+        }
+      }
+    }
+    .bg-primary {
+      background-color: fade(@primary-color, 10%);
+    }
+  }
+}
+html {
+  .theme(@default-primary-color);
+
+  &.theme-dark {
+    .theme(@dark-primary-color);
+  }
+}

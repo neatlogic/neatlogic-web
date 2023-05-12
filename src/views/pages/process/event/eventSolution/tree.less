@@ -1,0 +1,94 @@
+// 对事件解决方案编辑页面的iviewUI的tree组件的样式覆盖
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.customize-tree.ivu-tree {
+  border: 1px solid @default-border;
+  border-bottom: none;
+  overflow: hidden;
+  li {
+    padding-right: 0 !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ivu-tree-arrow {
+    line-height: 25px;
+		height:30px;
+  }
+  .ivu-tree-children {
+    & > li {
+      margin: 0;
+    }
+    .ivu-tree-title {
+      display: inline-block;
+      height: 32px;
+      width: 100%;
+      line-height: 32px;
+      border-radius: 0;
+      border-bottom: 1px solid @default-border;
+      color: @default-text;
+      transition: none;
+      position: relative;
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 300%;
+        height: calc(100% + 1px);
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: -100%;
+        border-bottom: 1px solid @default-border;
+      }
+      &-selected {
+        background-color: transparent !important;
+        &::before {
+          background-color: fade(@default-primary-color, 10%);
+        }
+        &::after {
+          content: '\e863'; // tsfont-check
+          display: block;
+          font-family: 'tsfont' !important;
+          float: right;
+          margin-right: 30px;
+          // font-weight: bolder;
+          color: @default-primary-color;
+        }
+      }
+      &:hover {
+        background-color: transparent !important;
+        &::before {
+          background-color: @default-primary-grey;
+        }
+      }
+    }
+  }
+}
+
+html.theme-dark {
+  .customize-tree.ivu-tree {
+    border: 1px solid @dark-border;
+    .ivu-tree-children {
+      .ivu-tree-title {
+        color: @dark-text;
+        border-bottom: 1px solid @dark-border;
+        &::before {
+          border-bottom: 1px solid @dark-border;
+        }
+        &-selected {
+          &::before {
+            background-color: fade(@dark-primary-color, 10%);
+          }
+          &::after {
+            color: @dark-primary-color;
+          }
+        }
+        &:hover {
+          background-color: transparent !important;
+          &::before {
+            background-color: @dark-primary-grey;
+          }
+        }
+      }
+    }
+  }
+}

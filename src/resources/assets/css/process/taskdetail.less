@@ -1,0 +1,682 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@border-color-base,@primary-color,@dividing-color, @primary-grey) {
+  .CenterDetail {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .form-prevview {
+      padding-top: 8px;
+      margin-top: 8px;
+      border-top: 1px solid;
+    }
+    .change-text {
+      padding: 0 @space-xs;
+    }
+    .pl24{
+      padding: 16px 16px 16px 24px;
+    }
+    //回复
+    .order-list {
+      position: relative;
+      .step-userimg {
+        position: absolute;
+      }
+      .user-name {
+        padding-right: @space-xs;
+      }
+      .comment-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        > button {
+          margin-left: 10px;
+        }
+      }
+      .comment-list {
+        margin-bottom: 24px;
+      }
+      .order-comment {
+        &:not(:last-child) {
+          padding-bottom: 16px;
+          .comment-border {
+            border-bottom: 1px solid;
+            padding-top: 16px;
+          }
+        }
+        .comment-detail {
+          position: relative;
+          padding-left: 32px;
+          .user-name {
+            line-height: 24px;
+          }
+          .comment-content {
+            padding: 4px 0 10px;
+          }
+        }
+      }
+    }
+    //工单详情start
+    .common-main {
+      .form-view {
+        .form-line {
+          position: relative;
+          border-top: 1px solid;
+          margin-top: 16px;
+          padding-top: 16px;
+          &:hover {
+            .form-show {
+              display: block;
+            }
+          }
+        }
+        .form-show {
+          width: 18px;
+          height: 18px;
+          position: absolute;
+          top: -9px;
+          left: 50%;
+          border: 1px solid;
+          border-radius: 50%;
+          transform: translateX(-50%);
+          display: none;
+        }
+      }
+      .tab-content{
+        overflow-y: auto;
+      }
+      //活动日志
+      .activity-log-tab {
+        position: relative;
+        &.tab-padding {
+          padding-right: 20px;
+        }
+        .item-active{
+          padding: 0 16px;
+        }
+        .sort-icon {
+          position: absolute;
+          top: 9px;
+          right: -2px;
+          width: 16px;
+          height: 16px;
+          font-weight: normal;
+          &::before {
+            font-family: 'tsfont';
+            content: '\e897'; // tsfont-drop-down
+            position: absolute;
+            top: 3px;
+            left: 0;
+            width: 14px;
+            height: 16px;
+            line-height: 16px;
+          }
+          &::after {
+            font-family: 'tsfont';
+            content: '\e89a'; // tsfont-drop-up
+            position: absolute;
+            top: -4px;
+            left: 0;
+            width: 14px;
+            height: 16px;
+            line-height: 16px;
+          }
+          &.select-icon-left {
+            &::before {
+              color: @primary-color;
+            }
+          }
+          &.select-icon-right {
+            &::after {
+              color: @primary-color;
+            }
+          }
+        }
+      }
+      .activity-log-content {
+        // margin-top: 8px;
+        position: relative;
+        .activity-box-list {
+          border-radius: 6px;
+          margin-bottom: 16px;
+          padding: 16px;
+          border: 1px solid @border-color-base;
+          border-left: 6px solid;
+          overflow: hidden;
+
+          .text-padding-rg {
+            padding-right: 16px;
+          }
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          &:nth-child(3n + 1) {
+            border-color: @primary-color;
+          }
+
+          &:nth-child(3n + 3) {
+            border-color: @warning-color;
+          }
+
+          .activity-box-user {
+            width: 100%;
+            margin-bottom: 16px;
+
+            .title {
+              padding-left: 8px;
+              display: inline-block;
+              // vertical-align: text-bottom;
+
+              .text-color {
+                color: @primary-color;
+              }
+            }
+
+            .time {
+              float: right;
+            }
+          }
+
+          .text-content {
+            margin-bottom: 16px;
+          }
+
+          .description {
+            // line-height: 32px;
+
+            .text-height {
+              // margin-bottom: 16px;
+            }
+
+            .text-word-break {
+              word-break: break-all;
+            }
+
+            .subtask-list {
+              padding: @space-xs @space-md;
+              margin: @space-xs 0 @space-md;
+              .box-shadow(0px 1px 4px 0px @default-boxshadow-main);
+            }
+          }
+
+          .activity-box-content {
+            padding-left: 40px;
+          }
+        }
+
+        .priority-item {
+          display: inline-block;
+          min-width: 80px;
+          padding-left: 20px;
+          position: relative;
+          line-height: 20px;
+
+          > span {
+            &:before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: 100%;
+              border-right: 10px solid;
+            }
+          }
+        }
+
+        .activity-step {
+          position: relative;
+          padding-left: 115px;
+          padding-bottom: 16px;
+          @media screen and (min-width: 1440px) {
+            // padding-left: 224px;
+          }
+          @media screen and (max-width: 1281px){
+            // padding-left: 198px;
+          }
+          .step-left {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 181px;
+            @media screen and (min-width: 1440px) {
+              width: 207px;
+            }
+            @media screen and (max-width: 1281px){
+              width: 181px;
+            }
+
+            .left-btn-step {
+              position: absolute;
+              top: 8px;
+              width: 100%;
+              padding-right: 32px;
+              text-align: center;
+              cursor: pointer;
+
+              &:hover {
+                color: @primary-color;
+              }
+            }
+
+            .right-btn-step {
+              position: absolute;
+              bottom: 8px;
+              width: 100%;
+              text-align: center;
+              padding-right: 32px;
+              cursor: pointer;
+
+              &:hover {
+                color: @primary-color;
+              }
+            }
+
+            .item-li {
+              position: relative;
+              cursor: pointer;
+              padding-left: 18px;
+              margin-bottom: 16px;
+              height: 55px;
+              
+
+              &:not(:last-child)::before {
+                content: '';
+                position: absolute;
+                height: 57px;
+                top: 25px;
+                left: 5px;
+                border-right: 1.5px dashed var(--dividing-color, @dividing-color);
+              }
+              .item-li-content{
+                 padding: 8px 10px;
+              }
+              &.active {
+                .item-li-content{
+                  background-color: @primary-grey;
+                  border-radius: 6px;
+                }
+               
+              }
+              &.not-allowed {
+                cursor: not-allowed;
+                background-color: inherit;
+              }
+              .item-li-dot {
+                position: absolute;
+                left: 0;
+                top: 10px;
+                border: 2px solid @primary-color;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+              }
+              .item-li-current {
+                position: absolute;
+                left: -2px;
+                top: 6px;
+                font-size: 16px;
+                color: @primary-color;
+              }
+              .item-li-content{
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+
+          .step-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .name-box{
+              flex-shrink: 0;
+              .name{
+                display: inline-block;
+                max-width: 300px;
+              }
+            }
+            .step-status{
+              padding-right: 6px;
+            }
+          }
+
+          .step-right-list {
+            .step-auditList {
+              //步骤回复
+              position: relative;
+              .step-userimg {
+                position: absolute;
+              }
+              .user-name {
+                color: @primary-color;
+                padding-right: @space-xs;
+              }
+              .text-bold {
+                font-weight: bold;
+              }
+            }
+          }
+          //状态颜色
+          .succeed {
+            color: @success-color;
+          }
+          .running {
+            color: @info-color;
+          }
+        }
+
+        //新版活动UI
+        .activity-show-box {
+          border-radius: 2px;
+          padding-left: @space-xs;
+          .activity-show-list {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: @space-md;
+            .user-img {
+              position: absolute;
+              left: 0;
+              top: 0;
+            }
+          }
+          .activity-show-list {
+            &:last-of-type {
+              margin-bottom: 0;
+              padding-bottom: @space-xs;
+              .content-box {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+
+        .content-box {
+          // border-bottom: 1px solid;
+          // padding-bottom: @space-md;
+          .text-bold {
+            font-weight: bold;
+          }
+          .title {
+            line-height: 24px;
+            padding-bottom: 8px;
+            .user-name {
+              color: @primary-color;
+              padding-right: @space-xs;
+              vertical-align: bottom;
+            }
+          }
+          .content-list {
+            .tip-title {
+              padding-right: @space-xs;
+            }
+            .default-dot {
+              display: inline-block;
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background-color: fade(@primary-color, 20%);
+              &:after {
+                content: '';
+                display: inline-block;
+                border: 1px solid @primary-color;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                margin: 3px;
+              }
+              &.dot-bg {
+                &:after {
+                  background-color: @primary-color;
+                }
+              }
+            }
+          }
+        }
+
+        //end新版活动UI
+
+        //新的步骤调整
+        .activity-step {
+          .time-block {
+            margin-top: @space-xs;
+          }
+          .time-end {
+            position: relative;
+            .timeout {
+              position: absolute;
+              left: 60px;
+              top: 0;
+              height: 22px;
+              line-height: 22px;
+              padding: 0 6px;
+              .time-padding {
+                padding-left: 4px;
+              }
+            }
+          }
+          .time-start {
+            margin-right: 4px;
+          }
+          .time-date {
+            font-size: 16px;
+            height: 24px;
+            line-height: 24px;
+            margin-top: 4px;
+          }
+          .comment-time {
+            width: 100%;
+            text-align: right;
+          }
+          .padding-tag {
+            padding: 10px @space-md;
+            margin-bottom: 4px;
+          }
+          .sub-description {
+            // border: 1px solid;
+            // border-radius: 10px;
+            .sub-status {
+              position: absolute;
+              right: 0;
+              top: 0;
+            }
+            .sub-comment-user {
+              position: absolute;
+              top: 0;
+              left: 0;
+            }
+          }
+          .handler-user {
+            padding-top: 6px;
+          }
+          .sub-list {
+            &:not(:last-child) {
+              border-bottom: 1px solid;
+              margin-bottom: 16px;
+            }
+          }
+          .main-user {
+            width: 28px;
+            height: 28px;
+            border-radius: 28px;
+            text-align: center;
+            padding-top: 2px;
+          }
+          .step-toggle {
+            border: 1px solid @primary-active-color;
+            .btn-toggle {
+              position: relative;
+              display: inline-block;
+              padding: 0 10px;
+              &.active{
+                color: @primary-color;
+              }
+              .tab-box {
+                position: relative;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                .tab-text {
+                  display: inline-block;
+                  margin-bottom: 10px;
+                }
+                .tab-text-active {
+                  margin-bottom: 8px;
+                }
+                .sub-number {
+                  position: absolute;
+                  right: -21px;
+                  top: 0;
+                  width: 18px;
+                  height: 18px;
+                  text-align: center;
+                  line-height: 18px;
+                  font-size: 12px;
+                  border-radius: 50%;
+                  color: @default-op;
+                  background-color: @default-error-color;
+                }
+              }
+              .tabs-ink-bar{
+                width: 36px;
+                border-bottom: 2px solid @primary-color;
+              }
+            }
+          }
+        }
+      }
+    }
+    //工单详情end
+    .step-main{    //步骤详情start
+      padding-top: 8px;
+      &.step-line {
+        border-top: 2px solid;
+      }
+    }
+    //步骤详情ent
+    .text-padding {
+      padding: 0 @space-xs;
+    }
+    .file-list-down {
+      display: inline-block;
+      padding-right: @space-md;
+    }
+    .form-main {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      .order-list {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin-bottom: 10px;
+
+        .order-title {
+          position: relative;
+          line-height: 32px;
+        }
+
+        .order-content {
+          padding: 16px 24px;
+
+          .title {
+            padding-bottom: @space-xs;
+          }
+
+          &.no-padding {
+            padding: 0;
+
+            textarea {
+              width: 100%;
+              overflow-y: auto;
+              padding: 24px 32px;
+              border: none;
+            }
+          }
+        }
+      }
+
+      .order-list-btn {
+        button {
+          margin-right: 8px;
+        }
+      }
+    }
+    .btn-backtop {
+      position: absolute;
+      bottom: 120px;
+      right: 4px;
+      width: 36px;
+      height: 36px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 20px;
+      padding: 0;
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  //弹框样式
+  .task-step {
+    .step-list {
+      // padding: 0 8px;
+      overflow-x: hidden;
+    }
+
+    .ivu-form-label-top .ivu-form-item-label {
+      padding-bottom: 8px;
+    }
+
+    .topo-box {
+      position: relative;
+      height: 100%;
+    }
+
+    .text-line {
+      line-height: 40px;
+    }
+
+    .related-task {
+      width: 100%;
+      position: relative;
+
+      .search {
+        width: 100%;
+        margin-bottom: @space-md;
+
+        .list {
+          float: left;
+          width: 49%;
+          position: relative;
+          padding-right: @space-md;
+
+          .label {
+            position: absolute;
+            width: 60px;
+            top: 4px;
+            text-align: right;
+          }
+
+          .controls {
+            padding-left: 70px;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+html {
+  .theme(@default-border, @default-primary-color,@default-dividing,@default-primary-grey);
+
+  &.theme-dark {
+    .theme(@dark-border, @dark-primary-color,@dark-dividing,@dark-primary-grey);
+  }
+}

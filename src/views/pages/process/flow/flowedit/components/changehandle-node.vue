@@ -1,0 +1,332 @@
+<template>
+  <div class="changehandleNode">
+    <!-- 表单场景 -->
+    <FormsceneSetting
+      v-model="configData.stepConfig"
+      :formConfig="formConfig"
+      :toSetting="toSetting"
+      @updateScene="updateScene"
+    ></FormsceneSetting>
+    <!-- 权限 -->
+    <AuthoritySetting
+      :list="authorityList"
+      :defaultIsActive="activeSetting.permission"
+      :nodeConfig="nodeConfig"
+      @updateauthority="updateauthority"
+    ></AuthoritySetting>
+    <!-- 通知设置 -->
+    <NoticeSetting
+      ref="NoticeSetting"
+      v-model="activeSetting.informSetting"
+      :formUuid="formUuid"
+      :config="notifyPolicyConfig"
+      :nodeConfig="nodeConfig"
+    ></NoticeSetting>
+    <!-- 动作设置 -->
+    <ActionSetting
+      v-bind="actionConfig"
+      :defaultIsActive="activeSetting.actionSetting"
+      :formConfig="formConfig"
+      @updateaction="updateaction"
+      @updateActionSetting="updateActionSetting"
+    ></ActionSetting>
+    <!-- 动作设置_end -->
+    <!-- 按钮映射 -->
+    <ButtonSetting
+      :defaultIsActive="activeSetting.buttonStatus"
+      :defaultCustomButtonList="customButtonList"
+      :defaultCustomStatusList="customStatusList"
+      :defaultReplaceableTextList="replaceableTextList"
+      :nodeConfig="nodeConfig"
+      @updatebutton="updatebutton"
+    ></ButtonSetting>
+
+    <div class="settingList">
+      <div class="control-box">
+        <div class="control-setting">
+          <span class="label">
+            <span>{{ $t('page.defaultcontent') }}</span>
+          </span>
+          <span class="control-btn">
+            <i-switch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></i-switch>
+          </span>
+        </div>
+      </div>
+      <div v-if="activeSetting.replySetting == 1" class="permission-list">
+        <div class="bg-block">
+          <ReplySetting ref="replySetting" :commentTemplateId="configData.stepConfig.commentTemplateId"></ReplySetting>
+        </div>
+      </div>
+    </div>
+    <!-- 子任务策略 事件变更处理 -->
+    <!-- <StrategySetting
+      v-if="nodeConfig.handler === 'changehandle'"
+      ref="StrategySetting"
+      :isStrategy="taskisStrategy"
+      :strategySetting="configData.stepConfig"
+    ></StrategySetting> -->
+    <!-- 标签 -->
+    <TagSetting
+      ref="TagSetting"
+      :nodeConfig="nodeConfig"
+      :defaultIsActive="activeSetting.tagSetting"
+      :list="tagList"
+    ></TagSetting>
+    <div v-if="formUuid !='' && isExtend(previewFormContent)">
+      <ExtendAuth
+        :config="extendConfig"
+        :noUserExtendList="noUserExtendList"
+        :formConfig="previewFormContent"
+        @updateConfig="updateExtendConfig"
+      ></ExtendAuth>
+    </div>
+    <!-- 变更 -->
+    <div class="settingList">
+      <div id="changeStep" class="control-box">
+        <div class="control-setting">
+          <span class="label require-label">{{ $t('term.process.relchange') }}</span>
+        </div>
+      </div>
+      <div class="permission-list">
+        <div class="list">
+          <div class="input-border">
+            <TsFormSelect
+              ref="changeStep"
+              v-model="linkedChange"
+              :dataList="returnChangeNodeList(prevNodes)"
+              :validateList="validateSetting.required"
+              textName="name"
+              valueName="uuid"
+              border="border"
+            ></TsFormSelect>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="settingList">
+      <div id="changeStep" class="control-box">
+        <div class="control-setting">
+          <span class="label require-label">{{ $t('term.process.changesteptodotip') }}</span>
+        </div>
+      </div>
+      <div class="permission-list">
+        <div class="list">
+          <div class="input-border">
+            <RadioGroup v-model="whenChangeStepUserVisible">
+              <Radio v-for="(c, cindex) in changeStepVisibleList" :key="cindex" :label="c.value">
+                <span>{{ c.text }}</span>
+                <span style="padding-right:8px">
+                  <Tooltip
+                    placement="bottom"
+                    max-width="300"
+                    :transfer="true"
+                    theme="light"
+                  >
+                    <b class="tsfont-info-o text-href"></b>
+                    <div slot="content">
+                      <p v-if="c.value == 'changeStepActive'">{{ $t('term.process.changestepsoptip') }}</p>
+                      <p v-else>{{ $t('term.process.enablechangetodotip') }}</p>
+                    </div>
+                  </Tooltip>
+                </span>
+              </Radio>
+            </RadioGroup>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+//变更处理
+import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import nodemixin from './nodemixin.js';
+import itemmixin from './itemmixin.js';
+export default {
+  name: '',
+  components: {
+    // StrategySetting: resolve => require(['./nodesetting/strategy-setting.vue'], resolve),
+    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
+    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
+    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
+    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
+    TsFormSelect,
+    ExtendAuth: resolve => require(['./nodesetting/extend/extendauth.vue'], resolve),
+    ReplySetting: resolve => require(['./nodesetting/reply-setting.vue'], resolve),
+    TagSetting: resolve => require(['./nodesetting/tag-setting.vue'], resolve),
+    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+  },
+  mixins: [nodemixin, itemmixin],
+  props: {},
+  data() {
+    let _this = this;
+    return {
+      configData: {stepConfig: {}}, //当前节点数据
+      activeSetting: {//开关设置
+        permission: 0, //权限设置开关
+        buttonStatus: 0, //按钮状态设置
+        informSetting: 0, //通知设置
+        replySetting: 0, //回复模板
+        tagSetting: 0, //标签
+        actionSetting: 0 // 动作设置
+      },
+      validateSelectList: ['required'],
+      formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
+      defaultAuthorityList: [], //权限设置默认
+      authorityList: [], //权限
+      customButtonList: [], //按钮
+      customStatusList: [], //工单状态映射
+      replaceableTextList: [], //文案映射
+      notifyPolicyConfig: {},
+      actionConfig: {}, //动作数据
+      linkedChange: '',
+      whenChangeStepUserVisible: '',
+      processStepUuidList: '', //前置步骤值
+      validateSetting: {
+        required: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: ''}) }]
+      },
+      taskisStrategy: {
+        isStrategy: 0 //子任务节点是否开启，如果说有子任务节点id就开启，没有就关闭
+      },
+      previewFormContent: null, //用来预览表单数据
+      changeStepVisibleList: [
+        {
+          value: 'changeStepActive',
+          text: this.$t('term.process.enablechange')
+        },
+        {
+          value: 'processTaskStepActive',
+          text: this.$t('term.process.readychange')
+        }
+      ],
+      tagList: []
+    };
+  },
+
+  beforeCreate() {},
+
+  created() {},
+
+  beforeMount() {},
+
+  mounted() {
+    this.keyList = ['actionConfig', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'linkedChange', 'whenChangeStepUserVisible', 'tagList'];//stepConfig 需要包含的数据
+    this.getNodeSetting();
+  },
+
+  beforeUpdate() {},
+
+  updated() {},
+
+  activated() {},
+
+  deactivated() {},
+
+  beforeDestroy() {},
+
+  destroyed() {},
+
+  methods: {
+    getNodeSetting() {
+      //初始化节点数据
+      if (!this.nodeConfig) {
+        return;
+      }
+      let config = this.configData = this.$utils.deepClone(this.nodeConfig);
+      this.uuid = config.uuid;
+      this.initNodeData(config, this.keyList);//初始化数据
+      this.getCopyPrevNodes();//初始化前置节点
+      if (this.formUuid) { //获取表单对应的数据
+        this.getFormItem(this.formUuid);
+      }
+    },
+    getCopyPrevNodes() {
+      //所有节点数据筛选
+      if (this.copyPrevNodes && this.copyPrevNodes.length > 0) {
+        let newCopyPrevNodes = [];
+        this.copyPrevNodes.forEach((item, index) => {
+          if (item.type == 'process') {
+            newCopyPrevNodes.push(item);
+          }
+        });
+        this.copyPrevNodes = newCopyPrevNodes;
+      }
+    },
+    saveNodeData() {
+      //保存数据
+      let stepConfig = Object.assign({}, this.configData.stepConfig);
+      if (this.keyList && this.keyList.length) {
+        this.keyList.forEach(item => {
+          stepConfig[item] = this[item] || undefined;
+        });
+      }
+      if (this.$refs.NoticeSetting) { //通知
+        stepConfig.notifyPolicyConfig = this.$refs.NoticeSetting.getData();
+      }
+      if (this.$refs.TagSetting) { //标签
+        stepConfig.tagList = this.$refs.TagSetting.getData();
+      }
+      //回复模板
+      stepConfig.commentTemplateId = this.$refs.replySetting && this.$refs.replySetting.getData() ? this.$refs.replySetting.getData() : undefined;
+      stepConfig['formSceneUuid'] = this.configData.stepConfig.formSceneUuid || '';
+      return this.clearNodeData(stepConfig);
+    },
+    updateaction(type, data, index) {
+      if (type == 'add') {
+        this.actionConfig.actionList.push(data);
+      } else if (type == 'empty') {
+        this.actionConfig.actionList = [];
+      } else if (type == 'remove') {
+        this.$delete(this.actionConfig.actionList, index);
+      } else {
+        this.$set(this.actionConfig.actionList, index, data);
+      }
+    },
+    nodeValid(href) {
+      //校验
+      let querySelect = href.substring(1);
+      this.$nextTick(() => {
+        this.$refs[`${querySelect}`].valid();
+      });
+    },
+    returnChangeNodeList(prevNodes) {
+      let changeNodeList = [];
+      if (prevNodes) {
+        let list = prevNodes.filter(p => p.handler === 'changecreate');
+        if (list) {
+          if (this.linkedChange) {
+            let obj = list.find(f => f.uuid == this.linkedChange);
+            if (!obj) {
+              this.linkedChange = '';
+            }
+          }
+          changeNodeList = list;
+        }
+      }
+      return changeNodeList;
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {
+    formConfig: {
+      handler(newVal, oldVal) {
+        let _this = this;
+        let newformConfig = this.$utils.deepClone(newVal);
+        this.extendConfig = {};
+        this.formUuid = newformConfig.uuid || '';
+        _this.getNodeform(newformConfig);
+        if (newformConfig.extendConfig) {
+          for (let key in newformConfig.extendConfig) {
+            this.extendConfig[key] = newformConfig.extendConfig[key] ? newformConfig.extendConfig[key][this.nodeConfig.uuid] || {} : {};
+          }
+        }
+        this.getFormItem(this.formUuid);
+      },
+      deep: true
+    }
+  }
+};
+</script>
+

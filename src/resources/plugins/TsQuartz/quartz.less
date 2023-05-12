@@ -1,0 +1,121 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.jquery-quartz-container {
+  // display: inline-block;
+  vertical-align: middle;
+  outline: none;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.form-group .jquery-quartz-container {
+  margin-top: 7px;
+}
+.jquery-quartz-controller-container {
+  white-space: nowrap;
+  // position: relative;
+  cursor: pointer;
+  margin: 1px 3px;
+  display: inline-block;
+}
+.jquery-quartz-controller-text {
+  border: 1px solid;
+  border-radius: 3px;
+  line-height: 30px;
+  padding-left: 6px;
+  padding-right: 6px;
+  word-break: break-word;
+  white-space: pre-wrap;
+  min-width: 32px;
+  height: auto;
+}
+.jquery-quartz-container.quartz-show .jquery-quartz-controller-text {
+  border: none;
+  border-radius: 3px;
+  padding-left: 0px;
+  padding-right: 0px;
+  min-width: auto;
+  cursor: text;
+  background: transparent;
+}
+
+.jquery-quartz-container.quartz-show .jquery-quartz-controller-label {
+  cursor: text;
+  line-height: 30px;
+  display: inline-block;
+  vertical-align: top;  
+}
+.jquery-quartz-container.quartz-show .jquery-quartz-controller-container {
+  margin: 0px;
+}
+.td-cron .jquery-quartz-container label {
+  margin: 0px;
+}
+.td-cron .jquery-quartz-controller-text {
+  border: none;
+  border-radius: 0;
+  height: auto;
+  line-height: 1.2;
+  padding: 0px;
+}
+.jquery-quartz-dropdown-container {
+  position: absolute;
+  left: 0px;
+  padding: 5px;
+  width:200px;
+  border-radius: 5px;
+  border: 1px solid #dddddd;
+  display: none;
+  background-color: #ffffff;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}
+.jquery-quartz-dropdown-item {
+  float: left;
+  text-align: center;
+  white-space: nowrap;
+  padding: 3px;
+  margin: 2px;
+  min-width: 40px;
+  border-radius: 3px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.theme(@primary-color, @op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow) {
+  .jquery-quartz-controller-text {
+    border-color: var(--border-color, @border-color-base);
+    background: @op-color;
+  }
+
+  .jquery-quartz-dropdown-container {
+    border: 1px solid var(--border-color, @border-color-base);
+    background-color: @op-color;
+
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    z-index: 999999;
+  }
+  .jquery-quartz-dropdown-item:hover,
+  .jquery-quartz-dropdown-item.selected {
+    background: @primary-color;
+    color: #ffffff;
+  }
+}
+
+html {
+  .theme(@default-primary-color, @default-op, @default-title, @default-text, @default-icon, @default-dividing, @default-mongolia, @default-background, @default-blockbg, @default-gray, @default-border, @default-boxshadow-main, @default-boxshadow-bolck, @default-disable, @primary-grey, @default-selectbg, @default-placeholder, @default-op, @default-footer-btn-bg, @default-shadow, @default-main-shadow);
+
+  &.theme-dark {
+    .theme(@dark-primary-color, @dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @menu-background, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow);
+  }
+}

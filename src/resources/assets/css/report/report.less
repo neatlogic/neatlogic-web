@@ -1,0 +1,53 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@type,@op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @disabled-bg, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow, @tip-color, @primary-color, @primary-active-color, @primary-hover-color, @link-color, @info-color, @info-active-color, @info-hover-color, @success-color , @success-active-color , @success-hover-color, @warning-color, @warning-active-color, @warning-hover-color,@warning-bg-color, @error-color, @error-active-color, @error-hover-color,@invert-bg,@pending-color) {
+  .report-main{
+    svg{
+      background: @blockbg-color;
+      // .chartBackgroundColor{
+      //   fill: @op-color;
+      // }
+      .chartBackgroundColor,.legendBackgroundColor,.plotBackgroundColor{
+        fill:none;
+      }
+      text{
+        fill:@text-color;
+      }
+      .titleColor{
+        fill:@title-color;
+      }
+      .color1{fill:@primary-color}
+      .color2{fill:#BDD2FD;}
+      .color3{fill:#5AD8A6;}
+      .color4{fill:#BDEFDB;}
+      .color5{fill:#5D7092;}
+      .color6{fill:#C2C8D5;}
+      .color7{fill:#F6BD16;}
+      .color8{fill:#FBE5A2;}
+      .color9{fill:#E8684A;}
+      .color10{fill:#F6C3B7;}
+      .color11{fill:#6DC8EC;}
+      .color12{fill:#B6E3F5;}
+      .color13{fill:#9270CA;}
+      .color14{fill:#D3C6EA;}
+      .color15{fill:#FF9D4D;}
+      .color16{fill:#FFD8B8;}
+      .color17{fill:#269A99;}
+      .color18{fill:#AAD8D8;}
+      .color19{fill:#FF99C3;}
+      .color20{fill:#FFD6E7;}
+      .labelLinkColorStroke{
+        stroke: @text-color !important;
+      }
+    }
+  }
+}
+@default-type: 'white';
+@dark-type: 'dark';
+html {
+  .theme(@default-type, @default-op, @default-title, @default-text, @default-icon, @default-dividing, @default-mongolia, @default-background, @default-blockbg, @default-gray, @default-border, @default-boxshadow-main, @default-boxshadow-bolck, @default-disable, @default-footer-btn-bg, @default-primary-grey, @default-selectbg, @default-placeholder, @default-op, @default-footer-btn-bg, @default-shadow, @default-main-shadow, @default-tip, @default-primary-color, @default-primary-active-color, @default-primary-hover-color, @default-link-color, @default-info-color, @default-info-active-color, @default-info-hover-color, @default-success-color, @default-success-active-color, @default-success-hover-color, @default-warning-color, @default-warning-active-color, @default-warning-hover-color, @default-warning-bg-color, @default-error-color, @default-error-active-color, @default-error-hover-color, @default-invert-bg, @default-pending-color);
+
+  &.theme-dark {
+    .theme(@dark-type, @dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @dark-border, @dark-primary-grey, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow, @dark-tip, @dark-primary-color, @dark-primary-active-color, @dark-primary-hover-color, @dark-link-color, @dark-info-color, @dark-info-active-color, @dark-info-hover-color, @dark-success-color, @dark-success-active-color, @dark-success-hover-color, @dark-warning-color, @dark-warning-active-color, @dark-warning-hover-color, @dark-warning-bg-color, @dark-error-color, @dark-error-active-color, @dark-error-hover-color, @dark-invert-bg, @dark-pending-color);
+  }
+}

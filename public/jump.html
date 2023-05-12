@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./resource/tsfavicon.png" />
+    <title>NeatLogic</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        
+        .login-bg-tips-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .login-bg-tips-wrap .img-wrap {
+            width: 50%;
+            text-align: center;
+        }
+        
+        .login-bg-tips-wrap img {
+            width: 76%;
+            height: 60%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .text {
+            font-size: 22px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-weight: 400;
+            color: #212121;
+        }
+        
+        .no-chrome-browser-tips img {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .no-chrome-browser-tips span {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-bg-tips-wrap">
+        <div class="img-wrap">
+            <img src="./resource/img/login/login-left-bg.png" id="bgImg" alt="登录页面背景图片" />
+        </div>
+        <div class="no-chrome-browser-tips" id="chrome-tips-text" style="display: block;">
+            <img src="./resource/tips.svg" alt="感叹号图标" />
+            <span class="text">IE浏览器存在兼容性问题，请您使用chrome浏览器</span>
+        </div>
+        <div class="text" style="display: none;" id="contact-admin-text">
+            检测不到chrome路径，请联系管理员!
+        </div>
+        <div class="text" id="close-current-page" style="display: none;">
+            当前页面已跳转到chrome浏览器，请关闭当前页面
+            <button type="button" onclick="window.close()">关闭当前页面</button>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            if (IEVersion() != -1) {
+                openUrlWithChrome(); // 用chrome浏览器打开页面
+            } else {
+                window.location.href = getRedirectUrl() + getQueryString();
+                document.getElementById('chrome-tips-text').style.display = 'none'
+            }
+        };
+        function IEVersion() {
+            //  判断是否是IE浏览器，如果不是IE浏览器，那就返回一个-1，排除edge浏览器
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+            var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
+            var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf('rv:11.0') > -1;
+            if (isIE) {
+                var reIE = new RegExp('MSIE (\\d+\\.\\d+);');
+                reIE.test(userAgent);
+                var fIEVersion = parseFloat(RegExp['$1']);
+                if (fIEVersion == 7) {
+                    return 7;
+                } else if (fIEVersion == 8) {
+                    return 8;
+                } else if (fIEVersion == 9) {
+                    return 9;
+                } else if (fIEVersion == 10) {
+                    return 10;
+                } else {
+                    return 6; //IE版本<=7F
+                }
+            } else if (isIE11) {
+                return 11; //IE11
+            } else {
+                return -1; //不是ie浏览器
+            }
+        }
+
+        function getBaseUrl() {
+            var url = location.href;
+            var pos = url.indexOf('/', 7); //http://xxxxxx/,最后一个斜杠
+            pos = url.indexOf('/', pos + 1); //http://xxxxxx/yyy/,最后一个斜杠
+
+            return url.substr(0, pos);
+        }
+
+        function getQueryString() {
+            var url = location.href;
+            var callBackUrl = getRedirectUrl();
+            if(url && url.indexOf('ICMS_SSO_PARAMS') != -1) {
+                var queryString = 'ICMS_SSO_USER_TOKEN=' +  url.match(/ICMS_SSO_USER_TOKEN=(\S*)&ICMS_SSO_PARAMS/)[1];
+                return callBackUrl.indexOf('?') >= 0 ? '&' + queryString : '?' + queryString;
+            } else {
+                var pos = url.indexOf('?');
+                return url.substr(pos);
+            }
+           
+        }
+
+        function getRedirectUrl() {
+            // 获取重定向地址
+            var url = location.href;
+            if(url.indexOf('ICMS_SSO_PARAMS') != -1) {
+                var sso_params = url.split('ICMS_SSO_PARAMS=')[1];
+                var base64ParamsUrl = sso_params && sso_params.split('&')[0] ? handleSpecialCharacter(sso_params.split('&')[0]) : '';
+                var redirectUrl = base64ParamsUrl ? window.atob(decodeURIComponent(base64ParamsUrl)) : getBaseUrl(); // 匹配到参数地址，base64解码
+                return redirectUrl;
+            } else {
+                return getBaseUrl();
+            }
+        }
+        function handleSpecialCharacter(value) {
+            // 处理url地址栏特殊字符
+            var returnValue = '';
+            if(value && value.indexOf('%3D') != -1) {
+                returnValue = value.replace(/%3D/g, '=');
+            }
+            return returnValue || value
+        }
+
+        function hasActiveXRight() {
+            hasRight = true;
+            try {
+                var fsObj = new ActiveXObject('Scripting.FileSystemObject');
+                var shellObj = new ActiveXObject('WScript.Shell');
+            } catch (e) {
+                hasRight = false;
+            }
+            console.log("ActiveX Right:" + hasRight);
+            return hasRight;
+        }
+
+        function findChromePath() {
+            var shellObj = new ActiveXObject('WScript.Shell');
+            var fsObj = new ActiveXObject('Scripting.FileSystemObject');
+
+            var progPath = shellObj.ExpandEnvironmentStrings("%PROGRAMFILES%");
+            var x86ProgPath = shellObj.ExpandEnvironmentStrings("%PROGRAMFILES(X86)%");
+            var localAppDataPath = shellObj.ExpandEnvironmentStrings("%LOCALAPPDATA%");
+
+            var possiblePaths = new Array();
+            possiblePaths[0] = localAppDataPath + '\\Google\\Chrome\\Application\\chrome.exe';
+            possiblePaths[1] = progPath + "\\Google\\Chrome\\Application\\chrome.exe";
+            possiblePaths[2] = x86ProgPath + "\\Google\\Chrome\\Application\\chrome.exe";
+
+            var regVal = null;
+            var regPaths = new Array();
+            regPaths[0] = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\\';
+            regPaths[1] = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\ChromeHTML\\shell\\open\\command\\';
+            regPaths[2] = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\ChromeHTML\Application\\';
+
+            for (var i = 0; i < regPaths.length; i++) {
+                try {
+                    var regVal = shellObj.RegRead(regPaths[i]);
+                    console.log("regVal:" + regVal);
+                    var pos = regVal.indexOf('chrome.exe');
+                    if (pos > 0) {
+                        var chromePath = regVal.substr(0, pos) + 'chrome.exe';
+                        possiblePaths.push(chromePath);
+                    }
+                } catch (e) {}
+            }
+
+            var paths = shellObj.ExpandEnvironmentStrings("%PATH%");
+            var pathsArray = paths.split(';');
+            for (var i = 0; i < pathsArray.length; i++) {
+                possiblePaths.push(pathsArray[i] + '\\' + 'chrome.exe');
+            }
+
+            var chromePath = null;
+            for (var i = 0; i < possiblePaths.length; i++) {
+                if (fsObj.FileExists(possiblePaths[i])) {
+                    chromePath = possiblePaths[i];
+                    chromePath = chromePath.substr(0, chromePath.length - 10);
+                    break;
+                }
+            }
+            console.log("Chrome Path:" + chromePath);
+            return chromePath;
+        }
+
+        function launchChromeWithUrl(baseUrl) {
+            var chromePath = findChromePath();
+            if (chromePath == null) {
+                //提示安装Chrome
+                var installHintUrl = baseUrl + '/install-chrome.html';
+                console.log("Redireto to:" + installHintUrl);
+                window.location.href = installHintUrl;
+                return;
+            }
+
+            var queryString = getQueryString();
+            var destUrl = getRedirectUrl() + queryString;
+            console.log('querystring', destUrl);
+            var shellObj = new ActiveXObject('WScript.Shell');
+            var chromePaths = chromePath + 'chrome.exe';
+            // var exitCode = shellObj.Run('cmd.exe /c start /D "TITLE" "' + chromePath + '" chrome.exe "' + destUrl + '"', 0, true);
+            var exitCode = shellObj.Run('"' + chromePaths + '"' + destUrl, 0, false);
+            if(exitCode == 0){
+                // 提示文案
+                document.getElementById('close-current-page').style.display = 'block'
+                document.getElementById('chrome-tips-text').style.display = 'none';
+                if(document.getElementById('contact-admin')) {
+                    document.getElementById('contact-admin').style.display = 'none';
+                }
+                setTimeout(function() {
+                    window.opener = null;
+                    window.open(',','_self');
+                    window.close();
+                }, 5 * 1000);
+             } else  {
+                //  异常
+                document.getElementById('chrome-tips-text').style.display = 'none';
+                document.getElementById('close-current-page').style.display = 'none'
+                document.getElementById('contact-admin').style.display = 'block';
+             }
+        }
+
+        function openUrlWithChrome() {
+            var baseUrl = getBaseUrl();
+            console.log("Base Url:" + baseUrl);
+            if (!hasActiveXRight()) {
+                var ieSettingHintUrl = baseUrl + '/open-safety-tips.html';
+                console.log("Redireto to:" + ieSettingHintUrl);
+                window.location.href = ieSettingHintUrl;
+            }
+
+            launchChromeWithUrl(baseUrl);
+        }
+    </script>
+</body>
+
+</html>

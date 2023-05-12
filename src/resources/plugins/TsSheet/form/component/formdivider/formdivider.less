@@ -1,0 +1,74 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@border-color) {
+  .divider {
+    border-top: var(--border-width, 1px) var(--border-style, solid) var(--border-color, @border-color);
+    height: 0px;
+    width: 100%;
+  }
+
+  .divider-width-text-start,
+  .divider-width-text-left,
+  .divider-width-text-center,
+  .divider-width-text-right,
+  .divider-width-text-end {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .divider-width-text-start {
+    text-align: left;
+  }
+
+  .divider-width-text-end {
+    text-align: right;
+  }
+
+  .divider-width-text-left {
+    text-align: left;
+    padding-left: 20px;
+  }
+
+  .divider-width-text-right {
+    text-align: right;
+    padding-right: 20px;
+  }
+
+  .divider-width-text-center {
+    text-align: center;
+  }
+
+  .divider-inner-text {
+    position: relative;
+    display: inline-block;
+    color: var(--border-color, @border-color);
+  }
+
+  .divider-inner-text:before,
+  .divider-inner-text:after {
+    content: '';
+    position: absolute;
+    top: calc(50% - calc(var(--border-width, 1) / 2));
+    width: 9999px;
+    height: 0px;
+    border-top: var(--border-width, 1px) var(--border-style, solid) var(--border-color, @border-color);
+    //background: var(--border-color, @border-color);
+  }
+
+  .divider-inner-text:before {
+    right: 100%;
+    margin-right: 10px;
+  }
+
+  .divider-inner-text:after {
+    left: 100%;
+    margin-left: 10px;
+  }
+}
+
+html {
+  .theme(@default-tip);
+  &.theme-dark {
+    .theme(@dark-tip);
+  }
+}

@@ -1,0 +1,29 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@pending-color,@running-color,@success-color,@failed-color,@checked-color) {
+  .job-container {
+    border-top: 8px solid @pending-color;
+  }
+  .job-container.pending {
+    border-top-color: @pending-color;
+  }
+  .job-container.completed {
+    border-top-color: @success-color;
+  }
+  .job-container.running {
+    border-top-color: @running-color;
+  }
+  .job-container.failed {
+    border-top-color: @failed-color;
+  }
+  .job-container.checked{
+    border-top-color: @checked-color;
+  }
+}
+
+html {
+  .theme(@default-bg-grey, @default-info-bg-color, @default-success-bg-color, @default-error-bg-color, @default-success-active-color);
+
+  &.theme-dark {
+    .theme(@dark-bg-grey, @dark-info-bg-color, @dark-success-bg-color, @dark-error-bg-color, @dark-success-active-color);
+  }
+}

@@ -1,0 +1,168 @@
+<template>
+  <div>
+    <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
+      <template v-slot>
+        <TsForm ref="form" v-model="confData" :item-list="formConfig">
+          <template v-slot:timingtmpl>
+            <div class="grid">
+              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.slowest') }}</span></div>
+              <div class="ml-nm mr-nm">
+                <Slider
+                  :value="confData.timingtmpl ? parseInt(confData.timingtmpl) : 1"
+                  :min="1"
+                  :max="5"
+                  :step="1"
+                  @on-change="
+                    val => {
+                      $set(confData, 'timingtmpl', val);
+                    }
+                  "
+                ></Slider>
+              </div>
+              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.fastest') }}</span></div>
+            </div>
+          </template>
+          <template v-slot:workercount>
+            <div class="grid">
+              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.lessest') }}</span></div>
+              <div class="ml-nm mr-nm">
+                <Slider
+                  :value="confData.workercount ? parseInt(confData.workercount) : 1"
+                  :min="1"
+                  :max="50"
+                  :step="1"
+                  @on-change="
+                    val => {
+                      $set(confData, 'workercount', val);
+                    }
+                  "
+                ></Slider>
+              </div>
+              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.most') }}</span></div>
+            </div>
+          </template>
+        </TsForm>
+      </template>
+      <template v-slot:footer>
+        <Button @click="closeDialog()">{{ $t('page.close') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+      </template>
+    </TsDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+  },
+  props: {
+    conf: { type: Object }
+  },
+  data() {
+    return {
+      confData: (this.conf && this.$utils.deepClone(this.conf)) || {timingTmpl: 1, workerCount: 1},
+      formConfig: {
+        name: {
+          label: this.$t('page.name'),
+          type: 'text',
+          validateList: ['required']
+        },
+        nets: {
+          label: this.$t('page.networksegment'),
+          type: 'text',
+          validateList: ['required'],
+          desc: this.$t('form.help.networksegment')
+        },
+        ports: {
+          label: this.$t('page.port'),
+          type: 'text',
+          desc: this.$t('form.help.multiport')
+        },
+        snmpport: {
+          label: this.$t('page.snmpport'),
+          type: 'number',
+          validateList: ['required']
+        },
+        communities: {
+          label: this.$t('page.community'),
+          type: 'textarea',
+          desc: this.$t('form.help.community')
+        },
+        combopId: {
+          label: this.$t('term.autoexec.combinationtool'),
+          type: 'select',
+          dynamicUrl: '/api/rest/autoexec/combop/list',
+          params: {
+            typeId: 2
+          },
+          rootName: 'tbodyList',
+          textName: 'name',
+          valueName: 'id',
+          transfer: true
+        },
+        timingtmpl: {
+          label: this.$t('term.autoexec.speedlevel'),
+          type: 'slot'
+        },
+        workercount: {
+          label: this.$t('term.autoexec.workthread'),
+          type: 'slot'
+        }
+      },
+      dialogConfig: {
+        title: this.conf ? '编辑配置' : '添加配置',
+        type: 'modal',
+        maskClose: false,
+        isShow: true,
+        width: 'medium'
+      }
+    };
+  },
+  beforeCreate() {},
+  created() {
+    if (this.conf && this.conf.id) {
+      this.getDiscoveryConfCombop();
+    }
+  },
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    save() {
+      if (this.$refs['form'].valid()) {
+        this.$api.cmdb.discovery.saveDiscoveryConf(this.confData).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.closeDialog(true);
+          }
+        });
+      }
+    },
+    closeDialog(needRefresh) {
+      this.$emit('close', needRefresh);
+    },
+    getDiscoveryConfCombop() {
+      this.$api.cmdb.discovery.getDiscoveryConfCombop(this.conf.id).then(res => {
+        if (res.Return) {
+          this.$set(this.confData, 'combopId', res.Return.combopId);
+        }
+      });
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {}
+};
+</script>
+<style lang="less" scoped>
+.grid {
+  display: grid;
+  grid-template-columns: 40px auto 40px;
+}
+</style>

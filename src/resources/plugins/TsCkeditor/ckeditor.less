@@ -1,0 +1,82 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.userselect-container {
+  .ivu-select-dropdown {
+    max-height: 200px;
+    overflow: auto;
+    &.ivu-select-dropdown-transfer {
+      max-height: auto;
+    }
+  }
+}
+.ck-content{
+  min-height:130px;
+  // >p{
+  //   margin-top: 0;
+  // }
+}
+.theme(@op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow) {
+  .ck.ck-reset_all,
+  .ck.ck-reset_all * {
+    color: @text-color;
+  }
+
+  .ck.ck-button:not(.ck-disabled):hover,
+  a.ck.ck-button:not(.ck-disabled):hover {
+    background-color: @blockbg-color;
+  }
+
+  .ck.ck-button.ck-on,
+  a.ck.ck-button.ck-on {
+    background-color: @blockbg-color;
+  }
+
+  .ck.ck-list {
+    background-color: @blockbg-color;
+  }
+
+  .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
+    background-color: @selected-bg;
+  }
+
+  .ck.ck-list__item .ck-button.ck-on {
+    background: @selected-bg;
+    color: @primary-color;
+  }
+
+  .ck.ck-dropdown__panel {
+    background: @blockbg-color;
+    border-color: var(--border-color, @border-color-base);
+  }
+
+  .ck-content .table table td,
+  .ck-content .table table th,
+  .ck-content .table table {
+    border-color: var(--border-color, @border-color-base) !important;
+    border: 1px solid;
+  }
+  // 表格只读模式下，加上边框样式
+  figure.table table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  figure.table table td,
+  figure.table table th,
+  figure.table table {
+    border-color: var(--border-color, @border-color-base) !important;
+    border: 1px solid;
+    padding: .5em;
+  }
+}
+.ck .ck-tooltip {
+  background: @dark-op !important;
+}
+
+html {
+  .theme(@default-op, @default-title, @default-text, @default-icon, @default-dividing, @default-mongolia, @default-background, @default-blockbg, @default-gray, @default-border, @default-boxshadow-main, @default-boxshadow-bolck, @default-disable, @primary-grey, @default-selectbg, @default-placeholder, @default-op, @default-footer-btn-bg, @default-shadow, @default-main-shadow);
+
+  &.theme-dark {
+    .theme(@dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @menu-background, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow);
+  }
+}
+

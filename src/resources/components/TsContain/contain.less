@@ -1,0 +1,137 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+@contain-prev: tscontain-;
+//头部固定
+.tscontain-container {
+  height: 100%;
+
+  .tscontain-header ,.tscontain-headerBg{
+    //padding: 0 16px;
+    // height: 66px;
+    // line-height: calc(66px - 2px);
+    height: @actionbar-height;
+    line-height: calc(@actionbar-height - 2px);
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    &.border-none{
+      border-bottom: 0 none !important;
+    }
+    .span-black {
+      cursor: pointer;
+      position: relative;
+      padding-right: 24px;
+      margin-right: 16px;
+      &.ts-angle-left:before {
+        padding-right: 10px;
+      }
+      &:after {
+        content: '';
+        width: 1px;
+        top: 18px;
+        bottom: 18px;
+        right: 0px;
+        position: absolute;
+      }
+    }
+    .title-text {
+      font-size: 16px;
+      display: inline-block;
+    }
+    /*.text-action,.btn-action{
+      &:not(:last-of-type){
+        margin-right: 16px;
+      }
+    }*/
+  }
+  .tscontain-headerbottom{
+    border-bottom: 0 solid #ccc!important;
+  }
+  .tscontain-headerBg{
+    height: 66px!important;
+    line-height: calc(66px - 2px)!important;
+  }
+
+  .tscontain-body {
+    //padding-right: @space-outer;
+    //padding-left: @space-outer;
+    height: calc(100vh - @top-height - @actionbar-height - @space-normal);
+    z-index: 1;
+    position: relative;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .tscontain-sider {
+    height: 100%;
+    overflow-y: auto;
+    &-right {
+      order: 1;
+    }
+  }
+  .tscontain-content {
+    position: relative;
+  }
+  .ivu-split-pane{
+    overflow-x: hidden;
+    overflow-y: auto;
+    .right-pane{
+      padding-left: 6px;
+    }
+  }
+  #verticalAfter{
+    width: 12px;
+    height: 36px;
+    position: absolute;
+    left: 0px;
+    display: inline-block;
+    top: 32px;
+    z-index: 111;
+    cursor: pointer;
+    // color: #fff;
+    line-height: 24px;
+    border-radius: 4px;    
+  }
+  #rightIcons,#leftIcons{
+    line-height: 12px;
+    &:after {
+      content: '\e900'; // tsfont-left
+      font-family: 'tsfont';
+      font-size: 14px;
+      top: 11px;
+      right: -1px;
+      position: absolute;
+    }
+  }
+  #leftIcons{
+    &:after {
+      content: '\e986'!important; // tsfont-right
+    }
+  }
+  // #verticalAfter:hover{
+  //   background: #1670F0;
+  // }
+
+  &.hideSider{
+    .ivu-split-trigger-con{
+      // display: none;
+    }
+    .ivu-split-pane.right-pane{
+      padding-left: 0px;
+    }
+  }
+ .right-btn {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    height: 60px;
+    width: 12px;
+    line-height: 60px;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    cursor: pointer;
+  }
+}
+// .@{contain-prev}header {
+//   margin-bottom: -1px;
+// }

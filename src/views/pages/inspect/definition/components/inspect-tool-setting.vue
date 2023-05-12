@@ -1,0 +1,209 @@
+/*
+ * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+<template>
+  <div class="tool-setting-wrap">
+    <TsDialog
+      v-bind="dialogSetting"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <Row>
+            <Col span="14">
+            </Col>
+            <Col span="10">
+              <InputSearcher
+                v-model="searchKeyword"
+                :placeholder="$t('page.name')"
+                class="mb-md"
+                @change="handleSearchChange"
+              ></InputSearcher>
+            </Col>
+          </Row>
+          <TsTable
+            v-if="tableSetting.tbodyList"
+            v-bind="tableSetting"
+            :theadList="theadList"
+          >
+            <template slot="CiType" slot-scope="{row}">
+              <span class="overflow">{{ row.label }} <span class="overflow text-grey">({{ row.name }})</span></span>
+            </template>
+            <template slot="combopId" slot-scope="{row}">
+              <TsFormSelect
+                v-model="row.combopId"
+                v-bind="formSelectSetting"
+                :dataList="comboList"
+                @on-change="() => selectChange(row)"
+              >
+              </TsFormSelect>
+            </template>
+          </TsTable>
+        </div>
+      </template>
+    </TsDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: 'InspectToolSetting', // 巡检工具设置
+  components: {
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+  },
+  filters: {
+  },
+  props: {
+    keyword: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      searchKeyword: this.keyword,
+      comboList: [], // 组合工具列表
+      deepCloneTbodyList: [], // 深拷贝列表值
+      dialogSetting: {
+        type: 'modal',
+        title: this.$t('term.inspect.inspecttoolmanage'),
+        isShow: true,
+        okText: this.$t('page.save'),
+        height: '500px',
+        width: '45%'
+      },
+      formSelectSetting: {
+        search: true,
+        transfer: true,
+        valueName: 'id',
+        textName: 'name',
+        width: '200px'
+      },
+      theadList: [
+        {
+          title: 'CiType',
+          key: 'CiType',
+          type: 'slot',
+          width: 200
+        },
+        {
+          title: this.$t('term.autoexec.combinationtool'),
+          key: 'combopId',
+          type: 'slot'
+        }
+      ],
+      tableSetting: {
+        height: '350px',
+        loading: false,
+        tbodyList: []
+      }
+    };
+  },
+  beforeCreate() {},
+  created() {
+    this.getComboList();
+    this.getTableData();
+  },
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    handleSearchChange() {
+      this.getTableData();
+    },
+    selectChange(row) {
+      // 值改变
+      this.deepCloneTbodyList.push({...row});
+      this.deepCloneTbodyList = this.$utils.uniqueByField(this.deepCloneTbodyList, 'id');
+    },
+    getComboList() {
+      // 获取组合工具列表
+      this.$api.inspect.definition.getCombopList().then((res) => {
+        if (res.Status == 'OK') {
+          this.comboList = res.Return.tbodyList;
+        }
+      });
+    },
+    okDialog() {
+      // 保存
+      let inspectCombopList = this.$utils.deepClone(this.tableSetting.tbodyList);
+      let inspectCiCombopList = [];
+      inspectCombopList.forEach((val) => {
+        inspectCiCombopList.push({
+          id: val.id,
+          combopId: val.combopId
+        });
+      });
+      this.$api.inspect.definition.saveCombinationTool({inspectCiCombopList: inspectCiCombopList}).then((res) => {
+        if (res.Status == 'OK') {
+          this.closeDialog(true);
+          this.$Message.success(this.$t('message.savesuccess'));
+        }
+      });
+    },
+    closeDialog(needRefresh = false) {
+      this.searchKeyword = '';
+      this.$emit('close', needRefresh);
+    },
+    getTableData() {
+      // 获取列表数据
+      this.tableSetting.loading = true;
+      this.tableSetting.tbodyList = [];
+      let tbodyList = [];
+      this.$api.inspect.definition.getCombinationToolList(this.searchKeyword).then((res) => {
+        if (res.Status == 'OK') {
+          let dataList = res.Return || [];
+          if (!this.$utils.isEmpty(this.deepCloneTbodyList) && !this.$utils.isEmpty(dataList)) {
+            let defaultTbodyIdList = [];
+            this.deepCloneTbodyList.forEach((item) => {
+              defaultTbodyIdList.push(item.id);
+            });
+            dataList.forEach((item) => {
+              if (defaultTbodyIdList.includes(item.id)) {
+                let findItem = this.deepCloneTbodyList.find((item) => item.id); // 搜索值后，保留新关联组合工具的值
+                if (!this.$utils.isEmpty(findItem)) {
+                  tbodyList.push(findItem);
+                }
+              } else {
+                tbodyList.push(item);
+              }
+            });
+            this.tableSetting.tbodyList = tbodyList;
+          } else {
+            this.tableSetting.tbodyList = dataList || [];
+          }
+          this.tableSetting.tbodyList.forEach((val) => {
+            if (!val.combopId) {
+              val.combopId = null; // 设置默认初始值
+            } 
+          });
+        }
+      }).finally(() => {
+        this.tableSetting.loading = false;
+      });
+    }
+  },
+  computed: {},
+  watch: {}
+};
+</script>
+

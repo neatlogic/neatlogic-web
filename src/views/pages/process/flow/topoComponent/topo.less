@@ -1,0 +1,163 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@primary-color,@node-stroke, @node-fill, @node-name,@link-stroke,@anchor-color, @mask-color,@topo-bgcolor,@success-color, @error-color) {
+  @node-removeIcon: @link-stroke;
+  .topo {
+    .linktextbackground {
+      flood-color: @topo-bgcolor;
+    }
+    .groupG {
+      .icon {
+        fill: @node-name;
+      }
+    }
+    .nodeG {
+      // 节点的基础样式
+      .select {
+        stroke: @primary-color;
+        fill: fade(@primary-color, 10%);
+      }
+      .shape {
+        fill: @node-stroke;
+        stroke: @node-fill;
+      }
+      .name {
+        fill: @node-name;
+      }
+      .icon {
+        fill: @node-name;
+      }
+      .removeBtn {
+        fill: @node-removeIcon;
+      }
+
+      &.pending {
+        .shape {
+          stroke: @node-pending-stroke;
+          fill: @node-pending-fill;
+        }
+        .name {
+        }
+        .icon {
+          fill: @node-pending-icon;
+        }
+      }
+      &.succeed {
+        .shape {
+          stroke: @node-succeed-stroke;
+          fill: @node-succeed-fill;
+        }
+        .name {
+        }
+        .icon {
+          fill: @node-succeed-icon;
+        }
+      }
+      &.running {
+        .shape {
+          stroke: @node-running-stroke;
+          fill: @node-running-fill;
+        }
+        .name {
+        }
+        .icon {
+          fill: @node-running-icon;
+        }
+        .progress {
+          fill: @node-running-progress;
+        }
+      }
+      // 特殊节点样式
+      &.start {
+        .shape {
+          fill: @node-stroke;
+          stroke: @node-fill;
+        }
+        .name {
+          fill: @node-name;
+        }
+        .icon {
+          fill: @node-start-icon;
+        }
+      }
+      &.end {
+        .shape {
+          fill: @node-stroke;
+          stroke: @node-fill;
+        }
+        .name {
+          fill: @node-name;
+        }
+        .icon {
+          fill: @node-end-icon;
+        }
+      }
+    }
+    .alignPath {
+      stroke: @link-stroke;
+    }
+    .linkG {
+      .linkPath {
+        stroke: @link-stroke;
+        &.success {
+          stroke: @success-color;
+        }
+        &.error {
+          stroke: @error-color;
+        }
+      }
+      .icon {
+        fill: @link-stroke;
+      }
+      .maskPath {
+        stroke: @topo-bgcolor;
+      }
+      .name {
+        fill: @link-stroke;
+      }
+    }
+    .linkArrow {
+      path {
+        fill: @link-stroke;
+        stroke: @link-stroke;
+        &.success {
+          stroke: @success-color;
+          fill: @success-color;
+        }
+        &.error {
+          stroke: @error-color;
+          fill: @error-color;
+        }
+      }
+      circle {
+        fill: @link-stroke;
+        stroke: @link-stroke;
+        &.success {
+          stroke: @success-color;
+          fill: @success-color;
+        }
+        &.error {
+          stroke: @error-color;
+          fill: @error-color;
+        }
+      }
+    }
+  }
+  .anchor {
+    fill: @anchor-color;
+    stroke: @primary-color;
+  }
+  .assistAnchor {
+    fill: @primary-color;
+  }
+  .linktextbackground {
+    flood-color: @mask-color;
+  }
+}
+
+html {
+  .theme(@default-primary-color, @default-dividing, @default-dividing, @default-title, @default-icon, @default-blockbg, @default-background, @default-op, @default-success-color, @default-error-color);
+
+  &.theme-dark {
+    .theme(@dark-primary-color, @dark-dividing, @dark-dividing, @dark-title, @dark-icon, @dark-bg-grey, @dark-background, @default-invert-bg, @default-success-color, @dark-error-color);
+  }
+}

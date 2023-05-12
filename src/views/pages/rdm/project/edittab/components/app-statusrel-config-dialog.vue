@@ -1,0 +1,207 @@
+<template>
+  <TsDialog v-bind="dialogConfig" @on-ok="save" @on-close="close">
+    <template v-slot>
+      <div>
+        <TsFormItem :label="$t('page.auth')" labelPosition="top" :tooltip="$t('term.rdm.nosetnolimit')">
+          <UserSelect
+            :value="authIdList"
+            :multiple="true"
+            :transfer="true"
+            :groupList="['issueUserType', 'user', 'role', 'team']"
+            @on-change="
+              (val, item) => {
+                setAuthList(item);
+              }
+            "
+          ></UserSelect>
+        </TsFormItem>
+        <TsFormItem :label="$t('term.rdm.attributesetting')" labelPosition="top">
+          <div>
+            <div>
+              <span class="cursor tsfont-plus text-href" @click="addRequiredAttr()">{{ $t('term.rdm.requiredattribute') }}</span>
+            </div>
+            <div>
+              <TsTable v-if="config.requiredAttrList && config.requiredAttrList.length > 0" :theadList="theadList" :tbodyList="config.requiredAttrList">
+                <template v-slot:attr="{ row }">
+                  <TsFormSelect
+                    v-model="row.attrId"
+                    :dataList="filtedAttrList(row)"
+                    transfer
+                    valueName="id"
+                    textName="label"
+                    border="border"
+                    @on-change="
+                      val => {
+                        setAttrId(row, val);
+                      }
+                    "
+                  ></TsFormSelect>
+                </template>
+                <template v-slot:defaultvalue="{ row }">
+                  <div>
+                    <AttrHandler
+                      v-if="getAttrById(row.attrId)"
+                      :value="row.defaultValue"
+                      :attrConfig="getAttrById(row.attrId)"
+                      @setValue="
+                        val => {
+                          setAttrValue(row, val);
+                        }
+                      "
+                    ></AttrHandler>
+                    <span v-else class="text-grey">{{ $t('form.placeholder.pleaseselect', { target: $t('page.attribute') }) }}</span>
+                  </div>
+                </template>
+                <template v-slot:action="{ row, index }">
+                  <div class="tstable-action">
+                    <ul class="tstable-action-ul">
+                      <li class="tsfont-trash-o" @click="deleteRequiredAttr(row, index)">{{ $t('page.delete') }}</li>
+                    </ul>
+                  </div>
+                </template>
+              </TsTable>
+            </div>
+          </div>
+        </TsFormItem>
+      </div>
+    </template>
+  </TsDialog>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+  },
+  props: {
+    statusrel: { type: Object }
+  },
+  data() {
+    return {
+      attrList: [],
+      config: {
+        authList: [],
+        requiredAttrList: []
+      },
+      dialogConfig: {
+        title: this.statusrel.fromStatusLabel + ' -> ' + this.statusrel.toStatusLabel,
+        type: 'modal',
+        maskClose: false,
+        isShow: true,
+        width: 'medium'
+      },
+      theadList: [
+        {
+          key: 'attr',
+          title: this.$t('page.attribute'),
+          width: 300
+        },
+        {
+          key: 'defaultvalue',
+          title: this.$t('page.defaultvalue')
+        },
+        {
+          key: 'action'
+        }
+      ]
+    };
+  },
+  beforeCreate() {},
+  created() {
+    if (this.statusrel.config) {
+      this.config = this.statusrel.config;
+    }
+    this.getAttrByAppId();
+  },
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    setAuthList(itemList) {
+      if (itemList && itemList.length > 0) {
+        const authList = [];
+        itemList.forEach(auth => {
+          authList.push({value: auth.value, text: auth.text});
+        });
+        this.$set(this.config, 'authList', itemList);
+      }
+    },
+    setAttrId(row, attrId) {
+      if (attrId) {
+        const attr = this.getAttrById(attrId);
+        if (attr) {
+          this.$set(row, 'attrLabel', attr.label);
+          this.$set(row, 'attrName', attr.name);
+        } else {
+          this.$delete(row, 'attrLabel');
+          this.$delete(row, 'attrName');
+        }
+      } else {
+        this.$delete(row, 'attrLabel');
+        this.$delete(row, 'attrName');
+      }
+    },
+    deleteRequiredAttr(row, index) {
+      this.config.requiredAttrList.splice(index, 1);
+    },
+    setAttrValue(row, val) {
+      this.$set(row, 'defaultValue', val);
+      console.log(JSON.stringify(this.config.requiredAttrList, null, 2));
+    },
+    filtedAttrList(row) {
+      const other = this.config.requiredAttrList.filter(d => d !== row);
+      return this.attrList.filter(d => !other.find(dd => dd.attrId === d.id));
+    },
+    getAttrByAppId() {
+      if (this.statusrel?.appId) {
+        this.$api.rdm.app.getAppById(this.statusrel.appId).then(res => {
+          this.attrList = res.Return.attrList;
+        });
+      }
+    },
+    getAttrById(attrId) {
+      return this.attrList.find(d => d.id === attrId);
+    },
+    addRequiredAttr() {
+      this.config.requiredAttrList.push({ attrId: null, defaultValue: null });
+    },
+    save() {
+      this.$set(this.statusrel, 'config', this.config);
+      this.$api.rdm.status.saveStatusRelConfig(this.statusrel).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
+      });
+    },
+    close(needRefresh) {
+      this.$emit('close', needRefresh);
+    }
+  },
+  filter: {},
+  computed: {
+    authIdList() {
+      const authIdList = [];
+      if (this.config && this.config.authList) {
+        this.config.authList.forEach(auth => {
+          if (auth.value) {
+            authIdList.push(auth.value);
+          }
+        });
+      }
+      return authIdList;
+    }
+  },
+  watch: {}
+};
+</script>
+<style lang="less"></style>

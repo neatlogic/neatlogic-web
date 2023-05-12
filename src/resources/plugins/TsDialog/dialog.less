@@ -1,0 +1,343 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+// modal对应的样式
+@modal-prv: tsmodal-;
+
+.@{modal-prv}wrap {
+  position: fixed;
+  overflow: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1000;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+
+  .@{modal-prv}container {
+    width: 500px;
+    margin: 0 auto;
+    position: relative;
+    outline: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+    border: 0;
+    border-radius: @btn-border-radius;
+    background-clip: padding-box;
+  }
+
+  .@{modal-prv}header,
+  .@{modal-prv}content,
+  .@{modal-prv}footer {
+    padding: 20px 32px;
+    // padding: @space-sm @space-md;
+  }
+  .@{modal-prv}footer {
+    padding: 0px 32px 24px 32px!important;
+  }
+
+  .@{modal-prv}header {
+    position: relative;
+    height: 56px;
+    padding-top: 15px;
+    border-radius: 2px 2px 0px 0px;
+
+    > * {
+      display: block;
+      // font-size: @font-size-modal;
+      font-size: @font-size-large;
+      line-height: @line-height-modal;
+      padding-right: @space-md;
+      .overflow();
+      max-width: 100%;
+    }
+  }
+
+  .@{modal-prv}footer {
+    text-align: right;
+
+    button:not(:first-of-type) {
+      margin-left: 16px;
+      // margin-left: @space-xs;
+    }
+
+    .ts-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      margin-right: 2px;
+      font-size: 15px;
+      animation: tsloading 1.4s infinite linear;
+    }
+  }
+
+  .@{modal-prv}content {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .btn-close {
+    position: absolute;
+    right: 18px;
+    top: 5px;
+    padding: 2px 5px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .btn-dialog-contain {
+    position: absolute;
+    right: 0px;
+    top: 14px;
+
+    .btn-dialog-header {
+      padding: 0px @space-sm;
+      font-size: @font-size-base;
+      position: relative;
+      cursor: pointer;
+      opacity: 0.6;
+      display: inline-block;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &::before {
+        padding-right: 3px;
+        font-size: 14px;
+        opacity: 1;
+        font-weight: normal;
+      }
+
+      &:not(:last-of-type)::after {
+        content: '';
+        position: absolute;
+        top: 15%;
+        bottom: 15%;
+        width: 1px;
+        right: 0;
+      }
+
+      &:last-of-type {
+        padding-right: 0px;
+      }
+    }
+  }
+  .no-radius {
+    border-radius : 0 !important;
+  }
+}
+
+//slider对应的样式
+@slider-prv: tsslider-;
+
+.@{slider-prv}wrap {
+  position: fixed;
+  overflow: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1000;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+}
+
+.@{slider-prv}container {
+  position: fixed;
+  z-index: 1001;
+  outline: 0;
+  border: 0;
+  border-radius: @btn-border-radius;
+  background-clip: padding-box;
+  box-shadow: @bg-shadow;
+  max-width: 100%;
+
+  &.right {
+    width: 500px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+  }
+
+  &.left {
+    width: 500px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+  }
+
+  &.bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 300px;
+  }
+}
+
+.@{slider-prv}header,
+.@{slider-prv}content,
+.@{slider-prv}footer {
+  padding: @space-sm @space-md;
+}
+
+.@{slider-prv}footer {
+  padding: 24px 32px!important;
+}
+
+.@{slider-prv}header {
+  position: relative;
+  height: 51px;
+
+  > * {
+    display: block;
+    font-size: @font-size-large;
+    line-height: @line-height-modal;
+    padding-right: @space-md;
+    .overflow();
+    max-width: 100%;
+  }
+}
+
+.@{slider-prv}footer {
+  text-align: right;
+  height: 57px;
+
+  button:not(:first-of-type) {
+    margin-left: 16px;
+  }
+
+  .ts-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 2px;
+    font-size: 15px;
+    animation: tsloading 1.4s infinite linear;
+  }
+}
+
+.@{slider-prv}body {
+  height: calc(100% - 132px);
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.btn-close {
+  position: absolute;
+  top: @space-sm;
+  right: 16px;
+  height: @line-height-modal;
+  line-height: @line-height-modal;
+  width: @space-normal;
+  padding: 0;
+  font-size: @font-size-base;
+  cursor: pointer;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.theme(@mongolia-color, @header-bg, @border-color-base, @background-color, @boxshadow-main,@header-color,@close-color) {
+  //tsdialog
+
+  .tsmodal-wrap {
+    background-color: @mongolia-color;
+
+    .tsmodal-header {
+      // background: @header-bg;
+      padding: 16px 16px 16px 20px;
+      border-radius: 10px 10px 0px 0px;
+      >div{
+        line-height: inherit;
+        font-size: 14px!important;
+        font-weight: bold;
+      }
+      .title-des {
+        font-weight: initial;
+        padding-left: 10px;
+        font-size: 13px !important;
+        padding-right: 20px;
+      }
+      .btn-dialog-header {
+        &::after {
+          background: var(--border-color, @border-color-base);
+        }
+      }
+    }
+
+    .tsmodal-container {
+      background-color: @background-color;
+      border-radius: 10px;
+      &:hover {
+        box-shadow: 1px 4px 8px @boxshadow-main;
+      }
+    }
+  }
+
+  .tsslider-wrap {
+    background-color: @mongolia-color;
+
+    .tsslider-content{
+      padding: 12px 12px!important;
+    }
+
+    .tsslider-container {
+      background-color: @background-color;
+      border-radius: 0px!important;
+      .btn-close{
+        top:1px!important;
+      }
+
+      .tsslider-header {
+        // background: @header-bg;
+        padding: 0px 16px 0px 20px;
+        // line-height: 51px;
+        height: 52px!important;
+        font-weight: bold;
+        display: flex;
+        >div{
+          font-size: 14px!important;
+          display: inline-block;
+          padding: 13px 0 21px 0;
+          line-height: initial;
+        }
+        .title-des {
+          font-weight: initial;
+          padding-left: 10px;
+          font-size: 13px !important;
+          padding-right: 20px;
+        }
+      }
+    }
+  }
+
+  //页面遮罩滑块，带透明度的蒙层
+  .slider-container {
+    background-color: @mongolia-color;
+  }
+  .btn-close {
+    color: @close-color;
+  }
+  .bg-check {
+    background-color: @background-color;
+  }
+}
+
+html {
+  .theme(@default-mongolia, @default-dividing, @default-border, @default-background, @default-boxshadow-main, @default-title, @icon-color);
+
+  &.theme-dark {
+    .theme(@dark-mongolia, @dark-modal-header-bg, @dark-border, @dark-background, @dark-boxshadow-main, @dark-title, fade(#fff, 60%));
+  }
+}

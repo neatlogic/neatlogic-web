@@ -1,0 +1,51 @@
+.carosel-img{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  top: 0;
+  left: 0;
+  .img-tool{
+    position: absolute;
+    top: 0;
+    opacity: 0.8;
+    font-size: 18px;
+    width: 100%;
+    .img-btn{
+      float: right;
+      padding: 3px 16px;
+      cursor: pointer;
+      .tsfont-close{
+        padding: 10px 0px;
+      
+      }
+    }
+  }
+  .demo-carousel{
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+    img{
+      user-select: none;
+      max-width: 90%;
+      max-height: 100%;
+      cursor: zoom-in;
+      &[isMax='1']{
+        cursor: zoom-out;
+      }
+    }
+  }
+  .ivu-carousel-arrow>*{
+    font-size: 25px;
+    vertical-align: middle;
+  }
+}
+.img-viewer{
+  img{
+    cursor:zoom-in;
+  }
+  .image > img {
+    max-width: 100%;
+  }
+}

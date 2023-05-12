@@ -1,0 +1,60 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.CodeMirror-wrap pre.CodeMirror-line,.CodeMirror-linenumber,.CodeMirror-foldgutter-open, .CodeMirror-foldgutter-folded{
+  line-height: 1.3;
+}
+.tscodemirror.disabled{
+  .CodeMirror-cursors{
+    display: none;
+  }
+  .CodeMirror-line {
+    opacity: .6;
+  }
+}
+.theme(@op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow,@primary-color,@error-color) {
+  .CodeMirror {
+    background-color: @blockbg-color;
+    color: @text-color;
+    border-radius: 6px;
+  }
+  .CodeMirror-cursor {
+    border-color: @text-color;
+  }
+  .CodeMirror-gutters {
+    background-color: @footer-btn-bg;
+    border-color: var(--border-color, @border-color-base);
+  }
+  .cm-s-eclipse {
+    span{
+      &.cm-variable {
+        color: @text-color;
+      }
+      &.cm-def,&.cm-variable-2{
+        color: @primary-color;
+      }
+      &.cm-keyword{
+        color: @error-color;      
+      }
+      &.cm-property{
+        color: @icon-color;      
+      }
+      &.cm-string {
+        color: @primary-color;
+      }
+      &.cm-operator,&.cm-string-2{
+        color: @text-color;
+      }
+      &.cm-number {
+        color: @default-success-hover-color;
+      }
+    }
+  }
+
+}
+
+html {
+  .theme(@default-op, @default-title, @default-text, @default-icon, @default-dividing, @default-mongolia, @default-background, @default-blockbg, @default-gray, @default-border, @default-boxshadow-main, @default-boxshadow-bolck, @default-disable, @primary-grey, @default-selectbg, @default-placeholder, @default-op, @default-footer-btn-bg, @default-shadow, @default-main-shadow,@default-primary-color,@default-error-color);
+
+  &.theme-dark {
+    .theme(@dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @menu-background, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow,@dark-primary-color,@dark-error-color);
+  }
+}

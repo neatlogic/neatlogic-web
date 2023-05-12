@@ -1,0 +1,4064 @@
+//公共样式：皮肤
+
+@import (reference) './variable.less';
+
+.theme(@type, @op-color,@op-color-opacity, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @disabled-bg, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow, @tip-color, @primary-color, @primary-active-color, @primary-hover-color, @link-color, @info-color, @info-active-color, @info-hover-color, @info-bg-color, @success-color , @success-active-color , @success-hover-color, @success-bg-color, @warning-color, @warning-active-color, @warning-hover-color, @warning-bg-color, @error-color, @error-active-color, @error-hover-color, @error-bg-color, @invert-bg, @pending-color, @modal-bg-color, @modal-header-bg-color, @table-stripe-color, @topbg-color, @bg-grey, @bg-grey-hover, @table-hover-color, @menu-select, @menu-hover, @top-active, @menu-cmdbselect, @th-bg-color, @form-sheet-style-setting, @tag-bg, @primary-color20, @form-text-disabled, @form-disabled, @form-disabled-after, @switch-bg,@bg-dark-grey,@dot-color) {
+  // @disable-color : tint(@icon-color, 70%);
+  @bg-shadow: 0px 10px 35px 0px @boxshadow-main;
+  @white: @op-color;
+  @black: @title-color;
+
+  @inputbg-color: @blockbg-color;
+  //outer
+  @top-shadow: 0px 1px 4px 0px @boxshadow-main;
+  @top-bg-color: var(--topbg-color, @topbg-color);
+
+  @left-bg-color: @op-color;
+  @mainside-bg-color: @background-color;
+  //table
+  // @th-bg-color: @th-bg-color;
+  @td-bg-color: @blockbg-color;
+  @td-hover-bg-color: var(--table-hover-color, @table-hover-color);
+
+  @shadow: 0px 1px 4px 0px @boxshadow-bolck;
+  @block-hover-shadow: 0px 4px 8px 0px @boxshadow-bolck;
+  //scrollbar
+  @scrollbar-track-color: var(--gray-color, @gray-color);
+  @scrollbar-thumb-color: var(--dividing-color, @dividing-color);
+  @scrollbar-thumb-hovercolor: @icon-color;
+  //列表
+  @li-hover-bg-color: var(--primary-grey, @primary-grey);
+
+  //tab
+  @tab-bar-bg: var(--th-bg-color, @th-bg-color);
+  //select
+  @bg-grey-select: var(--table-hover-color, @table-hover-color);
+
+  body {
+    color: @text-color;
+    background: @background-color;
+  }
+
+  color: @black;
+
+  a {
+    color: var(--primary-color, @primary-color);
+
+    &:hover {
+      color: var(--primary-hover-color, @primary-hover-color);
+    }
+  }
+
+  .topnav {
+    background-color: @top-bg-color;
+    color: @default-op;
+
+    .topnav-logo {
+      background-image: url('~img-module/logo_big_dark.png');
+    }
+
+    .topnav-menu {
+      .topnav-menu-divider {
+        background-color: var(--border-color, @border-color-base);
+      }
+
+      .topnav-menu-module {
+        .module-item,
+        a {
+          color: @default-top-text;
+
+          &:hover {
+            color: @default-op;
+            background: fade(@top-active, 50%);
+          }
+
+          &-active {
+            color: @default-op;
+            // font-weight: 600;
+            background: var(--top-active, @top-active);
+          }
+        }
+      }
+    }
+
+    .topnav-user {
+      .user-info {
+        .user-image {
+          background: var(--gray-color, @gray-color);
+          color: var(--primary-color, @primary-color);
+        }
+      }
+
+      .dropdown-menu {
+        color: @text-color;
+      }
+    }
+
+    .topnav-message {
+      .badge {
+        background-color: @error-color;
+      }
+    }
+  }
+
+  .ivu-drawer-header-inner {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .topnav-menu-list {
+    .apps-icon {
+      &-active,
+      &:hover {
+        color: var(--primary-active-color, @primary-active-color);
+      }
+    }
+
+    .menu-group-list {
+      .module-group {
+        .module-name {
+          color: @text-color;
+
+          &:hover {
+            color: var(--primary-active-color, @primary-active-color);
+          }
+
+          &::after {
+            background-color: var(--dividing-color, @dividing-color);
+          }
+        }
+
+        .menu-group {
+          .menu-name {
+            color: @text-color;
+
+            &:hover {
+              color: var(--primary-active-color, @primary-active-color);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .message-drawer {
+    .message {
+      .title {
+        color: @invert-bg;
+      }
+    }
+  }
+
+  .popup-msg-container {
+    &::before,
+    &::after,
+    .close-all {
+      background-color: @blockbg-color;
+      box-shadow: @shadow;
+    }
+  }
+
+  //leftmenu
+  .leftmenu {
+    background: @left-bg-color;
+
+    .menubar {
+      background: @left-bg-color;
+
+      .toggle-btn {
+        background: @blockbg-color;
+        box-shadow: @top-shadow;
+
+        &:hover {
+          background: var(--primary-color, @primary-color);
+          color: @op-color;
+
+          &:before {
+            color: @op-color;
+          }
+        }
+      }
+
+      .menu_content {
+        .menu_link {
+          // .title {
+          //     color: @text-color;
+          // }
+
+          .link {
+            &:hover {
+              a {
+                background: var(--menu-hover, @menu-hover);
+              }
+            }
+
+            a {
+              color: @text-color;
+            }
+
+            &.active {
+              a {
+                background: var(--menu-select, @menu-select);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // @menu-select
+  .tsbg-block {
+    background: @menu-cmdbselect;
+  }
+
+  .tsscroll-container,
+  div,
+  span,
+  ul,
+  li,
+  i,
+  p,
+  textarea {
+    &:hover {
+      &::-webkit-scrollbar-track,
+      &::-webkit-scrollbar-track-piece {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: @scrollbar-thumb-color;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: @scrollbar-thumb-hovercolor;
+      }
+    }
+  }
+
+  //ztree 插件
+  .ztree {
+    color: @text-color;
+
+    li {
+      a {
+        color: @text-color;
+
+        &.curSelectedNode {
+          background-color: transparent;
+          color: var(--primary-color, @primary-color);
+        }
+
+        input.rename {
+          border: 1px solid var(--border-color, @border-color-base);
+        }
+
+        &.tmpTargetNode_prev,
+        &.tmpTargetNode_next,
+        &.tmpTargetNode_inner {
+          &::before {
+            color: @success-color;
+          }
+        }
+
+        &.tmpTargetNode_inner {
+          background-color: fade(@primary-hover-color, 10%);
+        }
+      }
+      a:hover {
+        color: var(--primary-color, @primary-color);
+      }
+      ul {
+        &::before {
+          border-left: 1px dotted var(--border-color, @border-color-base);
+        }
+
+        span.button.roots_docu:before,
+        span.button.center_docu:before,
+        span.button.bottom_docu:before {
+          border-top: 1px dotted var(--border-color, @border-color-base);
+        }
+      }
+    }
+
+    &.zTreeDragUL {
+      background-color: @background-color;
+    }
+  }
+
+  //操作分类组
+  .action-group {
+    .action-item {
+      .icon {
+        &:before {
+          margin-right: 4px;
+        }
+      }
+
+      &:not(.disable, .block-item):hover {
+        color: var(--primary-color, @primary-color);
+
+        &::before {
+          color: var(--primary-color, @primary-color);
+        }
+
+        .icon {
+          &:before {
+            color: var(--primary-color, @primary-color);
+          }
+        }
+      }
+
+      &.active {
+        color: var(--primary-color, @primary-color);
+
+        .icon {
+          &:before {
+            color: var(--primary-color, @primary-color);
+          }
+        }
+      }
+
+      &.disable {
+        color: @disable-color;
+        cursor: not-allowed;
+
+        .icon {
+          &:before {
+            color: @disable-color;
+          }
+        }
+      }
+
+      // &:after {
+      //   background-color: var(--dividing-color, @dividing-color);
+      // }
+    }
+
+    &.line {
+      .action-item {
+        &:after {
+          background-color: var(--border-color, @border-color-base);
+        }
+      }
+    }
+
+    &.no-line {
+      .action-item {
+        &:after {
+          background-color: transparent;
+        }
+
+        &.line {
+          &:after {
+            background-color: var(--dividing-color, @dividing-color);
+          }
+        }
+      }
+    }
+  }
+
+  .tableaction-container {
+    .table-dropdown {
+      .ivu-dropdown-menu {
+        background: @background-color;
+
+        .ivu-dropdown-item {
+          &:not(:last-of-type) {
+            &:after {
+              background: var(--border-color, @border-color-base);
+            }
+          }
+
+          &:hover {
+            background: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .ivu-dropdown-item:hover {
+    // background-color: var(--menu-hover, @menu-hover)!important;
+    background-color: var(--selected-bg, @selected-bg) !important;
+  }
+
+  //头部固定
+  .tscontain-container {
+    background: @op-color;
+
+    .tscontain-header {
+      background: @background-color;
+      border-bottom: 1px solid var(--dividing-color, @dividing-color);
+
+      .span-black {
+        color: @text-color;
+
+        &.ts-angle-left:before {
+          color: @icon-color;
+        }
+
+        &:hover {
+          color: var(--primary-color, @primary-color);
+
+          &.ts-angle-left:before {
+            color: var(--primary-color, @primary-color);
+          }
+        }
+
+        &:after {
+          background-color: var(--dividing-color, @dividing-color);
+        }
+      }
+    }
+
+    // 右侧展开收起按钮补充hover时，添加主题色
+    .bg-right-btn-hover {
+      &:hover {
+        background: var(--primary-color, @primary-color);
+        color: @op-color;
+      }
+    }
+  }
+
+  //表格嵌表格，内层表格样式
+  .inner-table {
+    > .tstable-container {
+      .folder-tr {
+        background: @bg-grey-hover;
+
+        > td {
+          background: @bg-grey-hover;
+
+          thead,
+          tbody,
+          tr,
+          th,
+          td,
+          .tstable-main,
+          .action-bg,
+          .tstable-action-ul,
+          .tstable-action-ul:before {
+            background: @bg-grey-hover !important;
+          }
+
+          th:not(.th-selection) {
+            border-bottom: 1px solid var(--dividing-color, @dividing-color);
+          }
+        }
+      }
+    }
+  }
+
+  //栅格块
+  .list-box {
+    .overvivew-main {
+      background: @blockbg-color;
+      border: 1px solid var(--border-color, @border-color-base);
+      color: @text-color;
+      box-shadow: @shadow;
+
+      &:hover {
+        box-shadow: @block-hover-shadow;
+      }
+
+      &.isStop {
+        background: @background-color;
+        box-shadow: none;
+
+        &:hover {
+          box-shadow: @shadow;
+        }
+      }
+
+      .btn-list {
+        background: @footer-btn-bg;
+        color: @icon-color;
+      }
+
+      .tag-title {
+        color: var(--primary-color, @primary-color);
+      }
+
+      .title {
+        .title-left {
+          .tips-bg {
+            color: @op-color;
+            background-color: var(--primary-color, @primary-color);
+          }
+        }
+      }
+    }
+  }
+
+  //关联数字
+  .reference-number {
+    color: @warning-color;
+    background-color: rgba(216, 110, 51, 0.1);
+  }
+
+  //圆点
+  .dot {
+    &:before {
+      border: 2px solid @text-color;
+    }
+  }
+
+  //table
+  .table-body {
+    //border-top: 1px solid var(--border-color, @border-color-base);
+  }
+
+  .tstable-container {
+    //border-top: 1px solid var(--border-color, @border-color-base);
+    &.tstable-allborder {
+      border-top: 1px solid var(--border-color, @border-color-base);
+      border-left: 1px solid var(--border-color, @border-color-base);
+      border-right: 1px solid var(--border-color, @border-color-base);
+      border-bottom: 1px solid var(--border-color, @border-color-base);
+    }
+
+    .btn-setting {
+      .icon-setting {
+        background: var(--th-bg-color, @th-bg-color);
+
+        &:hover {
+          color: var(--primary-color, @primary-color);
+        }
+      }
+    }
+
+    &.fixtop {
+      .tstable-main {
+        th {
+          background: var(--th-bg-color, @th-bg-color);
+        }
+      }
+
+      &:after {
+        background: var(--th-bg-color, @th-bg-color);
+      }
+    }
+
+    &.border {
+      .tstable-body {
+        > .tbody-main {
+          //添加层级关系主要是为了防止存在表格嵌套表格时导致各种样式覆盖问题
+          > tr:not(:last-of-type) {
+            > td {
+              border-bottom: 2px solid @background-color;
+            }
+          }
+        }
+      }
+    }
+
+    &.stripe {
+      .bg-table {
+        background: @td-bg-color;
+        margin-bottom: 2px;
+      }
+
+      .tstable-body {
+        th,
+        thead {
+          background: @td-bg-color;
+        }
+
+        tbody {
+          tr:nth-of-type(odd):not(:hover) {
+            // background:@table-stripe-color;
+            background: var(--table-stripe-color, @table-stripe-color);
+          }
+        }
+      }
+
+      .icon-setting {
+        background: @td-bg-color;
+      }
+    }
+
+    .bg-table {
+      background: var(--table-hover-color, @table-hover-color);
+    }
+
+    > div > .tstable-body {
+      //添加层级关系主要是为了防止存在表格嵌套表格时导致各种样式覆盖问题
+      th {
+        background: var(--th-bg-color, @th-bg-color);
+
+        .btn-resize {
+          &:after {
+            background: var(--border-color, @border-color-base);
+          }
+        }
+      }
+
+      .btn-setting {
+        .icon-setting {
+          // background: @table-hover-color;
+        }
+      }
+
+      thead {
+        background: var(--th-bg-color, @th-bg-color);
+        color: @title-color;
+      }
+
+      > tbody {
+        background: @td-bg-color;
+        color: @text-color;
+
+        > tr {
+          &.selected {
+            background: var(--primary-grey, @primary-grey) !important;
+
+            .action-bg {
+              background: var(--primary-grey, @primary-grey) !important;
+            }
+
+            .tstable-action {
+              .tstable-action-ul {
+                background: var(--primary-grey, @primary-grey) !important;
+
+                .mask {
+                  background: var(--primary-grey, @primary-grey) !important;
+                }
+
+                // &:before{
+                //   background: var(--primary-grey, @primary-grey) !important;
+                // }
+              }
+            }
+          }
+
+          &:hover,
+          &.selected:hover {
+            background: @td-hover-bg-color;
+
+            .action-bg {
+              background: @td-hover-bg-color;
+            }
+
+            .tstable-action {
+              .tstable-action-ul {
+                background: @td-hover-bg-color;
+
+                .mask {
+                  background: @td-hover-bg-color !important;
+                }
+
+                // &:before{
+                //   background: @td-hover-bg-color;
+                // }
+
+                li {
+                  &.disable {
+                    color: @disable-color;
+
+                    .icon:before {
+                      color: @disable-color;
+                    }
+                  }
+
+                  &:not(.disable):hover {
+                    color: var(--primary-color, @primary-color);
+
+                    .icon:before {
+                      color: var(--primary-color, @primary-color);
+                    }
+
+                    &.icon:before {
+                      color: var(--primary-color, @primary-color);
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          &.selected {
+            background-color: var(--primary-grey, @primary-grey);
+          }
+        }
+      }
+
+      .tstable-selection {
+        border: 1px solid var(--border-color, @border-color-base);
+        background: @op-color;
+
+        &:not([disabled]):hover {
+          border-color: var(--primary-color, @primary-color);
+          cursor: pointer;
+        }
+
+        &.selected {
+          border-color: var(--primary-color, @primary-color);
+          background-color: var(--primary-color, @primary-color);
+
+          &.radio {
+            background: var(--primary-color, @primary-color);
+
+            &:after {
+              background: var(--primary-color, @primary-color);
+              border: 2px solid @op-color;
+            }
+          }
+
+          &:after {
+            border: 2px solid @op-color;
+            border-color: transparent transparent @op-color @op-color;
+          }
+        }
+
+        &.disabled {
+          background: @disable-color;
+          border-color: @disable-color;
+
+          &:hover {
+            border-color: @disable-color;
+          }
+        }
+
+        &.some {
+          background-color: var(--primary-color, @primary-color);
+          border-color: var(--primary-color, @primary-color);
+
+          &:after {
+            background: @op-color;
+          }
+        }
+      }
+
+      .tstable-action {
+        .tstable-action-ul {
+          background: @op-color;
+        }
+      }
+    }
+
+    &.tstable-nohover {
+      .tstable-body {
+        tbody {
+          tr {
+            &:hover {
+              background: @td-bg-color;
+
+              .action-bg {
+                background: @td-bg-color;
+              }
+
+              .tstable-action {
+                .tstable-action-ul {
+                  background: @td-bg-color;
+
+                  li {
+                    &.disable {
+                      color: @disable-color;
+
+                      .icon:before {
+                        color: @disable-color;
+                      }
+                    }
+
+                    &:not(.disable):hover {
+                      color: var(--primary-color, @primary-color);
+
+                      .icon:before {
+                        color: var(--primary-color, @primary-color);
+                      }
+
+                      &.icon:before {
+                        color: var(--primary-color, @primary-color);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.tstable-allborder {
+      th:not(:last-of-type),
+      td:not(:last-of-type) {
+        border-right: 1px solid var(--border-color, @border-color-base);
+      }
+
+      tbody tr:not(:last-of-type) td {
+        border-bottom: 1px solid var(--border-color, @border-color-base);
+      }
+
+      thead tr th {
+        border-bottom: 1px solid var(--border-color, @border-color-base);
+      }
+    }
+
+    &.tstable-card {
+      .tstable-body {
+        th {
+          background: @background-color;
+        }
+
+        td {
+          background: @background-color;
+
+          &:before {
+            background: @blockbg-color;
+          }
+        }
+
+        tr {
+          background: @background-color;
+
+          &:hover {
+            td {
+              background: @td-hover-bg-color;
+
+              &:before {
+                background: @td-hover-bg-color;
+              }
+            }
+
+            .action-bg {
+              background: @td-hover-bg-color;
+            }
+          }
+        }
+      }
+
+      &.tstable-nohover {
+        tr:hover {
+          background: @background-color;
+
+          td {
+            background: @background-color;
+
+            &:before {
+              background: @op-color;
+              box-shadow: 0px 1px 4px @boxshadow-bolck;
+            }
+
+            &:not(.action-tr) {
+              overflow: hidden;
+            }
+          }
+
+          .action-bg {
+            background: @op-color;
+          }
+        }
+      }
+    }
+  }
+
+  .tstable-page {
+    background: @background-color;
+  }
+
+  /*.sort-container {
+    .sort-thead {
+      background: var(--th-bg-color, @th-bg-color);
+      border-bottom: 1px solid var(--border-color, @border-color-base);
+    }
+  }*/
+
+  //下拉
+  .dropdown-container {
+    background: @op-color;
+    box-shadow: 0 1px 6px @boxshadow-bolck;
+
+    .dropdown-li {
+      &.disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.8;
+      }
+
+      &:not(.disabled) {
+        &:hover {
+          background-color: var(--selected-bg, @selected-bg);
+        }
+      }
+
+      &.selected {
+        color: var(--primary-color, @primary-color);
+        background-color: var(--selected-bg, @selected-bg);
+      }
+    }
+  }
+
+  .ivu-dropdown-menu {
+    .select-li,
+    .userselect-li {
+      &.hover:not(.ivu-dropdown-item-disabled) {
+        background-color: var(--selected-bg, @selected-bg);
+      }
+    }
+  }
+
+  .m-border {
+    border: 1px solid var(--border-color, @border-color-base);
+  }
+
+  .m-userCard {
+    vertical-align: text-top;
+    font-size: 1rem !important;
+    display: inline-block;
+
+    .usercard-container {
+      vertical-align: inherit;
+    }
+
+    .usercard {
+      font-size: 1rem !important;
+      line-height: inherit !important;
+    }
+  }
+
+  .m-users {
+    vertical-align: sub;
+  }
+
+  .m-userCardInfo {
+    position: absolute;
+    bottom: 20px;
+    display: block;
+
+    .verticaAlignl-Bottom {
+      vertical-align: bottom;
+    }
+  }
+
+  // 自定义滚动条样式开始
+  .m-scrollBar::-webkit-scrollbar {
+    width: 6px;
+    height: 13px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+  }
+
+  .m-scrollBar::-webkit-scrollbar-thumb {
+    background-color: @default-border;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    min-height: 28px;
+  }
+
+  .m-scrollBar::-webkit-scrollbar-thumb:hover {
+    background-color: @default-border;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+  }
+
+  // 自定义滚动条样式结束
+  //块状布局
+  .containers:hover {
+    box-shadow: @block-hover-shadow;
+  }
+
+  .block-container {
+    // border: 1px solid var(--border-color, @border-color-base);
+    background: @blockbg-color;
+    // box-shadow: @shadow;
+
+    &:hover {
+      box-shadow: @block-hover-shadow;
+    }
+  }
+
+  .m-noShadow {
+    box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 10%) !important;
+    border-radius: 8px;
+
+    &:hover {
+      box-shadow: @block-hover-shadow !important;
+    }
+  }
+
+  //卡片式分页
+  // .tscard-container {
+  //   .tscard-page {
+  //     .tscard-pageli {
+  //       background: var(--dividing-color, @dividing-color);
+  //       color:@white;
+  //       .tscard-pagenum{
+  //         color:@text-color;
+  //       }
+  //     }
+  //   }
+  // }
+
+  // 提示框
+  .tooltip-box {
+    .tooltip {
+      background: @op-color;
+      box-shadow: @shadow;
+
+      &.tipright {
+        &:before {
+          border-right: 7px solid var(--dividing-color, @dividing-color);
+        }
+
+        &:after {
+          border-right: 6px solid @op-color;
+        }
+      }
+
+      &.tipleft {
+        &:before {
+          border-left: 7px solid var(--dividing-color, @dividing-color);
+        }
+
+        &:after {
+          border-left: 6px solid @op-color;
+        }
+      }
+
+      &.tiptop {
+        &:before {
+          border-top: 7px solid var(--dividing-color, @dividing-color);
+        }
+
+        &:after {
+          border-top: 6px solid @op-color;
+        }
+      }
+
+      &.tipbottom {
+        &:before {
+          border-bottom: 7px solid var(--dividing-color, @dividing-color);
+        }
+
+        &:after {
+          border-bottom: 6px solid @op-color;
+        }
+      }
+
+      .tooltip-title {
+        border-color: @disable-color;
+      }
+
+      .tooltip-content {
+        .label {
+          color: @icon-color;
+        }
+      }
+    }
+  }
+
+  //tabs切换颜色
+  .order-tabs-title {
+    .active {
+      color: var(--primary-color, @primary-color);
+      border-color: var(--primary-color, @primary-color);
+
+      .title-box {
+        color: var(--primary-color, @primary-color);
+        border-color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  // 块状选择框样式
+  .select-box {
+    background-color: @op-color;
+    border-color: transparent;
+
+    &.active {
+      border-color: var(--primary-color, @primary-color);
+
+      .select-icon {
+        // background: var(--primary-color, @primary-color);
+        border-color: var(--primary-color, @primary-color);
+        color: @op-color;
+
+        i {
+          background: var(--primary-color, @primary-color);
+        }
+      }
+
+      .ts-check::before {
+        color: @op-color;
+      }
+    }
+
+    .select-icon {
+      border-color: @disable-color;
+    }
+  }
+
+  .bg-tip-grey {
+    background: @bg-grey-hover;
+  }
+
+  .bg-grey {
+    background: @background-color;
+  }
+
+  .bg-dark-grey {
+    background: @bg-dark-grey;
+  }
+
+  .bg-grey-hover {
+    //#f9f9f9
+    background: @bg-grey-hover;
+  }
+
+  .bg-hover-grey {
+    cursor: pointer;
+
+    &:hover {
+      background: @background-color;
+    }
+  }
+
+  .bg-td-hover {
+    //#EFEFEF
+    &:hover {
+      background-color: @td-hover-bg-color;
+    }
+  }
+
+  .bg-op {
+    background-color: @op-color !important;
+  }
+
+  .bg-op-opacity {
+    background-color: @op-color-opacity !important;
+  }
+
+  .bg-table-header {
+    background-color: var(--th-bg-color, @th-bg-color);
+  }
+
+  .bg-table-body {
+    background-color: @td-bg-color;
+  }
+  .bg-dot {
+    background: @dot-color;
+  }
+  //公共树
+  .ts-tree {
+    .ivu-tree-title-selected,
+    .ivu-tree-title:hover {
+      // font-weight: 400;
+      //min-width: 130px;
+      //height: 32px;
+      //line-height: 32px;
+      //padding:0px 10px;
+      //padding-left: 16px;
+      //margin:3px 0px;
+      padding: 2px 10px;
+    }
+
+    .ivu-tree-title {
+      // font-weight: 400;
+      //min-width: 130px;
+      //height: 32px;
+      //line-height: 32px;
+      //padding:0px 10px;
+      //padding-left: 16px;
+      //margin:3px 0px;
+      padding: 2px 10px;
+    }
+
+    .ivu-tree-arrow {
+      //margin:3px 0px;
+      padding: 2px 10px;
+      //line-height: 32px;
+    }
+  }
+
+  // 公共样式
+  .padding-lr {
+    padding: 0 @space-normal 0 @space-normal;
+  }
+
+  .padding-l {
+    padding-left: @space-normal;
+  }
+
+  .padding-tb {
+    padding: @space-normal 0 @space-normal 0;
+  }
+
+  .padding-empty {
+    padding: 0 !important;
+  }
+
+  .padding-t {
+    padding-top: @space-normal;
+  }
+
+  .padding-b {
+    padding-bottom: @space-normal;
+  }
+
+  .margin-l {
+    margin-left: @space-normal;
+  }
+
+  .margin-r {
+    margin-right: @space-normal;
+  }
+
+  .red {
+    color: @default-error-color;
+  }
+
+  .green {
+    color: @default-success-color;
+  }
+
+  .cursor {
+    cursor: pointer;
+  }
+
+  .ts-border {
+    border-radius: @space-sm;
+  }
+
+  // .ts-border-lr{
+  //   border:0 8px 0 8px;
+  // }
+
+  .ts-border-tb {
+    border: @space-normal 0 @space-normal 0;
+  }
+
+  // .ts-border-tl{
+  //   border:8px 8px 0 0;
+  // }
+
+  .ts-border-br {
+    border: 0 0 @space-sm @space-sm;
+  }
+
+  // .ts-padding-lr{
+  //   padding:0 8px 0 8px;
+  // }
+
+  // .ts-padding-tb{
+  //   padding:8px 0 8px 0;
+  // }
+
+  // .ts-padding-tl{
+  //   padding:8px 8px 0 0;
+  // }
+
+  // .ts-padding-br{
+  //   padding:0 0 8px 8px;
+  // }
+
+  // .ts-margin-lr{
+  //   margin:0 8px 0 8px;
+  // }
+
+  // .ts-margin-tb{
+  //   margin:8px 0 8px 0;
+  // }
+
+  // .ts-margin-tl{
+  //   margin:8px 8px 0 0;
+  // }
+
+  .ts-margin-b {
+    margin-bottom: @space-sm;
+  }
+
+  .background-FATAL {
+    background-color: @error-bg-color;
+    color: @error-color !important;
+    width: 38px;
+    border-radius: 13px;
+    font-size: 13px;
+    text-align: center;
+    display: inline-block;
+  }
+
+  // 上右下左
+  .bg-disabled {
+    background-color: @disabled-bg;
+  }
+
+  .bg-block {
+    background-color: @blockbg-color;
+  }
+
+  .bg-selected {
+    background-color: var(--primary-grey, @primary-grey);
+  }
+
+  .item-selected {
+    background-color: var(--primary-grey, @primary-grey);
+    color: var(--primary-color, @primary-color);
+  }
+
+  .bg-modal {
+    background-color: @op-color;
+  }
+
+  .bg-three {
+    background-color: @left-bg-color;
+  }
+
+  .bg-grey-select {
+    background-color: @bg-grey-select;
+  }
+
+  .bg-footer-btn {
+    background-color: @footer-btn-bg;
+  }
+
+  .bg-mongolia {
+    background: @mongolia-color;
+  }
+
+  .bg-code {
+    background: @default-bg-code;
+    color: @default-color-code;
+  }
+
+  .shadow {
+    box-shadow: @shadow;
+  }
+
+  .bottom-shadow {
+    //下阴影
+    box-shadow: 0px 4px 4px -4px @boxshadow-bolck;
+  }
+
+  .top-shadow {
+    //下阴影
+    box-shadow: 0px 4px 4px 4px @boxshadow-bolck;
+  }
+
+  .card-hover-shadow {
+    &:hover {
+      box-shadow: @block-hover-shadow;
+    }
+  }
+
+  .block-border {
+    border: 1px solid var(--border-color, @border-color-base);
+  }
+
+  .base-int {
+    border: 1px solid var(--border-color, @border-color-base);
+    border-radius: @item-border-radius;
+  }
+
+  .main-shadow {
+    box-shadow: @main-shadow;
+  }
+
+  .text-title {
+    //标题  #666666;
+    color: @title-color;
+  }
+
+  .text-default {
+    //#333333
+    color: @text-color;
+  }
+
+  .text-disabled {
+    &:hover {
+      color: @text-color !important;
+    }
+  }
+
+  .text-op {
+    //相反色
+    color: @op-color;
+  }
+
+  .text-icon {
+    //#333333
+    color: @text-color;
+  }
+
+  .text-action {
+    color: @text-color;
+
+    /*&:before {
+      margin-right: 4px;
+    }*/
+
+    &:hover {
+      color: var(--primary-color, @primary-color);
+
+      &[class^='ts-'],
+      &[class*=' ts-'],
+      &.ts {
+        &:before {
+          color: var(--primary-color, @primary-color);
+        }
+      }
+    }
+  }
+
+  .modal-tag {
+    &.href {
+      cursor: pointer;
+      color: var(--primary-color, @primary-color);
+
+      &:hover {
+        text-decoration: underline;
+        color: var(--primary-color, @primary-color);
+      }
+    }
+
+    &:not(:last-of-type) {
+      :after {
+        background: var(--border-color, @border-color-base);
+      }
+    }
+  }
+
+  .text-tip {
+    //提示999999
+    color: @tip-color;
+  }
+
+  .text-tip-active {
+    cursor: pointer;
+    color: @tip-color;
+
+    &:hover {
+      color: var(--primary-hover-color, @primary-hover-color);
+    }
+  }
+
+  .text-href {
+    color: var(--primary-color, @primary-color);
+
+    &:before {
+      margin-right: 4px;
+      color: var(--primary-color, @primary-color);
+    }
+
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-arrow {
+      color: var(--primary-color, @primary-color);
+      border-color: var(--primary-color, @primary-color) !important;
+    }
+
+    &:hover {
+      color: var(--primary-hover-color, @primary-hover-color);
+    }
+  }
+
+  .text-primary {
+    color: var(--primary-color, @primary-color);
+
+    &:before {
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .text-info {
+    color: @info-color;
+
+    &:before {
+      color: @info-color;
+    }
+  }
+
+  .text-grey,
+  .text-icon {
+    //图标颜色
+    //（辅助色可用于背景上弱化标题）
+    color: @icon-color;
+
+    &:before {
+      color: @icon-color;
+    }
+  }
+
+  .text-danger,
+  .text-error,
+  .text-CRITICAL {
+    //删除，警告
+    color: @error-color;
+
+    &:before {
+      color: @error-color;
+    }
+  }
+
+  .border-base {
+    border: 1px solid var(--border-color, @border-color-base) !important;
+  }
+
+  .border-base-right {
+    border-right: 1px solid var(--border-color, @border-color-base) !important;
+  }
+
+  .border-base-left {
+    border-left: 1px solid var(--border-color, @border-color-base) !important;
+  }
+
+  .border-error {
+    border: 1px solid @error-color;
+  }
+
+  .border-warning {
+    border: 1px solid @warning-color;
+  }
+
+  .border-success {
+    border: 1px solid @success-color;
+  }
+
+  .border-info {
+    border: 1px solid @info-color;
+  }
+
+  .border-primary {
+    border: 1px solid @primary-color;
+  }
+
+  .border-color-error {
+    border-color: @error-color !important;
+  }
+  .border-color-warning {
+    border-color: @warning-color !important;
+  }
+  .border-color-success {
+    border-color: @success-color !important;
+  }
+  .border-color-info {
+    border-color: @info-color !important;
+  }
+  .border-color-primary {
+    border-color: @primary-color !important;
+  }
+  .border-primary-grey {
+    border-color: @primary-grey !important;
+  }
+
+  .border-color-base {
+    border-color: @border-color-base;
+  }
+
+  .text-warning,
+  .text-WARN {
+    color: @warning-color;
+
+    &:before {
+      color: @warning-color;
+    }
+  }
+
+  .text-pending {
+    color: @pending-color;
+
+    &:before {
+      color: @pending-color;
+    }
+  }
+
+  .text-success {
+    color: @success-color;
+
+    &:before {
+      color: @success-color;
+    }
+  }
+
+  .bg-shadow {
+    box-shadow: @shadow;
+  }
+
+  .bg-primary {
+    background: var(--primary-color, @primary-color);
+  }
+
+  .bg-danger {
+    background-color: @error-color;
+  }
+
+  .bg-gray {
+    background-color: @tip-color;
+  }
+
+  .bg-completa {
+    //完成
+    background: @success-color;
+  }
+
+  .bg-abort {
+    //取消
+    background: @warning-color;
+  }
+
+  .bg-pending {
+    //待处理
+    background: @pending-color;
+  }
+
+  .bg-info {
+    background-color: @info-color;
+  }
+
+  .bg-info-grey {
+    background-color: @info-bg-color;
+  }
+
+  .bg-success {
+    background-color: @success-color;
+  }
+
+  .bg-success-grey {
+    background-color: @success-bg-color;
+  }
+
+  .bg-warning {
+    background: @warning-color !important;
+  }
+
+  .bg-warning-grey {
+    background: var(--warning-bg-color, @warning-bg-color);
+  }
+
+  .bg-error {
+    background: @error-color;
+  }
+
+  .bg-error-grey {
+    background: @error-bg-color;
+  }
+
+  .block-primary {
+    //background: @default-primary-grey;
+    background: var(--primary-grey, @primary-grey);
+    // background: fade(var(--primary-color, @primary-color), 10%);
+    border: 1px solid var(--primary-color, @primary-color);
+  }
+
+  .border-color {
+    border-color: var(--border-color, @border-color-base) !important;
+  }
+
+  .table-color {
+    td {
+      border-color: var(--border-color, @border-color-base) !important;
+    }
+  }
+
+  .dividing-color {
+    //分割线的边框
+    border-color: var(--dividing-color, @dividing-color) !important;
+  }
+
+  .border-primary {
+    border-color: var(--primary-color, @primary-color) !important;
+  }
+
+  .dividing-bg-color {
+    background-color: var(--dividing-color, @dividing-color);
+  }
+
+  .li-active {
+    //选中背景色和字体颜色
+    background-color: @li-hover-bg-color;
+
+    &.li-text {
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .li-hover {
+    //hover状态背景色
+    &:hover {
+      background-color: @li-hover-bg-color;
+    }
+  }
+
+  .footer {
+    background-color: @op-color;
+    box-shadow: 0px -1px 2px 0px @default-boxshadow-bolck;
+  }
+
+  // 消息
+  .notify-detail {
+    background-color: @background-color;
+    border-left: 1px solid var(--border-color, @border-color-base);
+
+    &:hover {
+      box-shadow: @shadow;
+    }
+
+    .time-list {
+      border: 1px solid var(--border-color, @border-color-base);
+      background-color: @blockbg-color;
+
+      &:hover {
+        box-shadow: @shadow;
+      }
+    }
+  }
+
+  //tsform
+  .tsForm-border-bottom {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border: none;
+      border-bottom: 1px solid var(--border-color, @border-color-base);
+      border-radius: 0 !important;
+      background: transparent;
+    }
+  }
+
+  .tsForm-border-border,
+  .tsForm-border-border.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border: 1px solid var(--border-color, @border-color-base);
+      background-color: @inputbg-color;
+      border-radius: 2px;
+    }
+
+    .ivu-input {
+      padding-left: 8px;
+    }
+  }
+
+  .tsForm-border-none {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection,
+    .form-target {
+      border: none;
+      background: @inputbg-color;
+    }
+  }
+
+  .tsForm-border-bottom.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border: none;
+      border-bottom: 1px solid var(--border-color, @border-color-base);
+      border-radius: 0;
+      background: transparent;
+    }
+    .ivu-input-number-input {
+      background: transparent;
+    }
+  }
+
+  .tsForm-border-border.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border: 1px solid var(--border-color, @border-color-base);
+      background-color: @inputbg-color;
+      border-radius: 2px;
+    }
+  }
+
+  .tsForm-border-none.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border: none;
+    }
+  }
+
+  .tsForm-border-nobg.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection{
+      background-color: transparent;
+      border: 1px solid var(--border-color, @border-color-base);
+    }
+  }
+  .tsForm-border-nobdbg.tsForm-item {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      background-color: transparent;
+      border: none;
+    }
+  }
+  
+
+  .tsForm-item .tsForm-formItem-error,
+  .tsForm-formItem-error {
+    .ivu-input,
+    .ivu-input-number,
+    .ivu-select-selection {
+      border-color: @error-color;
+    }
+  }
+  .tsForm-item .tsForm-formItem-error,
+  .tsForm-formItem-error.ivu-input-number {
+    border-color: @error-color;
+  }
+
+  .form-error-tip {
+    color: @error-color;
+  }
+
+  //btn
+  .btn-green-op {
+    border: 1px solid @success-color;
+    background: fade(@success-color, 10%);
+    color: @success-color;
+
+    .icon {
+      &:before {
+        color: @success-color;
+      }
+    }
+  }
+
+  .btn-disable {
+    //禁止文案颜色
+    color: @disable-color;
+    cursor: not-allowed !important;
+
+    .icon {
+      &:before {
+        color: @disable-color;
+      }
+    }
+  }
+
+  //必填参数
+  .require-label,
+  .ivu-form-item-label {
+    &:before {
+      color: @error-color !important;
+      // color: inherit !important;
+      font-family: inherit !important;
+      top: 2px;
+      position: relative;
+      margin-right: 1px !important;
+    }
+  }
+
+  .require-label-right {
+    &:after {
+      //color: @error-color !important;
+      color: inherit !important;
+    }
+  }
+
+  //仿照input的placeholder
+  .empty-placeholder {
+    &:before {
+      float: left;
+      color: @placeholder-color;
+    }
+  }
+
+  .empty-placeholder-disable {
+    // 禁用文本占位符颜色
+    &:before {
+      color: @form-text-disabled;
+    }
+  }
+
+  //placeholder
+  input {
+    &::-webkit-input-placeholder {
+      color: @placeholder-color !important;
+    }
+
+    &:disabled::-webkit-input-placeholder {
+      color: @form-text-disabled !important;
+    }
+  }
+
+  input {
+    &::-moz-placeholder {
+      color: @placeholder-color !important;
+    }
+
+    &:disabled::-moz-placeholder {
+      color: @form-text-disabled !important;
+    }
+  }
+
+  /* firefox 19+ */
+  input {
+    &::-ms-input-placeholder {
+      color: @placeholder-color !important;
+    }
+
+    &:disabled::-ms-input-placeholder {
+      color: @form-text-disabled !important;
+    }
+  }
+
+  /* ie */
+  input {
+    &:-moz-placeholder {
+      color: @placeholder-color !important;
+    }
+
+    &:disabled::-moz-placeholder {
+      color: @form-text-disabled !important;
+    }
+  }
+
+  input {
+    caret-color: @title-color;
+  }
+
+  textarea {
+    &::-webkit-input-placeholder {
+      color: @placeholder-color !important;
+    }
+
+    &:disabled::-webkit-input-placeholder {
+      color: @form-text-disabled !important;
+    }
+  }
+  .CodeMirror-placeholder {
+    color: @placeholder-color !important;
+  }
+
+  //表单编辑阴影.formsetting-container
+  .formsetting-container {
+    box-shadow: -3px 0 3px @boxshadow-main;
+  }
+
+  //右侧编辑框（流程编辑）
+  .setting-box {
+    > .name {
+      //顶部标题编辑
+      .title {
+        color: @icon-color;
+      }
+    }
+
+    .edit-setting {
+      //可编辑区域
+      background-color: @blockbg-color;
+      color: @text-color;
+    }
+
+    .control-setting {
+      //开关操作区
+      > .label {
+        color: @icon-color;
+      }
+
+      .tip {
+        //提示信息
+        //color: @disable-color;
+      }
+    }
+
+    .permission-list {
+      .list {
+        .content {
+          .second-title {
+            color: @icon-color;
+          }
+        }
+      }
+    }
+
+    .add-btn {
+      color: var(--primary-color, @primary-color);
+
+      &:before {
+        color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  //ckeditor
+  .ck-rounded-corners .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+    border-color: var(--border-color, @border-color-base);
+    background: @bg-grey-select;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+    border-color: var(--border-color, @border-color-base);
+    // border-top: 1px!important;
+    background: @op-color;
+  }
+
+  .ck.ck-toolbar .ck.ck-toolbar__separator {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .ck.ck-editor__main {
+    > .ck-editor__editable {
+      &:hover,
+      &:focus {
+        border-color: var(--primary-color, @primary-color);
+        background: @op-color;
+      }
+
+      border-color: var(--primary-color, @primary-color);
+      background: @op-color;
+      border-bottom-left-radius: 10px !important;
+      border-bottom-right-radius: 10px !important;
+    }
+  }
+
+  .ck-widget.table td.ck-editor__nested-editable.ck-editor__nested-editable_focused,
+  .ck-widget.table th.ck-editor__nested-editable.ck-editor__nested-editable_focused,
+  .ck.ck-balloon-panel,
+  .ck-balloon-rotator__content > * {
+    border-color: var(--primary-color, @primary-color);
+    background: @op-color;
+  }
+
+  .cke_editable {
+    color: @text-color;
+
+    td,
+    th {
+      border-color: var(--border-color, @border-color-base);
+      border-spacing: 0;
+    }
+  }
+
+  .checkbox-container {
+    border: 1px solid var(--border-color, @border-color-base);
+    background: @op-color;
+    transition: all 0.3s;
+
+    &:not(.disable):hover {
+      cursor: pointer;
+      border-color: var(--primary-color, @primary-color);
+    }
+
+    .icon-check {
+      opacity: 0;
+      transition: all 0.3s;
+      transform: scale(0, 0);
+
+      &:before {
+        color: @op-color;
+        transform: scale(0.8);
+      }
+    }
+
+    &.disable {
+      background: var(--gray-color, @gray-color);
+    }
+
+    &.selected {
+      border-color: var(--primary-color, @primary-color);
+      background: var(--primary-color, @primary-color);
+
+      .icon-check {
+        opacity: 1;
+        transform: scale(1, 1);
+      }
+    }
+  }
+
+  .form-block {
+    .block-left {
+      color: @text-color;
+    }
+  }
+
+  .search-top {
+    border-bottom: 1px solid var(--dividing-color, @dividing-color);
+    background-color: @background-color;
+  }
+
+  //topo
+  .node-itemul {
+    .node-bg {
+      path {
+        fill: @topo-node;
+      }
+    }
+
+    .node-icon {
+      fill: @icon-color;
+    }
+  }
+
+  //工单处理气泡框
+  .activity-step {
+    .tag-bubble {
+      position: relative;
+      border-radius: 0px 8px 8px 8px;
+
+      .tag-arrow {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        left: -8px;
+        top: 0px;
+      }
+
+      .tag-arrow * {
+        display: block;
+        position: absolute;
+        border-style: dashed solid solid dashed;
+        font-size: 0;
+        line-height: 0;
+      }
+
+      .tag-arrow em {
+        border-color: @background-color @background-color transparent transparent;
+        border-width: 4px 4px;
+      }
+    }
+  }
+
+  // 服务目录
+  .serviceDilog {
+    //服务目录的对话框
+    .search-input {
+      color: @text-color;
+      background: @inputbg-color;
+    }
+
+    .more-item {
+      .text {
+        color: @text-color;
+      }
+    }
+  }
+
+  // 箭头图标
+  .arrow {
+    border-right-color: @default-icon;
+
+    &::before {
+      border-right-color: @background-color;
+    }
+  }
+
+  // 用户设置页
+  .user_setting {
+    .title {
+      color: @title-color;
+    }
+
+    .convenience {
+      .setting-top {
+        background-color: var(--gray-color, @gray-color);
+      }
+
+      .setting-content {
+        .item {
+          border-top: 1px solid var(--dividing-color, @dividing-color);
+        }
+      }
+    }
+
+    .defaultpage-manage {
+      .module-list {
+        .module {
+          background-color: @blockbg-color;
+          border: 1px solid var(--border-color, @border-color-base);
+
+          &:hover {
+            box-shadow: @block-hover-shadow;
+          }
+
+          &-default {
+            // background-color: fade(@primary-active-color, 10%);
+            background-color: var(--primary-active-color, @primary-active-color);
+          }
+        }
+      }
+
+      .menu-list {
+        .ivu-select-selection {
+          border: 1px solid var(--border-color, @border-color-base);
+        }
+      }
+    }
+  }
+
+  .tssort {
+    color: var(--primary-color, @primary-color);
+
+    &:before {
+      border-color: transparent transparent var(--border-color, @border-color-base) transparent;
+    }
+
+    &:after {
+      border-color: var(--border-color, @border-color-base) transparent transparent transparent;
+    }
+
+    &.up {
+      &:after {
+        border-color: var(--primary-color, @primary-color) transparent transparent transparent;
+      }
+    }
+
+    &.down {
+      &:before {
+        border-color: transparent transparent var(--primary-color, @primary-color) transparent;
+      }
+    }
+  }
+
+  .tsnav-goprev {
+    .goprev-left {
+      &.prev-hasnext {
+        &:after {
+          background: var(--border-color, @border-color-base);
+        }
+      }
+    }
+  }
+
+  .tscontain-split {
+    // &.left{
+    //   .left-pane{
+    //     background: @blockbg-color;
+    //    }
+    // }
+    &.right {
+      .right-pane {
+        background: @blockbg-color;
+      }
+    }
+  }
+
+  .knowledge-search {
+    em {
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  //iview
+  @iv-prev: ivu-;
+
+  .@{iv-prev}table th {
+    background: var(--th-bg-color, @th-bg-color);
+  }
+
+  .@{iv-prev}input {
+    border: 1px solid var(--border-color, @border-color-base);
+    //border-bottom: 1px solid var(--border-color, @border-color-base);
+    color: @text-color;
+    &.@{iv-prev}color-picker-input {
+      padding: 4px 32px 4px 8px;
+    }
+  }
+
+  .@{iv-prev}input-word-count {
+    background-color: transparent;
+  }
+
+  .@{iv-prev}form-item-error {
+    .@{iv-prev}input {
+      border-bottom: 1px solid @error-color;
+    }
+  }
+
+  .@{iv-prev}cascader .@{iv-prev}input {
+    background-color: transparent;
+    // border-bottom: 1px solid var(--border-color, @border-color-base);
+  }
+
+  .@{iv-prev}input[disabled],
+  .@{iv-prev}input-number-input[disabled],
+  fieldset[disabled] .@{iv-prev}input {
+    background-color: @disabled-bg !important;
+    color: @form-text-disabled;
+  }
+
+  .text-btn[disabled] {
+    color: @tip-color;
+  }
+
+  .input-border {
+    .@{iv-prev}input {
+      border: 1px solid var(--border-color, @border-color-base);
+      background: @inputbg-color;
+      border-radius: 2px;
+    }
+
+    .@{iv-prev}form-item-error,
+    .tsForm-formItem-error {
+      .@{iv-prev}cascader .@{iv-prev}input,
+      .@{iv-prev}select-selection,
+      .@{iv-prev}input {
+        border-color: @error-color;
+      }
+    }
+    .@{iv-prev}form-item-error,
+    .tsForm-formItem-error.@{iv-prev}input-number {
+      border-color: @error-color;
+    }
+
+    .@{iv-prev}cascader .@{iv-prev}input,
+    .@{iv-prev}select-selection {
+      border: 1px solid var(--border-color, @border-color-base);
+      background: @inputbg-color;
+      border-radius: 2px;
+    }
+  }
+
+  .@{iv-prev}input-prefix i,
+  .@{iv-prev}input-suffix i {
+    color: @icon-color;
+  }
+
+  //btn
+  .@{iv-prev}btn {
+    background: transparent;
+
+    &.@{iv-prev}btn-ghost {
+      background: transparent;
+
+      &.@{iv-prev}btn-default,
+      &.@{iv-prev}btn-dashed {
+        color: @tip-color;
+        border-color: var(--border-color, @border-color-base);
+
+        &:hover {
+          background: @op-color;
+          color: @text-color;
+        }
+      }
+    }
+
+    &:hover {
+      border-color: var(--primary-hover-color, @primary-hover-color);
+      color: var(--primary-hover-color, @primary-hover-color);
+      background: transparent;
+    }
+
+    &.bg-trans {
+      background: transparent;
+    }
+  }
+
+  .@{iv-prev}btn[disabled] {
+    background-color: @disabled-bg !important;
+    color: @tip-color !important;
+    border-color: var(--border-color, @border-color-base) !important;
+
+    &:hover {
+      color: @tip-color !important;
+      border-color: var(--border-color, @border-color-base) !important;
+    }
+  }
+
+  .@{iv-prev}btn-default {
+    color: @text-color;
+    border-color: var(--border-color, @border-color-base);
+
+    &:focus {
+      color: var(--primary-color, @primary-color);
+      border-color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .@{iv-prev}btn-primary {
+    color: @bg-op-color;
+    background-color: var(--primary-color, @primary-color);
+    border-color: var(--primary-color, @primary-color);
+
+    &:hover {
+      background-color: var(--primary-hover-color, @primary-hover-color);
+      color: @bg-op-color;
+      border-color: var(--primary-hover-color, @primary-hover-color);
+    }
+
+    &.@{iv-prev}btn-ghost {
+      color: var(--primary-color, @primary-color);
+      border-color: var(--primary-color, @primary-color);
+
+      &:hover {
+        background-color: @blockbg-color;
+        color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  .@{iv-prev}btn-info {
+    color: @bg-op-color;
+    background-color: @info-color;
+    border-color: @info-color;
+
+    &:hover {
+      background-color: @info-hover-color;
+      border-color: @info-hover-color;
+      border-color: @info-hover-color;
+      color: @bg-op-color;
+    }
+
+    &.@{iv-prev}btn-ghost {
+      color: @info-color;
+      border-color: @info-color;
+    }
+  }
+
+  #verticalAfter {
+    background-color: @blockbg-color;
+    color: #8c8c8c;
+  }
+
+  #verticalAfter:hover {
+    /*background: @primary-hover-color;
+    color:#fff;*/
+  }
+
+  .@{iv-prev}btn-success {
+    color: @bg-op-color;
+    background-color: @success-color;
+    border-color: @success-color;
+
+    &:hover {
+      background-color: @success-hover-color;
+      color: @bg-op-color;
+      border-color: @success-hover-color;
+    }
+
+    &.@{iv-prev}btn-ghost {
+      color: @success-color;
+      border-color: @success-color;
+    }
+  }
+
+  .@{iv-prev}btn-warning {
+    color: @bg-op-color;
+    background-color: @warning-color;
+    border-color: @warning-color;
+
+    &:hover {
+      background-color: @warning-hover-color;
+      color: @bg-op-color;
+      border-color: @warning-hover-color;
+    }
+
+    &.@{iv-prev}btn-ghost {
+      color: @warning-color;
+      border-color: @warning-color;
+    }
+  }
+
+  .@{iv-prev}btn-error {
+    color: @bg-op-color;
+    background-color: @error-color;
+    border-color: @error-color;
+
+    &:hover {
+      background-color: @error-hover-color;
+      color: @bg-op-color;
+      border-color: @error-hover-color;
+    }
+
+    &.@{iv-prev}btn-ghost {
+      color: @error-color;
+      border-color: @error-color;
+    }
+  }
+
+  .@{iv-prev}btn-text {
+    color: @text-color;
+    background-color: transparent;
+
+    &:focus {
+      color: var(--primary-color, @primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color, @primary-color);
+      background-color: transparent;
+    }
+  }
+
+  .@{iv-prev}btn-ghost {
+    background: transparent;
+
+    &:hover {
+      color: @bg-op-color;
+    }
+  }
+
+  //lable
+  .@{iv-prev}form-item-label {
+    color: @title-color;
+  }
+
+  .@{iv-prev}form-item:not(.disabled):focus-within {
+    > .@{iv-prev}form-item-label {
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  //input
+  .@{iv-prev}input {
+    border-color: var(--border-color, @border-color-base);
+
+    &:not([disabled]):focus,
+    &:not([disabled]):hover {
+      border-color: var(--primary-color, @primary-color);
+      // box-shadow: 0 0 0 2px fade(var(--primary-color, @primary-color), 10%);input
+    }
+  }
+  //  input-number
+  .@{iv-prev}input-number {
+    border-color: var(--border-color, @border-color-base);
+
+    &:not([disabled]):focus,
+    &:not([disabled]):hover {
+      border-color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .@{iv-prev}input-icon {
+    color: @icon-color;
+  }
+
+  //input-number
+  .@{iv-prev}input-number {
+    background-color: @blockbg-color;
+    border-color: var(--border-color, @border-color-base);
+    width: 100%;
+    &-handler-wrap {
+      background-color: @blockbg-color;
+      border-color: var(--border-color, @border-color-base);
+    }
+
+    &-handler-up,
+    &-handler-down {
+      border-color: var(--border-color, @border-color-base);
+    }
+
+    &-input {
+      background-color: @blockbg-color;
+      color: @text-color;
+    }
+  }
+
+  //select
+  .@{iv-prev}select {
+    color: @text-color;
+  }
+
+  .@{iv-prev}select-selection {
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-color, @border-color-base);
+
+    .@{iv-prev}select-input {
+      color: @text-color;
+    }
+
+    .@{iv-prev}tag {
+      border-color: var(--border-color, @border-color-base);
+      background-color: var(--dividing-color, @dividing-color);
+    }
+
+    &:hover {
+      border-color: var(--primary-color, @primary-color) !important;
+
+      // box-shadow: 0 0 0 2px fade(var(--primary-color, @primary-color),10%);
+      &.@{iv-prev}select-selection-focused {
+        border-color: var(--primary-color, @primary-color) !important;
+        //box-shadow: 0 0 0 2px fade(@primary-color, 10%);
+      }
+    }
+  }
+
+  .@{iv-prev}select-visible .@{iv-prev}select-selection {
+    border-color: var(--primary-color, @primary-color) !important;
+    // box-shadow: 0 0 0 2px fade(@primary-color, 10%);
+  }
+
+  .@{iv-prev}form-item-error {
+    .@{iv-prev}select-selection {
+      border-bottom: 1px solid @error-color;
+    }
+  }
+
+  .@{iv-prev}page-item,
+  .@{iv-prev}page-prev,
+  .@{iv-prev}page-next {
+    &:hover {
+      a {
+        color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  .@{iv-prev}page-item-active {
+    background-color: var(--primary-color, @primary-color);
+
+    a {
+      color: @bg-op-color;
+    }
+
+    &:hover {
+      a {
+        color: @bg-op-color;
+      }
+    }
+  }
+
+  .@{iv-prev}select-dropdown {
+    background-color: @blockbg-color;
+    box-shadow: 0 1px 6px @boxshadow-bolck;
+
+    .@{iv-prev}dropdown-item-divided:before {
+      background-color: transparent;
+    }
+
+    .@{iv-prev}dropdown-item {
+      color: @text-color;
+      border-color: var(--border-color, @border-color-base);
+
+      .overflow();
+
+      &:hover {
+        background-color: var(--selected-bg, @selected-bg);
+      }
+
+      &.selected {
+        color: var(--primary-color, @primary-color);
+        background-color: var(--selected-bg, @selected-bg);
+      }
+
+      &.@{iv-prev}dropdown-item-disabled {
+        color: @disable-color;
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  .@{iv-prev}select-item {
+    color: @text-color;
+
+    &:hover {
+      background-color: var(--selected-bg, @selected-bg);
+    }
+  }
+
+  .@{iv-prev}select-item-focus {
+    background-color: transparent;
+  }
+
+  .@{iv-prev}select-item-selected {
+    background-color: var(--selected-bg, @selected-bg);
+    color: var(--primary-color, @primary-color);
+  }
+
+  .@{iv-prev}select-multiple {
+    .@{iv-prev}select-item-focus {
+      background-color: transparent;
+    }
+
+    .@{iv-prev}select-item-selected {
+      background-color: var(--selected-bg, @selected-bg);
+      color: var(--primary-color, @primary-color);
+
+      &:hover {
+        background-color: var(--selected-bg, @selected-bg);
+      }
+    }
+  }
+
+  //dropdown
+
+  .@{iv-prev}dropdown-item-selected {
+    color: var(--primary-color, @primary-color);
+    background-color: var(--selected-bg, @selected-bg);
+  }
+
+  //picker
+  .@{iv-prev}time-picker-cells-cell-selected,
+  .@{iv-prev}time-picker-cells-cell-selected:hover,
+  .@{iv-prev}time-picker-cells-cell:hover,
+  .@{iv-prev}cell-selected {
+    background-color: var(--selected-bg, @selected-bg);
+    color: var(--primary-color, @primary-color);
+
+    em {
+      background-color: var(--selected-bg, @selected-bg);
+    }
+  }
+
+  .@{iv-prev}time-picker-cells-cell-selected {
+    color: var(--primary-color, @primary-color);
+  }
+
+  .@{iv-prev}date-picker-cells-cell:hover,
+  .@{iv-prev}date-picker-cells-cell-selected,
+  .@{iv-prev}date-picker-cells-cell-selected:hover {
+    em {
+      box-shadow: none;
+      background-color: var(--primary-color, @primary-color);
+      color: @op-color;
+    }
+  }
+
+  .@{iv-prev}date-picker-cells-cell-disabled {
+    background-color: var(--gray-color, @gray-color);
+
+    em {
+      background-color: unset !important;
+      color: unset !important;
+    }
+  }
+
+  .@{iv-prev}date-picker-cells-focused,
+  .@{iv-prev}date-picker-cells-focused:hover {
+    em {
+      box-shadow: none;
+    }
+  }
+
+  .ivu-date-picker-cells-cell-today {
+    em:after {
+      background-color: var(--primary-color, @primary-color);
+    }
+  }
+
+  //radio
+  .@{iv-prev}radio {
+    &:not(.@{iv-prev}radio-disabled):hover {
+      .@{iv-prev}radio-inner {
+        border-color: var(--primary-color, @primary-color);
+      }
+    }
+
+    &.@{iv-prev}radio-checked {
+      .@{iv-prev}radio-inner {
+        border-color: var(--primary-color, @primary-color);
+        background-color: var(--primary-color, @primary-color);
+
+        &:after {
+          background-color: @op-color;
+        }
+      }
+    }
+
+    &.@{iv-prev}radio-disabled,
+    .@{iv-prev}radio-wrapper-disabled {
+      &.@{iv-prev}radio-checked {
+        .@{iv-prev}radio-inner {
+          background-color: var(--form-disabled, @form-disabled);
+          border-color: var(--form-disabled, @form-disabled);
+
+          &:after {
+            background-color: var(--form-disabled-after, @form-disabled-after);
+          }
+        }
+      }
+    }
+  }
+
+  .@{iv-prev}radio-inner {
+    background-color: transparent;
+    border-color: var(--border-color, @border-color-base);
+  }
+
+  .tsform-radio-readonly {
+    .@{iv-prev}radio-disabled .@{iv-prev}radio-inner {
+      border-color: var(--form-disabled, @form-disabled);
+      background-color: transparent;
+
+      &:after {
+        background-color: var(--form-disabled, @form-disabled);
+      }
+    }
+
+    .@{iv-prev}radio-checked .@{iv-prev}radio-inner {
+      border-color: var(--primary-color, @primary-color);
+      background-color: transparent;
+    }
+  }
+
+  .@{iv-prev}radio-group-button {
+    .@{iv-prev}radio-wrapper {
+      background: @blockbg-color;
+      border-color: var(--border-color, @border-color-base);
+      color: @text-color;
+      &:after,
+      &:before {
+        background: var(--border-color, @border-color-base);
+      }
+    }
+
+    .@{iv-prev}radio-wrapper-checked {
+      background: @blockbg-color;
+      color: var(--primary-color, @primary-color) !important;
+      border-color: var(--primary-color, @primary-color);
+      box-shadow: -1px 0 0 0 var(--primary-color, @primary-color);
+    }
+  }
+
+  .radioblock {
+    .@{iv-prev}radio-wrapper-checked {
+      background-color: var(--primary-grey, @primary-grey);
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  //Checkbox
+  .@{iv-prev}checkbox-inner {
+    border: 1px solid var(--border-color, @border-color-base);
+    background-color: @op-color;
+  }
+
+  .@{iv-prev}checkbox {
+    &:not(.@{iv-prev}checkbox-disabled):hover {
+      .@{iv-prev}checkbox-inner {
+        border-color: var(--form-disabled, @form-disabled);
+      }
+    }
+  }
+
+  .@{iv-prev}checkbox-disabled,
+  .@{iv-prev}checkbox-wrapper-disabled {
+    &.@{iv-prev}checkbox-checked {
+      .@{iv-prev}checkbox-inner {
+        background-color: var(--form-disabled, @form-disabled);
+        // background-color: var(--border-color, @border-color-base);
+        border-color: var(--form-disabled, @form-disabled);
+      }
+    }
+  }
+
+  .tsform-checkbox-readonly {
+    .@{iv-prev}checkbox-disabled .@{iv-prev}checkbox-inner {
+      border-color: var(--form-disabled, @form-disabled);
+      background-color: var(--form-disabled, @form-disabled);
+    }
+
+    .@{iv-prev}checkbox-checked .@{iv-prev}checkbox-inner {
+      border-color: var(--primary-color, @primary-color);
+      background-color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .@{iv-prev}checkbox-checked .@{iv-prev}checkbox-inner {
+    border: 1px solid var(--primary-color, @primary-color);
+    background-color: var(--primary-color, @primary-color);
+
+    &:after {
+      color: var(--form-disabled-after, @form-disabled-after);
+      transform: rotate(0) scale(0.8);
+    }
+  }
+
+  .@{iv-prev}checkbox-indeterminate .@{iv-prev}checkbox-inner {
+    border: 1px solid var(--primary-color, @primary-color);
+    background-color: var(--primary-color, @primary-color);
+
+    &:after {
+      left: 2.5px;
+      top: 7px;
+      border: 2px solid @default-blockbg;
+      border-top: 0;
+      border-left: 0;
+    }
+  }
+
+  //switch
+  .@{iv-prev}switch {
+    background-color: var(--border-color, @border-color-base);
+    border-color: transparent;
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &.@{iv-prev}switch-checked {
+      background-color: var(--switch-bg, @switch-bg);
+      border-color: var(--switch-bg, @switch-bg);
+    }
+
+    &.@{iv-prev}switch-checked:after {
+      background-color: var(--primary-color, @primary-color);
+    }
+
+    &.@{iv-prev}switch-checked.@{iv-prev}switch-disabled {
+      background-color: var(--switch-bg, @switch-bg);
+      border-color: var(--switch-bg, @switch-bg);
+    }
+  }
+
+  .@{iv-prev}switch:after {
+    box-shadow: @shadow;
+  }
+
+  .ts-dialog-steps-bg {
+    // 弹窗组件里步骤条样式随着弹框背景主题色改变
+    .@{iv-prev}steps {
+      .@{iv-prev}steps-title {
+        background: @modal-bg-color !important;
+      }
+
+      .@{iv-prev}steps-head {
+        background: @modal-bg-color;
+
+        .@{iv-prev}steps-item {
+          &.@{iv-prev}steps-status-process {
+            .@{iv-prev}steps-head-inner {
+              background-color: @modal-bg-color;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .@{iv-prev}steps {
+    .@{iv-prev}steps-title {
+      background: @background-color;
+      cursor: pointer;
+      margin-bottom: 0;
+      margin-top: 4px;
+    }
+
+    .@{iv-prev}steps-head {
+      background: @background-color;
+
+      .@{iv-prev}steps-item {
+        &.@{iv-prev}steps-status-process {
+          .@{iv-prev}steps-head-inner {
+            background-color: var(--primary-color, @primary-color);
+            color: @title-color;
+          }
+
+          .ivu-steps-tail > i {
+            background-color: var(--border-color, @border-color-base);
+          }
+        }
+
+        &.@{iv-prev}steps-status-wait .@{iv-prev}steps-head-inner,
+        .@{iv-prev}steps-head-inner {
+          background-color: @blockbg-color;
+        }
+
+        .@{iv-prev}steps-tail > i:after {
+          background: var(--border-color, @border-color-base);
+        }
+      }
+    }
+    .@{iv-prev}steps-item.@{iv-prev}steps-status-process .@{iv-prev}steps-tail > i {
+      background-color: var(--border-color, @border-color-base);
+    }
+  }
+
+  .@{iv-prev}steps-item.@{iv-prev}steps-status-process {
+    .@{iv-prev}steps-head-inner {
+      background-color: var(--primary-color, @primary-color);
+      color: @title-color;
+    }
+  }
+
+  .@{iv-prev}steps-item.ivu-steps-status-wait .@{iv-prev}steps-head-inner {
+    background-color: @blockbg-color;
+  }
+
+  .@{iv-prev}steps-item.@{iv-prev}steps-status-finish {
+    .@{iv-prev}steps-head-inner {
+      background-color: @op-color;
+      border-color: var(--primary-color, @primary-color);
+
+      span {
+        color: var(--primary-color, @primary-color);
+      }
+    }
+    .@{iv-prev}steps-tail > i:after {
+      background-color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .@{iv-prev}avatar {
+    background-color: @tab-bar-bg;
+  }
+
+  .@{iv-prev}form-label-right {
+    > .@{iv-prev}form-item-label {
+      color: @title-color;
+    }
+  }
+
+  .@{iv-prev}timeline-item-head {
+    background: @blockbg-color;
+  }
+
+  .@{iv-prev}timeline-item-tail {
+    border-left: 2px solid var(--dividing-color, @dividing-color);
+  }
+
+  //upload
+  .@{iv-prev}upload-drag {
+    background: @op-color;
+    border-color: var(--border-color, @border-color-base);
+    border-radius: 6px;
+  }
+
+  //tag
+  .@{iv-prev}tag {
+    &-default {
+      border-color: @tag-bg;
+      background-color: @tag-bg;
+    }
+    &-primary {
+      border-color: var(--primary-color, @primary-color);
+      background-color: var(--primary-color, @primary-color);
+    }
+
+    .@{iv-prev}tag-text {
+      color: @text-color;
+    }
+
+    .@{iv-prev}icon-ios-close {
+      color: @icon-color;
+    }
+
+    &-dot {
+      border-color: var(--border-color, @border-color-base) !important;
+      background-color: var(--dividing-color, @dividing-color) !important;
+    }
+  }
+
+  //cascader
+  .@{iv-prev}cascader {
+    .@{iv-prev}cascader-menu-item {
+      color: @text-color;
+
+      &:hover {
+        background-color: var(--selected-bg, @selected-bg);
+      }
+
+      &.@{iv-prev}cascader-menu-item-active {
+        background-color: var(--selected-bg, @selected-bg);
+      }
+    }
+
+    .@{iv-prev}select-dropdown {
+      max-height: inherit;
+    }
+  }
+
+  .@{iv-prev}cascader-menu {
+    border-color: var(--border-color, @border-color-base);
+  }
+
+  .@{iv-prev}cascader-transfer {
+    .@{iv-prev}cascader-menu-item {
+      color: @text-color;
+    }
+    .@{iv-prev}cascader-menu-item-active,
+    .@{iv-prev}cascader-menu-item-focus,
+    .@{iv-prev}cascader-menu-item:hover {
+      color: var(--primary-color, @primary-color);
+      background-color: var(--selected-bg, @selected-bg);
+    }
+  }
+
+  //loading
+  .@{iv-prev}spin-fix {
+    background-color: fade(@background-color, 90%);
+  }
+
+  //table
+
+  .@{iv-prev}table {
+    border-color: var(--border-color, @border-color-base);
+    color: @text-color;
+    background-color: @blockbg-color;
+
+    &::before {
+      background-color: transparent;
+    }
+
+    th,
+    td {
+      border-color: var(--border-color, @border-color-base);
+    }
+
+    .@{iv-prev}table-cell-tree {
+      background-color: @blockbg-color;
+      border-color: var(--border-color, @border-color-base);
+    }
+
+    th .@{iv-prev}table-cell {
+      > span {
+        color: @title-color;
+      }
+    }
+  }
+
+  .@{iv-prev}table-border th,
+  .@{iv-prev}table-border td {
+    border-color: var(--border-color, @border-color-base);
+  }
+
+  .@{iv-prev}table-border:after {
+    background-color: transparent;
+  }
+
+  .@{iv-prev}table td {
+    background-color: @blockbg-color;
+  }
+
+  .@{iv-prev}table-row-highlight td,
+  tr.@{iv-prev}table-row-highlight.@{iv-prev}table-row-hover td,
+  .@{iv-prev}table-stripe .ivu-table-body tr.@{iv-prev}table-row-highlight:nth-child(2n) td,
+  .@{iv-prev}table-stripe .@{iv-prev}table-fixed-body tr.@{iv-prev}table-row-highlight:nth-child(2n) td,
+  .@{iv-prev}table-row-hover td {
+    background-color: @td-hover-bg-color;
+  }
+
+  .@{iv-prev}table-header {
+    background-color: var(--th-bg-color, @th-bg-color);
+  }
+
+  // 解决接口管理，输入参数表格边框问题
+  .@{iv-prev}table-wrapper-with-border {
+    border: 1px solid var(--border-color, @border-color-base);
+  }
+
+  //card
+  .@{iv-prev}card {
+    background-color: @blockbg-color;
+    color: @text-color;
+    border-color: var(--border-color, @border-color-base);
+
+    &:hover {
+      box-shadow: @shadow;
+    }
+
+    .@{iv-prev}card-head {
+      border-color: var(--border-color, @border-color-base);
+      color: @text-color;
+    }
+  }
+
+  .@{iv-prev}card-head p,
+  .@{iv-prev}card-head-inner {
+    color: @title-color;
+  }
+
+  .@{iv-prev}cell {
+    color: @text-color;
+    border-color: var(--border-color, @border-color-base);
+
+    &:hover {
+      background-color: var(--selected-bg, @selected-bg);
+    }
+  }
+
+  //carousel
+  .@{iv-prev}carousel-arrow {
+    // background-color: fade(@mongolia-color, 50%);
+    background-color: transparent;
+    color: @text-color;
+
+    &:hover {
+      background-color: @mongolia-color;
+      background-color: transparent;
+    }
+  }
+
+  //tab
+  .@{iv-prev}tabs {
+    color: @text-color;
+  }
+
+  .@{iv-prev}poptip-inner {
+    background-color: @blockbg-color;
+    box-shadow: @shadow;
+    border-radius: 6px;
+  }
+
+  .@{iv-prev}poptip-title-inner {
+    color: @title-color;
+  }
+
+  .@{iv-prev}poptip-title {
+    &:after {
+      background-color: var(--border-color, @border-color-base);
+    }
+  }
+
+  .@{iv-prev}poptip-body-content {
+    color: @text-color;
+  }
+
+  .@{iv-prev}poptip-body-content-inner {
+    color: @text-color;
+  }
+
+  .@{iv-prev}poptip-popper[x-placement^='bottom'] .@{iv-prev}poptip-arrow:after {
+    border-bottom-color: @blockbg-color;
+    top: 0;
+  }
+
+  .@{iv-prev}poptip-popper[x-placement^='top'] .@{iv-prev}poptip-arrow:after {
+    border-top-color: @blockbg-color;
+  }
+
+  .@{iv-prev}poptip-popper[x-placement^='left'] .@{iv-prev}poptip-arrow:after {
+    border-left-color: @blockbg-color;
+  }
+
+  .@{iv-prev}poptip-popper[x-placement^='right'] .@{iv-prev}poptip-arrow:after {
+    border-right-color: @blockbg-color;
+  }
+
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-center,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-left,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-right {
+    background-color: transparent;
+  }
+
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-center:before,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-left:before,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-right:before,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-start:before,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-end:before,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-center:after,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-left:after,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-right:after,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-start:after,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-end:after {
+    border-color: var(--dividing-color, @dividing-color);
+  }
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-center,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-left,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-right,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-start,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-end,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-center,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-left,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-right,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-start,
+  .@{iv-prev}divider-horizontal.@{iv-prev}divider-with-text-end {
+    color: @text-color;
+    font-size: 13px;
+    margin: 10px 0;
+    background: transparent !important;
+  }
+
+  .@{iv-prev}divider {
+    color: @title-color;
+    // background: var(--dividing-color, @dividing-color);
+  }
+
+  //message
+  .@{iv-prev}message-notice-content {
+    background: @blockbg-color;
+    box-shadow: @shadow;
+  }
+
+  .@{iv-prev}notice-notice {
+    background: @blockbg-color;
+    box-shadow: @shadow;
+    border-radius: 6px;
+
+    .@{iv-prev}notice-desc {
+      color: @text-color;
+    }
+
+    .@{iv-prev}notice-title {
+      color: @text-color;
+    }
+  }
+
+  //Tabs
+  .@{iv-prev}tabs {
+    .@{iv-prev}tabs-bar {
+      border-color: var(--dividing-color, @dividing-color);
+    }
+
+    .@{iv-prev}tabs-nav {
+      .@{iv-prev}tabs-ink-bar {
+        background-color: transparent;
+
+        &:before {
+          background-color: var(--primary-color, @primary-color);
+        }
+      }
+
+      .@{iv-prev}tabs-tab {
+        &:hover {
+          color: var(--primary-color, @primary-color);
+        }
+      }
+
+      .@{iv-prev}tabs-tab-active {
+        color: var(--primary-color, @primary-color);
+        border-color: var(--dividing-color, @dividing-color);
+      }
+    }
+
+    &.block-tabs {
+      > .ivu-tabs-bar {
+        .ivu-tabs-tab {
+          background-color: @tab-bar-bg;
+          color: @title-color;
+
+          &.ivu-tabs-tab-active {
+            background-color: @op-color;
+            color: var(--primary-color, @primary-color);
+          }
+        }
+      }
+
+      .ivu-tabs-nav-container {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      .ivu-tabs-content {
+        background-color: @op-color;
+      }
+    }
+
+    &.block-tabs2 {
+      > .ivu-tabs-bar {
+        // background: @op-color;
+      }
+    }
+
+    &.block-span {
+      > .ivu-tabs-bar {
+        border-bottom: 0;
+
+        .ivu-tabs-tab {
+          max-width: 120px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          background-color: none;
+          color: @title-color;
+
+          &.ivu-tabs-tab-active {
+            background-color: @info-bg-color;
+            color: var(--primary-color, @primary-color);
+          }
+        }
+      }
+
+      .ivu-tabs-nav-container {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      .ivu-tabs-content {
+        background-color: @op-color;
+      }
+    }
+  }
+
+  .ivu-tooltip-popper {
+    //Tooltip组件transfer时，会被其他组件的transfer遮挡，需要提高z-index
+    z-index: 100000 !important;
+  }
+
+  .@{iv-prev}tooltip-inner {
+    //background-color: @invert-bg;
+    background-color: @blockbg-color;
+    box-shadow: @shadow;
+    //color: @op-color;
+    color: @text-color;
+  }
+
+  .@{iv-prev}tooltip-popper[x-placement^='bottom'] .@{iv-prev}tooltip-arrow {
+    border-bottom-color: @blockbg-color;
+    //border-bottom-color: @invert-bg;
+  }
+
+  .@{iv-prev}tooltip-popper[x-placement^='top'] .@{iv-prev}tooltip-arrow {
+    border-top-color: @blockbg-color;
+    //border-top-color: @invert-bg;
+  }
+
+  .@{iv-prev}tooltip-popper[x-placement^='left'] .@{iv-prev}tooltip-arrow {
+    border-left-color: @blockbg-color;
+    //border-left-color: @invert-bg;
+  }
+
+  .@{iv-prev}tooltip-popper[x-placement^='right'] .@{iv-prev}tooltip-arrow {
+    border-right-color: @blockbg-color;
+    //border-right-color: @invert-bg;
+  }
+
+  .@{iv-prev}tooltip-light {
+    .@{iv-prev}tooltip-inner {
+      background-color: @blockbg-color;
+      color: @text-color;
+    }
+
+    &.@{iv-prev}tooltip-popper[x-placement^='bottom'] {
+      .@{iv-prev}tooltip-arrow {
+        border-bottom-color: @blockbg-color;
+
+        &::after {
+          border-bottom-color: @blockbg-color;
+        }
+      }
+    }
+
+    &.@{iv-prev}tooltip-popper[x-placement^='top'] {
+      .@{iv-prev}tooltip-arrow {
+        border-bottom-color: @blockbg-color;
+
+        &::after {
+          border-top-color: @blockbg-color;
+        }
+      }
+    }
+
+    &.@{iv-prev}tooltip-popper[x-placement^='left'] {
+      .@{iv-prev}tooltip-arrow {
+        border-bottom-color: @blockbg-color;
+
+        &::after {
+          border-left-color: @blockbg-color;
+        }
+      }
+    }
+
+    &.@{iv-prev}tooltip-popper[x-placement^='right'] {
+      border-bottom-color: @blockbg-color;
+
+      .@{iv-prev}tooltip-arrow {
+        &::after {
+          border-right-color: @blockbg-color;
+        }
+      }
+    }
+  }
+
+  // layout
+  .@{iv-prev}layout {
+    background: @background-color;
+
+    &-sider {
+      background-color: @background-color;
+      // background-color: @blockbg-color;
+      // margin-left: -1px;
+    }
+
+    &-content {
+      background-color: @background-color;
+    }
+  }
+
+  // drawer
+  .@{iv-prev}drawer {
+    &-mask {
+      background-color: @mongolia-color;
+    }
+
+    &-header {
+      border-bottom: none;
+
+      &-inner {
+        color: @text-color;
+      }
+    }
+
+    &-content {
+      background-color: @blockbg-color;
+      box-shadow: @shadow;
+    }
+
+    &-drag-move-trigger {
+      background-color: @blockbg-color;
+    }
+  }
+
+  .@{iv-prev}tabs-card > .@{iv-prev}tabs-bar .@{iv-prev}tabs-tab {
+    background-color: @tab-bar-bg;
+    color: @title-color;
+    border-color: var(--dividing-color, @dividing-color);
+
+    &.@{iv-prev}tabs-tab-active {
+      color: var(--primary-color, @primary-color);
+      background-color: @op-color;
+    }
+  }
+
+  .@{iv-prev}split-trigger-vertical {
+    background-color: @background-color;
+    color: var(--border-color, @border-color-base);
+    border-color: var(--dividing-color, @dividing-color);
+
+    .@{iv-prev}split-trigger-bar {
+      background-color: var(--border-color, @border-color-base);
+    }
+  }
+
+  .@{iv-prev}collapse {
+    background-color: @table-stripe-color;
+  }
+  .@{iv-prev}collapse-simple {
+    background-color: transparent;
+    border-color: var(--border-color, @border-color-base);
+    color: @text-color;
+    .@{iv-prev}collapse-header {
+      background-color: @background-color;
+    }
+    .@{iv-prev}collapse-content {
+      background-color: transparent;
+    }
+  }
+
+  .@{iv-prev}collapse > .@{iv-prev}collapse-item {
+    border-color: var(--border-color, @border-color-base);
+    > .@{iv-prev}collapse-header {
+      color: @text-color;
+    }
+  }
+  .@{iv-prev}collapse > .@{iv-prev}collapse-item.@{iv-prev}collapse-item-active > .@{iv-prev}collapse-header {
+    border-bottom-color: var(--border-color, @border-color-base);
+  }
+  .@{iv-prev}collapse-content {
+    background-color: @blockbg-color;
+    color: @text-color;
+  }
+
+  //tree
+  .ivu-tree-title {
+    color: @text-color;
+  }
+
+  .@{iv-prev}tree-title-selected {
+    background-color: var(--selected-bg, @selected-bg);
+    color: var(--primary-color, @primary-color);
+  }
+
+  .@{iv-prev}tree-title-selected:hover,
+  .@{iv-prev}tree-title:hover {
+    background-color: var(--selected-bg, @selected-bg);
+  }
+
+  // modal
+  .@{iv-prev}modal {
+    &-mask {
+      background-color: @mongolia-color;
+    }
+
+    &-header {
+      background-color: @modal-header-bg-color;
+    }
+
+    &-content,
+    &-body,
+    &-footer {
+      background-color: @modal-bg-color;
+    }
+
+    &-header,
+    &-footer {
+      border-color: var(--border-color, @border-color-base);
+    }
+  }
+
+  .menu-tree.ivu-tree {
+    .ivu-tree-title {
+      color: @text-color;
+      background-color: unset !important;
+
+      &:hover {
+        color: var(--primary-color, @primary-color);
+      }
+
+      &-selected {
+        color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  //alert
+  .@{iv-prev}alert,
+  .@{iv-prev}alert-desc {
+    color: @text-color;
+  }
+
+  .@{iv-prev}alert-info {
+    border: 0px solid fade(@primary-color, 50%) !important;
+    border-radius: @item-border-radius;
+    background-color: fade(@primary-color, 10%);
+
+    .@{iv-prev}alert-icon {
+      color: var(--primary-color, @primary-color);
+    }
+  }
+
+  .@{iv-prev}alert-error {
+    background: @error-bg-color;
+    border: 1px solid @error-bg-color;
+  }
+
+  .@{iv-prev}alert-warning {
+    background: var(--warning-bg-color, @warning-bg-color);
+    border: 1px solid var(--warning-bg-color, @warning-bg-color);
+  }
+
+  .@{iv-prev}alert-success {
+    background: @success-bg-color;
+    border: 1px solid @success-bg-color;
+  }
+
+  //divider
+  .@{iv-prev}divider {
+    background-color: var(--border-color, @border-color-base);
+  }
+
+  .module-img {
+    background-image: url('~@/resources/assets/images/modules/icon/big/framework-default.png');
+  }
+
+  //进度条
+  .ivu-progress {
+    .ivu-progress-inner {
+      background-color: var(--gray-color, @gray-color);
+    }
+
+    &.ivu-progress-success {
+      .ivu-progress-bg {
+        background-color: var(--primary-color, @primary-color);
+      }
+    }
+  }
+
+  .bg-all-op {
+    background-color: @op-color;
+
+    .ivu-layout-content,
+    .ivu-layout-sider,
+    .ivu-layout {
+      background-color: @op-color;
+    }
+  }
+
+  // color-picker 拾色器面板
+  .@{iv-prev}color-picker-confirm {
+    border-top: 1px solid var(--border-color, @border-color-base);
+  }
+
+  //水波纹
+  @sglqprefix: sg-liquid-;
+
+  .@{sglqprefix}container {
+    border-color: var(--primary-color, @primary-color);
+    color: var(--primary-color, @primary-color);
+
+    .@{sglqprefix}wave {
+      background: var(--primary-color, @primary-color);
+    }
+
+    &.status-info {
+      border-color: @info-color;
+      color: @info-color;
+
+      .@{sglqprefix}wave {
+        background: @info-color;
+      }
+    }
+
+    &.status-success {
+      border-color: @success-color;
+      color: @success-color;
+
+      .@{sglqprefix}wave {
+        background: @success-color;
+      }
+    }
+
+    &.status-warning {
+      border-color: @warning-color;
+      color: @warning-color;
+
+      .@{sglqprefix}wave {
+        background: @warning-color;
+      }
+    }
+
+    &.status-danger {
+      border-color: @error-color;
+      color: @error-color;
+
+      .@{sglqprefix}wave {
+        background: @error-color;
+      }
+    }
+  }
+
+  .ivu-date-picker-cells-cell-range:before {
+    background-color: var(--primary-grey, @primary-grey);
+  }
+
+  // 表单拾色器背景颜色
+  .color-picker-th-bg {
+    background: var(--th-bg-color, @th-bg-color) !important;
+  }
+
+  .color-picker-bg {
+    background: @background-color !important;
+  }
+
+  .color-picker-border-bg {
+    background: var(--border-color, @border-color-base) !important;
+  }
+
+  .color-picker-tip-bg {
+    background: @tip-color !important;
+  }
+
+  .color-picker-text-bg {
+    background: @text-color !important;
+  }
+
+  .color-picker-info-bg {
+    background: @info-color !important;
+  }
+
+  .color-picker-warning-bg {
+    background: @warning-color !important;
+  }
+
+  .color-picker-success-bg {
+    background: @success-color !important;
+  }
+
+  .color-picker-error-bg {
+    background: @error-color !important;
+  }
+
+  .color-picker-info-grey-bg {
+    background: @info-bg-color !important;
+  }
+
+  .color-picker-warning-grey-bg {
+    background: var(--warning-bg-color, @warning-bg-color) !important;
+  }
+
+  .color-picker-success-grey-bg {
+    background: @success-bg-color !important;
+  }
+
+  .color-picker-error-grey-bg {
+    background: @error-bg-color !important;
+  }
+
+  .color-picker-form-sheet-style-setting-bg {
+    background: @form-sheet-style-setting !important;
+  }
+
+  // 表单拾色器字体颜色
+  .color-picker-th-color {
+    color: var(--th-bg-color, @th-bg-color) !important;
+  }
+
+  .color-picker-color {
+    color: @background-color !important;
+  }
+
+  .color-picker-border-color {
+    color: var(--border-color, @border-color-base) !important;
+  }
+
+  .color-picker-tip-color {
+    color: @tip-color !important;
+  }
+
+  .color-picker-info-color {
+    color: @info-color !important;
+  }
+
+  .color-picker-warning-color {
+    color: @warning-color !important;
+  }
+
+  .color-picker-success-color {
+    color: @success-color !important;
+  }
+
+  .color-picker-error-color {
+    color: @error-color !important;
+  }
+
+  .color-picker-info-grey-color {
+    color: @info-bg-color !important;
+  }
+
+  .color-picker-warning-grey-color {
+    color: var(--warning-bg-color, @warning-bg-color) !important;
+  }
+
+  .color-picker-success-grey-color {
+    color: @success-bg-color !important;
+  }
+
+  .color-picker-error-grey-color {
+    color: @error-bg-color !important;
+  }
+
+  .color-picker-form-sheet-style-setting-color {
+    color: @form-sheet-style-setting !important;
+  }
+
+  // 表单单元格边框颜色
+  .color-picker-th-border {
+    border-color: var(--th-bg-color, @th-bg-color) !important;
+  }
+
+  .color-picker-border {
+    border-color: @background-color !important;
+  }
+
+  .color-picker-border-border {
+    border-color: var(--border-color, @border-color-base) !important;
+  }
+
+  .color-picker-tip-border {
+    border-color: @tip-color !important;
+  }
+
+  .color-picker-text-border {
+    border-color: @text-color !important;
+  }
+
+  .color-picker-info-border {
+    border-color: @info-color !important;
+  }
+
+  .color-picker-warning-border {
+    border-color: @warning-color !important;
+  }
+
+  .color-picker-success-border {
+    border-color: @success-color !important;
+  }
+
+  .color-picker-error-border {
+    border-color: @error-color !important;
+  }
+
+  .color-picker-info-grey-border {
+    border-color: @info-bg-color !important;
+  }
+
+  .color-picker-warning-grey-border {
+    border-color: var(--warning-bg-color, @warning-bg-color) !important;
+  }
+
+  .color-picker-success-grey-border {
+    border-color: @success-bg-color !important;
+  }
+
+  .color-picker-error-grey-border {
+    border-color: @error-bg-color !important;
+  }
+
+  .color-picker-form-sheet-style-setting-border {
+    border-color: @form-sheet-style-setting !important;
+  }
+
+  // jsonViewer
+  .jv-container {
+    &.jv-light {
+      background: @op-color;
+    }
+
+    &.boxed {
+      border: 1px solid @op-color;
+    }
+
+    .jv-ellipsis {
+      background-color: @op-color;
+    }
+
+    .jv-key {
+      color: @title-color;
+    }
+
+    .jv-item {
+      &.jv-array {
+        color: @title-color;
+      }
+
+      &.jv-object {
+        color: @title-color;
+      }
+    }
+  }
+}
+
+.theme-dark {
+  .ivu-notice-notice-close:hover {
+    i {
+      color: @dark-icon;
+    }
+  }
+
+  .ivu-date-picker-cells-cell-range:before {
+    background-color: @dark-selectbg !important;
+  }
+}
+
+@default-type: 'white';
+@dark-type: 'dark';
+
+html {
+  .theme(
+    @default-type,
+    @default-op,
+    @default-op-opacity,
+    @default-title,
+    @default-text,
+    @default-icon,
+    @default-dividing,
+    @default-mongolia,
+    @default-background,
+    @default-blockbg,
+    @default-gray,
+    @default-border,
+    @default-boxshadow-main,
+    @default-boxshadow-bolck,
+    @default-disable,
+    @default-footer-btn-bg,
+    @default-primary-grey,
+    @default-selectbg,
+    @default-placeholder,
+    @default-op,
+    @default-footer-btn-bg,
+    @default-shadow,
+    @default-main-shadow,
+    @default-tip,
+    @default-primary-color,
+    @default-primary-active-color,
+    @default-primary-hover-color,
+    @default-link-color,
+    @default-info-color,
+    @default-info-active-color,
+    @default-info-hover-color,
+    @default-info-bg-color,
+    @default-success-color,
+    @default-success-active-color,
+    @default-success-hover-color,
+    @default-success-bg-color,
+    @default-warning-color,
+    @default-warning-active-color,
+    @default-warning-hover-color,
+    @default-warning-bg-color,
+    @default-error-color,
+    @default-error-active-color,
+    @default-error-hover-color,
+    @default-error-bg-color,
+    @default-invert-bg,
+    @default-pending-color,
+    @default-background,
+    @default-dividing,
+    @default-table-stripe-color,
+    @default-topbg-color,
+    @default-bg-grey,
+    @default-bg-grey-hover,
+    @default-table-hover-color,
+    @default-menu-select,
+    @default-menu-hover,
+    @default-top-active,
+    @default-menu-select,
+    @default-th-bg-color,
+    @default-form-sheet-style-setting,
+    @default-tag-bg,
+    @default-primary-color20,
+    @default-form-text-disabled,
+    @default-form-disabled,
+    @default-form-disabled-after,
+    @default-switch-bg,
+    @default-bg-dark-grey,
+    @default-dot-color
+  );
+
+  &.theme-dark {
+    .theme(
+      @dark-type,
+      @dark-op,
+      @dark-op-opacity,
+      @dark-title,
+      @dark-text,
+      @dark-icon,
+      @dark-dividing,
+      @dark-mongolia,
+      @dark-background,
+      @dark-blockbg,
+      @dark-gray,
+      @dark-border,
+      @dark-boxshadow-main,
+      @dark-boxshadow-bolck,
+      @dark-disable,
+      @dark-border,
+      @dark-primary-grey,
+      @dark-selectbg,
+      @dark-placeholder,
+      @dark-dividing,
+      @dark-footer-btn-bg,
+      @dark-shadow,
+      @dark-main-shadow,
+      @dark-tip,
+      @dark-primary-color,
+      @dark-primary-active-color,
+      @dark-primary-hover-color,
+      @dark-link-color,
+      @dark-info-color,
+      @dark-info-active-color,
+      @dark-info-hover-color,
+      @dark-info-bg-color,
+      @dark-success-color,
+      @dark-success-active-color,
+      @dark-success-hover-color,
+      @dark-success-bg-color,
+      @dark-warning-color,
+      @dark-warning-active-color,
+      @dark-warning-hover-color,
+      @dark-warning-bg-color,
+      @dark-error-color,
+      @dark-error-active-color,
+      @dark-error-hover-color,
+      @dark-error-bg-color,
+      @dark-invert-bg,
+      @dark-pending-color,
+      @dark-modal-background,
+      @dark-modal-header-bg,
+      @dark-table-stripe-color,
+      @dark-topbg-color,
+      @dark-bg-grey,
+      @dark-bg-grey-hover,
+      @dark-table-hover-color,
+      @dark-menu-select,
+      @dark-menu-hover,
+      @dark-top-active,
+      @dark-menu-hover,
+      @dark-th-bg-color,
+      @dark-form-sheet-style-setting,
+      @dark-tag-bg,
+      @dark-primary-color20,
+      @dark-form-text-disabled,
+      @dark-form-disabled,
+      @dark-form-disabled-after,
+      @dark-switch-bg,
+      @dark-bg-dark-grey,
+      @dark-dot-color
+    );
+  }
+}

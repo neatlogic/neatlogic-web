@@ -1,0 +1,431 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.handsontable td i.remove {
+  display: none;
+  cursor: pointer;
+  z-index: 100;
+}
+.handsontable td{
+  position: relative;
+  .tips {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0.6;
+    z-index: 9;
+
+  }
+  .tips-valid{
+    display: inline-block;
+  }
+}
+.handsontable td:hover i.remove {
+  display: inline;
+}
+
+.handsontable td.component-active {
+  background: @primary-grey;
+}
+
+.handsontable .wtBorder.corner {
+  display: none !important;
+}
+
+.handsontable td .cellComponent {
+  padding: 6px 10px 6px 6px;
+  position: relative;
+
+  /*height: 100%;*/
+  /*box-sizing: border-box;*/
+  div,
+  input,
+  textarea {
+    box-sizing: border-box;
+  }
+
+  .celltips {
+    position: absolute;
+    right: -13px;
+    top: 6px;
+  }
+
+
+  .cell-container {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 9;
+    }
+  }
+}
+
+//}
+
+.tsSheet {
+  .rightContent {
+    top: 1px;
+    right: 0;
+    width: 380px;
+    bottom: 10px;
+    z-index: 1000;
+    position: absolute;
+    //transition: all .1s;
+    &.hideedit{
+      width: 0;
+      //right: -380px;
+    }
+    &.largewidth{
+      width: 600px;
+      .btn-togglewidth{
+        transform: rotate(180deg);
+      }
+    }
+    .ivu-cell-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: keep-all;
+      white-space: nowrap;
+      width: 280px;
+    }
+
+    .text-danger {
+      &::before {
+        color: @error-color;
+      }
+    }
+  }
+}
+
+.sheetbuilder-style {
+  display: block;
+  height: 38px;
+  border-bottom: 1px solid;
+
+  .sheetbuilder-styleul {
+    list-style: none;
+    height: 36px;
+
+    .sheetbuilder-styleli {
+      list-style: none;
+      display: inline-block;
+      vertical-align: middle;
+      height: 38px;
+      line-height: 38px;
+      position: relative;
+      padding: 0 10px;
+
+      .ivu-select-selection {
+        border-bottom: 0 none;
+      }
+
+      &:not(:last-of-type):after {
+        content: '';
+        position: absolute;
+        top: 9px;
+        right: 0;
+        width: 1px;
+        height: 20px;
+      }
+
+      .ivu-color-picker {
+        line-height: 26px;
+
+        .ivu-color-picker-input {
+          padding-top: 4px;
+        }
+        .ivu-color-picker-rel {
+          opacity: 0;
+        }
+      }
+    }
+  }
+}
+
+.sheetbuilder-maintable-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .btn-remove {
+    position: absolute;
+    top: -3px;
+    right: 2px;
+    opacity: 0.4;
+    cursor: pointer;
+    display: none;
+    z-index: 99;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    .btn-remove {
+      display: block;
+    }
+  }
+}
+
+#hot-display-license-info {
+  display: none;
+}
+
+.formsetting-container {
+  position: absolute;
+  top: 0px;
+  right: 0;
+  width: 100%;
+  bottom: 1px;
+  z-index: 1000;
+  height: calc(100vh - @top-height - @actionbar-height - 4px);
+  overflow: auto;
+  .btn-togglewidth{
+    cursor: pointer;
+    height: 22px;
+    line-height: 22px;
+    width: 22px;
+    vertical-align: baseline;
+    &:before{
+      margin-right: 0;
+    }
+  }
+  .btn-closeedit {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    height: 20px;
+    line-height: 20px;
+    width: 26px;
+    text-align: center;
+    opacity: 0.4;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  &:hover:before {
+    content: '';
+    width: 6px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: -6px;
+  }
+  .formTop {
+    font-size: 15px;
+    line-height: 50px;
+    padding: 0 16px;
+  }
+  .formContain {
+    overflow: auto;
+    height: calc(100% - 50px);
+    padding: 0px 16px 10px 16px;
+    .formsetting-block {
+      padding-bottom: 10px;
+      .formsetting-label {
+        line-height: 2.4;
+        display: inline-block;
+        &.label-switch {
+          padding-right: 50px;
+          width: 100%;
+          display: inline-block;
+          position: relative;
+          .label-right {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            .text-tip-active {
+              padding: 0px 5px;
+              margin: 0px 3px;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+      &.label-left {
+        padding-left: 82px;
+        position: relative;
+        .formsetting-label {
+          position: absolute;
+          width: 80px;
+          left: 0;
+          top: 8px;
+          line-height: 30px;
+          text-align: center;
+        }
+      }
+      .formsetting-text.bg-block {
+        padding: 8px;
+        border-radius: 6px;
+      }
+    }
+    .darken-block {
+      padding: 14px 12px;
+    }
+  }
+  .ivu-radio-group,
+  .ivu-checkbox-group {
+    &.col-3 {
+      width: 100%;
+      > .ivu-radio-wrapper,
+      .ivu-checkbox-wrapper {
+        width: 33.3%;
+        margin-right: 0;
+      }
+    }
+    &.col-2 {
+      width: 100%;
+      > .ivu-radio-wrapper,
+      .ivu-checkbox-wrapper {
+        width: 50%;
+        margin-right: 0;
+      }
+    }
+    &.col-4 {
+      width: 100%;
+      > .ivu-radio-wrapper,
+      .ivu-checkbox-wrapper {
+        width: 24%;
+        margin-right: 0;
+      }
+    }
+    &.more {
+      > .ivu-radio-wrapper,
+      .ivu-checkbox-wrapper {
+        padding: 4px 0px;
+      }
+    }
+  }
+}
+.authority-select .ivu-select-dropdown {
+  max-width: 100%;
+}
+.cellComponent{
+  .nohightlight{
+    opacity: .4;
+  }
+  .hightlight{
+    opacity: 1;
+  }
+}
+
+.theme(@gray-color, @dividing-color, @op-color, @icon-color, @text-color, @border-color-base, @selected-bg,@block-bg,@title-color,@primary-grey,@disable-color) {
+  .handsontable {
+    th {
+      background: @gray-color;
+      border-color: var(--dividing-color, @dividing-color) !important;
+      border-top-color: transparent !important;
+      border-left-color: transparent !important;
+      vertical-align: middle;
+      color: @text-color;
+      // background-color: @op-color;
+    }
+
+    td {
+      border-color: var(--dividing-color, @dividing-color) !important;
+      background-color: @op-color;
+      color: @title-color;
+    }
+
+  }
+ .editor-table {
+  .handsontable {
+    th {
+      border-top-color: var(--dividing-color, @dividing-color) !important;
+      border-left-color: var(--dividing-color, @dividing-color) !important;
+    }
+
+    td {
+      border-bottom: none;
+    }
+
+  }
+  .ht_clone_left{
+    z-index: 1;
+  }
+  .ht_clone_top{
+    z-index: 2;
+  }
+  .ht_clone_top_left_corner, .ht_clone_bottom_left_corner{
+    z-index: 2;
+  }
+ }
+  .handsontableInput {
+    background: @block-bg;
+    color: @title-color;
+  }
+
+  .sheet-content {
+    position: relative;
+
+    .sheet-top {
+      position: absolute;
+      top: 0px;
+      left: 0;
+      width: 100%;
+      background-color: @gray-color;
+      height: 40px;
+    }
+
+    .sheet-left {
+      position: absolute;
+      top: 0px;
+      left: 0;
+      width: 51px;
+      background-color: @gray-color;
+      height: 100%;
+    }
+  }
+  .ivu-color-picker-color-empty {
+    background-color: @op-color;
+    color: @icon-color;
+  }
+  .htContextMenu table tbody tr td.htDisabled {
+    color: @disable-color;
+    cursor: not-allowed;
+    &:hover{
+      color: @disable-color;
+    }
+  }
+  .htContextMenu table.htCore {
+    border-color: var(--border-color, @border-color-base);
+    td{
+      color: @text-color;
+    }
+   
+  }
+  .htContextMenu table tbody tr td.current.highlist {
+    background-color: @selected-bg;
+  }
+  .handsontable tr {
+    background-color: var(--border-color, @border-color-base);
+  }
+
+  .htContextMenu table tbody tr td.current,
+  .htContextMenu table tbody tr td.zeroclipboard-is-hover {
+    background-color: @selected-bg;
+  }
+  .sheetbuilder-style .sheetbuilder-styleul .sheetbuilder-styleli:not(:last-of-type):after {
+    background-color: var(--dividing-color, @dividing-color);
+  }
+  .component-tr{
+    &.hover{
+      background-color: @primary-grey;
+    }
+  }
+}
+
+html {
+  .theme(@default-gray, @default-dividing, @default-op, @default-icon, @default-text, @default-border, @default-selectbg, @default-blockbg, @default-title,@default-primary-grey,@default-disable);
+
+  &.theme-dark {
+    .theme(@dark-gray, @dark-dividing, @dark-op, @dark-icon, @dark-text, @dark-border, @dark-selectbg, @dark-blockbg, @dark-title,@dark-primary-grey,@dark-disable);
+  }
+}

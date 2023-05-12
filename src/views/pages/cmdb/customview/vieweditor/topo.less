@@ -1,0 +1,198 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@primary-color,
+  @node-stroke,
+  @node-fill,
+  @node-name,
+  @ci-fill,
+  @ci-name,
+  @link-stroke,
+  @anchor-color,
+  @mask-color,
+  @topo-bgcolor,
+  @selected-stroke) {
+  @node-removeIcon: @link-stroke;
+
+  .viewTopo {
+    .linktextbackground {
+      flood-color: @topo-bgcolor;
+    }
+
+    .groupG {
+      .icon {
+        fill: @node-name;
+      }
+      .selected {
+        stroke: @selected-stroke;
+        stroke-width: 4;
+      }
+    }
+
+    .nodeG.ci_node {
+      .shape {
+        fill: @ci-fill;
+        stroke: @node-stroke;
+      }
+
+      .icon {
+        fill: @ci-name;
+      }
+    }
+
+    .nodeG {
+      // 节点的基础样式
+      .select {
+        stroke: @primary-color;
+        fill: fade(@primary-color, 10%);
+      }
+
+      .shape {
+        fill: @node-fill;
+        stroke: @node-stroke;
+      }
+
+      .name {
+        fill: @node-name;
+      }
+
+      .icon {
+        fill: @node-name;
+      }
+
+      .removeBtn {
+        fill: @node-removeIcon;
+      }
+
+      &.pending {
+        .shape {
+          stroke: @node-pending-stroke;
+          fill: @node-pending-fill;
+        }
+
+        .name {
+        }
+
+        .icon {
+          fill: @node-pending-icon;
+        }
+      }
+
+      &.succeed {
+        .shape {
+          stroke: @node-succeed-stroke;
+          fill: @node-succeed-fill;
+        }
+
+        .name {
+        }
+
+        .icon {
+          fill: @node-succeed-icon;
+        }
+      }
+
+      &.running {
+        .shape {
+          stroke: @node-running-stroke;
+          fill: @node-running-fill;
+        }
+
+        .name {
+        }
+
+        .icon {
+          fill: @node-running-icon;
+        }
+
+        .progress {
+          fill: @node-running-progress;
+        }
+      }
+
+      // 特殊节点样式
+      &.start {
+        .shape {
+          fill: @node-stroke;
+          stroke: @node-fill;
+        }
+
+        .name {
+          fill: @node-name;
+        }
+
+        .icon {
+          fill: @node-start-icon;
+        }
+      }
+
+      &.end {
+        .shape {
+          fill: @node-stroke;
+          stroke: @node-fill;
+        }
+
+        .name {
+          fill: @node-name;
+        }
+
+        .icon {
+          fill: @node-end-icon;
+        }
+      }
+    }
+
+    .alignPath {
+      stroke: @link-stroke;
+    }
+
+    .linkG {
+      .name {
+        fill: @node-name;
+      }
+
+      .linkPath {
+        stroke: @link-stroke;
+      }
+
+      .linkRel {
+        stroke: @primary-color;
+      }
+
+      .icon {
+        fill: @link-stroke;
+      }
+
+      .maskPath {
+        stroke: @mask-color;
+      }
+    }
+
+    .linkArrow {
+      path {
+        fill: @link-stroke;
+        stroke: @link-stroke;
+      }
+
+      circle {
+        fill: @link-stroke;
+        stroke: @link-stroke;
+      }
+    }
+    .anchor {
+      fill: @anchor-color;
+      stroke: @primary-color;
+    }
+  
+    .assistAnchor {
+      fill: @primary-color;
+    }
+  }
+}
+
+html {
+  .theme(@default-primary-color, @default-dividing, @default-blockbg, @default-text, @default-bg-grey, @default-title, @default-icon, @default-blockbg, @default-background, @default-op, @default-primary-color);
+
+  &.theme-dark {
+    .theme(@dark-primary-color, @dark-dividing, @dark-blockbg, @dark-text, @dark-bg-grey, @dark-title, @dark-icon, @dark-bg-grey, @dark-background, @default-invert-bg, @dark-primary-active-color);
+  }
+}

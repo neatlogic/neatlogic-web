@@ -1,0 +1,49 @@
+.services-catalog-box {
+  .path-box {
+    display: flex;
+    justify-content: space-between;
+  }
+  .services-content-box {
+      position: relative;
+        .left-arrow-box {
+          position: absolute;
+          top: 23px;
+          left: -16px;
+          width: 12px;
+          height: 32px;
+          cursor: pointer;
+        }
+        .right-arrow-box {
+          position: absolute;
+          top: 23px;
+          right: -16px;
+          cursor: pointer;
+          width: 12px;
+          height: 32px;
+        }
+     .list {
+        display: flex;
+        align-items: center;
+        width: 226px;
+        height: 74px;
+        max-height: 74px;
+        cursor: pointer;
+        .active {
+          border: 1px solid;
+        }
+        .logo {
+          .logo-icon {
+            font-size: 23px;
+          }
+        }
+    }
+  }
+}
+.services-catalog-tooltip-wrap {
+  /deep/ &.ivu-tooltip {
+    width: 100%;
+    .description-text {
+      width: 100%;
+    }
+  }
+}
