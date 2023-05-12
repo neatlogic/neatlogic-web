@@ -1,4 +1,4 @@
-const { Select } = require('techsure-ui/iview/index.js');
+const { Select } = require('neatlogic-ui/iview/index.js');
 /**topo节点的基础类，所有节点class都要extends此类**/
 (function(global, factory) {
   factory((global.NodeBase = global.NodeBase || {}), global);

@@ -1,7 +1,7 @@
 // 全局通用类的引入，包括：全局样式、全局组件等
 import Vue from 'vue';
-import 'techsure-ui/iview/styles/index.less';
-import ViewUI from 'techsure-ui/iview/index.js';
+import 'neatlogic-ui/iview/styles/index.less';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import utils from '@/resources/assets/js/util.js';
 import NoData from '@/resources/components/nodata/NoData.js';
 import Loading from '@/resources/components/loading/Loading.js';

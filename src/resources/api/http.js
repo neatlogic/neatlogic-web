@@ -16,7 +16,7 @@
 
 import Vue from 'vue';
 import axios from 'axios';
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import utils from '@/resources/assets/js/util';
 import {$t} from '@/resources/init.js';
 

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'techsure-ui/iview/styles/index.less';
-import ViewUI from 'techsure-ui/iview/index.js';
+import 'neatlogic-ui/iview/styles/index.less';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import Login from './Login.vue';
 import axios from 'axios';
 import VueI18n from 'vue-i18n';

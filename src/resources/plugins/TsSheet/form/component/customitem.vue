@@ -22,7 +22,7 @@
 </template>
 <script>
 import Vue from 'vue';
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormCheckbox from '@/resources/plugins/TsForm/TsFormCheckbox';
 import TsFormRadio from '@/resources/plugins/TsForm/TsFormRadio';

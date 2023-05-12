@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'techsure-ui/iview/styles/index.less';
-import ViewUI from 'techsure-ui/iview/index.js';
+import 'neatlogic-ui/iview/styles/index.less';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import utils from '@/resources/assets/js/util.js';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';

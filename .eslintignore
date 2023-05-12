@@ -10,4 +10,4 @@ net.js
 node_modules/*
 public/*
 src/views/pages/framework/integration/freemarker-help.vue
-node_modules/techsure-ui
+node_modules/neatlogic-ui

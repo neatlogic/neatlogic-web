@@ -1,5 +1,5 @@
 import axios from '@/resources/api/http.js';
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 export default {
   data: function() {
     return {

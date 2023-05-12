@@ -23,7 +23,7 @@ npm run build
 ```
 npm update 依赖包名字
 
-eg:npm update techsure-ui
+eg:npm update neatlogic-ui
 ```
 ## 自动纠正文件里不符合eslint的语法
 ```

@@ -24,7 +24,7 @@ npm run build
 ```
 npm update dependent package name
 
-eg: npm update techsure-ui
+eg: npm update neatlogic-ui
 ```
 ## Automatically correct syntax that does not conform to eslint in the file
 ```

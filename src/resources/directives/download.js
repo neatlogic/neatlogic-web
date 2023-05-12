@@ -1,6 +1,6 @@
 import axios from '@/resources/api/http.js';
 import qs from 'qs';
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 const download = {
   bind(el, binding) {
     if (!binding.arg && binding.value) {

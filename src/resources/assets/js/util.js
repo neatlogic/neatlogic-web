@@ -27,7 +27,7 @@ getComposedPath(e)                           // 返回事件流中元素的事�
 */
 import _ from 'lodash';
 import store from '@/resources/store';
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import validtorJson from '@/resources/plugins/TsForm/TsValidtor';
 import { $t } from '@/resources/init.js';
 export default {

@@ -1,4 +1,4 @@
-import ViewUI from 'techsure-ui/iview/index.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import {$t} from '@/resources/init.js';
 (function(global, factory) {
   factory((global.End = global.End || {}), global);

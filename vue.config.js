@@ -157,7 +157,7 @@ module.exports = {
     //       tsUI: {
     //         name: 'chunk-tsUI',
     //         priority: 21, 
-    //         test: /[\\/]node_modules[\\/]_?techsure-ui(.*)/ 
+    //         test: /[\\/]node_modules[\\/]_?neatlogic-ui(.*)/ 
     //       },
     //       lodash: {
     //         name: 'chunk-lodash',
