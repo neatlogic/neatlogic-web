@@ -5,7 +5,7 @@
         :is="attrConfig.type + 'attr'"
         v-if="!attrConfig.isPrivate"
         ref="component"
-        :valueList="valueList || valueListLocal"
+        :valueList="valueListLocal"
         :attrConfig="attrConfig"
       ></component>
       <component
@@ -13,13 +13,13 @@
         v-else
         ref="component"
         :issueData="issueData"
-        :valueList="valueList"
+        :valueList="valueListLocal"
         :attrConfig="attrConfig"
       ></component>
     </div>
     <div v-else>
-      <div v-if="valueList && valueList.length > 0">
-        <span v-for="(v, index) in valueList" :key="index" v-html="format(v)"></span>
+      <div v-if="valueListLocal && valueListLocal.length > 0">
+        <span v-for="(v, index) in valueListLocal" :key="index" v-html="format(v)"></span>
       </div>
     </div>
   </div>
@@ -49,6 +49,8 @@ export default {
       if (attrData) {
         this.valueListLocal = attrData.valueList;
       }
+    } else if (this.valueList) {
+      this.valueListLocal = this.valueList;
     }
   },
   beforeMount() {},
