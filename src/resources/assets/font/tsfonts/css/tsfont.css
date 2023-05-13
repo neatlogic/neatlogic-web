@@ -2,12 +2,12 @@
 
 @font-face {
   font-family: 'tsfont';
-  src: url('../font/tsfont-fa9a010079.eot');
-  src: url('../font/tsfont-fa9a010079.eot?#iefix') format('embedded-opentype'),
-       url('../font/tsfont-fa9a010079.woff2') format('woff2'),
-       url('../font/tsfont-fa9a010079.woff') format('woff'),
-       url('../font/tsfont-fa9a010079.ttf') format('truetype'),
-       url('../font/tsfont-fa9a010079.svg?#tsfont') format('svg');
+  src: url('../font/tsfont-ec5372585a.eot');
+  src: url('../font/tsfont-ec5372585a.eot?#iefix') format('embedded-opentype'),
+       url('../font/tsfont-ec5372585a.woff2') format('woff2'),
+       url('../font/tsfont-ec5372585a.woff') format('woff'),
+       url('../font/tsfont-ec5372585a.ttf') format('truetype'),
+       url('../font/tsfont-ec5372585a.svg?#tsfont') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -18,7 +18,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-[class^="tsfont-"]:before,
+[class^="tsfont-"]:before, 
 [class*=" tsfont-"]:before,
 .tsfont:before {
   font-family: "tsfont" !important;
@@ -577,3 +577,4 @@
 .tsfont-trigger:before { content: '\ea15'; } /* '' */
 .tsfont-webhook:before { content: '\ea16'; } /* '' */
 .tsfont-width:before { content: '\ea17'; } /* '' */
+.tsfont-neatlogic:before { content: '\ea18'; } /* '' */
