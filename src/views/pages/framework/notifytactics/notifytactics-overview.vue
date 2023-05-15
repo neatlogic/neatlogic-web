@@ -263,10 +263,16 @@ export default {
               _this.handlerConfig = handlerList[0];
               if (this.handlerConfig.children && this.handlerConfig.children.length > 0) {
                 this.handler = this.handlerConfig.children[0].value;
-                this.defaultPolicyId = this.handlerConfig.children[0].defaultNotifyPolicyId;
-                this.defaultPolicyName = this.handlerConfig.children[0].defaultNotifyPolicyName;
-                this.defaultPolicyFormSelectValue = this.defaultPolicyId;
               }
+            }
+            if (_this.handler && _this.handlerConfig && _this.handlerConfig.children && _this.handlerConfig.children.length > 0) {
+              _this.handlerConfig.children.forEach(child => {
+                if (child.value == _this.handler) {
+                  _this.defaultPolicyId = child.defaultNotifyPolicyId;
+                  _this.defaultPolicyName = child.defaultNotifyPolicyName;
+                  _this.defaultPolicyFormSelectValue = _this.defaultPolicyId;
+                }
+              });
             }
             resolve(handlerList);
           }
