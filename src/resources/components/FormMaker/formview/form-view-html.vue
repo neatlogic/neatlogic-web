@@ -226,8 +226,8 @@ export default {
         }
 
         //栅格布局
-        .width(@per){
-          width: percentage(@per/12);
+        .width(@per){ 
+          width: percentage((@per/12));
         }
         .row:after, .container-fluid:after{
             visibility: hidden;

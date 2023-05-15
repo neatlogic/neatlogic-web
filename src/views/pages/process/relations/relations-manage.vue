@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus" @click="addRelations">{{ this.$t('page.relation') }}</span>
+        <span class="text-action tsfont-plus" @click="addRelations">{{ $t('page.relation') }}</span>
       </template>
       <template slot="topRight">
         <InputSearcher

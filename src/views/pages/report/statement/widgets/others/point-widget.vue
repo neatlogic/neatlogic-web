@@ -5,20 +5,18 @@
       ref="particle"
       :particlesInit="particlesInit"
       :particlesLoaded="particlesLoaded"
-      :style="{width:width+'px',height:height+'px'}"
+      :style="{ width: width + 'px', height: height + 'px' }"
       :options="options"
     />
   </div>
 </template>
 <script>
-
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
-    width: {type: Number}, //真实宽度，减去外层的边距
-    height: {type: Number}, //真实高度，减去外层的边距
+    width: { type: Number }, //真实宽度，减去外层的边距
+    height: { type: Number }, //真实高度，减去外层的边距
     widget: { type: Object }, //组件配置
     widgetComponent: { type: Object } //组件数据
   },
