@@ -450,7 +450,12 @@
     "relateknowledge": "Related knowledge",
     "relknowlege": "Associated Knowledge Base",
     "reportinghistory": "Reporting History",
-    "automaticprocessing": "Automatic processing"
+    "formcommonitem": "Form Common Components",
+    "formtableitem": "Form Table Component",
+    "automaticprocessing": "Automatic processing",
+    "recreatenewjob": "Fallback New Job",
+    "jobpolicy": "Job strategy",
+    "singlecreatejob": "Single Create Job"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
