@@ -61,6 +61,9 @@ export default {
     init() {
       if (this.list) {
         this.configList = this.$utils.deepClone(this.list);
+        this.configList.forEach(item => {
+          this.$set(item, 'isShow', true);
+        });
       }
     },
     addAutoexecList() {
@@ -85,8 +88,9 @@ export default {
       }
       let autoexecConfigValidList = this.$refs.autoexecConfig;
       if (autoexecConfigValidList && autoexecConfigValidList.length > 0) {
-        autoexecConfigValidList.forEach(v => {
+        autoexecConfigValidList.forEach((v, index) => {
           if (!v.valid()) {
+            this.$set(this.configList[index], 'isShow', true);
             this.isValid = false;
           }
         });
@@ -94,6 +98,9 @@ export default {
       if (!this.isValid) {
         return;
       }
+      this.configList.forEach(c => {
+        this.$delete(c, 'isShow');
+      });
       this.$emit('close', this.configList);
     },
     close() {
@@ -114,11 +121,11 @@ export default {
   .autoexec-list {
     &:hover {
       .action-btn {
-        display: block;
+        opacity: 1;
       }
     }
     .action-btn {
-      display: none;
+      opacity: 0;
     }
     .autoexec-title {
       display: flex;
