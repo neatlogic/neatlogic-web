@@ -61,6 +61,10 @@ if (SSOTICKETKEY && SSOTICKETVALUE) {
   instance.defaults.headers.post['AuthValue'] = SSOTICKETVALUE; //post请求头
 }
 
+if (SSOAUTHVALUE) {
+  instance.defaults.headers.post['AuthPlugin'] = SSOAUTHVALUE; 
+}
+
 //sessionStorage.setItem('neatlogic_authorization'
 /**
  * 跳转登录页

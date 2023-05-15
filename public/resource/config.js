@@ -14,6 +14,8 @@ var MENULIST = [];
 var MENUTYPE = {};
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
+var SSOAUTHKEY = '';//单点登录插件名key值
+var SSOAUTHVALUE ='';//单点登录插件名value值
 
 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
 var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
@@ -64,10 +66,28 @@ function removeCookie(name) {
 function getDirectUrl() {
   // 获取页面重定向地址
   var xhr = new XMLHttpRequest();
+  var neatlogic_auth_plugin = getCookie('neatlogic_auth_plugin');
   xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
+  //浏览器URL显示传递参数
   if(SSOTICKETKEY && SSOTICKETVALUE) {
     xhr.setRequestHeader('AuthType', SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
+  }
+  //从其他已登录的系统跳转过来，浏览器URL不带任何参数的时候
+  if(!SSOTICKETVALUE){
+    SSOTICKETVALUE = getCookie(SSOTICKETKEY);
+    xhr.setRequestHeader('AuthType', SSOTICKETKEY);
+    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
+  }
+  //浏览器URL显示传递参数
+  if(SSOAUTHVALUE) {
+    xhr.setRequestHeader('AuthPlugin', SSOAUTHVALUE);
+    removeCookie('neatlogic_auth_plugin');
+    setCookie('neatlogic_auth_plugin', SSOAUTHVALUE,1 );
+  }
+  //当sso跳转回来的时候，不带参数用cookie获取header
+  if(neatlogic_auth_plugin){
+    xhr.setRequestHeader('AuthPlugin', neatlogic_auth_plugin);
   }
   xhr.send();
   if(xhr.readyState == 4) {
@@ -94,11 +114,18 @@ function getSsoTokenKey() {
     if(xhr.status == 200){
       var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
       if(responseText && responseText.Status == 'OK' && responseText.ssoTicketKey) {
-        SSOTICKETKEY = responseText.ssoTicketKey;
+        SSOTICKETKEY = responseText.ssoTicketKey || '';
         if(SSOTICKETKEY && currentUrl && currentUrl.split(SSOTICKETKEY + '=')) {
           var token = currentUrl.split(SSOTICKETKEY + '=')[1];
           if (token) {
             SSOTICKETVALUE = token.split('&')[0]; //post请求头
+          }
+        }
+        SSOAUTHKEY = responseText.ssoAuthKey || '';
+        if( SSOAUTHKEY && currentUrl && currentUrl.split(SSOAUTHKEY + '=')) {
+          var pluginName = currentUrl.split(SSOAUTHKEY + '=')[1];
+          if (pluginName) {
+            SSOAUTHVALUE = pluginName.split('&')[0]; 
           }
         }
       } else if(responseText && responseText.Status != 'OK') {
