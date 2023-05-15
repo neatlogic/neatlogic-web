@@ -831,7 +831,7 @@ export default {
         if ((this.rightsettingVue.$refs.RightSetting && this.rightsettingVue.$refs.RightSetting.valid()) || this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'ts-complete');
           this.$set(priorityConfig, 'iconColor', '#81D655');
-          this.$set(priorityConfig, 'msg', this.$t('message.process.success', {target: this.$t('page.priority')}),);
+          this.$set(priorityConfig, 'msg', this.$t('message.process.success', {target: this.$t('page.priority')}));
           this.$set(priorityConfig, 'type', 'success');
         } else if (!this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'tsfont-close-o');

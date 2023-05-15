@@ -2,7 +2,7 @@
   <div>
     <div class="mb-md grid">
       <div>
-        <span>
+        <span> 
           <a
             v-if="canAppend"
             href="javascript:void(0)"
