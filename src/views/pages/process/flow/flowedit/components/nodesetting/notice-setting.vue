@@ -4,14 +4,12 @@
       <div class="control-setting">
         <span class="label">
           <span>{{ $t('page.noticesetting') }}</span>
+          <span class="pl-xs text-href">{{ $t('page.personalizationsettings') }}</span>
         </span>
         <span class="control-btn">
           <span
-            v-if="hasGlobal && nodeConfig"
-            class="tip"
-            :class="isActive == 1?'text-tip':'text-href'"
-            @click="gotoNodeSetting(isActive == 1,nodeConfig.handler,'inform')"
-          >{{ isActive==1?$t('page.custom'):$t('page.referenceglobal') }}</span>
+            class="tip text-tip"
+          >{{ isActive ==1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
           <i-switch
             v-model="isActive"
             :true-value="1"

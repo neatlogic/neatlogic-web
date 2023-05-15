@@ -882,5 +882,6 @@
   "autoexec": "自动化",
   "buttontype": "按钮类型",
   "background": "背景",
-  "clicksetting": "点击设置"
+  "clicksetting": "点击设置",
+  "personalizationsettings": "个性设置"
 }
