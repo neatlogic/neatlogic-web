@@ -325,6 +325,10 @@ export default {
                   }
                 }
               }
+              if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
+                // 拿到隐藏+必填表单uuid
+                this.$emit('updateHiddenComponentList', newVal, this.formItem.uuid);
+              }
               this.$forceUpdate();
             },
             { deep: true, immediate: true }
