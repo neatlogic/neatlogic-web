@@ -244,7 +244,7 @@
                     isDisableCommet = val
                   }"
                 >
-                  <template v-slot:autoexec>
+                  <template v-if="handlerStepInfo && handlerStepInfo.jobList" v-slot:autoexec>
                     <!-- 自动化作业 -->
                     <JobDetail :handlerStepInfo="handlerStepInfo"></JobDetail>
                   </template>
