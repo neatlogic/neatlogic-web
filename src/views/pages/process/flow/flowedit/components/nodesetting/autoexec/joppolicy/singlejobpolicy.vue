@@ -145,7 +145,7 @@
       </TsRow>
     </div>
     <div v-if="autoexecConfig.runtimeParamList.length > 0">
-      <div class="text-title pb-sm">{{ $t('term.process.jobparamsvalue') }}</div>
+      <div class="pb-sm">{{ $t('term.process.jobparamsvalue') }}</div>
       <div class="param-list">
         <TsRow
           v-for="(r,rindex) in autoexecConfig.runtimeParamList"
@@ -154,7 +154,7 @@
           class="item-list pb-sm"
         >
           <Col span="4">
-            <div class="overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
+            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
           </Col>
           <Col span="6">
             <TsFormSelect

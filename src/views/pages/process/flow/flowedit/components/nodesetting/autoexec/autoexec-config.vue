@@ -210,7 +210,7 @@ export default {
         isValid = this.$refs.jobPolicyConfig.valid() && isValid;
         if (this.autoexecConfig.createJobPolicy === 'batch') {
           this.isValidTable = this.$refs.jobPolicyConfig.validTable();
-          this.isValidTable = false;
+          isValid = this.isValidTable && isValid;
         }
       }
       return isValid;

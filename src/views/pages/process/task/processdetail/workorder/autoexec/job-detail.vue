@@ -28,7 +28,7 @@
         class="tab-content"
         tab="job"
       >
-        <div class="job-detail pt-nm" @click="gotoJopDetail()">
+        <div class="job-detail pt-nm" @click="gotoJopDetail(job)">
           <div v-if="job.phaseList && job.phaseList.length>0" class="step-List">
             <div
               v-for="(item,index) in getPhaseList(job.phaseList)"
@@ -93,8 +93,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    gotoJopDetail() { //查看作业
-      window.open(HOME + '/autoexec.html#/job-detail?id=' + this.handlerStepInfo.id, '_blank');
+    gotoJopDetail(job) { //查看作业
+      window.open(HOME + '/autoexec.html#/job-detail?id=' + job.id, '_blank');
     }
   },
   computed: {

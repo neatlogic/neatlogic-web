@@ -79,7 +79,7 @@
           <div v-show="item.expand">
             <div :class="item.isView != 1 ? 'hide-step' : ''">
               <div v-show="!item.isShow" class="step-comment" :class="!isTabShow(item) ? 'mt-md' : '' ">
-                <div v-if="item.handler == 'autoexec' && item.handlerStepInfo" class="sub-description border-color padding">
+                <div v-if="item.handler == 'autoexec' && item.handlerStepInfo" class="sub-description border-color">
                   <JobDetail :handlerStepInfo="item.handlerStepInfo"></JobDetail>
                 </div>
                 <div v-else class="description step-auditList">
