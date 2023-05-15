@@ -101,6 +101,7 @@
                     <Tooltip
                       max-width="660"
                       theme="light"
+                      placement="bottom-end"
                       transfer
                       class="formTableComponent-tip"
                     >
