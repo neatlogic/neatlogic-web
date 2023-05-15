@@ -1052,6 +1052,7 @@ export default {
     handleFixedPage(e, tabValue, labelName) {
       // 固定页面
       e.stopPropagation(); // 阻止冒泡，点击固定页面图标时，不触发tab的onClick事件，阻止tabValue值被改变
+      this.loadingShow = true;
       this.fixedPageList.push({
         tabValue: tabValue,
         label: labelName
@@ -1059,6 +1060,12 @@ export default {
       if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
         this.fixedPageTab[tabValue] = false;
       }
+      this.$nextTick(() => {
+        if (this.tabValue == tabValue) {
+          this.tabValue = ''; // 当前选中tab是高亮tab时，固定页面后，设置默认选中第一个tab
+        }
+        this.loadingShow = false; 
+      });
     },
     cancelFixedPage(tabValue) {
       // 取消固定页面
