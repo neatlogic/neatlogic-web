@@ -212,7 +212,7 @@ export default {
                 { class: 'pb-md'},
                 res.failureReasonList.map(item => {
                   return h('li', {}, item || '');
-                }),
+                })
               ),
               h('div', {}, '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。')
             ]);

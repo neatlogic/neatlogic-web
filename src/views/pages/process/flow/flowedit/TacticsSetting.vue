@@ -1159,7 +1159,7 @@ export default {
       } else {
         let addUuid = this.$utils.setUuid();
         this.slaData.uuid = addUuid;
-        this.slaData.processStepUuidList = this.slaData.processStepUuidList;
+        //this.slaData.processStepUuidList = this.slaData.processStepUuidList;
         this.slaList.push(this.slaData);
       }
       // this.$Notice.success({

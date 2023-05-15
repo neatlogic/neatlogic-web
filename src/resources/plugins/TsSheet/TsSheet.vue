@@ -317,6 +317,7 @@
                     }
                   "
                   @delete="deleteFormItem(cell)"
+                  @updateHiddenComponentList="updateHiddenComponentList"
                 ></FormItem>
               </div>
               <div v-if="!cell._isHandler && cell.border">
@@ -936,6 +937,8 @@ export default {
                 }
               });
             }
+            // 根据隐藏行，获取隐藏组件
+            this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
           },
           { deep: true, immediate: true }
         );
@@ -1540,6 +1543,28 @@ export default {
         });
       }
       return hiddenComponentList;
+    },
+    getHiddenComponentsByHideCondition() {
+      // 获取隐藏必填组件
+      let hiddenComponentList = [];
+      if (this.config.tableList && this.config.tableList.length > 0) {
+        this.config.tableList.forEach(item => {
+          if (item.component && item.component.hasValue && item.component.config) {
+            if ((this.config.hiddenRowList.includes(item.row)) || (item.component.config.isHide && item.component.config.isRequired)) {
+              hiddenComponentList.push(item.component.uuid);
+            }
+          }
+        });
+      }
+      return hiddenComponentList;
+    },
+    updateHiddenComponentList(formData, uuid) {
+      // 过滤设置联动规则，拿到必填+隐藏的表单，用于判断是否高亮【内容详情tab】
+      let hiddenComponentUuidList = this.getHiddenComponentsByHideCondition();
+      if (uuid) {
+        hiddenComponentUuidList.push(uuid);
+      }
+      this.$emit('updateHiddenComponentList', formData, hiddenComponentUuidList);
     },
     windowKeypress(event) {
       if (event.key == 'c' && event.ctrlKey) {

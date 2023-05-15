@@ -94,14 +94,16 @@ module.exports = {
   css: {
     loaderOptions: {
       less: {
-        javascriptEnabled: true,
-        globalVars: {
-          'top-height': '50px',
-          'actionbar-height': '50px',
-          'space-normal': '16px',
-          'space-md': '12px',
-          'space-sm': '10px',
-          'space-icon': '3px',
+        lessOptions: {
+          javascriptEnabled: true,
+          globalVars: {
+            'top-height': '50px',
+            'actionbar-height': '50px',
+            'space-normal': '16px',
+            'space-md': '12px',
+            'space-sm': '10px',
+            'space-icon': '3px'
+          }
         }
       }
     }
@@ -173,8 +175,8 @@ module.exports = {
     open: true,
     port: '8081',
     https: false,
-    hotOnly: true,
-    disableHostCheck: true,
+    hot: true,
+    //disableHostCheck: true,
     proxy: {
       '/([^/]+)/anonymous/api/': {
         target: urlPrefix,

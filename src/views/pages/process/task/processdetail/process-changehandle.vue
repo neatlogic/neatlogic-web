@@ -232,6 +232,7 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
+                  :hasPendingTasks="hasPendingTasks"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
@@ -865,6 +866,14 @@ export default {
         moreAction = true;
       }
       return moreAction;
+    },
+    hasPendingTasks() {
+      // 变更详情是否有待处理任务
+      let hasTask = false;
+      if (!this.$utils.isEmpty(this.changeStepList) && this.changeStepList.find((item) => item.status == 'pending')) {
+        hasTask = true;
+      }
+      return hasTask;
     }
   },
 
