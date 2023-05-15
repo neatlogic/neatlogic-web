@@ -1,4 +1,4 @@
 {
-  "tenantName": "develop",
-  "urlPrefix": "http://localhost:8080"
+  "tenantName": "demo",
+  "urlPrefix": "http://192.168.2.60:8282"
 }
