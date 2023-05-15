@@ -37,7 +37,7 @@
     "location": "0.0.1",
     "lodash": "^4.17.20",
     "navigator": "^1.0.1",
-    "neatlogic-ui": "^1.0.0",
+    "neatlogic-ui": "^1.0.1",
     "particles.vue": "^2.42.2",
     "postcss-loader": "^3.0.0",
     "qs": "^6.9.1",
