@@ -3214,5 +3214,11 @@
     "css": "tsfont-width",
     "hexCodepoint": "0xea17",
     "codepoint": 59927
+  },
+  {
+    "name": "neatlogic",
+    "css": "tsfont-neatlogic",
+    "hexCodepoint": "0xea18",
+    "codepoint": 59928
   }
 ]

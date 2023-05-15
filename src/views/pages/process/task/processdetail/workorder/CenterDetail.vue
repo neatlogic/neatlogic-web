@@ -65,6 +65,7 @@
                   :readonly="!actionConfig.save || !formEdit"
                   class="pl-sm pr-sm"
                   @emit="formSheetEmitData"
+                  @updateHiddenComponentList="updateHiddenComponentList"
                 ></TsSheet>
               </template>
               <template v-else>
@@ -506,7 +507,8 @@ export default {
       },
       stepSortIcon: false, // 步骤排序(true正序，false倒序)
       taskConfigList: [], //子任务策略
-      autoexechandlerStepInfo: null // 自动化信息
+      autoexechandlerStepInfo: null, // 自动化信息
+      lastFormConfig: null
     };
   },
   created() {
@@ -1182,6 +1184,13 @@ export default {
     },
     showRelationDetail(tranferreport, processTaskRelationCount) {
       return tranferreport || processTaskRelationCount;
+    },
+    updateHiddenComponentList(formValue, hidecomponentList) {
+      // 拿到表单实时更新的值
+      this.lastFormConfig = {
+        formValue: formValue,
+        hidecomponentList: hidecomponentList
+      };
     }
   },
   computed: {
@@ -1248,6 +1257,40 @@ export default {
     hasForm() {
       // 流程是否配置表单，无表单不显示内容详情tab
       return !!((this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)));
+    },
+    hasFormRequiredTask() {
+      /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】 
+          拿到表单所有必填的组件，过滤掉被隐藏必填的组件，并且必填字段为空时，需要高亮【内容详情tab】
+      */
+      let hasFormRequired = false;
+      let allRequiredComponentUuidList = []; // 拿到所有必填表单组件的uuid
+      let formValue = (this.lastFormConfig && this.lastFormConfig.formValue) || '';
+      let requiredFormValue = {};
+      let hidecomponentList = (this.lastFormConfig && this.lastFormConfig.hidecomponentList) || []; // 被隐藏必填组件列表
+      if (!this.$utils.isEmpty(this.formConfig) && !this.$utils.isEmpty(this.formConfig.tableList)) {
+        this.formConfig.tableList.forEach((item) => {
+          if (item && item.component && item.component.uuid && item.component.config && item.component.config.isRequired) {
+            if (this.$utils.isEmpty(hidecomponentList) || (!this.$utils.isEmpty(hidecomponentList) && !hidecomponentList.includes(item.component.uuid))) {
+              allRequiredComponentUuidList.push(item.component.uuid); // 拿到显示必填组件uuid列表
+            }
+          }
+        });
+        // 拿到必填表单字段的值
+        for (let key in formValue) {
+          if (key && allRequiredComponentUuidList.includes(key)) {
+            requiredFormValue[key] = formValue[key];
+          }
+        }
+        // 过滤表单必填字段，但为空的值
+        if (!this.$utils.isEmpty(allRequiredComponentUuidList)) {
+          for (let key of allRequiredComponentUuidList) {
+            if (!this.$utils.isEmpty(requiredFormValue) && (this.$utils.isEmpty(requiredFormValue[key]))) {
+              hasFormRequired = true;
+            }
+          }
+        }
+      }
+      return hasFormRequired;
     }
   },
   watch: {

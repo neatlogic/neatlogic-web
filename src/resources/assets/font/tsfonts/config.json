@@ -8,12 +8,12 @@
     "descent": -150,
     "weight": 400
   },
-  "output": "D:\\techsurePro\\neatlogic-web-icon\\build",
+  "output": "/Users/everan/work/techsure-work/codedriver-web-icon/build",
   "hinting": false,
   "meta": {
     "css_prefix_text": "tsfont-",
     "columns": 3,
-    "filename_hash": "-fa9a010079",
+    "filename_hash": "-ec5372585a",
     "css_use_suffix": false
   },
   "glyphs": [
@@ -4304,6 +4304,14 @@
       "width": 1000,
       "d": "M967 694c13 0 24-11 24-24v-640c0-13-11-24-24-24h-934c-14 0-25 11-25 24v640c0 13 11 24 25 24h934z m-74-98h-787v-492h787v492z m-187-134c2 0 5-1 6-2l123-102c4-4 5-10 1-14 0-1-1-1-1-2l-123-101c-4-4-10-3-14 1-1 2-2 4-2 6v53h-393v-53c0-1 0-3-1-4l-1-2c-4-4-10-5-14-1l-122 101c-5 4-5 10-2 14 1 1 1 1 2 2l122 102c4 3 10 2 14-2 1-2 2-4 2-6v-53h393v53c0 5 5 10 10 10z",
       "segments": 41
+    },
+    {
+      "src": "neatlogic.svg",
+      "code": 59928,
+      "css": "neatlogic",
+      "width": 1000,
+      "d": "M23 759c0-36 73-85 286-200 160-86 314-154 352-154h66v398h-71c-68 0-70-2-70-117 0-63-7-117-16-117-12 0-106 54-214 117-211 127-333 152-333 73z m0-378v-211h71c65 0 68 5 75 127l7 126 211-126c232-138 349-164 335-73-5 40-73 87-300 209-162 87-316 159-345 159-51 0-54-7-54-211z",
+      "segments": 22
     }
   ],
   "badGlyphs": []
