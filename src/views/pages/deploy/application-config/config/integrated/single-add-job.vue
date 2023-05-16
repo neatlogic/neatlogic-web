@@ -80,7 +80,7 @@
               >
                 <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.envName }}</div>
                 <div slot="content">
-                  <div>{{ this.$t('term.deploy.notenvauth', {target: item.envName}) }}</div>
+                  <div>{{ $t('term.deploy.notenvauth', {target: item.envName}) }}</div>
                 </div>
               </Tooltip>
             </Col>

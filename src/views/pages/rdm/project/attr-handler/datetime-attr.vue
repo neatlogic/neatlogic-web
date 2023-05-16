@@ -7,7 +7,7 @@
       :value="valueLocal"
       :readonly="readonly"
       type="datetime"
-      format="yyyy-MM-dd HH:mm:ss"
+      :format="format"
       :validateList="validateList"
       @change="changeValue"
     ></TsFormDatePicker>
@@ -18,8 +18,7 @@ import { AttrBase } from './base-attr.js';
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
   },
   extends: AttrBase,
   props: {},
@@ -27,8 +26,7 @@ export default {
     return {};
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -49,12 +47,7 @@ export default {
       const hour = d.getHours();
       const min = d.getMinutes();
       const sec = d.getSeconds();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
-        (day < 10 ? '0' + day : day) + ' ' + 
-        (hour < 10 ? '0' + hour : hour) + ':' + 
-        (min < 10 ? '0' + min : min) + ':' + 
-        (sec < 10 ? '0' + sec : sec);
+      return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day) + ' ' + (hour < 10 ? '0' + hour : hour) + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
     },
     changeValue(val) {
       if (val) {
@@ -79,10 +72,12 @@ export default {
         return this.valueList[0];
       }
       return null;
+    },
+    format() {
+      return this.attrConfig?.config?.format || 'yyyy-MM-dd HH:mm:ss';
     }
   },
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

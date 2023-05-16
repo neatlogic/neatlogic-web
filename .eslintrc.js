@@ -14,19 +14,29 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 0,
+    'vue/multi-word-component-names': 'off',
+    'vue/no-mutating-props': 'off',
+    'no-prototype-builtins': 'off',
+    'vue/valid-next-tick': 'off',
+    'vue/require-valid-default-prop': 'off',
+    'vue/no-useless-template-attributes': 'off',
+    'vue/no-side-effects-in-computed-properties': 'off',
+    'no-useless-catch': 'off',
+    'vue/v-slot-style': 'off',
+    'vue/no-lone-template': 'off',
+    'vue/one-component-per-file': 'off',
     'vue/max-attributes-per-line': [
       2,
       {
-        singleline: 3,//100
+        singleline: 3, //100
         multiline: {
-          max: 1,//80
-          allowFirstLine: false
+          max: 1//80
+          //allowFirstLine: false
         }
       }
     ],
-    'indent': ['warn', 2],
     'vue/html-self-closing': 'off',
-    'vue/no-parsing-error': [2, { "x-invalid-end-tag": false }],
+    'vue/no-parsing-error': [2, { 'x-invalid-end-tag': false }],
     'vue/require-default-prop': 'off',
     'vue/mustache-interpolation-spacing': ['error', 'always'],
     'vue/attribute-hyphenation': 'off',
