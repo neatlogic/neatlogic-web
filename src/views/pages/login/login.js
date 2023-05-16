@@ -22,7 +22,6 @@ Vue.config.productionTip = false;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$base64 = Base64;
 Vue.prototype.$axios = axios;
-Vue.prototype.encrypt = 'md5';
 
 axios.defaults.baseURL = BASEURLPREFIX; //默认接口前缀
 axios.defaults.headers.post['Content-Type'] = 'application/json';
