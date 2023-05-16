@@ -46,7 +46,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import {$t} from '@/resources/init.js';
@@ -54,7 +53,10 @@ import {$t} from '@/resources/init.js';
 export default {
   name: '',
   components: {},
-  props: [''],
+  props: {
+    authtype: String,
+    encrypt: String
+  },
   data() {
     return {
       loginForm: {
@@ -107,9 +109,13 @@ export default {
       } else {
         this.error = false;
         let psd = '{MD5}' + _this.$md5(this.loginForm.password);
+        if (_this.encrypt === 'base64') {
+          psd = '{BS}' + _this.$base64.encode(this.loginForm.password);
+        }
         let param = {
           userid: this.loginForm.username, 
-          password: psd
+          password: psd,
+          authType: _this.authtype
         };
         this.logining = true;
         this.$axios({method: 'post', url: '/login/check', data: param}).then(res => { //登录页面的接口不在全局（获取租户等，还有减少登录页面不必要的资源加载）
@@ -159,7 +165,6 @@ export default {
       };
     }
   },
-
   watch: {}
 };
 </script>

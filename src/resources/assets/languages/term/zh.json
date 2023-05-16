@@ -449,7 +449,12 @@
     "relateknowledge": "相关知识",
     "relknowlege": "关联知识库",
     "reportinghistory": "上报历史",
-    "automaticprocessing": "自动处理"
+    "formcommonitem": "表单普通组件",
+    "formtableitem": "表单表格组件",
+    "automaticprocessing": "自动处理",
+    "recreatenewjob": "回退新建作业",
+    "jobpolicy": "作业策略",
+    "singlecreatejob": "单次创建作业"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

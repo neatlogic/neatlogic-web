@@ -105,7 +105,11 @@
     "nodecannotbeconnectedstartnode": "This node cannot be connected to the start node!",
     "startnodeonlyoneline": "The start node can only have one line connected!",
     "changecrenotendnode": "Change creation node is not allowed to directly end!",
-    "pleasestartscoringsetting": "Please start scoring setting!"
+    "pleasestartscoringsetting": "Please start scoring setting!",
+    "recreatenewjobtip": "After the process is rolled back, when it flows back to the current step, recreate the automated job and execute it",
+    "batchcreatejobpolicyvalid": "Batch creation of jobs, table components must be referenced by automation job parameters at least once",
+    "batchjobpolicytip": "Loop through list data to create multiple jobs",
+    "jobpolicycolumn": "Loop through list data and merge into an array"
   },
   "autoexec": {
     "savedeadlinenolimit": "No setting means unlimited storage period",

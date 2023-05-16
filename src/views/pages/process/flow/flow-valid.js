@@ -247,58 +247,14 @@ let valid = {
       if (!autoexecConfig.failPolicy) {
         validList.push({
           name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
-          href: '#failPolicy'
-        });
-      }
-      if (!autoexecConfig.autoexecCombopId) {
-        validList.push({
-          name: $t('form.validate.required', { target: $t('term.autoexec.combinationtool') }),
           href: '#autoexecCombop'
         });
       }
-      if (autoexecConfig.autoexecCombopId && (autoexecConfig.runtimeParamList || autoexecConfig.executeParamList)) {
-        let runtimeParamList = autoexecConfig.runtimeParamList || [];
-        let executeParamList = autoexecConfig.executeParamList || [];
-        let paramsList = runtimeParamList.concat(executeParamList);
-        if (paramsList.length > 0) {
-          for (let i = 0; i < paramsList.length; i++) {
-            if (paramsList[i].isRequired) {
-              if (that.$utils.isEmpty(paramsList[i].value)) {
-                validList.push({
-                  name: $t('message.completerequired', { target: $t('term.process.paramsMapping') }),
-                  href: '#autoexecCombop'
-                });
-                break;
-              } else {
-                if (paramsList[i].mappingMode == 'form') { //值类型是form的校验
-                  let findForm = that.allFormitemList.find(f => f.uuid == paramsList[i].value);
-                  if (!findForm) {
-                    validList.push({
-                      name: $t('message.completerequired', { target: $t('term.process.paramsMapping') }),
-                      href: '#autoexecCombop'
-                    });
-                    break;
-                  }
-                } else if (paramsList[i].mappingMode == 'prestepexportparam') {
-                  let nodeExportParamList = [];
-                  that.nodeExportParamConfig && Object.keys(that.nodeExportParamConfig).forEach(key => {
-                    if (that.nodeExportParamConfig[key] && that.nodeExportParamConfig[key].length) {
-                      nodeExportParamList.push(...that.nodeExportParamConfig[key]);
-                    }
-                  });
-                  let findExport = nodeExportParamList.find(e => e.value == paramsList[i].value);
-                  if (!findExport) {
-                    validList.push({
-                      name: $t('message.completerequired', { target: $t('term.process.paramsMapping') }),
-                      href: '#autoexecCombop'
-                    });
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
+      if (that.$utils.isEmpty(autoexecConfig.configList)) {
+        validList.push({
+          name: $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}),
+          href: '#autoexecCombop'
+        });
       }
     }
     return validList;

@@ -880,5 +880,8 @@
   "autoexec": "automation",
   "buttontype": "Button type",
   "background": "background",
-  "clicksetting": "Click on Settings"
+  "use": "purpose",
+  "clicksetting": "Click on Settings",
+  "autoexecjob": "Automated operations",
+  "foreachtable": "Traverse Table"
 }

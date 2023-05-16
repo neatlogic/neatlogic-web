@@ -244,9 +244,9 @@
                     isDisableCommet = val
                   }"
                 >
-                  <template v-slot:autoexec>
+                  <template v-if="handlerStepInfo && handlerStepInfo.jobList" v-slot:autoexec>
                     <!-- 自动化作业 -->
-                    <JobDetail :handlerStepInfo="handlerStepInfo" class="job-box border-color"></JobDetail>
+                    <JobDetail :handlerStepInfo="handlerStepInfo"></JobDetail>
                   </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
@@ -719,10 +719,5 @@ export default {
 }
 /deep/ .ivu-layout-content{
   overflow-y: hidden !important;
-}
-.job-box{
-  padding-bottom: 16px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid;
 }
 </style>

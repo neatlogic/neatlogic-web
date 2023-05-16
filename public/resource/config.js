@@ -65,7 +65,14 @@ function getDirectUrl() {
   // 获取页面重定向地址
   var xhr = new XMLHttpRequest();
   xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
+  //浏览器URL显示传递参数
   if(SSOTICKETKEY && SSOTICKETVALUE) {
+    xhr.setRequestHeader('AuthType', SSOTICKETKEY);
+    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
+  }
+  //从其他已登录的系统跳转过来，浏览器URL不带任何参数的时候
+  if(!SSOTICKETVALUE){
+    SSOTICKETVALUE = getCookie(SSOTICKETKEY);
     xhr.setRequestHeader('AuthType', SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
   }
@@ -94,7 +101,7 @@ function getSsoTokenKey() {
     if(xhr.status == 200){
       var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
       if(responseText && responseText.Status == 'OK' && responseText.ssoTicketKey) {
-        SSOTICKETKEY = responseText.ssoTicketKey;
+        SSOTICKETKEY = responseText.ssoTicketKey || '';
         if(SSOTICKETKEY && currentUrl && currentUrl.split(SSOTICKETKEY + '=')) {
           var token = currentUrl.split(SSOTICKETKEY + '=')[1];
           if (token) {
