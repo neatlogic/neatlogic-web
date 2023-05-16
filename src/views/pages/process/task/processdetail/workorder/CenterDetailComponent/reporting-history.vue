@@ -11,6 +11,11 @@
       @changeCurrent="changeCurrent"
       @changePageSize="changePageSize"
     >
+      <template slot="title" slot-scope="{row}">
+        <div v-if="row.title" class="text-href" @click="toTaskDetailPage(row)">
+          {{ row.title }}
+        </div>
+      </template>
       <template slot="priority" slot-scope="{row}">
         <div v-if="row.priority" :style="{ color: row.priority.color }">
           {{ row.priority.name }}
@@ -128,6 +133,17 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    toTaskDetailPage(row) {
+      // 跳转到工单详情页面
+      let url = '/task-detail';
+      if (!this.$utils.isEmpty(row)) {
+        let id = row.id;
+        if (row.status === 'draft') {
+          url = '/task-dispatch';
+        }
+        window.open(HOME + `/process.html#${url}?processTaskId=${id}`, '_blank');
+      }
     }
   },
   filter: {},

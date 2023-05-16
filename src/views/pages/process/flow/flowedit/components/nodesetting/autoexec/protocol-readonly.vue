@@ -1,31 +1,15 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 <template>
   <div class="protocol">
     <TsFormSelect 
       ref="item" 
-      v-bind="getConfig"
+      v-bind="protocolConfig"
       :value="value"
-      :readonly="readonly"
+      :readonly="true"
       transfer
     ></TsFormSelect>
   </div>
 </template>
 <script>
-import comMixin from '../paramedit/editmixin.js';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
@@ -34,7 +18,6 @@ export default {
   },
   filters: {
   },
-  mixins: [comMixin],
   props: {
     value: [Number, String]
   },
@@ -84,24 +67,7 @@ export default {
       return columlist;
     }
   },
-  computed: {
-    getConfig() {
-      let config = Object.assign({}, this.protocolConfig);
-      config.validateList = [];
-      if (typeof this.isRequired == 'boolean') {
-        //当从别的判断带过来的关于这个组件是否必填的选项时，进行原来required的覆盖
-        if (this.isRequired) {
-          config.validateList.push('required');
-        } else if (!this.isRequired && config.validateList.indexOf('required') > -1) {
-          config.validateList = config.validateList.filter(v => {
-            return v != 'required';
-          });
-        }
-      }
-      return config;
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
-

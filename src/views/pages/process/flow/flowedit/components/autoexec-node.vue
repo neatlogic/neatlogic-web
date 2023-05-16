@@ -65,29 +65,6 @@
         ></ExtendAuth>
       </div>
     </div>
-    <div id="failPolicy" class="permission-list">
-      <div class="list">
-        <div class="second-title text-grey require-label">{{ $t('page.failurestrategy') }}</div>
-        <div class="input-border">
-          <TsFormSelect
-            ref="failPolicy"
-            v-model="failPolicy"
-            :dataList="failPolicyList"
-            :validateList="validateList"
-            border="border"
-          > </TsFormSelect>
-        </div>
-      </div>
-    </div>
-
-    <!-- 子任务策略通用节点 -->
-    <StrategySetting
-      v-if="nodeConfig.handler === 'autoexec'"
-      ref="StrategySetting"
-      :isStrategy="taskisStrategy"
-      :strategySetting="configData.stepConfig"
-    ></StrategySetting>
-
     <AutoexecSetting
       ref="autoexecConfig"
       :defaultAutoexecConfig="autoexecConfig"
@@ -117,8 +94,6 @@ export default {
   components: {
     AssignSetting,
     AutoexecSetting,
-    StrategySetting: resolve => require(['./nodesetting/strategy-setting.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
     NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
     ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
@@ -153,9 +128,7 @@ export default {
       extendConfig: {}, //拓展属性配置的流程设置
       validateList: ['required'],
       autoexecConfig: {}, //自动化数据
-      failPolicy: null,
-      failPolicyList: [], //失败策略
-      workerPolicyConfig: {} 
+      workerPolicyConfig: {}
     };
   },
   beforeCreate() {},
@@ -183,34 +156,6 @@ export default {
       if (this.formUuid) { //获取表单对应的数据
         this.getFormItem(this.formUuid);
       }
-      this.getFailPolicyList();
-      let failPolicy = this.autoexecConfig.failPolicy || null;
-      this.failPolicy = this.$utils.deepClone(failPolicy);
-    },
-    getFailPolicyList() {
-      let data = {
-        enumClass: 'neatlogic.module.autoexec.constvalue.FailPolicy'
-      };
-      this.$api.common.getSelectLit(data).then((res) => {
-        if (res.Status == 'OK') {
-          let failPolicyList = res.Return || [];
-          let newfailPolicyList = [];
-          let isBack = false;
-          if (this.nodeAllLinksList && this.nodeAllLinksList.length > 0) {
-            this.nodeAllLinksList.forEach(item => {
-              if (item.config.type == 'backward') {
-                isBack = true;
-              }
-            });
-          }
-          if (!isBack) {
-            newfailPolicyList = failPolicyList.filter(f => f.value != 'back');
-          } else {
-            newfailPolicyList = failPolicyList;
-          }
-          this.failPolicyList = newfailPolicyList;
-        }
-      });
     },
     nodeValid(href) {
       //校验
@@ -238,7 +183,6 @@ export default {
       }
       if (this.$refs.autoexecConfig) { //组合工具
         let autoexecConfig = this.$refs.autoexecConfig.saveAutoexecConfig();
-        this.$set(autoexecConfig, 'failPolicy', this.failPolicy);
         this.$set(stepConfig, 'autoexecConfig', autoexecConfig);
       }
       // if (!stepConfig.taskConfig) {

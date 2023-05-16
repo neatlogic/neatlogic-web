@@ -14,28 +14,45 @@
  * limitations under the License.
  */
 <template>
-  <div v-if="handlerStepInfo" class="job-detail" @click="gotoJopDetail()">
-    <div v-if="dataList && dataList.length>0" class="step-List border-color">
-      <div
-        v-for="(item,index) in dataList"
-        :key="index"
-        class="item-list border-color"
-        :class="index > 0?'left-margin':'no-margin'"
+  <div v-if="handlerStepInfo">
+    <Tabs
+      class="block-tabs2"
+      :animated="false"
+      name="job"
+    >
+      <TabPane
+        v-for="(job,jindex) in handlerStepInfo.jobList"
+        :key="jindex"
+        :label="job.name"
+        :name="'job_'+ job.id"
+        class="tab-content"
+        tab="job"
       >
-        <div
-          v-for="(litem,lindex) in item"
-          :key="lindex"
-          class="step-content border-color"
-          :class="lindex===0?'left-connector':''"
-        >
-          <div class="curve border-color"></div>
-          <div class="step-node overflow border-base bg-op radius-sm com-status" :title="litem.name">
-            <i v-if="litem.statusVo" class="tsfont-check-o" :class="getIconClass(litem.statusVo.name)"></i>
-            <span>{{ litem.name }}</span>
+        <div class="job-detail pt-nm" @click="gotoJopDetail(job)">
+          <div v-if="job.phaseList && job.phaseList.length>0" class="step-List">
+            <div
+              v-for="(item,index) in getPhaseList(job.phaseList)"
+              :key="index"
+              class="item-list border-color"
+              :class="index > 0?'left-margin':'no-margin'"
+            >
+              <div
+                v-for="(litem,lindex) in item"
+                :key="lindex"
+                class="step-content border-color"
+                :class="lindex===0?'left-connector':''"
+              >
+                <div class="curve border-color"></div>
+                <div class="step-node overflow border-base bg-op radius-sm com-status" :title="litem.name">
+                  <i v-if="litem.statusVo" class="tsfont-check-o" :class="getIconClass(litem.statusVo.name)"></i>
+                  <span>{{ litem.name }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </TabPane>
+    </Tabs>
   </div>
 </template>
 <script>
@@ -76,8 +93,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    gotoJopDetail() { //查看作业
-      window.open(HOME + '/autoexec.html#/job-detail?id=' + this.handlerStepInfo.id, '_blank');
+    gotoJopDetail(job) { //查看作业
+      window.open(HOME + '/autoexec.html#/job-detail?id=' + job.id, '_blank');
     }
   },
   computed: {
@@ -87,35 +104,30 @@ export default {
         iconClass += this.statusIcon[status] ? ' ' + this.statusIcon[status] : ' tsfont-refresh';
         return iconClass;
       };
+    },
+    getPhaseList() {
+      return (val) => {
+        let list = [];
+        let phaseList = val || [];
+        if (phaseList.length) {
+          for (let sort = 0, index = 0; index < phaseList.length;) {
+            let arr = [];
+            phaseList.filter(l => {
+              if (l.jobGroupVo.sort == sort) {
+                arr.push(l);
+                index++;
+                return true;
+              }
+            });
+            sort++;
+            list.push(arr);
+          }
+        }
+        return list;
+      };
     }
   },
-  watch: {
-    handlerStepInfo: {
-      handler(val) {
-        if (val) {
-          let list = [];
-          let phaseList = val.phaseList || [];
-          if (phaseList.length) {
-            for (let sort = 0, index = 0; index < phaseList.length;) {
-              let arr = [];
-              phaseList.filter(l => {
-                if (l.jobGroupVo.sort == sort) {
-                  arr.push(l);
-                  index++;
-                  return true;
-                }
-              });
-              sort++;
-              list.push(arr);
-            }
-          }
-          this.dataList = list;
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

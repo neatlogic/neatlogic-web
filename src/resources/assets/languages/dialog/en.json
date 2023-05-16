@@ -30,7 +30,8 @@
     "canceltarget": "Cancel {target}",
     "saveandtarget": "Save and {target}",
     "linktarget": "Link {target}",
-    "unlinkconfirm": "Release Confirmation"
+    "unlinkconfirm": "Release Confirmation",
+    "batchcreatetarget": "Batch creation {target}"
   },
   "content": {
     "deletetargetconfirm": "Are you sure to delete <b>{target}</b>?",

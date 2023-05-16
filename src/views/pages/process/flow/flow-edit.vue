@@ -633,7 +633,6 @@ export default {
           }
         });
       });
-      this.getNodeExportParams(this.stepList);
       if (action === 'init') {
         this.$nextTick(() => {
           let data = Vm.getFlowData();
@@ -1075,27 +1074,9 @@ export default {
           }
         });
     },
-    getNodeExportParams(list) { //自动化节点上游出参(用于数据校验)
-      let _this = this;
-      let nodeExportParamConfig = {};
-      list.forEach(item => {
-        if (item.handler == 'autoexec' && item.stepConfig && item.stepConfig.autoexecConfig && item.stepConfig.autoexecConfig.exportParamList) {
-          let exportParamList = _this.$utils.deepClone(item.stepConfig.autoexecConfig.exportParamList);
-          if (exportParamList.length) {
-            exportParamList.forEach(e => {
-              _this.$set(e, 'text', e.text + '_' + item.name);
-              _this.$set(e, 'value', item.uuid + '_' + e.value);
-            });
-            _this.$set(nodeExportParamConfig, item.uuid, exportParamList);
-          }
-        }
-      });
-      mutations.setNodeExportParams(nodeExportParamConfig);
-    },
     clearObservable() { //清空状态管理的数据
       store.allFormitemList = [];//表单组件
       store.automaticList = []; //分派器下拉列表
-      store.nodeExportParamConfig = {}; //节点上游出参校验数据
     },
     async getFormSceneuuidList(uuid) {
       //获取表单指定版本的数据，渲染表单
@@ -1163,9 +1144,6 @@ export default {
     },
     allFormitemList() { //表单组件
       return store.allFormitemList;
-    },
-    nodeExportParamConfig() {
-      return store.nodeExportParamConfig;
     }
   },
   watch: {
