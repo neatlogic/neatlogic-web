@@ -882,5 +882,8 @@
   "autoexec": "自动化",
   "buttontype": "按钮类型",
   "background": "背景",
-  "clicksetting": "点击设置"
+  "use": "用途",
+  "clicksetting": "点击设置",
+  "autoexecjob": "自动化作业",
+  "foreachtable": "遍历表格"
 }

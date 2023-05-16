@@ -30,7 +30,8 @@
     "canceltarget": "取消{target}",
     "saveandtarget": "保存并{target}",
     "linktarget": "关联{target}",
-    "unlinkconfirm": "解除确认"
+    "unlinkconfirm": "解除确认",
+    "batchcreatetarget": "批量创建{target}"
   },
   "content": {
     "deletetargetconfirm": "是否确认删除{target}？",
