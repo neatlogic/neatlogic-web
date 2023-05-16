@@ -24,17 +24,15 @@
         <CatalogList :appId="appId" @changeCatalog="changeCatalog"></CatalogList>
       </template>
       <template v-slot:content>
-        <div class="mb-md">
-          <IssueList
-            v-if="appData"
-            ref="issueList"
-            :mode="displayMode"
-            :app="appData"
-            :catalog="currentCatalog"
-            :isShowEmptyTable="true"
-            @toDetail="toRequestDetail"
-          ></IssueList>
-        </div>
+        <IssueList
+          v-if="isReady && appData"
+          ref="issueList"
+          :mode="displayMode"
+          :app="appData"
+          :catalog="currentCatalog"
+          :isShowEmptyTable="true"
+          @toDetail="toRequestDetail"
+        ></IssueList>
       </template>
     </TsContain>
     <EditIssue
@@ -44,7 +42,7 @@
       :catalogId="currentCatalog"
       @close="closeEditIssue"
     ></EditIssue>
-    <AttrSettingDialog v-if="isAttrSettingShow" @close="closeAttrSetting"></AttrSettingDialog>
+    <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
   </div>
 </template>
 <script>
@@ -68,7 +66,8 @@ export default {
       currentIssueId: null,
       isEditIssueShow: false,
       displayMode: 'level',
-      isAttrSettingShow: false
+      isAttrSettingShow: false,
+      isReady: true//刷新issue-list组件
     };
   },
   beforeCreate() {},
@@ -94,6 +93,9 @@ export default {
     },
     closeAttrSetting(needRefresh) {
       this.isAttrSettingShow = false;
+      if (needRefresh) {
+        this.reloadIssueList();
+      }
     },
     toRequestDetail(id) {
       this.$router.push({ path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id });
@@ -120,6 +122,12 @@ export default {
       } else {
         this.currentCatalog = null;
       }
+    },
+    reloadIssueList() {
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     refreshIssueList(currentPage) {
       const issueList = this.$refs['issueList'];

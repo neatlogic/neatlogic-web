@@ -2,11 +2,12 @@
   <TsDialog v-bind="dialogConfig">
     <template v-slot>
       <div>
-        <div class="card-head">
-          <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
-          <div class="block-name text-grey">{{ $t('term.cmdb.fieldname') }}</div>
-          <div class="block-type text-grey">{{ $t('term.cmdb.fieldtype') }}</div>
-          <div class="block-showtype text-grey">{{ $t('term.cmdb.displaytype') }}</div>
+        <div class="grid">
+          <div class="text-grey">{{ $t('page.sort') }}</div>
+          <div class="text-grey">{{ $t('term.cmdb.fieldname') }}</div>
+          <div class="text-grey">{{ $t('term.cmdb.fieldtype') }}</div>
+          <div class="text-grey">{{ $t('page.description') }}</div>
+          <div class="text-grey">{{ $t('term.cmdb.displaytype') }}</div>
         </div>
         <draggable
           v-bind="dragOptions"
@@ -17,11 +18,12 @@
           handle=".ts-bars"
           :forceFallback="false"
         >
-          <div v-for="(item, index) in attrList" :key="index" class="card-item">
-            <div class="block-handler"><i class="ts-bars move"></i></div>
-            <div class="block-name">{{ item.label }}</div>
-            <div class="block-type">{{ item.typeText }}</div>
-            <div class="block-showtype">
+          <div v-for="(item, index) in attrList" :key="index" class="grid">
+            <div><i class="ts-bars" style="cursor: move"></i></div>
+            <div>{{ item.label }}</div>
+            <div>{{ item.typeText }}</div>
+            <div>{{ item.description }}</div>
+            <div>
               <TsFormSelect
                 v-model="item.showType"
                 :dataList="showTypeList"
@@ -67,13 +69,15 @@ export default {
         disabled: false,
         ghostClass: 'ghost'
       },
+      appSetting: {},
       attrList: [] //对象属性列表，此处会返回所有属性，包括未激活属性
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     this.getShowTypeList();
-    this.searchAppAttr();
+    await this.searchAppAttr();
+    this.getAppSetting();
   },
   beforeMount() {},
   mounted() {},
@@ -84,13 +88,35 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAppSetting() {
+      this.$api.rdm.app.getAppUserSetting(this.appId).then(res => {
+        this.appSetting = res.Return;
+        if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.attrList && this.attrList.length > 0) {
+          this.appSetting.config.attrList.forEach(attrconf => {
+            const attr = this.attrList.find(d => d.id === attrconf.attrId);
+            if (attr) {
+              this.$set(attr, 'sort', attrconf.sort);
+              this.$set(attr, 'showType', attrconf.showType || 'all');
+            }
+          });
+        }
+        this.attrList.forEach(attr => {
+          if (!attr.showType) {
+            this.$set(attr, 'showType', 'all');
+          }
+        });
+        this.attrList.sort((a, b) => {
+          return (a.sort || 0) - (b.sort || 0);
+        });
+      });
+    },
     getShowTypeList() {
-      this.$api.common.getSelectList({enumClass: 'neatlogic.framework.rdm.enums.ShowType'}).then(res => {
+      this.$api.common.getSelectList({ enumClass: 'neatlogic.framework.rdm.enums.ShowType' }).then(res => {
         this.showTypeList = res.Return;
       });
     },
-    searchAppAttr() {
-      this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
+    async searchAppAttr() {
+      await this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
         this.attrList = res.Return;
       });
     },
@@ -100,86 +126,37 @@ export default {
       this.attrList.forEach(element => {
         idList.push(element.id);
       });
-      this.$api.rdm.project.updateAttrSort({idList: idList, appId: this.appId});
+      this.$api.rdm.project.updateAttrSort({ idList: idList, appId: this.appId });
     },
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },
     save() {
+      console.log(JSON.stringify(this.attrList, null, 2));
+      const saveAttrList = [];
+      this.attrList.forEach((attr, index) => {
+        saveAttrList.push({attrId: attr.id, sort: index + 1, showType: attr.showType});
+      });
+      this.$api.rdm.app.saveAppUserSetting({appId: this.appId, config: {attrList: saveAttrList}}).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
+      });
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+  },
   watch: {}
 };
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.card-head {
-  position: relative;
-  height: 30px;
-  .block-handler {
-    position: absolute;
-    left: 10px;
-    line-height: 30px;
-  }
-  .block-name {
-    position: absolute;
-    left: 60px;
-    top: 0px;
-    line-height: 30px;
-  }
-  .block-type {
-    position: absolute;
-    left: 250px;
-    top: 0px;
-    line-height: 30px;
-  }
-  .block-showtype {
-    position: absolute;
-    left: 400px;
-    top: 0px;
-    line-height: 30px;
-  }
-  .block-allowedit {
-    position: absolute;
-    left: 550px;
-    top: 0px;
-    line-height: 30px;
-  }
-}
-.card-item {
-  margin-bottom: 10px;
-  position: relative;
-  height: 30px;
-  .block-handler {
-    position: absolute;
-    left: 10px;
-    line-height: 30px;
-    cursor: move;
-  }
-  .block-name {
-    position: absolute;
-    left: 60px;
-    top: 0px;
-    line-height: 30px;
-  }
-  .block-type {
-    position: absolute;
-    left: 250px;
-    top: 0px;
-    line-height: 30px;
-  }
-  .block-showtype {
-    position: absolute;
-    left: 400px;
-    top: 0px;
-  }
-  .block-allowedit {
-    position: absolute;
-    left: 550px;
-    top: 0px;
-  }
+.grid {
+  display: grid;
+  height: 40px;
+  line-height: 40px;
+  grid-template-columns: 50px 150px 150px auto 130px;
 }
 </style>
-

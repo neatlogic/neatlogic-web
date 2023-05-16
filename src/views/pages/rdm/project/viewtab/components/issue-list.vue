@@ -191,15 +191,19 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    //首先获取用户配置
+    await this.getAppSetting();
     if (this.app.attrList && this.app.attrList.length > 0) {
       this.app.attrList.forEach(attr => {
-        this.theadList.push({ key: attr.id.toString(), title: attr.label });
-        this.searchConfig.searchList.push({
-          type: 'slot',
-          name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
-          label: attr.label
-        });
+        if (['all', 'list'].includes(attr.showType)) {
+          this.theadList.push({ key: attr.id.toString(), title: attr.label });
+          this.searchConfig.searchList.push({
+            type: 'slot',
+            name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+            label: attr.label
+          });
+        }
       });
     }
     if (this.linkAppType && this.linkAppType.length > 0) {
@@ -221,6 +225,29 @@ export default {
     //供外部调用，刷新查询数据
     refresh(currentPage) {
       this.searchIssue(currentPage);
+    },
+    async getAppSetting() {
+      await this.$api.rdm.app.getAppUserSetting(this.app.id).then(res => {
+        this.appSetting = res.Return;
+        if (this.appSetting && this.appSetting?.config?.attrList && 
+        this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
+          this.appSetting.config.attrList.forEach(attrconf => {
+            const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
+            if (attr) {
+              this.$set(attr, 'sort', attrconf.sort);
+              this.$set(attr, 'showType', attrconf.showType || 'all');
+            }
+          });
+        }
+        this.app.attrList.forEach(attr => {
+          if (!attr.showType) {
+            this.$set(attr, 'showType', 'all');
+          }
+        });
+        this.app.attrList.sort((a, b) => {
+          return (a.sort || 0) - (b.sort || 0);
+        });
+      });
     },
     toggleChildIssue(row) {
       if (!row._loading) {
