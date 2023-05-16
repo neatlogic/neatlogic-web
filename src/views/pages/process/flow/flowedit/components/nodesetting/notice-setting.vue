@@ -4,7 +4,7 @@
       <div class="control-setting">
         <span class="label">
           <span>{{ $t('page.noticesetting') }}</span>
-          <span class="pl-xs text-href">{{ $t('page.personalizationsettings') }}</span>
+          <span class="pl-xs text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
         </span>
         <span class="control-btn">
           <span
@@ -30,7 +30,6 @@
                   v-model="notifyPolicyConfig.policyId"
                   v-bind="notifySelectConfig"
                   @first="gotoAddNotify()"
-                  @on-change="notifySelectChange()"
                 >
                 </TsFormSelect>
               </Col>
@@ -44,54 +43,17 @@
                 ></span>
               </Col>
             </TsRow>
-            <span v-if="notifyPolicyConfig.policyId" class="text-primary show-text" @click="showNotify()">
-              {{ controlShow ? $t('term.process.showparams'): $t('term.process.hideparams') }}
-            </span>
-            <div class="wrapper">
-              <div
-                v-for="(notify,notifyIndex) in paramList"
-                :key="notifyIndex"
-                class="status-list"
-                :class="notify.isHidden ? 'isHidden':'isShow'"
-              >
-                <span class="status-left overflow" :title="notify.label+'('+notify.name+')'">{{ notify.name }}</span>
-                <span class="status-center">
-                  <img src="~@/resources/assets/images/itsm/btn-relevance.png" />
-                </span>
-                <span class="status-right" :class="{ 'input-border': border }">
-                  <template v-if="notify.paramType != 'date'">
-                    <TsFormSelect
-                      ref="notifySelect"
-                      v-model="notify.value"
-                      search
-                      clearable
-                      filterable
-                      transfer
-                      allow-create
-                      :placeholder="notify.label"
-                      :dataList="paramTypeConfig[notify.paramType]"
-                      border="border"
-                    >
-                    </TsFormSelect>
-                  </template>
-                  <template v-else>
-                    <TimeSelect
-                      v-model="notify.value"
-                      type="datetime"
-                      format="yyyy/MM/dd HH:mm:ss"
-                      :placeholder="notify.label"
-                      :dataList="paramTypeConfig[notify.paramType]"
-                      style="display:block"
-                      border="border"
-                    ></TimeSelect>
-                  </template>
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
+    <PersonSettingsDialog
+      v-if="isShowPersonSettingDialog"
+      :policyId="notifyPolicyConfig.policyId"
+      :border="border"
+      :conditionNodeList="conditionNodeList"
+      :paramMappingList="notifyPolicyConfig.paramMappingList"
+    ></PersonSettingsDialog>
   </div>
 
 </template>
@@ -101,8 +63,8 @@ import itemmixin from '../itemmixin.js';
 export default {
   name: 'NoticeSetting',
   components: {
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    PersonSettingsDialog: resolve => require(['./notice/person-settings-dialog'], resolve) // 个性设置
   },
   mixins: [itemmixin],
   model: {
@@ -121,9 +83,9 @@ export default {
       }
     },
     handler: String, //搜索通知策略的handler 统一先从config里面取，如果没有才看handler 这个主要是为了兼容实效策略
-    hasGlobal: {//是否显示全局引用
+    hasGlobal: {// 是否自定义通知设置
       type: Boolean,
-      default: true
+      default: false
     },
     defaultIsActive: Number, //是否打开通知设置
     border: {
@@ -139,15 +101,12 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       isActive: 0,
       notifyPolicyConfig: {},
       nodePolicyId: '', //选中ID
       conditionNodeList: [], //右边下拉框数据
-      paramTypeConfig: {}, //不同参数类型来面可选右边数据
       paramList: [], //参数列表
-      controlShow: true, //是否隐藏参数
       firstText: this.$t('term.process.policy'),
       firstLi: true,
       notifySelectConfig: {
@@ -159,30 +118,21 @@ export default {
         textName: 'name',
         rootName: 'tbodyList',
         params: {handler: this.config.handler || this.handler}
-      }
+      },
+      isShowPersonSettingDialog: false
     };
   },
 
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     //跳转策略编辑页面
     gotoAddNotify(val) {
@@ -196,57 +146,9 @@ export default {
     refreshNotify() { //刷新通知策略
       this.notifyPolicyConfig.paramMappingList = this.getData().paramMappingList;
       this.$refs.notifyPolicy.initDataListByUrl();
-      this.notifySelectChange(true);
       this.$Message.success(this.$t('message.executesuccess'));
     },
-    notifySelectChange(isFresh) { //初始化通知策略参数     isFresh 代表是否刷新页面
-      if (!this.notifyPolicyConfig.policyId) {
-        this.paramList = [];
-        return;
-      }
-      let param = {
-        id: this.notifyPolicyConfig.policyId
-      };
-      this.$api.framework.tactics.editNotify(param).then(res => {
-        if (res.Status == 'OK') {
-          let obj = res.Return;
-          this.notifyPolicyConfig.policyName = obj.name;
-          this.notifyPolicyConfig.policyPath = obj.path;
-        }
-      });
-      const data = {
-        policyId: this.notifyPolicyConfig.policyId,
-        needPage: false
-      };
-      this.$api.framework.tactics.notifyParamList(data).then(res => {
-        if (res.Status == 'OK') {
-          this.paramList = res.Return.paramList;
-          this.controlShow = true;
-          this.getParamTypeList();
-          this.paramList.forEach(ditem => {
-            if (isFresh) {
-              this.notifyPolicyConfig.paramMappingList.find(key => {
-                if (ditem.name == key.name) {
-                  let value = key.value;
-                  if (ditem.paramType == 'date' && typeof value == 'number') {
-                    value = {startTime: value};
-                  } else if (ditem.paramType == 'date' && typeof key.value == 'string') {
-                    value = {timeRange: value};
-                  }
-                  this.$set(ditem, 'value', value);
-                  return true;
-                }
-              });
-            } else if (!ditem.isEditable) { //isEditable代表不会自动匹配数据 不会把name复制到value
-              ditem.value = ditem.paramType == 'date' ? {timeRange: ditem.name} : ditem.name;
-            }
-            if (ditem.value && !ditem.isEditable && (ditem.name == ditem.value || ditem.name == ditem.value.timeRange)) { //左边name和value相同时，同时isEditable为0时，需要隐藏这个参数
-              this.$set(ditem, 'isHidden', this.controlShow);
-            }
-          });
-        }
-      });
-    },
+
     getConditionNode() { //获取参数对应的可选值 条件
       let handler = this.config.handler || this.handler;
       if (!this.config || !handler) {
@@ -260,33 +162,7 @@ export default {
           const dataList = this.config.paramMappingList;
           this.notifyPolicyConfig.policyId = this.config.policyId;
           this.notifyPolicyConfig.paramMappingList = dataList;
-          this.notifySelectChange(true);
-          this.getParamTypeList();
-        }
-      });
-    },
-    getParamTypeList() { //对左侧的条件参数进行分类，方便根据不同的paramType来选中不同的参数值
-      let paramTypeConfig = {};
-      if (this.paramList.length && this.conditionNodeList.length) {
-        this.paramList.forEach(param => {
-          if (!paramTypeConfig[param.paramType]) {
-            let arr = [];
-            this.conditionNodeList.forEach(item => {
-              if (param.paramType == item.paramType) {
-                arr.push({text: item.label, value: item.name, paramType: item.paramType, type: item.type});
-              }
-            });
-            paramTypeConfig[param.paramType] = arr;
-          }
-        });
-      }
-      this.paramTypeConfig = paramTypeConfig;
-    },
-    showNotify() { //显示已匹配参数
-      this.controlShow = !this.controlShow;
-      this.paramList.forEach(item => {
-        if (item.value && !item.isEditable && (item.name == item.value || item.name == item.value.timeRange)) { //左边name和value相同时，同时isEditable为0时，需要隐藏这个参数
-          this.$set(item, 'isHidden', this.controlShow);
+          this.notifyPolicyConfig.isCustom = this.config.isCustom; // 是否自定义通知策略
         }
       });
     },
@@ -329,10 +205,12 @@ export default {
     changeSwitch() {
       if (!this.isActive) {
         this.notifyPolicyConfig.policyId = undefined;
-        this.paramList = [];
         this.notifyPolicyConfig.paramMappingList = [];
       }
       this.$emit('change', this.isActive);
+    },
+    openPersonSettingDialog() {
+      this.isShowPersonSettingDialog = true;
     }
   },
   filter: {},
