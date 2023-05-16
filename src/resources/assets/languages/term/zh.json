@@ -2080,7 +2080,8 @@
     "bug": "缺陷",
     "requestmanage": "需求管理",
     "disconnect": "断联",
-    "relativerequest": "关联需求"
+    "relativerequest": "关联需求",
+    "attrsetting": "字段设置"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

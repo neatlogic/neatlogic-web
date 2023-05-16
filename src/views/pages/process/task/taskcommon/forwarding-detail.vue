@@ -161,7 +161,7 @@ export default {
             if (this.$refs.FormPreview) {
               this.$refs.FormPreview.updateFormval(config.formAttributeDataMap);
             }
-          }, 500);
+          });
         }
         return formConfig;
       };

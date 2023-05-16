@@ -2,12 +2,12 @@
   <div>
     <div><a class="tsfont-plus" @click="addAttr">{{ $t('term.rdm.customattribute') }}</a></div>
     <TsTable
-      v-if="objectAttrList && objectAttrList.length > 0"
+      v-if="attrList && attrList.length > 0"
       :fixedHeader="false"
       :canDrag="true"
       keyName="id"
       :theadList="theadList"
-      :tbodyList="objectAttrList"
+      :tbodyList="attrList"
       @updateRowSort="updateAttrList"
     >
       <template v-slot:isActive="{ row }">
@@ -25,8 +25,8 @@
           v-model="row.isRequired"
           :trueValue="1"
           :falseValue="0"
-          trueText="是"
-          falseText="否"
+          :trueText="$t('page.yes')"
+          :falseText="$t('page.no')"
           @on-change="val=>{
             changeAttrIsRequired(row);
           }"
@@ -72,7 +72,7 @@ export default {
     return {
       isAttrShow: false,
       currentAttrId: null,
-      objectAttrList: [], //对象属性列表，此处会返回所有属性，包括未激活属性
+      attrList: [], //对象属性列表，此处会返回所有属性，包括未激活属性
       theadList: [
         {
           key: 'isActive',
@@ -127,9 +127,9 @@ export default {
         'on-ok': vnode => {
           this.$api.rdm.project.deleteAttrById(attr.id).then(res => {
             if (res.Status === 'OK') {
-              const index = this.objectAttrList.findIndex(d => d.id === attr.id);
+              const index = this.attrList.findIndex(d => d.id === attr.id);
               if (index > -1) {
-                this.objectAttrList.splice(index, 1);
+                this.attrList.splice(index, 1);
               }
               vnode.isShow = false;
               this.$Message.success(this.$t('message.deletesuccess'));
@@ -149,9 +149,9 @@ export default {
       }
     },
     updateAttrList(event, val) {
-      this.objectAttrList = val;
+      this.attrList = val;
       const idList = [];
-      this.objectAttrList.forEach(element => {
+      this.attrList.forEach(element => {
         idList.push(element.id);
       });
       this.$api.rdm.project.updateAttrSort({idList: idList, appId: this.appId});
@@ -159,17 +159,17 @@ export default {
     getNewAttrById(id) {
       this.$api.rdm.project.getAttrById(id).then(res => {
         const attrData = res.Return;
-        const index = this.objectAttrList.findIndex(d => d.id === attrData.id);
+        const index = this.attrList.findIndex(d => d.id === attrData.id);
         if (index > -1) {
-          this.$set(this.objectAttrList, index, attrData);
+          this.$set(this.attrList, index, attrData);
         } else {
-          this.objectAttrList.push(attrData);
+          this.attrList.push(attrData);
         }
       });
     },
     searchAppAttr() {
       this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
-        this.objectAttrList = res.Return;
+        this.attrList = res.Return;
       });
     }
   },

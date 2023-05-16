@@ -191,7 +191,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.module.autoexec.constvalue.FailPolicy'
       };
-      this.$api.common.getSelectLit(data).then((res) => {
+      this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           let failPolicyList = res.Return || [];
           let newfailPolicyList = [];

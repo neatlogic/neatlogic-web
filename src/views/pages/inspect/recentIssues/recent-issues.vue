@@ -469,7 +469,7 @@ export default {
     async getInspectStatusList() {
       // 获取巡检状态列表
       this.inspectStatusList = [];
-      await this.$api.common.getSelectLit({enumClass: 'InspectStatus'}).then((res) => {
+      await this.$api.common.getSelectList({enumClass: 'InspectStatus'}).then((res) => {
         if (res.Status == 'OK') {
           let nodeList = res.Return || [];
           if (nodeList && nodeList.length > 0) {

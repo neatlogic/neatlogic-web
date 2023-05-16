@@ -1,5 +1,3 @@
-/* eslint-disable */
-const webpack = require('webpack');
 const path = require('path');
 const glob = require('glob');
 let custommodule_home;
@@ -7,14 +5,14 @@ let baseConfiglUrl = '';
 let baseImg = '';
 let src = './src';
 let rootSrc = './src';
-let cssCkeditor = '';  //主要是用来工单处理-回复-编辑器的段落样式,为了改颜色才加的这个js
-let pageTitle = '';   //页面标题名称
+let cssCkeditor = ''; //主要是用来工单处理-回复-编辑器的段落样式,为了改颜色才加的这个js
+let pageTitle = ''; //页面标题名称
 let currentModuleName = '';
 let projectName = '';
 try {
-  custommodule_home = require('../neatlogic-web-config/config.json');  //查找是否有配置信息
-  currentModuleName = custommodule_home.currentModuleName;  //项目信息
-  projectName = custommodule_home[currentModuleName]
+  custommodule_home = require('../neatlogic-web-config/config.json'); //查找是否有配置信息
+  currentModuleName = custommodule_home.currentModuleName; //项目信息
+  projectName = custommodule_home[currentModuleName];
   if (projectName.hasUrl) {
     baseConfiglUrl = projectName.baseConfiglUrl;
     baseImg = projectName.baseImg;
@@ -25,20 +23,20 @@ try {
     cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
   }
   process.env.VUE_APP_CUSTOMMODULE = true;
-  process.env.VUE_APP_CUSTOMPAGES = projectName.home;  //当前模块是否是银行的
+  process.env.VUE_APP_CUSTOMPAGES = projectName.home; //当前模块是否是银行的
   pageTitle = projectName.title;
   process.env.VUE_APP_LOGINTITLE = projectName.loginTitle; // 登陆页标题
   process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
 } catch (e) {
   baseImg = './public/resource';
   process.env.VUE_APP_CUSTOMPAGES = 'neatlogic';
-  process.env.VUE_APP_CUSTOMMODULE = false
+  process.env.VUE_APP_CUSTOMMODULE = false;
   baseConfiglUrl = src + '/dummy_custom_module';// 如果不引用的话，就引用本地的空文件夹
   cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
   pageTitle = 'neatlogic';
   // localStorage.titleLogin = 'neatlogic';
   // window.localStorage.setItem('titleLogin', 'neatlogic');
-  process.env.VUE_APP_LOGINTITLE = 'neatlogic'
+  process.env.VUE_APP_LOGINTITLE = 'neatlogic';
 }
 //注意：urlPrefix需为包含端口号的完整的访问路径，比如：http://192.168.0.25:8282
 
@@ -57,13 +55,13 @@ function getPages(pageList) {
       const newpage = {};
       let pageLogin = `${pageTitle}-${filename[1]}`;
       if (`${filename[1]}` == 'login') {
-        pageLogin = `${pageTitle}`
+        pageLogin = `${pageTitle}`;
       }
       newpage[filename[1]] = {
         entry: `${src}/views/pages/${filename[1]}/${filename[1]}.js`,
         template: `public/index.html`,
         filename: `${filename[1]}.html`,
-        title: pageLogin,  // 标题名称+参数
+        title: pageLogin, // 标题名称+参数
         chunks: [`chunk-vendors`, `chunk-common`, `${filename[1]}`]
       };
 
@@ -169,7 +167,6 @@ module.exports = {
     //     }
     //   });
     // }
-
   },
   devServer: {
     open: true,

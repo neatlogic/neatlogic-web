@@ -216,7 +216,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.framework.restful.enums.ApiInvokedStatus'
       };
-      this.$api.common.getSelectLit(data).then((res) => {
+      this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           let list = res.Return || [];
           list.length > 0 && (this.statusDataList.push(...list));

@@ -1,35 +1,28 @@
 <template>
   <div>
     <div class="mb-md">
-      <span
+      <IssueStatus
         v-if="oldStatusData"
-        :class="targetStatus === oldStatusData.id ? 'actived' : ''"
-        class="issue-status cursor pl-sm pr-sm radius-lg"
-        :style="{
-          '--color': oldStatusData.color,
-          borderColor: oldStatusData.color,
-          color: oldStatusData.color,
-          background: targetStatus === oldStatusData.id ? $utils.convertHexToRGBA(oldStatusData.color, 0.2) : ''
-        }"
-        @click="targetStatus = oldStatusData.id"
-      >
-        <strong>{{ oldStatusData.label }}</strong>
-      </span>
+        :statusData="oldStatusData"
+        :actived="targetStatus === oldStatusData.id"
+        @click="
+          status => {
+            targetStatus = status;
+          }
+        "
+      ></IssueStatus>
       <Divider v-if="oldStatusData && statusList.length > 0" type="vertical" />
-      <span
+      <IssueStatus
         v-for="(status, index) in statusList"
         :key="index"
-        :class="targetStatus === status.id ? 'actived' : ''"
-        class="issue-status cursor mr-xs pl-sm pr-sm radius-lg"
-        :style="{
-          borderColor: status.color,
-          color: status.color,
-          background: targetStatus === status.id ? $utils.convertHexToRGBA(status.color, 0.2) : ''
-        }"
-        @click="changeTargetStatus(status.id)"
-      >
-        <strong>{{ status.label }}</strong>
-      </span>
+        :statusData="status"
+        :actived="targetStatus === status.id"
+        @click="
+          status => {
+            changeTargetStatus(status);
+          }
+        "
+      ></IssueStatus>
     </div>
     <div v-if="statusRel" class="mb-md">
       <TsFormItem
@@ -55,6 +48,7 @@
 export default {
   name: '',
   components: {
+    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
@@ -172,16 +166,5 @@ export default {
     bottom: -25px;
     cursor: pointer;
   }
-}
-.issue-status {
-  border-width: 2px;
-  border-style: solid;
-}
-.issue-status.actived:before {
-  font-family: 'tsfont' !important;
-  content: '\e863';
-  display: inline-block;
-  color: var(--color);
-  margin-right: 3px;
 }
 </style>

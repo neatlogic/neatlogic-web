@@ -430,7 +430,7 @@ export default {
     },
     filterNormalFields() {
       // 过滤级别正常的字段
-      this.$api.common.getSelectLit({enumClass: 'neatlogic.framework.common.constvalue.InspectStatus'}).then((res) => {
+      this.$api.common.getSelectList({enumClass: 'neatlogic.framework.common.constvalue.InspectStatus'}).then((res) => {
         if (res.Status == 'OK' && res.Return) {
           let levelList = res.Return;
           for (let i = 0; i < levelList.length; i++) {

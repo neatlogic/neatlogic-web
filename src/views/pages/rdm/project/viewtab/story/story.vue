@@ -8,9 +8,17 @@
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" @click="addIssue()">
-          <span class="tsfont-plus">{{ $t('term.rdm.request') }}</span>
-        </Button>
+        <div class="action-group">
+          <span class="action-item tsfont-os" @click="editDisplayAttr()">
+            {{ $t('term.rdm.attrsetting') }}
+          </span>
+          <span class="action-item" @click="displayMode = displayMode === 'level' ? 'list' : 'level'">
+            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">列表视图</span>
+            <Divider type="vertical" />
+            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">层级视图</span>
+          </span>
+          <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.request') }}</span>
+        </div>
       </template>
       <template v-slot:sider>
         <CatalogList :appId="appId" @changeCatalog="changeCatalog"></CatalogList>
@@ -20,6 +28,7 @@
           <IssueList
             v-if="appData"
             ref="issueList"
+            :mode="displayMode"
             :app="appData"
             :catalog="currentCatalog"
             :isShowEmptyTable="true"
@@ -35,6 +44,7 @@
       :catalogId="currentCatalog"
       @close="closeEditIssue"
     ></EditIssue>
+    <AttrSettingDialog v-if="isAttrSettingShow" @close="closeAttrSetting"></AttrSettingDialog>
   </div>
 </template>
 <script>
@@ -44,11 +54,10 @@ export default {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve)
+    CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
+    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
   },
-  props: {
-  
-  },
+  props: {},
   data() {
     return {
       pageName: this.$t('term.rdm.requestmanage'),
@@ -57,8 +66,9 @@ export default {
       appData: null,
       currentCatalog: null,
       currentIssueId: null,
-      isEditIssueShow: false
-     
+      isEditIssueShow: false,
+      displayMode: 'level',
+      isAttrSettingShow: false
     };
   },
   beforeCreate() {},
@@ -79,15 +89,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editDisplayAttr() {
+      this.isAttrSettingShow = true;
+    },
+    closeAttrSetting(needRefresh) {
+      this.isAttrSettingShow = false;
+    },
     toRequestDetail(id) {
-      this.$router.push({path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id});
+      this.$router.push({ path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id });
     },
     getAppById() {
       this.$api.rdm.app.getAppById(this.appId).then(res => {
         this.appData = res.Return;
       });
     },
-    
+
     addIssue() {
       this.isEditIssueShow = true;
       this.currentIssueId = null;
@@ -117,8 +133,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

@@ -1,5 +1,6 @@
 <template>
-  <div>{{ value }}</div>
+  <div v-if="value">{{ value }}</div>
+  <div v-else class="text-grey">-</div>
 </template>
 <script>
 import { AttrBase } from './base-attr.js';

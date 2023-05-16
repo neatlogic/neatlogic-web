@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div v-if="catalogName">
     {{ catalogName }}
   </div>
+  <div v-else class="text-grey">-</div>
 </template>
 <script>
 import { AttrBase } from './base-privateattr.js';
 
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   extends: AttrBase,
   props: {},
   data() {
@@ -36,11 +36,9 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

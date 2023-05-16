@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 const projectEdit = () => import('./project/project-edit.vue');
 const bugDetail = () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue');
 const storyDetail = () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue');
+const taskDetail = () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
 const story = () => import('@/views/pages/rdm/project/viewtab/story/story.vue');
 const bug = () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue');
@@ -77,6 +78,16 @@ let routerArr = [
     path: '/bug-detail/:projectId/:appId/:issueId',
     name: 'bug-detail',
     component: bugDetail,
+    meta: {
+      ismenu: false,
+      authority: 'RDM_BASE',
+      type: 'project'
+    }
+  },
+  {
+    path: '/task-detail/:projectId/:appId/:issueId',
+    name: 'task-detail',
+    component: taskDetail,
     meta: {
       ismenu: false,
       authority: 'RDM_BASE',

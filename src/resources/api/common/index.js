@@ -135,7 +135,7 @@ const common = {
     return axios.post('/api/rest/systemnotice/readstatus/update', params);
   },
   //下拉列表：枚举数据源通用接口
-  getSelectLit(params) {
+  getSelectList(params) {
     return axios.post('/api/rest/universal/enum/get', params);
   },
   //查询执行目标列表
@@ -143,7 +143,7 @@ const common = {
     return axios.post('/api/rest/resourcecenter/resource/list', params);
   },
   //获取多个下拉列表：枚举数据源通用接口（入参为数组）
-  getBatchSelectLit(params) {
+  getBatchSelectList(params) {
     return axios.post('/api/rest/universal/enum/get/batch', params);
   },
   // 获取最近使用的仪表板

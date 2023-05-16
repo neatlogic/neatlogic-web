@@ -282,7 +282,7 @@ export default {
       let data = {
         enumClass: 'AutoexecJobPhaseExecutePolicy'
       };
-      this.$api.common.getSelectLit(data).then((res) => {
+      this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           this.executePolicyList = res.Return || [];
         }

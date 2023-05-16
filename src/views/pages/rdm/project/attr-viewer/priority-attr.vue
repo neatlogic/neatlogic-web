@@ -1,7 +1,7 @@
 <template>
   <div>
     <span v-if="priority">{{ priorityName }}</span>
-    <span v-else>-</span>
+    <span v-else class="text-grey">-</span>
   </div>
 </template>
 <script>

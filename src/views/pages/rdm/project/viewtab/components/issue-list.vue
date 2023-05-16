@@ -2,7 +2,7 @@
   <div>
     <div class="mb-md grid">
       <div>
-        <span> 
+        <span>
           <a
             v-if="canAppend"
             href="javascript:void(0)"
@@ -67,7 +67,7 @@
         <div :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
           <span><AppIcon :app="app"></AppIcon></span>
           <span
-            v-if="row.childrenCount"
+            v-if="mode==='level' && row.childrenCount"
             class="cursor text-href"
             :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
             @click="toggleChildIssue(row)"
@@ -126,6 +126,7 @@ export default {
     IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve)
   },
   props: {
+    mode: { type: String, default: 'list' }, //显示模式，有level和list两种
     canSearch: { type: Boolean, default: false },
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
@@ -348,6 +349,7 @@ export default {
         });
     },
     searchIssue(currentPage) {
+      this.searchIssueData.mode = this.mode;
       this.searchIssueData.parentId = this.parentId;
       this.searchIssueData.fromId = this.fromId;
       this.searchIssueData.toId = this.toId;
@@ -413,6 +415,11 @@ export default {
   },
   watch: {
     catalog: {
+      handler: function(val) {
+        this.searchIssue(1);
+      }
+    },
+    mode: {
       handler: function(val) {
         this.searchIssue(1);
       }

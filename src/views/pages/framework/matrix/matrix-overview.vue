@@ -576,7 +576,7 @@ export default {
       this.showFileError = false;
     },
     async policyList() {
-      await this.$api.common.getSelectLit({ enumClass: 'MatrixTypeFactory' }).then((res) => {
+      await this.$api.common.getSelectList({ enumClass: 'MatrixTypeFactory' }).then((res) => {
         if (res.Status == 'OK') {
           this.addAtrixForm.type.dataList = res.Return.filter(item => {
             return item.value != 'private';

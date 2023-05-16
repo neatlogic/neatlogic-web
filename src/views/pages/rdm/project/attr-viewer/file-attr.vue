@@ -12,6 +12,7 @@
       </Tag>
     </div>
   </div>
+  <div v-else class="text-grey">-</div>
 </template>
 <script>
 import download from '@/resources/directives/download.js';

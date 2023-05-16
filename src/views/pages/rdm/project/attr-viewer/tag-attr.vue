@@ -6,7 +6,7 @@
       </Tag>
     </span>
   </div>
-  <div v-else>-</div>
+  <div v-else class="text-grey">-</div>
 </template>
 <script>
 import { AttrBase } from './base-privateattr.js';

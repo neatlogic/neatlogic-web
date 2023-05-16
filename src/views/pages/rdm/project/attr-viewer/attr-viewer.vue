@@ -21,6 +21,7 @@
       <div v-if="valueListLocal && valueListLocal.length > 0">
         <span v-for="(v, index) in valueListLocal" :key="index" v-html="format(v)"></span>
       </div>
+      <div v-else class="text-grey">-</div>
     </div>
   </div>
 </template>

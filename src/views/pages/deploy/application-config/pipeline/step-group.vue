@@ -359,7 +359,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecJobGroupPolicy'
       };
-      this.$api.common.getSelectLit(data).then((res) => {
+      this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           this.dataList = res.Return || [];
         }

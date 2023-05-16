@@ -100,7 +100,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.framework.deploy.constvalue.DeployWhiteType'
       };
-      await this.$api.common.getSelectLit(data).then((res) => {
+      await this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           if (res.Return && !this.$utils.isEmpty(res.Return)) {
             res.Return.forEach((v) => {

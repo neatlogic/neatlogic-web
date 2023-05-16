@@ -480,7 +480,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.framework.deploy.constvalue.DeployCiRepoEvent'
       };
-      await this.$api.common.getSelectLit(data).then((res) => {
+      await this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           this.dataList = res.Return || [];
           this.storehouseFormList.forEach((item) => {
@@ -499,7 +499,7 @@ export default {
       let data = {
         enumClass: 'neatlogic.framework.deploy.constvalue.DeployCiTriggerType'
       };
-      this.$api.common.getSelectLit(data).then(res => {
+      this.$api.common.getSelectList(data).then(res => {
         if (res.Status == 'OK') {
           this.$set(this, 'triggerTypeList', res.Return);
         }

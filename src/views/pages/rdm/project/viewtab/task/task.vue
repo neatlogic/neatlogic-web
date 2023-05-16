@@ -71,7 +71,7 @@ export default {
   destroyed() {},
   methods: {
     toRequestDetail(id) {
-      this.$router.push({path: '/task-detail/' + this.projectId + '/' + this.appId + '/' + id});
+      this.$router.push({path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id});
     },
     getAppById() {
       this.$api.rdm.app.getAppById(this.appId).then(res => {

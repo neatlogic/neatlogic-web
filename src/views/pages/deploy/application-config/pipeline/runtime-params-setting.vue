@@ -215,7 +215,7 @@ export default {
     getParamsTypeLit() {
       //选择组件类型
       let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.ParamType' };
-      return this.$api.common.getSelectLit(data).then(res => {
+      return this.$api.common.getSelectList(data).then(res => {
         if (res.Status == 'OK') {
           this.paramsTypeList = res.Return;
         }

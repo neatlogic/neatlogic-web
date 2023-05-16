@@ -3,7 +3,7 @@
     <div class="change-top">
       <div v-if="newChangeStepList && newChangeStepList.length > 0">
         <span class="text-grey top-title">{{ title }}</span>
-        <span class="tsfont-edit text-action" style="position: relative;">
+        <span class="tsfont-edit text-action" style="position: relative">
           <span @click="editUser">{{ $t('term.process.batchedituser') }}</span>
           <div v-if="visible" class="pop-box">
             <div class="tooltip-box">
@@ -25,7 +25,7 @@
                     <Button
                       type="primary"
                       size="small"
-                      style="margin:0;"
+                      style="margin: 0"
                       @click="changeAllUser"
                     >{{ $t('page.confirm') }}</Button>
                   </div>
@@ -42,10 +42,10 @@
         <span class="tsfont-plus text-href" @click="addStep">{{ $t('term.process.step') }}</span>
       </div>
     </div>
-    <div v-if="newChangeStepList && newChangeStepList.length>0" class="change-main card-wrapper">
+    <div v-if="newChangeStepList && newChangeStepList.length > 0" class="change-main card-wrapper">
       <!-- <changeTreeview :children="newChangeStepList" :isSelectId="selectId" :width="changeWidth" @uptata="saveList"></changeTreeview> -->
       <div
-        v-for="(cd,index) in newChangeStepList"
+        v-for="(cd, index) in newChangeStepList"
         :key="cd.uuid"
         :uuid="cd.uuid"
         :parentUuid="cd.parentUuid"
@@ -53,7 +53,7 @@
         class="card-list"
       >
         <span class="sub-line"></span>
-        <div class="card-item block-container " :class="isSelectId && isSelectId == cd.uuid?'bg-primary':'bg-block'" :style="{ 'margin-bottom':cd.isShow?'0px':'8px' }">
+        <div class="card-item block-container" :class="isSelectId && isSelectId == cd.uuid ? 'bg-primary' : 'bg-block'" :style="{ 'margin-bottom': cd.isShow ? '0px' : '8px' }">
           <!-- <div class="move-icon">
             <i class="ts-bars move" draggable="true" @dragstart="onDragstartTable($event, cd)"></i>
           </div> -->
@@ -82,14 +82,14 @@
                 <div v-else>-</div>
               </div>
             </div>
-            <div class="files-block" style="position: relative;">
+            <div class="files-block" style="position: relative">
               <div class="text-grey">{{ $t('page.accessory') }}</div>
               <div v-if="cd.fileIdList && cd.fileIdList.length" class="text-action" @click.stop>
                 <Dropdown trigger="click">
                   <span>{{ cd.fileIdList.length }}</span>
                   <DropdownMenu slot="list" class="dropdown">
                     <DropdownItem v-for="f in cd.fileList" :key="f.id">
-                      <span v-download="downurl('/api/binary/file/download',f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
+                      <span v-download="downurl('/api/binary/file/download', f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -98,8 +98,8 @@
             </div>
             <div class="btn-list">
               <ul class="action-group no-line">
-                <li class="action-item tsfont-edit" @click.stop="editsStep('edit',cd)"></li>
-                <li class="action-item tsfont-plus" @click.stop="editsStep('add',cd,index)"></li>
+                <li class="action-item tsfont-edit" @click.stop="editsStep('edit', cd)"></li>
+                <li class="action-item tsfont-plus" @click.stop="editsStep('add', cd, index)"></li>
                 <li class="action-item tsfont-trash-o" @click.stop="delStep(cd.uuid, cd.name, cd)"></li>
               </ul>
             </div>
@@ -121,11 +121,11 @@
             </div>
             <div v-if="cd.fileList && cd.fileList.length">
               <div v-for="f in cd.fileList" :key="f.id">
-                <span v-download="downurl('/api/binary/file/download',f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
+                <span v-download="downurl('/api/binary/file/download', f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
               </div>
             </div>
           </div>
-          <div v-else class="text-grey content-text">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
+          <div v-else class="text-grey content-text">{{ $t('page.notarget', { target: $t('page.description') }) }}</div>
         </div>
       </div>
     </div>
@@ -165,7 +165,7 @@ export default {
       title: this.$t('term.process.stepinfor'),
       addType: 'step',
       stepDialog: false,
-      dialogStepTitle: this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')}),
+      dialogStepTitle: this.$t('dialog.title.addtarget', { target: this.$t('term.process.step') }),
       ChangeStepConfig: {}, //添加步骤数据
       selectId: null,
       // changeWidth: 700,
@@ -173,7 +173,7 @@ export default {
       allWorkerVo: null,
       groupList: ['user', 'team'],
       visible: false,
-      validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.dealwithuser')}) }],
+      validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.process.dealwithuser') }) }],
       newChangeStepList: [],
       stepConfig: null, //步骤信息
       character: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'X', 'Y', 'Z']
@@ -191,7 +191,7 @@ export default {
         if (this.stepConfig) {
           this.stepDialog = true;
         }
-      }, 500);
+      });
     }
   },
   beforeUpdate() {},
@@ -209,7 +209,7 @@ export default {
       //删除条件节点规则
       this.$createDialog({
         title: this.$t('dialog.title.clearconfirm'),
-        content: this.$t('dialog.content.clearconfirm', {target: this.$t('term.process.noderules')}),
+        content: this.$t('dialog.content.clearconfirm', { target: this.$t('term.process.noderules') }),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;
@@ -279,7 +279,7 @@ export default {
       let _this = this;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: name}),
+        content: this.$t('dialog.content.deleteconfirm', { target: name }),
         btnType: 'error',
         'on-ok': vnode => {
           let index = this.newChangeStepList.map(item => item.uuid).indexOf(id);
@@ -291,10 +291,10 @@ export default {
     editsStep(type, obj, index) {
       this.dialogParentUuid = null;
       if (type == 'edit') {
-        this.dialogStepTitle = this.$t('dialog.title.edittarget', {target: this.$t('term.process.step')});
+        this.dialogStepTitle = this.$t('dialog.title.edittarget', { target: this.$t('term.process.step') });
         this.stepConfig = obj || null;
       } else {
-        this.dialogStepTitle = this.$t('dialog.title.addtarget', {target: this.$t('term.process.step')});
+        this.dialogStepTitle = this.$t('dialog.title.addtarget', { target: this.$t('term.process.step') });
         this.dialogParentUuid = obj.parentUuid;
         this.stepIndex = index - 0 + 1;
       }
@@ -339,7 +339,7 @@ export default {
   }
 };
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .change-detail {
   .change-top {
     position: relative;
