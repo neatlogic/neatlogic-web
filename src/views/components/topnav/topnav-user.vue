@@ -116,7 +116,13 @@ export default {
         if (res.Status == 'OK') {
           sessionStorage.removeItem('neatlogic_authorization');
           this.$utils.removeCookie('neatlogic_authorization');
-          window.location.href = HOME + '/login.html';
+          let url = res.Return.url || '';
+          if (url) {
+            url = url.indexOf('http://') == -1 || url.indexOf('https://') == -1 ? 'http://' + url : url;
+            window.open(url, '_self');
+          } else {
+            window.location.href = HOME + '/login.html';
+          }
         }
       });
     },
