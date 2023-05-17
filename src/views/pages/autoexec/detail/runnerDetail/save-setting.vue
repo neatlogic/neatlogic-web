@@ -95,7 +95,7 @@ export default {
     },
     getTriggerTypeLit() { //触发方式
       let data = {enumClass: 'neatlogic.framework.autoexec.constvalue.JobTriggerType'};
-      this.$api.common.getSelectLit(data).then(res => {
+      this.$api.common.getSelectList(data).then(res => {
         if (res.Status == 'OK') {
           let dataList = res.Return || [];
           this.formConfig.itemList.triggerType.dataList = dataList;

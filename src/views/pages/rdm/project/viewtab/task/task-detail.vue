@@ -1,12 +1,12 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true" :isSiderHide="true">
+    <TsContain :rightWidth="300" :enableCollapse="true">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>
-          <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
+          <strong>[{{ issueData.id }}]{{ issueData.name }}</strong>
         </span>
         <IssueStatus :issueData="issueData"></IssueStatus>
       </template>
@@ -37,45 +37,14 @@
                 <div v-html="issueData.content"></div>
               </div>
             </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
-              <div v-if="currentTab == 'task'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('task')"
-                  ref="taskList"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'task', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('task')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.bug'), 'bug', 'extend', 'from')" name="bug">
-              <div v-if="currentTab == 'bug'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('bug')"
-                  ref="bugList"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'bug', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('bug')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabelForChild(render, issueData, $t('term.rdm.childrequest'))" name="childrequest">
-              <div v-if="currentTab == 'childrequest'" class="pl-nm pr-nm">
+            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'extend', 'to')" name="story">
+              <div v-if="currentTab == 'story'" class="pl-nm pr-nm">
                 <IssueList
                   v-if="id && getApp('story')"
-                  ref="requestList"
-                  :canAppend="true"
+                  :canAppend="false"
                   :canSearch="false"
                   :canAction="true"
-                  :parentId="id"
+                  :toId="id"
                   :app="getApp('story')"
                   @refresh="init"
                 ></IssueList>
@@ -156,6 +125,7 @@ export default {
   data() {
     return {
       currentTab: 'main',
+      isEditIssueShow: false,
       issueData: {},
       issueDataSnapshot: {},
       catalogData: {},
@@ -200,10 +170,12 @@ export default {
   watch: {
     issueData: {
       handler: function(val) {
-        //console.log(JSON.stringify(val, null, 2));
+        console.log(JSON.stringify(val, null, 2));
       },
       deep: true
     }
   }
 };
 </script>
+<style lang="less" scoped>
+</style>

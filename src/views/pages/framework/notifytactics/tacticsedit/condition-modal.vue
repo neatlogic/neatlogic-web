@@ -245,7 +245,7 @@ export default {
     this.getAction();
     this.$nextTick(() => {
       this.initData();
-    }, 500);
+    });
   },
   beforeUpdate() {},
   updated() {},

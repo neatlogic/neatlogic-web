@@ -154,7 +154,7 @@ export default {
       this.isListDeployJobDialogShow = false;
     },
     gethandlerList() { //流水线类型
-      this.$api.common.getSelectLit({enumClass: 'PipelineType'}).then((res) => {
+      this.$api.common.getSelectList({enumClass: 'PipelineType'}).then((res) => {
         if (res.Status == 'OK') {
           this.jobTypeDataList = res.Return || [];
           this.jobTypeDataList.unshift({

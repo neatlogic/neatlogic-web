@@ -156,6 +156,34 @@ export default {
       if (this.formUuid) { //获取表单对应的数据
         this.getFormItem(this.formUuid);
       }
+      this.getFailPolicyList();
+      let failPolicy = this.autoexecConfig.failPolicy || null;
+      this.failPolicy = this.$utils.deepClone(failPolicy);
+    },
+    getFailPolicyList() {
+      let data = {
+        enumClass: 'neatlogic.module.autoexec.constvalue.FailPolicy'
+      };
+      this.$api.common.getSelectList(data).then((res) => {
+        if (res.Status == 'OK') {
+          let failPolicyList = res.Return || [];
+          let newfailPolicyList = [];
+          let isBack = false;
+          if (this.nodeAllLinksList && this.nodeAllLinksList.length > 0) {
+            this.nodeAllLinksList.forEach(item => {
+              if (item.config.type == 'backward') {
+                isBack = true;
+              }
+            });
+          }
+          if (!isBack) {
+            newfailPolicyList = failPolicyList.filter(f => f.value != 'back');
+          } else {
+            newfailPolicyList = failPolicyList;
+          }
+          this.failPolicyList = newfailPolicyList;
+        }
+      });
     },
     nodeValid(href) {
       //校验

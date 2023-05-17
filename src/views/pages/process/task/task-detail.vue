@@ -300,7 +300,7 @@ export default {
           if (this.$refs.processList) {
             this.taskHeight = this.$refs.processList.offsetHeight;
           }
-        }, 500);
+        });
       }
     },
     toNextTask(item) {

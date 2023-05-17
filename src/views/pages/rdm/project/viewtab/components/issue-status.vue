@@ -1,15 +1,17 @@
 <template>
   <span
-    v-if="name"
-    class="ml-xs pl-sm pr-sm radius-lg issue-status"
+    v-if="id"
+    :class="{ actived: actived }"
+    class="cursor ml-xs pl-sm pr-sm radius-lg issue-status fz10"
     :style="{
       '--color': color,
       'border-color': color,
       color: color,
       background: $utils.convertHexToRGBA(color, 0.2)
     }"
+    @click="clickStatus()"
   >
-    <strong>{{ label }}</strong>
+    {{ label }}
   </span>
 </template>
 <script>
@@ -18,28 +20,19 @@ export default {
   components: {},
   props: {
     issueData: { type: Object },
-    status: { type: Number }
+    status: { type: Number },
+    statusData: {type: Object},
+    actived: { type: Boolean }
   },
   data() {
     return {
       color: null,
       label: null,
-      name: null
+      id: null
     };
   },
   beforeCreate() {},
   created() {
-    if (this.issueData && !this.$utils.isEmpty(this.issueData)) {
-      this.name = this.issueData.status;
-      this.color = this.issueData.statusColor;
-      this.label = this.issueData.statusLabel;
-    } else if (this.status) {
-      this.$api.rdm.status.getStatusById(this.status).then(res => {
-        this.name = res.Return.name;
-        this.label = res.Return.label;
-        this.color = res.Return.color;
-      });
-    }
   },
   beforeMount() {},
   mounted() {},
@@ -49,15 +42,61 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    clickStatus() {
+      this.$emit('click', this.id);
+    }
+  },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    issueData: {
+      handler: function(val) {
+        if (val) {
+          this.color = val.statusColor;
+          this.label = val.statusLabel;
+          this.id = val.status;
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    statusData: {
+      handler: function(val) {
+        if (val) {
+          this.color = val.color;
+          this.label = val.label;
+          this.id = val.id;
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    status: {
+      handler: function(val) {
+        if (val) {
+          this.id = val;
+          this.$api.rdm.status.getStatusById(val).then(res => {
+            this.label = res.Return.label;
+            this.color = res.Return.color;
+          });
+        }
+      },
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
 .issue-status {
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
+}
+.issue-status.actived:before {
+  font-family: 'tsfont' !important;
+  content: '\e863';
+  display: inline-block;
+  color: var(--color);
+  margin-right: 3px;
 }
 </style>

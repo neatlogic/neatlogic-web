@@ -1,13 +1,4 @@
 <template>
-  <!--<Tabs :animated="false" :value="currentTab" @on-click="changeTab">
-    <TabPane :label="$t('term.rdm.projectinfo')" name="project"></TabPane>
-    <TabPane
-      v-for="item in appList"
-      :key="item.id"
-      :label="item.name"
-      :name="'app_' + item.id"
-    ></TabPane>
-  </Tabs>-->
   <ButtonGroup>
     <Button :type="currentTab === 'project' ? 'primary' : 'default'" @click="changeTab('project')">{{ $t('term.rdm.projectinfo') }}</Button>
     <Button

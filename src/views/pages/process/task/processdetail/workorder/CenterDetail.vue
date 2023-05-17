@@ -1,9 +1,6 @@
 <template>
   <div class="CenterDetail">
-    <Loading
-      :loadingShow="loadingShow"
-      type="fix"
-    ></Loading>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <!-- 头部描述内容 -->
     <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="mb-nm">
       <div class="padding bg-op radius-lg" style="min-height: 100px">
@@ -16,10 +13,10 @@
           @saveTaskD="saveTaskD"
           @upActivityList="updateStepActive()"
         >
-          <template v-if="startHandler=='changecreate'" v-slot:changeStep>
+          <template v-if="startHandler == 'changecreate'" v-slot:changeStep>
             <!-- 变更 -->
-            <div v-if="handler == 'changecreate' && (actionConfig.complete || (handlerStepInfo.changeStepList && handlerStepInfo.changeStepList.length >0))" class="report-changecreate border-color">
-              <ChangecreateStep ref="changeStepList" :isComplete="actionConfig.complete? true: false" :handlerStepInfo="handlerStepInfo"></ChangecreateStep>
+            <div v-if="handler == 'changecreate' && (actionConfig.complete || (handlerStepInfo.changeStepList && handlerStepInfo.changeStepList.length > 0))" class="report-changecreate border-color">
+              <ChangecreateStep ref="changeStepList" :isComplete="actionConfig.complete ? true : false" :handlerStepInfo="handlerStepInfo"></ChangecreateStep>
             </div>
             <div v-else>
               <ChangeDetail
@@ -48,7 +45,7 @@
       >
         <TabPane
           v-if="hasForm"
-          :label="(render) => getTabPaneLabel(render, 'report', 'ContentDetails')"
+          :label="render => getTabPaneLabel(render, 'report', 'ContentDetails')"
           name="report"
           class="tab-content"
           tab="tab1"
@@ -92,7 +89,7 @@
         </TabPane>
         <TabPane
           v-if="fixedPageTab.changeDetails && ($slots.changecreate || $slots.changehandle)"
-          :label="(render) => renderTabPaneLabel(render, 'changeDetails', $t('term.process.changedetail'))"
+          :label="render => renderTabPaneLabel(render, 'changeDetails', $t('term.process.changedetail'))"
           name="changeDetails"
           class="tab-content"
           tab="tab1"
@@ -108,7 +105,7 @@
         </TabPane>
         <TabPane
           v-if="fixedPageTab.autoexec && $slots.autoexec"
-          :label="(render) => renderTabPaneLabel(render, 'autoexec', $t('page.autoexec'))"
+          :label="render => renderTabPaneLabel(render, 'autoexec', $t('page.autoexec'))"
           name="autoexec"
           class="tab-content"
           tab="tab1"
@@ -121,7 +118,7 @@
         </TabPane>
         <TabPane
           v-if="fixedPageTab.automatic && $slots.automatic"
-          :label="(render) => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
+          :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
           name="automatic"
           class="tab-content"
           tab="tab1"
@@ -133,9 +130,9 @@
           </div>
         </TabPane>
         <template v-for="subStep in taskConfigList">
-          <TabPane      
+          <TabPane
             v-if="fixedPageTab[`subTask${subStep.id}`]"
-            :key="subStep.id"   
+            :key="subStep.id"
             :label="subTask(subStep)"
             :name="'subTask' + subStep.id"
             tab="tab1"
@@ -148,10 +145,10 @@
               :config="subStep"
               @getStepList="getStepList"
             ></StrategyDetail>
-          <!-- 子任务策略end -->
+            <!-- 子任务策略end -->
           </TabPane>
         </template>
-        
+
         <TabPane
           v-if="fixedPageTab.step"
           :label="renderStepList()"
@@ -183,21 +180,17 @@
         </TabPane>
         <TabPane
           v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"
-          :label="(render) => getTabPaneLabel(render,'relevance', 'Relationlist')"
+          :label="render => getTabPaneLabel(render, 'relevance', 'Relationlist')"
           name="relevance"
           class="tab-content"
           tab="tab1"
         >
           <!-- 关联工单 -->
-          <RelationDetail
-            :processTaskConfig="processTaskConfig"
-            :relationAuth="actionConfig.tranferreport"
-            @upActivityList="updateStepActive()"
-          ></RelationDetail>
+          <RelationDetail :processTaskConfig="processTaskConfig" :relationAuth="actionConfig.tranferreport" @upActivityList="updateStepActive()"></RelationDetail>
         </TabPane>
         <TabPane
           v-if="(actionConfig.markrepeat || repeatList.length > 0) && fixedPageTab.markrepeat"
-          :label="(render) => renderTabPaneLabel(render, 'markrepeat', $t('term.process.repeatedevent'))"
+          :label="render => renderTabPaneLabel(render, 'markrepeat', $t('term.process.repeatedevent'))"
           name="markrepeat"
           class="tab-content"
           tab="tab1"
@@ -212,21 +205,17 @@
         </TabPane>
         <TabPane
           v-if="hasAccessoriesList && fixedPageTab.file"
-          :label="(render) => renderTabPaneLabel(render, 'file', $t('term.process.accessorieslist'))"
+          :label="render => renderTabPaneLabel(render, 'file', $t('term.process.accessorieslist'))"
           name="file"
           class="padding tab-content"
           tab="tab1"
-        > 
+        >
           <!-- 附件清单 -->
-          <AccessoriesList
-            ref="processTaskFile"
-            :processTaskId="processTaskId"
-            @update:value="updateAccessoriesList"
-          ></AccessoriesList>
+          <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" @update:value="updateAccessoriesList"></AccessoriesList>
         </TabPane>
         <TabPane
           v-if="fixedPageTab.reportingHistory"
-          :label="(render) => renderTabPaneLabel(render, 'reportingHistory', $t('term.process.reportinghistory'))"
+          :label="render => renderTabPaneLabel(render, 'reportingHistory', $t('term.process.reportinghistory'))"
           name="reportingHistory"
           class="padding tab-content"
           tab="tab1"
@@ -356,7 +345,7 @@
         :processTaskId="processTaskConfig.id"
       ></ScoreEdit>
       <!-- 用户评分end -->
-   
+
       <!-- 回复 -->
       <ReplyContent
         ref="replyContent"
@@ -365,8 +354,7 @@
         :commentObj="commentObj"
         :processTaskStepConfig="processTaskStepConfig"
         :isDisableCommet.sync="isDisableCommet"
-      >
-      </ReplyContent>
+      ></ReplyContent>
       <slot name="replyBtn"></slot>
       <!-- 回复end -->
     </div>
@@ -427,7 +415,8 @@ export default {
     },
     startProcessTaskStep: Object, //上报内容
     replaceableTextConfig: Object, //文案替换（子任务）
-    priorityList: { //优先级列表
+    priorityList: {
+      //优先级列表
       type: Array,
       default: () => []
     },
@@ -550,7 +539,7 @@ export default {
     },
     updateAccessoriesList(val) {
       this.hasAccessoriesList = true;
-      if (this.$utils.isEmpty(val) && (val && this.$utils.isEmpty(val.tbodyList))) {
+      if (this.$utils.isEmpty(val) && val && this.$utils.isEmpty(val.tbodyList)) {
         this.hasAccessoriesList = false;
       }
     },
@@ -558,7 +547,7 @@ export default {
       // 过滤银行定制批量合并上报组件
       let data = this.$utils.deepClone(formConfig);
       if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && process.env.VUE_APP_LOGINTITLE == 'neatlogic') {
-        let arr = formConfig.controllerList.filter((val) => {
+        let arr = formConfig.controllerList.filter(val => {
           return val.handler != 'custommergeprocess';
         });
         data.controllerList = arr;
@@ -618,7 +607,7 @@ export default {
         this.handler = processTaskStepConfig.handler;
         this.taskConfigList = this.getTaskConfigList(processTaskStepConfig.taskConfigList);
         if (!this.$utils.isEmpty(this.taskConfigList)) {
-          this.taskConfigList.forEach((item) => {
+          this.taskConfigList.forEach(item => {
             if (item && item.id) {
               this.fixedPageTab[`subTask${item.id}`] = true;
             }
@@ -666,20 +655,18 @@ export default {
       let data = {
         processTaskId: this.processTaskId
       };
-      this.$api.process.processtask
-        .getAuditList(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            let activeList = res.Return;
-            this.activeData.splice(0);
-            activeList.forEach(active => {
-              if (active.auditDetailList && active.auditDetailList.length > 0) {
-                this.$set(active, 'isShow', false);
-              }
-            });
-            this.activeData = activeList;
-          }
-        });
+      this.$api.process.processtask.getAuditList(data).then(res => {
+        if (res.Status == 'OK') {
+          let activeList = res.Return;
+          this.activeData.splice(0);
+          activeList.forEach(active => {
+            if (active.auditDetailList && active.auditDetailList.length > 0) {
+              this.$set(active, 'isShow', false);
+            }
+          });
+          this.activeData = activeList;
+        }
+      });
     },
 
     getStepStatusList() {
@@ -687,19 +674,17 @@ export default {
       let data = {
         processTaskId: this.processTaskId
       };
-      this.$api.process.processtask
-        .getStepStatusList(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.stepData = res.Return;
-            !this.stepSortIcon && this.stepData.reverse();
-            if (this.stepData && this.stepData.length > 0) {
-              this.stepData.forEach(item => {
-                this.$set(item, 'isShow', false);
-              });
-            }
+      this.$api.process.processtask.getStepStatusList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.stepData = res.Return;
+          !this.stepSortIcon && this.stepData.reverse();
+          if (this.stepData && this.stepData.length > 0) {
+            this.stepData.forEach(item => {
+              this.$set(item, 'isShow', false);
+            });
           }
-        });
+        }
+      });
     },
     saveTaskD() {
       //暂存
@@ -710,7 +695,7 @@ export default {
           if (res.Status == 'OK') {
             this.auditId = res.Return;
             this.$emit('update', data);
-            this.$Message.success(this.$t('page.saved', {target: this.$utils.getCurrenttime('HH:mm:ss')}));
+            this.$Message.success(this.$t('page.saved', { target: this.$utils.getCurrenttime('HH:mm:ss') }));
           }
         });
       }
@@ -812,7 +797,7 @@ export default {
       let validList = [];
       let isValidForm = true;
       if (this.$refs.FormPreview) {
-        isValidForm = await this.$refs.FormPreview.getFormval({processTaskId: this.processTaskId});
+        isValidForm = await this.$refs.FormPreview.getFormval({ processTaskId: this.processTaskId });
       } else if (this.$refs.formSheet) {
         isValidForm = await this.formValid(this.processTaskConfig);
       }
@@ -821,7 +806,7 @@ export default {
           focus: '#form',
           icon: 'tsfont-close-o',
           iconColor: '#FF625A',
-          msg: this.$t('message.process.complete', {target: this.$t('page.form')}),
+          msg: this.$t('message.process.complete', { target: this.$t('page.form') }),
           type: 'error'
         });
       }
@@ -833,16 +818,16 @@ export default {
         if ((this.rightsettingVue.$refs.RightSetting && this.rightsettingVue.$refs.RightSetting.valid()) || this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'ts-complete');
           this.$set(priorityConfig, 'iconColor', '#81D655');
-          this.$set(priorityConfig, 'msg', this.$t('message.process.success', {target: this.$t('page.priority')}));
+          this.$set(priorityConfig, 'msg', this.$t('message.process.success', { target: this.$t('page.priority') }));
           this.$set(priorityConfig, 'type', 'success');
         } else if (!this.processTaskConfig.priorityUuid) {
           this.$set(priorityConfig, 'icon', 'tsfont-close-o');
           this.$set(priorityConfig, 'iconColor', '#FF625A');
-          this.$set(priorityConfig, 'msg', this.$t('message.process.prioritymsg', {target: this.$t('page.priority')}));
+          this.$set(priorityConfig, 'msg', this.$t('message.process.prioritymsg', { target: this.$t('page.priority') }));
           this.$set(priorityConfig, 'type', 'error');
         }
         validList.push(priorityConfig);
-      } 
+      }
       return validList;
     },
     changeValid() {
@@ -878,7 +863,7 @@ export default {
       this.stephidetrList = [];
       this.stepreadtrList = [];
       this.formAttributeHideList = this.processTaskConfig.formAttributeHideList;
-      let authorityList = this.processTaskConfig.formConfigAuthorityList || [];//流程图表单授权
+      let authorityList = this.processTaskConfig.formConfigAuthorityList || []; //流程图表单授权
       try {
         let stepuuid = this.processTaskConfig.currentProcessTaskStep.processStepUuid || this.processTaskConfig.startProcessTaskStep.processStepUuid || null;
         let currentFormlist = this.getCurrentFormauth(stepuuid, authorityList) || [];
@@ -976,23 +961,17 @@ export default {
           'div',
           {
             class: ['activity-log-tab', 'tab-padding'],
-            on: {mouseover: () => this.handleMouseover('step'), mouseleave: this.handleMouseleave}
+            on: { mouseover: () => this.handleMouseover('step'), mouseleave: this.handleMouseleave }
           },
           [
             h('span', {
-              class: [
-                'text-action', 
-                'tsfont', 
-                'sort-icon', 
-                'text-grey',
-                { 'select-icon-left': this.tabValue == 'step' && this.stepSortIcon },
-                { 'select-icon-right': this.tabValue == 'step' && !this.stepSortIcon }],
+              class: ['text-action', 'tsfont', 'sort-icon', 'text-grey', { 'select-icon-left': this.tabValue == 'step' && this.stepSortIcon }, { 'select-icon-right': this.tabValue == 'step' && !this.stepSortIcon }],
               on: {
                 click: this.stepListSort
               }
             }),
             h('span', labelName),
-            h('span', {class: this.mouseoverTabName == 'step' || (this.tabValue == 'step') ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: {title: this.$t('page.fixedpage')}, on: {click: (e) => this.handleFixedPage(e, 'step', labelName)}})
+            h('span', { class: this.mouseoverTabName == 'step' || this.tabValue == 'step' ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: { title: this.$t('page.fixedpage') }, on: { click: e => this.handleFixedPage(e, 'step', labelName) } })
           ]
         );
       };
@@ -1005,7 +984,7 @@ export default {
           'div',
           {
             class: ['activity-log-tab', 'tab-padding'],
-            on: {mouseover: () => this.handleMouseover('activity'), mouseleave: this.handleMouseleave}
+            on: { mouseover: () => this.handleMouseover('activity'), mouseleave: this.handleMouseleave }
           },
           [
             h('span', {
@@ -1015,7 +994,7 @@ export default {
               }
             }),
             h('span', labelName),
-            h('span', {class: this.mouseoverTabName == 'activity' || (this.tabValue == 'activity') ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: {title: this.$t('page.fixedpage')}, on: {click: (e) => this.handleFixedPage(e, 'activity', labelName)}})
+            h('span', { class: this.mouseoverTabName == 'activity' || this.tabValue == 'activity' ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: { title: this.$t('page.fixedpage') }, on: { click: e => this.handleFixedPage(e, 'activity', labelName) } })
           ]
         );
       };
@@ -1025,28 +1004,22 @@ export default {
       return h(
         'div',
         {
-          on: {mouseover: () => this.handleMouseover(tabName), mouseleave: this.handleMouseleave}
+          on: { mouseover: () => this.handleMouseover(tabName), mouseleave: this.handleMouseleave }
         },
-        [
-          h('span', {class: this.hasPendingTasks && tabName == 'changeDetails' ? 'require-label' : ''}, labelName),
-          h('span', {class: this.mouseoverTabName == tabName || (this.tabValue == tabName) ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: {title: this.$t('page.fixedpage')}, on: {click: (e) => this.handleFixedPage(e, tabName, labelName)}})
-        ]
+        [h('span', { class: this.hasPendingTasks && tabName == 'changeDetails' ? 'require-label' : '' }, labelName), h('span', { class: this.mouseoverTabName == tabName || this.tabValue == tabName ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: { title: this.$t('page.fixedpage') }, on: { click: e => this.handleFixedPage(e, tabName, labelName) } })]
       );
     },
     getTabPaneLabel(h, tabName, labelName) {
       // 获取工单中心tab文案信息
       let replaceableTextList = Object.values(this.replaceableTextConfig);
       if (replaceableTextList && replaceableTextList.length > 0) {
-        replaceableTextList.forEach((item) => {
+        replaceableTextList.forEach(item => {
           this.tabLabelReplaceableTextConfig[item.name] = item.value || item.text;
         });
       }
       let tabPanelLabelName = this.tabLabelReplaceableTextConfig[`replaceable${labelName}`];
       if (h) {
-        return h('div', { on: {mouseover: () => this.handleMouseover(tabName), mouseleave: this.handleMouseleave}}, [
-          h('span', {class: tabName == 'report' && this.hasFormRequiredTask ? 'require-label' : ''}, tabPanelLabelName),
-          h('span', {'class': this.mouseoverTabName == tabName || this.tabValue == tabName ? 'tsfont tsfont-pin-angle-o pl-sm' : '', on: {click: (e) => this.handleFixedPage(e, tabName, tabPanelLabelName)}, attrs: {title: this.$t('page.fixedpage')}}, '')
-        ]);
+        return h('div', { on: { mouseover: () => this.handleMouseover(tabName), mouseleave: this.handleMouseleave } }, [h('span', { class: tabName == 'report' && this.hasFormRequiredTask ? 'require-label' : '' }, tabPanelLabelName), h('span', { class: this.mouseoverTabName == tabName || this.tabValue == tabName ? 'tsfont tsfont-pin-angle-o pl-sm' : '', on: { click: e => this.handleFixedPage(e, tabName, tabPanelLabelName) }, attrs: { title: this.$t('page.fixedpage') } }, '')]);
       } else {
         return tabPanelLabelName;
       }
@@ -1073,7 +1046,7 @@ export default {
       // 取消固定页面
       this.loadingShow = true;
       for (let index = 0; index < this.fixedPageList.length; index++) {
-        if (this.fixedPageList[index] && (this.fixedPageList[index]['tabValue'] == tabValue)) {
+        if (this.fixedPageList[index] && this.fixedPageList[index]['tabValue'] == tabValue) {
           this.fixedPageList.splice(index, 1);
           this.$nextTick(() => {
             this.loadingShow = false; // 取消固定页面时，调整tab顺序为初始化时的顺序
@@ -1086,7 +1059,8 @@ export default {
     },
     handleMouseover(tabValue) {
       this.mouseoverTabName = '';
-      if (this.tabValue != tabValue) { // 当前选中的tab默认显示固定图钉按钮
+      if (this.tabValue != tabValue) {
+        // 当前选中的tab默认显示固定图钉按钮
         this.mouseoverTabName = tabValue;
       }
     },
@@ -1117,18 +1091,20 @@ export default {
       this.stepData.reverse();
       localStorage.setItem('stepSortIcon', this.stepSortIcon);
     },
-    getTaskConfigList(list) { //子任务策略，权限过滤
+    getTaskConfigList(list) {
+      //子任务策略，权限过滤
       let arr = [];
       if (list && list.length > 0) {
         list.forEach(item => {
           if (item.processTaskStepTaskList && item.processTaskStepTaskList.length > 0) {
-            if (this.actionConfig.complete) { //有流转权限时，可查看子任务策略
+            if (this.actionConfig.complete) {
+              //有流转权限时，可查看子任务策略
               arr.push(item);
-            } else { 
+            } else {
               //无权限时，仅可查看自己需要处理的策略任务
               let isReplyable = false;
               let processTaskStepTaskList = [];
-              item.processTaskStepTaskList.forEach((s) => {
+              item.processTaskStepTaskList.forEach(s => {
                 let findItem = s.stepTaskUserVoList.find(r => r.isReplyable);
                 if (findItem) {
                   isReplyable = true;
@@ -1140,7 +1116,8 @@ export default {
                 arr.push(item);
               }
             }
-          } else if (this.actionConfig.createtask) { //子任务策略创建权限
+          } else if (this.actionConfig.createtask) {
+            //子任务策略创建权限
             arr.push(item);
           }
         });
@@ -1163,7 +1140,8 @@ export default {
               if (data.changePriority.includes(item.name)) {
                 list.push(item);
               }
-            } if (Array.isArray(data.changePriority)) {
+            }
+            if (Array.isArray(data.changePriority)) {
               if (data.changePriority.join('/').includes(item.name)) {
                 list.push(item);
               }
@@ -1175,7 +1153,8 @@ export default {
             messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
             defaultPriorityConfig = {};
-          } else if (list.length == 0) { //优先级不存在时提示
+          } else if (list.length == 0) {
+            //优先级不存在时提示
             messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
             defaultPriorityConfig = {};
@@ -1204,13 +1183,13 @@ export default {
     getStrategyConfig() {
       // 根据子任务id获取子任务配置信息
       let config = {};
-      return (tabValue) => {
+      return tabValue => {
         let subTaskArr = tabValue.split('subTask'); // subTask634741641125888
         let taskId = '';
         if (subTaskArr && subTaskArr.length > 1) {
           taskId = subTaskArr[1]; // 获取任务id
           if (taskId) {
-            config = this.taskConfigList.find((item) => item.id == taskId);
+            config = this.taskConfigList.find(item => item.id == taskId);
           }
         }
         return config;
@@ -1218,7 +1197,7 @@ export default {
     },
     subTask(h) {
       // 子任务策略
-      return (item) => {
+      return item => {
         let temData = [];
         if (item.processTaskStepTaskList) {
           item.processTaskStepTaskList.forEach(i => {
@@ -1233,12 +1212,16 @@ export default {
           });
         }
         return h => {
-          return h('div', {
-            on: {mouseover: () => this.handleMouseover(`subTask${item.id}`), mouseleave: this.handleMouseleave}
-          }, [
-            h('span', {class: temData && temData.length ? 'require-label' : ''}, item.name), // 待处理子任务，需要高亮
-            h('span', {'class': this.mouseoverTabName == `subTask${item.id}` || this.tabValue == `subTask${item.id}` ? 'tsfont tsfont-pin-angle-o pl-sm' : '', on: {click: (e) => this.handleFixedPage(e, `subTask${item.id}`, item.name)}, attrs: {title: this.$t('page.fixedpage')}}, '')
-          ]);
+          return h(
+            'div',
+            {
+              on: { mouseover: () => this.handleMouseover(`subTask${item.id}`), mouseleave: this.handleMouseleave }
+            },
+            [
+              h('span', { class: temData && temData.length ? 'require-label' : '' }, item.name), // 待处理子任务，需要高亮
+              h('span', { class: this.mouseoverTabName == `subTask${item.id}` || this.tabValue == `subTask${item.id}` ? 'tsfont tsfont-pin-angle-o pl-sm' : '', on: { click: e => this.handleFixedPage(e, `subTask${item.id}`, item.name) }, attrs: { title: this.$t('page.fixedpage') } }, '')
+            ]
+          );
         };
       };
     },
@@ -1252,7 +1235,8 @@ export default {
         };
       };
     },
-    haveProcessTask() { //存在工单信息：上报内容和表单
+    haveProcessTask() {
+      //存在工单信息：上报内容和表单
       return (haveComment, startHandler, formConfig, processTaskConfig) => {
         let haveContent = false;
         if (haveComment || startHandler == 'changecreate' || !this.$utils.isEmpty(formConfig) || (processTaskConfig && processTaskConfig.isHasOldFormProp == 1)) {
@@ -1263,7 +1247,7 @@ export default {
     },
     hasForm() {
       // 流程是否配置表单，无表单不显示内容详情tab
-      return !!((this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)));
+      return !!(this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig));
     },
     hasFormRequiredTask() {
       /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】 
@@ -1275,7 +1259,7 @@ export default {
       let requiredFormValue = {};
       let hidecomponentList = (this.lastFormConfig && this.lastFormConfig.hidecomponentList) || []; // 被隐藏必填组件列表
       if (!this.$utils.isEmpty(this.formConfig) && !this.$utils.isEmpty(this.formConfig.tableList)) {
-        this.formConfig.tableList.forEach((item) => {
+        this.formConfig.tableList.forEach(item => {
           if (item && item.component && item.component.uuid && item.component.config && item.component.config.isRequired) {
             if (this.$utils.isEmpty(hidecomponentList) || (!this.$utils.isEmpty(hidecomponentList) && !hidecomponentList.includes(item.component.uuid))) {
               allRequiredComponentUuidList.push(item.component.uuid); // 拿到显示必填组件uuid列表
@@ -1291,7 +1275,7 @@ export default {
         // 过滤表单必填字段，但为空的值
         if (!this.$utils.isEmpty(allRequiredComponentUuidList)) {
           for (let key of allRequiredComponentUuidList) {
-            if (!this.$utils.isEmpty(requiredFormValue) && (this.$utils.isEmpty(requiredFormValue[key]))) {
+            if (!this.$utils.isEmpty(requiredFormValue) && this.$utils.isEmpty(requiredFormValue[key])) {
               hasFormRequired = true;
             }
           }
@@ -1312,7 +1296,7 @@ export default {
               this.$refs.FormPreview.updateFormval(this.processTaskConfig.formAttributeDataMap);
               this.update();
             }
-          }, 500);
+          });
         } else if (val != oldval) {
           this.update();
         }
@@ -1389,14 +1373,14 @@ function getParent(node) {
 /deep/.ivu-tabs-bar {
   margin-bottom: 0px !important;
 }
-/deep/ .subTask-label{
+/deep/ .subTask-label {
   font-size: 12px;
   margin-left: 4px;
   border-radius: 16px;
   padding: 2px 6px;
 }
 .report-changecreate {
-  border-top:1px solid;
+  border-top: 1px solid;
   padding-top: 16px;
   margin-top: 16px;
 }

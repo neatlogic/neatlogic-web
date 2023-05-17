@@ -8,19 +8,20 @@
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" @click="addIssue()">
-          <span class="tsfont-plus">{{ $t('term.rdm.request') }}</span>
-        </Button>
+        <div class="action-group">
+          <span class="action-item tsfont-os" @click="editDisplayAttr()">
+            {{ $t('term.rdm.attrsetting') }}
+          </span>
+          <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.bug') }}</span>
+        </div>
       </template>
       <template v-slot:content>
-        <div class="mb-md">
-          <IssueList
-            v-if="appData"
-            ref="issueList"
-            :app="appData"
-            @toDetail="toRequestDetail"
-          ></IssueList>
-        </div>
+        <IssueList
+          v-if="appData"
+          ref="issueList"
+          :app="appData"
+          @toDetail="toRequestDetail"
+        ></IssueList>
       </template>
     </TsContain>
     <EditIssue
@@ -29,6 +30,7 @@
       :app="appData"
       @close="closeEditIssue"
     ></EditIssue>
+    <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
   </div>
 </template>
 <script>
@@ -37,7 +39,8 @@ export default {
   components: {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
   },
   props: {
   
@@ -49,7 +52,9 @@ export default {
       projectId: null,
       appData: null,
       currentIssueId: null,
-      isEditIssueShow: false
+      isEditIssueShow: false,
+      isAttrSettingShow: false,
+      isReady: true//刷新issue-list组件
     };
   },
   beforeCreate() {},
@@ -70,6 +75,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editDisplayAttr() {
+      this.isAttrSettingShow = true;
+    },
+    closeAttrSetting(needRefresh) {
+      this.isAttrSettingShow = false;
+      if (needRefresh) {
+        this.reloadIssueList();
+      }
+    },
     toRequestDetail(id) {
       this.$router.push({path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id});
     },

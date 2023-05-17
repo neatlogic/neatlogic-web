@@ -2091,7 +2091,8 @@
     "bug": "defect",
     "requestmanage": "demand management ",
     "disconnect": "Disconnection",
-    "relativerequest": "Related Requirements"
+    "relativerequest": "Related Requirements",
+    "attrsetting": "Field Settings"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

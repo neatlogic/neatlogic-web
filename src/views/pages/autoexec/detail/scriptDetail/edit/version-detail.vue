@@ -107,7 +107,7 @@ export default {
       let data = {
         enumClassList: ['neatlogic.framework.autoexec.constvalue.ParamType', 'neatlogic.framework.autoexec.constvalue.OutputParamType']
       };
-      return this.$api.common.getBatchSelectLit(data).then(res => {
+      return this.$api.common.getBatchSelectList(data).then(res => {
         if (res.Status == 'OK') {
           let obj = res.Return || {};
           this.paramsTypeList = obj['neatlogic.framework.autoexec.constvalue.ParamType'] || [];

@@ -101,7 +101,7 @@ export default {
     },
     getTriggerTypeLit() { //触发方式
       let data = {enumClass: 'JobTriggerType'};
-      this.$api.common.getSelectLit(data).then(res => {
+      this.$api.common.getSelectList(data).then(res => {
         if (res.Status == 'OK') {
           this.itemList.triggerType.dataList = res.Return || [];
         }

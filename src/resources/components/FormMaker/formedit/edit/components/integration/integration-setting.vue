@@ -123,7 +123,7 @@ export default {
       this.$nextTick(() => {
         this.$Message.success('刷新成功');
         this.changeIntegration();
-      }, 1000);
+      });
     },
     addDataSource(val) {
       if (val) {

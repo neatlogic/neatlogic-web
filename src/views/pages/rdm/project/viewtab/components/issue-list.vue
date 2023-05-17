@@ -2,7 +2,7 @@
   <div>
     <div class="mb-md grid">
       <div>
-        <span> 
+        <span>
           <a
             v-if="canAppend"
             href="javascript:void(0)"
@@ -67,7 +67,7 @@
         <div :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
           <span><AppIcon :app="app"></AppIcon></span>
           <span
-            v-if="row.childrenCount"
+            v-if="mode==='level' && row.childrenCount"
             class="cursor text-href"
             :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
             @click="toggleChildIssue(row)"
@@ -126,6 +126,7 @@ export default {
     IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve)
   },
   props: {
+    mode: { type: String, default: 'list' }, //显示模式，有level和list两种
     canSearch: { type: Boolean, default: false },
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
@@ -190,15 +191,19 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    //首先获取用户配置
+    await this.getAppSetting();
     if (this.app.attrList && this.app.attrList.length > 0) {
       this.app.attrList.forEach(attr => {
-        this.theadList.push({ key: attr.id.toString(), title: attr.label });
-        this.searchConfig.searchList.push({
-          type: 'slot',
-          name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
-          label: attr.label
-        });
+        if (['all', 'list'].includes(attr.showType)) {
+          this.theadList.push({ key: attr.id.toString(), title: attr.label });
+          this.searchConfig.searchList.push({
+            type: 'slot',
+            name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+            label: attr.label
+          });
+        }
       });
     }
     if (this.linkAppType && this.linkAppType.length > 0) {
@@ -220,6 +225,29 @@ export default {
     //供外部调用，刷新查询数据
     refresh(currentPage) {
       this.searchIssue(currentPage);
+    },
+    async getAppSetting() {
+      await this.$api.rdm.app.getAppUserSetting(this.app.id).then(res => {
+        this.appSetting = res.Return;
+        if (this.appSetting && this.appSetting?.config?.attrList && 
+        this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
+          this.appSetting.config.attrList.forEach(attrconf => {
+            const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
+            if (attr) {
+              this.$set(attr, 'sort', attrconf.sort);
+              this.$set(attr, 'showType', attrconf.showType || 'all');
+            }
+          });
+        }
+        this.app.attrList.forEach(attr => {
+          if (!attr.showType) {
+            this.$set(attr, 'showType', 'all');
+          }
+        });
+        this.app.attrList.sort((a, b) => {
+          return (a.sort || 0) - (b.sort || 0);
+        });
+      });
     },
     toggleChildIssue(row) {
       if (!row._loading) {
@@ -348,6 +376,7 @@ export default {
         });
     },
     searchIssue(currentPage) {
+      this.searchIssueData.mode = this.mode;
       this.searchIssueData.parentId = this.parentId;
       this.searchIssueData.fromId = this.fromId;
       this.searchIssueData.toId = this.toId;
@@ -413,6 +442,11 @@ export default {
   },
   watch: {
     catalog: {
+      handler: function(val) {
+        this.searchIssue(1);
+      }
+    },
+    mode: {
       handler: function(val) {
         this.searchIssue(1);
       }

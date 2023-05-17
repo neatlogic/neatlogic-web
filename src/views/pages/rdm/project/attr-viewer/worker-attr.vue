@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="userIdList && userIdList.length > 0">
     <UserCard
       v-for="(user, index) in userIdList"
       :key="index"
@@ -7,6 +7,7 @@
       class="pr-sm"
     ></UserCard>
   </div>
+  <div v-else class="text-grey">-</div>
 </template>
 <script>
 import { AttrBase } from './base-privateattr.js';

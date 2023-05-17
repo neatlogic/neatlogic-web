@@ -208,11 +208,7 @@ const errorHandle = res => {
       tip(rejectSource, null, res.config.url, '提示', 'info');
       throw rejectSource;
     default:
-      try {
-        console.log($t('message.urlnotfound', { target: res.config.url }) + '，原因：' + (res.data.Message ? res.data.Message : res.data));
-      } catch (e) {
-        throw e;
-      }
+      console.error($t('message.urlnotfound', { target: res.config.url }) + '，原因：' + (res.data.Message ? res.data.Message : res.data));
   }
 };
 Vue.prototype.$https = instance;
