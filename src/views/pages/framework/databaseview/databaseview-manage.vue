@@ -47,8 +47,7 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
-        { key: 'status', title: this.$t('page.status') },
-        { key: 'action' }
+        { key: 'status', title: this.$t('page.status') }
       ],
       tbodyList: []
     };
