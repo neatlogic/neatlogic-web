@@ -1,29 +1,31 @@
 <template>
   <component
-    :is="appName + 'Handler'"
-    :projectId="projectId"
-    :appId="appId"
+    :is="appData.type + 'Editor'"
+    v-if="appData"
+    ref="editor"
+    :appData="appData"
   ></component>
 </template>
 <script>
-import * as handlers from './index.js';
+import * as editor from './index.js';
 
 export default {
   name: '',
   components: {
-    ...handlers
+    ...editor
   },
   props: {
-    appName: {type: String},
     projectId: {type: Number},
     appId: {type: Number}
   },
   data() {
     return {
+      appData: null
     };
   },
   beforeCreate() {},
   created() {
+    this.getAppById();
   },
   beforeMount() {},
   mounted() {},
@@ -34,6 +36,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAppById() {
+      this.$api.rdm.app.getAppById(this.appId).then(res => {
+        this.appData = res.Return;
+      });
+    }
   },
   filter: {},
   computed: {},

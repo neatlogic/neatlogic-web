@@ -2,13 +2,17 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const projectEdit = () => import('./project/project-edit.vue');
-const bugDetail = () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue');
-const storyDetail = () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue');
-const taskDetail = () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
-const story = () => import('@/views/pages/rdm/project/viewtab/story/story.vue');
-const bug = () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue');
-const task = () => import('@/views/pages/rdm/project/viewtab/task/task.vue');
+const appModules = {
+  bugDetail: () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue'),
+  storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
+  taskDetail: () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue'),
+  iterationDetail: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration-detail.vue'),
+  story: () => import('@/views/pages/rdm/project/viewtab/story/story.vue'),
+  bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
+  task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
+  iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue')
+};
 
 import { $t } from '@/resources/init.js';
 
@@ -57,39 +61,8 @@ let routerArr = [
     name: 'project-edit',
     component: projectEdit,
     meta: {
-      title: $t('router.rdm.projectmanage'),
       ismenu: false,
       icon: 'tsfont-task',
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/story-detail/:projectId/:appId/:issueId',
-    name: 'story-detail',
-    component: storyDetail,
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/bug-detail/:projectId/:appId/:issueId',
-    name: 'bug-detail',
-    component: bugDetail,
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/task-detail/:projectId/:appId/:issueId',
-    name: 'task-detail',
-    component: taskDetail,
-    meta: {
-      ismenu: false,
       authority: 'RDM_BASE',
       type: 'project'
     }
@@ -99,42 +72,37 @@ let routerArr = [
     name: 'project',
     component: project,
     meta: {
-      title: $t('router.rdm.projectdetail'),
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/story/:projectId/:appId',
-    name: 'story',
-    component: story,
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/bug/:projectId/:appId',
-    name: 'bug',
-    component: bug,
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  },
-  {
-    path: '/task/:projectId/:appId',
-    name: 'task',
-    component: task,
-    meta: {
       ismenu: false,
       authority: 'RDM_BASE',
       type: 'project'
     }
   }
 ];
-
+const appList = ['story', 'bug', 'task', 'iteration'];
+appList.forEach(app => {
+  routerArr.push(
+    ...[
+      {
+        path: '/' + app + '/:projectId/:appId',
+        name: app,
+        component: appModules[app],
+        meta: {
+          ismenu: false,
+          authority: 'RDM_BASE',
+          type: 'project'
+        }
+      },
+      {
+        path: '/' + app + '-detail/:projectId/:appId/:issueId',
+        name: app + '-detail',
+        component: appModules[app + 'Detail'],
+        meta: {
+          ismenu: false,
+          authority: 'RDM_BASE',
+          type: 'project'
+        }
+      }
+    ]
+  );
+});
 export default routerArr;

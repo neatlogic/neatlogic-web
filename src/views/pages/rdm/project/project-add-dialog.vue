@@ -13,7 +13,7 @@
 export default {
   name: '',
   components: {
-    ProjectEdit: resolve => require(['./project-edit.vue'], resolve)
+    ProjectEdit: resolve => require(['@/views/pages/rdm/project/edittab/project-edit.vue'], resolve)
   },
   props: {
     id: { type: Number }
@@ -27,7 +27,6 @@ export default {
         isShow: true,
         width: 'medium'
       }
-    
     };
   },
   beforeCreate() {},
@@ -43,9 +42,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getProjectById() {
-
-    },
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },

@@ -2086,7 +2086,11 @@
     "requestmanage": "需求管理",
     "disconnect": "断联",
     "relativerequest": "关联需求",
-    "attrsetting": "字段设置"
+    "attrsetting": "字段设置",
+    "taskmanage": "任务管理",
+    "iterationmanage": "迭代管理",
+    "bugmanage": "缺陷管理",
+    "iteration": "迭代"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

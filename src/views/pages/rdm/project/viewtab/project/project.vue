@@ -1,9 +1,9 @@
 <template>
   <div>
     <TsContain>
-      <template v-slot:navigation>
+      <!--<template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
-      </template>
+      </template>-->
       <template v-slot:topLeft>
         <AppTab v-if="projectId" :projectId="projectId"></AppTab>
       </template>
@@ -85,6 +85,8 @@ export default {
     getProjectById() {
       this.$api.rdm.project.getProjectById(this.projectId).then(res => {
         this.projectData = res.Return;
+        document.title = this.projectData.name;
+        this.$route.meta.title = this.projectData.name;
       });
     },
     getIssueCountByProjectId() {

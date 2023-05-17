@@ -8,6 +8,7 @@ import issueaudit from './issue/issueaudit.js';
 import priority from './issue/priority.js';
 import catalog from './issue/catalog.js';
 import tag from './tag/tag.js';
+import iteration from './iteration/iteration.js';
 
 export default {
   project,
@@ -18,5 +19,6 @@ export default {
   issueaudit,
   priority,
   catalog,
-  tag
+  tag,
+  iteration
 };

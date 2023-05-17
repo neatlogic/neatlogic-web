@@ -112,7 +112,7 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusEditDialog: resolve => require(['./components/app-status-edit-dialog.vue'], resolve),
+    StatusEditDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-status-edit-dialog.vue'], resolve),
     AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-statusrel-config-dialog.vue'], resolve)
   },
   props: {
