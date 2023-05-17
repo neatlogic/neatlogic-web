@@ -145,6 +145,7 @@
     "jobmanage": "定时作业",
     "filemanage": "附件管理",
     "fullTextIndexmanage": "重建索引",
+    "databaseView": "重建数据库视图",
     "modulemanage": "模块管理",
     "threaddump": "线程快照",
     "sqldump": "SQL监控",

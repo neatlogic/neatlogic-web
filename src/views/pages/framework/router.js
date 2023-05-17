@@ -52,6 +52,8 @@ const licenseManage = () => import('./license/license-manage.vue');
 
 const moduleManage = () => import('./module/module-manage.vue');
 const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // 批量操作
+const databaseViewManage = () => import('./databaseview/databaseview-manage.vue');//重建视图
+
 import {$t} from '@/resources/init.js';
 
 export default [
@@ -575,6 +577,18 @@ export default [
       ismenu: true,
       icon: 'tsfont-node',
       authority: 'FULLTEXTINDEX_MODIFY',
+      type: 'others'
+    }
+  },
+  {
+    path: '/databaseview-manage',
+    name: 'databaseview-manage',
+    component: databaseViewManage,
+    meta: {
+      title: $t('router.framework.databaseView'),
+      ismenu: true,
+      icon: 'tsfont-setting',
+      authority: 'ADMIN',
       type: 'others'
     }
   },
