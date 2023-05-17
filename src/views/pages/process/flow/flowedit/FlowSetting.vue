@@ -63,7 +63,6 @@
       ref="NoticeSetting"
       v-model="activeSetting.informSetting"
       :formUuid="formUuid"
-      :hasGlobal="false"
       :config="notifyPolicyConfig"
     ></NoticeSetting>
     <!-- 动作设置 -->
@@ -321,7 +320,7 @@ export default {
       let config = this.configData = this.$utils.deepClone(this.processConfig);
       if (this.activeSetting) {
         this.activeSetting.permission = config.enableAuthority || 0;
-        this.activeSetting.informSetting = config.notifyPolicyConfig && config.notifyPolicyConfig.policyId ? 1 : 0;
+        this.activeSetting.informSetting = config.notifyPolicyConfig && config.notifyPolicyConfig.isCustom || 0;
         this.activeSetting.actionSetting = config.actionConfig && config.actionConfig.actionList && config.actionConfig.actionList.length ? 1 : 0;
       }
       this.actionConfig = config.actionConfig || {};

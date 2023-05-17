@@ -3,15 +3,12 @@
   <div class="app-manage-wrap">
     <AppInfo :appSystemId="appSystemId"></AppInfo>
     <div class="border-bottom border-color"></div>
-    <div class="pt-nm">
-      <span class="pl-nm">{{ $t('page.notify') }}</span>
-    </div>
-    <div class="mb-nm">
-      <TsForm
-        ref="form"
-        v-model="formValue"
-        :item-list="formList"
-      ></TsForm>
+    <div>
+      <NoticeSetting
+        ref="noticeSetting"
+        layoutType="custom"
+        :config="notifyPolicyConfig"
+      ></NoticeSetting>
     </div>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
@@ -138,7 +135,7 @@ export default {
     AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit.vue'], resolve),
     AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
     BatchEditAuthDialog: resolve => require(['@/views/pages/deploy/application-config/config/app/components/batch-edit-auth-dialog.vue'], resolve), // 批量编辑权限
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve)
   },
   props: {
     appSystemId: {
@@ -177,28 +174,14 @@ export default {
         theadList: [],
         tbodyList: []
       },
-      formValue: {
-        notifyPolicyId: null
-      },
-      formList: [
-        {
-          type: 'select',
-          label: this.$t('page.notificationstrategy'),
-          name: 'notifyPolicyId',
-          dynamicUrl: 'api/rest/notify/policy/search',
-          params: {handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler'},
-          search: true,
-          rootName: 'tbodyList',
-          valueName: 'id',
-          textName: 'name',
-          width: '30%',
-          labelWidth: 82,
-          onChange: (val) => {
-            this.changeNotifyPolicy(val);
-          }
-        }
-      ]
-
+      notifyPolicyConfig: {
+        // 通知策略配置信息
+        policyId: '',
+        policyName: '',
+        policyPath: '',
+        handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler',
+        paramMappingList: []
+      }
     };
   },
   beforeCreate() {},
@@ -532,12 +515,13 @@ export default {
       });
     },
     getAppSystemNotifyId(appSystemId) {
+      // 获取发布应用的通知策略id
       let param = {
         appSystemId: appSystemId
       };
       this.$api.deploy.applicationConfig.getAppSystemNotifyId(param).then((res) => {
         if (res.Status == 'OK') {
-          this.formValue.notifyPolicyId = res.Return;
+          // this.formValue.notifyPolicyId = res.Return;
         }
       });
     }

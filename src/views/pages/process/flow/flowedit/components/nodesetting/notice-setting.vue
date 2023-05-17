@@ -1,58 +1,94 @@
 <template>
-  <div class="settingList">
-    <div v-if="showTitle" class="control-box">
-      <div class="control-setting">
-        <span class="label">
-          <span>{{ $t('page.noticesetting') }}</span>
-          <span class="pl-xs text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
-        </span>
-        <span class="control-btn">
+  <div class="notice-setting-box" :class="hasPadding ? 'pt-sm pb-sm pl-nm pr-nm' : ''">
+    <div :class="isActive ? 'pb-sm' : ''">
+      <ul v-if="layoutType == 'default'" class="notifypolicy-box">
+        <!-- 【流程设置/节点设置】通知策略样式 -->
+        <li>
+          <span class="text-grey">{{ $t('page.noticesetting') }}</span>
+          <span class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
+        </li>
+        <li>
           <span
-            class="tip text-tip"
-          >{{ isActive ==1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
+            class="tip text-tip pr-xs"
+          >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
           <i-switch
             v-model="isActive"
             :true-value="1"
             :false-value="0"
             @on-change="changeSwitch"
           ></i-switch>
-        </span>
-      </div>
+        </li>
+      </ul>
+      <ul v-else-if="layoutType == 'flexBetween'" class="notifypolicy-box">
+        <!-- 【自动化/时效设置】通知策略样式 -->
+        <li>
+          <span
+            class="tip text-tip pr-xs"
+          >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
+          <i-switch
+            v-model="isActive"
+            :true-value="1"
+            :false-value="0"
+            @on-change="changeSwitch"
+          ></i-switch>
+        </li>
+        <li>
+          <span class="text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
+        </li>
+      </ul>
+      <ul v-else-if="layoutType == 'custom'">
+        <!-- 【应用配置/应用信息】通知策略 -->
+        <li class="pb-sm">
+          <span>{{ $t('page.notify') }}</span>
+          <span class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
+        </li>
+        <li>
+          <span
+            class="tip text-tip pr-xs"
+          >{{ isActive == 1 ? ($t('page.custom') + $t('page.notificationstrategy')) : $t('term.framework.defaultpolicy') }}</span>
+          <i-switch
+            v-model="isActive"
+            :true-value="1"
+            :false-value="0"
+            @on-change="changeSwitch"
+          ></i-switch>
+        </li>
+      </ul>
     </div>
-    <div v-if="isActive == 1" class="permission-list">
-      <div class="bg-block " :class="{'notice':showTitle}">
-        <div class="notice-setting">
-          <div class="list">
-            <TsRow>
-              <Col span="18">
-                <TsFormSelect
-                  ref="notifyPolicy"
-                  v-model="notifyPolicyConfig.policyId"
-                  v-bind="notifySelectConfig"
-                  @first="gotoAddNotify()"
-                >
-                </TsFormSelect>
-              </Col>
-              <Col span="6">
-                <span class="tsfont-rotate-right notify-icon text-tip-active" :title="$t('page.refresh')" @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "></span>
-                <span
-                  v-if="notifyPolicyConfig.policyId"
-                  class="tsfont-edit notify-icon text-tip-active"
-                  :title="$t('page.edit')"
-                  @click="gotoAddNotify(notifyPolicyConfig.policyId)"
-                ></span>
-              </Col>
-            </TsRow>
-          </div>
+    <template v-if="isActive == 1">
+      <div class="notifypolicy-operation-box">
+        <TsFormSelect
+          ref="notifyPolicy"
+          v-model="notifyPolicyConfig.policyId"
+          v-bind="notifySelectConfig"
+          class="tsformselect-box-width"
+          @first="gotoAddNotify()"
+        >
+        </TsFormSelect>
+        <div class="operation-btn-box text-center">
+          <span
+            class="tsfont-rotate-right text-tip-active"
+            :class="notifyPolicyConfig.policyId ? 'pr-sm' : ''"
+            :title="$t('page.refresh')"
+            @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "
+          ></span>
+          <span
+            v-if="notifyPolicyConfig.policyId"
+            class="tsfont-edit text-tip-active"
+            :title="$t('page.edit')"
+            @click="gotoAddNotify(notifyPolicyConfig.policyId)"
+          ></span>
         </div>
       </div>
-    </div>
+    </template>
     <PersonSettingsDialog
       v-if="isShowPersonSettingDialog"
       :policyId="notifyPolicyConfig.policyId"
       :border="border"
       :conditionNodeList="conditionNodeList"
+      :excludeTriggerList="notifyPolicyConfig.excludeTriggerList"
       :paramMappingList="notifyPolicyConfig.paramMappingList"
+      @close="closePersonSettingsDialog"
     ></PersonSettingsDialog>
   </div>
 
@@ -83,11 +119,6 @@ export default {
       }
     },
     handler: String, //搜索通知策略的handler 统一先从config里面取，如果没有才看handler 这个主要是为了兼容实效策略
-    hasGlobal: {// 是否自定义通知设置
-      type: Boolean,
-      default: false
-    },
-    defaultIsActive: Number, //是否打开通知设置
     border: {
       type: String,
       default: 'border'
@@ -95,7 +126,12 @@ export default {
     nodeConfig: {
       type: Object
     },
-    showTitle: {//是否显示头部
+    layoutType: { // 通知策略样式，模式是流程设置
+      type: String,
+      default: 'default' // default/
+    },
+    hasPadding: {
+      // 是否需要间隙
       type: Boolean,
       default: true
     }
@@ -104,11 +140,9 @@ export default {
     return {
       isActive: 0,
       notifyPolicyConfig: {},
-      nodePolicyId: '', //选中ID
       conditionNodeList: [], //右边下拉框数据
       paramList: [], //参数列表
       firstText: this.$t('term.process.policy'),
-      firstLi: true,
       notifySelectConfig: {
         dynamicUrl: '/api/rest/notify/policy/search',
         filterable: true,
@@ -117,9 +151,13 @@ export default {
         valueName: 'id',
         textName: 'name',
         rootName: 'tbodyList',
+        validateList: ['required'],
         params: {handler: this.config.handler || this.handler}
       },
-      isShowPersonSettingDialog: false
+      isShowPersonSettingDialog: false,
+      tacticsObj: {}, // 个性设置
+      defaultPolicyId: null, // 默认通知策略的Id
+      defaultDeepCloneConfig: {}
     };
   },
 
@@ -139,7 +177,7 @@ export default {
       if (val) {
         window.open(HOME + '/framework.html#/notifytactics-edit?id=' + val, '_blank');
       } else {
-        let handler = this.config.handler || this.handler;
+        let handler = this.defaultDeepCloneConfig.handler || this.handler;
         window.open(HOME + '/framework.html#/notifytactics-overview?addNotify=' + true + '&handler=' + handler, '_blank');
       }
     },
@@ -149,68 +187,101 @@ export default {
       this.$Message.success(this.$t('message.executesuccess'));
     },
 
-    getConditionNode() { //获取参数对应的可选值 条件
-      let handler = this.config.handler || this.handler;
-      if (!this.config || !handler) {
+    async getConditionNode() { //获取参数对应的可选值 条件
+      let handler = this.defaultDeepCloneConfig.handler || this.handler;
+      if (!this.defaultDeepCloneConfig || !handler) {
         return;
       }
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
       this.notifySelectConfig.params.handler = handler;
+      this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
+      if (!this.isActive && this.$utils.isEmpty(this.defaultPolicyId)) {
+        // 为空，默认通知策略时，需要查默认通知策略的名称
+        await this.getDefaultPolicyId(handler);
+      }
       this.$api.process.process.getNotifyPolicyList(formData).then(res => {
         if (res.Status == 'OK') {
           this.conditionNodeList = res.Return.tbodyList || [];
-          const dataList = this.config.paramMappingList;
-          this.notifyPolicyConfig.policyId = this.config.policyId;
-          this.notifyPolicyConfig.paramMappingList = dataList;
-          this.notifyPolicyConfig.isCustom = this.config.isCustom; // 是否自定义通知策略
+          this.$set(this.notifyPolicyConfig, 'policyId', (this.defaultDeepCloneConfig.policyId && this.defaultDeepCloneConfig.isCustom) ? this.defaultDeepCloneConfig.policyId : this.defaultPolicyId); // 设置自定义通知策略，使用自定义通知策略，否则使用默认通知策略
+          this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
+          this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
+          this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
         }
       });
     },
     getData() { //获取数据
-      let data = this.$utils.deepClone(this.config);
-      let paramMappingList = [];
-      if (this.notifyPolicyConfig && this.notifyPolicyConfig.policyId) {
-        this.paramList && this.paramList.forEach(citem => {
-          let data = {
-            name: citem.name,
-            value: citem.value || '',
-            type: 'constant'
-          }; 
-          let paramItem = this.paramTypeConfig[citem.paramType] ? this.paramTypeConfig[citem.paramType].find(cc => cc.value == citem.value) : null;
-          data.type = paramItem ? (paramItem.type || data.type) : data.type;
-          if (citem.paramType == 'date' && !this.$utils.isEmpty(citem.value)) { //判断值为空的情况
-            data.value = citem.value.startTime ? citem.value.startTime : citem.value.timeRange;
-          }
-          paramMappingList.push(data);
-        });
-      }
-      return Object.assign(data, {
-        policyId: this.notifyPolicyConfig.policyId || undefined,
+      let data = {};
+      data = {
+        policyId: this.notifyPolicyConfig.policyId || this.defaultDeepCloneConfig.defaultPolicyId || undefined,
         policyName: this.notifyPolicyConfig.policyName || undefined,
         policyPath: this.notifyPolicyConfig.policyPath || undefined,
-        handler: this.config?.handler ? this.config.handler : this.handler,
-        paramMappingList: paramMappingList
-      });
+        handler: this.defaultDeepCloneConfig?.handler ? this.defaultDeepCloneConfig.handler : this.handler,
+        isCustom: this.isActive,
+        ...this.tacticsObj
+      };
+      return data;
     },
     valid() { //校验
-      const validList = [];
+      let isValid = true;
       const data = this.getData();
-      data.paramMappingList.forEach(item => {
-        if (!item.value) {
-          validList.push(false);
+      console.log('返回的值', data);
+      if (data && data.isCustom) {
+        // 自定义通知策略，必填
+        if (!data.hasOwnProperty('paramMappingList') || (data.hasOwnProperty('paramMappingList') && this.$utils.isEmpty(data.paramMappingList))) {
+          isValid = false;
+        } else if (!this.$utils.isEmpty(data.paramMappingList) && this.$utils.isEmpty(data.paramMappingList.filter((item) => !item.value))) {
+          isValid = false;
+        } else {
+          isValid = true;
         }
-      });
-      return !validList.length;
-    },
-    changeSwitch() {
-      if (!this.isActive) {
-        this.notifyPolicyConfig.policyId = undefined;
-        this.notifyPolicyConfig.paramMappingList = [];
       }
+      console.log('返回的值', isValid);
+      return isValid;
+    },
+    changeSwitch(isActive) {
+      this.tacticsObj = {};
+      if (isActive) {
+        this.notifyPolicyConfig.policyId = null;
+        this.notifyPolicyConfig.paramMappingList = [];
+        this.notifyPolicyConfig.excludeTriggerList = [];
+      } else if (!isActive) {
+        // 为空时，需要设置默认参数值
+        this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
+        this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
+        this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
+      }
+      this.isActive = isActive;
+      this.notifyPolicyConfig.isCustom = this.isActive;
       this.$emit('change', this.isActive);
     },
     openPersonSettingDialog() {
       this.isShowPersonSettingDialog = true;
+    },
+    closePersonSettingsDialog(needUpdateValue, tacticsData) {
+      this.isShowPersonSettingDialog = false;
+      if (needUpdateValue) {
+        this.tacticsObj = tacticsData;
+      }
+    },
+    getDefaultPolicyId(handler) {
+      let data = {
+        handler: handler,
+        needPage: false
+      };
+      let notifyList = [];
+      this.defaultPolicyId = null;
+      return this.$api.framework.tactics.searchNotifyList(data).then(res => {
+        if (res.Status == 'OK') {
+          notifyList = res.Return.tbodyList;
+          if (!this.$utils.isEmpty(notifyList)) {
+            notifyList.forEach((item) => {
+              if (item && item.isDefault) {
+                this.defaultPolicyId = item.id;
+              }
+            });
+          }
+        }
+      });
     }
   },
   filter: {},
@@ -222,124 +293,32 @@ export default {
     },
     config: {
       handler(newVal) {
+        this.defaultDeepCloneConfig = this.$utils.deepClone(newVal);
         this.getConditionNode();
       },
       deep: true,
-      immediate: true
-    },
-    defaultIsActive: {
-      handler(val) {
-        this.isActive = val;
-      },
       immediate: true
     }
   }
 };
 </script>
 <style lang='less' scoped>
-@import '~@/resources/assets/css/variable.less';
-.notice-setting {
-  .notify-icon {
-    line-height: 32px;
-    cursor: pointer;
-    &:not(:last-of-type){
-      padding-right: @space-sm;
-    }
+.notice-setting-box {
+  .notifypolicy-box {
+    display: flex;
+    justify-content: space-between;
   }
-  .show-text {
-    margin-top: 8px;
-    cursor: pointer;
-    display: inline-block;
+  .notifypolicy-operation-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  .isHidden {
-    display: none !important;
+  .operation-btn-box {
+    width: 45px;
   }
-  .list {
-     width: 100%;
-    .second-title {
-      padding-bottom: 8px;
-    }
-
-    .wrapper {
-      .text-list {
-        position: relative;
-        width: 100%;
-        line-height: 40px;
-
-        .title {
-          // display: inline-block;
-          position: absolute;
-          text-align: left;
-
-          &.text-right {
-            width: 70px;
-            text-align: right;
-          }
-        }
-
-        .text {
-          padding-left: 48px;
-          display: block;
-          line-height: 40px;
-
-          &.custom-select {
-            padding-left: 80px;
-            width: 94%;
-          }
-        }
-      }
-
-      .status-list {
-        display: flex;
-        position: relative;
-        width: 100%;
-        // height: 40px;
-        // line-height: 40px;
-        padding-top: 10px;
-        .status-left {
-          display: inline-block;
-          width: 36%;
-        }
-
-        .status-center {
-          display: inline-block;
-          width: 16%;
-        }
-
-        .status-right {
-          float: right;
-          width: 48%;
-
-          .ivu-input {
-            height: @line-height-chart;
-            text-align: center;
-          }
-        }
-      }
-
-      .form-list {
-        height: 40px;
-        line-height: 40px;
-        overflow: hidden;
-        position: relative;
-
-        .select-style {
-          width: 45%;
-          float: left;
-        }
-
-        .removePermission {
-          cursor: pointer;
-          position: absolute;
-          right: 0;
-          top: 0;
-
-          &:hover {
-            color: @default-primary-color;
-          }
-        }
-      }
-    }
+  .tsformselect-box-width {
+    width: calc(100% - 45px); // 45为 【刷新/编辑】操作按钮的宽度
   }
 }
+
 </style>

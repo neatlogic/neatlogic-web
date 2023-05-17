@@ -131,9 +131,7 @@
           <div class="bg-op padding-sm radius-sm">
             <NoticeSetting
               ref="noticeSetting"
-              :showTitle="false"
-              :defaultIsActive="1"
-              :hasGlobal="false"
+              layoutType="flexBetween"
               :config="invokeNotifyPolicyConfig"
             ></NoticeSetting>
           </div>

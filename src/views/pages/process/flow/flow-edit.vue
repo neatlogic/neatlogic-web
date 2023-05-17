@@ -659,6 +659,7 @@ export default {
       // 流程数据验证
       if (action !== 'save') this.validCardOpen = true;
       var is = nodeValid(allNode);
+      console.log('验证的数据', is);
       return is;
     },
     getShape(data) {
