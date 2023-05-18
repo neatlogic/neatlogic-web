@@ -62,7 +62,7 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CustomAttrEdit: resolve => require(['./components/customattr-edit-dialog.vue'], resolve)
+    CustomAttrEdit: resolve => require(['@/views/pages/rdm/project/edittab/components/customattr-edit-dialog.vue'], resolve)
   },
   props: {
     projectId: { type: Number },

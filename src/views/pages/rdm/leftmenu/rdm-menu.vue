@@ -11,7 +11,7 @@
           v-for="project in projectList"
           :key="project.id"
           class="link"
-          :class="{ active: $isMenuActive('/project-detail/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
+          :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
           <a class="cursor">
             <div style="position:relative">
@@ -52,7 +52,7 @@ import LeftMenu from '@/views/components/leftmenu/leftmenu';
 export default {
   name: 'RdmMenu',
   components: {
-    ProjectEditDialog: resolve => require(['@/views/pages/rdm/project/edittab/project-edit-dialog.vue'], resolve)
+    ProjectEditDialog: resolve => require(['@/views/pages/rdm/project/project-add-dialog.vue'], resolve)
   },
   extends: LeftMenu,
   data: function() {

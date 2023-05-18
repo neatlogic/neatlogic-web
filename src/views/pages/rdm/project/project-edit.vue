@@ -5,7 +5,7 @@
     </template>
     <template v-slot:topLeft></template>
     <template v-slot:sider>
-      <div style="height:calc(100vh - 205px)" class="pr-md">
+      <div style="height: calc(100vh - 205px)" class="pr-md">
         <div class="text-title padding-xs">{{ $t('term.rdm.projectsets') }}</div>
         <ul>
           <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectinfo' }" @click="currentTab = 'projectinfo'">
@@ -18,15 +18,15 @@
         <div class="text-title padding-xs">{{ $t('term.rdm.appsets') }}</div>
         <ul>
           <li
-            v-for="item in objectList"
+            v-for="item in allList"
             :key="item.id"
             class="text-default overflow radius-sm padding-xs cursor"
             :title="item.name"
-            :class="{ 'bg-selected': currentTab === 'object_' + item.name }"
+            :class="{ 'bg-selected': currentTab === 'app_' + item.name }"
             @click="
-              currentTab = 'object_' + item.name;
+              currentTab = 'app_' + item.name;
               appId = null;
-              $nextTick(()=>{
+              $nextTick(() => {
                 appId = item.id;
               });
             "
@@ -45,7 +45,9 @@
     <template v-slot:content>
       <div v-if="currentTab === 'projectinfo'"><ProjectEdit :id="projectId"></ProjectEdit></div>
       <div v-else-if="currentTab === 'projectstatus'"><ProjectStatus :projectId="projectId"></ProjectStatus></div>
-      <div v-else-if="currentTab.startsWith('object_') && appId"><AppEdit :projectId="projectId" :appId="appId"></AppEdit></div>
+      <div v-else-if="currentTab.startsWith('app_') && appId">
+        <AppEditor :projectId="projectId" :appId="appId"></AppEditor>
+      </div>
       <div v-else-if="currentTab === 'others'">
         <MoreEdit :projectId="projectId" @close="close"></MoreEdit>
       </div>
@@ -58,7 +60,7 @@ export default {
   name: '',
   components: {
     ProjectEdit: resolve => require(['./edittab/project-edit.vue'], resolve),
-    AppEdit: resolve => require(['./edittab/app-edit.vue'], resolve),
+    AppEditor: resolve => require(['./edittab/app-editor.vue'], resolve),
     MoreEdit: resolve => require(['./edittab/more-edit.vue'], resolve),
     ProjectStatus: resolve => require(['./edittab/project-status-edit.vue'], resolve)
   },
@@ -72,7 +74,7 @@ export default {
         width: 'huge',
         hasFooter: false
       },
-      objectList: [],
+      allList: [],
       appId: null,
       currentTab: 'projectinfo'
     };
@@ -94,7 +96,7 @@ export default {
     getAppByProjectId() {
       if (this.projectId) {
         this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
-          this.objectList = res.Return;
+          this.allList = res.Return;
         });
       }
     },

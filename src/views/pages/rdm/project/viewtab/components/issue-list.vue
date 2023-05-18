@@ -55,7 +55,7 @@
       </div>
     </div>
     <TsTable
-      v-if="isShowEmptyTable || (issueData && issueData.tbodyList && issueData.tbodyList.length > 0)"
+      v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
       :theadList="finalTheadList"
       v-bind="issueData"
       multiple
@@ -94,6 +94,7 @@
         </div>
       </template>
     </TsTable>
+    <NoData v-else-if="isShowEmptyTable"></NoData>
     <EditIssue
       v-if="isEditIssueShow"
       :app="app"

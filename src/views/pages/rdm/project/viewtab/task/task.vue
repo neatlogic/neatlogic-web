@@ -1,9 +1,6 @@
 <template>
   <div>
     <TsContain :enableCollapse="true">
-      <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
-      </template>
       <template v-slot:topLeft>
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
       </template>
@@ -20,6 +17,7 @@
           v-if="appData"
           ref="issueList"
           :app="appData"
+          :isShowEmptyTable="true"
           @toDetail="toRequestDetail"
         ></IssueList>
       </template>
@@ -34,6 +32,8 @@
   </div>
 </template>
 <script>
+import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
+
 export default {
   name: '',
   components: {
@@ -42,15 +42,13 @@ export default {
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
   },
+  mixins: [mixins],
   props: {
   
   },
   data() {
     return {
-      pageName: this.$t('term.rdm.requestmanage'),
-      appId: null,
-      projectId: null,
-      appData: null,
+      pageName: this.$t('term.rdm.taskmanage'),
       currentIssueId: null,
       isEditIssueShow: false,
       isAttrSettingShow: false,
@@ -59,12 +57,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    //初始化当前页面名称
-    document.title = this.pageName;
-    this.$route.meta.title = this.pageName;
-    this.projectId = Math.floor(this.$route.params['projectId']);
-    this.appId = Math.floor(this.$route.params['appId']);
-    this.getAppById();
   },
   beforeMount() {},
   mounted() {},
@@ -87,11 +79,6 @@ export default {
     toRequestDetail(id) {
       this.$router.push({path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id});
     },
-    getAppById() {
-      this.$api.rdm.app.getAppById(this.appId).then(res => {
-        this.appData = res.Return;
-      });
-    },
     addIssue() {
       this.isEditIssueShow = true;
       this.currentIssueId = null;
@@ -102,11 +89,11 @@ export default {
         this.refreshIssueList();
       }
     },
-    refreshIssueList(currentPage) {
-      const issueList = this.$refs['issueList'];
-      if (issueList) {
-        issueList.refresh(currentPage);
-      }
+    reloadIssueList() {
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     editIssue(issue) {
       this.isEditIssueShow = true;

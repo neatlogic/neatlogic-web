@@ -2092,7 +2092,11 @@
     "requestmanage": "demand management ",
     "disconnect": "Disconnection",
     "relativerequest": "Related Requirements",
-    "attrsetting": "Field Settings"
+    "attrsetting": "Field Settings",
+    "taskmanage": "task management",
+    "iterationmanage": "Iterative management",
+    "bugmanage": "defect management ",
+    "iteration": "iteration"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

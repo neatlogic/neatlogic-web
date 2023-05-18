@@ -178,7 +178,7 @@
                   :title="nextStepList[0].name ? nextStepList[0].flowDirection + nextStepList[0].name : null"
                   @click="completeStep(nextStepList[0])"
                 >
-                  <div class="overflow" style="max-width:150px">{{ actionConfig.complete }}</div>
+                  <div class="overflow" style="max-width:150px">{{ nextStepList[0].aliasName || actionConfig.complete }}</div>
                 </Button>
               </span>
               <!-- 流转_end -->

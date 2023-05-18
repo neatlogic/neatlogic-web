@@ -2,10 +2,10 @@
   <div>
     <Tabs v-model="currentTab">
       <TabPane :label="$t('term.rdm.attributesetting')" name="attr" class="pl-md">
-        <AttrEdit v-if="currentTab === 'attr'" :appId="appId" :projectId="projectId"></AttrEdit>
+        <AttrEdit v-if="currentTab === 'attr'" :appId="appData.id" :projectId="appData.projectId"></AttrEdit>
       </TabPane>
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
-        <AppStatus v-if="currentTab === 'objectstatus'" :appId="appId" :projectId="projectId"></AppStatus>
+        <AppStatus v-if="currentTab === 'objectstatus'" :appId="appData.id" :projectId="appData.projectId"></AppStatus>
       </TabPane>
     </Tabs>
   </div>
@@ -14,12 +14,11 @@
 export default {
   name: '',
   components: {
-    AttrEdit: resolve => require(['./attr-edit.vue'], resolve),
-    AppStatus: resolve => require(['./app-status-edit.vue'], resolve)
+    AttrEdit: resolve => require(['@/views/pages/rdm/project/edittab/components/attr-edit.vue'], resolve),
+    AppStatus: resolve => require(['@/views/pages/rdm/project/edittab/components/app-status-edit.vue'], resolve)
   },
   props: {
-    projectId: {type: Number},
-    appId: {type: Number}
+    appData: {type: Object}
   },
   data() {
     return {
@@ -27,7 +26,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {
+  created() {
   },
   beforeMount() {},
   mounted() {},
