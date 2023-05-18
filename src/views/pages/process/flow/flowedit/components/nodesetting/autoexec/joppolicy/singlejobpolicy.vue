@@ -204,7 +204,7 @@
                       ref="formValid"
                       v-model="r.column"
                       :dataList="getAttrList(r.value)"
-                      :validateList="r.isRequired && r.column?validateList:[]"
+                      :validateList="r.isRequired && r.value?validateList:[]"
                       :firstSelect="false"
                       transfer
                       border="border"
