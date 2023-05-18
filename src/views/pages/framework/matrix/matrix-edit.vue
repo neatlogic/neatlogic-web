@@ -73,9 +73,11 @@
           :tbodyList="tabledata.tbodyList || []"
           :theadList="tabledata.theadList"
           multiple
+          canDrag
           @getSelected="getSelect"
           @changeCurrent="getPagedata"
           @changePageSize="changePageSize"
+          @updateRowSort="updateRowSort"
         >
           <template v-for="(item, index) in tabledata.theadList" :slot="item.key" slot-scope="{ row }">
             <div v-if="isUserSelect(row[item.key])" :key="index">
@@ -389,6 +391,27 @@ export default {
       if (needRefresh) {
         this.getMatrixData();
       }
+    },
+    updateRowSort({ oldIndex, newIndex }) {
+      if (oldIndex == newIndex) {
+        return;
+      }
+      let tbodyList = this.tabledata.tbodyList;
+      let uuid = tbodyList[oldIndex].uuid.value;
+      let toUuid = tbodyList[newIndex].uuid.value;
+      const param = {
+        matrixUuid: this.matrixUuid,
+        uuid: uuid, 
+        toUuid: toUuid
+      };
+      this.$api.framework.matrix.moveMatrixData(param)
+        .then(res => {
+          if (res.Status === 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          } else throw res;
+        }).finally(() => {
+          this.getMatrixData();
+        });
     }
   },
   filter: {},
