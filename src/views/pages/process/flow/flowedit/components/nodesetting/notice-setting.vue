@@ -62,6 +62,7 @@
           v-model="notifyPolicyConfig.policyId"
           v-bind="notifySelectConfig"
           class="tsformselect-box-width"
+          @change="changePolicyId"
           @first="gotoAddNotify()"
         >
         </TsFormSelect>
@@ -195,7 +196,7 @@ export default {
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
       this.notifySelectConfig.params.handler = handler;
       this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
-      if (!this.isActive && this.$utils.isEmpty(this.defaultPolicyId)) {
+      if (this.$utils.isEmpty(this.defaultPolicyId)) {
         // 为空，默认通知策略时，需要查默认通知策略的名称
         await this.getDefaultPolicyId(handler);
       }
@@ -224,7 +225,6 @@ export default {
     valid() { //校验
       let isValid = true;
       const data = this.getData();
-      console.log('返回的值', data);
       if (data && data.isCustom) {
         // 自定义通知策略，必填
         if (!data.hasOwnProperty('paramMappingList') || (data.hasOwnProperty('paramMappingList') && this.$utils.isEmpty(data.paramMappingList))) {
@@ -235,7 +235,6 @@ export default {
           isValid = true;
         }
       }
-      console.log('返回的值', isValid);
       return isValid;
     },
     changeSwitch(isActive) {
@@ -282,6 +281,17 @@ export default {
           }
         }
       });
+    },
+    changePolicyId(policyId) {
+      if (policyId == this.defaultDeepCloneConfig.policyId) {
+        // 默认值有，就使用默认值
+        this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
+        this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
+      } else {
+        // 清空个性化设置值
+        this.notifyPolicyConfig.paramMappingList = [];
+        this.notifyPolicyConfig.excludeTriggerList = [];
+      }
     }
   },
   filter: {},

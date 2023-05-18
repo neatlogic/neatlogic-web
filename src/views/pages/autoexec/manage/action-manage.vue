@@ -128,7 +128,7 @@
         type="type"
       >
         <template v-slot:notifyPolicy>
-          <div class="bg-op padding-sm radius-sm">
+          <div class="bg-op radius-sm">
             <NoticeSetting
               ref="noticeSetting"
               layoutType="flexBetween"
