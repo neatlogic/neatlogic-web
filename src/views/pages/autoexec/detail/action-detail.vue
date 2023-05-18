@@ -249,7 +249,7 @@
         type="type"
       >
         <template v-slot:notifyPolicy>
-          <div class="bg-op padding-sm radius-sm">
+          <div class="bg-op radius-sm">
             <NoticeSetting
               ref="noticeSetting"
               layoutType="flexBetween"
@@ -1367,12 +1367,13 @@ export default {
       this.showBasicInfoEditDialog = true;
     },
     saveBasicInfo() {
-      if (!this.$refs.editBasicInfo.valid()) {
+      let noticeSetting = this.$refs.noticeSetting || '';
+      if (!this.$refs.editBasicInfo.valid() || (noticeSetting && !noticeSetting.valid())) {
         return;
       }
       this.$set(this.editBasicInfo, 'id', this.id);
       this.$set(this.editBasicInfo, 'typeName', this.typeName);
-      const notifyPolicyConfig = this.$refs.noticeSetting.getData();
+      const notifyPolicyConfig = noticeSetting.getData();
       if (notifyPolicyConfig?.policyId) {
         this.editBasicInfo.config.invokeNotifyPolicyConfig = notifyPolicyConfig;
       } else {

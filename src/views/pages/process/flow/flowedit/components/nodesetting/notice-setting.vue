@@ -45,7 +45,7 @@
         <li>
           <span
             class="tip text-tip pr-xs"
-          >{{ isActive == 1 ? ($t('page.custom') + $t('page.notificationstrategy')) : $t('term.framework.defaultpolicy') }}</span>
+          >{{ isActive == 1 ? $t('page.custom') : $t('term.framework.defaultpolicy') }}</span>
           <i-switch
             v-model="isActive"
             :true-value="1"
@@ -57,11 +57,13 @@
     </div>
     <template v-if="isActive == 1">
       <div class="notifypolicy-operation-box">
+        <span v-if="layoutType == 'custom'">{{ $t('page.notificationstrategy') }}</span>
         <TsFormSelect
+          id="notifyPolicy"
           ref="notifyPolicy"
           v-model="notifyPolicyConfig.policyId"
           v-bind="notifySelectConfig"
-          class="tsformselect-box-width"
+          :class="layoutType == 'custom' ? 'tsformselect-custom-box-width' : 'tsformselect-box-width'"
           @change="changePolicyId"
           @first="gotoAddNotify()"
         >
@@ -158,6 +160,7 @@ export default {
       isShowPersonSettingDialog: false,
       tacticsObj: {}, // 个性设置
       defaultPolicyId: null, // 默认通知策略的Id
+      defaultPolicyName: '', // 默认通知策略的名称
       defaultDeepCloneConfig: {}
     };
   },
@@ -207,33 +210,28 @@ export default {
           this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
           this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
           this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
+          this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
         }
       });
     },
     getData() { //获取数据
       let data = {};
       data = {
-        policyId: this.notifyPolicyConfig.policyId || this.defaultDeepCloneConfig.defaultPolicyId || undefined,
-        policyName: this.notifyPolicyConfig.policyName || undefined,
-        policyPath: this.notifyPolicyConfig.policyPath || undefined,
-        handler: this.defaultDeepCloneConfig?.handler ? this.defaultDeepCloneConfig.handler : this.handler,
+        policyId: this.notifyPolicyConfig.policyId || null,
+        policyName: this.notifyPolicyConfig.policyName || '',
+        policyPath: this.notifyPolicyConfig.policyPath || '',
+        handler: this.notifyPolicyConfig.handler || this.handler,
         isCustom: this.isActive,
         ...this.tacticsObj
       };
       return data;
     },
-    valid() { //校验
+    valid() {
       let isValid = true;
       const data = this.getData();
-      if (data && data.isCustom) {
+      if (data && data.isCustom && (this.$refs.notifyPolicy && !this.$refs.notifyPolicy.valid())) {
         // 自定义通知策略，必填
-        if (!data.hasOwnProperty('paramMappingList') || (data.hasOwnProperty('paramMappingList') && this.$utils.isEmpty(data.paramMappingList))) {
-          isValid = false;
-        } else if (!this.$utils.isEmpty(data.paramMappingList) && this.$utils.isEmpty(data.paramMappingList.filter((item) => !item.value))) {
-          isValid = false;
-        } else {
-          isValid = true;
-        }
+        isValid = false;
       }
       return isValid;
     },
@@ -248,6 +246,7 @@ export default {
         this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
         this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
         this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
+        this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
       }
       this.isActive = isActive;
       this.notifyPolicyConfig.isCustom = this.isActive;
@@ -263,26 +262,30 @@ export default {
       }
     },
     getDefaultPolicyId(handler) {
+      // 获取默认通知策略信息
       let data = {
         handler: handler,
         needPage: false
       };
       let notifyList = [];
       this.defaultPolicyId = null;
+      this.defaultPolicyName = '';
       return this.$api.framework.tactics.searchNotifyList(data).then(res => {
         if (res.Status == 'OK') {
           notifyList = res.Return.tbodyList;
           if (!this.$utils.isEmpty(notifyList)) {
-            notifyList.forEach((item) => {
+            for (const item of notifyList) {
               if (item && item.isDefault) {
                 this.defaultPolicyId = item.id;
+                this.defaultPolicyName = item.name;
+                break;
               }
-            });
+            }
           }
         }
       });
     },
-    changePolicyId(policyId) {
+    changePolicyId(policyId, valueObject) {
       if (policyId == this.defaultDeepCloneConfig.policyId) {
         // 默认值有，就使用默认值
         this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
@@ -291,6 +294,7 @@ export default {
         // 清空个性化设置值
         this.notifyPolicyConfig.paramMappingList = [];
         this.notifyPolicyConfig.excludeTriggerList = [];
+        this.notifyPolicyConfig.policyName = (!this.$utils.isEmpty(valueObject) && valueObject.text) || ''; // 用于组合工具，编辑基本信息，值回显
       }
     }
   },
@@ -328,6 +332,9 @@ export default {
   }
   .tsformselect-box-width {
     width: calc(100% - 45px); // 45为 【刷新/编辑】操作按钮的宽度
+  }
+  .tsformselect-custom-box-width {
+    width: 88%;
   }
 }
 

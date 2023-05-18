@@ -9,6 +9,9 @@
         layoutType="custom"
         :config="notifyPolicyConfig"
       ></NoticeSetting>
+      <div class="pl-nm pb-sm">
+        <Button type="primary" @click="saveNoticeSetting">{{ $t('page.save') }}</Button>
+      </div>
     </div>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
@@ -180,7 +183,8 @@ export default {
         policyName: '',
         policyPath: '',
         handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler',
-        paramMappingList: []
+        paramMappingList: [],
+        excludeTriggerList: []
       }
     };
   },
@@ -500,20 +504,6 @@ export default {
         this.$set(this, 'topRightWidth', Math.max(0, innerWidth - outWidth) ? Math.max(0, innerWidth - (outWidth + scrollLeft)) + 20 : 0); // 20一个操作按钮的宽度
       });
     },
-    //改变策略
-    changeNotifyPolicy(notifyPolicyId) {
-      let param = {
-        appSystemId: this.appSystemId
-      };
-      if (notifyPolicyId) {
-        param['notifyPolicyId'] = notifyPolicyId;
-      }
-      this.$api.deploy.applicationConfig.saveAppSystemNotify(param).then((res) => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-        }
-      });
-    },
     getAppSystemNotifyId(appSystemId) {
       // 获取发布应用的通知策略id
       let param = {
@@ -521,9 +511,24 @@ export default {
       };
       this.$api.deploy.applicationConfig.getAppSystemNotifyId(param).then((res) => {
         if (res.Status == 'OK') {
-          // this.formValue.notifyPolicyId = res.Return;
+          Object.assign(this.notifyPolicyConfig, res.Return);
         }
       });
+    },
+    saveNoticeSetting() {
+      // 保存通知策略
+      if (this.$refs.noticeSetting) {
+        let notifyPolicyInfo = this.$refs.noticeSetting.getData();
+        let param = {
+          appSystemId: this.appSystemId,
+          ...notifyPolicyInfo
+        };
+        this.$api.deploy.applicationConfig.saveAppSystemNotify(param).then((res) => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }
+        });
+      }
     }
   },
   filter: {},

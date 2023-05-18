@@ -252,6 +252,16 @@ function nodeValid(allNode) {
         Vm.activeTab = 'flowsetting';
       }
     });
+    if (flowSettingData.processConfig.notifyPolicyConfig && flowSettingData.processConfig.notifyPolicyConfig.isCustom && (!flowSettingData.processConfig.notifyPolicyConfig.policyId || !flowSettingData.processConfig.notifyPolicyConfig.hasOwnProperty('policyId'))) {
+      // 自定义通知策略必填
+      validList.push({
+        type: 'error',
+        msg: '【' + $t('term.process.flowsetting') + '】' + $t('form.validate.required', {target: $t('page.notificationstrategy')}),
+        focus() {
+          Vm.activeTab = 'flowsetting';
+        }
+      });
+    }
   }
 
   allNode.forEach(vm => {
@@ -659,7 +669,6 @@ export default {
       // 流程数据验证
       if (action !== 'save') this.validCardOpen = true;
       var is = nodeValid(allNode);
-      console.log('验证的数据', is);
       return is;
     },
     getShape(data) {

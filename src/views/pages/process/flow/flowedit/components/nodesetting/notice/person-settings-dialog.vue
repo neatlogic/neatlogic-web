@@ -165,7 +165,6 @@ export default {
           saveData.paramMappingList.push(data);
         });
       }
-      console.dir(saveData);
       this.$emit('close', true, saveData);
     },
     closeDialog() {
