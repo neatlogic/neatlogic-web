@@ -10,6 +10,10 @@
     >
       <template v-slot>
         <div>
+          <Loading
+            :loadingShow="loadingShow"
+            type="fix"
+          ></Loading>
           <Tabs
             v-model="tabValue"
             class="block-tabs"
@@ -114,6 +118,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       isshowDialog: true,
       controlShow: true, //是否隐藏参数
       tabValue: 'triggerTiming',
@@ -124,9 +129,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.policyId) {
-      this.getTactInfo();
-    }
+    this.getTactInfo();
   },
   beforeMount() {},
   mounted() {},
@@ -173,6 +176,11 @@ export default {
       let data = {
         id: this.policyId
       };
+      this.loadingShow = true;
+      if (!this.policyId) {
+        this.loadingShow = false;
+        return false;
+      }
       this.$api.framework.tactics.editNotify(data).then(res => {
         if (res.Status == 'OK') {
           let config = (res.Return && res.Return.config) || {};
@@ -199,6 +207,8 @@ export default {
             this.getParamTypeList();
           }
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     getParamTypeList() { //对左侧的条件参数进行分类，方便根据不同的paramType来选中不同的参数值

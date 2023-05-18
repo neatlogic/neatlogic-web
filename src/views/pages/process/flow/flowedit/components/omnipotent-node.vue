@@ -289,7 +289,7 @@ export default {
           stepConfig[item] = this[item] || undefined;
         });
       }
-      if (this.$refs.NoticeSetting && !this.$refs.NoticeSetting.valid()) { //通知
+      if (this.$refs.NoticeSetting) { //通知
         stepConfig.notifyPolicyConfig = this.$refs.NoticeSetting.getData();
         return false;
       }
