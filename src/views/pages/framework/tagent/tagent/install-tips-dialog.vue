@@ -71,7 +71,7 @@ export default {
               id: this.$utils.setUuid(),
               systemName: 'Linux|Unix',
               LinuxScripts: '#' + this.$t('message.framework.autolinuxscripts') + '：' + '\nRUNNER_ADDR=http://10.68.10.60:8084\ncd /tmp\ncurl -o install.sh $RUNNER_ADDR/autoexecrunner/tagent/download/install.sh\nbash install.sh --listenaddr 0.0.0.0 --port 3939 --tenant develop --pkgurl $RUNNER_ADDR/autoexecrunner/tagent/download/tagent.tar --serveraddr $RUNNER_ADDR',
-              UnixScripts: '#' + this.$t('message.framework.autounixscripts') + '：' + '\nRUNNER_ADDR=http://10.68.10.60:8084\ncd /tmp\ncurl -o install.sh $RUNNER_ADDR/autoexecrunner/tagent/download/install.sh\nbash install.sh --user app --listenaddr 0.0.0.0 --port 2020 --tenant develop --pkgurl $RUNNER_ADDR/autoexecrunner/tagent/download/tagent.tar --serveraddr $RUNNER_ADDR'
+              UnixScripts: '#' + this.$t('message.framework.autounixscripts') + '：' + '\nRUNNER_ADDR=http://10.68.10.60:8084\ncd /tmp\ncurl -o install.sh $RUNNER_ADDR/autoexecrunner/tagent/download/install.sh\nbash install.sh --runuser app --listenaddr 0.0.0.0 --port 2020 --tenant develop --pkgurl $RUNNER_ADDR/autoexecrunner/tagent/download/tagent.tar --serveraddr $RUNNER_ADDR'
             },
             {
               id: this.$utils.setUuid(),
