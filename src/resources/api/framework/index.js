@@ -29,6 +29,7 @@ import file from './file/file';//附件管理
 import module from './module/module';//模块管理
 import license from './license/license';//许可管理
 import globallock from './globallock/globallock';//全局锁
+import databaseview from './databaseview/databaseview';//重建数据库视图
 
 export default {
   menu,
@@ -60,5 +61,6 @@ export default {
   file,
   module,
   license,
-  globallock
+  globallock,
+  databaseview
 };

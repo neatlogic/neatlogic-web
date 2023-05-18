@@ -145,6 +145,7 @@
     "jobmanage": "Scheduled Jobs",
     "filemanage": "Attachments",
     "fullTextIndexmanage": "Rebuild Index",
+    "databaseView": "Rebuild database view",
     "modulemanage": "Modules",
     "threaddump": "Thread snapshot",
     "sqldump": "SQL Monitoring",
