@@ -84,7 +84,6 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       loadingShow: false,
       type: 'all',
@@ -101,7 +100,7 @@ export default {
         validateList: ['required']
       }),
       searchParam: {
-        keywork: '',
+        keyword: '',
         type: null,
         pageSize: 10,
         currentPage: 1
@@ -238,49 +237,44 @@ export default {
         this.editForm.splice(3, 0, this.systemTypeFrom);
       }
     },
-    editRow(data) {
-      this.getData(data.id);
-      this.editTsDialog.isShow = true;
-      this.editTsDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('page.template')});
-      let hasModifyAuthority = this.$AuthUtils.hasRole('PROCESS_COMMENT_TEMPLATE_MODIFY');
-      
-      let index = this.editForm.findIndex(item => item.name == 'authList');
-      if (data.type == 'system' && index == -1) {
-        this.editForm.splice(3, 0, this.systemTypeFrom);
+    editRow(rowData) {
+      if (rowData && rowData.id) {
+        this.$api.process.reply.get({id: rowData.id}).then(res => {
+          if (res.Status == 'OK') {
+            const data = res.Return.template;
+            this.editTsDialog.isShow = true;
+            this.editTsDialog.title = this.$t('dialog.title.edittarget', {target: this.$t('page.template')});
+            let hasModifyAuthority = this.$AuthUtils.hasRole('PROCESS_COMMENT_TEMPLATE_MODIFY');
+            let index = this.editForm.findIndex(item => item.name == 'authList');
+            if (data.type == 'system' && index == -1) {
+              this.editForm.splice(3, 0, this.systemTypeFrom);
+            }
+            if (data.type == 'custom' && index >= 0) {
+              this.editForm.splice(index, 1);
+            }
+            if (data['type'] == 'system' && !hasModifyAuthority) {
+              this.isShowConfirm = false;
+            } else {
+              this.isShowConfirm = true;
+            }
+            this.editForm.forEach(item => {
+              item.value = data[item.name];
+              if (data['type'] == 'system' && !hasModifyAuthority) {
+                item.readonly = true;
+              } else {
+                item.readonly = false;
+              }
+              if (data['type'] == 'custom' && !hasModifyAuthority && item.name == 'type') {
+                item.disabled = true;
+              } 
+            });
+            this.editForm.forEach(item => {
+              item.value = data[item.name];
+            });
+            this.replyType = data.type;
+          }
+        });
       }
-      if (data.type == 'custom' && index >= 0) {
-        this.editForm.splice(index, 1);
-      }
-      if (data['type'] == 'system' && !hasModifyAuthority) {
-        this.isShowConfirm = false;
-      } else {
-        this.isShowConfirm = true;
-      }
-      this.editForm.forEach(item => {
-        item.value = data[item.name];
-        if (data['type'] == 'system' && !hasModifyAuthority) {
-          item.readonly = true;
-        } else {
-          item.readonly = false;
-        }
-        if (data['type'] == 'custom' && !hasModifyAuthority && item.name == 'type') {
-          item.disabled = true;
-        } 
-      });
-    },
-    getData(id) {
-      const data = {
-        id: id
-      };
-      this.$api.process.reply.get(data).then(res => {
-        if (res.Status == 'OK') {
-          const data = res.Return.template;
-          this.editForm.forEach(item => {
-            item.value = data[item.name];
-          });
-          this.replyType = data.type;
-        }
-      });
     },
     deleteRow(id) {
       this.$createDialog({
