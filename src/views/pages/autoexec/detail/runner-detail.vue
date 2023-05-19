@@ -69,23 +69,31 @@
             </TsFormItem>
           </div>
         </div>
-        <template v-if="dataConfig.config && showExecuteData && showScenarioExecute">
+        <div>
+          <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
           <div v-if="needExecuteNode" class="box-block">
-            <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
-            <div>
-              <AddTarget
-                :id="actionId"
-                ref="addTarget"
-                :value="executeConfig ? executeConfig.executeNodeConfig:{}"
-                :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
-                :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
-                :executeConfig="executeValue"
-                :runtimeParamList="runtimeParamList"
-                :needBorder="needExecuteUser|| needProtocol"
-                :filterSearchValue="filterSearchValue"
-              ></AddTarget>
+            <AddTarget
+              :id="actionId"
+              ref="addTarget"
+              :value="executeConfig ? executeConfig.executeNodeConfig:{}"
+              :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
+              :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
+              :executeConfig="executeValue"
+              :runtimeParamList="runtimeParamList"
+              :needBorder="needExecuteUser|| needProtocol"
+              :filterSearchValue="filterSearchValue"
+            ></AddTarget>
+          </div>
+          <div v-else class="box-block text-tip">
+            <div v-if="dataConfig.allPhasesAreRunnerOrSqlExecMode">
+              {{ $t('message.autoexec.executerunnertip') }}
+            </div>
+            <div v-else>
+              {{ $t('message.autoexec.notsetexecutertip') }}
             </div>
           </div>
+        </div>
+        <template v-if="dataConfig.config && showExecuteData && showScenarioExecute">
           <div v-if="needExecuteUser|| needProtocol" class="box-block">
             <Divider orientation="start">{{ $t('term.autoexec.executeaccount') }}</Divider>
             <div>

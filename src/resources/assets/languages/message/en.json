@@ -117,7 +117,9 @@
     "successimporttip": "The import only generates a pending version, which can only be activated after being approved.",
     "replaceimporttip": "The following tools have pending versions, whether to replace:",
     "emptyfiltervalue": "Not within filter range",
-    "notfoundsys": "The corresponding asset was not found in the system"
+    "notfoundsys": "The corresponding asset was not found in the system",
+    "executerunnertip": "The combination tool only includes the runner or SQL execution method, and there is no need to set the execution target",
+    "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here"
   },
   "knowledge": {
     "notcatalog": "No text catalog",
