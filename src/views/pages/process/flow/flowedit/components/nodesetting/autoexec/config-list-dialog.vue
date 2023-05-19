@@ -9,7 +9,8 @@
       @on-ok="ok()"
       @on-close="close()"
     >
-      <div v-if="configList.length > 0">
+      <Loading :loadingShow="loadingShow" type="fix"></Loading>
+      <div v-if="!loadingShow && configList.length > 0">
         <div v-for="(item, index) in configList" :key="index" class="autoexec-list bg-op radius-sm mb-sm">
           <div class="autoexec-title">
             <div>#{{ index+1 }}</div>
@@ -41,6 +42,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       configList: [],
       isValid: true
     };
@@ -65,6 +67,7 @@ export default {
           this.$set(item, 'isShow', true);
         });
       }
+      this.loadingShow = false;
     },
     addAutoexecList() {
       let config = {
@@ -79,7 +82,11 @@ export default {
       this.configList.push(config);
     },
     delItem(index) {
-      this.configList.splice(index, 1);
+      this.loadingShow = true;
+      this.$nextTick(() => {
+        this.configList.splice(index, 1);
+        this.loadingShow = false;
+      });
     },
     ok() {
       this.isValid = true;

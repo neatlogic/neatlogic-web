@@ -64,6 +64,10 @@ const matrix = {
   saveMatrixData(data) {
     return axios.post('/api/rest/matrix/data/save', data);
   },
+  //矩阵数据移动接口
+  moveMatrixData(data) {
+    return axios.post('/api/rest/matrix/data/move', data);
+  },
   //矩阵数据删除接口
   deleteMatrixData(data) {
     return axios.post('/api/rest/matrix/data/delete', data);
