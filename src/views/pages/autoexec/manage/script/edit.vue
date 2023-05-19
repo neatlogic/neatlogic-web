@@ -23,7 +23,7 @@
     @on-ok="confirmEdit()"
   >
     <template v-slot:header>
-      <div>{{ $t('term.autoexec.publishcombinetool') }}AAA</div>
+      <div>{{ $t('term.autoexec.publishcombinetool') }}</div>
     </template>
     <template v-slot>
       <div>
