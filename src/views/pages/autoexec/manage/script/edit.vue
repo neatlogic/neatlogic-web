@@ -23,7 +23,7 @@
     @on-ok="confirmEdit()"
   >
     <template v-slot:header>
-      <div>{{ $t('term.autoexec.publishcombinetool') }}</div>
+      <div>{{ $t('term.autoexec.publishcombinetool') }}AAA</div>
     </template>
     <template v-slot>
       <div>
@@ -75,7 +75,7 @@ export default {
             'required', 
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/combop/save', 
+              url: '/api/rest/autoexec/combop/basic/info/save', 
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
