@@ -1,7 +1,8 @@
 <template>
   <div class="step-overview-container">
-    <div class="step-left-margin mb-md">
-      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="text-href" @click="expandAll = !expandAll">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
+    <div class="step-left-margin mb-md" @click="expandAll = !expandAll">
+      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="icon-right"></span>
+      <span class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
     </div>
     <div class="activity-step">
       <Timeline>
@@ -51,6 +52,7 @@
             <ButtonGroup
               v-if="isTabShow(item)"
               shape="circle"
+              size="small"
               class="child-button"
             >
               <Button :type="!item.isShow?'primary':'default'" @click="item.isShow = false">
