@@ -637,9 +637,6 @@ export default {
           }
         }
       }
-      if (this.taskConfigList.length > 0) {
-        this.tabValue = 'subTask' + this.taskConfigList[0].id;
-      }
     },
     getStepList(data) {
       //刷新子策略数据
