@@ -36,33 +36,14 @@
           <span class="text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
         </li>
       </ul>
-      <ul v-else-if="layoutType == 'custom'">
-        <!-- 【应用配置/应用信息】通知策略 -->
-        <li class="pb-sm">
-          <span>{{ $t('page.notify') }}</span>
-          <span class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
-        </li>
-        <li>
-          <span
-            class="tip text-tip pr-xs"
-          >{{ isActive == 1 ? $t('page.custom') : $t('term.framework.defaultpolicy') }}</span>
-          <i-switch
-            v-model="isActive"
-            :true-value="1"
-            :false-value="0"
-            @on-change="changeSwitch"
-          ></i-switch>
-        </li>
-      </ul>
     </div>
     <template v-if="isActive == 1">
       <div class="notifypolicy-operation-box">
-        <span v-if="layoutType == 'custom'">{{ $t('page.notificationstrategy') }}</span>
         <TsFormSelect
           ref="notifyPolicy"
           v-model="notifyPolicyConfig.policyId"
           v-bind="notifySelectConfig"
-          :class="layoutType == 'custom' ? 'tsformselect-custom-box-width' : 'tsformselect-box-width'"
+          class="tsformselect-box-width"
           @change="changePolicyId"
           @first="gotoAddNotify()"
         >
@@ -128,9 +109,9 @@ export default {
     nodeConfig: {
       type: Object
     },
-    layoutType: { // 通知策略样式，模式是流程设置
+    layoutType: { // 通知策略样式
       type: String,
-      default: 'default' // default/
+      default: 'default' // default、flexBetween
     },
     hasPadding: {
       // 是否需要间隙
@@ -336,9 +317,6 @@ export default {
   }
   .tsformselect-box-width {
     width: calc(100% - 45px); // 45为 【刷新/编辑】操作按钮的宽度
-  }
-  .tsformselect-custom-box-width {
-    width: 88%;
   }
 }
 
