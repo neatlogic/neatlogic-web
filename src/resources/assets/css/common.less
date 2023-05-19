@@ -39,6 +39,9 @@ html {
   .@{iv-prev}input-number-focused {
     box-shadow: none;
   }
+  .@{iv-prev}input-number-handler {
+      height: 16px; // 解决less升级到4.0版本后，85/2不支持，需要加小括号的问题
+   }
   textarea {
     &.@{iv-prev}input {
       height: auto;

@@ -457,11 +457,11 @@
                       <div class="item">
                         <noticeSetting
                           ref="noticeSetting"
-                          :showTitle="false"
                           :formUuid="formUuid"
-                          :defaultIsActive="1"
-                          border="bottom"
+                          :hasPadding="false"
                           :config="item.notifyPolicyConfig"
+                          layoutType="flexBetween"
+                          border="bottom"
                           handler="neatlogic.module.process.notify.handler.SlaNotifyPolicyHandler"
                         ></noticeSetting>
                       </div>
@@ -582,7 +582,6 @@
 import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
-// import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker.vue';
 import vuedraggable from 'vuedraggable';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 import noticeSetting from './components/nodesetting/notice-setting.vue';
@@ -596,7 +595,6 @@ export default {
     vuedraggable,
     TsFormInput,
     UserSelect,
-    // TsFormDatePicker,
     TsFormSelect,
     noticeSetting,
     ...formItems

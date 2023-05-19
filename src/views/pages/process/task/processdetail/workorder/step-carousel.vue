@@ -17,7 +17,7 @@
   <div v-if="isShow" class="information-box">
     <div class="bg-op padding radius-lg">
       <div class="h4 cursor" :class="showStep ? 'pb-nm' : ''" @click="showStep = !showStep">
-        <span :class="showStep ? 'tsfont-down' : 'tsfont-right'">{{ $t('term.process.currentstep') }}</span>
+        <span :class="showStep ? 'tsfont-down' : 'tsfont-right'" class="icon-right">{{ $t('term.process.currentstep') }}</span>
       </div>
       <div v-show="showStep">
         <Carousel

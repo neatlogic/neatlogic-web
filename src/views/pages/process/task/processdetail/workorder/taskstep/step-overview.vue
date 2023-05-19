@@ -1,10 +1,8 @@
 <template>
   <div class="step-overview-container">
-    <div class="mb-md">
-      <span style="cursor:pointer" @click="expandAll = !expandAll">
-        <i :class="expandAll ? 'tsfont-down' : 'tsfont-right'"></i>
-        {{ expandAll?$t('page.putawayall'):$t('page.expandall') }}
-      </span>
+    <div class="step-left-margin mb-md" @click="expandAll = !expandAll">
+      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="icon-right"></span>
+      <span class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
     </div>
     <div class="activity-step">
       <Timeline>
@@ -23,8 +21,7 @@
                 :title="item.name"
                 @click="expandChange(item, index)"
               >
-                <span :class="item.expand ? 'tsfont-down' : 'tsfont-right'"></span>
-                <span :class="!item.expand ? 'overflow node-name' : ''"> {{ item.name }}</span>
+                <span :class="item.expand ? 'tsfont-down' : 'tsfont-right'" class="overflow node-name icon-right">{{ item.name }}</span>
               </div>
               <div class="user-header-wrap ml-sm mr-sm">
                 <UserCard
@@ -55,6 +52,7 @@
             <ButtonGroup
               v-if="isTabShow(item)"
               shape="circle"
+              size="small"
               class="child-button"
             >
               <Button :type="!item.isShow?'primary':'default'" @click="item.isShow = false">
@@ -374,9 +372,14 @@ export default {
 <style lang='less' scoped>
 .step-overview-container {
   overflow: hidden;
-}
-/deep/ .activity-step {
-  margin-left: 100px;
+  .step-left-margin {
+    display: inline-block;
+    width: 150px;
+    padding-right: 16px;
+    text-align: right;
+  }
+  /deep/ .activity-step {
+  margin-left: 150px;
   .step-log-common-box {
    .ivu-timeline-item-tail {
       display: inline-block !important;
@@ -406,9 +409,13 @@ export default {
 .child-node-name{
   position: absolute;
   top: 2px;
-  left: -123px;
-  width: 80px;
-  word-wrap: break-word; // 处理字母数字换行的问题
+  left: -174px;
+  width: 150px;
+  padding-right: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
   &.child-node-name-wrap {
     display: flex;
   }
@@ -474,4 +481,6 @@ export default {
     display: inline-block;
   }
 }
+}
+
 </style>

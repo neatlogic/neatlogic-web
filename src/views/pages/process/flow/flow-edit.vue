@@ -252,6 +252,16 @@ function nodeValid(allNode) {
         Vm.activeTab = 'flowsetting';
       }
     });
+    if (flowSettingData.processConfig.notifyPolicyConfig && flowSettingData.processConfig.notifyPolicyConfig.isCustom && (!flowSettingData.processConfig.notifyPolicyConfig.policyId || !flowSettingData.processConfig.notifyPolicyConfig.hasOwnProperty('policyId'))) {
+      // 自定义通知策略必填
+      validList.push({
+        type: 'error',
+        msg: '【' + $t('term.process.flowsetting') + '】' + $t('form.validate.required', {target: $t('page.notificationstrategy')}),
+        focus() {
+          Vm.activeTab = 'flowsetting';
+        }
+      });
+    }
   }
 
   allNode.forEach(vm => {

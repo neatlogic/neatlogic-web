@@ -454,7 +454,10 @@
     "automaticprocessing": "自动处理",
     "recreatenewjob": "回退新建作业",
     "jobpolicy": "作业策略",
-    "singlecreatejob": "单次创建作业"
+    "singlecreatejob": "单次创建作业",
+    "triggertiming": "触发时机",
+    "notificationpolicysettings": "通知策略设置",
+    "templateparametermapping": "模板参数映射"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
