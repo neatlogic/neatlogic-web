@@ -18,7 +18,6 @@
           ref="issueList"
           :app="appData"
           :isShowEmptyTable="true"
-          @toDetail="toRequestDetail"
         ></IssueList>
       </template>
     </TsContain>

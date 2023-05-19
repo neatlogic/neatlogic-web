@@ -885,5 +885,6 @@
   "use": "用途",
   "clicksetting": "点击设置",
   "autoexecjob": "自动化作业",
-  "foreachtable": "遍历表格"
+  "foreachtable": "遍历表格",
+  "current": "当前"
 }

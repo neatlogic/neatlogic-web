@@ -14,7 +14,7 @@
             <template v-else>{{ item[textName] }}</template>
           </Tag>
         </template>
-        <template v-else>-</template>
+        <span v-else class="text-grey">-</span>
       </template>
       <template v-else>
         <!--{{ selectedList[0] ? selectedList[0][textName] : '-' }}-->
@@ -22,6 +22,7 @@
           <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ selectedList[0][textName] }}</span>
           <template v-else>{{ selectedList[0][textName] }}</template>
         </Tag>
+        <span v-else class="text-grey">-</span>
       </template>
     </span>
 

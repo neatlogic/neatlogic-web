@@ -32,15 +32,19 @@
         <span v-if="row.attrName && row.attrName === 'file'">
           {{ $t('page.accessory') }}
         </span>
+        <span v-if="row.attrName && row.attrName === 'iteration'">
+          {{ $t('term.rdm.iteration') }}
+        </span>
       </template>
       <div slot="oldValue" slot-scope="{ row }" style="white-space:normal">
         <AttrViewer v-if="row.appAttr" :attrConfig="row.appAttr" :valueList="row.oldValue"></AttrViewer>
         <div v-else-if="row.attrName && row.attrName === 'name'">
-          {{ row.oldValue && row.oldValue.length > 0 ? row.oldValue[0] : '-' }}
+          <span v-if="row.oldValue && row.oldValue.length > 0">{{ row.oldValue[0] }}</span>
+          <span v-else class="text-grey">-</span>
         </div>
         <div v-else-if="row.attrName && row.attrName === 'status'">
           <IssueStatus v-if="row.oldValue && row.oldValue.length > 0" :status="row.oldValue[0]"></IssueStatus>
-          <span v-else>-</span>
+          <span v-else class="text-grey">-</span>
         </div>
         <div v-else-if="row.attrName && row.attrName === 'file'">
           <div v-if="row.oldValue && row.oldValue.length > 0">
@@ -53,17 +57,18 @@
               {{ file.name }}
             </Tag>
           </div>
-          <span v-else>-</span>
+          <span v-else class="text-grey">-</span>
         </div>
       </div>
       <div slot="newValue" slot-scope="{ row }" style="white-space:normal">
         <AttrViewer v-if="row.appAttr" :attrConfig="row.appAttr" :valueList="row.newValue"></AttrViewer>
         <div v-else-if="row.attrName && row.attrName === 'name'">
-          {{ row.newValue && row.newValue.length > 0 ? row.newValue[0] : '-' }}
+          <span v-if="row.newValue && row.newValue.length > 0">{{ row.newValue[0] }}</span>
+          <span v-else class="text-grey">-</span>
         </div>
         <div v-else-if="row.attrName && row.attrName === 'status'">
           <IssueStatus v-if="row.newValue && row.newValue.length > 0" :status="row.newValue[0]"></IssueStatus>
-          <span v-else>-</span>
+          <span v-else class="text-grey">-</span>
         </div>
         <div v-else-if="row.attrName && row.attrName === 'file'">
           <div v-if="row.newValue && row.newValue.length > 0">
@@ -76,7 +81,7 @@
               {{ file.name }}
             </Tag>
           </div>
-          <span v-else>-</span>
+          <span v-else class="text-grey">-</span>
         </div>
       </div>
     </TsTable>
