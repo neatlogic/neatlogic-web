@@ -57,7 +57,7 @@ export default [
       ismenu: true,
       type: 'reportmanage',
       icon: 'ts-layout',
-      authority: ['REPORT_BASE']
+      authority: ['REPORT_MODIFY']
     }
   },
   {

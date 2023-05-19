@@ -26,7 +26,12 @@
       <template v-slot:sider>侧边栏</template>
       <template v-slot:right>
         <div class="pl-md">
-          <AttrList v-if="isReady && appId" :appId="appId" :issueData="issueData"></AttrList>
+          <AttrList
+            v-if="isReady && appId"
+            :projectId="projectId"
+            :appId="appId"
+            :issueData="issueData"
+          ></AttrList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">

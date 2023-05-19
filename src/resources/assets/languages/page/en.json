@@ -883,5 +883,7 @@
   "use": "purpose",
   "clicksetting": "Click on Settings",
   "autoexecjob": "Automated operations",
-  "foreachtable": "Traverse Table"
+  "foreachtable": "Traverse Table",
+  "personalizationsettings": "Personalization settings",
+  "current": "current"
 }

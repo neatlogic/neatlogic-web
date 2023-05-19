@@ -455,7 +455,10 @@
     "automaticprocessing": "Automatic processing",
     "recreatenewjob": "Fallback New Job",
     "jobpolicy": "Job strategy",
-    "singlecreatejob": "Single Create Job"
+    "singlecreatejob": "Single Create Job",
+    "triggertiming": "Trigger timing",
+    "notificationpolicysettings": "Notification Policy Settings",
+    "templateparametermapping": "Template parameter mapping"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

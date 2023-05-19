@@ -28,7 +28,6 @@
           :app="appData"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
-          @toDetail="toRequestDetail"
         ></IssueList>
       </template>
     </TsContain>

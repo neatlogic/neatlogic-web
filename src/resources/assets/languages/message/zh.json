@@ -117,7 +117,9 @@
     "successimporttip": "，导入仅生成待审核版本，需要审核通过后才可激活使用。",
     "replaceimporttip": "以下工具存在待审核版本，是否替换：",
     "emptyfiltervalue": "不在过滤器范围内",
-    "notfoundsys": "在系统中未找到对应资产"
+    "notfoundsys": "在系统中未找到对应资产",
+    "executerunnertip": "组合工具仅包含runner或者sql执行方式，无需设置执行目标",
+    "notsetexecutertip": "组合工具中，每个执行阶段均已预设执行目标，此处无需设置执行目标"
   },
   "knowledge": {
     "notcatalog": "无文本目录",

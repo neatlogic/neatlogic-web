@@ -12,6 +12,7 @@
         v-if="attr._isReady"
         ref="attrHandler"
         border="none"
+        :projectId="projectId"
         :readonly="editingField != 'attr_' + attr.id"
         :attrConfig="attr"
         :issueData="issueDataLocal"
@@ -38,6 +39,7 @@ export default {
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
+    projectId: {type: Number},
     appId: { type: Number },
     issueData: { type: Object }
   },

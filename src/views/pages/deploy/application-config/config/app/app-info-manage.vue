@@ -3,16 +3,10 @@
   <div class="app-manage-wrap">
     <AppInfo :appSystemId="appSystemId"></AppInfo>
     <div class="border-bottom border-color"></div>
-    <div class="pt-nm">
-      <span class="pl-nm">{{ $t('page.notify') }}</span>
-    </div>
-    <div class="mb-nm">
-      <TsForm
-        ref="form"
-        v-model="formValue"
-        :item-list="formList"
-      ></TsForm>
-    </div>
+    <DeployNoticeSetting
+      v-if="appSystemId"
+      :appSystemId="appSystemId"
+    ></DeployNoticeSetting>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
       <span class="pl-nm">{{ $t('page.authority') }}</span>
@@ -138,7 +132,7 @@ export default {
     AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit.vue'], resolve),
     AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
     BatchEditAuthDialog: resolve => require(['@/views/pages/deploy/application-config/config/app/components/batch-edit-auth-dialog.vue'], resolve), // 批量编辑权限
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    DeployNoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-setting.vue'], resolve) // 通知策略
   },
   props: {
     appSystemId: {
@@ -176,37 +170,11 @@ export default {
       tableConfig: {
         theadList: [],
         tbodyList: []
-      },
-      formValue: {
-        notifyPolicyId: null
-      },
-      formList: [
-        {
-          type: 'select',
-          label: this.$t('page.notificationstrategy'),
-          name: 'notifyPolicyId',
-          dynamicUrl: 'api/rest/notify/policy/search',
-          params: {handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler'},
-          search: true,
-          rootName: 'tbodyList',
-          valueName: 'id',
-          textName: 'name',
-          width: '30%',
-          labelWidth: 82,
-          onChange: (val) => {
-            this.changeNotifyPolicy(val);
-          }
-        }
-      ]
-
+      }
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.appSystemId) {
-      this.getAppSystemNotifyId(this.appSystemId);
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.loadingShow = true;
@@ -515,30 +483,6 @@ export default {
         let innerWidth = this.$refs.tableBody ? this.$refs.tableBody.scrollWidth : 0;
         let scrollLeft = this.$refs.tableMain ? this.$refs.tableMain.scrollLeft : 0; // 左边滚动距离
         this.$set(this, 'topRightWidth', Math.max(0, innerWidth - outWidth) ? Math.max(0, innerWidth - (outWidth + scrollLeft)) + 20 : 0); // 20一个操作按钮的宽度
-      });
-    },
-    //改变策略
-    changeNotifyPolicy(notifyPolicyId) {
-      let param = {
-        appSystemId: this.appSystemId
-      };
-      if (notifyPolicyId) {
-        param['notifyPolicyId'] = notifyPolicyId;
-      }
-      this.$api.deploy.applicationConfig.saveAppSystemNotify(param).then((res) => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-        }
-      });
-    },
-    getAppSystemNotifyId(appSystemId) {
-      let param = {
-        appSystemId: appSystemId
-      };
-      this.$api.deploy.applicationConfig.getAppSystemNotifyId(param).then((res) => {
-        if (res.Status == 'OK') {
-          this.formValue.notifyPolicyId = res.Return;
-        }
       });
     }
   },

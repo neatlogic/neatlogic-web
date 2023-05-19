@@ -105,7 +105,7 @@ export default {
     config() {
       //避免组件修改了config数据，所以复制一份数据
       //return this.$utils.deepClone(this.formItem.config) || {};
-      return this.formItem.config || {};
+      return (this.formItem && this.formItem.config) || {};
     }
   },
   watch: {

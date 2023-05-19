@@ -6,6 +6,9 @@
         :trueValue="true"
         :falseValue="false"
         :disabled="disabled"
+        @on-change="val => {
+          changeMultiple(val);
+        }"
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem :label="$t('page.category')" labelPosition="top" required>
@@ -45,7 +48,13 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    changeMultiple(val) {
+      if (!val && this.config.defaultValue instanceof Array && this.config.defaultValue.length > 0) {
+        this.setConfig('defaultValue', [this.config.defaultValue[0]]);
+      }
+    }
+  },
   filter: {},
   computed: {},
   watch: {}

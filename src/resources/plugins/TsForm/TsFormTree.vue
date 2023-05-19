@@ -10,11 +10,12 @@
             </span>
           </template>
         </span>
-        <template v-else>-</template>
+        <span v-else class="text-grey">-</span>
       </template>
       <template v-else>
         <div class="overflow" :title="selectedList.length>0 ? (showPath ?selectedList[0]._path : selectedList[0][textName]):'-' ">
-          {{ selectedList.length>0 ? (showPath ?selectedList[0]._path : selectedList[0][textName]):'-' }}
+          <span v-if="selectedList.length>0">{{ showPath ?selectedList[0]._path : selectedList[0][textName] }}</span>
+          <span v-else class="text-grey">-</span>
         </div>
       </template>
     </span>

@@ -128,12 +128,10 @@
         type="type"
       >
         <template v-slot:notifyPolicy>
-          <div class="bg-op padding-sm radius-sm">
+          <div class="bg-op radius-sm">
             <NoticeSetting
               ref="noticeSetting"
-              :showTitle="false"
-              :defaultIsActive="1"
-              :hasGlobal="false"
+              layoutType="flexBetween"
               :config="invokeNotifyPolicyConfig"
             ></NoticeSetting>
           </div>
@@ -444,11 +442,12 @@ export default {
     },
     okAddAction() {
       //添加、复制
-      if (!this.$refs.addActionForm.valid()) {
+      let noticeSetting = this.$refs.noticeSetting || '';
+      if (!this.$refs.addActionForm.valid() || (noticeSetting && !noticeSetting.valid())) {
         return;
       }
       this.$set(this.addActionConfig, 'typeName', this.typeName);
-      const notifyPolicyConfig = this.$refs.noticeSetting.getData();
+      const notifyPolicyConfig = noticeSetting.getData();
       if (notifyPolicyConfig?.policyId) {
         this.addActionConfig.config.invokeNotifyPolicyConfig = notifyPolicyConfig;
       } else {

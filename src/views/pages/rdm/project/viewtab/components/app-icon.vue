@@ -2,10 +2,10 @@
   <div
     class="app-icon"
     :style="{
-      background: app.color
+      background: app ? app.color : appColor
     }"
   >
-    {{ app.type.toUpperCase() }}
+    {{ app ? app.type.toUpperCase() : appType.toUpperCase() }}
   </div>
 </template>
 <script>
@@ -13,7 +13,9 @@ export default {
   name: '',
   components: {},
   props: {
-    app: { type: Object }
+    app: { type: Object },
+    appType: { type: String },
+    appColor: { type: String }
   },
   data() {
     return {};
@@ -36,7 +38,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .app-icon {
-  color:#fff;
+  color: #fff;
   padding: 0px 3px 0px 3px;
   border-radius: 3px;
   display: inline-block;
