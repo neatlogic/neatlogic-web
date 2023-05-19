@@ -1,5 +1,5 @@
 import utils from '@/resources/assets/js/util.js';
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 let valid = {
   common(nodeConfig, d, that) { //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
@@ -15,7 +15,14 @@ let valid = {
         href: '#nodeName'
       });
     }
-    return validList; 
+    if (nodeConfig && nodeConfig.stepConfig && nodeConfig.stepConfig.notifyPolicyConfig && nodeConfig.stepConfig.notifyPolicyConfig.isCustom && that.$utils.isEmpty(nodeConfig.stepConfig.notifyPolicyConfig.policyId)) {
+      // 【通知策略】为自定义通知策略，必填
+      validList.push({
+        name: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
+        href: '#NoticeSetting'
+      });
+    }
+    return validList;
   },
   poliyUser(nodeConfig, d, that) { //分派处理人校验
     // 分派处理人校验
@@ -23,7 +30,7 @@ let valid = {
     let nodeData = nodeConfig.stepConfig || {};
     let parentNodes = d.getPrevNodes();
     let isStart = parentNodes.find(d => {
-      return d.getConfig() && d.getConfig().handler === 'start'; 
+      return d.getConfig() && d.getConfig().handler === 'start';
     });
     if (isStart) { //如果是开始节点
       return validList;
@@ -45,7 +52,7 @@ let valid = {
       let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
-          'prestepassign': { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid')}, //由前置步骤处理人指定
+          'prestepassign': { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
           'copy': { value: 'processStepUuid', text: $t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
           'form': { value: 'attributeUuidList', text: $t('term.process.formworkerpolicyvalid') }, //表单值
           'assign': { value: 'workerList', text: $t('term.process.assignworkerpolicyvalid') }//自定义
@@ -73,7 +80,7 @@ let valid = {
                 isChecked = 0;
                 errorText = keyConfig[type].text;
                 break;
-              } 
+              }
             } else if (policyList[i].type == 'automatic') { //分派器
               if (policyList[i].config.handler && policyList[i].config.handler != '') {
                 if (policyList[i].config.handlerConfig != {}) {
@@ -97,7 +104,7 @@ let valid = {
                         isChecked = 0;
                         errorText = $t('term.process.assignconfigvalid');
                         break;
-                      } 
+                      }
                     }
                   }
                 }
@@ -135,13 +142,13 @@ let valid = {
     if (nodeConfig.handler === 'automatic') {
       if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.integrationUuid) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.externalcall')}),
+          name: $t('form.validate.required', { target: $t('term.process.externalcall') }),
           href: '#requestIntegration'
         });
       }
       if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.failPolicy) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('page.failurestrategy')}),
+          name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
           href: '#failPolicy'
         });
       }
@@ -163,7 +170,7 @@ let valid = {
         }
       }
     }
-    return validList; 
+    return validList;
   },
   changecreate(nodeConfig, d, that) { //变更创建的校验
     let validList = [];
@@ -173,16 +180,16 @@ let valid = {
       let haveChangehandle = allNextNodes.filter(p => p.getConfig() && p.getConfig().handler === 'changehandle');
       if (haveChangehandle.length == 0) {
         validList.push({
-          name: $t('term.process.changeexistinpairsvalid') 
+          name: $t('term.process.changeexistinpairsvalid')
         });
       } else {
         let selectChangeList = haveChangehandle.filter(c => {
           let config = that.stepList.find(item => item.uuid == c.getUuid());
-          return config.stepConfig.linkedChange && config.stepConfig.linkedChange == nodeConfig.uuid; 
+          return config.stepConfig.linkedChange && config.stepConfig.linkedChange == nodeConfig.uuid;
         });
         if (selectChangeList.length == 0) {
           validList.push({
-            name: $t('term.process.notselectchangelistvalid') 
+            name: $t('term.process.notselectchangelistvalid')
           });
         } else if (selectChangeList.length > 1) {
           validList.push({
@@ -191,7 +198,7 @@ let valid = {
         }
       }
     }
-    return validList; 
+    return validList;
   },
   changehandle(nodeConfig, d, that) { //变更处理的校验
     let validList = [];
@@ -201,7 +208,7 @@ let valid = {
       let haveChangecreate = allPrevNodes.filter(p => p.getConfig() && p.getConfig().handler === 'changecreate');
       if (haveChangecreate.length == 0) {
         validList.push({
-          name: $t('term.process.changeexistinpairsvalid') 
+          name: $t('term.process.changeexistinpairsvalid')
         });
       } else if (haveChangecreate.length > 0 && !nodeData.linkedChange) {
         validList.push({
@@ -210,7 +217,7 @@ let valid = {
         });
       }
     }
-    return validList; 
+    return validList;
   },
   cientitysync(nodeConfig, d, that) { //配置项同步
     let validList = [];
@@ -237,7 +244,7 @@ let valid = {
         }
       }
     }
-    return validList; 
+    return validList;
   },
   autoexec(nodeConfig, d, that) { //自动化节点
     let validList = [];
@@ -252,7 +259,7 @@ let valid = {
       }
       if (that.$utils.isEmpty(autoexecConfig.configList)) {
         validList.push({
-          name: $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}),
+          name: $t('form.validate.leastonetarget', { 'target': $t('term.autoexec.job') }),
           href: '#autoexecCombop'
         });
       }
@@ -301,5 +308,5 @@ let setInitData = {
     }
   }
 };
-export {valid, setInitData};
+export { valid, setInitData };
 
