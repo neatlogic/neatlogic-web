@@ -8,6 +8,7 @@
     :valueList="valueList"
     :attrConfig="attrConfig"
     :mode="mode"
+    :projectId="projectId"
     @setValue="setValue"
   ></component>
   <component
@@ -20,6 +21,7 @@
     :valueList="valueList"
     :attrConfig="attrConfig"
     :mode="mode"
+    :projectId="projectId"
     @setValue="setPrivateValue"
   ></component>
 </template>
@@ -31,6 +33,7 @@ export default {
     ...handlers
   },
   props: {
+    projectId: {type: Number},
     readonly: {type: Boolean, default: false},
     border: {type: String, default: 'border'},
     mode: {type: String, default: 'input'},

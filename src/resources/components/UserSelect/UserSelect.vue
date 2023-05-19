@@ -10,7 +10,7 @@
           </span>
         </template>
       </template>
-      <template v-else>-</template>
+      <span v-else class="text-grey">-</span>
     </span>
     <div
       v-else

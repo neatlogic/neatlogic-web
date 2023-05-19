@@ -2,6 +2,7 @@ export const AttrBase = {
   name: '',
   components: {},
   props: {
+    projectId: {type: Number},
     readonly: {type: Boolean, default: false},
     border: { type: String },
     mode: { type: String, default: 'input' },

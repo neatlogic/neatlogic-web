@@ -75,7 +75,7 @@ export default {
             'required', 
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/combop/save', 
+              url: '/api/rest/autoexec/combop/basic/info/save', 
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }

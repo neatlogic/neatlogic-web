@@ -92,7 +92,7 @@ export default {
         isValid = false;
       }
       if (isValid) {
-        console.log(JSON.stringify(this.iterationData, null, 2));
+        this.iterationData.projectId = this.app.projectId;
         this.$api.rdm.iteration.saveIteration(this.iterationData).then(res => {
           if (res.Status === 'OK') {
             this.close(true);

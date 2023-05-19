@@ -13,10 +13,6 @@ const action = {
   saveActionBasicInfo(params) {
     return axios.post('/api/rest/autoexec/combop/basic/info/save', params);
   },
-  //保存组合工具场景信息
-  // saveActionScenario(params) {
-  //   return axios.post('/api/rest/autoexec/combop/scenario/save', params);
-  // },
   //查询组合工具详情
   getActionDetail(params) {
     return axios.post('/api/rest/autoexec/combop/detail/get', params);
