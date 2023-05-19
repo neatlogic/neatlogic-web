@@ -886,5 +886,6 @@
   "use": "用途",
   "autoexecjob": "自动化作业",
   "foreachtable": "遍历表格",
-  "personalizationsettings": "个性化设置"
+  "personalizationsettings": "个性化设置",
+  "current": "当前"
 }

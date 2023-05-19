@@ -65,15 +65,15 @@
     >
       <template v-slot:name="{ row }">
         <div :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
-          <span><AppIcon :app="app"></AppIcon></span>
+          <span><AppIcon :appType="row.appType" :appColor="row.appColor"></AppIcon></span>
           <span
-            v-if="mode==='level' && row.childrenCount"
+            v-if="mode === 'level' && row.childrenCount"
             class="cursor text-href"
             :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
             @click="toggleChildIssue(row)"
           ></span>
           <span class="overflow">
-            <a href="javascript:void(0)" @click="toIssueDetail(row.id)">{{ row.name }}</a>
+            <a href="javascript:void(0)" @click="toIssueDetail(row.id, row.appId)">{{ row.name }}</a>
           </span>
         </div>
       </template>
@@ -132,6 +132,7 @@ export default {
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
     canSelect: { type: Boolean, default: false },
+    iteration: { type: Number }, //迭代id
     parentId: { type: Number }, //父任务id
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
@@ -230,8 +231,7 @@ export default {
     async getAppSetting() {
       await this.$api.rdm.app.getAppUserSetting(this.app.id).then(res => {
         this.appSetting = res.Return;
-        if (this.appSetting && this.appSetting?.config?.attrList && 
-        this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
+        if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
           this.appSetting.config.attrList.forEach(attrconf => {
             const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
             if (attr) {
@@ -301,8 +301,8 @@ export default {
       this.searchIssueData.pageSize = pageSize;
       this.searchIssue(1);
     },
-    toIssueDetail(id) {
-      this.$router.push({ path: '/' + this.app.type + '-detail/' + this.app.projectId + '/' + this.app.id + '/' + id });
+    toIssueDetail(id, appId) {
+      this.$router.push({ path: '/' + this.app.type + '-detail/' + this.app.projectId + '/' + appId + '/' + id });
     },
     closeLinkIssue(needRefresh) {
       this.linkApp = null;
@@ -352,7 +352,7 @@ export default {
     searchChildIssue(row, index) {
       const searchParam = {};
       searchParam.parentId = row.id;
-      searchParam.appId = this.app.id;
+      searchParam.appId = row.appId;
       this.$set(row, '_loading', true);
       this.$api.rdm.issue
         .searchIssue(searchParam)
@@ -381,10 +381,9 @@ export default {
       this.searchIssueData.parentId = this.parentId;
       this.searchIssueData.fromId = this.fromId;
       this.searchIssueData.toId = this.toId;
-      this.searchIssueData.appId = this.app.id;
-      if (this.catalog) {
-        this.searchIssueData.catalog = this.catalog;
-      }
+      this.searchIssueData.appId = this.app && this.app.id;
+      this.searchIssueData.catalog = this.catalog;
+      this.searchIssueData.iteration = this.iteration;
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -443,6 +442,11 @@ export default {
   },
   watch: {
     catalog: {
+      handler: function(val) {
+        this.searchIssue(1);
+      }
+    },
+    iteration: {
       handler: function(val) {
         this.searchIssue(1);
       }

@@ -40,7 +40,12 @@
         <div v-if="attrList && attrList.length > 0" class="grid">
           <div v-for="(attr, index) in attrList" :key="index">
             <TsFormItem :label="attr.label" labelPosition="top" :required="!!attr.isRequired">
-              <AttrHandler ref="attrHandler" :attrConfig="attr" :issueData="issueData"></AttrHandler>
+              <AttrHandler
+                ref="attrHandler"
+                :projectId="app.projectId"
+                :attrConfig="attr"
+                :issueData="issueData"
+              ></AttrHandler>
             </TsFormItem>
           </div>
         </div>

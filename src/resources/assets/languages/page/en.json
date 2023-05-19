@@ -884,5 +884,6 @@
   "clicksetting": "Click on Settings",
   "autoexecjob": "Automated operations",
   "foreachtable": "Traverse Table",
-  "personalizationsettings": "Personalization settings"
+  "personalizationsettings": "Personalization settings",
+  "current": "current"
 }

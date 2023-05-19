@@ -2,17 +2,20 @@
   <div>
     <TsFormSelect
       ref="select"
-      :dataList="iterationList"
       :value="iteration"
       valueName="id"
       textName="name"
+      rootName="tbodyList"
       :readonly="readonly"
       transfer
+      :search="true"
+      :params="{ projectId: projectId }"
+      url="/api/rest/rdm/iteration/search"
       :border="border"
       :validateList="validateList"
       @change="
         (val, opt) => {
-          $emit('setValue', 'priority', val, opt.text);
+          $emit('setValue', 'iteration', val, opt.text);
         }
       "
     ></TsFormSelect>
@@ -35,9 +38,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    this.getPriorityList();
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -49,11 +50,6 @@ export default {
   methods: {
     valid() {
       return this.$refs['select'].valid();
-    },
-    getIterationList() {
-      this.$api.rdm.iteration.searchIteration().then(res => {
-        this.priorityList = res.Return;
-      });
     }
   },
   filter: {},

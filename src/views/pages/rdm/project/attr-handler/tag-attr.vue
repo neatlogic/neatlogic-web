@@ -7,7 +7,7 @@
         </Tag>
       </span>
     </span>
-    <span v-else-if="readonly">-</span>
+    <span v-else-if="readonly" class="text-grey">-</span>
     <TsFormSelect
       v-if="isEditing"
       ref="selectInput"

@@ -208,7 +208,7 @@ export default {
           value: '',
           maxlength: 50,
           label: this.$t('page.name'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/autoexec/combop/save', key: 'name', message: this.$t('message.targetisexists', {target: this.$t('page.name')}) }]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/autoexec/combop/basic/info/save', key: 'name', message: this.$t('message.targetisexists', {target: this.$t('page.name')}) }]
         },
         {
           type: 'select',
