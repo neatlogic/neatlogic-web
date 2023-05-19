@@ -1,6 +1,6 @@
 <template>
   <div class="activity-box">
-    <div v-if="activeData && activeData.length > 0" class="activity-show-box bg-block ml-140">
+    <div v-if="activeData && activeData.length > 0" class="activity-show-box bg-block">
       <Timeline>
         <TimelineItem v-for="item of activeData" :key="item.id">
           <template slot="dot">
@@ -131,12 +131,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .activity-show-box {
+  margin-left: 145px;
   /deep/ .image > img {
     max-width: 100%;
   }
-}
-.ml-140{
-  margin-left:140px;
 }
 .parent{
   position: relative;
@@ -144,7 +142,7 @@ export default {
 .child-time{
   position: absolute;
   top: 2px;
-  left: -145px;
+  left: -149px;
 }
 .text-icon-font-size {
   font-size: 22px;
@@ -155,6 +153,9 @@ export default {
     width: 72px;
     margin-right: 15px;
     text-align: right;
+  }
+  /deep/ .ivu-timeline-item-tail {
+    left: 3px; // 解决时间线不对齐问题
   }
 }
 </style>
