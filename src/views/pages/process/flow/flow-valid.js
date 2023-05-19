@@ -16,13 +16,12 @@ let valid = {
       });
     }
     if (nodeConfig && nodeConfig.stepConfig && nodeConfig.stepConfig.notifyPolicyConfig && nodeConfig.stepConfig.notifyPolicyConfig.isCustom && that.$utils.isEmpty(nodeConfig.stepConfig.notifyPolicyConfig.policyId)) {
-      // 自定义通知策略，必填
+      // 【通知策略】为自定义通知策略，必填
       validList.push({
         name: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
         href: '#NoticeSetting'
       });
     }
-    console.log('xxx', nodeConfig.stepConfig.notifyPolicyConfig);
     return validList;
   },
   poliyUser(nodeConfig, d, that) { //分派处理人校验

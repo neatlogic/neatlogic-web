@@ -291,7 +291,6 @@ export default {
       }
       if (this.$refs.NoticeSetting) { //通知
         stepConfig.notifyPolicyConfig = this.$refs.NoticeSetting.getData();
-        return false;
       }
       if (this.$refs.TagSetting) { //标签
         stepConfig.tagList = this.$refs.TagSetting.getData();

@@ -3,16 +3,10 @@
   <div class="app-manage-wrap">
     <AppInfo :appSystemId="appSystemId"></AppInfo>
     <div class="border-bottom border-color"></div>
-    <div>
-      <NoticeSetting
-        ref="noticeSetting"
-        layoutType="custom"
-        :config="notifyPolicyConfig"
-      ></NoticeSetting>
-      <div class="pl-nm pb-sm">
-        <Button type="primary" @click="saveNoticeSetting">{{ $t('page.save') }}</Button>
-      </div>
-    </div>
+    <DeployNoticeSetting
+      v-if="appSystemId"
+      :appSystemId="appSystemId"
+    ></DeployNoticeSetting>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">
       <span class="pl-nm">{{ $t('page.authority') }}</span>
@@ -138,7 +132,7 @@ export default {
     AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit.vue'], resolve),
     AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
     BatchEditAuthDialog: resolve => require(['@/views/pages/deploy/application-config/config/app/components/batch-edit-auth-dialog.vue'], resolve), // 批量编辑权限
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve)
+    DeployNoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-setting.vue'], resolve) // 通知策略
   },
   props: {
     appSystemId: {
@@ -176,24 +170,11 @@ export default {
       tableConfig: {
         theadList: [],
         tbodyList: []
-      },
-      notifyPolicyConfig: {
-        // 通知策略配置信息
-        policyId: '',
-        policyName: '',
-        policyPath: '',
-        handler: 'neatlogic.module.deploy.notify.handler.DeployJobNotifyPolicyHandler',
-        paramMappingList: [],
-        excludeTriggerList: []
       }
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.appSystemId) {
-      this.getAppSystemNotifyId(this.appSystemId);
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.loadingShow = true;
@@ -503,32 +484,6 @@ export default {
         let scrollLeft = this.$refs.tableMain ? this.$refs.tableMain.scrollLeft : 0; // 左边滚动距离
         this.$set(this, 'topRightWidth', Math.max(0, innerWidth - outWidth) ? Math.max(0, innerWidth - (outWidth + scrollLeft)) + 20 : 0); // 20一个操作按钮的宽度
       });
-    },
-    getAppSystemNotifyId(appSystemId) {
-      // 获取发布应用的通知策略id
-      let param = {
-        appSystemId: appSystemId
-      };
-      this.$api.deploy.applicationConfig.getAppSystemNotifyId(param).then((res) => {
-        if (res.Status == 'OK') {
-          Object.assign(this.notifyPolicyConfig, res.Return);
-        }
-      });
-    },
-    saveNoticeSetting() {
-      // 保存通知策略
-      if (this.$refs.noticeSetting) {
-        let notifyPolicyInfo = this.$refs.noticeSetting.getData();
-        let param = {
-          appSystemId: this.appSystemId,
-          ...notifyPolicyInfo
-        };
-        this.$api.deploy.applicationConfig.saveAppSystemNotify(param).then((res) => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        });
-      }
     }
   },
   filter: {},

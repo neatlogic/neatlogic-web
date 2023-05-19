@@ -59,7 +59,6 @@
       <div class="notifypolicy-operation-box">
         <span v-if="layoutType == 'custom'">{{ $t('page.notificationstrategy') }}</span>
         <TsFormSelect
-          id="notifyPolicy"
           ref="notifyPolicy"
           v-model="notifyPolicyConfig.policyId"
           v-bind="notifySelectConfig"
@@ -154,11 +153,11 @@ export default {
         valueName: 'id',
         textName: 'name',
         rootName: 'tbodyList',
-        validateList: ['required'],
+        validateList: [{ name: 'required', message: ' ' }],
         params: {handler: this.config.handler || this.handler}
       },
       isShowPersonSettingDialog: false,
-      tacticsObj: {}, // 个性设置
+      tacticsData: {}, // 个性设置
       defaultPolicyId: null, // 默认通知策略的Id
       defaultPolicyName: '', // 默认通知策略的名称
       defaultDeepCloneConfig: {}
@@ -211,6 +210,7 @@ export default {
           this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
           this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
           this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
+          this.$set(this.notifyPolicyConfig, 'handler', handler);
         }
       });
     },
@@ -220,9 +220,9 @@ export default {
         policyId: this.notifyPolicyConfig.policyId || null,
         policyName: this.notifyPolicyConfig.policyName || '',
         policyPath: this.notifyPolicyConfig.policyPath || '',
-        handler: this.notifyPolicyConfig.handler || this.handler,
+        handler: this.notifyPolicyConfig.handler || '',
         isCustom: this.isActive,
-        ...this.tacticsObj
+        ...this.tacticsData
       };
       return data;
     },
@@ -236,7 +236,7 @@ export default {
       return isValid;
     },
     changeSwitch(isActive) {
-      this.tacticsObj = {};
+      this.tacticsData = {};
       if (isActive) {
         this.notifyPolicyConfig.policyId = null;
         this.notifyPolicyConfig.paramMappingList = [];
@@ -247,6 +247,7 @@ export default {
         this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
         this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
         this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
+        this.$set(this.notifyPolicyConfig, 'handler', this.defaultDeepCloneConfig.handler);
       }
       this.isActive = isActive;
       this.notifyPolicyConfig.isCustom = this.isActive;
@@ -258,7 +259,7 @@ export default {
     closePersonSettingsDialog(needUpdateValue, tacticsData) {
       this.isShowPersonSettingDialog = false;
       if (needUpdateValue) {
-        this.tacticsObj = tacticsData;
+        this.tacticsData = tacticsData;
       }
     },
     getDefaultPolicyId(handler) {
@@ -267,6 +268,9 @@ export default {
         handler: handler,
         needPage: false
       };
+      if (!handler) {
+        return false;
+      }
       let notifyList = [];
       this.defaultPolicyId = null;
       this.defaultPolicyName = '';

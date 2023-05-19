@@ -265,13 +265,12 @@ export default {
         }
       });
     },
-    getJsonValue(isSave) { //获取流程设置的数据
-      if (isSave) {
-        this.notifyPolicyConfig = this.$refs.NoticeSetting ? this.$refs.NoticeSetting.getData() : this.notifyPolicyConfig;
-      }
+    getJsonValue() { //获取流程设置的数据
+      this.notifyPolicyConfig = this.$refs.NoticeSetting ? this.$refs.NoticeSetting.getData() : this.notifyPolicyConfig;
       if (!this.activeSetting.actionSetting) {
         this.$set(this.actionConfig, 'actionList', []);
       }
+      
       let json = {
         processConfig: {
           name: this.currentName,
