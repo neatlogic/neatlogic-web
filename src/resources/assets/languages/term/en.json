@@ -2093,7 +2093,9 @@
     "taskmanage": "task management",
     "iterationmanage": "Iterative management",
     "bugmanage": "defect management ",
-    "iteration": "iteration"
+    "iteration": "iteration",
+    "isopened": "Opened",
+    "isclosed": "Closed"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

@@ -2090,7 +2090,9 @@
     "taskmanage": "任务管理",
     "iterationmanage": "迭代管理",
     "bugmanage": "缺陷管理",
-    "iteration": "迭代"
+    "iteration": "迭代",
+    "isopened": "已开启",
+    "isclosed": "已关闭"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

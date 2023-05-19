@@ -5,7 +5,7 @@
         v-for="(iteration, index) in iterationList"
         :key="index"
         style="position: relative"
-        class="cursor padding-md radius-sm mb-md"
+        class="cursor padding-md radius-md mb-md"
         :class="{
           'bg-op': currentIterationId !== iteration.id,
           'bg-selected': currentIterationId === iteration.id,
