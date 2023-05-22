@@ -3,11 +3,11 @@
     <Loading :loadingShow="nodeLoading" type="fix"></Loading>
     <TsContain @scroll="scroll">
       <template v-slot:topLeft>
-        <InputSearcher
-          v-model="keywork"
-          :placeholder="$t('form.placeholder.pleaseinput', {target:$t('term.process.nodename')})"
-          @change="getNodeList"
-        ></InputSearcher>
+        <TsFormSelect
+          v-model="keyword"
+          v-bind="selectConfig"
+          @on-change="getNodeList"
+        ></TsFormSelect>
       </template>
       <template v-slot:topRight>
         <div style="text-align:right"><Button type="primary" :disabled="saving" @click="saveConfig">{{ $t('page.save') }}</Button></div>
@@ -157,7 +157,7 @@
           </div>
         </template>
         <div v-else>
-          <no-data></no-data>
+          <NoData></NoData>
         </div>
       </div>
     </TsContain>
@@ -168,17 +168,26 @@ export default {
   name: 'NodeManage',
   components: {
     UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
     // TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve),
-    // TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
   },
   props: [],
   data() {
-    let _this = this;
     return {
-      keywork: '',
+      keyword: '',
       nodeLoading: true,
       nodeList: [],
+      selectConfig: {
+        // 节点名称下拉
+        url: '/api/rest/process/step/handler/search',
+        rootName: 'stepHandlerList',
+        valueName: 'name',
+        textName: 'name',
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.nodename')}),
+        transfer: true,
+        search: true,
+        border: 'border'
+      },
       // paramTypeConfig: {},
       // triggerList: [], //触发方式列表
       // handlerList: [], //通知方法列表
@@ -228,9 +237,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getNodeList(name) {
+    getNodeList() {
       let _this = this;
-      return this.$api.process.process.getNodeList({ keywork: name }).then(res => {
+      return this.$api.process.process.getNodeList({ keywork: this.keyword }).then(res => {
         if (res.Status == 'OK') {
           _this.nodeList = res.Return.stepHandlerList;
           _this.nodeList.forEach(async(item) => {

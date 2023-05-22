@@ -10,9 +10,9 @@
                 v-else-if="item.stepStatus && item.stepStatus == 'failed'"
                 class="tsfont-info-s text-error text-icon-font-size"
               ></span>
-              <div v-else class="tsfont-layer text-primary" style="font-size:22px"></div>
+              <span v-else class="tsfont-layer text-primary text-icon-font-size"></span>
             </template>
-            <div v-else-if="item.action == 'restfulaction'" class="tsfont-action text-primary" style="font-size:22px"></div>
+            <span v-else-if="item.action == 'restfulaction'" class="tsfont-action text-primary text-icon-font-size"></span>
             <UserCard
               v-else
               :uuid="item.userVo.uuid"
@@ -145,6 +145,8 @@ export default {
   left: -149px;
 }
 .text-icon-font-size {
+  display: inline-block;
+  margin-left: -6px;
   font-size: 22px;
 }
 .activity-box {

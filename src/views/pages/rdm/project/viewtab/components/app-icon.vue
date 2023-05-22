@@ -5,7 +5,7 @@
       background: app ? app.color : appColor
     }"
   >
-    {{ app ? app.type.toUpperCase() : appType.toUpperCase() }}
+    {{ app ? app.type.toUpperCase() : appType && appType.toUpperCase() }}
   </div>
 </template>
 <script>
@@ -44,5 +44,6 @@ export default {
   display: inline-block;
   font-size: 12px !important;
   transform: scale(0.75);
+  line-height: 18px;
 }
 </style>

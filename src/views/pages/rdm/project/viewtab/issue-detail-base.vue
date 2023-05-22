@@ -14,7 +14,7 @@ export default {
   created() {
     this.projectId = Math.floor(this.$route.params['projectId']);
     this.appId = Math.floor(this.$route.params['appId']);
-    this.id = Math.floor(this.$route.params['issueId']);
+    this.id = Math.floor(this.$route.params['id']);
     this.init();
     this.getAppByProjectId();
   },

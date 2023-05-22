@@ -45,7 +45,8 @@
                   <span v-if="item.endTime">{{ item.endTime | formatDate }}</span>
                 </div>
               </div>
-              <SlaTime v-if="item.slaTimeList && getOvertimeList(item.slaTimeList).length && item.status != 'succeed'" :slaTimeList="getOvertimeList(item.slaTimeList)"></SlaTime>
+              <!-- 工单状态=【已取消】时，不显示时效 -->
+              <SlaTime v-if="item.slaTimeList && getOvertimeList(item.slaTimeList).length && item.status != 'succeed' && processTaskConfig.status != 'aborted'" :slaTimeList="getOvertimeList(item.slaTimeList)"></SlaTime>
             </div>
 
             <div v-if="isTabShow(item)" class="parent"></div>

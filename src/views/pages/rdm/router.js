@@ -81,28 +81,25 @@ let routerArr = [
 const appList = ['story', 'bug', 'task', 'iteration'];
 appList.forEach(app => {
   routerArr.push(
-    ...[
-      {
-        path: '/' + app + '/:projectId/:appId',
-        name: app,
-        component: appModules[app],
-        meta: {
-          ismenu: false,
-          authority: 'RDM_BASE',
-          type: 'project'
-        }
-      },
-      {
-        path: '/' + app + '-detail/:projectId/:appId/:issueId',
-        name: app + '-detail',
-        component: appModules[app + 'Detail'],
-        meta: {
-          ismenu: false,
-          authority: 'RDM_BASE',
-          type: 'project'
-        }
+    {
+      path: '/' + app + '/:projectId/:appId',
+      name: app,
+      component: appModules[app],
+      meta: {
+        ismenu: false,
+        authority: 'RDM_BASE',
+        type: 'project'
       }
-    ]
-  );
+    });
+  routerArr.push({
+    path: '/' + app + '-detail/:projectId/:appId/:id',
+    name: app + '-detail',
+    component: appModules[app + 'Detail'],
+    meta: {
+      ismenu: false,
+      authority: 'RDM_BASE',
+      type: 'project'
+    }
+  });
 });
 export default routerArr;

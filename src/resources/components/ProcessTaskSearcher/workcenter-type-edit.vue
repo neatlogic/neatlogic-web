@@ -57,8 +57,10 @@ export default {
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }],
           onChange: (val) => {
             if (val == 'system') {
+              this.formConfig.support.isHidden = false; // 个人分类时，隐藏使用范围
               this.formConfig.authList.isHidden = false;
             } else {
+              this.formConfig.support.isHidden = true;
               this.formConfig.authList.isHidden = true;
             }
           }
@@ -68,6 +70,7 @@ export default {
           label: this.$t('page.limituser'),
           transfer: true,
           defaultValueIsFirst: true,
+          isHidden: true,
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.common.constvalue.DeviceType' }
         },       

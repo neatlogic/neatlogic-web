@@ -5,23 +5,13 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
+        <span><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
         <span>
           <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
         </span>
         <IssueStatus :issueData="issueData"></IssueStatus>
       </template>
       <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
-          <div class="action-item">
-            <Dropdown :transfer="true" placement="bottom-end">
-              <Button type="primary" ghost>
-                <span>{{ $t('page.more') }}</span>
-                <span class="tsfont-drop-down"></span>
-              </Button>
-              <DropdownMenu slot="list"></DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
       </template>
       <template v-slot:sider>侧边栏</template>
       <template v-slot:right>
@@ -147,6 +137,7 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),

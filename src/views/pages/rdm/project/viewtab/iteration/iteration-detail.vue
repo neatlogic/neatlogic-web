@@ -5,169 +5,100 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>
-          <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
-        </span>
-        <IssueStatus :issueData="issueData"></IssueStatus>
-      </template>
-      <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
-          <div class="action-item">
-            <Dropdown :transfer="true" placement="bottom-end">
-              <Button type="primary" ghost>
-                <span>{{ $t('page.more') }}</span>
-                <span class="tsfont-drop-down"></span>
-              </Button>
-              <DropdownMenu slot="list"></DropdownMenu>
-            </Dropdown>
+        <div class="clearfix">
+          <div class="float-left">
+            <AppIcon v-if="iterationData" :appType="iterationData.appType" :appColor="iterationData.appColor"></AppIcon>
+          </div>
+          <div class="float-left mr-md">
+            <strong class="fz16">{{ iterationData.name }}</strong>
           </div>
         </div>
       </template>
-      <template v-slot:sider>侧边栏</template>
-      <template v-slot:right>
-        <div class="pl-md">
-          <AttrList v-if="isReady && appId" :appId="appId" :issueData="issueData"></AttrList>
-        </div>
-      </template>
-      <div slot="content" class="ci-content border-color">
-        <div class="middle bg-block radius-lg">
-          <Tabs v-model="currentTab">
-            <TabPane :label="$t('page.detailinfo')" name="main">
-              <div class="pl-nm pr-nm">
-                <div v-html="issueData.content"></div>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
-              <div v-if="currentTab == 'task'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('task')"
-                  ref="taskList"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'task', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('task')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.bug'), 'bug', 'extend', 'from')" name="bug">
-              <div v-if="currentTab == 'bug'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('bug')"
-                  ref="bugList"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'bug', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('bug')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabelForChild(render, issueData, $t('term.rdm.childrequest'))" name="childrequest">
-              <div v-if="currentTab == 'childrequest'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('story')"
-                  ref="requestList"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :parentId="id"
-                  :app="getApp('story')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
-              <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
-                <IssueAuditList v-if="currentTab === 'audit' && id && appId" :issueId="id" :appId="appId"></IssueAuditList>
-              </div>
-            </TabPane>
-          </Tabs>
-          <div class="padding">
-            <Divider />
-            <div class="item-grid">
-              <div>
-                <strong class="text-grey">{{ $t('page.accessory') }}</strong>
-              </div>
-              <div><TsUpLoad
-                styleType="text"
-                dataType="issue"
-                className="smallUpload"
-                type="drag"
-                :params="{ issueId: id }"
-                :multiple="true"
-                :isDeleteRemote="true"
-                :defaultList="issueData.fileList"
-              ></TsUpLoad></div>
+      <template v-slot:topRight></template>
+      <div slot="content">
+        <div class="radius-md mt-md padding-md bg-op">
+          <div class="clearfix fz16">
+            <div class="float-left text-grey">
+              <span class="tsfont-calendar mr-md"></span>
+              <span>{{ iterationData.startDate | formatDate('yyyy-mm-dd') }}</span>
+              <span class="ml-xs mr-xs">~</span>
+              <span>{{ iterationData.endDate | formatDate('yyyy-mm-dd') }}</span>
             </div>
-            <div v-if="issueData.commentCount" class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.comment') }}</strong>
-              </div>
-              <div>
-                <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
-              </div>
+            <div class="float-left ml-lg">
+              <TsFormSwitch
+                :value="iterationData.isOpen"
+                :trueValue="1"
+                :falseValue="0"
+                :showStatus="true"
+                :trueText="$t('term.rdm.isopened')"
+                :falseText="$t('term.rdm.isclosed')"
+                @on-change="toggleIterationOpen"
+              ></TsFormSwitch>
             </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('term.rdm.nextstatus') }}</strong>
-              </div>
-              <div>
-                <StatusRequiredAttrList
-                  v-if="isReady && !$utils.isEmpty(issueData)"
-                  ref="requiredAttrList"
-                  :appId="appId"
-                  :issueData="issueData"
-                ></StatusRequiredAttrList>
-                <div class="mb-md">
-                  <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-                </div>
-                <div>
-                  <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-                </div>
-              </div>
-            </div>
+            <div class="float-left ml-lg" style="width: 300px"><Progress status="active" :percent="parseFloat(((iterationData.doneIssueCount / iterationData.issueCount) * 100).toFixed(2))" :stroke-width="20" /></div>
+          </div>
+          <div class="grid">
+            <div><IssueBar v-if="issueCountData" :data="issueCountData"></IssueBar></div>
+            <div><IssueRing v-if="issueCountData" :data="issueCountData"></IssueRing></div>
           </div>
         </div>
+        <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
+          <TabPane
+            v-for="(app, index) in issueAppList"
+            :key="index"
+            :label="app.name"
+            :name="app.type"
+          >
+            <div>
+              <IssueList
+                v-if="currentApp === app.type"
+                :canAppend="true"
+                :app="app"
+                :mode="displayMode"
+                :iteration="iterationData && iterationData.id"
+                :isShowEmptyTable="true"
+              ></IssueList>
+            </div>
+          </TabPane>
+        </Tabs>
+        <NoData v-else></NoData>
       </div>
     </TsContain>
   </div>
 </template>
 <script>
-import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
 export default {
   name: '',
   components: {
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
-    StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
-    IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
+    IssueRing: resolve => require(['@/views/pages/rdm/project/viewtab/iteration/issue-ring.vue'], resolve),
+    IssueBar: resolve => require(['@/views/pages/rdm/project/viewtab/iteration/issue-bar.vue'], resolve),
+    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
   },
-  extends: IssueDetailBase,
   props: {},
   data() {
     return {
-      currentTab: 'main',
-      issueData: {},
-      issueDataSnapshot: {},
-      catalogData: {},
-      statusList: [],
+      id: null,
+      appId: null,
+      projectId: null,
+      iterationData: {},
       isReady: true,
-      isLoading: true,
-      isTransferReady: true,
-      appList: []
+      appList: [],
+      displayMode: 'level',
+      currentApp: null,
+      issueCountData: null
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.projectId = Math.floor(this.$route.params['projectId']);
+    this.appId = Math.floor(this.$route.params['appId']);
+    this.id = Math.floor(this.$route.params['id']);
+    this.getIterationById();
+    this.getAppByProjectId();
+    this.getIterationIssueCount();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -177,33 +108,55 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    goToNext() {
-      const requiredAttrList = this.$refs['requiredAttrList'];
-      if (!requiredAttrList || requiredAttrList.valid()) {
-        this.saveIssue();
+    getIterationIssueCount() {
+      if (this.id) {
+        this.$api.rdm.iteration.getIterationIssueCount(this.id).then(res => {
+          this.issueCountData = res.Return;
+        });
       }
     },
-    saveIssue() {
-      this.$api.rdm.issue.saveIssue(this.issueData).then(async res => {
-        this.init();
+    toggleIterationOpen(val) {
+      this.$api.rdm.iteration.toggleIterationIsOpen({ id: this.iterationData.id, isOpen: val }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.updatesuccess'));
+        }
       });
     },
-    selectStatus(status) {
-      this.$set(this.issueData, 'status', status.id);
-      this.$set(this.issueData, 'statusName', status.name);
-      this.$set(this.issueData, 'statusColor', status.color);
-      this.$set(this.issueData, 'statusLabel', status.label);
+    getIterationById() {
+      if (this.id) {
+        this.$api.rdm.iteration.getIterationById(this.id).then(res => {
+          this.iterationData = res.Return;
+          document.title = this.iterationData.name;
+          this.$route.meta.title = this.iterationData.name;
+        });
+      }
+    },
+    getAppByProjectId() {
+      this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+        this.appList = res.Return;
+        const list = this.appList.filter(d => d.hasIssue);
+        if (list.length > 0) {
+          this.currentApp = list[0].type;
+        }
+      });
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-    issueData: {
-      handler: function(val) {
-        //console.log(JSON.stringify(val, null, 2));
-      },
-      deep: true
+  computed: {
+    issueAppList() {
+      if (this.appList && this.appList.length > 0) {
+        return this.appList.filter(d => d.hasIssue);
+      }
+      return [];
     }
-  }
+  },
+  watch: {}
 };
 </script>
+<style lang="less" scoped>
+.grid {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 10px;
+}
+</style>

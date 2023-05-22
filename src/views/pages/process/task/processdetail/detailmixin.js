@@ -563,6 +563,17 @@ export default {
         url ? this.$utils.gotoHref(url) : next();
       }
     },
+    isDataChangeSwitchTsak() { // 切换任务列表时，对比数据是否变化
+      let draftData = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getData() : '';
+      let isSame = this.$utils.isSame(this.draftData, draftData);
+      let isDataChange = false;
+      if (isSame || this.draftData == '') {
+        isDataChange = false;
+      } else {
+        isDataChange = true;
+      }
+      return isDataChange;
+    },
     updateAllData() {
       this.wipeData();
       this.getAllData();

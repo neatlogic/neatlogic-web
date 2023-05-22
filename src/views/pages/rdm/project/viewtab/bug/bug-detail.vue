@@ -5,6 +5,7 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
+        <span><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
         <span>
           <strong>[{{ issueData.id }}]{{ issueData.name }}</strong>
         </span>
@@ -116,6 +117,7 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
