@@ -86,13 +86,12 @@
 
 <script>
 import draggable from 'vuedraggable';
-import TeamTreeview from './team-treeview';
 var ADDPARENTUUID = '';
 export default {
   name: 'TeamTreeview',
   components: {
     draggable,
-    TeamTreeview
+    TeamTreeview: resolve => require(['./team-treeview'], resolve)
   },
   props: {
     children: {
