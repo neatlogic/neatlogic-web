@@ -34,7 +34,7 @@
                     <span v-if="childrenItem.isCanEdit === 1 || childrenItem.isCanRole === 1" ref="horizontal" class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
                       <DropdownItem v-if="childrenItem.isCanEdit === 1" @click.native="editRename(childrenItem)">
-                        <div>{{ $t('page.add') }}</div>
+                        <div>{{ $t('page.rename') }}</div>
                       </DropdownItem>
                       <DropdownItem v-if="childrenItem.isCanRole === 1" @click.native="editAuthorization(childrenItem)">
                         <div>{{ $t('page.auth') }}</div>
