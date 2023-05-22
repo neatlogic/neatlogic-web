@@ -274,6 +274,13 @@
             </ul>
           </div>
         </template>
+
+        <template v-if="row.account" slot="const_account" slot-scope="{ row }">
+          <Tag
+            v-for="(account, index) in row.account.split(',')"
+            :key="index"
+          >{{ account }}</Tag>
+        </template>
       </TsTable>
     </div>
     <div v-if="!ciEntityData.error && (!ciEntityData.tbodyList || ciEntityData.tbodyList.length == 0)">
