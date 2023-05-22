@@ -304,15 +304,54 @@ export default {
       }
     },
     toNextTask(item) {
-      let _this = this;
-      _this.loadingShow = true;
-      _this.processTaskId = item.processTaskId;
-      _this.processTaskStepId = item.processTaskStepId;
+      // 切换下一个任务时，判断数据是否有变化，有则弹窗提示用户保留数据
+      let isDataChange = this.$refs.nodeDatas ? this.$refs.nodeDatas.isDataChangeSwitchTsak() : false;
+      if (!isDataChange) {
+        // 没有改变
+        this.switchTaskNoSave(item);
+      } else {
+        this.$createDialog({
+          title: this.$t('page.tip'),
+          content: this.$t('message.notsavedataupdateredirecttip'),
+          btnList: [   
+            {
+              text: this.$t('page.cancel'),
+              fn: vnode => {
+                vnode.isShow = false;
+              }
+            },
+            {
+              text: this.$t('page.notsave'), // 不保存
+              type: 'primary',
+              ghost: true,
+              fn: vnode => {
+                vnode.isShow = false;
+                this.switchTaskNoSave(item);
+              }
+            },
+            {
+              text: this.$t('page.save'), // 保存
+              type: 'primary',
+              fn: async vnode => {
+                await this.$refs.nodeDatas.saveTaskData(true);
+                vnode.isShow = false;
+                this.switchTaskNoSave(item);
+              }
+            }
+          ]
+        });
+      }
+    },
+    switchTaskNoSave(item) {
+      // 切换任务不保存
+      this.loadingShow = true;
+      this.processTaskId = item.processTaskId;
+      this.processTaskStepId = item.processTaskStepId;
       this.$router.push({
         path: '/task-detail',
         query: {
-          processTaskId: _this.processTaskId,
-          processTaskStepId: _this.processTaskStepId,
+          processTaskId: this.processTaskId,
+          processTaskStepId: this.processTaskStepId,
           type: Date.now()
         }
       });
