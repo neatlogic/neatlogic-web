@@ -455,7 +455,10 @@
     "automaticprocessing": "Automatic processing",
     "recreatenewjob": "Fallback New Job",
     "jobpolicy": "Job strategy",
-    "singlecreatejob": "Single Create Job"
+    "singlecreatejob": "Single Create Job",
+    "triggertiming": "Trigger timing",
+    "notificationpolicysettings": "Notification Policy Settings",
+    "templateparametermapping": "Template parameter mapping"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -2093,7 +2096,9 @@
     "taskmanage": "task management",
     "iterationmanage": "Iterative management",
     "bugmanage": "defect management ",
-    "iteration": "iteration"
+    "iteration": "iteration",
+    "isopened": "Opened",
+    "isclosed": "Closed"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

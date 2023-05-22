@@ -12,6 +12,9 @@ const iteration = {
   },
   saveIteration(params) {
     return axios.post('/api/rest/rdm/iteration/save', params);
+  },
+  toggleIterationIsOpen(params) {
+    return axios.post('/api/rest/rdm/iteration/isopen/toggle', params);
   }
 };
 export default iteration;

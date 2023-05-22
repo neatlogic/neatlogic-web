@@ -21,6 +21,27 @@
       </template>
       <template v-slot:content>
         <div class="pl-md pb-md">
+          <div v-if="selectedIteration" class="clearfix mb-md mt-md bg-op padding-md radius-md">
+            <div class="float-left mr-md">
+              <strong>
+                <a href="javascript:void" class="text-grey" @click="toInterationDetail(selectedIteration.id)">{{ selectedIteration.name }}</a>
+              </strong>
+            </div>
+            <div class="float-left mr-md"><TsFormSwitch
+              :value="selectedIteration.isOpen"
+              :trueValue="1"
+              :falseValue="0"
+              :showStatus="true"
+              :trueText="$t('term.rdm.isopened')"
+              :falseText="$t('term.rdm.isclosed')"
+              @on-change="toggleIterationOpen"
+            ></TsFormSwitch></div>
+            <div class="float-left text-grey">
+              <span>{{ selectedIteration.startDate | formatDate('yyyy-mm-dd') }}</span>
+              <span class="ml-xs mr-xs">~</span>
+              <span>{{ selectedIteration.endDate | formatDate('yyyy-mm-dd') }}</span>
+            </div>
+          </div>
           <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
             <TabPane
               v-for="(app, index) in issueAppList"
@@ -33,7 +54,7 @@
                   v-if="currentApp === app.type"
                   :app="app"
                   :mode="displayMode"
-                  :iteration="selectedIterationId"
+                  :iteration="selectedIteration && selectedIteration.id"
                   :isShowEmptyTable="true"
                 ></IssueList>
               </div>
@@ -59,7 +80,8 @@ export default {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIteration: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue'], resolve),
     IterationList: resolve => require(['@/views/pages/rdm/project/viewtab/components/iteration-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   mixins: [mixins],
   props: {},
@@ -69,7 +91,7 @@ export default {
       scrollHeight: 500,
       pageName: this.$t('term.rdm.iterationmanage'),
       currentIterationId: null,
-      selectedIterationId: null,
+      selectedIteration: null,
       isEditIterationShow: false,
       searchParam: {},
       iterationData: {},
@@ -92,8 +114,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    initHeight() {
-      this.iterationHeight = window.innerHeight - this.$refs['iterationList'].getBoundingClientRect().top - 16;
+    toggleIterationOpen(val) {
+      this.$api.rdm.iteration.toggleIterationIsOpen({ id: this.selectedIteration.id, isOpen: val }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.updatesuccess'));
+        }
+      });
+    },
+    toInterationDetail(id) {
+      this.$router.push({ path: '/iteration-detail/' + this.projectId + '/' + this.appId + '/' + id });
     },
     getAppByProjectId() {
       this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
@@ -111,9 +140,9 @@ export default {
     },
     selectIteration(iteration) {
       if (iteration) {
-        this.selectedIterationId = iteration.id;
+        this.selectedIteration = iteration;
       } else {
-        this.selectedIterationId = null;
+        this.selectedIteration = null;
       }
     },
     addIteration() {
@@ -156,3 +185,4 @@ export default {
   watch: {}
 };
 </script>
+<style lang="less" scoped></style>

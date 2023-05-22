@@ -454,7 +454,10 @@
     "automaticprocessing": "自动处理",
     "recreatenewjob": "回退新建作业",
     "jobpolicy": "作业策略",
-    "singlecreatejob": "单次创建作业"
+    "singlecreatejob": "单次创建作业",
+    "triggertiming": "触发时机",
+    "notificationpolicysettings": "通知策略设置",
+    "templateparametermapping": "模板参数映射"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -2090,7 +2093,9 @@
     "taskmanage": "任务管理",
     "iterationmanage": "迭代管理",
     "bugmanage": "缺陷管理",
-    "iteration": "迭代"
+    "iteration": "迭代",
+    "isopened": "已开启",
+    "isclosed": "已关闭"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

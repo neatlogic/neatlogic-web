@@ -34,7 +34,7 @@
       <div v-if="processTaskConfig.ownerVo" class="information-box">
         <div class="bg-op padding radius-lg">
           <div class="h4 cursor" :class="showInfomant ? 'pb-nm' : ''" @click="showInfomant = !showInfomant">
-            <span :class="showInfomant ? 'tsfont-down' : 'tsfont-right'"> {{ $t('page.informant') }}</span>
+            <span :class="showInfomant ? 'tsfont-down' : 'tsfont-right'" class="icon-right">{{ $t('page.informant') }}</span>
           </div>
           <div v-show="showInfomant">
             <div v-if="processTaskConfig.ownerVo" class="information-list">
@@ -75,7 +75,7 @@
       <div class="information-box">
         <div class="bg-op padding radius-lg">
           <div class="h4 cursor" :class="showBasic ? 'pb-nm' : ''" @click="showBasic = !showBasic">
-            <span :class="showBasic ? 'tsfont-down' : 'tsfont-right'"> {{ $t('page.basicinfo') }}</span>
+            <span :class="showBasic ? 'tsfont-down' : 'tsfont-right'" class="icon-right">{{ $t('page.basicinfo') }}</span>
           </div>
           <div v-show="showBasic">
             <div v-for="(item, index) of taskInformationList" :key="index">
@@ -196,7 +196,7 @@
             :class="showScore ? 'pb-nm' : ''"
             @click="showScore = !showScore"
           >
-            <span :class="showScore ? 'tsfont-down' : 'tsfont-right'"> {{ $t('page.score') }}</span>
+            <span :class="showScore ? 'tsfont-down' : 'tsfont-right'" class="icon-right">{{ $t('page.score') }}</span>
           </div>
           <div v-show="showScore">
             <ScoreDisplay :scoreConfig="JSON.parse(processTaskConfig.scoreInfo)"></ScoreDisplay>

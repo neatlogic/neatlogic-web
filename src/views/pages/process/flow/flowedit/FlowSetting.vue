@@ -63,7 +63,6 @@
       ref="NoticeSetting"
       v-model="activeSetting.informSetting"
       :formUuid="formUuid"
-      :hasGlobal="false"
       :config="notifyPolicyConfig"
     ></NoticeSetting>
     <!-- 动作设置 -->
@@ -266,13 +265,12 @@ export default {
         }
       });
     },
-    getJsonValue(isSave) { //获取流程设置的数据
-      if (isSave) {
-        this.notifyPolicyConfig = this.$refs.NoticeSetting ? this.$refs.NoticeSetting.getData() : this.notifyPolicyConfig;
-      }
+    getJsonValue() { //获取流程设置的数据
+      this.notifyPolicyConfig = this.$refs.NoticeSetting ? this.$refs.NoticeSetting.getData() : this.notifyPolicyConfig;
       if (!this.activeSetting.actionSetting) {
         this.$set(this.actionConfig, 'actionList', []);
       }
+      
       let json = {
         processConfig: {
           name: this.currentName,
@@ -321,7 +319,7 @@ export default {
       let config = this.configData = this.$utils.deepClone(this.processConfig);
       if (this.activeSetting) {
         this.activeSetting.permission = config.enableAuthority || 0;
-        this.activeSetting.informSetting = config.notifyPolicyConfig && config.notifyPolicyConfig.policyId ? 1 : 0;
+        this.activeSetting.informSetting = config.notifyPolicyConfig && config.notifyPolicyConfig.isCustom || 0;
         this.activeSetting.actionSetting = config.actionConfig && config.actionConfig.actionList && config.actionConfig.actionList.length ? 1 : 0;
       }
       this.actionConfig = config.actionConfig || {};
