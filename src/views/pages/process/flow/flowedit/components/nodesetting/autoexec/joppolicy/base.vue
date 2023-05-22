@@ -194,7 +194,6 @@ export default {
 }
 .formTableComponent {
   position: relative;
-  padding-right: 20px;
   .formTableComponent-tip {
     position: absolute;
     right: 0;

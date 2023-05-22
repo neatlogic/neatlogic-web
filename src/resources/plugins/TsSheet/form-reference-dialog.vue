@@ -21,7 +21,7 @@
         @updatePage="quoteList"
       >
         <template slot-scope="{ row }">
-          <div v-html="row.text"></div>
+          <div class="line-2" v-html="row.text"></div>
         </template>
       </TsCard>
     </template>
