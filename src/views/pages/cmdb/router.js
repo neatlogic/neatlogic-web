@@ -77,7 +77,6 @@ let routerArr = [
     name: 'refresh',
     component: refresh
   },
-
   {
     path: '/global-search',
     name: 'global-search',
