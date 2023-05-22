@@ -98,7 +98,8 @@
     <EditIssue
       v-if="isEditIssueShow"
       :app="app"
-      :catalogId="catalog"
+      :catalog="catalog"
+      :iteration="iteration"
       :fromId="fromId"
       :parentId="parentId"
       @close="closeEditIssue"

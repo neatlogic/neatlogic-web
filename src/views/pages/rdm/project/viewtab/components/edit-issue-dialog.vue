@@ -71,7 +71,8 @@ export default {
     fromId: { type: Number },
     id: { type: Number },
     app: { type: Object },
-    catalogId: { type: Number }
+    catalog: { type: Number },
+    iteration: { type: Number }
   },
   data() {
     return {
@@ -85,14 +86,15 @@ export default {
       catalogConfig: {
         url: 'api/rest/rdm/catalog/search',
         params: { appId: this.app.id },
-        value: this.catalogId,
+        value: this.catalog,
         valueName: 'id',
         textName: 'name',
         showPath: true
       },
       issueData: {
         appId: this.app.id,
-        catalog: this.catalogId,
+        catalog: this.catalog,
+        iteration: this.iteration,
         attrList: []
       },
       catalogData: {},

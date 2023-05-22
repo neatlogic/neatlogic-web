@@ -24,7 +24,7 @@
           <div v-if="selectedIteration" class="clearfix mb-md mt-md bg-op padding-md radius-md">
             <div class="float-left mr-md">
               <strong>
-                <a href="javascript:void" class="text-grey" @click="toInterationDetail(selectedIteration.id)">{{ selectedIteration.name }}</a>
+                <span class="cursor text-grey" @click="toInterationDetail(selectedIteration.id)">{{ selectedIteration.name }}</span>
               </strong>
             </div>
             <div class="float-left mr-md"><TsFormSwitch
@@ -53,6 +53,7 @@
                 <IssueList
                   v-if="currentApp === app.type"
                   :app="app"
+                  :canAppend="true"
                   :mode="displayMode"
                   :iteration="selectedIteration && selectedIteration.id"
                   :isShowEmptyTable="true"
@@ -131,11 +132,6 @@ export default {
         if (list.length > 0) {
           this.currentApp = list[0].type;
         }
-      });
-    },
-    getIterationApp(iterationId) {
-      this.$api.rdm.iteration.getIterationApp(iterationId).then(res => {
-        this.appList = res.Return;
       });
     },
     selectIteration(iteration) {
