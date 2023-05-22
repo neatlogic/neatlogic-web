@@ -9,7 +9,7 @@
               <router-link :to="menus.url ? menus.url : '/'" :class="menus.icon">{{ menus.name }}</router-link>
             </div>
             <div v-else>
-              <div class="title text-grey">{{ menutype[ind] }}</div>
+              <div v-if="menutype[ind]" class="title text-grey">{{ menutype[ind] }}</div>
               <ul v-if="menus && menus.length > 0">
                 <li
                   v-for="(menu, mindex) in menus"

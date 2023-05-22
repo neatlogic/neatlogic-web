@@ -245,11 +245,14 @@
     "organizationsetting": "机构设置",
     "categorymanage": "分类标识管理"
   },
-  "globalsearch":{
-    "searchcenter":"搜索中心"
+  "globalsearch": {
+    "searchcenter": "搜索中心"
   },
-  "rdm":{
-    "projectdetail":"项目详情",
-    "projectmanage":"项目管理"
+  "rdm": {
+    "projectdetail": "项目详情",
+    "projectmanage": "项目管理",
+    "workbench": "工作台",
+    "mydoing": "我的待办",
+    "mycompleted": "我的已办"
   }
 }

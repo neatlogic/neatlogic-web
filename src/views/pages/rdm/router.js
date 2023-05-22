@@ -3,6 +3,7 @@ const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const projectEdit = () => import('./project/project-edit.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
+const taskList = () => import('@/views/pages/rdm/workbench/task-list.vue');
 const appModules = {
   bugDetail: () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue'),
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
@@ -75,6 +76,30 @@ let routerArr = [
       ismenu: false,
       authority: 'RDM_BASE',
       type: 'project'
+    }
+  },
+  {
+    path: '/task-list/doing',
+    name: 'taskList',
+    component: taskList,
+    meta: {
+      title: $t('router.rdm.mydoing'),
+      ismenu: true,
+      type: 'workbrench',
+      authority: 'RDM_BASE',
+      icon: 'tsfont-formdynamiclist'
+    }
+  },
+  {
+    path: '/task-list/done',
+    name: 'taskList',
+    component: taskList,
+    meta: {
+      title: $t('router.rdm.mycompleted'),
+      ismenu: true,
+      type: 'workbrench',
+      authority: 'RDM_BASE',
+      icon: 'tsfont-check-o'
     }
   }
 ];

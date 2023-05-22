@@ -245,11 +245,14 @@
     "thresholdrule": "Threshold Rule",
     "thresholdruledetail": "Threshold rule details"
   },
-  "globalsearch":{
-    "searchcenter":"Search Center"
+  "globalsearch": {
+    "searchcenter": "Search Center"
   },
-  "rdm":{
-    "projectdetail":"Project Detail",
-    "projectmanage":"Project Manage"
+  "rdm": {
+    "projectdetail": "Project Detail",
+    "projectmanage": "Project Manage",
+    "workbench": "Workbench",
+    "mydoing": "To-Do List",
+    "mycompleted": "Completed List"
   }
 }
