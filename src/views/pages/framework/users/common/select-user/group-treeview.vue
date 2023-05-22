@@ -42,12 +42,11 @@
 </template>
 
 <script>
-import GroupTreeView from './group-treeview';
 export default {
   inject: ['$parent'],
   name: 'GroupTreeView',
   components: {
-    GroupTreeView,
+    GroupTreeView: resolve => require(['./group-treeview'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
 
   },
