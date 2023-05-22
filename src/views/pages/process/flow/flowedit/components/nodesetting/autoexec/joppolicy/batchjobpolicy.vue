@@ -228,36 +228,6 @@
                   transfer
                   border="border"
                 ></TsFormSelect>
-                <Tooltip
-                  max-width="660"
-                  theme="light"
-                  transfer
-                  class="formTableComponent-tip"
-                >
-                  <span class="text-href tsfont-info-o"></span>
-                  <div slot="content">
-                    <div class="pb-sm">{{ $t('message.process.jobpolicycolumn') }}</div>
-                    <div class="tip-eg">
-                      <div class="text-center">
-                        <table border="1" style="border-collapse: collapse; width:50px;">
-                          <tr>
-                            <td>A</td>
-                          </tr>
-                          <tr>
-                            <td>B</td>
-                          </tr>
-                          <tr>
-                            <td>C</td>
-                          </tr>
-                        </table>
-                      </div>
-                      <div class="center-text"></div>
-                      <div style="width:100px">
-                        [A,B,C]
-                      </div>
-                    </div>
-                  </div>
-                </Tooltip>
               </div>
             </template>
             <template v-else-if="r.mappingMode == 'constant'">

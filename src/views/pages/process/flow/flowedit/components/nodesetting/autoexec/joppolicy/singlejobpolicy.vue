@@ -199,7 +199,7 @@
                   ></TsFormSelect>
                 </Col>
                 <Col span="12">
-                  <div class="formTableComponent">
+                  <div class="formTableComponent pr-lg">
                     <TsFormSelect
                       ref="formValid"
                       v-model="r.column"
