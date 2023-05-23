@@ -15,6 +15,11 @@
  */
 <template>
   <div v-if="handlerStepInfo">
+    <Alert v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
+      <template slot="desc">
+        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex">{{ $t('term.autoexec.targetjoberror',{target: e.jobName}) }}：{{ e.error }}</div>
+      </template>
+    </Alert>
     <Tabs
       class="block-tabs2"
       :animated="false"
