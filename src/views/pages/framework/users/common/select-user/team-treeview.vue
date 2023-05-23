@@ -58,11 +58,12 @@
 </template>
 
 <script>
-import TeamTreeView from './team-treeview';
 export default {
   inject: ['setIsCheck'],
   name: 'TeamTreeView',
-  components: { TeamTreeView },
+  components: { 
+    TeamTreeView: resolve => require(['./team-treeview'], resolve)
+  },
   props: {
     children: {
       required: true,
