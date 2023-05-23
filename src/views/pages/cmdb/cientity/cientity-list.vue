@@ -258,7 +258,12 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li v-if="mode == 'page'" class="tsfont-formtextarea" @click="toCiEntity(row.id, row.ciId)">详情</li>
+              <li v-if="mode == 'page'" class="tsfont-formtextarea" @click="toCiEntity(row.id, row.ciId)">{{ $t('page.detail') }}</li>
+              <li
+                v-if="needAction && $AuthUtils.hasRole('RESOURCECENTER_ACCOUNT_MODIFY')"
+                class="tsfont-userinfo"
+                @click="openAccountEditDialog(row)"
+              >{{ $t('page.accountsmanage') }}</li>
               <li
                 v-if="needAction"
                 class="tsfont-edit"
@@ -342,6 +347,7 @@
         >{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
+    <AccountEditDialog v-if="isShowAddAccountDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
   </div>
 </template>
 <script>
@@ -357,7 +363,8 @@ export default {
     AttrViewer: resolve => require(['./attr-viewer.vue'], resolve),
     RelCiEntityDialog: resolve => require(['./rel-cientity-dialog.vue'], resolve),
     DeleteCiEntityDialog: resolve => require(['./cientity-delete-dialog.vue'], resolve),
-    BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve)
+    BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve),
+    AccountEditDialog: resolve => require(['@/views/pages/cmdb/asset/components/account-edit-dialog'], resolve) // 帐户管理
   },
   directives: { download },
   props: {
@@ -445,7 +452,9 @@ export default {
       isBatchEditDialogShow: false, //批量修改窗口
       batchEditCiId: null, //批量修改模型id
       batchEditCiEntityList: [], //批量修改配置项
-      attrRelList: [] //属性和关系列表，用于导出excel时选择
+      attrRelList: [], //属性和关系列表，用于导出excel时选择
+      isShowAddAccountDialog: false, // 帐号管理弹窗
+      resourceId: null
     };
   },
   beforeCreate() {},
@@ -972,6 +981,16 @@ export default {
         this.$set(this.searchParam, 'groupId', groupId);
       }
       this.searchCiEntity();
+    },
+    openAccountEditDialog(row) {
+      this.resourceId = row.id;
+      this.isShowAddAccountDialog = true;
+    },
+    closeAccountEditDialog(needRefresh) {
+      this.isShowAddAccountDialog = false;
+      if (needRefresh) {
+        this.searchCiEntity();
+      }
     }
   },
   filter: {},
