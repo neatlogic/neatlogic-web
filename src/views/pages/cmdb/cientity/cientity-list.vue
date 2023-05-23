@@ -987,6 +987,7 @@ export default {
       this.isShowAddAccountDialog = true;
     },
     closeAccountEditDialog(needRefresh) {
+      this.resourceId = null;
       this.isShowAddAccountDialog = false;
       if (needRefresh) {
         this.searchCiEntity();
