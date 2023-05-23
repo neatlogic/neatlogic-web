@@ -68,7 +68,6 @@
 
 <script>
 import Draggable from 'vuedraggable';
-import NodeList from './NodeList';
 import NodeContent from './NodeContent';
 import NodeRight from './NodeRight';
 
@@ -76,9 +75,9 @@ export default {
   name: 'NodeList',
   components: {
     Draggable,
-    NodeList,
     NodeContent,
-    NodeRight
+    NodeRight,
+    NodeList: resolve => require(['./NodeList'], resolve)
   },
   props: {
     path: {type: Array, default: () => []},
