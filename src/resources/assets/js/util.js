@@ -24,6 +24,7 @@ copyText(id)                                 点击复制内容，id表示需要
 mapArray(array, key)                         //从数组对象中挑出一个key，将其值作为数组返回
 intersectionArr                              // 返回一个包含所有传入数组交集元素的新数组。
 getComposedPath(e)                           // 返回事件流中元素的事件路径
+removeHTMLTag(str)                           //去除html标签
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -956,5 +957,16 @@ export default {
       return `rgba(${r},${g},${b},${opacity})`;
     }
     return '';
-  }
+  },
+  removeHTMLTag(str) { //去除html标签
+    if (typeof str != 'string') {
+      str = JSON.stringify(str);
+    }
+    str = str.replace(/<\/?[^>]*>/g, ''); //去除HTML tag
+    str = str.replace(/[ | ]*\n/g, '\n'); //去除行尾空白
+    str = str.replace(/\n[\s| | ]*\r/g, '\n'); //去除多余空行
+    str = str.replace(/ /gi, '');
+    str = str.replace(/&nbsp;/ig, ' '); //替换HTML空格
+    return str;
+  },
 };

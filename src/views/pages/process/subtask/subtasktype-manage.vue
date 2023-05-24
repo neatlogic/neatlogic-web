@@ -236,13 +236,6 @@ export default {
           type: 'text',
           name: 'defaultContent',
           label: this.$t('page.defaultcontent')
-        },
-        {
-          type: 'switch',
-          name: 'isRequired',
-          label: this.$t('page.desrequired'),
-          trueValue: 1,
-          falseValue: 0
         }
       ],
       validateList: ['required']
@@ -413,8 +406,7 @@ export default {
           let customButtonList = this.customButtonList.map(item => {
             return {
               name: item.name,
-              defaultContent: item.defaultContent,
-              isRequired: item.isRequired
+              defaultContent: item.defaultContent
             };
           });
           this.$set(data.config, 'customButtonList', customButtonList);
@@ -438,8 +430,7 @@ export default {
     addCustomBtn() {
       this.customButtonList.push({
         name: '',
-        defaultContent: '',
-        isRequired: 1
+        defaultContent: ''
       });
     },
     deleteCustomBtn(index) {
