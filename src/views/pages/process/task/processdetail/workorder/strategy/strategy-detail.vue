@@ -67,14 +67,29 @@
               <span :class="{'text-disabled':row.isDelete == 1}">{{ row.endTime | formatDate }}</span>
             </template>
             <template slot="content" slot-scope="{ row }">
-              <div :class="{'text-disabled':row.isDelete == 1}">
-                <span v-html="row.content"></span>
+              <div v-if="row.content" :class="{'text-disabled':row.isDelete == 1}">
+                <Tooltip max-width="500" transfer>
+                  <span v-if="$utils.removeHTMLTag(row.content) && $utils.removeHTMLTag(row.content).length >30">
+                    {{ $utils.removeHTMLTag(row.content).substr(0, Number(30)) }}...
+                  </span>
+                  <span v-else>{{ $utils.removeHTMLTag(row.content) }}</span>
+
+                  <div slot="content">
+                    <div v-html="row.content"></div>
+                  </div>
+                </Tooltip>
+              </div>
+            </template>
+            <template slot="action" slot-scope="{ row }">
+              <div class="tstable-action">
+                <ul v-if="!readonly && row.isReplyable && item.readonlyContent" class="tstable-action-ul" @click.stop>
+                  <li class="tsfont-edit" @click="editCkeditor(item)">{{ $t('page.edit') }}></li>
+                </ul>
               </div>
             </template>
           </TsTable>
         </div>
-
-        <div v-if="!readonly && item.isReplyable">
+        <div v-if="!readonly && item.isReplyable && !item.readonlyContent">
           <div class="inline-block mt-md">
             <TsUpLoad
               ref="fileList"
@@ -94,39 +109,27 @@
               v-model="item.CkeditorContent"
               :showIconToggle="true"
               width="100%"
-              :readonly="item.readonlyContent"
               @change="commentContent(item, item.CkeditorContent)"
             ></TsCkeditor>
-          
           </div>
           <div class="mt-md">
+            <template v-if="customButtonList.length > 0">
+              <Button
+                v-for="btn in customButtonList"
+                :key="btn.name"
+                class="mr-xs"
+                type="primary"
+                ghost
+                @click="comment(item, btn)"
+              >{{ btn.name }}</Button>
+            </template>
             <Button
-              v-if="item.readonlyContent"
+              v-else
               type="primary"
               :disabled="isDisableCommet"
-              @click="editCkeditor(item)"
-            >{{ $t('page.edit') }}</Button>
-            <template v-else>
-              <template v-if="customButtonList.length > 0">
-                <div>
-                  <Button
-                    v-for="btn in customButtonList"
-                    :key="btn.name"
-                    class="mr-xs"
-                    type="primary"
-                    ghost
-                    @click="comment(item, btn)"
-                  >{{ btn.name }}</Button>
-                </div>
-              </template>
-              <Button
-                v-else
-                type="primary"
-                :disabled="isDisableCommet"
-                :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
-                @click="comment(item)"
-              >{{ $t('page.reply') }}</Button>
-            </template>
+              :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
+              @click="comment(item)"
+            >{{ $t('page.reply') }}</Button>            
           </div>
         </div>
       </div>
@@ -145,6 +148,13 @@
         </div>
       </template>
     </TsDialog>
+    <ReplyDialog
+      v-if="isShowReplyDialog"
+      :config="replyConfig"
+      :customButtonList="customButtonList"
+      @getListTask="getListTask()"
+      @close="closeReply"
+    ></ReplyDialog>
   </div>
 </template>
 <script>
@@ -155,7 +165,8 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
+    ReplyDialog: resolve => require(['./reply-dialog.vue'], resolve)
   },
   filters: {
   },
@@ -191,12 +202,13 @@ export default {
         }, {
           title: this.$t('page.reply'),
           key: 'content',
-          type: 'html',
-          maxLength: '50'
+          type: 'html'
         }, {
           title: this.$t('page.accessory'),
           key: 'fileList',
           type: 'file'
+        }, {
+          key: 'action'
         }
       ],
       isShow: false,
@@ -225,7 +237,9 @@ export default {
       },
       isDisableCommet: false,
       editType: 'add',
-      customButtonList: [] //策略：自定义按钮列表
+      customButtonList: [], //策略：自定义按钮列表
+      isShowReplyDialog: false,
+      replyConfig: {}
     };
   },
   beforeCreate() {},
@@ -405,8 +419,8 @@ export default {
       }
     },
     editCkeditor(item) {
-      item.readonlyContent = !item.readonlyContent;
-      this.$forceUpdate();
+      this.replyConfig = this.$utils.deepClone(item);
+      this.isShowReplyDialog = true;
     },
     comment(item, btn) {
       let data = {
@@ -459,6 +473,12 @@ export default {
           this.getListTask();
         }
       });
+    },
+    closeReply(isUpdate) {
+      if (isUpdate) {
+        this.getListTask();
+      }
+      this.isShowReplyDialog = false;
     }
   },
   computed: {},

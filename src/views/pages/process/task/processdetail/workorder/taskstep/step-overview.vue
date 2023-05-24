@@ -50,7 +50,7 @@
 
             <div v-if="isTabShow(item)" class="parent"></div>
             <ButtonGroup
-              v-if="isTabShow(item)"
+              v-if="item.expand && isTabShow(item)"
               shape="circle"
               size="small"
               class="child-button"
