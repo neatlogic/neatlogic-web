@@ -2,7 +2,7 @@
   <div class="job-detail border-radius">
     <TsContain :siderWidth="258" :enableCollapse="true">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
