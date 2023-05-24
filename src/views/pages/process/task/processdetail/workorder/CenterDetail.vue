@@ -560,8 +560,10 @@ export default {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
       this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
       this.setTimeUpdata = setTimeout(() => {
-        let allData = this.getData();
-        this.$emit('update', allData);
+        this.$nextTick(() => { // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
+          let allData = this.getData();
+          this.$emit('update', allData);
+        });
         this.setTimeUpdata = null;
       }, 300);
     },
