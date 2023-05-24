@@ -190,6 +190,8 @@ export default {
           if (item.mappingMode === 'formTableComponent') {
             this.$set(item, 'value', null);
             this.$set(item, 'column', '');
+            this.$set(item, 'filterList', []);
+            this.$set(item, 'isActive', false);
           }
         });
       }
@@ -198,6 +200,8 @@ export default {
           if (item.mappingMode === 'formTableComponent') {
             this.$set(item, 'value', null);
             this.$set(item, 'column', '');
+            this.$set(item, 'filterList', []);
+            this.$set(item, 'isActive', false);
           }
         });
       }

@@ -78,6 +78,8 @@ export default {
         this.$set(item, 'value', null);
       }
       this.$set(item, 'column', null);
+      this.$set(item, 'filterList', []);
+      this.$set(item, 'isActive', false);
     },
     addFormParam() {
       let obj = {
@@ -190,6 +192,12 @@ export default {
       font-size: 18px;
       right: -11px;
     }
+  }
+}
+.filter-top {
+  display: flex;
+  .label {
+    flex: none;
   }
 }
 .formTableComponent {
