@@ -6,7 +6,7 @@
       class="relative"
       :label="attr.label"
       labelPosition="left"
-      :labelWidth="80"
+      :labelWidth="120"
     >
       <AttrHandler
         v-if="attr._isReady"

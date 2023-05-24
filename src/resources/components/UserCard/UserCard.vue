@@ -5,23 +5,24 @@
     v-click-outside:false.touchstart="onClickOutside"
     class="usercard-container clearfix"
     tabindex="-1"
-    @click.stop
   >
     <div v-if="initType != 'processUserType' && initType != 'common'" class="float-left userinfo-card-wrap">
       <Poptip
+        v-if="trigger != 'none'"
         ref="pop"
         v-model="isshow"
         :trigger="trigger"
         :word-wrap="true"
         width="400"
         transfer
-        class="usercard-poptip no-font-size"        
+        class="usercard-poptip no-font-size"
         padding="0 0"
         :placement="placement"
+        @click.stop
         @on-popper-show="getInfo"
         @on-popper-hide="hidePopper"
       >
-        <div class="overflow" :class="[name || config.name ? 'usercard' : '', !name || !config.name ? 'noCursor' : '' , alignMode == 'vertical' ? 'avatar-name-vertical' : '']">
+        <div class="overflow" :class="[name || config.name ? 'usercard' : '', !name || !config.name ? 'noCursor' : '', alignMode == 'vertical' ? 'avatar-name-vertical' : '']">
           <slot>
             <TsAvatar
               v-if="!hideAvatar"
@@ -50,9 +51,7 @@
               <UserInfo v-if="!multiple" :userInfo="userInfo"></UserInfo>
               <div v-else-if="initType == 'team' || initType == 'role'" class="padding">
                 <TsRow v-if="userList.length > 0" :gutter="0">
-                  <div class="padding-b">
-                    {{ $t('page.name') }}：{{ name || config.name || $t('page.nodata') }}
-                  </div>
+                  <div class="padding-b">{{ $t('page.name') }}：{{ name || config.name || $t('page.nodata') }}</div>
                   <Col v-for="user in userList" :key="user.uuid" span="8">
                     <div class="usercard-li overflow" @click.stop="showUser(user)">
                       <TsAvatar v-bind="user" :size="iconSize" class="avatar" />
@@ -69,8 +68,23 @@
           </template>
         </div>
       </Poptip>
+      <div v-else>
+        <TsAvatar
+          v-if="!hideAvatar"
+          :avatar="avatar || config.avatar"
+          :vipLevel="vipLevel || config.vipLevel"
+          :initType="initType"
+          :pinyin="pinyin || config.pinyin"
+          :size="iconSize"
+          :name="name || config.name"
+          :class="getgapClassName"
+        />
+        <template v-if="!hideName">
+          <span style="font-size: 13px">{{ showName() }}</span>
+        </template>
+      </div>
     </div>
-    <div v-else :class="alignMode == 'vertical' ? 'avatar-name-vertical' : 'float-left'">
+    <div v-else :class="alignMode == 'vertical' ? 'avatar-name-vertical' : 'float-left'" @click.stop>
       <TsAvatar
         v-if="!hideAvatar"
         :avatar="avatar || config.avatar"
@@ -99,20 +113,20 @@ export default {
   },
   inheritAttrs: false, //去掉多余的属性
   props: {
-    trigger: { type: String, default: 'click' }, // 用户信息卡片显示出来的触发方式，默认是click，可选hover
+    trigger: { type: String, default: 'click' }, // 用户信息卡片显示出来的触发方式，默认是click，可选hover，none代表不触发poptip
     initType: { type: String, default: 'user' },
     initViaNet: { type: Boolean, default: false }, // 是否通过后台接口初始化头像和用户名，需传入userUuid
     avatar: { type: String },
     hideAvatar: { type: Boolean, default: false }, // 是否隐藏头像
-    isInterface: { type: Boolean, default: true}, // 是否调用基础数据接口请求 (user/cache/get)，工单中心的列表用户是不调用接口的,默认是调用的
+    isInterface: { type: Boolean, default: true }, // 是否调用基础数据接口请求 (user/cache/get)，工单中心的列表用户是不调用接口的,默认是调用的
     vipLevel: { type: Number }, //VIP等级
     uuid: { type: String },
     name: { type: String },
     pinyin: { type: String },
     placement: { type: String }, //自定义提示位置
     iconSize: { type: Number, default: 24 },
-    hideName: {type: Boolean, default: false}, // 是否隐藏名称
-    nameLength: {type: [Boolean, Number], default: false}, //展示多少个字符:false默认不限制；true展示4个字符；number自定义,
+    hideName: { type: Boolean, default: false }, // 是否隐藏名称
+    nameLength: { type: [Boolean, Number], default: false }, //展示多少个字符:false默认不限制；true展示4个字符；number自定义,
     alignMode: {
       type: String, // 头像和名称的对齐方式，可选（水平对齐 horizontal）|| (垂直对齐 vertical)
       default: 'horizontal'
@@ -174,7 +188,8 @@ export default {
                 this.config.avatar = res.Return.avatar;
                 this.config.pinyin = res.Return.pinyin;
               }
-            }).finally(() => {
+            })
+            .finally(() => {
               this.config.isLoading = false;
             });
         } else {
@@ -190,11 +205,14 @@ export default {
         let uuid = this.uuid.includes('#') ? this.uuid.split('#')[1] : this.uuid;
         const params = { uuid };
         this.config.isLoading = true;
-        return this.$https.get('/api/rest/team/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token }).then(res => {
-          this.config.name = res.Return.name;
-        }).finally(() => {
-          this.config.isLoading = false;
-        });
+        return this.$https
+          .get('/api/rest/team/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+          .then(res => {
+            this.config.name = res.Return.name;
+          })
+          .finally(() => {
+            this.config.isLoading = false;
+          });
       }
     },
     initRoleConfig() {
@@ -202,11 +220,14 @@ export default {
         let uuid = this.uuid.includes('#') ? this.uuid.split('#')[1] : this.uuid;
         const params = { uuid };
         this.config.isLoading = true;
-        return this.$https.get('/api/rest/role/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token }).then(res => {
-          this.config.name = res.Return.name;
-        }).finally(() => {
-          this.config.isLoading = false;
-        });
+        return this.$https
+          .get('/api/rest/role/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+          .then(res => {
+            this.config.name = res.Return.name;
+          })
+          .finally(() => {
+            this.config.isLoading = false;
+          });
       }
     },
     getInfo() {
@@ -339,7 +360,8 @@ export default {
     }
   },
   computed: {
-    showName() { //展示用户/角色/组的名称
+    showName() {
+      //展示用户/角色/组的名称
       return () => {
         let text = null;
         if (this.name) {
@@ -351,14 +373,14 @@ export default {
             } else {
               text = this.config.name;
             }
-          } 
+          }
         }
         if (text && this.nameLength) {
           if (typeof this.nameLength == 'number') {
             text.length > this.nameLength && (text = text.slice(0, this.nameLength) + '...');
           } else {
             text.length > 4 && (text = text.slice(0, 4) + '...');
-          } 
+          }
         } else if (!text) {
           if (this.initType === 'user') {
             text = '-';
@@ -394,7 +416,7 @@ export default {
 .avatar {
   margin-right: 6px;
 }
-.radius-sm{
+.radius-sm {
   max-height: 210px;
   overflow: auto;
   overflow-x: hidden;
@@ -419,13 +441,12 @@ export default {
     font-size: 1rem;
     line-height: 1rem;
   }
-  .noCursor{
+  .noCursor {
     display: flex; //文字与头像对齐问题
     align-items: center;
     font-size: 1rem;
     line-height: 1rem;
   }
- 
 }
 // 用户卡片边框
 .userinfo-box-border-top {
@@ -434,23 +455,22 @@ export default {
 }
 .userinfo-card-wrap {
   font-size: 0;
-  width:100%;
+  width: 100%;
 }
 .usercard-li {
   padding-top: 4px;
   padding-bottom: 4px;
   cursor: pointer;
 }
- // 用户列表文案间距样式
-  .userlist-wrap {
-    display: inline-block;
-    padding: 0 0 14px 14px;
-  }
+// 用户列表文案间距样式
+.userlist-wrap {
+  display: inline-block;
+  padding: 0 0 14px 14px;
+}
 
-  .avatar-name-vertical {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-  }
-
+.avatar-name-vertical {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 </style>

@@ -11,4 +11,6 @@ export { default as datetimeattr } from './datetime-attr.vue';
 export { default as timeattr } from './time-attr.vue';
 export { default as fileattr } from './file-attr.vue';
 export { default as iterationattr } from './iteration-attr.vue';
-
+export { default as startdateattr } from './startdate-attr.vue';
+export { default as enddateattr } from './enddate-attr.vue';
+export { default as userattr } from './user-attr.vue';

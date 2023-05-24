@@ -4,7 +4,7 @@
       ref="handler"
       border="border"
       :transfer="true"
-      :value="valueLocal"
+      :value="startDate"
       :readonly="readonly"
       :type="mode == 'input' ? 'date' : 'daterange'"
       format="yyyy-MM-dd"
@@ -14,20 +14,27 @@
   </div>
 </template>
 <script>
-import { AttrBase } from './base-attr.js';
+import { AttrBase } from './base-privateattr.js';
+
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
   },
   extends: AttrBase,
   props: {},
   data() {
-    return {};
+    return {
+      startDate: null
+    };
   },
   beforeCreate() {},
   created() {
+    if (this.mode === 'input') {
+      this.startDate = (this.issueData && this.issueData.startDate) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    } else if (this.mode === 'search') {
+      this.startDate = this.valueList;
+    }
   },
   beforeMount() {},
   mounted() {},
@@ -43,9 +50,7 @@ export default {
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
       const day = d.getDate();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
-        (day < 10 ? '0' + day : day);
+      return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
     },
     valid() {
       return this.$refs['handler'].valid();
@@ -53,13 +58,13 @@ export default {
     changeValue(val) {
       if (val) {
         if (val instanceof Array) {
-          this.$emit('setValue', val, val);
+          this.$emit('setValue', 'startDate', val, val);
         } else {
           const timestr = this.formatDate(val);
-          this.$emit('setValue', [timestr], [timestr]);
+          this.$emit('setValue', 'startDate', timestr, timestr);
         }
       } else {
-        this.$emit('setValue', null, null);
+        this.$emit('setValue', 'startDate', null, null);
       }
     }
   },
@@ -70,21 +75,9 @@ export default {
         return [{ name: 'required', message: ' ' }];
       }
       return [];
-    },
-    valueLocal() {
-      if (this.mode === 'input') {
-        if (this.valueList && this.valueList.length > 0) {
-          return this.valueList[0];
-        } 
-      } else if (this.mode === 'search') {
-        //搜索模式返回的是数组
-        return this.valueList;
-      }
-      return null;
     }
   },
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

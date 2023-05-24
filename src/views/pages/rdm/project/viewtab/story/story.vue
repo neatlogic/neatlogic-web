@@ -26,6 +26,7 @@
           ref="issueList"
           :mode="displayMode"
           :app="appData"
+          :canSearch="true"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
         ></IssueList>

@@ -116,7 +116,7 @@ export default {
     },
     placeholder: String,
     valueType: {
-      //最终获取到的value值是否是时间搓
+      //最终获取到的value值是否是时间戳
       type: String,
       default: 'normal' // normal timestamp  format
     },

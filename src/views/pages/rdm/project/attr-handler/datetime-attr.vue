@@ -6,8 +6,9 @@
       :transfer="true"
       :value="valueLocal"
       :readonly="readonly"
-      type="datetime"
+      :type="mode == 'input' ? 'datetime' : 'datetimerange'"
       :format="format"
+      valueType="format"
       :validateList="validateList"
       @change="changeValue"
     ></TsFormDatePicker>
@@ -51,9 +52,12 @@ export default {
     },
     changeValue(val) {
       if (val) {
-        //TsFormDatePicker在format为全格式的情况下，会直接返回时间戳，所以需要再转换一次
-        const timestr = this.formatDate(val);
-        this.$emit('setValue', [timestr], [timestr]);
+        if (val instanceof Array) {
+          this.$emit('setValue', val, val);
+        } else {
+          const timestr = this.formatDate(val);
+          this.$emit('setValue', [timestr], [timestr]);
+        }
       } else {
         this.$emit('setValue', null, null);
       }
@@ -68,8 +72,13 @@ export default {
       return [];
     },
     valueLocal() {
-      if (this.valueList && this.valueList.length > 0) {
-        return this.valueList[0];
+      if (this.mode === 'input') {
+        if (this.valueList && this.valueList.length > 0) {
+          return this.valueList[0];
+        } 
+      } else if (this.mode === 'search') {
+        //搜索模式返回的是数组
+        return this.valueList;
       }
       return null;
     },
