@@ -28,11 +28,10 @@
 </template>
 
 <script>
-import NodeList from './NodeList.vue';
 export default {
   name: 'TsTree',
   components: {
-    NodeList: NodeList
+    NodeList: resolve => require(['./NodeList.vue'], resolve)
   },
   provide() {
     return {
