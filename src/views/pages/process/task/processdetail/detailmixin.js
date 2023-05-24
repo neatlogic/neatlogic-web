@@ -412,7 +412,6 @@ export default {
             this.processTaskConfig.title = val;
             this.isEditTitle = false;
             this.$refs.TaskCenterDetail.getActivityList();
-            this.$refs.RightSetting.getSlatime();
           }
         });
       } else {
@@ -534,12 +533,6 @@ export default {
     update(data) {
       if (data) {
         this.draftData = this.$utils.deepClone(data);
-      } else {
-        if (this.$refs.RightSetting) {
-          this.$nextTick(() => {
-            this.$refs.RightSetting.getSlatime();
-          });
-        }
       }
     },
     isDraftData(to, from, next, url) { //路由跳转比较对比  父组件beforeRouterLeave调用

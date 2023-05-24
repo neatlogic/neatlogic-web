@@ -40,6 +40,10 @@ const Mutations = {
   },
   setMessageRead(state, payload) {
     state.readMessage = payload;
+  },
+  setTaskSlaTimeList(state, slaTimeList) {
+    // 设置工单sla时效
+    state.slaTimeList = slaTimeList;
   }
 };
 
