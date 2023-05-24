@@ -239,12 +239,13 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
+                  :defaultTabValue="isShowJob? 'autoexec' : ''"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
                   }"
                 >
-                  <template v-if="handlerStepInfo && handlerStepInfo.jobList" v-slot:autoexec>
+                  <template v-if="isShowJob" v-slot:autoexec>
                     <!-- 自动化作业 -->
                     <JobDetail :handlerStepInfo="handlerStepInfo"></JobDetail>
                   </template>
@@ -696,6 +697,9 @@ export default {
         moreAction = true;
       }
       return moreAction;
+    },
+    isShowJob() {
+      return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.jobList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
     }
   },
 

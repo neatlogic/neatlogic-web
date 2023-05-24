@@ -424,6 +424,10 @@ export default {
     hasPendingTasks: {
       type: Boolean,
       default: false
+    },
+    defaultTabValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -446,7 +450,7 @@ export default {
       mouseoverTabName: '', // 鼠标进入事件
       hasAccessoriesList: true,
       toolbar: [],
-      tabValue: '', // 不给默认值，默认为第一项的name
+      tabValue: this.defaultTabValue, // 不给默认值，默认为第一项的name
       isStepRequired: 0, //回复必填：1必填，0非必填
       validateList: ['required'],
       taskLoading: true,
