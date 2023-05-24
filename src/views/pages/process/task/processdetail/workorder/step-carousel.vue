@@ -118,14 +118,8 @@ export default {
   components: {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
-  filters: {
-  },
-  props: {
-    slaTimeList: {
-      type: Array,
-      default: () => []
-    }
-  },
+  filters: {},
+  props: {},
   data() {
     return {
       baseTime: Date.now(),
@@ -207,7 +201,6 @@ export default {
       let data = {
         processTaskId: this.processTaskId
       };
-      let _this = this;
       this.$api.process.processtask.getStepStatusList(data).then(res => {
         if (res.Status == 'OK') {
           let list = res.Return || [];
@@ -216,10 +209,10 @@ export default {
           });
           if (stepDataList.length > 0) {
             let findIndex = -1;
-            _this.stepList = _this.$utils.deepClone(stepDataList);
-            _this.processTaskStepId && (findIndex = _this.stepList.findIndex(f => f.id == _this.processTaskStepId));
+            this.stepList = this.$utils.deepClone(stepDataList);
+            this.processTaskStepId && (findIndex = this.stepList.findIndex(f => f.id == this.processTaskStepId));
             findIndex > -1 && (this.value = findIndex);
-            _this.isShow = true;
+            this.isShow = true;
           }
         }
       });
@@ -268,10 +261,13 @@ export default {
           return true;
         }
       };
+    },
+    slaTimeList() {
+      this.baseTime = Date.now();
+      return this.$store.state.slaTimeList;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
