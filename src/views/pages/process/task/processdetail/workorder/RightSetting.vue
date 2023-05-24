@@ -28,7 +28,7 @@
     <div ref="rightMain" class="right-setting" :style="setContentHeight(rightHeight)">
 
       <!-- 步骤 -->
-      <StepCarousel v-if="isOrderRight" :slaTimeList="slaTimeList"></StepCarousel>
+      <StepCarousel v-if="isOrderRight"></StepCarousel>
 
       <!-- 上报人 -->
       <div v-if="processTaskConfig.ownerVo" class="information-box">
@@ -245,7 +245,6 @@ export default {
   },
   data() {
     return {
-      baseTime: Date.now(), //时效基准
       slaUpdateTimer: null,
       rightLoading: true,
       processTaskId: null, //工单id
@@ -255,7 +254,6 @@ export default {
       channelUuid: null, //服务id
       tagVoList: [],
       taskInformationList: [], //工单信息（基本信息）
-      slaTimeList: [], //时效列表
       defaultProcessTask: [
         //基本信息
         {
@@ -380,17 +378,8 @@ export default {
         this.currentProcessTaskStep = processTaskConfig.currentProcessTaskStep;
         this.handler = this.currentProcessTaskStep.handler;
         this.processTaskStepId = processTaskStepConfig.id;
-        this.slaTimeList = processTaskStepConfig.slaTimeList ? this.$utils.deepClone(processTaskStepConfig.slaTimeList) : [];
-        let doingSlaIdList = [];
-        for (var index in this.slaTimeList) {
-          if (this.slaTimeList[index].status === 'doing') {
-            doingSlaIdList.push(this.slaTimeList[index].slaId);
-          }
-        }
-        this.timingUpdateDoingSlaList(doingSlaIdList);
       }
       this.rightLoading = false;
-      this.baseTime = Date.now();
     },
     setPriorityByForm(list) {
       //如果list存在则通过list赋值过去 ，list 主要是为了表单规则时修改优先级下拉数据
@@ -448,7 +437,6 @@ export default {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
           this.$emit('updateActiveStep', {'priority': this.priorityConfig});
-          this.getSlatime();
         }
       });
     },
@@ -465,69 +453,6 @@ export default {
       this.$api.process.processtask.updateWorkData(date).then(res => {
         if (res.Status === 'OK') {
           this.$emit('updateActiveStep');
-        }
-      });
-    },
-    //查询当前步骤的时效
-    getSlatime() {
-      if (this.processTaskStepId) {
-        let data = {
-          processTaskStepId: this.processTaskStepId
-        };
-        this.$api.process.processtask.stepSlatime(data).then(res => {
-          if (res.Status === 'OK') {
-            this.baseTime = Date.now();
-            let slaTimeList = res.Return.slaTimeList || [];
-            this.slaTimeList = slaTimeList;
-            let doingSlaIdList = [];
-            for (var index in slaTimeList) {
-              if (slaTimeList[index].status === 'doing') {
-                doingSlaIdList.push(slaTimeList[index].slaId);
-              }
-            }
-            this.timingUpdateDoingSlaList(doingSlaIdList);
-          }
-        });
-      }
-    },
-    timingUpdateDoingSlaList(slaIdList) {
-      if (this.slaUpdateTimer) {
-        clearTimeout(this.slaUpdateTimer);
-        this.slaUpdateTimer = null;
-      }
-      if (slaIdList.length == 0) {
-        return;
-      }
-      let data = {
-        slaIdList: slaIdList
-      };
-      this.$api.process.processtask.slaTimeList(data).then(res => {
-        if (res.Status === 'OK') {
-          this.baseTime = Date.now();
-          let tbodyList = res.Return.tbodyList || [];
-          let doingSlaIdList = [];
-          for (var i in tbodyList) {
-            var tbody = tbodyList[i];
-            for (var j in this.slaTimeList) {
-              if (tbody.slaId == this.slaTimeList[j].slaId) {
-                this.slaTimeList[j].status = tbody.status;
-                this.slaTimeList[j].timeLeft = tbody.timeLeft;
-                this.slaTimeList[j].realTimeLeft = tbody.realTimeLeft;
-                this.slaTimeList[j].expireTime = tbody.expireTime;
-                this.slaTimeList[j].realExpireTime = tbody.realExpireTime;
-                this.slaTimeList[j].expireTimeLong = tbody.expireTimeLong;
-                this.slaTimeList[j].realExpireTimeLong = tbody.realExpireTimeLong;
-                this.slaTimeList[j].calculationTime = tbody.calculationTime;
-                this.slaTimeList[j].displayModeAfterTimeout = tbody.displayModeAfterTimeout;
-                if (tbody.status === 'doing') {
-                  doingSlaIdList.push(tbody.slaId);
-                }
-              }
-            }
-          }
-          this.slaUpdateTimer = setTimeout(() => {
-            this.timingUpdateDoingSlaList(doingSlaIdList);
-          }, 60 * 1000);
         }
       });
     },

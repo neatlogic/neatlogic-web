@@ -715,7 +715,8 @@
     "servicehasfailed": "Service has expired",
     "currenttoolisalreadydependentonanothertool": "The current tool is already dependent on another tool,",
     "deletefailedcombinatetoolpresetcitetips": "Deletion failed. Please check if it has been referenced by the combination tool or preset parameter set",
-    "usedtooldesc": "The current type has been referenced by a tool and cannot be deleted"
+    "usedtooldesc": "The current type has been referenced by a tool and cannot be deleted",
+    "targetjoberror": "{target} Failed to create job"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
