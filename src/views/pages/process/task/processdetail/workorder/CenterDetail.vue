@@ -211,7 +211,7 @@
           tab="tab1"
         >
           <!-- 附件清单 -->
-          <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" @update:value="updateAccessoriesList"></AccessoriesList>
+          <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" @updateTabStatus="updateAccessoriesList"></AccessoriesList>
         </TabPane>
         <TabPane
           v-if="fixedPageTab.reportingHistory"
@@ -543,7 +543,7 @@ export default {
     },
     updateAccessoriesList(val) {
       this.hasAccessoriesList = true;
-      if (this.$utils.isEmpty(val) && val && this.$utils.isEmpty(val.tbodyList)) {
+      if (this.$utils.isEmpty(val) && this.$utils.isEmpty(val.tbodyList)) {
         this.hasAccessoriesList = false;
       }
     },
