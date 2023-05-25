@@ -3,7 +3,6 @@
     <TsTable
       v-bind="fileTable"
       :theadList="theadList"
-      :height="setContentHeight()"
       @changeCurrent="changeCurrentFlie"
       @changePageSize="changePageSizeFile"
     >
@@ -30,7 +29,6 @@ export default {
   directives: {download},
   props: {
     processTaskId: Number,
-    contentHeight: [Number, String],
     value: {
       type: Object,
       default: function() {
@@ -82,7 +80,7 @@ export default {
       this.$api.process.processtask.getProcesstaskFileList(this.searchParams).then(res => {
         if (res.Status == 'OK') {
           this.fileTable = res.Return;
-          this.$emit('update.value', this.fileTable);
+          this.$emit('updateTabStatus', this.fileTable); // 更新外部附件清单tab是否显示
         }
       });
     },
@@ -106,12 +104,6 @@ export default {
             id: id
           }
         };
-      };
-    },
-    setContentHeight() {
-      return () => {
-        let height = typeof this.contentHeight == 'number' ? this.contentHeight - 32 : this.contentHeight;
-        return height;
       };
     }
   },
