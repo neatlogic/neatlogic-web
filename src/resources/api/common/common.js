@@ -135,7 +135,7 @@ const common = {
     return axios.post('/api/rest/systemnotice/readstatus/update', params);
   },
   //下拉列表：枚举数据源通用接口
-  getSelectLit(params) {
+  getSelectList(params) {
     return axios.post('/api/rest/universal/enum/get', params);
   },
   //查询执行目标列表

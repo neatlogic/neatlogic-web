@@ -1,8 +1,7 @@
 <template>
   <div class="step-overview-container">
-    <div class="step-left-margin mb-md" @click="expandAll = !expandAll">
-      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="icon-right"></span>
-      <span class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
+    <div class="step-left-margin mb-md" :class="expandAll ? ' pr-nm' : 'pr-18'" @click="expandAll = !expandAll">
+      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
     </div>
     <div class="activity-step">
       <Timeline>
@@ -51,7 +50,7 @@
 
             <div v-if="isTabShow(item)" class="parent"></div>
             <ButtonGroup
-              v-if="isTabShow(item)"
+              v-if="item.expand && isTabShow(item)"
               shape="circle"
               size="small"
               class="child-button"
@@ -376,8 +375,10 @@ export default {
   .step-left-margin {
     display: inline-block;
     width: 150px;
-    padding-right: 16px;
     text-align: right;
+    &.pr-18 {
+      padding-right: 18px; // 处理收起之后，右边不对齐问题
+    }
   }
   /deep/ .activity-step {
   margin-left: 150px;

@@ -86,7 +86,7 @@
                         v-for="(item, index) in row.notifyList"
                         :key="index"
                         class="action-item overflow"
-                        :class="index > 0 ? 'dividing-color' : ''"
+                        :class="[index > 0 ? 'dividing-color' : '', index > 0 && (row.notifyList.length - 1 == index) ? 'last-action-item-class' : '' ]"
                       >
                         <template v-if="index < 3">
                           <div class="name text-tip">{{ $t('page.actions') }}{{ numberChinese(index) }}</div>
@@ -607,6 +607,11 @@ export default {
           white-space: nowrap;
           &:not(:first-child) {
             border-left: 1px solid;
+          }
+          &.last-action-item-class {
+            border-left: none;
+            height: 0;
+            padding: 0;
           }
           .action-icon {
             display: inline-block;

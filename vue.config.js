@@ -19,7 +19,7 @@ try {
     cssCkeditor = projectName.cssCkeditor;
   } else {
     baseImg = './public/resource';
-    baseConfiglUrl = src + '/dummy_custom_module';// 如果不引用的话，就引用本地的空文件夹
+    baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
     cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
   }
   process.env.VUE_APP_CUSTOMMODULE = true;
@@ -31,7 +31,7 @@ try {
   baseImg = './public/resource';
   process.env.VUE_APP_CUSTOMPAGES = 'neatlogic';
   process.env.VUE_APP_CUSTOMMODULE = false;
-  baseConfiglUrl = src + '/dummy_custom_module';// 如果不引用的话，就引用本地的空文件夹
+  baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
   cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
   pageTitle = 'neatlogic';
   // localStorage.titleLogin = 'neatlogic';
@@ -117,12 +117,7 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-    config.module
-      .rule('vue')
-      .use('vue-path-injector')
-      .loader(require.resolve('./vue-path-injector.js'))
-      .after('vue-loader')
-      .end();
+    config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
     config.resolve.alias.set('@', resolve(src));
     config.resolve.alias.set('custom-module', resolve(baseConfiglUrl));
     config.resolve.alias.set('base-module', resolve(localUrl));
@@ -151,18 +146,18 @@ module.exports = {
     //       },
     //       antv:{
     //         name: 'chunk-antv',
-    //         priority: 20, 
-    //         test: /[\\/]node_modules[\\/]_?@antv(.*)/ 
+    //         priority: 20,
+    //         test: /[\\/]node_modules[\\/]_?@antv(.*)/
     //       },
     //       tsUI: {
     //         name: 'chunk-tsUI',
-    //         priority: 21, 
-    //         test: /[\\/]node_modules[\\/]_?neatlogic-ui(.*)/ 
+    //         priority: 21,
+    //         test: /[\\/]node_modules[\\/]_?neatlogic-ui(.*)/
     //       },
     //       lodash: {
     //         name: 'chunk-lodash',
-    //         priority: 22, 
-    //         test: /[\\/]node_modules[\\/]_?lodash(.*)/ 
+    //         priority: 22,
+    //         test: /[\\/]node_modules[\\/]_?lodash(.*)/
     //       }
     //     }
     //   });
@@ -173,6 +168,9 @@ module.exports = {
     port: '8081',
     https: false,
     hot: true,
+    client: {
+      overlay: false
+    },
     //disableHostCheck: true,
     proxy: {
       '/([^/]+)/anonymous/api/': {
@@ -205,12 +203,12 @@ module.exports = {
           Tenant: tenantName
         }
       },
-      '/([^/]+)/([^\/]+)/check': {
+      '/([^/]+)/([^/]+)/check': {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
         pathRewrite: {
-          '^/([^/]+)/([^\/]+)/check$': '/neatlogic/$2/check/$1'
+          '^/([^/]+)/([^/]+)/check$': '/neatlogic/$2/check/$1'
         },
         headers: {
           Tenant: tenantName

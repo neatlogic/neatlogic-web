@@ -15,7 +15,7 @@
         >
           <a class="cursor tsfont-blocks" style="position:relative" @click="goTo('/project/' + project.id)">
             <span>{{ project.name }}</span>
-            <div style="position:absolute;right:0px;top:0px" class="text-grey cursor tsfont-setting" @click="toProjectManage(project.id)"></div>
+            <div style="position:absolute;right:0px;top:0px" class="text-grey cursor tsfont-setting" @click.stop="toProjectManage(project.id)"></div>
           </a>
         </li>
       </ul>

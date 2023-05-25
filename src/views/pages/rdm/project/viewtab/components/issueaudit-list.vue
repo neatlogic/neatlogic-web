@@ -26,14 +26,8 @@
         <span v-if="row.attrName && row.attrName === 'status'">
           {{ $t('page.status') }}
         </span>
-        <span v-if="row.attrName && row.attrName === 'status'">
-          {{ $t('page.status') }}
-        </span>
         <span v-if="row.attrName && row.attrName === 'file'">
           {{ $t('page.accessory') }}
-        </span>
-        <span v-if="row.attrName && row.attrName === 'iteration'">
-          {{ $t('term.rdm.iteration') }}
         </span>
       </template>
       <div slot="oldValue" slot-scope="{ row }" style="white-space:normal">

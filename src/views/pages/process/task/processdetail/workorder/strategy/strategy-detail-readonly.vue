@@ -58,8 +58,16 @@
               <span :class="{'text-disabled':row.isDelete == 1}">{{ row.endTime | formatDate }}</span>
             </template>
             <template slot="content" slot-scope="{ row }">
-              <div :class="{'text-disabled':row.isDelete == 1}">
-                <span v-html="row.content"></span>
+              <div v-if="row.content" :class="{'text-disabled':row.isDelete == 1}">
+                <Tooltip max-width="500" transfer>
+                  <span v-if="$utils.removeHTMLTag(row.content) && $utils.removeHTMLTag(row.content).length >30">
+                    {{ $utils.removeHTMLTag(row.content).substr(0, Number(30)) }}...
+                  </span>
+                  <span v-else>{{ $utils.removeHTMLTag(row.content) }}</span>
+                  <div slot="content">
+                    <div v-html="row.content"></div>
+                  </div>
+                </Tooltip>
               </div>
             </template>
           </TsTable>

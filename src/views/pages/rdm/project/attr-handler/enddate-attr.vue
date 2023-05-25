@@ -4,7 +4,7 @@
       ref="handler"
       border="border"
       :transfer="true"
-      :value="valueLocal"
+      :value="endDate"
       :readonly="readonly"
       :type="mode == 'input' ? 'date' : 'daterange'"
       format="yyyy-MM-dd"
@@ -14,7 +14,8 @@
   </div>
 </template>
 <script>
-import { AttrBase } from './base-attr.js';
+import { AttrBase } from './base-privateattr.js';
+
 export default {
   name: '',
   components: {
@@ -24,10 +25,17 @@ export default {
   extends: AttrBase,
   props: {},
   data() {
-    return {};
+    return {
+      endDate: null
+    };
   },
   beforeCreate() {},
   created() {
+    if (this.mode === 'input') {
+      this.endDate = (this.issueData && this.issueData.endDate) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    } else if (this.mode === 'search') {
+      this.endDate = this.valueList;
+    }
   },
   beforeMount() {},
   mounted() {},
@@ -53,13 +61,13 @@ export default {
     changeValue(val) {
       if (val) {
         if (val instanceof Array) {
-          this.$emit('setValue', val, val);
+          this.$emit('setValue', 'endDate', val, val);
         } else {
           const timestr = this.formatDate(val);
-          this.$emit('setValue', [timestr], [timestr]);
+          this.$emit('setValue', 'endDate', timestr, timestr);
         }
       } else {
-        this.$emit('setValue', null, null);
+        this.$emit('setValue', 'endDate', null, null);
       }
     }
   },
@@ -70,17 +78,6 @@ export default {
         return [{ name: 'required', message: ' ' }];
       }
       return [];
-    },
-    valueLocal() {
-      if (this.mode === 'input') {
-        if (this.valueList && this.valueList.length > 0) {
-          return this.valueList[0];
-        } 
-      } else if (this.mode === 'search') {
-        //搜索模式返回的是数组
-        return this.valueList;
-      }
-      return null;
     }
   },
   watch: {}

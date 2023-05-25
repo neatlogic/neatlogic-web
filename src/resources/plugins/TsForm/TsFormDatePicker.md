@@ -23,7 +23,7 @@ disabled|Boolean|false|否|是否可以使用|-
 readonly|Boolean|false|否|是否只读|-
 placeholder|String|-|否|-|-
 validateList|Array|-|否|校验|-
-valueType|String|normal|否|最终获取的值的类型|normal timestamp  format
+valueType|String|normal或format|否|最终获取的值的类型|normal timestamp  format
 splitPanels|Boolean|false|否|左右两边是否联动|单类型为range时使用
 transfer|Boolean|false|否|是否放到body下面|有些场景外层使用了overflow，导致显示不全时使用
 border|String|-|否|边框样式|border none bottom

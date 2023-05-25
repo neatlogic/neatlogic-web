@@ -37,7 +37,7 @@ export default {
     readonly: {type: Boolean, default: false},
     border: {type: String, default: 'border'},
     mode: {type: String, default: 'input'},
-    value: {type: Array}, //直接从外部传值，一般用在属性默认值设置
+    value: {type: [Array, String, Number]}, //直接从外部传值，一般用在属性默认值设置
     issueData: {type: Object}, //issue数据
     attrConfig: {type: Object} //属性设置
   },
@@ -54,7 +54,13 @@ export default {
         this.valueList = attrData.valueList;
       }
     } else {
-      this.valueList = this.value;
+      if (this.value != null) {
+        if (this.value instanceof Array) {
+          this.valueList = this.value; 
+        } else {
+          this.valueList = [this.value];
+        }
+      }
     }
   },
   beforeMount() {},
@@ -95,6 +101,9 @@ export default {
     },
     setValue(val, text) {
       if (this.issueData) {
+        if (!this.issueData.attrList) {
+          this.$set(this.issueData, 'attrList', []);
+        }
         const index = this.issueData.attrList.findIndex(d => d.attrId === this.attrConfig.id);
         if (index > -1) {
           const attrData = this.issueData.attrList[index];

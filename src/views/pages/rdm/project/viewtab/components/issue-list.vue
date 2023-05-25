@@ -34,17 +34,28 @@
             <div :key="index">
               <AttrHandler
                 v-if="isSearchReady"
+                :projectId="app.projectId"
                 :attrConfig="attr"
                 :value="attr.isPrivate ? searchValue[attr.name] : searchValue['attr_' + attr.id]"
                 mode="search"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
-                      $set(valueConfig, attr.name, val);
-                      $set(textConfig, attr.name, text);
+                      if (val != null) {
+                        $set(valueConfig, attr.name, val);
+                        $set(textConfig, attr.name, text);
+                      } else {
+                        $delete(valueConfig, attr.name);
+                        $delete(textConfig, attr.name);
+                      }
                     } else {
-                      $set(valueConfig, 'attr_' + attr.id, val);
-                      $set(textConfig, 'attr_' + attr.id, text);
+                      if(val != null){
+                        $set(valueConfig, 'attr_' + attr.id, val);
+                        $set(textConfig, 'attr_' + attr.id, text);
+                      }else{
+                        $delete(valueConfig, 'attr_' + attr.id);
+                        $delete(textConfig, 'attr_' + attr.id);
+                      }
                     }
                   }
                 "
@@ -165,6 +176,7 @@ export default {
       ],
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
+      pageSize: null,
       searchConfig: {
         search: false,
         labelPosition: 'left',
@@ -299,7 +311,7 @@ export default {
       }
     },
     changePageSize(pageSize) {
-      this.searchIssueData.pageSize = pageSize;
+      this.pageSize = pageSize;
       this.searchIssue(1);
     },
     toIssueDetail(id, appId) {
@@ -378,6 +390,8 @@ export default {
         });
     },
     searchIssue(currentPage) {
+      this.searchIssueData = {};
+      this.searchIssueData.pageSize = this.pageSize;
       this.searchIssueData.mode = this.mode;
       this.searchIssueData.parentId = this.parentId;
       this.searchIssueData.fromId = this.fromId;
