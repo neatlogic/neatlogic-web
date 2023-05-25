@@ -114,7 +114,7 @@ export default {
     descName: { //每个选项的描述
       default: 'description'
     },
-    isClearSameValue: { //是否需要取消选中
+    allowToggle: { //是否需要取消选中
       type: Boolean,
       default: false
     }
@@ -213,7 +213,7 @@ export default {
       }
     },
     cancelRadio(label) { //取消勾选
-      if (this.isClearSameValue && this.currentValue == label) {
+      if (this.allowToggle && this.currentValue == label) {
         this.currentValue = '';
         this.$emit('update:value', this.currentValue);
         this.$emit('change', this.currentValue);

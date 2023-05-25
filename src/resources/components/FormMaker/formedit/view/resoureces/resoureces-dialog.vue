@@ -27,7 +27,7 @@
       <TsFormRadio
         v-model="type"
         :dataList="typeList"
-        :isClearSameValue="true"
+        :allowToggle="true"
       ></TsFormRadio>
     </div>
     <div v-if="type">

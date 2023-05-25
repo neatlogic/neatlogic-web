@@ -6,7 +6,7 @@
       :disabled="disabled"
       :validateList="validateList"
       :dataList="dataList"
-      :isClearSameValue="true"
+      :allowToggle="true"
       @change="setData"
     ></TsFormRadio>
   </div>

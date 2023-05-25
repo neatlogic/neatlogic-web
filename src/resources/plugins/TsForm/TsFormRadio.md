@@ -34,6 +34,7 @@ params|Object|-|否|接口参数|在通过接口获取数据时，把它作为�
 className|String|-|否|-|-
 onChange|Function|-|否|改变值调用的方法|主要与tsform一起使用
 descName|String|description|否|每一个选项帮助信息取的key值|使用场景：需要Tooltip 来显示帮助信息
+allowToggle|Boolean|false|否|反选
 
 >>  方法(通过@调用方法)
  方法名|用途|说明
