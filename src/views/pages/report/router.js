@@ -7,7 +7,6 @@ const reportShow = () => import('./report/report-show.vue');
 const reportinstanceShow = () => import('./report/reportinstance-show.vue');
 const sendjobManage = () => import('./sendjob/sendjob-manage.vue');
 const sendjobEdit = () => import('./sendjob/sendjob-edit.vue');
-const demo = () => import('./demo/demo.vue');
 const blackWhiteListManage = () => import('./config/blackwhitelist-manage.vue');
 const statementEdit = () => import('./statement/statement-edit.vue');
 const statementView = () => import('./statement/statement-view.vue');
@@ -81,17 +80,6 @@ export default [
       type: 'reporttemplate',
       icon: 'ts-layout',
       authority: ['REPORT_TEMPLATE_MODIFY']
-    }
-  },
-  {
-    path: '/demo',
-    name: 'demo',
-    component: demo,
-    meta: {
-      title: $t('router.report.demopage'),
-      ismenu: false,
-      icon: 'ts-m-metrics',
-      authority: ['REPORT_BASE']
     }
   },
   {

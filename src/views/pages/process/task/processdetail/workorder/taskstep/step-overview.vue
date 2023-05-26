@@ -75,7 +75,7 @@
             </ButtonGroup>
           </div>
           <div v-show="item.expand">
-            <div :class="item.isView != 1 ? 'hide-step' : ''">
+            <div v-if="item.isView != 1">
               <div v-show="!item.isShow" class="step-comment" :class="!isTabShow(item) ? 'mt-md' : '' ">
                 <div v-if="item.handler == 'autoexec' && item.handlerStepInfo" class="sub-description border-color">
                   <JobDetail :handlerStepInfo="item.handlerStepInfo"></JobDetail>
@@ -341,7 +341,8 @@ export default {
       // 是否有分配处理人
       return (item) => {
         let hasHandlerMan = false;
-        if (((item.majorUser && item.majorUser.userVo) || (item.workerList && item.workerList.length == 1))) {
+        if (((item.majorUser && item.majorUser.userVo) || (item.workerList && item.workerList.length == 1)) || item.isView != 1) {
+          // 没有分配处理或者没有当前步骤查看权限时
           hasHandlerMan = true;
         }
         return hasHandlerMan;
@@ -460,9 +461,6 @@ export default {
         padding-bottom: 10px;
       }
     }
-  }
-  .hide-step {
-    filter: blur(4px);
   }
   .sub-content{
     padding-top: 10px;
