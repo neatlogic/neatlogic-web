@@ -8,7 +8,7 @@
       :dataList="dataList"
       :vertical="config.direction === 'vertical'"
       :validateList="validateList"
-      :isClearSameValue="true"
+      :allowToggle="true"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       @change="
         val => {
