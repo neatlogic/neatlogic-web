@@ -47,7 +47,7 @@
               :dataList="scenarioList"
               valueName="scenarioId"
               textName="scenarioName"
-              :isClearSameValue="true"
+              :allowToggle="true"
               @change="changeScenarioId"
             ></TsFormRadio>
           </div>

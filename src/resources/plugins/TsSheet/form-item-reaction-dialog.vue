@@ -63,7 +63,7 @@
                 :value="r.event"
                 :validateList="[{ name: 'required', message: $t('form.placeholder.pleaseselect',{'target':$t('page.triggerevent')}) }]"
                 :dataList="emitTypeList"
-                :isClearSameValue="true"
+                :allowToggle="true"
                 @change="
                   val => {
                     if(val) {

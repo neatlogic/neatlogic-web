@@ -28,7 +28,7 @@
           :dataList="scenarioList"
           valueName="scenarioId"
           textName="scenarioName"
-          :isClearSameValue="true"
+          :allowToggle="true"
           :validateList="['required']"
         ></TsFormRadio>
       </TsFormItem>

@@ -83,7 +83,7 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul v-if="!readonly && row.isReplyable && item.readonlyContent" class="tstable-action-ul" @click.stop>
-                  <li class="tsfont-edit" @click="editCkeditor(item)">{{ $t('page.edit') }}></li>
+                  <li class="tsfont-edit" @click="editCkeditor(item)">{{ $t('page.edit') }}</li>
                 </ul>
               </div>
             </template>

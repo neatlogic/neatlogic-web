@@ -124,7 +124,7 @@ export default {
             type: 'radio',
             valueName: 'scenarioId',
             textName: 'scenarioName',
-            isClearSameValue: true,
+            allowToggle: true,
             readonly: true,
             dataList: []
           } 
