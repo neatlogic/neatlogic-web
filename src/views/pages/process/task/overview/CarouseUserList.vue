@@ -95,7 +95,8 @@ export default {
         aborted: 'tsfont-forbid',
         draft: 'tsfont-unsend',
         failed: 'tsfont-close-o',
-        hidden: 'tsfont-eye-off'
+        hidden: 'tsfont-eye-off',
+        hang: 'tsfont-forbid'
       }
     };
   },
