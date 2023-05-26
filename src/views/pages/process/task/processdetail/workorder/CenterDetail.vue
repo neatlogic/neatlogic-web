@@ -51,7 +51,7 @@
           tab="tab1"
         >
           <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
+          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig) && (tabValue == '' || tabValue == 'report')" class="pt-nm pb-nm">
             <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
               <template v-if="formConfig._type == 'new'">
                 <TsSheet
