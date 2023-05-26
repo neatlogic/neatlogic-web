@@ -207,7 +207,6 @@ export default {
         policyName: this.notifyPolicyConfig.policyName || '',
         handler: this.notifyPolicyConfig.handler || '',
         isCustom: this.isActive,
-        // policyPath: '',
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
       };
