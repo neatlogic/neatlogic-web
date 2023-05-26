@@ -117,27 +117,22 @@ export default {
     getDefaultPolicyId() {
       // 获取默认通知策略信息
       let data = {
-        handler: this.notifyPolicyConfig.handler,
-        needPage: false
+        handler: this.notifyPolicyConfig.handler
       };
-      let notifyList = [];
+      if (!data.handler) {
+        return false;
+      }
       this.defaultPolicyId = null;
       this.defaultPolicyName = '';
-      return this.$api.framework.tactics.searchNotifyList(data).then(res => {
+      return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
         if (res.Status == 'OK') {
-          notifyList = res.Return.tbodyList;
-          if (!this.$utils.isEmpty(notifyList)) {
-            for (const item of notifyList) {
-              if (item && item.isDefault) {
-                this.defaultPolicyId = item.id;
-                this.defaultPolicyName = item.name;
-                if (!this.notifyPolicyConfig.policyId) {
-                  this.notifyPolicyConfig.policyId = item.id;
-                  this.notifyPolicyConfig.policyName = item.name;
-                  this.notifyPolicyConfig.isCustom = 0;
-                }
-                break;
-              }
+          if (res.Return) {
+            this.defaultPolicyId = res.Return.id;
+            this.defaultPolicyName = res.Return.name;
+            if (!this.notifyPolicyConfig.policyId) {
+              this.notifyPolicyConfig.policyId = res.Return.id;
+              this.notifyPolicyConfig.policyName = res.Return.name;
+              this.notifyPolicyConfig.isCustom = 0;
             }
           }
         }

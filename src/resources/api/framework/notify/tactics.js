@@ -141,6 +141,9 @@ const tactics = {
   },
   updateIsDefaultNotifyPolicy(params) {
     return axios.post('/api/rest/notify/policy/isdefault/update', params);
+  },
+  getDefaultPolicy(params) {
+    return axios.post('/api/rest/notify/policy/default/get', params);
   }
 };
 export default tactics;
