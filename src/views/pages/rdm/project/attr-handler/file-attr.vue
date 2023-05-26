@@ -15,6 +15,7 @@
   <div v-else-if="mode === 'search'">
     <TsFormRadio
       v-model="hasFile"
+      :allowToggle="true"
       :dataList="dataList"
       @on-change="changeHasFile"
     ></TsFormRadio>
