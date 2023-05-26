@@ -141,14 +141,16 @@ export default {
       tacticsData: {}, // 个性设置
       defaultPolicyId: null, // 默认通知策略的Id
       defaultPolicyName: '', // 默认通知策略的名称
-      defaultDeepCloneConfig: {}
+      defaultDeepCloneConfig: this.$utils.deepClone(this.config)
     };
   },
 
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -156,6 +158,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.getDefaultPolicyId();
+      let handler = this.defaultDeepCloneConfig.handler || this.handler;
+      this.notifySelectConfig.params.handler = handler;
+      this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
+      this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
+      this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
+      this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
+      this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
+      this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
+      this.$set(this.notifyPolicyConfig, 'handler', handler);
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath')) {
+        this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath || '');
+      }
+    },
     //跳转策略编辑页面
     gotoAddNotify(val) {
       if (val) {
@@ -171,27 +188,15 @@ export default {
       this.$Message.success(this.$t('message.executesuccess'));
     },
 
-    async getConditionNode() { //获取参数对应的可选值 条件
+    getConditionNode() { //获取参数对应的可选值 条件
       let handler = this.defaultDeepCloneConfig.handler || this.handler;
-      if (!this.defaultDeepCloneConfig || !handler) {
-        return;
+      if (!handler) {
+        return false;
       }
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
-      this.notifySelectConfig.params.handler = handler;
-      this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
-      if (this.$utils.isEmpty(this.defaultPolicyId)) {
-        // 为空，默认通知策略时，需要查默认通知策略的名称
-        await this.getDefaultPolicyId(handler);
-      }
       this.$api.process.process.getNotifyPolicyList(formData).then(res => {
         if (res.Status == 'OK') {
           this.conditionNodeList = res.Return.tbodyList || [];
-          this.$set(this.notifyPolicyConfig, 'policyId', (this.defaultDeepCloneConfig.policyId && this.defaultDeepCloneConfig.isCustom) ? this.defaultDeepCloneConfig.policyId : this.defaultPolicyId); // 设置自定义通知策略，使用自定义通知策略，否则使用默认通知策略
-          this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
-          this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
-          this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
-          this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
-          this.$set(this.notifyPolicyConfig, 'handler', handler);
         }
       });
     },
@@ -202,10 +207,11 @@ export default {
         policyName: this.notifyPolicyConfig.policyName || '',
         handler: this.notifyPolicyConfig.handler || '',
         isCustom: this.isActive,
+        // policyPath: '',
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
       };
-      if (this.notifyPolicyConfig.policyPath) {
+      if (this.notifyPolicyConfig.hasOwnProperty('policyPath')) {
         this.$set(data, 'policyPath', this.notifyPolicyConfig.policyPath);
       }
       Object.assign(data, this.tacticsData);
@@ -247,13 +253,13 @@ export default {
         this.tacticsData = tacticsData;
       }
     },
-    getDefaultPolicyId(handler) {
+    getDefaultPolicyId() {
       // 获取默认通知策略信息
       let data = {
-        handler: handler,
+        handler: this.defaultDeepCloneConfig.handler || this.handler,
         needPage: false
       };
-      if (!handler) {
+      if (!data.handler) {
         return false;
       }
       let notifyList = [];
@@ -293,14 +299,6 @@ export default {
     formUuid(newVal) {
       this.formUuid = newVal;
       this.getConditionNode();
-    },
-    config: {
-      handler(newVal) {
-        this.defaultDeepCloneConfig = this.$utils.deepClone(newVal);
-        this.getConditionNode();
-      },
-      deep: true,
-      immediate: true
     }
   }
 };
