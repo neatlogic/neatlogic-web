@@ -200,11 +200,15 @@ export default {
       data = {
         policyId: this.notifyPolicyConfig.policyId || null,
         policyName: this.notifyPolicyConfig.policyName || '',
-        policyPath: this.notifyPolicyConfig.policyPath || '',
         handler: this.notifyPolicyConfig.handler || '',
         isCustom: this.isActive,
-        ...this.tacticsData
+        paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
+        excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
       };
+      if (this.notifyPolicyConfig.policyPath) {
+        this.$set(data, 'policyPath', this.notifyPolicyConfig.policyPath);
+      }
+      Object.assign(data, this.tacticsData);
       return data;
     },
     valid() {
