@@ -39,7 +39,11 @@ export default {
       return this.$refs['text'].valid();
     },
     changeValue(val) {
-      this.$emit('setValue', [val], [val]);
+      if (val != null && val.trim() != '') {
+        this.$emit('setValue', [val], [val]);
+      } else {
+        this.$emit('setValue', null, null);
+      }
     }
   },
   filter: {},

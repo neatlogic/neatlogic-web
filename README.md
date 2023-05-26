@@ -4,6 +4,13 @@ neatlogic-web是neatlogic平台前端代码，所有子模块的前端代码都�
 
 neatlogic-web基于vue2.x，UI框架在iView4.x源码基础上经过调整。
 
+## 构建依赖
+vue/cli 5.x,webpack 5.x
+先全局安装vue/cli最新版
+```
+npm install -g @vue/cli
+```
+
 ## 初始化依赖
 ```
 npm install
@@ -37,7 +44,7 @@ https://www.cnblogs.com/weilai-info/p/10988829.html
 ## 设置vscode的个人配置
 为了统一代码风格，多人开发时不会出现格式错乱，进行二开时请使用相同的代码风格配置。
 #### 安装插件
-EsLint、vetur、Prettier - Code formatter
+EsLint、vetur、Prettier - Code formatter、i18nhelper(自动进行i18n键值替换和多语言翻译)
 
 #### 设置>命令面板>输入“setting”>选择“首选项：打开设置”>打开 settings.json
 ```

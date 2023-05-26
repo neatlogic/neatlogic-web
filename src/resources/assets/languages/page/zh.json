@@ -887,5 +887,7 @@
   "autoexecjob": "自动化作业",
   "foreachtable": "遍历表格",
   "personalizationsettings": "个性化设置",
-  "current": "当前"
+  "current": "当前",
+  "hasfile": "有附件",
+  "nofile": "无附件"
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="mode === 'input'">
     <TsUpLoad
       styleType="button"
       dataType="rdm"
@@ -12,19 +12,29 @@
       @getFileList="changeValue"
     ></TsUpLoad>
   </div>
+  <div v-else-if="mode === 'search'">
+    <TsFormRadio
+      v-model="hasFile"
+      :dataList="dataList"
+      @on-change="changeHasFile"
+    ></TsFormRadio>
+  </div>
 </template>
 <script>
 import { AttrBase } from './base-attr.js';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
   },
   extends: AttrBase,
   props: {},
   data() {
     return {
-      fileList: []
+      fileList: [],
+      hasFile: null,
+      dataList: [{value: 1, text: this.$t('page.hasfile')}, {value: 0, text: this.$t('page.nofile')}]
     };
   },
   beforeCreate() {},
@@ -50,6 +60,10 @@ export default {
         }
       } 
       return true;
+    },
+    changeHasFile(val) {
+      console.log(val);
+      this.$emit('setValue', [val], [val ? this.$t('page.hasfile') : this.$t('page.nofile')]);
     },
     changeValue(fileList) {
       if (fileList && fileList.length > 0) {

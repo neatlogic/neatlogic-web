@@ -5,6 +5,14 @@ neatlogic-web is the front-end code of the neatlogic platform, and the front-end
 
 neatlogic-web is based on vue2.x, and the UI framework has been adjusted on the basis of iView4.x source code.
 
+## Build Dependencies
+vue/cli 5.x, webpack 5.x
+
+First, globally install the latest version of vue/cli:
+```
+npm install -g @vue/cli
+```
+
 ## Initialize dependencies
 ```
 npm install
@@ -38,7 +46,7 @@ https://www.cnblogs.com/weilai-info/p/10988829.html
 ## Set the personal configuration of vscode
 In order to unify the code style, there will be no format confusion when multiple people develop, please use the same code style configuration when opening the second version.
 #### Install plugin
-EsLint, vetur, Prettier - Code formatter
+EsLint, vetur, Prettier - Code formatter, i18nhelper（auto translate）
 
 #### Settings > Command Palette > Type "settings" > Select "Preferences: Open Settings" > Open settings.json
 ```

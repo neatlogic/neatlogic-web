@@ -39,7 +39,11 @@ export default {
       return this.$refs['handler'].valid();
     },
     changeValue(val) {
-      this.$emit('setValue', [val], [val]);
+      if (val != null) {
+        this.$emit('setValue', [val], [val]);
+      } else {
+        this.$emit('setValue', null, null);
+      }
     }
   },
   filter: {},

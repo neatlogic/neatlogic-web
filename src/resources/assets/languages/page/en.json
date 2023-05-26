@@ -885,5 +885,7 @@
   "autoexecjob": "Automated operations",
   "foreachtable": "Traverse Table",
   "personalizationsettings": "Personalization settings",
-  "current": "current"
+  "current": "current",
+  "hasfile": "With attachments",
+  "nofile": "No attachments"
 }
