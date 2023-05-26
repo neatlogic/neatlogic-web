@@ -262,7 +262,7 @@ export default {
       }
       this.defaultPolicyId = null;
       this.defaultPolicyName = '';
-      return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
+      this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
         if (res.Status == 'OK') {
           if (res.Return) {
             this.defaultPolicyId = res.Return.id;
