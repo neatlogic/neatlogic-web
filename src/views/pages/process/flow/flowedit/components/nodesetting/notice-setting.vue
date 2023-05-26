@@ -255,27 +255,17 @@ export default {
     getDefaultPolicyId() {
       // 获取默认通知策略信息
       let data = {
-        handler: this.defaultDeepCloneConfig.handler || this.handler,
-        needPage: false
+        handler: this.defaultDeepCloneConfig.handler || this.handler
       };
       if (!data.handler) {
         return false;
       }
-      let notifyList = [];
       this.defaultPolicyId = null;
       this.defaultPolicyName = '';
-      return this.$api.framework.tactics.searchNotifyList(data).then(res => {
+      return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
         if (res.Status == 'OK') {
-          notifyList = res.Return.tbodyList;
-          if (!this.$utils.isEmpty(notifyList)) {
-            for (const item of notifyList) {
-              if (item && item.isDefault) {
-                this.defaultPolicyId = item.id;
-                this.defaultPolicyName = item.name;
-                break;
-              }
-            }
-          }
+          this.defaultPolicyId = res.Return.id;
+          this.defaultPolicyName = res.Return.name;
         }
       });
     },
