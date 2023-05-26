@@ -264,8 +264,10 @@ export default {
       this.defaultPolicyName = '';
       return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
         if (res.Status == 'OK') {
-          this.defaultPolicyId = res.Return.id;
-          this.defaultPolicyName = res.Return.name;
+          if (res.Return) {
+            this.defaultPolicyId = res.Return.id;
+            this.defaultPolicyName = res.Return.name;
+          }
         }
       });
     },
