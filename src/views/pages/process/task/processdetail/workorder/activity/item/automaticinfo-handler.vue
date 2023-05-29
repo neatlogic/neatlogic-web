@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-start align-start">
+  <div v-if="config" class="flex-start align-start">
     <div class="left-label-text text-grey">
       {{ config.typeName }}
     </div>
