@@ -8,8 +8,8 @@
     ></StepLogCommon>
     <div v-if="item.processTaskStepData && !$utils.isEmpty(item.processTaskStepData.requestAudit)" class="request-audit">
       <div v-if="item.processTaskStepData.isStepUser == 1">
-        <div class="flex-between pb-sm">
-          <span>{{ $t('term.process.callrecord') }}</span>
+        <div class="pb-sm">
+          <span class="pr-nm">{{ $t('term.process.callrecord') }}</span>
           <CommonStatus
             v-if="item.processTaskStepData.requestAudit.status"
             :statusName="item.processTaskStepData.requestAudit.status.text"
@@ -26,8 +26,8 @@
         ></AutoDetail>
       </div>
       <div v-if="item.processTaskStepData && !$utils.isEmpty(item.processTaskStepData.callbackAudit)" class="pt-nm">
-        <div v-if="item.processTaskStepData.isStepUser == 1" class="flex-between pb-sm">
-          <span>{{ $t('term.process.callbackrecord') }}</span>
+        <div v-if="item.processTaskStepData.isStepUser == 1" class="pb-sm">
+          <span class="pr-nm">{{ $t('term.process.callbackrecord') }}</span>
           <CommonStatus
             v-if="item.processTaskStepData.callbackAudit.status"
             :statusName="item.processTaskStepData.callbackAudit.status.text"
