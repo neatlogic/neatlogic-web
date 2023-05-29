@@ -11,6 +11,7 @@ import pbc from './pbc';
 import process from './process';
 import report from './report';
 import rdm from './rdm';
+import codehub from './codehub'; // 代码中心
 
 export default {
   autoexec,
@@ -25,5 +26,6 @@ export default {
   knowledge,
   process,
   report,
-  rdm
+  rdm,
+  codehub
 };
