@@ -6,6 +6,9 @@
           <template v-slot:isRequired>
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
           </template>
+          <template v-slot:isReadOnly>
+            <TsFormSwitch v-model="propertyLocal.config.isReadOnly" :trueValue="true" :falseValue="false"></TsFormSwitch>
+          </template>
           <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem :label="$t('page.defaultvalue')" style="margin-bottom:16px">
               <!--由于最后一个formitem去掉了margin-bottom，这里补充回来-->
@@ -181,6 +184,20 @@
                     }
                   "
                 ></ConditionGroup>
+                <div v-if="key === 'setvalue'">
+                  <div v-if="!$utils.isEmpty(r)" class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
+                  <FormItem
+                    v-if="!$utils.isEmpty(r)"
+                    :formItem="propertyLocal"
+                    :value="r.value"
+                    mode="defaultvalue"
+                    @change="
+                      val => {
+                        $set(r, 'value', val);
+                      }
+                    "
+                  ></FormItem>
+                </div>
               </TabPane>
             </Tabs>
           </template>
@@ -205,7 +222,8 @@ export default {
     TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
     StaticDataEditor: resolve => require(['../common/static-data-editor.vue'], resolve),
     ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
-    TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve)
+    TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve),
+    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -274,6 +292,11 @@ export default {
           type: 'slot'
         },
         {
+          name: 'isReadOnly',
+          label: this.$t('page.readonly'),
+          type: 'slot'
+        },
+        {
           name: 'config',
           hideLabel: true,
           type: 'slot'
@@ -293,15 +316,20 @@ export default {
     if (!this.propertyLocal.config) {
       this.$set(this.propertyLocal, 'config', {
         isRequired: false,
+        isReadOnly: false,
         isMask: false,
         isHide: false
       });
     }
     if (!this.propertyLocal.reaction) {
-      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {} });
+      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}});
     }
     if (this.isNeedTable) {
       this.formConfig[1].dataList.push({ text: 'table', value: 'formtable' });
+    }
+    if (this.propertyLocal.handler != 'formtable') {
+      this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
+      this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
     }
   },
   beforeMount() {},
