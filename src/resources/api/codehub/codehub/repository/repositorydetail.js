@@ -85,7 +85,7 @@ const repositorydetail = {
     return axios.post('/api/rest/codehub/repository/gitlab/listProjectMembers', data);
   },
   searchGitGroup(data) {
-    return axios.post('/module/codehub//api/rest/repository/gitlab/listProjectSharedWithGroups', data);
+    return axios.post('/api/rest/codehub/repository/gitlab/listProjectSharedWithGroups', data);
   },
   saveGitAuth(type, data) {
     //删除git权限
