@@ -99,7 +99,7 @@
                   </li>
                 </ul>
                 <div v-else>
-                  <no-data></no-data>
+                  <NoData></NoData>
                 </div>
               </Scroll>
             </div>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 <template>
-  <div class="process-right pt-nm">
+  <div v-if="isOrderRight" class="process-right pt-nm">
     <Loading :loadingShow="rightLoading" type="fix"></Loading>
     <div v-if="processTaskConfig.statusVo" class="task-status">
       <CommonStatus
@@ -28,7 +28,7 @@
     <div ref="rightMain" class="right-setting" :style="setContentHeight(rightHeight)">
 
       <!-- 步骤 -->
-      <StepCarousel v-if="isOrderRight"></StepCarousel>
+      <StepCarousel></StepCarousel>
 
       <!-- 上报人 -->
       <div v-if="processTaskConfig.ownerVo" class="information-box">
