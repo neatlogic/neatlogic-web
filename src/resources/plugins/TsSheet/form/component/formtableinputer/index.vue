@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
-      <div class="action-item">
+      <div v-if="!config.hasOwnProperty('isCanAdd') || config.isCanAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
       </div>
       <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
@@ -44,6 +44,7 @@
         </div>
       </template>
     </TsTable>
+    <TsTable v-else :theadList="tableData.theadList"></TsTable>
   </div>
 </template>
 <script>
@@ -288,7 +289,9 @@ export default {
       handler: function(val) {
         this.tableData.theadList = [];
         if (!this.disabled && !this.readonly) {
-          this.tableData.theadList.push({ key: 'selection' });
+          if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
+            this.tableData.theadList.push({ key: 'selection' });
+          }
         }
         if (this.config.isShowNumber) {
           this.tableData.theadList.push({ key: 'number', title: this.$t('page.ordernumber') });
@@ -306,7 +309,9 @@ export default {
           }
         });
         if (!this.disabled && !this.readonly) {
-          this.tableData.theadList.push({ key: 'action' });
+          if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
+            this.tableData.theadList.push({ key: 'action' });
+          }
         }
         this.$emit('resize');
       },

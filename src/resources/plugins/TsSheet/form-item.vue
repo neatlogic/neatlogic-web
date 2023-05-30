@@ -1,6 +1,6 @@
 <template>
   <div class="form-item">
-    <i v-if="showComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly" class="require-tip text-error">*</i>
+    <i v-if="showComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
     <div v-if="mode === 'edit' && !formItem.isContainer" class="editor-mask"></div>
     <div v-if=" mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
@@ -258,9 +258,10 @@ export default {
                   } else if (action === 'setvalue') {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (result) {
-                      if ((!reaction.isFirstLoad && !this.formData.hasOwnProperty(this.formItem.uuid)) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
+                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid])) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
                         this.addExecuteCount('setvalue');
                         this.$set(this.formData, this.formItem.uuid, reaction.value);
+                        this.$emit('change', reaction.value);
                       }
                     }
                   } else if (action === 'filter') {
