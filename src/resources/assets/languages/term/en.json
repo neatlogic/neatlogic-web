@@ -2194,5 +2194,23 @@
     "loweralphabet": "English lowercase letters",
     "1to12": "An integer between 1 and 12",
     "properlyformattestring": "Correctly formatted string"
+  },
+  "codehub": {
+    "recentlyupdate": "Latest updates",
+    "proxyaddress": "Proxy address",
+    "proxyaddressdesc": "Deployed on the same machine as the codebase service to create an SVN repository",
+    "agentusername": "Proxy username",
+    "agentpassword": "Proxy Password",
+    "copyurladdress": "Copy URL Address",
+    "copyworkingcopyroute": "Copying workingcopy path",
+    "warehouseservices": "Warehouse Services",
+    "associatedsystem": "Associated system",
+    "associatedsubsystems": "Associated subsystems",
+    "branchpath": "Branch Path",
+    "tagpath": "Tag Path",
+    "warehousesynchronization": "Warehouse synchronization",
+    "branchtobesynchronized": "Branch to be synchronized",
+    "syncexecuteandback": "Warehouse synchronization has been executed in the background",
+    "typename": "Type Name"
   }
 }

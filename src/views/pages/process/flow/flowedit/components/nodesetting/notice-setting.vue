@@ -287,6 +287,14 @@ export default {
   filter: {},
   computed: {},
   watch: {
+    config: {
+      handler(config) {
+        // 解决切换不同的节点，通知策略数据没有变化的问题
+        this.defaultDeepCloneConfig = this.$utils.deepClone(config); 
+        this.init();
+      },
+      deep: true
+    },
     formUuid(newVal) {
       this.formUuid = newVal;
       this.getConditionNode();

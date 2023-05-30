@@ -2191,5 +2191,23 @@
     "loweralphabet": "英文小写字母",
     "1to12": "1至12之间的整数",
     "properlyformattestring": "正确格式的字符串"
+  },
+  "codehub": {
+    "recentlyupdate": "最新更新",
+    "proxyaddress": "代理地址",
+    "proxyaddressdesc": "与代码库服务部署在同一台机器上，用于创建SVN仓库",
+    "agentusername": "代理用户名",
+    "agentpassword": "代理密码",
+    "copyurladdress": "复制URL地址",
+    "copyworkingcopyroute": "复制workingcopy路径",
+    "warehouseservices": "仓库服务",
+    "associatedsystem": "关联系统",
+    "associatedsubsystems": "关联子系统",
+    "branchpath": "分支路径",
+    "tagpath": "tag路径",
+    "warehousesynchronization": "仓库同步",
+    "branchtobesynchronized": "待同步分支",
+    "syncexecuteandback": "已后台执行仓库同步",
+    "typename": "类型名称"
   }
 }

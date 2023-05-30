@@ -253,5 +253,10 @@
     "workbench": "工作台",
     "mydoing": "我的待办",
     "mycompleted": "我的已办"
+  },
+  "codehub": {
+    "codehub": "代码中心",
+    "repositoryservice": "代码库服务",
+    "repository": "代码仓库"
   }
 }
