@@ -549,3 +549,5 @@
 .tsfont-webhook { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea16;&nbsp;'); }
 .tsfont-width { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea17;&nbsp;'); }
 .tsfont-neatlogic { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea18;&nbsp;'); }
+.tsfont-gitlab { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea19;&nbsp;'); }
+.tsfont-svn { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1a;&nbsp;'); }
