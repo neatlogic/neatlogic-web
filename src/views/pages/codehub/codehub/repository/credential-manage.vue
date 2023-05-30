@@ -110,12 +110,6 @@ export default {
                 if (matchList.length) {
                   let resultConfig = matchList[0];
                   Object.assign(c, resultConfig);
-                  //后台密文，然后处理成***
-                  // if (resultConfig.repoCredential && resultConfig.credType == 'password') {
-                  //   Object.assign(c, {
-                  //     repoCredential: this.hidePassword(resultConfig.repoCredential)
-                  //   });
-                  // }
                 }
               });
             }

@@ -18,7 +18,8 @@ export default {
     'dataConfig': [],
     'isShowNumber': true,
     'isCanDrag': true,
-    'lineNumber': 1
+    'lineNumber': 1,
+    'isCanAdd': true
   },
   'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'emit': {} }
 };

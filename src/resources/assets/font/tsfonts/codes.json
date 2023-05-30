@@ -3220,5 +3220,17 @@
     "css": "tsfont-neatlogic",
     "hexCodepoint": "0xea18",
     "codepoint": 59928
+  },
+  {
+    "name": "gitlab",
+    "css": "tsfont-gitlab",
+    "hexCodepoint": "0xea19",
+    "codepoint": 59929
+  },
+  {
+    "name": "svn",
+    "css": "tsfont-svn",
+    "hexCodepoint": "0xea1a",
+    "codepoint": 59930
   }
 ]

@@ -1,5 +1,13 @@
 <template>
   <div>
+    <TsFormItem :label="$t('term.pbc.adddata')" labelPosition="left" contentAlign="right">
+      <TsFormSwitch
+        v-model="config.isCanAdd"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('page.ordernumber')" labelPosition="left" contentAlign="right">
       <TsFormSwitch
         v-model="config.isShowNumber"
@@ -117,7 +125,11 @@ export default {
   beforeCreate() {},
   async created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if (!this.config.hasOwnProperty('isCanAdd')) {
+      this.$set(this.config, 'isCanAdd', true);
+    }
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
