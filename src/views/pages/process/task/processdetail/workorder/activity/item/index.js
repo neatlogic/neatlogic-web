@@ -16,6 +16,7 @@ import changeinfoHandler from './list-handler';
 import changestepinfoHandler from './list-handler';
 import eventinfoHandler from './list-handler';
 import focususerHandler from './focususer-handler';
+import automaticinfoHandler from './automaticinfo-handler';
 
 export default {
   defaultHandler, //默认活动展示
@@ -35,5 +36,6 @@ export default {
   changeinfoHandler, //变更
   changestepinfoHandler, //变更步骤
   eventinfoHandler, //事件
-  focususerHandler //修改工单关注人
+  focususerHandler, //修改工单关注人
+  automaticinfoHandler
 };
