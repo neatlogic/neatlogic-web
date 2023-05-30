@@ -538,3 +538,5 @@
 .tsfont-webhook:before { content: '\ea16'; } /* '' */
 .tsfont-width:before { content: '\ea17'; } /* '' */
 .tsfont-neatlogic:before { content: '\ea18'; } /* '' */
+.tsfont-gitlab:before { content: '\ea19'; } /* '' */
+.tsfont-svn:before { content: '\ea1a'; } /* '' */
