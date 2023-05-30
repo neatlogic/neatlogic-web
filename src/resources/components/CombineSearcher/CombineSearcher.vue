@@ -126,7 +126,7 @@
                   <slot name="action"></slot>
                 </div>
                 <div v-else>
-                  <Button ghost class="mr-nm" @click.native="isVisible = false">{{ $t('page.cancel') }}</Button>
+                  <Button ghost class="mr-nm" @click.native="handleCancel">{{ $t('page.cancel') }}</Button>
                   <Button type="primary" @click.native="doSearch">{{ $t('page.search') }}</Button>
                 </div>
               </div>
@@ -315,15 +315,10 @@ export default {
           this.$delete(this.searchValue, key);
           this.$delete(this.totalText, key);
           this.$delete(this.textConfig, key);
-          if (this.searchMode == 'clickBtnSearch') { // 非实时搜索模式，删除后，需要触发一次change
-            let totalSearch = this.getFullSearch();
-            this.$emit('change', totalSearch);
-            this.$emit('confirm', totalSearch);
-          } else {
-            this.$nextTick(() => {
-              this.$emit('remove-label');
-            });
-          }
+          let totalSearch = this.getFullSearch();
+          this.$emit('remove-label');
+          this.$emit('change', totalSearch);
+          this.$emit('confirm', totalSearch);
         });
       }
       //只有在搜索模式下才去匹配输入框的，如果是删除下拉的属性会在watch里触发，如果是删除关键词的还需要在这里触发一次change
@@ -331,13 +326,9 @@ export default {
         this.$set(this, 'keywordValue', '');
         this.$delete(this.totalText, key);
         let totalSearch = this.getFullSearch();
+        this.$emit('remove-label');
         this.$emit('change', totalSearch);
-        if (this.searchMode == 'clickBtnSearch') {
-          this.$emit('confirm', totalSearch);
-        }
-        this.$nextTick(() => {
-          this.$emit('remove-label');
-        });
+        this.$emit('confirm', totalSearch);
       }
     },
     addKeyword() {
@@ -356,6 +347,18 @@ export default {
         }
       }
     },
+    handleCancel() {
+      // 点击取消
+      this.isVisible = false;
+      if (this.searchMode != 'clickBtnSearch') {
+        // 实时搜索时，点击【取消】按钮，清空搜索栏中的值
+        this.keyword = '';
+        this.keywordValue = '';
+        this.searchValue = {};
+        this.totalText = {};
+        this.$refs.form && this.$refs.form.clearFormInput();
+      }
+    },
     doSearch(val) {
       this.isVisible = false;
       let fullSearch = this.getFullSearch();
@@ -372,10 +375,8 @@ export default {
       this.isVisible = false;
       this.$refs.form && this.$refs.form.clearFormInput(); // 解决input输入框清空失败的问题
       this.$forceUpdate();
-      if (this.searchMode == 'clickBtnSearch') {
-        this.$emit('change', {});// 非实时搜索，删除全部数据后，触发change
-        this.$emit('confirm', {});
-      }
+      this.$emit('change', {});// 非实时搜索，删除全部数据后，触发change
+      this.$emit('confirm', {});
     },
     handleSearch() {
       this.$emit('change', this.getFullSearch());
