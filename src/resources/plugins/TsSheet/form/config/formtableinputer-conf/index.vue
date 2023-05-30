@@ -127,8 +127,7 @@ export default {
   beforeMount() {},
   mounted() {
     if (!this.config.hasOwnProperty('isCanAdd')) {
-      this.setConfig('isCanAdd', true);
-      // this.$set(this.config, 'isCanAdd', true);
+      this.$set(this.config, 'isCanAdd', true);
     }
   },
   beforeUpdate() {},
