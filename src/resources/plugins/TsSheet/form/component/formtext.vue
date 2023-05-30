@@ -8,7 +8,7 @@
     :value="actualValue"
     :readonly="readonly"
     :disabled="disabled"
-    :validateList="validateList"
+    :validateList="actualValidateList"
     :readonlyTextIsHighlight="readonlyTextIsHighlight"
     @change="
       val => {
@@ -58,6 +58,13 @@ export default {
         }
       }
       return null;
+    },
+    actualValidateList() {
+      let validateList = this.validateList || [];
+      if (this.config.validate) {
+        validateList.push(this.config.validate);
+      }
+      return validateList; 
     }
   },
   watch: {}

@@ -10,9 +10,17 @@
             <TsFormSwitch v-model="propertyLocal.config.isReadOnly" :trueValue="true" :falseValue="false"></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+            <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
+              <TsFormSelect
+                v-model="propertyLocal.config.validate"
+                :dataList="ruleList"
+                transfer
+                border="border"
+              ></TsFormSelect>
+            </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')" style="margin-bottom:16px">
               <!--由于最后一个formitem去掉了margin-bottom，这里补充回来-->
-              <TsFormInput v-model="propertyLocal.config.defaultValue" :type="propertyLocal.handler.replace('form', '')"></TsFormInput>
+              <TsFormInput v-model="propertyLocal.config.defaultValue" :validateList="propertyLocal.config.validate? [propertyLocal.config.validate]:[]" :type="propertyLocal.handler.replace('form', '')"></TsFormInput>
             </TsFormItem>
           </template>
           <template v-else-if="['formselect', 'formradio', 'formcheckbox'].includes(propertyLocal.handler)" v-slot:config>
@@ -307,30 +315,54 @@ export default {
           type: 'slot',
           isHidden: !this.isNeedReaction
         }
+      ],
+      ruleList: [
+        {
+          text: this.$t('page.letter'),
+          value: 'unique_ident'
+        },
+        {
+          text: this.$t('page.lowercaseletter'),
+          value: 'lowercase'
+        },
+        {
+          text: this.$t('page.capitalletter'),
+          value: 'uppercase'
+        },
+        {
+          text: this.$t('page.number'),
+          value: 'number'
+        },
+        {
+          text: this.$t('page.lettersandnumbers'),
+          value: 'enchar'
+        },
+        {
+          text: this.$t('page.emailaddress'),
+          value: 'mail'
+        },
+        {
+          text: this.$t('page.phonenumber'),
+          value: 'phone'
+        },
+        {
+          text: this.$t('page.ip'),
+          value: 'ip'
+        },
+        {
+          text: this.$t('page.port'),
+          value: 'port'
+        },
+        {
+          text: 'URL',
+          value: 'url'
+        }
       ]
     };
   },
   beforeCreate() {},
   created() {
-    this.propertyLocal = this.property;
-    if (!this.propertyLocal.config) {
-      this.$set(this.propertyLocal, 'config', {
-        isRequired: false,
-        isReadOnly: false,
-        isMask: false,
-        isHide: false
-      });
-    }
-    if (!this.propertyLocal.reaction) {
-      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}});
-    }
-    if (this.isNeedTable) {
-      this.formConfig[1].dataList.push({ text: 'table', value: 'formtable' });
-    }
-    if (this.propertyLocal.handler != 'formtable') {
-      this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
-      this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
-    }
+    this.init();
   },
   beforeMount() {},
   mounted() {},
@@ -341,6 +373,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.propertyLocal = this.property;
+      if (!this.propertyLocal.config) {
+        this.$set(this.propertyLocal, 'config', {
+          isRequired: false,
+          isReadOnly: false,
+          isMask: false,
+          isHide: false
+        });
+      }
+      if (!this.propertyLocal.reaction) {
+        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}});
+      }
+      if (this.isNeedTable) {
+        this.formConfig[1].dataList.push({ text: 'table', value: 'formtable' });
+      }
+      if (this.propertyLocal.handler != 'formtable') {
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
+        this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
+      }
+    },
     close() {
       this.$emit('close');
     },
@@ -401,6 +454,20 @@ export default {
     },
     removeSourceColumn(index) {
       this.propertyLocal.config.sourceColumnList.splice(index, 1);
+    },
+    changeHandler(val) {
+      this.propertyLocal.reaction = null;
+      this.$nextTick(() => {
+        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}});
+        this.$set(this.propertyLocal, 'value', null);
+        if (val != 'formtable') {
+          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
+          this.$set(this.propertyLocal.reaction, 'setvalue', {});
+        } else {
+          this.$delete(this.reactionName, 'setvalue');
+          this.$delete(this.propertyLocal.reaction, 'setvalue');
+        }
+      });
     }
   },
   filter: {},
@@ -478,6 +545,7 @@ export default {
       handler: function(newVal, oldVal) {
         if (newVal && oldVal && oldVal != newVal) {
           this.$set(this.propertyLocal, 'config', {isRequired: true});
+          this.changeHandler(newVal);
         }
       },
       deep: true,
