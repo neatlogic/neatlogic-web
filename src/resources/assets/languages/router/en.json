@@ -253,5 +253,10 @@
     "workbench": "Workbench",
     "mydoing": "To-Do List",
     "mycompleted": "Completed List"
+  },
+  "codehub": {
+    "codehub": "Code Center",
+    "repositoryservice": "Code Library Service",
+    "repository": "repository"
   }
 }

@@ -887,5 +887,12 @@
   "personalizationsettings": "Personalization settings",
   "current": "current",
   "hasfile": "With attachments",
-  "nofile": "No attachments"
+  "nofile": "No attachments",
+  "synchronous": "synchronization",
+  "switchnode": "Switch nodes",
+  "subsystem": "Subsystem",
+  "manualcreation": "Manual creation",
+  "warehouseaddress": "Warehouse address",
+  "trunk": "trunk",
+  "versiontype": "Version Type"
 }
