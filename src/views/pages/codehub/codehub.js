@@ -5,10 +5,7 @@ import routers from './router.js';
 import store from '@/resources/store';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
-
 import VueI18n from 'vue-i18n';
-import toolCatalogUtils from '@/views/pages/autoexec/utils/tools-catalog';
-//公共的全局组件、样式等
 import '@/resources/base.js';
 import {initRouter, initI18n} from '@/resources/init.js';
 
@@ -27,8 +24,6 @@ let i18n = initI18n(VueI18n, {});//语言包配置
 Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
-//Vue.prototype.i18n = i18n;
-Vue.prototype.$toolCatalogUtils = toolCatalogUtils;
 
 new Vue({
   router,

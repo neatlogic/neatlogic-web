@@ -85,7 +85,7 @@ export default [
     name: 'versiontype-overview',
     component: versiontypeOverview,
     meta: {
-      title: '版本类型',
+      title: $t('router.codehub.versiontype'),
       ismenu: true,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -97,7 +97,7 @@ export default [
     name: 'version-overview',
     component: versionOverview,
     meta: {
-      title: '版本管理',
+      title: $t('router.codehub.versioning'),
       ismenu: true,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -109,7 +109,7 @@ export default [
     name: 'strategy-overview',
     component: strategyOverview,
     meta: {
-      title: '版本策略',
+      title: $t('router.codehub.versionstrategy'),
       ismenu: true,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -121,7 +121,7 @@ export default [
     name: 'merge-create',
     component: mergeCreate,
     meta: {
-      title: '创建MR',
+      title: $t('router.codehub.createmergerequest'),
       ismenu: false,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -133,7 +133,7 @@ export default [
     name: 'merge-handler',
     component: mergeHandler,
     meta: {
-      title: '处理MR',
+      title: $t('router.codehub.handlermergerequest'),
       ismenu: false,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -145,7 +145,7 @@ export default [
     name: 'merge-review',
     component: mergeReview,
     meta: {
-      title: '代码评审',
+      title: $t('router.codehub.codereview'),
       ismenu: false,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -157,7 +157,7 @@ export default [
     name: 'merge-overview',
     component: mergeOverview,
     meta: {
-      title: 'MR列表',
+      title: $t('router.codehub.mergerequestlist'),
       ismenu: true,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -169,7 +169,7 @@ export default [
     name: 'merge-action',
     component: mergeAction,
     meta: {
-      title: 'MR动作管理',
+      title: $t('router.codehub.mergeactionmanage'),
       ismenu: true,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -181,7 +181,7 @@ export default [
     name: 'repository-detail',
     component: repositoryDetail,
     meta: {
-      title: '仓库详情',
+      title: $t('router.codehub.repositorydetail'),
       ismenu: false,
       icon: 'ts-dev-iplist',
       authrity: '',
@@ -193,7 +193,7 @@ export default [
     name: 'api',
     component: codehubApi,
     meta: {
-      title: '接口列表',
+      title: $t('router.codehub.apilist'),
       ismenu: true,
       icon: 'ts-cube',
       authrity: '',
@@ -205,7 +205,7 @@ export default [
     name: 'project-overview',
     component: projectOverview,
     meta: {
-      title: '项目映射',
+      title: $t('router.codehub.projectmapping'),
       ismenu: true,
       icon: 'ts-cube',
       authrity: '',
@@ -217,7 +217,7 @@ export default [
     name: 'credential-manage',
     component: credentialManage,
     meta: {
-      title: '仓库凭证',
+      title: $t('router.codehub.repositoryvoucher'),
       ismenu: true,
       icon: 'ts-cube',
       authrity: '',

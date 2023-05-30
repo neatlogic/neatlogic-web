@@ -257,6 +257,18 @@
   "codehub": {
     "codehub": "Code Center",
     "repositoryservice": "Code Library Service",
-    "repository": "repository"
+    "repository": "repository",
+    "versiontype": "Version Type",
+    "versioning": "Versioning",
+    "versionstrategy": "Version Policy",
+    "createmergerequest": "Create Merge Request",
+    "handlermergerequest": "Handler Merge Request",
+    "codereview": "Code Review",
+    "mergerequestlist": "Merge Request List",
+    "mergeactionmanage": "Merge Action Manage",
+    "repositorydetail": "Repository Detail",
+    "apilist": "Api List",
+    "projectmapping": "Project Mapping",
+    "repositoryvoucher": "Repository Voucher"
   }
 }

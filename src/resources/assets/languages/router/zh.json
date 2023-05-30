@@ -257,6 +257,18 @@
   "codehub": {
     "codehub": "代码中心",
     "repositoryservice": "代码库服务",
-    "repository": "代码仓库"
+    "repository": "代码仓库",
+    "versiontype": "版本类型",
+    "versioning": "版本管理",
+    "versionstrategy": "版本策略",
+    "createmergerequest": "创建MR",
+    "handlermergerequest": "处理MR",
+    "codereview": "代码评审",
+    "mergerequestlist": "MR列表",
+    "mergeactionmanage": "MR动作管理",
+    "repositorydetail": "仓库详情",
+    "apilist": "接口列表",
+    "projectmapping": "项目映射",
+    "repositoryvoucher": "仓库凭证"
   }
 }
