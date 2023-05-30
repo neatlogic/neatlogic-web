@@ -214,9 +214,10 @@ export default {
     },
     cancelRadio(label) { //取消勾选
       if (this.allowToggle && this.currentValue == label) {
-        this.currentValue = '';
+        this.currentValue = null;
         this.$emit('update:value', this.currentValue);
         this.$emit('change', this.currentValue);
+        this.$emit('on-change', this.currentValue);
       }
     }
   },

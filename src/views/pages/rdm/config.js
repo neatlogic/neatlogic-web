@@ -1,7 +1,8 @@
-import {$t} from '@/resources/init.js';
-export const config = { 
-  module: 'rdm', 
-  menuType: { 
-    workbrench: $t('router.rdm.workbench')
-  } 
+import { $t } from '@/resources/init.js';
+export const config = {
+  module: 'rdm',
+  menuType: {
+    workbrench: $t('router.rdm.workbench'),
+    system: $t('router.rdm.manage')
+  }
 };

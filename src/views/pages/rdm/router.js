@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 const projectEdit = () => import('./project/project-edit.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
 const taskList = () => import('@/views/pages/rdm/workbench/task-list.vue');
+const priorityManage = () => import('@/views/pages/rdm/priority/priority-manage.vue');
 const appModules = {
   bugDetail: () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue'),
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
@@ -101,21 +102,32 @@ let routerArr = [
       authority: 'RDM_BASE',
       icon: 'tsfont-check-o'
     }
+  },
+  {
+    path: '/priority-manage',
+    name: 'priorityManage',
+    component: priorityManage,
+    meta: {
+      title: $t('router.rdm.prioritymanage'),
+      ismenu: true,
+      type: 'system',
+      authority: 'PRIORITY_MANAGE',
+      icon: 'tsfont-check-o'
+    }
   }
 ];
 const appList = ['story', 'bug', 'task', 'iteration'];
 appList.forEach(app => {
-  routerArr.push(
-    {
-      path: '/' + app + '/:projectId/:appId',
-      name: app,
-      component: appModules[app],
-      meta: {
-        ismenu: false,
-        authority: 'RDM_BASE',
-        type: 'project'
-      }
-    });
+  routerArr.push({
+    path: '/' + app + '/:projectId/:appId',
+    name: app,
+    component: appModules[app],
+    meta: {
+      ismenu: false,
+      authority: 'RDM_BASE',
+      type: 'project'
+    }
+  });
   routerArr.push({
     path: '/' + app + '-detail/:projectId/:appId/:id',
     name: app + '-detail',

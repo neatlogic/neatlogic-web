@@ -63,8 +63,11 @@ export default {
       return true;
     },
     changeHasFile(val) {
-      console.log(val);
-      this.$emit('setValue', [val], [val ? this.$t('page.hasfile') : this.$t('page.nofile')]);
+      if (val != null) {
+        this.$emit('setValue', [val], [val ? this.$t('page.hasfile') : this.$t('page.nofile')]);
+      } else {
+        this.$emit('setValue', null, null);
+      }
     },
     changeValue(fileList) {
       if (fileList && fileList.length > 0) {
