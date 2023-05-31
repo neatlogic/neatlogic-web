@@ -896,5 +896,12 @@
   "manualcreation": "手动创建",
   "warehouseaddress": "仓库地址",
   "trunk": "主干",
-  "versiontype": "版本类型"
+  "versiontype": "版本类型",
+  "browse": "浏览",
+  "voucher": "凭证",
+  "sourcebranch": "源分支",
+  "targetbranch": "目标分支",
+  "keyname": "键名",
+  "necessary": "必需",
+  "viewparameters": "查看参数"
 }

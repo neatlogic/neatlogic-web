@@ -111,7 +111,7 @@ export default {
           name: 'systemUuid',
           label: '触发系统：',
           width: '30%',
-          url: '/module/codehub/api/rest/system/search',
+          url: '/api/rest/codehub/system/search',
           rootName: 'list',
           valueName: 'uuid',
           textName: 'name',
@@ -137,7 +137,7 @@ export default {
           name: 'versionUuid',
           label: '触发版本：',
           width: '30%',
-          url: '/module/codehub/api/rest/version/search',
+          url: '/api/rest/codehub/version/search',
           rootName: 'list',
           valueName: 'uuid',
           textName: 'name',
@@ -259,7 +259,7 @@ export default {
       if (_this.actionData.systemUuid) {
         this.$axios({
           method: 'post',
-          url: '/balantflow/module/codehub/api/rest/subsystem/search',
+          url: '/balantflow/api/rest/codehub/subsystem/search',
           data: {
             systemId: this.actionData.systemUuid
           }

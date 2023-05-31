@@ -38,7 +38,7 @@ export default {
         name: 'checkoutBranchesVal',
         validateList: ['required'],
         transfer: true,
-        url: '/module/codehub/api/rest/repository/branch/search',
+        url: '/api/rest/codehub/repository/branch/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'name',

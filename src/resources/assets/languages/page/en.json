@@ -894,5 +894,12 @@
   "manualcreation": "Manual creation",
   "warehouseaddress": "Warehouse address",
   "trunk": "trunk",
-  "versiontype": "Version Type"
+  "versiontype": "Version Type",
+  "browse": "browse",
+  "voucher": "voucher",
+  "sourcebranch": "Source Branch",
+  "targetbranch": "Target Branch",
+  "keyname": "Key name",
+  "necessary": "essential",
+  "viewparameters": "View parameters"
 }

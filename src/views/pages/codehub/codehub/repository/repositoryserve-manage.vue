@@ -43,10 +43,10 @@
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
               <div class="action-item">
-                <div class="text-action ts-edit" @click="editServe(row.uuid)">{{ $t('page.edit') }}</div>
+                <div class="text-action tsfont-edit" @click="editServe(row.uuid)">{{ $t('page.edit') }}</div>
               </div>
               <div class="action-item">
-                <div class="text-action ts-trash" @click="deleteServe(row.uuid)">{{ $t('page.delete') }}</div>
+                <div class="text-action tsfont-trash" @click="deleteServe(row.uuid)">{{ $t('page.delete') }}</div>
               </div>
             </div>
           </template>

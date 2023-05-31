@@ -1,11 +1,10 @@
 <template>
   <div>
-    <TsContain v-if="reposData" class="bg-block">
+    <TsContain v-if="reposData">
       <template slot="top">
         <div class="clearfix">
-          <div class="ts-angle-left d_f cursor-pointer" @click="gotoList">仓库列表</div>
+          <div class="ts-angle-left d_f cursor-pointer" @click="gotoList">{{ $t('term.codehub.repositorylist') }}</div>
           <div class="d_f top-title">
-            <!-- <Badge :color="statusList[reposData.syncStatus]" /> -->
             <h3 class="title">{{ reposData.name||'-' }}</h3>
             <div class="text-tip desc">
               <Tooltip v-if="showtips(reposData)" theme="light" max-width="300">
@@ -18,19 +17,17 @@
             </div>
           </div>
           <div v-if="!isLoad" class="action-group d_f_r">
-            <div v-if="reposData.agentName" class="action-item"><span class="text-tip">节点</span><span>{{ reposData.agentName||'-' }}</span>
+            <div v-if="reposData.agentName" class="action-item"><span class="text-tip">{{ $t('page.node') }}</span><span>{{ reposData.agentName||'-' }}</span>
               <span
                 class="text-action ts-refresh"
                 style="margin-left:5px;"
-                title="切换节点"
+                :title="$t('page.switchnode')"
                 @click.stop="updateNode(reposData)"
               ></span>
             </div>
-            <div class="action-item ts-link" @click="copyWorkingPath(reposData)">复制workingcopy路径</div>
-            <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copyok" class="action-item ts-link">复制URL地址</div>
-            <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.uuid)">同步</div>
-            <!-- <div class="action-item text-action ts-edit" @click="editRepository">编辑</div>
-            <div class="action-item text-action ts-trash" @click="deleteRepository">删除</div> -->
+            <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
+            <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copyok" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
+            <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.uuid)">{{ $t('page.synchronous') }}</div>
           </div>
         </div>
       </template>
@@ -86,8 +83,6 @@ export default {
     RepositorySyncDialog: resolve => require(['./edit/repository-sync-dialog.vue'], resolve),
     NoData,
     ...tabs
-    //FormSelect,
-    //FormInput
   },
   directives: {clipboard},
   mixins: [repositorymixin],
@@ -99,19 +94,19 @@ export default {
       isEdit: false, //是否编辑
       tabList: [{
         name: 'action',
-        text: '活动'
+        text: this.$t('page.activity')
       }, {
         name: 'commit',
-        text: '提交'
+        text: this.$t('page.submit')
       }, {
         name: 'branch',
-        text: '分支'
+        text: this.$t('page.branch')
       }, {
         name: 'tag',
-        text: '标签'
+        text: this.$t('page.tag')
       }, {
         name: 'file',
-        text: '浏览'
+        text: this.$t('page.browse')
       }],
       activetab: 'action',
       uuid: null,
@@ -128,33 +123,20 @@ export default {
       showSync: true//是否显示同步按钮
     };
   },
-
   beforeCreate() {},
-
-  created() {
-
-  },
-
+  created() {},
   beforeMount() {},
-
   mounted() {
     if (this.$route.query.uuid) {
       this.uuid = this.$route.query.uuid;
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     editRepository() {
       this.isEdit = true;
@@ -162,20 +144,17 @@ export default {
     },
     deleteRepository() {
       //详情页删除当前仓库的功能已经去掉
-      let _this = this;
       let param = { uuid: this.uuid };
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该仓库',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.warehouse')}),
         btnType: 'error',
         'on-ok': function(vnode) {
-          _this.$api.codehub.repository.delete(param).then(res => {
+          this.$api.codehub.repository.delete(param).then(res => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.gotoList();
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.gotoList();
               vnode.isShow = false;
-            } else {
-              _this.$Message.error(res.Message);
             }
           });
         }
@@ -210,7 +189,7 @@ export default {
           if (this.reposData.type != 'svn' || this.reposData.delegation) {
             this.tabList.push({
               name: 'setting',
-              text: '设置'
+              text: this.$t('page.setting')
             });
           }
         } else {
@@ -221,27 +200,20 @@ export default {
       });
     },
     copyok() {
-      this.$Message.success('复制成功');
+      this.$Message.success(this.$t('message.copysuccess'));
       this.isLoad = false;
     },
     updateTabstatus(status) {
       this.tabLoaded = !status;
     }
   },
-
   filter: {},
-
   computed: {
     setTxt() {
       return function(config, type) {
         let text = '';
         let prev = config.systemVo || '';
         let next = config.subSystemVo || '';
-        // if (type == 'text') {
-        //   text = (prev ? prev.name : '') + (next ? '/' + next.name : '');
-        // } else if (type == 'tips') {
-        //   text = (prev && prev.description ? prev.description : '') + (next && next.description ? '/' + next.description : '');
-        // }
         if (prev) {
           text = prev.name + (prev.description ? ('(' + prev.description + ')') : '');
           if (next) {
@@ -260,9 +232,7 @@ export default {
         return isshow;
       };
     }
-
   },
-
   watch: {
     uuid: {
       handler: function(val) {
@@ -279,9 +249,6 @@ export default {
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-// .action-item {
-//   width: 90px;
-// }
 .top-title {
   .title {
     line-height: 30px;

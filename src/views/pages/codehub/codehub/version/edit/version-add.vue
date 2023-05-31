@@ -20,8 +20,8 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -42,10 +42,9 @@ export default {
     list: { type: Object }
   },
   data() {
-    let _this = this;
     return {
       setting: {
-        title: _this.uuid ? '编辑版本' : '新增版本',
+        title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versions')}) : this.$t('page.newtarget', {'target': this.$t('page.versions')}),
         maskClose: false,
         height: '200px'
       },
@@ -55,27 +54,27 @@ export default {
       formConfig: [
         {
           type: 'text',
-          label: '版本策略',
+          label: this.$t('term.codehub.versionstrategy'),
           name: 'versionName',
           disabled: true
         },
         {
           type: 'select',
-          label: '版本类型',
+          label: this.$t('page.versiontype'),
           name: 'versionTypeUuid',
           transfer: true,
-          dynamicUrl: '/module/codehub/api/rest/versiontype/search?isActive=1',
+          dynamicUrl: '/api/rest/codehub/versiontype/search?isActive=1',
           rootName: 'list',
           textName: 'name',
           valueName: 'uuid',
-          onChange: function(val) {
-            _this.versionData.versionTypeUuid = val;
-            _this.autofillName(val);
+          onChange: (val) => {
+            this.versionData.versionTypeUuid = val;
+            this.autofillName(val);
           }
         },
         {
           type: 'slot',
-          label: '版本号',
+          label: this.$t('term.framework.pkgversion'),
           name: 'name'
         }
       ],
@@ -116,7 +115,7 @@ export default {
         this.$api.codehub.version.save(param).then(res => {
           this.saving = false;
           if (res.Status == 'OK') {
-            this.$Message.success('新增版本成功');
+            this.$Message.success(this.$t('message.addsuccess'));
             this.$emit('close', true);
             this.$router.push({ path: 'merge-create', query: {versionid: res.Return} });
           }
@@ -157,23 +156,22 @@ export default {
   watch: {
     list: {
       handler: function(val) {
-        let _this = this;
         Object.assign(this.versionData, {
           versionStrategyUuid: val.uuid,
           name: '',
           versionTypeUuid: val.versionTypeUuid || '',
           subsystemUuid: val.subsystemUuid
         });
-        _this.formConfig.forEach(form => {
+        this.formConfig.forEach(form => {
           if (form.name == 'versionName') {
-            _this.$set(form, 'value', val.name);
+            this.$set(form, 'value', val.name);
           }
           if (form.name == 'versionTypeUuid' && val.versionTypeUuid) {
-            _this.$set(form, 'value', val.versionTypeUuid);
-            _this.autofillName(val.versionTypeUuid);
+            this.$set(form, 'value', val.versionTypeUuid);
+            this.autofillName(val.versionTypeUuid);
           }
         });
-        _this.textPrev = val.versionPrefix;
+        this.textPrev = val.versionPrefix;
       },
       immediate: true,
       deep: true

@@ -1,5 +1,4 @@
 <template>
-  
   <TsCard
     v-bind="cardData"
     headerPosition="right"
@@ -8,14 +7,8 @@
   >
     <template slot="header" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="action-group">
-        <div v-if="row.canEdit" class="action-item text-action ts-plus-o" @click="addMr(row.uuid,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">创建MR</div>
-        <!-- <div class="action-item text-action">
-          <label>开/封板</label>
-          <i-switch
-            v-model="row.isOpen" :true-value="openval.true" :false-value="openval.false" @on-change="val => {changeOpen(val, row);}"
-          ></i-switch>
-        </div> -->
-        <div v-if="canDelete" class="action-item text-action ts-trash" @click="deleteVersion(row.uuid)">删除</div>
+        <div v-if="row.canEdit" class="action-item text-action ts-plus-o" @click="addMr(row.uuid,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
+        <div v-if="canDelete" class="action-item text-action ts-trash" @click="deleteVersion(row.uuid)">{{ $t('page.delete') }}</div>
       </div>
     </template>
     <template slot-scope="{ row }">
@@ -97,46 +90,35 @@ export default {
         cardList: []
       },
       typeTxt: {
-        'branch': '按分支合并',
-        'issue': '按需求合并'
+        branch: this.$t('term.codehub.branchmerge'),
+        issue: this.$t('term.codehub.issuemerge')
       },
       typeColor: {
-        'branch': 'primary',
-        'issue': 'warning'        
+        branch: 'primary',
+        issue: 'warning'        
       }
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     if (this.versionData) {
       Object.assign(this.cardData, {
-        'pageCount': this.versionData.pageCount,
-        'rowNum': this.versionData.rowNum,
-        'pageSize': this.versionData.pageSize,
-        'currentPage': this.versionData.currentPage,
-        'cardList': this.versionData.list
+        pageCount: this.versionData.pageCount,
+        rowNum: this.versionData.rowNum,
+        pageSize: this.versionData.pageSize,
+        currentPage: this.versionData.currentPage,
+        cardList: this.versionData.list
       });
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     updatePage(page) {
       this.$emit('updatePage', page);
@@ -148,7 +130,6 @@ export default {
       this.$emit('addMr', uuid);
     },
     changeOpen(val, list) {
-      let _this = this;
       let listdata = {};
       Object.assign(listdata, {
         uuid: list.uuid,
@@ -156,21 +137,19 @@ export default {
       });
       this.$api.codehub.version.updateOpen(listdata).then(res => {
         if (res && res.Status == 'OK') {
-          _this.$Message.success('操作成功');
+          this.$Message.success(this.$t('message.executesuccess'));
         } else {
-          _this.$set(list, 'isOpen', val ? 0 : 1);
+          this.$set(list, 'isOpen', val ? 0 : 1);
         }
       }).catch(error => {
-        _this.$set(list, 'isOpen', val ? 0 : 1);
+        this.$set(list, 'isOpen', val ? 0 : 1);
       });
     },
     deleteVersion(uuid) {
       this.$emit('deleteVersion', uuid);
     }
   },
-
   filter: {},
-
   computed: { 
     showtips() {
       return function(config) {
@@ -186,11 +165,6 @@ export default {
         let text = '';
         let prev = config.systemVo || '';
         let next = config.subSystemVo || '';
-        // if (type == 'text') {
-        //   text = (prev ? prev.name : '') + (next ? '/' + next.name : '');
-        // } else if (type == 'tips') {
-        //   text = (prev && prev.description ? prev.description : '') + (next && next.description ? '/' + next.description : '');
-        // }
         if (prev) {
           text = prev.name + (prev.description ? ('(' + prev.description + ')') : '');
           if (next) {
@@ -201,28 +175,7 @@ export default {
       };
     }
   },
-
-  watch: {
-    // versionData: {
-    //   hanlder: function(val) {
-    //     this.isInit = false;
-    //     let _this = this;
-    //     if (val) {
-    //       Object.assign(_this.cardData, {
-    //         'pageCount': val.pageCount,
-    //         'rowNum': val.rowNum,
-    //         'pageSize': val.pageSize,
-    //         'currentPage': val.currentPage,
-    //         'cardList': val.list
-    //       });
-    //       _this.$nextTick(() => {
-    //         _this.isInit = true;
-    //       });
-    //     }
-    //   },
-    //   deep: true
-    // }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

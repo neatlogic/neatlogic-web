@@ -48,8 +48,8 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -75,10 +75,9 @@ export default {
     systemUuid: [String, Number]
   },
   data() {
-    let _this = this;
     return {
       setting: {
-        title: _this.uuid ? '编辑版本' : '新增版本',
+        title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versions')}) : this.$t('page.newtarget', {'target': this.$t('page.versions')}),
         maskClose: false
       },
       vaildConfig: ['required'],
@@ -91,16 +90,16 @@ export default {
         theadList: [{
           key: 'selection'
         }, {
-          title: '策略名称',
+          title: this.$t('term.codehub.strategyname'),
           key: 'name'
         }, {
-          title: '类型',
+          title: this.$t('page.type'),
           key: 'type'
         }, { 
-          title: '源分支',
+          title: this.$t('page.sourcebranch'),
           key: 'srcBranch'
         }, {
-          title: '目标分支',
+          title: this.$t('page.targetbranch'),
           key: 'targetBranch'
         }],
         tbodyList: null
@@ -113,48 +112,48 @@ export default {
       },
       formConfig: [{
         type: 'select',
-        label: '系统',
+        label: this.$t('page.system'),
         width: '100%',
         name: 'systemUuid',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/system/search',
+        dynamicUrl: '/api/rest/codehub/system/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
-        value: _this.systemUuid,
-        onChange: function(val) {
-          _this.changeSubsys(val);
+        value: this.systemUuid,
+        onChange: (val) => {
+          this.changeSubsys(val);
         }
       }, {
         type: 'slot',
-        label: '子系统',
+        label: this.$t('page.subsystem'),
         name: 'subsystemUuid',
         validateList: ['required']
       }],
       typeTxt: {
-        'branch': '按分支合并',
-        'issue': '按需求合并'
+        branch: this.$t('term.codehub.branchmerge'),
+        issue: this.$t('term.codehub.issuemerge')
       },
       versionConfig: [{
         type: 'select',
-        label: '版本类型',
+        label: this.$t('page.versiontype'),
         width: '100%',
         name: 'versionTypeUuid',
         transfer: true,
         validateList: ['required'],
-        url: '/module/codehub/api/rest/versiontype/search?isActive=1',
+        url: '/api/rest/codehub/versiontype/search?isActive=1',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
-        onChange: function(val) {
-          _this.versionData.versionTypeUuid = val;
-          _this.autofillName(_this.versionData);
+        onChange: (val) => {
+          this.versionData.versionTypeUuid = val;
+          this.autofillName(this.versionData);
         } 
       }, {
         type: 'slot',
         isHidden: true,
-        label: '版本号',
+        label: this.$t('term.framework.pkgversion'),
         width: '100%',
         name: 'name',
         validateList: ['required']
@@ -163,7 +162,7 @@ export default {
         width: '100%',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/subsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid' 
@@ -212,7 +211,7 @@ export default {
           }
         } else {
           this.saving = false;
-          this.$Message.error('请选择策略');
+          this.$Message.error(this.$t('form.validate.required', {target: this.$t('term.process.policy')}));
         }
       }
     },
@@ -235,17 +234,16 @@ export default {
       });
     },
     changeSubsys(val) {
-      let _this = this;
-      _this.versionData.systemUuid = val;
-      _this.versionData.subsystemUuid = '';
-      _this.versionData.versionStrategyUuid = '';
-      _this.hideName();
+      this.versionData.systemUuid = val;
+      this.versionData.subsystemUuid = '';
+      this.versionData.versionStrategyUuid = '';
+      this.hideName();
       if (val) {
-        _this.$set(_this.subsystemConfig, 'params', {systemId: val});
-        _this.$set(_this.subsystemConfig, 'dynamicUrl', '/module/codehub/api/rest/subsystem/search');
+        this.$set(this.subsystemConfig, 'params', {systemId: val});
+        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
       } else {
-        _this.$set(_this.subsystemConfig, 'params', {});
-        _this.$set(_this.subsystemConfig, 'dynamicUrl', '');
+        this.$set(this.subsystemConfig, 'params', {});
+        this.$set(this.subsystemConfig, 'dynamicUrl', '');
       }
     },
     getVersion(val) {
@@ -269,10 +267,9 @@ export default {
       }
     },
     setVal(name, val) {
-      let _this = this;
       this.formConfig.forEach((form, findex) => {
         if (form.name == name) {
-          _this.$set(form, 'value', val);
+          this.$set(form, 'value', val);
         }
       });
     },
@@ -300,14 +297,11 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {
     uuid: {
       handler: function(val) {
-        if (val) {
-          //this.getDetail(val);
-        } else {
+        if (!val) {
           this.formConfig.forEach(form => {
             if (form.name == 'isActive') {
               this.$set(form, 'value', 1);
@@ -316,7 +310,7 @@ export default {
             }
           });
         }
-        this.$set(this.setting, 'title', val ? '编辑版本' : '新增版本');
+        this.$set(this.setting, 'title', val ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versions')}) : this.$t('page.newtarget', {'target': this.$t('page.versions')}));
       },
       immediate: true
     },
@@ -333,7 +327,7 @@ export default {
         if (val) {
           this.setVal('systemUuid', val);
           this.$set(this.subsystemConfig, 'params', {systemId: val});
-          this.$set(this.subsystemConfig, 'dynamicUrl', '/module/codehub/api/rest/subsystem/search');
+          this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
         }
       },
       immediate: true
@@ -343,14 +337,6 @@ export default {
         if (val && val.uuid) {
           this.getVersion(val.uuid);
         }
-      },
-      deep: true
-    },
-    versionData: {
-      handler: function(val, oldval) {
-        // if (val && (oldvalval.versionStrategyUuid != oldval.versionStrategyUuid) && val.versionTypeUuid && val.subsystemUuid) {
-        //   this.autofillName(val.subsystemUuid, val.versionStrategyUuid, val.versionTypeUuid);
-        // }
       },
       deep: true
     }

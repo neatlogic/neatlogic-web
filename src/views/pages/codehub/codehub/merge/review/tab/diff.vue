@@ -237,7 +237,7 @@ export default {
       cancel && cancel.cancel();
       const CancelToken = axios.CancelToken;
       this.cancelAxios = CancelToken.source();
-      axios.post('/module/codehub/api/rest/mergerequest/diff', param, { cancelToken: _this.cancelAxios.token }).then(res => {
+      axios.post('/api/rest/codehub/mergerequest/diff', param, { cancelToken: _this.cancelAxios.token }).then(res => {
         if (res.Status == 'OK') {
           this.leftCommitId = res.Return.leftCommitId;
           this.rightCommitId = res.Return.rightCommitId;

@@ -24,7 +24,7 @@
                 width="75%"
               />
             </div>
-            <div v-else class="text-tip">请先选择仓库服务</div>
+            <div v-else class="text-tip">{{ $t('term.codehub.pleaserepositoryservice') }}</div>
           </template>
           <template slot="subsystemUuid">
             <TsFormSelect v-model="editData.subsystemUuid" v-bind="subsysConfig" />
@@ -119,7 +119,7 @@ export default {
         label: this.$t('term.codehub.associatedsystem'),
         name: 'systemUuid',
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/system/search',
+        dynamicUrl: '/api/rest/codehub/system/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
@@ -164,7 +164,7 @@ export default {
       ],
       subsysConfig: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/subsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid'
@@ -173,7 +173,7 @@ export default {
       serviceConfig: {
         transfer: true,
         validateList: ['required'],
-        url: '/module/codehub/api/rest/repositoryservice/search',
+        url: '/api/rest/codehub/repositoryservice/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid'

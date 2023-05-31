@@ -21,7 +21,6 @@
             v-bind="usepatternConfig"
             :validateList="vaildConfig"
             width="75%"
-            @on-change="setSrcbranch"
           />
         </template>
         <template slot="srcBranch">
@@ -37,31 +36,25 @@
           <div>
             <TsFormSelect v-model="editvalList.targetBranch" v-bind="targetbranchConfig" width="75%" />
           </div>
-          
         </template>
       </TsForm>
-      <!-- <TsForm ref="branchform" :itemList="branchConfig">
-        </TsForm> -->
     </div>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
 </template>
 <script>
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
-import TsFormRadio from '@/resources/plugins/TsForm/TsFormRadio.vue';
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormSelect,
-    TsFormRadio,
-    TsFormInput
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   filters: {},
   props: {
@@ -74,116 +67,119 @@ export default {
     subsystemUuid: [String, Number]
   },
   data() {
-    let _this = this;
     return {
       setting: {
-        title: _this.uuid ? '编辑策略' : '新增策略',
+        title: this.uuid ? this.$t('term.pbc.editpolicy') : this.$t('page.newtarget', {'target': this.$t('term.process.policy')}),
         maskClose: false
       },
       selectSub: null,
       vaildConfig: ['required'],
       statusVal: [], //需求状态
-      formConfig: [{
-        type: 'text',
-        label: '名称',
-        name: 'name',
-        validateList: ['required'],
-        onChange: function(val) {
-          _this.editvalList.name = val;
-        }
-      }, {
-        type: 'text',
-        label: '版本前缀',
-        name: 'versionPrefix',
-        // validateList: ['required'],
-        onChange: function(val) {
-          _this.editvalList.versionPrefix = val;
-        }
-      }, {
-        type: 'select',
-        label: '版本类型',
-        transfer: true,
-        name: 'versionTypeUuid',
-        dynamicUrl: '/module/codehub/api/rest/versiontype/search?isActive=1',
-        rootName: 'list',
-        textName: 'name',
-        valueName: 'uuid',
-        idListName: 'uuid',
-        onChange: function(val) {
-          _this.editvalList.versionTypeUuid = val;
-        }
-      }, {
-        type: 'select',
-        label: '策略类型',
-        name: 'type',
-        transfer: true,
-        validateList: ['required'],
-        dataList: [{
-          text: '分支',
-          value: 'branch'
-        },
+      formConfig: [
         {
-          text: '需求',
-          value: 'issue'
-        }],
-        value: 'branch',
-        onChange: function(val) {
-          _this.editvalList.type = val;
+          type: 'text',
+          label: this.$t('page.name'),
+          name: 'name',
+          validateList: ['required'],
+          onChange: (val) => {
+            this.editvalList.name = val;
+          }
+        }, 
+        {
+          type: 'text',
+          label: this.$t('term.deploy.versionprefix'),
+          name: 'versionPrefix',
+          onChange: (val) => {
+            this.editvalList.versionPrefix = val;
+          }
+        }, 
+        {
+          type: 'select',
+          label: this.$t('page.versiontype'),
+          transfer: true,
+          name: 'versionTypeUuid',
+          dynamicUrl: '/api/rest/codehub/versiontype/search?isActive=1',
+          rootName: 'list',
+          textName: 'name',
+          valueName: 'uuid',
+          idListName: 'uuid',
+          onChange: (val) => {
+            this.editvalList.versionTypeUuid = val;
+          }
+        }, 
+        {
+          type: 'select',
+          label: this.$t('term.codehub.strategytype'),
+          name: 'type',
+          transfer: true,
+          validateList: ['required'],
+          dataList: [{
+            text: this.$t('page.branch'),
+            value: 'branch'
+          },
+          {
+            text: this.$t('term.rdm.request'),
+            value: 'issue'
+          }],
+          value: 'branch',
+          onChange: (val) => {
+            this.editvalList.type = val;
+          }
+        }, {
+          type: 'select',
+          label: this.$t('page.system'),
+          name: 'systemUuid',
+          transfer: true,
+          dynamicUrl: '/api/rest/codehub/system/search',
+          rootName: 'list',
+          textName: 'name',
+          valueName: 'uuid',
+          idListName: 'uuid',
+          validateList: ['required'],
+          value: '',
+          onChange: (val) => {
+            this.changeSubsys(val);
+          }
+        }, {
+          type: 'slot',
+          label: this.$t('page.subsystem'),
+          name: 'subsystemUuid',
+          validateList: ['required'],
+          isHidden: true
+        }, {
+          type: 'slot',
+          label: this.$t('term.codehub.issuesstatus'),
+          name: 'issueStatusUuid',
+          isHidden: true
+        },  
+        {
+          type: 'slot',
+          label: this.$t('term.codehub.fixedsourcebranch'),
+          name: 'usePattern',
+          validateList: ['required'],
+          isHidden: true       
+        }, 
+        {
+          type: 'slot',
+          label: this.$t('page.sourcebranch'),
+          name: 'srcBranch',
+          isHidden: true
+        }, 
+        {
+          type: 'slot',
+          label: this.$t('page.targetbranch'),
+          name: 'targetBranch',
+          isHidden: true
         }
-      }, {
-        type: 'select',
-        label: '系统',
-        name: 'systemUuid',
-        transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/system/search',
-        rootName: 'list',
-        textName: 'name',
-        valueName: 'uuid',
-        idListName: 'uuid',
-        validateList: ['required'],
-        value: '',
-        onChange: function(val) {
-          _this.changeSubsys(val);
-        }
-      }, {
-        type: 'slot',
-        label: '子系统',
-        name: 'subsystemUuid',
-        validateList: ['required'],
-        isHidden: true
-      }, {
-        type: 'slot',
-        label: '需求状态',
-        name: 'issueStatusUuid',
-        isHidden: true
-      },  
-      {
-        type: 'slot',
-        label: '固定源分支',
-        name: 'usePattern',
-        validateList: ['required'],
-        isHidden: true       
-      }, {
-        type: 'slot',
-        label: '源分支',
-        name: 'srcBranch',
-        isHidden: true
-      }, {
-        type: 'slot',
-        label: '目标分支',
-        name: 'targetBranch',
-        //validateList: ['required'],
-        isHidden: true
-      }
       ],
       typeTxt: {
-        'branch': '按分支合并',
-        'issue': '按需求合并'
+        branch: this.$t('term.codehub.branchmerge'),
+        issue: this.$t('term.codehub.issuemerge')
       },
       subsystemConfig: {
         transfer: true,
         isHidden: true,
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/subsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
@@ -193,18 +189,18 @@ export default {
       usepatternConfig: {
         validateList: ['required'],
         dataList: [{
-          text: '是',
+          text: this.$t('page.yes'),
           value: '0'
         },
         {
-          text: '否',
+          text: this.$t('page.no'),
           value: '1'
         }],
         value: '1'
       }, 
       srcbranchConfig: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/repository/branch/search',
+        dynamicUrl: '/api/rest/codehub/repository/branch/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'name',
@@ -213,18 +209,17 @@ export default {
       },
       targetbranchConfig: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/repository/branch/search',
+        dynamicUrl: '/api/rest/codehub/repository/branch/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'name',
         idListName: 'keyword',
-        // validateList: ['required'],
         params: {}
       },
       editvalList: {
         name: '',
         srcBranch: '',
-        subsystemUuid: _this.subsystemUuid,
+        subsystemUuid: this.subsystemUuid,
         targetBranch: '',
         type: '',
         usePattern: '1',
@@ -234,7 +229,7 @@ export default {
       },
       issueStatusconfig: {
         transfer: true,
-        url: '/module/codehub/api/rest/issue/status/get',
+        url: '/api/rest/codehub/issue/status/get',
         rootName: 'list',
         textName: 'displayName',
         valueName: 'uuid',
@@ -245,11 +240,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -261,16 +254,15 @@ export default {
       this.$emit('close');
     },
     updatesystemsetting(val) {
-      let _this = this;
       let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      _this.editvalList.subsystemUuid = val;
-      _this.editvalList.usePattern = '1';
-      _this.editvalList.srcBranch = '';
-      _this.editvalList.targetBranch = '';
-      _this.statusVal = [];
-      _this.formConfig.forEach((form, findex) => {
+      this.editvalList.subsystemUuid = val;
+      this.editvalList.usePattern = '1';
+      this.editvalList.srcBranch = '';
+      this.editvalList.targetBranch = '';
+      this.statusVal = [];
+      this.formConfig.forEach((form, findex) => {
         if (hideList.indexOf(form.name) > -1) {
-          _this.$set(form, 'isHidden', !val);
+          this.$set(form, 'isHidden', !val);
         }
       });
       Object.assign(this.srcbranchConfig.params, {
@@ -308,33 +300,28 @@ export default {
     },
     changeSubsys(val) {
       //根据系统改变子系统
-      let _this = this;
       let hideList = ['subsystemUuid', 'usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      _this.editvalList.subsystemUuid = '';
-      _this.editvalList.usePattern = '1';
-      _this.editvalList.srcBranch = '';
-      _this.editvalList.targetBranch = '';
+      this.editvalList.subsystemUuid = '';
+      this.editvalList.usePattern = '1';
+      this.editvalList.srcBranch = '';
+      this.editvalList.targetBranch = '';
       this.formConfig.forEach((form, findex) => {
-        // if (form.name == 'subsystemUuid') {
-        //   _this.$set(form, 'isHidden', !val);
-        // }
         if (hideList.indexOf(form.name) > -1) {
-          _this.$set(form, 'isHidden', !val);
+          this.$set(form, 'isHidden', !val);
         }
       });
       this.$set(this.subsystemConfig, 'params', {systemId: val}); 
       this.updatesystemsetting('');
     },
     getDetail(val) {
-      let _this = this;
-      _this.$set(_this.editvalList, 'subsystemUuid', '');
+      this.$set(this.editvalList, 'subsystemUuid', '');
       if (val) {
         this.$api.codehub.strategy.getDetail({uuid: val}).then(res => {
           if (res && res.Status == 'OK') {
             if (res.Return.subsystemUuid) {
-              _this.updatesystemsetting(res.Return.subsystemUuid);
+              this.updatesystemsetting(res.Return.subsystemUuid);
             }
-            Object.assign(_this.editvalList, {
+            Object.assign(this.editvalList, {
               name: res.Return.name || '',
               srcBranch: res.Return.srcBranch || '',
               subsystemUuid: res.Return.subsystemUuid || '',
@@ -345,32 +332,30 @@ export default {
               versionPrefix: res.Return.versionPrefix || '',
               versionTypeUuid: res.Return.versionTypeUuid || ''
             });
-            _this.statusVal = res.Return.issueStatusUuid ? res.Return.issueStatusUuid.split(',') : [];
+            this.statusVal = res.Return.issueStatusUuid ? res.Return.issueStatusUuid.split(',') : [];
           } else {
-            _this.editvalList = {};
-            _this.statusVal = [];
+            this.editvalList = {};
+            this.statusVal = [];
           }
         });
       } else {
-        _this.editvalList = {};
+        this.editvalList = {};
       }
     },
     updataVal(name, val) {
-      let _this = this;
-      _this.formConfig.forEach(form => {
+      this.formConfig.forEach(form => {
         if (form.name == name) {
-          _this.$set(form, 'value', val);
-          val && _this.$set(form, 'isHidden', false);
+          this.$set(form, 'value', val);
+          val && this.$set(form, 'isHidden', false);
         }
       });
     },
     updateRelate(val) {
-      //单独更新子系统相关的参数（不改变值）
-      let _this = this;
+      //单独更新子系统相关的参数（不改变值
       let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      _this.formConfig.forEach((form, findex) => {
+      this.formConfig.forEach((form, findex) => {
         if (hideList.indexOf(form.name) > -1) {
-          _this.$set(form, 'isHidden', !val);
+          this.$set(form, 'isHidden', !val);
         }
       });
       Object.assign(this.srcbranchConfig.params, {
@@ -382,18 +367,9 @@ export default {
       Object.assign(this.issueStatusconfig.params, {
         subsystemUuid: val
       });
-    },
-    setSrcbranch(val) {
-      // if (val == '1') {
-      //   this.srcbranchConfig.type = 'select';
-      // } else {
-      //   this.srcbranchConfig.type = 'text';
-      // }
     }
-
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     uuid: {
       handler: function(val) {
@@ -408,43 +384,38 @@ export default {
             }
           });
         }
-        this.$set(this.setting, 'title', val ? '编辑策略' : '新增策略');
+        this.$set(this.setting, 'title', val ? this.$t('term.pbc.editpolicy') : this.$t('page.newtarget', {'target': this.$t('term.process.policy')}));
       },
       immediate: true
     },
     selectSub: {
       handler: function(val, oldeval) {
-        let _this = this;
         if (val && val.systemVo) {
-          _this.updataVal('systemUuid', val.systemVo.uuid);
-          _this.$set(_this.subsystemConfig, 'params', {systemId: val.systemVo.uuid});
+          this.updataVal('systemUuid', val.systemVo.uuid);
+          this.$set(this.subsystemConfig, 'params', {systemId: val.systemVo.uuid});
         }
-        // if (val && val.uuid) {
-        //   _this.updatesystemsetting(val.uuid);
-        // }
       },
       immediate: true,
       deep: true
     },
     editvalList: {
       handler: function(val) {
-        let _this = this;
         if (val && val.name) {
           if (val.subsystemUuid) {
-            _this.$set(this.setting, 'height', '500px');
-            Object.assign(_this.srcbranchConfig.params, {
+            this.$set(this.setting, 'height', '500px');
+            Object.assign(this.srcbranchConfig.params, {
               subsystemUuid: val.subsystemUuid
             });
-            Object.assign(_this.targetbranchConfig.params, {
+            Object.assign(this.targetbranchConfig.params, {
               subsystemUuid: val.subsystemUuid
             });
           } else {
             this.$set(this.setting, 'height', '300px');
           }
-          _this.formConfig.forEach(form => {
+          this.formConfig.forEach(form => {
             if (val[form.name]) {
-              _this.$set(form, 'value', val[form.name]);
-              _this.$set(form, 'isHidden', false);
+              this.$set(form, 'value', val[form.name]);
+              this.$set(form, 'isHidden', false);
             }
           });
         }

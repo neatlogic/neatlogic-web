@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="asynTsDialog" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="asynTsDialog" @on-close="close">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
@@ -10,35 +10,29 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="saving" @click="submitEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="submitEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
 </template>
-
 <script>
-
 export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
   },
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
     sourceList: {
       type: Array
     }
   },
   data() {
-    let _this = this;
     return {
       asynTsDialog: {
-        title: '同步需求',
+        title: this.$t('term.codehub.syncissues'),
         maskClose: false,
+        isShow: true,
         height: '200px'
       },
       editData: {
@@ -48,88 +42,68 @@ export default {
       formConfig: [  
         {
           type: 'select',
-          label: '需求来源',
+          label: this.$t('term.codehub.issuessource'),
           name: 'sourceUuid',
           transfer: true,
           clear: false,
-          dataList: _this.sourceList,
+          dataList: this.sourceList,
           rootName: 'syncSourceList',
           textName: 'source',
           valueName: 'uuid',
           validateList: ['required'],
-          onChange: function(val) {
-            _this.editData.sourceUuid = val;
-            _this.getsourceconfig(val);
+          onChange: (val) => {
+            this.editData.sourceUuid = val;
+            this.getsourceconfig(val);
           }
         },    
         {
           type: 'select',
-          label: '系统',
+          label: this.$t('page.system'),
           name: 'systemUuid',
           transfer: true,
-          dynamicUrl: '/module/codehub/api/rest/system/search',
+          dynamicUrl: '/api/rest/codehub/system/search',
           rootName: 'list',
           textName: 'name',
           valueName: 'uuid',
           validateList: ['required'],
-          onChange: function(val) {
-            _this.editData.systemUuid = val;
-            _this.getsubsysconfig(val);
+          onChange: (val) => {
+            this.editData.systemUuid = val;
+            this.getsubsysconfig(val);
           }
         }
       ],
       subsysConfig: {
         type: 'select',
-        label: '子系统',
+        label: this.$t('page.subsystem'),
         name: 'subsystemUuid',
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/subsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
         params: {},
         validateList: ['required'],
-        onChange: function(val) {
-          _this.editData.subsystemUuid = val;
+        onChange: (val) => {
+          this.editData.subsystemUuid = val;
         }
       },
       sourceConfig: [],
       saving: false
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
-  mounted() {
-    //this.getConfig();
-  },
-
+  mounted() {},
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     close() {
       this.$emit('close');
-    },
-    getConfig() {
-      // this.$api.codehub.issue.aysn().then(res => {
-      //   if (res && res.Status == 'OK') {
-      //     console.log(res);
-      //   }
-      // });      
     },
     getsourceconfig(uuid) {
       if (uuid) {
@@ -163,7 +137,6 @@ export default {
     },
     getsubsysconfig(val) {
       if (val) {
-        let _this = this;
         this.formConfig.forEach((form, findex) => {
           if (form.name == 'subsystemUuid') {
             this.formConfig.splice(findex, 1);
@@ -171,17 +144,17 @@ export default {
         });
         let sysitem = {
           type: 'select',
-          label: '子系统',
+          label: this.$t('page.subsystem'),
           name: 'subsystemUuid',
           transfer: true,
-          dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+          dynamicUrl: '/api/rest/codehub/subsystem/search',
           rootName: 'list',
           textName: 'name',
           valueName: 'id',
           params: {systemId: val},
           validateList: ['required'],
-          onChange: function(val) {
-            _this.editData.subsystemUuid = val;
+          onChange: (val) => {
+            this.editData.subsystemUuid = val;
           }
         };
         this.formConfig.push(sysitem);
@@ -198,13 +171,13 @@ export default {
         let param = {};
         Object.assign(param, this.editData, this.$refs.sourceform.getFormValue());
         if (param.startTime > param.endTime) {
-          this.$Message.error('开始时间不能大于结束时间！');
+          this.$Message.error(this.$t('term.framework.startlargethanend'));
         } else {
           this.saving = true;
           this.$api.codehub.issue.aysn(param).then(res => {
             this.saving = false;
             if (res && res.Status == 'OK') {
-              this.$Message.success('同步成功');
+              this.$Message.success(this.$t('message.syncsuccess'));
               this.$emit('close');
             }
           }).catch(e => {
@@ -214,16 +187,10 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
-
 };
-
 </script>
 <style lang='less'>
-
 </style>

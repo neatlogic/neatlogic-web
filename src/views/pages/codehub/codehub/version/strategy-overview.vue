@@ -3,7 +3,7 @@
     <TsContain class="bg-block">
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="editStrategy()">策略</span>
+          <span class="action-item tsfont-plus" @click="editStrategy()">{{ $t('term.process.policy') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -25,9 +25,9 @@
             >
               <template slot="header" slot-scope="{ row }">
                 <div v-if="row.canEdit" class="action-group">
-                  <div class="action-item text-action ts-plus" @click="addVersion(row)">添加版本</div>
-                  <div class="action-item text-action ts-edit" @click="editStrategy(row.uuid)">编辑</div>
-                  <div class="action-item text-action ts-trash" @click="deleteLi(row.uuid)">删除</div>
+                  <div class="action-item text-action tsfont-plus" @click="addVersion(row)">{{ $t('dialog.title.addtarget',{'target':$t('page.versions')}) }}</div>
+                  <div class="action-item text-action tsfont-edit" @click="editStrategy(row.uuid)">{{ $t('page.edit') }}</div>
+                  <div class="action-item text-action tsfont-trash-o" @click="deleteLi(row.uuid)">{{ $t('page.delete') }}</div>
                 </div>
               </template>
               <template slot-scope="{ row }">
@@ -48,7 +48,7 @@
                       <td>
                         <i v-if="row.versionPrefix" class="ts-version text-icon"></i><span v-if="row.versionPrefix" style="margin-left:5px;">{{ row.versionPrefix }}</span>
                       </td>
-                      <td class="text-right"><span v-if="row.lcu && row.lcd">最新更新：{{ row.lcu }}</span><span v-if="row.lcd" class="text-tip ml-10">{{ row.lcd | formatDate }}</span></td>
+                      <td class="text-right"><span v-if="row.lcu && row.lcd">{{ $t('term.codehub.recentlyupdate') }}：{{ row.lcu }}</span><span v-if="row.lcd" class="text-tip ml-10">{{ row.lcd | formatDate }}</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -105,8 +105,8 @@ export default {
         cardList: []        
       },
       typeList: {
-        'branch': {name: '按分支合并', color: 'primary'},
-        'issue': {name: '按需求合并', color: 'warning'}
+        branch: {name: this.$t('term.codehub.branchmerge'), color: 'primary'},
+        issue: {name: this.$t('term.codehub.issuemerge'), color: 'warning'}
       },
       searchVal: {},
       searchConfig: {
@@ -115,7 +115,7 @@ export default {
           {
             name: 'systemUuid',
             type: 'select',
-            label: '系统',
+            label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/system/search',
             rootName: 'list',
@@ -131,7 +131,7 @@ export default {
           {
             name: 'subsystemUuid',
             type: 'select',
-            label: '子系统',
+            label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'list',
             textName: 'name',
@@ -226,19 +226,16 @@ export default {
       }
     },
     deleteLi(id) {
-      let _this = this;
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该策略',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.process.policy')}),
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.strategy.delete({uuid: id}).then((res) => {
+        'on-ok': (vnode) => {
+          this.$api.codehub.strategy.delete({uuid: id}).then((res) => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.getSearch();
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getSearch();
               vnode.isShow = false;
-            } else {
-              _this.$Message.error(res.Message);
             }
           });
         }
@@ -257,15 +254,9 @@ export default {
       this.editUuid = null;      
     }
   },
-
   filter: {},
-
-  computed: {
-
-  },
-
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

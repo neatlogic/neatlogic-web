@@ -268,5 +268,6 @@
   "notsavedataupdateredirecttip": "Do you have unsaved data? Do you want to save the current modifications and jump to a new page?",
   "passcode": "Please enter a string with a length between 8-20, consisting of at least 2 combinations of letters, numbers, and special characters",
   "editaftersave": "Please save before editing",
-  "commentsucces": "Comment successful"
+  "commentsucces": "Comment successful",
+  "syncsuccess": "Sync successful"
 }

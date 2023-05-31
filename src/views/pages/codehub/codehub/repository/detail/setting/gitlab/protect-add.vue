@@ -44,7 +44,7 @@ export default {
           label: '分支名称',
           name: 'name',
           validateList: ['required'],
-          dynamicUrl: '/module/codehub/api/rest/repository/gitlab/searchBranches',
+          dynamicUrl: '/api/rest/codehub/repository/gitlab/searchBranches',
           params: {
             repositoryUuid: _this.uuid
           },

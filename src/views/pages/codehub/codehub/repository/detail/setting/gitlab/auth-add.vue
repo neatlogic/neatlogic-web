@@ -104,7 +104,7 @@ export default {
         width: '300px',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/repository/gitlab/searchGroups',
+        dynamicUrl: '/api/rest/codehub/repository/gitlab/searchGroups',
         textName: 'name',
         valueName: 'id',
         params: {
@@ -122,7 +122,7 @@ export default {
         width: '300px',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/repository/gitlab/searchUsers',
+        dynamicUrl: '/api/rest/codehub/repository/gitlab/searchUsers',
         textName: 'name',
         valueName: 'id',
         params: {

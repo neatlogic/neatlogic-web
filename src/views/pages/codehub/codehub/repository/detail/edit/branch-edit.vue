@@ -62,7 +62,7 @@ export default {
           multiple: false,
           textName: 'name',
           valueName: 'name',
-          dynamicUrl: '/module/codehub/api/rest/repository/branch/search',
+          dynamicUrl: '/api/rest/codehub/repository/branch/search',
           rootName: 'list',
           params: {
             repositoryUuid: _this.repositoryUuid

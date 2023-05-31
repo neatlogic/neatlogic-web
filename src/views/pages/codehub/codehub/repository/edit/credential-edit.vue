@@ -21,16 +21,17 @@
         {{ editConfig.credType =='password'?'密码':'token' }}
       </template>
     </TsForm>
-    <div class="edit-btn"><Button type="primary" :disabled="saving" @click="saveEdit">保存</Button></div>
+    <div class="edit-btn">
+      <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.save') }}</Button>
+    </div>
   </div>
 </template>
 <script>
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormInput
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   props: {
     isShow: {
@@ -46,11 +47,10 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       vaildConfig: ['required'],
       setting: {
-        title: _this.item ? '编辑凭证' : '新增凭证',
+        title: this.item ? this.$t('dialog.title.edittarget', {'target': this.$t('page.voucher')}) : this.$t('page.newtarget', {'target': this.$t('page.voucher')}),
         maskClose: false,
         width: 'medium',
         height: '250px'
@@ -63,7 +63,7 @@ export default {
       },
       formConfig: [{
         type: 'slot',
-        label: '仓库类型',
+        label: this.$t('term.deploy.warehousetype'),
         width: '75%',
         name: 'repoType',
         dataList: [{
@@ -76,13 +76,13 @@ export default {
       },
       {
         type: 'radio',
-        label: '凭证类型',
+        label: this.$t('term.codehub.vouchertype'),
         name: 'credType',
         width: '75%',
         isHidden: true,
         value: 'password',
         dataList: [{
-          text: '密码',
+          text: this.$t('page.password'),
           value: 'password'
         }, {
           text: 'token',
@@ -95,7 +95,7 @@ export default {
       },
       {
         type: 'text',
-        label: '用户名',
+        label: this.$t('page.username'),
         width: '75%',
         name: 'repoUsername',
         isHidden: true,
@@ -106,7 +106,7 @@ export default {
       },
       {
         type: 'slot',
-        label: '密码',
+        label: this.$t('page.password'),
         width: '75%',
         isHidden: true,
         name: 'repoCredential',
@@ -120,9 +120,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -147,7 +145,7 @@ export default {
         this.$api.codehub.credential.save(param).then((res) => {
           this.saving = false;
           if (res && res.Status == 'OK') {
-            this.$Message.success('保存成功');
+            this.$Message.success(this.$t('message.savesuccess'));
             this.$emit('close', true);
           }
         }).catch((e) => {
@@ -254,7 +252,6 @@ export default {
       immediate: true,
       deep: true   
     }
-
   }
 };
 </script>

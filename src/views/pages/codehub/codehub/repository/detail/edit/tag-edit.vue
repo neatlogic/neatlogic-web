@@ -56,7 +56,7 @@ export default {
           textName: 'name',
           valueName: 'name',
           rootName: 'list',
-          url: '/module/codehub/api/rest/repository/branch/search',
+          url: '/api/rest/codehub/repository/branch/search',
           params: {
             repositoryUuid: _this.repositoryUuid,
             hasCommit: 1
