@@ -39,7 +39,7 @@
                   </td>
                   <td>
                     <div>
-                      <span :class="imgsrc[row.repositoryServiceVo.type]" class="usercard-smallicon" style="width: 19px;vertical-align: middle;margin-right: 5px;"></span>
+                      <span :class="getClassName[row.repositoryServiceVo.type]" class="usercard-smallicon" style="width: 19px;vertical-align: middle;margin-right: 5px;"></span>
                       <span>{{ row.repositoryServiceVo ? setServetxt(row.repositoryServiceVo.type) : '-' }}</span>
                     </div>
                   </td>
@@ -105,7 +105,7 @@ export default {
   props: [''],
   data() {
     return {
-      imgsrc: {
+      getClassName: {
         //不同类型映射的名字
         gitlab: 'tsfont-gitlab',
         svn: 'tsfont-svn'
@@ -158,7 +158,7 @@ export default {
             value: '',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/module/codehub/api/rest/system/search',
+            dynamicUrl: '/api/rest/codehub/system/search',
             rootName: 'list',
             textName: 'name',
             valueName: 'uuid',
@@ -298,14 +298,12 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.warehouse')}),
         btnType: 'confirm',
-        'on-ok': function(vnode) {
+        'on-ok': (vnode) => {
           this.$api.codehub.repository.delete(param).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.searchList();
               vnode.isShow = false;
-            } else {
-              this.$Message.error(res.Message);
             }
           });
         }

@@ -1,22 +1,20 @@
 <template>
   <TsDialog
-    v-if="isShow"
     v-bind="setting"
-    :isShow="isShow"
     @on-close="close"
   >
     <template v-slot>
       <div v-if="urlConfig">
         <Collapse v-model="collList">
           <Panel name="brief">
-            基本信息
+            {{ $t('page.basicinfo') }}
             <div slot="content">
-              <div>访问地址：/module/codehub/api/rest/{{ url }}</div>
-              <div>接口描述：{{ urlConfig.description||'-' }}</div>
+              <div>{{ $t('term.codehub.accessaddress') }}：/api/rest/codehub/{{ url }}</div>
+              <div>{{ $t('term.codehub.apidescrition') }}：{{ urlConfig.description||'-' }}</div>
             </div>
           </Panel>
           <Panel name="input">
-            输入参数
+            {{ $t('page.inputparam') }}
             <div slot="content">
               <TsTable v-if="urlConfig.input && urlConfig.input.length>0" :theadList="inputtheadList" :tbodyList="urlConfig.input">
                 <template slot="isRequired" slot-scope="{row}">
@@ -24,11 +22,11 @@
                 </template>
 
               </TsTable>
-              <div v-else>暂无输入参数</div>
+              <div v-else>{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
             </div>            
           </Panel>
           <Panel name="output">
-            输出参数
+            {{ $t('page.outputparam') }}
             <div slot="content">
               <TsTable
                 v-if="urlConfig.output && urlConfig.output.length>0"
@@ -36,17 +34,16 @@
                 :tbodyList="urlConfig.output"
                 height="600px"
               ></TsTable>
-              <div v-else>暂无输出参数</div>
+              <div v-else>{{ $t('page.notarget', {target: $t('page.outputparam')}) }}</div>
             </div>              
           </Panel>
         </Collapse>
       </div>
-      <div v-else>暂无接口帮助信息</div>
+      <div v-else>{{ $t('term.codehub.noapihelpinfo') }}</div>
     </template>
   </TsDialog>
 </template>
 <script>
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import axios from '@/resources/api/http.js';
 export default {
   name: '',
@@ -54,63 +51,56 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
   },
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
     url: {
       type: String    
     }
   },
   data() {
-    let _this = this;
     return {
       setting: {
         type: 'slider',
         hasFooter: false,
         maskClose: true,
+        isShow: true,
         width: 'medium'
       }, 
       urlConfig: null,
       collList: ['brief', 'input', 'output'],
       inputtheadList: [{
-        title: 'key名',
+        title: this.$t('page.keyname'),
         key: 'name'
       }, {
-        title: '数据类型',
+        title: this.$t('term.report.datatype.name'),
         key: 'type'
       }, {
-        title: '必需',
+        title: this.$t('page.necessary'),
         key: 'isRequired'
       }, {
-        title: '说明',
+        title: this.$t('page.description'),
         key: 'description'
       }
       ],
       outputtheadList: [{
-        title: 'key名',
+        title: this.$t('page.keyname'),
         key: 'name'
       }, {
-        title: '数据类型',
+        title: this.$t('term.report.datatype.name'),
         key: 'type'
       }, {
-        title: '说明',
+        title: this.$t('page.description'),
         key: 'description'
       }
       ],
       requiredText: {
-        'false': '否',
-        'true': '是'
+        'false': this.$t('page.no'),
+        'true': this.$t('page.yes')
       }
-    
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -129,7 +119,7 @@ export default {
           if (result.output[0] && result.output[0].content) {
             Object.assign(result.output[0], {
               children: result.output[0].content,
-              name: '特殊处理的'
+              name: this.$t('term.codehub.speciallytreated')
             }); 
           }
         }
@@ -140,8 +130,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {
     url: {
       handler: function(val) {
@@ -157,5 +146,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-
 </style>

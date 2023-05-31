@@ -1,7 +1,6 @@
 <template>
   <TsDialog v-bind="issueTsDialog" :isShow="isShow" @on-close="close">
     <TsTable v-bind="tabledata" :tbodyList="issueList">
-
     </TsTable>
   </TsDialog>
 </template>
@@ -19,7 +18,7 @@ export default {
   data() {
     return {
       issueTsDialog: {
-        title: '提交列表',
+        title: this.$t('page.tip'),
         hasFooter: false,
         height: '400px'
       },
@@ -27,7 +26,6 @@ export default {
         theadList: []
       },
       issueList: []
-      
     };
   },
   beforeCreate() {},
@@ -60,10 +58,8 @@ export default {
       deep: true
     }
   }
-
 };
 
 </script>
 <style lang='less' scoped>
-
 </style>

@@ -12,7 +12,7 @@
           <template slot-scope="{ row }">
             <div>
               <div class="credential-img">
-                <!-- <img :src="imgsrc[row.repoType]" /> -->
+                <span :class="getClassName(row.type)"></span>
               </div>
               <CredentialEdit :item="row" :typeDataList="typeDataList" @close="close">
               </CredentialEdit>
@@ -24,8 +24,6 @@
   </div>
 </template>
 <script>
-// import gitlabimg from '@/resources/assets/images/codehub/logo/gitlab.png';
-// import svnimg from '@/resources/assets/images/codehub/logo/svn.png';
 export default {
   name: '',
   components: {
@@ -37,11 +35,6 @@ export default {
   props: [''],
   data() {
     return {
-      // imgsrc: {
-      //   //不同类型映射的名字
-      //   gitlab: gitlabimg,
-      //   svn: svnimg
-      // },
       loading: false, //加载中
       credentialList: [
         {'repoType': 'gitlab'},
@@ -61,7 +54,7 @@ export default {
       ],
       credTypeList: [
         {
-          text: '密码',
+          text: this.$t('page.password'),
           value: 'password'
         },
         {
@@ -76,7 +69,7 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        nodataText: '暂无凭证',
+        nodataText: this.$t('page.nodata'),
         classname: 'credentialList'
       }
     };
@@ -115,9 +108,8 @@ export default {
             }
           }
         })
-        .catch(e => {
+        .finally(e => {
           this.loading = false;
-          this.credentialList = [];
         });
     },
     editCredential(item) {
@@ -150,10 +142,10 @@ export default {
         this.$api.codehub.credential.save(param).then((res) => {
           this.saving = false;
           if (res && res.Status == 'OK') {
-            this.$Message.success('保存成功');
+            this.$Message.success(this.$t('message.savesuccess'));
             this.$emit('close', true);
           }
-        }).catch((e) => {
+        }).finally(() => {
           this.saving = false;
         });
       }
@@ -185,6 +177,15 @@ export default {
           str = text.toString().replace(/./g, '*');
         }
         return str;
+      };
+    },
+    getClassName() {
+      return function(type) {
+        let className = {
+          gitlab: 'tsfont-gitlab',
+          svn: 'tsfont-svn'
+        };
+        return className[type];
       };
     }
     

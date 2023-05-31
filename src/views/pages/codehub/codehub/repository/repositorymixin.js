@@ -4,21 +4,15 @@ export default {
       let param = {
         uuid: item.uuid
       };
-      let _this = this;
-      // if (item.workingCopyPath) {
-      //   _this.clipboardTxt(item.workingCopyPath);
-      // } else {
       this.$api.codehub.repository.getWorkingcopypath(param).then(res => {
         if (res && res.Status == 'OK') {
-          _this.$set(item, 'workingCopyPath', res.Return.workingCopyPath);
-          _this.clipboardTxt(res.Return.workingCopyPath);
+          this.$set(item, 'workingCopyPath', res.Return.workingCopyPath);
+          this.clipboardTxt(res.Return.workingCopyPath);
         }
       });
-      //}
     },
     clipboardTxt(value) {
       let copytxt = '';
-      let _this = this;
       if (typeof value !== 'string') {
         try {
           copytxt = JSON.stringify(value);
@@ -49,19 +43,18 @@ export default {
         uuid: item.uuid,
         pull: true
       };
-      let _this = this;
-      _this.$createDialog({
-        title: '确认切换节点',
-        content: '是否确认切换？',
+      this.$createDialog({
+        title: this.$t('page.tip'),
+        content: this.$t('dialog.content.executeaction'),
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.repository.updateNode(param).then(res => {
+        'on-ok': (vnode) => {
+          this.$api.codehub.repository.updateNode(param).then(res => {
             if (res && res.Status == 'OK') {
               item.agentId = res.Return.newAgentId;
               item.agentName = res.Return.newAgentName;
-              _this.$Message.success('节点切换成功');
+              this.$Message.success($t('message.executesuccess'));
             } else {
-              _this.$Message.error(res.Message);
+              this.$Message.error(res.Message);
             }
           }).finally(e => {
             vnode.isShow = false;

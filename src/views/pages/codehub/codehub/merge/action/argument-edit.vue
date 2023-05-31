@@ -17,7 +17,7 @@ export default {
         toUsers: {
           type: 'select',
           label: '收件人：',
-          dynamicUrl: '/module/codehub/api/rest/user/search',
+          dynamicUrl: '/api/rest/codehub/user/search',
           idListName: 'idList',
           rootName: 'list',
           value: '',

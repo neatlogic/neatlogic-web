@@ -115,7 +115,7 @@ export default {
         search: true,
         textName: 'userName',
         valueName: 'userId',
-        dynamicUrl: '/module/codehub/api/rest/user/search',
+        dynamicUrl: '/api/rest/codehub/user/search',
         idListName: 'idList',
         rootName: 'list',
         hasReturn: true

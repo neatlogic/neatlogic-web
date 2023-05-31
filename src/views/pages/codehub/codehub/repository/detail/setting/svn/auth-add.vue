@@ -208,7 +208,7 @@ export default {
         width: '300px',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/repository/svn/getgroup',
+        dynamicUrl: '/api/rest/codehub/repository/svn/getgroup',
         params: {
           'repositoryUuid': _this.uuid
         },
@@ -221,7 +221,7 @@ export default {
         width: '300px',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/module/codehub/api/rest/repository/svn/getmemberbygroup',
+        dynamicUrl: '/api/rest/codehub/repository/svn/getmemberbygroup',
         params: {
           'repositoryUuid': _this.uuid,
           'groupName': ''

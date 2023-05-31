@@ -68,7 +68,7 @@ export default {
         label: '系统',
         name: 'systemUuid',
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/system/search',
+        dynamicUrl: '/api/rest/codehub/system/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
@@ -91,7 +91,7 @@ export default {
         textName: 'name',
         valueName: 'uuid',
         idListName: 'uuid',
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search'
+        dynamicUrl: '/api/rest/codehub/subsystem/search'
       },
       saving: false
     };
@@ -154,7 +154,7 @@ export default {
       _this.subsystemUuid = '';
       if (val) {
         this.$set(this.subsystemConfig, 'params', {systemId: val});
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/module/codehub/api/rest/subsystem/search');
+        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
         this.showSub(true);
       } else {
         this.$set(this.subsystemConfig, 'params', {});
@@ -178,7 +178,7 @@ export default {
       });
       if (name == 'systemUuid') {
         this.systemId = val;
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/module/codehub/api/rest/subsystem/search');
+        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
         this.$set(this.subsystemConfig, 'params', {systemId: val});
         this.showSub(true);
       }

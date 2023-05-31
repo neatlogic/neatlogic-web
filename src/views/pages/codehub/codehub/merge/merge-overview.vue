@@ -62,7 +62,7 @@ export default {
       subsystemUuid: '',
       systemConf: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/system/search',
+        dynamicUrl: '/api/rest/codehub/system/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',

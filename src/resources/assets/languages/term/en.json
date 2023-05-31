@@ -2211,6 +2211,24 @@
     "warehousesynchronization": "Warehouse synchronization",
     "branchtobesynchronized": "Branch to be synchronized",
     "syncexecuteandback": "Warehouse synchronization has been executed in the background",
-    "typename": "Type Name"
+    "typename": "Type Name",
+    "repositorylist": "Warehouse List",
+    "vouchertype": "document type ",
+    "pleaserepositoryservice": "Please select a warehouse service first",
+    "branchmerge": "Merge by Branch",
+    "issuemerge": "Merge according to demand",
+    "createmergerequest": "Create MR",
+    "strategytype": "Policy Type",
+    "issuesstatus": "Requirement Status",
+    "fixedsourcebranch": "Fixed source branch",
+    "versionstrategy": "Version strategy",
+    "strategyname": "Policy Name",
+    "accessaddress": "Access address",
+    "apidescrition": "Interface Description",
+    "noapihelpinfo": "There is currently no interface help information available",
+    "speciallytreated": "Specially treated",
+    "syncissues": "Synchronize requirements",
+    "issuessource": "Source of demand",
+    "issuesnumber": "Requirement number"
   }
 }

@@ -4,19 +4,19 @@
       <template slot="top">
         <Row :gutter="16">
           <Col span="9">
-            <Button type="primary" @click="sysnIssue">同步需求</Button>
+            <Button type="primary" @click="sysnIssue">{{ $t('term.codehub.syncissues') }}</Button>
           </Col>
           <Col span="4">
-            <FormSelect v-model="systemUuid" placeholder="请选择系统" v-bind="systemConf"></FormSelect>
+            <TsFormSelect v-model="systemUuid" v-bind="systemConf"></TsFormSelect>
           </Col>
           <Col span="5">
-            <FormSelect v-model="subsystemUuid" placeholder="请选择子系统" v-bind="subsystemConf"></FormSelect>
+            <TsFormSelect v-model="subsystemUuid" v-bind="subsystemConf"></TsFormSelect>
           </Col>
           <Col span="6">
             <Input
               v-model.trim="keyword"
               prefix="i-icon ts-search"
-              placeholder="关键字"
+              :placeholder="$t('page.keyword')"
               @keyup.enter.native="getSearch"
             />
           </Col>
@@ -69,18 +69,16 @@
 </template>
 
 <script>
-import FormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: '',
   components: {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    IssueAsyn: resolve => require(['./overview/issue-asyn'], resolve),
-    FormSelect
+    IssueAsyn: resolve => require(['./overview/issue-asyn'], resolve)
   },
   props: [''],
   data() {
-    let _this = this;
     return {
       keyword: '',
       systemUuid: '',
@@ -88,28 +86,28 @@ export default {
       syncSourceList: [],
       tabledata: {
         theadList: [{
-          title: '需求编号',
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         }, {
-          title: '处理人',
+          title: this.$t('term.process.dealwithuser'),
           key: 'lcu'
         }, {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'status'
         }, {
-          title: '系统',
+          title: this.$t('page.system'),
           key: 'systemVo'
         }, {
-          title: '子系统',
+          title: this.$t('page.subsystem'),
           key: 'subSystemVo'
         }, {
-          title: '更新时间',
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: '来源',
+          title: this.$t('page.source'),
           key: 'sourceUuid'
         }],
         tbodyList: []
@@ -117,51 +115,39 @@ export default {
       showEdit: false,
       systemConf: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/system/search',
+        dynamicUrl: '/api/rest/codehub/system/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
-        onChange: function(val) {
-          _this.getSearch();
+        onChange: (val) => {
+          this.getSearch();
         }
       },
       subsystemConf: {
         transfer: true,
-        dynamicUrl: '/module/codehub/api/rest/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/subsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
-        onChange: function(val) {
-          _this.getSearch();
+        onChange: (val) => {
+          this.getSearch();
         }        
       }
-
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getSouce();
     this.getList();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     sysnIssue() {
       this.showEdit = true;
@@ -215,9 +201,7 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {
     getsource() {
       return function(uuid) {
@@ -231,13 +215,8 @@ export default {
       };
     }
   },
-
-  watch: {
-  }
-
+  watch: {}
 };
-
 </script>
 <style lang='less'>
-
 </style>

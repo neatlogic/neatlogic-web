@@ -13,33 +13,34 @@
             <div v-html="highlightKeyword(row.name)"></div>
           </template>
           <template slot="token" slot-scope="{row}">
-            /module/codehub/api/rest/<span v-html="highlightKeyword(row.token)"></span>
+            /api/rest/codehub/<span v-html="highlightKeyword(row.token)"></span>
           </template>
           <template slot="action" slot-scope="{row}">
             <div class="tstable-action">
-              <ul class="tstable-action-ul"><li @click="showapi(row)"><div class="ts-m-problem text-action">查看参数</div></li></ul>
+              <ul class="tstable-action-ul">
+                <li @click="showapi(row)">
+                  <div class="ts-m-problem text-action">{{ $t('page.viewparameters') }}</div>
+                </li>
+              </ul>
             </div>
           </template>
         </TsTable>
       </div>
-      <detail
+      <ApiDetailDialog
         v-if="showEdit"
-        :isShow="showEdit"
         :url="url"
         @close="close"
-      ></detail>
+      ></ApiDetailDialog>
     </div>
   </TsContain>
 </template>
-
 <script>
-
 export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    detail: resolve => require(['./api-detail.vue'], resolve)
+    ApiDetailDialog: resolve => require(['./api-detail-dialog.vue'], resolve)
   },
   props: [''],
   data() {
@@ -49,10 +50,10 @@ export default {
         hideAction: false,
         pageSize: 20,
         theadList: [{
-          title: '接口名字',
+          title: this.$t('page.name'),
           key: 'name'
         }, {
-          title: '访问url',
+          title: 'url',
           key: 'token'
         }, {
           key: 'action'

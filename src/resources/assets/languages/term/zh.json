@@ -2208,6 +2208,24 @@
     "warehousesynchronization": "仓库同步",
     "branchtobesynchronized": "待同步分支",
     "syncexecuteandback": "已后台执行仓库同步",
-    "typename": "类型名称"
+    "typename": "类型名称",
+    "repositorylist": "仓库列表",
+    "vouchertype": "凭证类型",
+    "pleaserepositoryservice": "请先选择仓库服务",
+    "branchmerge": "按分支合并",
+    "issuemerge": "按需求合并",
+    "createmergerequest": "创建MR",
+    "strategytype": "策略类型",
+    "issuesstatus": "需求状态",
+    "fixedsourcebranch": "固定源分支",
+    "versionstrategy": "版本策略",
+    "strategyname": "策略名称",
+    "accessaddress": "访问地址",
+    "apidescrition": "接口描述",
+    "noapihelpinfo": "暂无接口帮助信息",
+    "speciallytreated": "特殊处理的",
+    "syncissues": "同步需求",
+    "issuessource": "需求来源",
+    "issuesnumber": "需求编号"
   }
 }

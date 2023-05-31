@@ -3,7 +3,7 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="editVersion()">版本类型</span>
+          <span class="action-item tsfont-plus" @click="editVersion()">{{ $t('page.versiontype') }}</span>
         </div>
       </template>
       <template slot="topRight">

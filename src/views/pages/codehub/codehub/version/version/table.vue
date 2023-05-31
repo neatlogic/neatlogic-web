@@ -46,15 +46,8 @@
     <template slot="action" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="tstable-action">
         <ul class="tstable-action-ul">
-          <li v-if="row.canEdit" class="ts-plus-o" @click="addMr(row.uuid,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">创建MR</li>
-          <!-- <li>
-            <label>开/封板</label>
-            <i-switch
-              v-model="row.isOpen"
-              @on-change="val => {changeOpen(val, row);}"
-            ></i-switch>
-          </li> -->
-          <li v-if="canDelete" class="ts-trash" @click="deleteVersion(row.uuid)">删除</li>
+          <li v-if="row.canEdit" class="tsfont-plus-o" @click="addMr(row.uuid)">{{ $t('term.codehub.createmergerequest') }}</li>
+          <li v-if="canDelete" class="tsfont-trash-o" @click="deleteVersion(row.uuid)">{{ $t('page.delete') }}</li>
         </ul>
       </div>
     </template>
@@ -83,35 +76,35 @@ export default {
       tableData: {
         theadList: [
           {
-            title: '名称',
+            title: this.$t('page.name'),
             key: 'name'
           },
           {
-            title: '源分支',
+            title: this.$t('page.sourcebranch'),
             key: 'sourceBranch'
           },
           {
-            title: '目标分支',
+            title: this.$t('page.targetbranch'),
             key: 'targetBranch'
           },
           {
-            title: '系统',
+            title: this.$t('page.system'),
             key: 'systemVo'
           },
           {
-            title: '子系统',
+            title: this.$t('page.subsystem'),
             key: 'subSystemVo'
           },
           {
-            title: '处理人',
+            title: this.$t('term.process.dealwithuser'),
             key: 'fcu'
           },
           {
-            title: '状态',
+            title: this.$t('page.status'),
             key: 'status'
           },
           {
-            title: '时间',
+            title: this.$t('page.time'),
             key: 'fcd'
           },
           {
@@ -122,13 +115,9 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     if (this.versionData) {
       Object.assign(this.tableData, {
@@ -140,19 +129,12 @@ export default {
       });
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     updatePage(page) {
       this.$emit('updatePage', page);
@@ -163,14 +145,10 @@ export default {
     addMr(uuid) {
       this.$emit('addMr', uuid);
     },
-    toggleOpen(status, list) {
-      //console.log(status);
-    },
     deleteVersion(uuid) {
       this.$emit('deleteVersion', uuid);
     },
     changeOpen(val, list) {
-      let _this = this;
       let listdata = {};
       Object.assign(listdata, {
         uuid: list.uuid,
@@ -178,18 +156,16 @@ export default {
       });
       this.$api.codehub.version.updateOpen(listdata).then(res => {
         if (res && res.Status == 'OK') {
-          _this.$Message.success('操作成功');
+          this.$Message.success(this.$t('message.executesuccess'));
         } else {
-          _this.$set(list, 'isOpen', val ? 0 : 1);
+          this.$set(list, 'isOpen', val ? 0 : 1);
         }
       }).catch(error => {
-        _this.$set(list, 'isOpen', val ? 0 : 1);
+        this.$set(list, 'isOpen', val ? 0 : 1);
       });
     }
   },
-
   filter: {},
-
   computed: {
     showtips() {
       return function(config) {
@@ -214,24 +190,7 @@ export default {
       };
     }
   },
-
-  watch: {
-    // versionData: {
-    //   hanlder: function(val) {
-    //     let _this = this;
-    //     if (val) {
-    //       Object.assign(_this.tableData, {
-    //         pageCount: val.pageCount,
-    //         rowNum: val.rowNum,
-    //         pageSize: val.pageSize,
-    //         currentPage: val.currentPage,
-    //         tbodyList: val.list
-    //       });
-    //     }
-    //   },
-    //   deep: true
-    // }
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

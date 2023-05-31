@@ -3,7 +3,7 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="editVersion()">版本</span>
+          <span class="action-item tsfont-plus" @click="editVersion()">{{ $t('page.versions') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -83,7 +83,7 @@ export default {
           {
             name: 'systemUuid',
             type: 'select',
-            label: '系统',
+            label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/system/search',
             rootName: 'list',
@@ -99,7 +99,7 @@ export default {
           {
             name: 'subsystemUuid',
             type: 'select',
-            label: '子系统',
+            label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'list',
             textName: 'name',
@@ -138,19 +138,16 @@ export default {
       }
     },
     deleteVersion(uuid) {
-      let _this = this;
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该版本',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.versions')}),
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.version.delete({uuid: uuid}).then((res) => {
+        'on-ok': (vnode) => {
+          this.$api.codehub.version.delete({uuid: uuid}).then((res) => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.searchList();
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.searchList();
               vnode.isShow = false;
-            } else {
-              _this.$Message.error(res.Message);
             }
           });
         }
