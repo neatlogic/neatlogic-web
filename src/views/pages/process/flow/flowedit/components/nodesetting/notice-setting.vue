@@ -163,12 +163,16 @@ export default {
       let handler = this.defaultDeepCloneConfig.handler || this.handler;
       this.notifySelectConfig.params.handler = handler;
       this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
-      this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
       this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
       this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
       this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
-      this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
       this.$set(this.notifyPolicyConfig, 'handler', handler);
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyId')) {
+        this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
+      }
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyName')) {
+        this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
+      }
       if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath')) {
         this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath || '');
       }
@@ -201,15 +205,18 @@ export default {
       });
     },
     getData() { //获取数据
-      let data = {};
-      data = {
-        policyId: this.notifyPolicyConfig.policyId || null,
-        policyName: this.notifyPolicyConfig.policyName || '',
+      let data = {
         handler: this.notifyPolicyConfig.handler || '',
         isCustom: this.isActive,
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
       };
+      if (this.notifyPolicyConfig.hasOwnProperty('policyId')) {
+        this.$set(data, 'policyId', this.notifyPolicyConfig.policyId);
+      }
+      if (this.notifyPolicyConfig.hasOwnProperty('policyName')) {
+        this.$set(data, 'policyName', this.notifyPolicyConfig.policyName);
+      }
       if (this.notifyPolicyConfig.hasOwnProperty('policyPath')) {
         this.$set(data, 'policyPath', this.notifyPolicyConfig.policyPath);
       }

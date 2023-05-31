@@ -319,7 +319,7 @@ export default {
         if (this.multiple == true) {
           return new Array();
         } else {
-          return '';
+          return null;
         }
       }
     }, //默认值
@@ -810,7 +810,7 @@ export default {
     clearValue() {
       //清除数据
       this.selectedList = [];
-      this.multiple ? (this.currentValue = []) : (this.currentValue = '');
+      this.multiple ? (this.currentValue = []) : (this.currentValue = null);
       this.onChangeValue();
       this.isVisible && this.changeSearch();
       this.searchKeyWord = '';
@@ -1051,7 +1051,7 @@ export default {
             return true;
           }
         });
-        this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = '');
+        this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = null);
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
       this.isSingel = !!(this.isSquare && this.currentSearch);
@@ -1137,7 +1137,7 @@ export default {
             if (this.$listeners['enter-search'] && !this.multiple) {
               this.$emit('enter-search', this.searchKeyWord);
               this.selectedList = [];
-              this.multiple ? (this.currentValue = []) : (this.currentValue = '');
+              this.multiple ? (this.currentValue = []) : (this.currentValue = null);
               this.hideOption(true);
             } else {
               this.hideOption();
@@ -1467,7 +1467,7 @@ export default {
       if (this.multiple == true && typeof this.currentValue == 'string') {
         this.currentValue = [this.currentValue];
       } else if (this.multiple == false && typeof this.currentValue == 'object') {
-        this.currentValue = this.currentValue[0] || '';
+        this.currentValue = this.currentValue[0] || null;
       }
       this.searchKeyWord = '';
     },
