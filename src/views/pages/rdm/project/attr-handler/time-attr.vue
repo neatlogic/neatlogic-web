@@ -6,7 +6,7 @@
       :transfer="true"
       :value="valueLocal"
       :readonly="readonly"
-      type="time"
+      :type="mode == 'input' ? 'time' : 'timerange'"
       format="HH:mm:ss"
       :validateList="validateList"
       @change="changeValue"
@@ -43,7 +43,12 @@ export default {
     },
     changeValue(val) {
       if (val) {
-        this.$emit('setValue', [val.toString()], [val.toString()]);
+        if (val instanceof Array) {
+          this.$emit('setValue', val, val);
+        } else {
+          const timestr = this.formatDate(val);
+          this.$emit('setValue', [timestr], [timestr]);
+        }
       } else {
         this.$emit('setValue', null, null);
       }
@@ -58,8 +63,13 @@ export default {
       return [];
     },
     valueLocal() {
-      if (this.valueList && this.valueList.length > 0) {
-        return this.valueList[0];
+      if (this.mode === 'input') {
+        if (this.valueList && this.valueList.length > 0) {
+          return this.valueList[0];
+        } 
+      } else if (this.mode === 'search') {
+        //搜索模式返回的是数组
+        return this.valueList;
       }
       return null;
     }

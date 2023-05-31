@@ -252,7 +252,9 @@
     "projectmanage": "项目管理",
     "workbench": "工作台",
     "mydoing": "我的待办",
-    "mycompleted": "我的已办"
+    "mycompleted": "我的已办",
+    "prioritymanage": "优先级管理",
+    "manage": "系统管理"
   },
   "codehub": {
     "codehub": "代码中心",

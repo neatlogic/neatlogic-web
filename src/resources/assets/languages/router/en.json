@@ -249,10 +249,12 @@
   },
   "rdm": {
     "projectdetail": "Project Detail",
-    "projectmanage": "Project Manage",
+    "projectmanage": "Project Management",
     "workbench": "Workbench",
     "mydoing": "To-Do List",
-    "mycompleted": "Completed List"
+    "mycompleted": "Completed List",
+    "prioritymanage": "Priority Management",
+    "manage": "System Management"
   },
   "codehub": {
     "codehub": "Code Center",
