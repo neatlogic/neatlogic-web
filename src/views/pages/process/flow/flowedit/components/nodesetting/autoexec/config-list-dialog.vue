@@ -15,7 +15,7 @@
           <div class="autoexec-title">
             <div>#{{ index+1 }}</div>
             <div class="action-btn">
-              <span class="tsfont-close pr-sm text-tip-active" @click="delItem(index)"></span>
+              <!-- <span class="tsfont-close pr-sm text-tip-active" @click="delItem(index)"></span> -->
               <span class="text-tip-active" :class="item.isShow ? 'tsfont-down' : 'tsfont-up'" @click="item.isShow=!item.isShow"></span>
             </div>
           </div>
@@ -24,7 +24,7 @@
           </div>
         </div>
       </div>
-      <span class="tsfont-plus text-href" @click="addAutoexecList">{{ $t('term.autoexec.addjob') }}</span>
+      <!-- <span class="tsfont-plus text-href" @click="addAutoexecList">{{ $t('term.autoexec.addjob') }}</span> -->
       <div v-if="!isValid && $utils.isEmpty(configList)" class="form-error-tip pl-nm">
         {{ $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}) }}
       </div>
@@ -61,11 +61,13 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      if (this.list) {
+      if (this.list && this.list.length > 0) {
         this.configList = this.$utils.deepClone(this.list);
         this.configList.forEach(item => {
           this.$set(item, 'isShow', true);
         });
+      } else {
+        this.addAutoexecList();
       }
       this.loadingShow = false;
     },
