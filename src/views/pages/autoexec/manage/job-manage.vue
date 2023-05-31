@@ -386,7 +386,7 @@ export default {
       } else if (row.source == 'service') {
         window.open(HOME + '/autoexec.html#/catalog-manage?id=' + routeConfig.id, '_blank');
       } else if (row.source == 'itsm') {
-        window.open(HOME + '/process.html#/flow-edit?uuid=' + routeConfig.uuid + '&stepUuid=' + routeConfig.stepUuid, '_blank');
+        window.open(HOME + '/process.html#/task-detail?processTaskId=' + routeConfig.processTaskId + '&processTaskStepId=' + routeConfig.processTaskStepId, '_blank');
       } else if (row.source == 'discovery') {
         window.open(HOME + '/cmdb.html#/discovery-conf-manage?id=' + routeConfig.id, '_blank');
       } else if (row.source == 'inspect') {
