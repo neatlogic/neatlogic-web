@@ -25,6 +25,11 @@
               :theadList="theadList"
               :tbodyList="propList"
             >
+
+              <template v-slot:name="{ row }">
+                {{ row.description }}
+              </template>
+
               <template v-slot:value="{ row }">
                 <TsFormInput
                   v-if="row.dataType && (row.dataType.toLowerCase() == 'int' || row.dataType.toLowerCase() == 'integer' ||row.dataType.toLowerCase() == 'long' || row.dataType.toLowerCase() == 'double')"
@@ -84,10 +89,6 @@ export default {
         {
           title: this.$t('page.attrname'),
           key: 'name'
-        },
-        {
-          title: this.$t('page.attrtype'),
-          key: 'dataType'
         },
         {
           title: this.$t('page.attrvalue'),
@@ -212,13 +213,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeJobClass(value) {
+    async changeJobClass(value) {
       if (value) {
         let params = {
           className: value
         };
         this.propList = [];
-        this.$api.framework.schedule.classGet(params).then(res => {
+        await this.$api.framework.schedule.classGet(params).then(res => {
           if (res.Status == 'OK') {
             res.Return.inputList.forEach(item => {
               this.propList.push(this.$utils.deepClone(item));
@@ -233,7 +234,7 @@ export default {
         let data = form.getFormValue();
         data.propList = [];
         this.propList && this.propList.forEach((item) => {
-          if (item.name != '' && item.value != '') {
+          if (item.value) {
             data.propList.push(item);
           }
         });
@@ -254,6 +255,20 @@ export default {
     closeDialog(needRefresh) {
       this.$emit('close', needRefresh);
     },
+    MergeData: function(rsPropList) {
+      let mergePropList = [];
+      let propList = this.propList;
+      propList.forEach(function(defineProp) {
+        rsPropList.forEach(function(rsProp) {
+          if (defineProp.name === rsProp.name) {
+            defineProp['value'] = rsProp.value;
+            defineProp['id'] = rsProp.id;
+            mergePropList.push(defineProp);
+          }
+        });
+      });
+      this.propList = mergePropList;
+    },
     getJobByUuid: function() {
       if (this.jobUuid) {
         let params = {
@@ -261,9 +276,11 @@ export default {
         };
         this.$api.framework.schedule
           .get(params)
-          .then(res => {
+          .then(async res => {
             if (res.Status == 'OK') {
-              this.propList = res.Return.propList || [];
+              let rsPropList = res.Return.propList || [];
+              await this.changeJobClass(res.Return.handler);
+              this.MergeData(rsPropList);
               for (let key in this.formSetting) {
                 this.formSetting[key].value = res.Return[key];
               }
