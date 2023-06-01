@@ -46,6 +46,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    validData() {
+      const errorList = [];
+      if (!this.$refs.formitem.valid()) {
+        errorList.push({uuid: this.formItem.uuid, error: this.$refs.formitem.validMesage});
+      }
+      return errorList;
+    }
   },
   filter: {},
   computed: {
