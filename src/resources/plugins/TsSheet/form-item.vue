@@ -258,7 +258,7 @@ export default {
                   } else if (action === 'setvalue') {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (result) {
-                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid])) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
+                      if (!reaction.isFirstLoad || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
                         this.addExecuteCount('setvalue');
                         this.$set(this.formData, this.formItem.uuid, reaction.value);
                         this.$emit('change', reaction.value);
