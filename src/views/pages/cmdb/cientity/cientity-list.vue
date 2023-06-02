@@ -260,7 +260,7 @@
             <ul class="tstable-action-ul">
               <li v-if="mode == 'page'" class="tsfont-formtextarea" @click="toCiEntity(row.id, row.ciId)">{{ $t('page.detail') }}</li>
               <li
-                v-if="needAction && $AuthUtils.hasRole('RESOURCECENTER_ACCOUNT_MODIFY')"
+                v-if="row.authData && row.authData.accountmanagement"
                 class="tsfont-userinfo"
                 @click="openAccountEditDialog(row)"
               >{{ $t('page.accountsmanage') }}</li>
