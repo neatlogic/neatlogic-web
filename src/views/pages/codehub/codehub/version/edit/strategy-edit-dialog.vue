@@ -1,26 +1,24 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveEdit">
     <div>
       <TsForm ref="editform" :itemList="formConfig">
-        <template slot="subsystemUuid">
+        <template slot="appModuleId">
           <TsFormSelect
-            v-model="editvalList.subsystemUuid"
+            v-model="editvalList.appModuleId"
             v-bind="subsystemConfig"
             :validateList="vaildConfig"
-            width="75%"
             :selectItemList.sync="selectSub"
             @on-change="updatesystemsetting"
           />
         </template>
         <template slot="issueStatusUuid">
-          <TsFormSelect v-model="statusVal" v-bind="issueStatusconfig" width="75%" />
+          <TsFormSelect v-model="statusVal" v-bind="issueStatusconfig" />
         </template>
         <template slot="usePattern">
           <TsFormRadio
             v-model="editvalList.usePattern"
             v-bind="usepatternConfig"
             :validateList="vaildConfig"
-            width="75%"
           />
         </template>
         <template slot="srcBranch">
@@ -28,23 +26,16 @@
             v-if="editvalList.usePattern=='0'"
             v-model="editvalList.srcBranch"
             v-bind="srcbranchConfig"
-            width="75%"
           />
-          <TsFormInput v-else v-model.trim="editvalList.srcBranch" width="75%"></TsFormInput>
+          <TsFormInput v-else v-model.trim="editvalList.srcBranch"></TsFormInput>
         </template>
         <template slot="targetBranch">
           <div>
-            <TsFormSelect v-model="editvalList.targetBranch" v-bind="targetbranchConfig" width="75%" />
+            <TsFormSelect v-model="editvalList.targetBranch" v-bind="targetbranchConfig" />
           </div>
         </template>
       </TsForm>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>
@@ -58,19 +49,16 @@ export default {
   },
   filters: {},
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
-    uuid: {type: [String, Boolean]},
-    systemUuid: [String, Number],
-    subsystemUuid: [String, Number]
+    id: {type: Number},
+    appSystemId: [String, Number],
+    appModuleId: [String, Number]
   },
   data() {
     return {
-      setting: {
-        title: this.uuid ? this.$t('term.pbc.editpolicy') : this.$t('page.newtarget', {'target': this.$t('term.process.policy')}),
-        maskClose: false
+      dialogSetting: {
+        title: this.id ? this.$t('term.pbc.editpolicy') : this.$t('page.newtarget', {'target': this.$t('term.process.policy')}),
+        maskClose: false,
+        isShow: true
       },
       selectSub: null,
       vaildConfig: ['required'],
@@ -97,14 +85,14 @@ export default {
           type: 'select',
           label: this.$t('page.versiontype'),
           transfer: true,
-          name: 'versionTypeUuid',
+          name: 'versionTypeId',
           dynamicUrl: '/api/rest/codehub/versiontype/search?isActive=1',
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
           idListName: 'id',
           onChange: (val) => {
-            this.editvalList.versionTypeUuid = val;
+            this.editvalList.versionTypeId = val;
           }
         }, 
         {
@@ -128,12 +116,11 @@ export default {
         }, {
           type: 'select',
           label: this.$t('page.system'),
-          name: 'systemUuid',
+          name: 'appSystemId',
           transfer: true,
           dynamicUrl: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
+          dealDataByUrl: this.$utils.getAppForselect,
           idListName: 'id',
           validateList: ['required'],
           value: '',
@@ -143,7 +130,7 @@ export default {
         }, {
           type: 'slot',
           label: this.$t('page.subsystem'),
-          name: 'subsystemUuid',
+          name: 'appModuleId',
           validateList: ['required'],
           isHidden: true
         }, {
@@ -219,13 +206,13 @@ export default {
       editvalList: {
         name: '',
         srcBranch: '',
-        subsystemUuid: this.subsystemUuid,
+        appModuleId: this.appModuleId,
         targetBranch: '',
         type: '',
         usePattern: '1',
-        uuid: '',
+        id: '',
         versionPrefix: '',
-        versionTypeUuid: '' 
+        versionTypeId: '' 
       },
       issueStatusconfig: {
         transfer: true,
@@ -235,12 +222,13 @@ export default {
         valueName: 'id',
         multiple: true,
         params: {}
-      },
-      saving: false
+      }
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initData();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -250,12 +238,37 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      if (this.id) {
+        this.getDetail(this.id);
+      } else {
+        this.formConfig.forEach(form => {
+          if (form.name == 'isActive') {
+            this.$set(form, 'value', 1);
+          } else {
+            this.$set(form, 'value', '');
+          }
+        });
+        this.$set(this.subsystemConfig, 'params', {systemId: this.appSystemId});
+        this.updataVal('appSystemId', this.appSystemId);
+        if (this.appSystemId) {
+          this.formConfig.forEach((form) => {
+            if (form.name == 'appModuleId') {
+              this.$set(form, 'isHidden', false);
+            }
+          });
+        }
+        this.$set(this.editvalList, 'appModuleId', this.appModuleId);
+        this.updataVal('appModuleId', this.appModuleId);
+        this.updateRelate(this.appModuleId);
+      }
+    },
     close() {
       this.$emit('close');
     },
     updatesystemsetting(val) {
       let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      this.editvalList.subsystemUuid = val;
+      this.editvalList.appModuleId = val;
       this.editvalList.usePattern = '1';
       this.editvalList.srcBranch = '';
       this.editvalList.targetBranch = '';
@@ -266,13 +279,13 @@ export default {
         }
       });
       Object.assign(this.srcbranchConfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
       Object.assign(this.targetbranchConfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
       Object.assign(this.issueStatusconfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
     },
     saveEdit() {
@@ -286,22 +299,18 @@ export default {
             issueStatusUuid: this.statusVal.length > 0 ? this.statusVal.join(',') : ''
           });
         }
-        if (this.uuid) {
-          Object.assign(param, {uuid: this.uuid});
+        if (this.id) {
+          Object.assign(param, {id: this.id});
         }
-        this.saving = true;
         this.$api.codehub.strategy.save(param).then(res => {
-          this.saving = false;
           this.$emit('close', true);
-        }).catch(e => {
-          this.saving = false;
         });
       }
     },
     changeSubsys(val) {
       //根据系统改变子系统
-      let hideList = ['subsystemUuid', 'usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      this.editvalList.subsystemUuid = '';
+      let hideList = ['appModuleId', 'usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
+      this.editvalList.appModuleId = '';
       this.editvalList.usePattern = '1';
       this.editvalList.srcBranch = '';
       this.editvalList.targetBranch = '';
@@ -313,24 +322,24 @@ export default {
       this.$set(this.subsystemConfig, 'params', {systemId: val}); 
       this.updatesystemsetting('');
     },
-    getDetail(val) {
-      this.$set(this.editvalList, 'subsystemUuid', '');
-      if (val) {
-        this.$api.codehub.strategy.getDetail({uuid: val}).then(res => {
+    getDetail(strategyId) {
+      this.$set(this.editvalList, 'appModuleId', '');
+      if (strategyId) {
+        this.$api.codehub.strategy.getDetail({id: strategyId}).then(res => {
           if (res && res.Status == 'OK') {
-            if (res.Return.subsystemUuid) {
-              this.updatesystemsetting(res.Return.subsystemUuid);
+            if (res.Return.appModuleId) {
+              this.updatesystemsetting(res.Return.appModuleId);
             }
             Object.assign(this.editvalList, {
               name: res.Return.name || '',
               srcBranch: res.Return.srcBranch || '',
-              subsystemUuid: res.Return.subsystemUuid || '',
+              appModuleId: res.Return.appModuleId || '',
               targetBranch: res.Return.targetBranch || '',
               type: res.Return.type || '',
               usePattern: String(res.Return.usePattern),
-              uuid: res.Return.uuid || '',
+              id: res.Return.id || '',
               versionPrefix: res.Return.versionPrefix || '',
-              versionTypeUuid: res.Return.versionTypeUuid || ''
+              versionTypeId: res.Return.versionTypeId || ''
             });
             this.statusVal = res.Return.issueStatusUuid ? res.Return.issueStatusUuid.split(',') : [];
           } else {
@@ -359,39 +368,22 @@ export default {
         }
       });
       Object.assign(this.srcbranchConfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
       Object.assign(this.targetbranchConfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
       Object.assign(this.issueStatusconfig.params, {
-        subsystemUuid: val
+        appModuleId: val
       });
     }
   },
   computed: {},
   watch: {
-    uuid: {
-      handler: function(val) {
-        if (val) {
-          this.getDetail(val);
-        } else {
-          this.formConfig.forEach(form => {
-            if (form.name == 'isActive') {
-              this.$set(form, 'value', 1);
-            } else {
-              this.$set(form, 'value', '');
-            }
-          });
-        }
-        this.$set(this.setting, 'title', val ? this.$t('term.pbc.editpolicy') : this.$t('page.newtarget', {'target': this.$t('term.process.policy')}));
-      },
-      immediate: true
-    },
     selectSub: {
       handler: function(val, oldeval) {
         if (val && val.systemVo) {
-          this.updataVal('systemUuid', val.systemVo.uuid);
+          this.updataVal('appSystemId', val.systemVo.uuid);
           this.$set(this.subsystemConfig, 'params', {systemId: val.systemVo.uuid});
         }
       },
@@ -401,16 +393,16 @@ export default {
     editvalList: {
       handler: function(val) {
         if (val && val.name) {
-          if (val.subsystemUuid) {
-            this.$set(this.setting, 'height', '500px');
+          if (val.appModuleId) {
+            this.$set(this.dialogSetting, 'height', '500px');
             Object.assign(this.srcbranchConfig.params, {
-              subsystemUuid: val.subsystemUuid
+              appModuleId: val.appModuleId
             });
             Object.assign(this.targetbranchConfig.params, {
-              subsystemUuid: val.subsystemUuid
+              appModuleId: val.appModuleId
             });
           } else {
-            this.$set(this.setting, 'height', '300px');
+            this.$set(this.dialogSetting, 'height', '300px');
           }
           this.formConfig.forEach(form => {
             if (val[form.name]) {
@@ -422,32 +414,6 @@ export default {
       },
       immediate: true,
       deep: true      
-    },
-    systemUuid: {
-      handler: function(val) {
-        if (!this.uuid) {
-          this.$set(this.subsystemConfig, 'params', {systemId: val});
-          this.updataVal('systemUuid', val);
-          if (val) {
-            this.formConfig.forEach((form) => {
-              if (form.name == 'subsystemUuid') {
-                this.$set(form, 'isHidden', false);
-              }
-            });
-          }
-        }
-      },
-      immediate: true
-    },
-    subsystemUuid: {
-      handler: function(val) {
-        if (!this.uuid) {
-          this.$set(this.editvalList, 'subsystemUuid', val);
-          this.updataVal('subsystemUuid', val);
-          this.updateRelate(val);
-        }
-      },
-      immediate: true
     }
   }
 };

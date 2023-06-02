@@ -24,7 +24,12 @@
         </TsRow>
         <TsRow>
           <Col span="8">
-            <Tooltip v-if="showtips(row)" theme="light" max-width="300">
+            <Tooltip
+              v-if="showtips(row)"
+              theme="light"
+              max-width="300"
+              placement="top-start"
+            >
               <div>{{ setTxt(row,'text') }}</div>
               <div slot="content">
                 <div>{{ setTxt(row,'tips') }}</div>

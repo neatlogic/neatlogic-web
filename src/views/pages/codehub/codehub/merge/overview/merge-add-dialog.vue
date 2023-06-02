@@ -138,8 +138,7 @@ export default {
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
+        dealDataByUrl: this.$utils.getAppForselect,
         value: _this.systemUuid,
         onChange: function(val) {
           _this.changeSubsys(val);

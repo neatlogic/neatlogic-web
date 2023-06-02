@@ -169,8 +169,7 @@ export default {
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
+            dealDataByUrl: this.$utils.getAppForselect,
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;
