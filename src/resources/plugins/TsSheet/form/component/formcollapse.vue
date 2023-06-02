@@ -19,6 +19,7 @@
           <div v-if="tabCompomentList(panel.value) && tabCompomentList(panel.value).length > 0" class="bg-op">
             <div v-for="(component, index) in tabCompomentList(panel.value)" :key="component.uuid">
               <ChildFormItem
+                :ref="'childFormItem_' + component.uuid"
                 class="padding-xs"
                 :formItem="component"
                 :formData="formData"
@@ -107,6 +108,28 @@ export default {
           }
         }
       }
+    },
+    async validData() {
+      const errorList = [];
+      if (this.$refs) {
+        for (let name in this.$refs) {
+          if (this.$refs[name]) {
+            let formitem = this.$refs[name];
+            if (this.$refs[name] instanceof Array) {
+              formitem = this.$refs[name][0];
+            } else {
+              formitem = this.$refs[name];
+            }
+            if (formitem) {
+              const err = await formitem.validData();
+              if (err && err.length > 0) {
+                errorList.push(...err);
+              }
+            }
+          }
+        }
+      }
+      return errorList;
     }
   },
   filter: {},

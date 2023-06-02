@@ -192,13 +192,15 @@
                     }
                   "
                 ></ConditionGroup>
-                <div v-if="key === 'setvalue'">
-                  <div v-if="!$utils.isEmpty(r)" class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
+                <div v-if="key === 'setvalue' && !$utils.isEmpty(r)">
+                  <div class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
                   <FormItem
                     v-if="!$utils.isEmpty(r)"
-                    :formItem="propertyLocal"
+                    ref="assignmentValue"
+                    :formItem="assignmentValueConfig"
                     :value="r.value"
                     mode="defaultvalue"
+                    :showStatusIcon="false"
                     @change="
                       val => {
                         $set(r, 'value', val);
@@ -397,13 +399,26 @@ export default {
     close() {
       this.$emit('close');
     },
-    save() {
+    async save() {
       let isValid = true;
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
-            if (this.$refs[key] && !this.$refs[key].valid()) {
+            if (this.$refs[key] && this.$refs[key].valid && !this.$refs[key].valid()) {
               isValid = false;
+            }
+          } else if (key === 'assignmentValue') {
+            let formitem = null;
+            if (this.$refs[key] instanceof Array) {
+              formitem = this.$refs[key][0];
+            } else {
+              formitem = this.$refs[key];
+            }
+            if (formitem) {
+              const err = await formitem.validData();
+              if (err && err.length > 0) {
+                isValid = false;
+              }
             }
           }
         }
@@ -514,6 +529,13 @@ export default {
         setting.dataList = config.dataList;
       }
       return setting;
+    },
+    assignmentValueConfig() {
+      let item = this.$utils.deepClone(this.propertyLocal);
+      if (item.config) {
+        this.$set(item.config, 'isRequired', false);
+      }
+      return item;
     }
   },
   watch: {

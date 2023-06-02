@@ -451,7 +451,10 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.calcContainerHeight();
+    this.$nextTick(() => {
+      this.calcContainerHeight();
+    });
+   
     window.addEventListener('resize', this.calcContainerHeight);
     window.addEventListener('keydown', this.windowKeypress);
   },
