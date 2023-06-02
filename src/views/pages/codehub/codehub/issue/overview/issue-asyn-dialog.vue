@@ -61,10 +61,9 @@ export default {
           label: this.$t('page.system'),
           name: 'systemUuid',
           transfer: true,
-          dynamicUrl: '/api/rest/codehub/system/search',
+          dynamicUrl: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
+          dealDataByUrl: this.$utils.getAppForselect,
           validateList: ['required'],
           onChange: (val) => {
             this.editData.systemUuid = val;

@@ -9,7 +9,7 @@
     <template v-slot:footer>
       <div class="footer-btn-contain">
         <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
+        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -21,12 +21,12 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
   },
   props: {
-    uuid: {type: [String, Boolean]}
+    id: {type: Number}
   },
   data() {
     return {
       setting: {
-        title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versiontype')}) : this.$t('page.newtarget', {'target': this.$t('page.versiontype')}),
+        title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versiontype')}) : this.$t('page.newtarget', {'target': this.$t('page.versiontype')}),
         maskClose: false,
         width: 'medium',
         isShow: true
@@ -35,17 +35,23 @@ export default {
         type: 'text',
         label: this.$t('term.codehub.typename'),
         value: '',
-        width: '90%',
         name: 'name',
-        validateList: ['required'],
-        disabled: !!this.uuid
+        validateList: ['required', 
+          { name: 'searchUrl',
+            url: '/api/rest/codehub/versiontype/save', 
+            key: 'name',
+            message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
+            params: { id: ''}
+          }],
+        maxlength: 255,
+        disabled: !!this.id
       },
       {
-        type: 'text',
+        type: 'textarea',
         label: this.$t('page.description'),
-        width: '90%',
         name: 'description',
         validateList: ['required'],
+        maxlength: 255,
         value: ''
       },
       {
@@ -61,7 +67,7 @@ export default {
           text: this.$t('page.no'), value: 0
         }],
         value: 1,
-        disabled: !!this.uuid
+        disabled: !!this.id
       },
       {
         type: 'codemirror',
@@ -70,7 +76,7 @@ export default {
         width: '90%',
         validateList: ['required'],
         value: '',
-        disabled: !!this.uuid
+        disabled: !!this.id
       },
       {
         type: 'text',
@@ -80,14 +86,13 @@ export default {
         value: ' ',
         isHidden: true
       }
-      ],
-      saving: false
+      ]
     };
   },
   beforeCreate() {},
   created() {
-    if (this.uuid) {
-      this.getDetail(this.uuid);
+    if (this.id) {
+      this.getDetail(this.id);
     } else {
       this.formConfig.forEach(form => {
         if (form.name == 'isActive') {
@@ -123,20 +128,18 @@ function myFun(jsonObj){
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let param = this.$refs.editform.getFormValue();
-        if (this.uuid) {
-          Object.assign(param, {uuid: this.uuid});
+        if (this.id) {
+          Object.assign(param, {id: this.id});
         }
-        this.saving = true;
         this.$api.codehub.versiontype.save(param).then(res => {
-          this.saving = false;
-          this.$emit('close', true);
-        }).catch(e => {
-          this.saving = false;
+          if (res && res.Status == 'OK') {
+            this.$emit('close', true);
+          }
         });
       }
     },
-    getDetail(uuid) {
-      this.$api.codehub.versiontype.getDetail({uuid: uuid}).then(res => {
+    getDetail(id) {
+      this.$api.codehub.versiontype.getDetail({id: id}).then(res => {
         if (res && res.Status == 'OK') {
           let vallist = res.Return;
           Object.assign(vallist, {

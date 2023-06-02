@@ -12,13 +12,13 @@
             <CombineSearcher
               v-model="searchVal"
               v-bind="searchConfig"
-              @change="getTableList(1)"
+              @change="() => searchList(1)"
             ></CombineSearcher>
           </Col>
           <Col span="4">
             <RadioGroup v-model="showType" type="button" class="toggle-btn">
-              <Radio label="tabletab"><span class="ts-list"></span></Radio>
-              <Radio label="cardtab"><span class="ts-block"></span></Radio>
+              <Radio label="tabletab"><span class="tsfont-list"></span></Radio>
+              <Radio label="cardtab"><span class="tsfont-blocklist"></span></Radio>
             </RadioGroup>
           </Col>
         </TsRow>
@@ -26,7 +26,7 @@
       <div slot="content">
         <div 
           :is="showType" 
-          v-if="versionData &&!isLoad" 
+          v-if="versionData &&!loadingShow" 
           :versionData="versionData" 
           :statusList="statusList" 
           :canDelete="versionData.hasVersionManageRole"
@@ -38,14 +38,13 @@
         <Loading v-else loadingShow type="fix"></Loading>
       </div>
     </TsContain>
-    <VersionEdit
+    <VersionEditDialog
       v-if="isEdit"
-      :uuid="editUuid"
-      :isShow="isEdit"
-      :subsystemUuid="subsystemUuid"
-      :systemUuid="systemUuid"
+      :id="versionId"
+      :appModuleId="appModuleId"
+      :appSystemId="appSystemId"
       @close="close"
-    ></VersionEdit>
+    ></VersionEditDialog>
   </div>
 </template>
 
@@ -55,58 +54,57 @@ export default {
   name: '',
   components: {
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    VersionEdit: resolve => require(['./edit/version-edit.vue'], resolve),
+    VersionEditDialog: resolve => require(['./edit/version-edit-dialog.vue'], resolve),
     ...list
   },
   props: [''],
   data() {
     return {
       showType: 'cardtab',
-      systemUuid: '',
-      subsystemUuid: '',
+      appSystemId: null,
+      appModuleId: null,
       keyword: '',
-      isLoad: true,
+      loadingShow: true,
       isEdit: false, //是否编辑
-      editUuid: null, //编辑弹窗对应的仓库id
+      versionId: null, // 版本id
       versionData: {
         currentPage: 1,
         pageSize: 20
       },
       searchVal: {},
       statusList: {
-        'succeed': 'success',
-        'failed': 'error'
+        succeed: 'success',
+        failed: 'error'
       },
       searchConfig: {
         search: true,
         searchList: [
           {
-            name: 'systemUuid',
+            name: 'appSystemId',
             type: 'select',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/system/search',
+            dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
-            value: this.systemUuid,
+            dealDataByUrl: this.$utils.getAppForselect,
+            value: this.appSystemId,
             onChange: (val) => {
-              this.systemUuid = val;
+              this.appSystemId = val;
               this.updateSubSystem(val);
               this.getSearch();
             }
           },
           {
-            name: 'subsystemUuid',
+            name: 'appModuleId',
             type: 'select',
             label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'tbodyList',
             textName: 'name',
             valueName: 'id',
-            value: this.subsystemUuid,
+            value: this.appModuleId,
             onChange: (val) => {
-              this.subsystemUuid = val;
+              this.appModuleId = val;
               this.getSearch();
             }
           }
@@ -114,7 +112,6 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
   created() {},
   beforeMount() {},
@@ -128,22 +125,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    addMr(uuid, type) {
-      this.$router.push({ path: 'merge-create', query: {versionid: uuid, type: type} });
+    addMr(id, type) {
+      this.$router.push({ path: 'merge-create', query: {versionid: id, type: type} });
     },
-    editVersion(uuid) {
+    editVersion(id) {
       this.isEdit = true;
-      if (uuid) {
-        this.editUuid = uuid;
+      if (id) {
+        this.versionId = id;
       }
     },
-    deleteVersion(uuid) {
+    deleteVersion(id) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.versions')}),
         btnType: 'error',
         'on-ok': (vnode) => {
-          this.$api.codehub.version.delete({uuid: uuid}).then((res) => {
+          this.$api.codehub.version.delete({id: id}).then((res) => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.searchList();
@@ -166,15 +163,12 @@ export default {
       this.searchList();
     },
     searchList() {
-      let param = {};
-      if (this.versionData) {
-        this.versionData.pageSize && Object.assign(param, { pageSize: this.versionData.pageSize });
-        this.versionData.currentPage && Object.assign(param, { currentPage: this.versionData.currentPage });
-      }
-      this.keyword && Object.assign(param, { keyword: this.keyword });
-      this.subsystemUuid && Object.assign(param, { subsystemUuid: this.subsystemUuid });
-      this.systemUuid && Object.assign(param, { systemUuid: this.systemUuid });
-      this.isLoad = true;
+      let param = {
+        currentPage: this.versionData.currentPage,
+        pageSize: this.versionData.pageSize,
+        ...this.searchVal
+      };
+      this.loadingShow = true;
       this.$api.codehub.version.getList(param).then(res => {
         if (res && res.Status == 'OK') {
           this.versionData = res.Return;
@@ -182,28 +176,28 @@ export default {
           this.versionData = null;
         }
       }).finally(() => {
-        this.isLoad = false;
+        this.loadingShow = false;
       });
     },
     close(isreload) {
       this.isEdit = false;
-      this.editUuid = null;
+      this.versionId = null;
       if (isreload) {
         this.getSearch();
       }
     },
     updateSubSystem(val) {
-      this.subsystemUuid = '';
+      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {systemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {});
             this.$set(item, 'dynamicUrl', '');
           } 
@@ -215,7 +209,7 @@ export default {
   computed: {},
   watch: {
     showType(val) {
-      this.isLoad = true;
+      this.loadingShow = true;
       this.versionData.currentPage = 1;
       this.versionData.pageSize = val == 'tabletab' ? 20 : 10;
       this.searchList();      

@@ -9,51 +9,59 @@
       <template slot="topRight">
         <InputSearcher
           v-model="keyword"
-          @change="getSearch"
+          @change="() => changeCurrentPage(1)"
         ></InputSearcher>
       </template>
       <div slot="content">
-        <TsCard v-bind="versionData" headerPosition="right" @updatePage="updatePage">
+        <Loading
+          :loadingShow="loadingShow"
+          type="fix"
+        ></Loading>
+        <TsCard v-bind="versionData" headerPosition="right" @updatePage="changeCurrentPage">
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
               <div v-if="!row.isReserve" class="action-item text-action">
-                <label class="mr-10">{{ $t('page.enabled') }}</label>
-                <i-switch 
-                  v-model="row.isActive"
-                  :true-value="1"
-                  :false-value="0"
-                  @on-change="val => {changeStatus(val, row);}"
-                ></i-switch>
+                <div style="display: flex;">
+                  <span class="mr-sm">{{ $t('page.enabled') }}</span>
+                  <TsFormSwitch
+                    v-model="row.isActive"
+                    :true-value="1"
+                    :false-value="0"
+                    @on-change="val => {changeStatus(val, row);}"
+                  ></TsFormSwitch>
+                </div>
               </div>
-              <div class="action-item ts-edit text-action" @click="editVersion(row.uuid)">{{ $t('page.edit') }}</div>
-              <div v-if="!row.isReserve" class="action-item ts-trash text-action" @click="deleteVersion(row.uuid)">{{ $t('page.delete') }}</div>
+              <div class="action-item tsfont-edit" @click="editVersion(row.id)">{{ $t('page.edit') }}</div>
+              <div v-if="!row.isReserve" class="action-item tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
             </div>
           </template>
           <template slot-scope="{ row }">
-            <div class="overflow">
-              <span class="h2">{{ row.name }}</span>
-              <Poptip
-                v-if="row.help"
-                transfer
-                trigger="hover"
-                word-wrap
-              >
-                <div class="ts-m-problem ml-10 text-action"></div>
-                <div slot="content">
-                  <div style="font-size:10px;line-height: 1.1;" v-html="row.help"></div>
-                </div>
-              </Poptip>
-              
-            </div>
-            <div class="h4">{{ row.description||'-' }}</div>
-            <div class="text-tip">{{ row.lct }}</div>
+            <ul class="padding-sm">
+              <li :class="row.name ? 'mb-xs' : ''">
+                <span>{{ row.name }}</span>
+                <Poptip
+                  v-if="row.help"
+                  width="450"
+                  transfer
+                  trigger="hover"
+                  word-wrap
+                >
+                  <div class="tsfont-question-o ml-xs text-action"></div>
+                  <div slot="content">
+                    <div v-html="row.help"></div>
+                  </div>
+                </Poptip>
+              </li>
+              <li>{{ row.description || '-' }}</li>
+              <li class="text-tip">{{ row.lct }}</li>
+            </ul>
           </template>
         </TsCard>
       </div>
     </TsContain>
     <VersiontypeEditDialog
       v-if="isEdit"
-      :uuid="editUuid"
+      :id="versionTypeId"
       @close="close"
     ></VersiontypeEditDialog>
   </div>
@@ -63,8 +71,8 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     VersiontypeEditDialog: resolve => require(['./edit/versiontype-edit-dialog.vue'], resolve)
   },
@@ -73,10 +81,12 @@ export default {
     return {
       keyword: '',
       isEdit: false, //是否编辑
-      editUuid: null, //编辑弹窗对应的仓库id
+      loadingShow: true,
+      versionTypeId: null,
       versionData: {
         classname: 'version-card',
         classKey: 'isActive',
+        padding: false,
         span: 24,
         sm: 24,
         lg: 24,
@@ -105,58 +115,54 @@ export default {
     saveAsyn() {
       this.showEdit = false;
     },
-    editVersion(uuid) {
+    editVersion(id) {
       this.isEdit = true;
-      if (uuid) {
-        this.editUuid = uuid;
+      if (id) {
+        this.versionTypeId = id;
       }
     },
-    deleteVersion(uuid) {
+    deleteVersion(id) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.versiontype')}),
         btnType: 'error',
         'on-ok': (vnode) => {
-          this.$api.codehub.versiontype.delete({uuid: uuid}).then((res) => {
+          this.$api.codehub.versiontype.delete({id: id}).then((res) => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.getSearch();
+              this.changeCurrentPage(1);
               vnode.isShow = false;
             }
           });
         }
       });
     },
-    updatePage(page) {
-      this.versionData.currentPage = page;
-      this.searchList();
-    },
-    getSearch() {
-      this.versionData.currentPage = 1;
+    changeCurrentPage(currentPage) {
+      this.versionData.currentPage = currentPage;
       this.searchList();
     },
     searchList() {
-      let param = {};
-      this.versionData.pageSize && Object.assign(param, {pageSize: this.versionData.pageSize});
-      this.versionData.currentPage && Object.assign(param, {currentPage: this.versionData.currentPage});
-      this.keyword && Object.assign(param, {keyword: this.keyword});
-      this.isLoad = true;
+      let param = {
+        currentPage: this.versionData.currentPage,
+        pageSize: this.versionData.pageSize,
+        keyword: this.keyword
+      };
+      this.loadingShow = true;
       this.$api.codehub.versiontype.getList(param).then(res => {
-        this.isLoad = false;
         if (res && res.Status == 'OK') {
           this.$set(this.versionData, 'pageCount', res.Return.pageCount);
           this.$set(this.versionData, 'rowNum', res.Return.rowNum);
           this.$set(this.versionData, 'pageSize', res.Return.pageSize);
           this.$set(this.versionData, 'currentPage', res.Return.currentPage);
-          this.$set(this.versionData, 'cardList', res.Return.list);
-        } else {
-          this.$set(this.versionData, 'cardList', []);
+          this.$set(this.versionData, 'cardList', res.Return.tbodyList);
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     close(isreload) {
       this.isEdit = false;
-      this.editUuid = null;
+      this.versionTypeId = null;
       if (isreload) {
         this.searchList();
       }
@@ -164,7 +170,7 @@ export default {
     changeStatus(val, config) {
       let listdata = {};
       Object.assign(listdata, {
-        uuid: config.uuid,
+        id: config.id,
         isActive: val
       });
       this.$api.codehub.versiontype.updateStatus(listdata).then(res => {

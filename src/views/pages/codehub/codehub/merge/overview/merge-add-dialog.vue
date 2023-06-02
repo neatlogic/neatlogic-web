@@ -136,10 +136,9 @@ export default {
         name: 'systemUuid',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/api/rest/codehub/system/search',
+        dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
+        dealDataByUrl: this.$utils.getAppForselect,
         value: _this.systemUuid,
         onChange: function(val) {
           _this.changeSubsys(val);

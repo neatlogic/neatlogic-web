@@ -114,7 +114,7 @@ export default {
       showEdit: false,
       systemConf: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/system/search',
+        dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'id',

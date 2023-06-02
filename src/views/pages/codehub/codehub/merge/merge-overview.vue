@@ -62,10 +62,9 @@ export default {
       subsystemUuid: '',
       systemConf: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/system/search',
+        dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
+        dealDataByUrl: this.$utils.getAppForselect,
         onChange: function(val) {
           _this.updateSub(val);
           _this.getSearch();
@@ -93,10 +92,9 @@ export default {
             type: 'select',
             label: '系统',
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/system/search',
+            dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
+            dealDataByUrl: this.$utils.getAppForselect,
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;

@@ -101,7 +101,7 @@ export default {
           name: 'systemUuid',
           label: this.$t('term.codehub.triggersystem'),
           width: '30%',
-          url: '/api/rest/codehub/system/search',
+          url: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',

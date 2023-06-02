@@ -125,7 +125,7 @@ export default {
         rowNum: this.versionData.rowNum,
         pageSize: this.versionData.pageSize,
         currentPage: this.versionData.currentPage,
-        tbodyList: this.versionData.list
+        tbodyList: this.versionData.tbodyList
       });
     }
   },
