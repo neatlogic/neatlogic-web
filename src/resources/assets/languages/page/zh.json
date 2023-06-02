@@ -903,5 +903,11 @@
   "targetbranch": "目标分支",
   "keyname": "键名",
   "necessary": "必需",
-  "viewparameters": "查看参数"
+  "viewparameters": "查看参数",
+  "conflict": "冲突",
+  "detailcontent": "详细内容",
+  "presenter": "提交人",
+  "submitinformation": "提交信息",
+  "effectiveness": "有效性",
+  "strip": "条"
 }

@@ -24,11 +24,11 @@
               {{ row.triggerTime |formatDate }}
             </template>
             <template slot="inputArgument" slot-scope="{ row }">
-              <a v-if="row.inputArgument" href="javascript:;" @click="showArgument(row.inputArgument)">查看</a>
+              <a v-if="row.inputArgument" href="javascript:;" @click="showArgument(row.inputArgument)">{{ $t('page.view') }}</a>
               <span v-if="!row.inputArgument">-</span>
             </template>
             <template slot="outputArgument" slot-scope="{ row }">
-              <a v-if="row.outputArgument" href="javascript:;" @click="showArgument(row.outputArgument)">查看</a>
+              <a v-if="row.outputArgument" href="javascript:;" @click="showArgument(row.outputArgument)">{{ $t('page.view') }}</a>
               <span v-if="!row.outputArgument">-</span>
             </template>
             <template slot="result" slot-scope="{ row }">
@@ -39,7 +39,7 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
       </template>
     </TsDialog>
     <ArgumentDetail :argument="argument" @close="closeArgumentDetailDialog"></ArgumentDetail>
@@ -62,34 +62,34 @@ export default {
       detailData: {},
       actionLogData: {},
       contentHeight: '100',
-      statusData: {'succeed': '成功', 'failed': '失败'},
+      statusData: {succeed: this.$t('page.success'), failed: this.$t('page.fail')},
       dialogConfig: {
         type: 'slider',
         maskClose: true,
         isShow: false,
-        title: '触发记录',
-        width: '1000px',
+        title: this.$t('term.codehub.triggerrecord'),
+        width: 'large',
         isScrollbar: true
       },
       theadList: [
         {
-          title: '原始mr',
+          title: this.$t('term.codehub.originalmr'),
           key: 'mrUuid'
         },
         {
-          title: '动作触发时间',
+          title: this.$t('term.codehub.actiontriggertime'),
           key: 'triggerTime'
         },
         {
-          title: '输入参数',
+          title: this.$t('page.inputparam'),
           key: 'inputArgument'
         },
         {
-          title: '输出参数',
+          title: this.$t('page.outputparam'),
           key: 'outputArgument'
         },
         {
-          title: '动作执行结果',
+          title: this.$t('term.codehub.actionexecuteresult'),
           key: 'result'
         }
       ]
@@ -100,16 +100,14 @@ export default {
   beforeMount() {},
   mounted() {
     this.searchActionLog();
-    let _this = this;
-    window.addEventListener('resize', _this.initHeight);
+    window.addEventListener('resize', this.initHeight);
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    let _this = this;
-    window.removeEventListener('resize', _this.initHeight);
+    window.removeEventListener('resize', this.initHeight);
   },
   destroyed() {},
   methods: {
@@ -117,7 +115,6 @@ export default {
       // 搜索条件下拉
       this.searchActionLog(1);
     },
-
     searchActionLog: function(currentPage, pageSize) {
       let params = {actionId: this.uuid};
       if (currentPage) {
@@ -138,11 +135,9 @@ export default {
         }
       });
     },
-
     goDetail(val) {
       this.$router.push({ path: 'merge-review', query: {uuid: val} });
     },
-
     close: function() {
       this.isShow = false;
       this.$emit('close');

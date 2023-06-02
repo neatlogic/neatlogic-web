@@ -20,7 +20,7 @@ const repository = {
     return axios.post('/api/rest/codehub/repository/workingcopypath/get', data);
   },
   updateNode(data) {
-    return axios.post('/api/rest/codehub/repository/agent/update', data);
+    return axios.post('/api/rest/codehub/repository/runner/update', data);
   }
 };
 export default repository;

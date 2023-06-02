@@ -2,7 +2,7 @@
   <div>
     <TsDialog
       v-if="showTemplate == 'overview'"
-      title="模板列表"
+      :title="$t('page.templatelist')"
       width="large"
       height="400px"
       className="setting-dialog"
@@ -12,17 +12,13 @@
     >
       <TsRow class="input-border">
         <Col span="16">
-        <!-- <span class="text-action" @click="lookHelp">
-          <i class="tsfont-question-o cursor-pointer text-href"></i>
-          <span>帮助</span>
-        </span> -->
         </Col>
         <Col span="8">
           <Input
             v-model="keyword"
             prefix="i-icon ts-search"
             border="border"
-            placeholder="关键字"
+            :placeholder="$t('page.keyword')"
             clearable
             @on-enter="getTemplateList(1)"
             @on-clear="getTemplateList(1)"
@@ -44,7 +40,7 @@
           >
             <template slot="firstBtn">
               <div class="add text-action" @click.stop="addSetting">
-                <i class="ts-plus">模板</i>
+                <i class="ts-plus">{{ $t('page.template') }}</i>
               </div>
             </template>
             <template slot-scope="{ row }">
@@ -58,14 +54,14 @@
                   </div>
                   <div class="text-title overflow">{{ row.actionUser }}于{{ row.actionTime | formatDate }}{{ row.actionName }}</div>
                   <div class="operation text-tip" :class="row.isDel?'block':''">
-                    <i class="ts-intersect" title="复制" @click="editSetting(row, true)"></i>
-                    <i class="tsfont-edit" title="编辑" @click="editSetting(row, false)"></i>
-                    <i class="tsfont-trash-s" title="删除" @click="delSetting(row)"></i>
+                    <i class="ts-intersect" :title="$t('page.copy')" @click="editSetting(row, true)"></i>
+                    <i class="tsfont-edit" :title="$t('page.edit')" @click="editSetting(row, false)"></i>
+                    <i class="tsfont-trash-s" :title="$t('page.delete')" @click="delSetting(row)"></i>
                   </div>
                 </div>
                 <DelItme
                   v-if="row.isDel"
-                  :delName="'确定删除该模板：' + row.name + '?'"
+                  :delName="$t('dialog.content.deleteconfirm', {target: row.name})"
                   buttonSize="small"
                   @on-del="delTemplate(row)"
                   @on-close="closeTemplate(row)"
@@ -93,7 +89,7 @@
               <div>
                 <Alert>
                   <div>
-                    freemarker语法帮助
+                    {{ $t('term.framework.freemarkerhelp') }}
                     <Poptip
                       trigger="hover"
                       placement="right"
@@ -144,7 +140,7 @@
                 <div class="text-title" style="width:280px;">
                   <Alert>
                     <div>
-                      左侧“标题”或“内容”输入框获取光标后，点击下方参数，自动填充对应代码段
+                      {{ $t('message.framework.templateparamstip') }} 
                     </div>
                   </Alert>
                 </div>
@@ -153,7 +149,7 @@
                     v-model="paramkeyword"
                     class="input-border"
                     prefix="i-icon ts-search"
-                    placeholder="关键字"
+                    :placeholder="$t('page.keyword')"
                     clearable
                     @on-enter="getParamList(1)"
                     @on-clear="getParamList(1)"
@@ -186,7 +182,7 @@
                   >
                     <template slot-scope="{ row }">
                       <div @click="changeText(row)">
-                        <div class="parma-item" :title="row.isEditable ? '' : '系统参数不允许操作'">
+                        <div class="parma-item" :title="row.isEditable ? '' : $t('term.framework.sysparamsnotedit')">
                           <div :class="row.isDel?'text-mask':''">
                             <div class="title">
                               <div class="type-block text-tip bg-grey">{{ row.paramTypeName }}</div>
@@ -196,13 +192,13 @@
                               {{ row.label }}
                             </div>
                             <div v-if="row.isEditable" class="operation text-tip bg-block" :class="row.isDel?'block':''">
-                              <i class="tsfont-edit" title="编辑" @click.stop="editParam(row)"></i>
-                              <i class="tsfont-trash-s" title="删除" @click.stop="delParamSetting(row)"></i>
+                              <i class="tsfont-edit" :title="$t('page.edit')" @click.stop="editParam(row)"></i>
+                              <i class="tsfont-trash-s" :title="$t('page.delete')" @click.stop="delParamSetting(row)"></i>
                             </div>
                           </div>
                           <DelItme
                             v-if="row.isDel"
-                            :delName="'确定删除该参数：' + row.name + '?'"
+                            :delName="$t('dialog.content.deleteconfirm', {target: row.name})"
                             buttonSize="small"
                             @on-del="delParam(row)"
                             @on-close="closeDelParam(row)"
@@ -300,12 +296,12 @@ export default {
       },
       paramList: [],
       templateDialog: false,
-      dialogTitle: '添加模板',
+      dialogTitle: this.$t('dialog.title.addtarget', {'target': this.$t('page.template')}),
       templateFormConfig: [
         {
           type: 'text',
           name: 'name',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required'],
           width: '100%'
@@ -313,7 +309,7 @@ export default {
         {
           type: 'select',
           name: 'notifyHandler',
-          label: '类型',
+          label: this.$t('page.type'),
           validateList: ['required'],
           transfer: true,
           width: '100%'
@@ -321,13 +317,13 @@ export default {
         {
           type: 'slot',
           name: 'title',
-          label: '标题',
+          label: this.$t('page.title'),
           validateList: ['required']
         },
         {
           type: 'slot',
           name: 'content',
-          label: '内容',
+          label: this.$t('page.content'),
           validateList: ['required']
         }
       ],
@@ -393,7 +389,7 @@ export default {
           this.selectHandlerList = JSON.parse(JSON.stringify(res.Return));
           this.selectHandlerList.unshift({
             value: 'all',
-            text: '所有'
+            text: this.$t('page.allofthem')
           });
           this.templateFormConfig[1].dataList = res.Return;
         }
@@ -446,14 +442,14 @@ export default {
         formData.content = this.$refs.content.saveData();
         if (formData.title === '' || formData.content === '') {
           this.$Notice.info({
-            title: '表单填写完整',
+            title: this.$t('form.validate.completetheform'),
             duration: 1.5
           });
           return;
         }
         if (this.templateList.find(d => d.name == formData.name) && !this.isEdit) {
           this.$Notice.info({
-            title: '模板名已存在',
+            title: this.$t('form.validate.repeat', {target: this.$t('page.templatename')}),
             duration: 1.5
           });
           return;
@@ -462,7 +458,7 @@ export default {
         this.$api.codehub.tactics.templateSave(data).then(res => {
           if (res.Status == 'OK') {
             this.$Notice.success({
-              title: '保存成功',
+              title: this.$t('message.savesuccess'),
               duration: 1.5
             });
             this.getTemplateList();
@@ -511,7 +507,7 @@ export default {
         item.value = val[item.name];
       });
       if (isCopy) {
-        this.dialogTitle = '复制模板';
+        this.dialogTitle = this.$t('term.report.copytemplate');
         this.templateFormConfig[0].value = val.name + '_copy';
         this.isEdit = false;
         this.templateId = null;
@@ -530,7 +526,7 @@ export default {
       };
       this.$api.codehub.tactics.templateDelete(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('删除成功');
+          this.$Message.success(this.$t('message.deletesuccess'));
           this.getTemplateList();
         }
       });
@@ -597,7 +593,7 @@ export default {
       };
       this.$api.codehub.tactics.paramDelete(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('删除成功');
+          this.$Message.success(this.$t('message.deletesuccess'));
           const list = this.paramData.cardList.filter(p => p.name != item.name);
           this.paramData.cardList = list;
         }

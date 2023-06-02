@@ -118,9 +118,9 @@ export default {
         transfer: true,
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/system/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         value: this.systemUuid,
         onChange: (val) => {
           this.changeSubsys(val);
@@ -143,9 +143,9 @@ export default {
         transfer: true,
         validateList: ['required'],
         url: '/api/rest/codehub/versiontype/search?isActive=1',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         onChange: (val) => {
           this.versionData.versionTypeUuid = val;
           this.autofillName(this.versionData);
@@ -162,10 +162,10 @@ export default {
         width: '100%',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/api/rest/codehub/subsystem/search',
-        rootName: 'list',
+        dynamicUrl: '/api/rest/codehub/appmodule/search',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid' 
+        valueName: 'id' 
       },
       saving: false
     };
@@ -240,7 +240,7 @@ export default {
       this.hideName();
       if (val) {
         this.$set(this.subsystemConfig, 'params', {systemId: val});
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
       } else {
         this.$set(this.subsystemConfig, 'params', {});
         this.$set(this.subsystemConfig, 'dynamicUrl', '');
@@ -327,7 +327,7 @@ export default {
         if (val) {
           this.setVal('systemUuid', val);
           this.$set(this.subsystemConfig, 'params', {systemId: val});
-          this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+          this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
         }
       },
       immediate: true

@@ -112,7 +112,7 @@ export default {
           'perPage': 10
         },
         keyword: 'search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         clearable: false,
         multiple: true,
         search: true,
@@ -130,7 +130,7 @@ export default {
           'perPage': 10
         },
         keyword: 'search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         clearable: false,
         multiple: true,
         search: true,

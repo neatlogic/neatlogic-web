@@ -2,7 +2,7 @@
   <div>
     <Alert show-icon>
       <template slot="desc">
-        <div>帮助说明：点击变量名即可复制变量，变量在动作被触发时替换为实际值，支持Freemarker模板引擎的语法。</div>
+        <div>{{ $t('term.codehub.helpdesc') }}</div>
       </template>
     </Alert>
     <TsTable v-if="innerVariableList && innerVariableList.length > 0" :theadList="inputtheadList" :tbodyList="innerVariableList">
@@ -10,7 +10,7 @@
         <div v-clipboard="getClipboard(row.name)" v-clipboard:success="copyok">{{ '${' }}{{ row.name }}{{ '}' }}</div>
       </template>
     </TsTable>
-    <div v-else>暂无输入参数</div>
+    <div v-else>{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
   </div>
 </template>
 <script>
@@ -25,10 +25,10 @@ export default {
     return {
       innerVariableList: [],
       inputtheadList: [{
-        title: '变量名',
+        title: this.$t('page.variablename'),
         key: 'name'
       }, {
-        title: '变量说明',
+        title: this.$t('page.description'),
         key: 'description'
       }
       ]
@@ -58,14 +58,11 @@ export default {
       return '${' + val + '}';
     },
     copyok(val) {
-      this.$Message.success('复制成功');
+      this.$Message.success(this.$t('message.copysuccess'));
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

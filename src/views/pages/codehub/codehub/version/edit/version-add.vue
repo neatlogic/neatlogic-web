@@ -64,9 +64,9 @@ export default {
           name: 'versionTypeUuid',
           transfer: true,
           dynamicUrl: '/api/rest/codehub/versiontype/search?isActive=1',
-          rootName: 'list',
+          rootName: 'tbodyList',
           textName: 'name',
-          valueName: 'uuid',
+          valueName: 'id',
           onChange: (val) => {
             this.versionData.versionTypeUuid = val;
             this.autofillName(val);

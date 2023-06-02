@@ -169,7 +169,7 @@
     "linuxpkg": "Linux｜Unix安装包：tagent_linux.tar",
     "windowspkg": "Windows安装包：tagent_windows_x32.tar、tagent_windows_x64.tar（windows安装包内嵌了Perl运行时和7z工具）",
     "autoinstallwindows": "获取子目录bin下的install.sh或者install.vbs(Windows)",
-    "autoinstalltagent": "自动安装需要在某个可以http或ftp下载的地方放置tagent的安装包，下面的安装样例脚本中的地址和租户名称需要根据实际情况进行修改\\n变量：RUNNER_ADDR是执行节点的URL，根据网络是否能够连通来选择，只要网络能通，选择任意一个RUNNER效果是相同的。\\ntenant租户选择，根据系统安装设置的租户来进行输入。",
+    "autoinstalltagent": "自动安装需要在某个可以http或ftp下载的地方放置tagent的安装包，下面的安装样例脚本中的地址和租户名称需要根据实际情况进行修改<br/>变量：RUNNER_ADDR是执行节点的URL，根据网络是否能够连通来选择，只要网络能通，选择任意一个RUNNER效果是相同的。<br/>tenant租户选择，根据系统安装设置的租户来进行输入。",
     "autolinuxscripts": "Linux安装，以root用户运行",
     "autounixscripts": "Linux安装，以app用户运行，监听2020端口",
     "manualdectip": "上传安装包到服务器，解压到/opt/tagent",

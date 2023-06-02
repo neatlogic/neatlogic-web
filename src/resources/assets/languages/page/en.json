@@ -901,5 +901,11 @@
   "targetbranch": "Target Branch",
   "keyname": "Key name",
   "necessary": "essential",
-  "viewparameters": "View parameters"
+  "viewparameters": "View parameters",
+  "conflict": "conflict",
+  "detailcontent": "Detailed content",
+  "presenter": "submitter",
+  "submitinformation": "Submit Information",
+  "effectiveness": "Validity",
+  "strip": "strip"
 }

@@ -2,7 +2,7 @@ export default {
   methods: {
     copyWorkingPath(item) {
       let param = {
-        uuid: item.uuid
+        id: item.id
       };
       this.$api.codehub.repository.getWorkingcopypath(param).then(res => {
         if (res && res.Status == 'OK') {
@@ -31,7 +31,7 @@ export default {
       textarea.select();
       try {
         document.execCommand('copy');
-        _this.copyok();
+        this.copyok();
       } catch (err) {
         console.log(err);
       }
@@ -40,7 +40,7 @@ export default {
     },
     updateNode(item) {
       let param = {
-        uuid: item.uuid,
+        id: item.id,
         pull: true
       };
       this.$createDialog({
@@ -50,11 +50,9 @@ export default {
         'on-ok': (vnode) => {
           this.$api.codehub.repository.updateNode(param).then(res => {
             if (res && res.Status == 'OK') {
-              item.agentId = res.Return.newAgentId;
-              item.agentName = res.Return.newAgentName;
-              this.$Message.success($t('message.executesuccess'));
-            } else {
-              this.$Message.error(res.Message);
+              item.runnerId = res.Return.oldRunnerId;
+              item.runnerName = res.Return.oldRunnerName;
+              this.$Message.success(this.$t('message.executesuccess'));
             }
           }).finally(e => {
             vnode.isShow = false;

@@ -1,13 +1,7 @@
 <template>
   <div>
-    <TsDialog :is-show="isShow" v-bind="dialogConfig" @on-close="close">
-      <template v-slot:header>
-        详细内容
-      </template>
+    <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot><pre>{{ contentFormated }}</pre></template>
-      <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-      </template>
     </TsDialog>
   </div>
 </template>
@@ -20,12 +14,12 @@ export default {
   props: { argument: {type: String}},
   data() {
     return {
-      isShow: false,
       dialogConfig: {
         type: 'modal',
         maskClose: true,
         isShow: false,
-        width: '1000px'
+        width: 'large',
+        title: this.$t('page.detailcontent')
       }};
   },
   beforeCreate() {},

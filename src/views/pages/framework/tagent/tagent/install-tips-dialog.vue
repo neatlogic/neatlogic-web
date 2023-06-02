@@ -14,7 +14,7 @@
           <ul v-for="(item, index) in installTipsList" :key="index" class="pb-lg">
             <li :class="item.autoInstallTip1 || item.autoInstallTip2 ? 'pb-sm' : 'pb-nm'">{{ item.title }}</li>
             <li v-if="item.autoInstallTip1" class="text-grey" :class="!item.autoInstallTip2 ? 'pb-nm' : ''">{{ item.autoInstallTip1 }}</li>
-            <li v-if="item.autoInstallTip2" class="text-grey pb-nm">{{ item.autoInstallTip2 }}</li>
+            <li v-if="item.autoInstallTip2" class="text-grey pb-nm" v-html="item.autoInstallTip2"></li>
             <ul v-for="v in item.systemList" :key="v.id" class="system-list">
               <li class="text-grey pb-sm">{{ v.systemName }}</li>
               <li v-if="v.decompressLocation" class="text-grey pb-sm">{{ v.decompressLocation }}</li>

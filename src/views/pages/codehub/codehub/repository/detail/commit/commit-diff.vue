@@ -15,7 +15,7 @@
         @getMore="getMore"
       ></DiffDetail>
     </div>
-    <div v-else class="bg-grey border-color" style="line-height: 2;padding: 4px;border: 1px solid;">暂无内容</div>
+    <div v-else class="bg-grey border-color" style="line-height: 2;padding: 4px;border: 1px solid;">{{ $t('page.nodata') }}</div>
   </div>
 </template>
 <script>

@@ -55,7 +55,7 @@ export default {
           multiple: false,
           textName: 'name',
           valueName: 'name',
-          rootName: 'list',
+          rootName: 'tbodyList',
           url: '/api/rest/codehub/repository/branch/search',
           params: {
             repositoryUuid: _this.repositoryUuid,
@@ -63,12 +63,6 @@ export default {
           }
         
         }
-        // ,{
-        //   type: 'text',
-        //   label: '描述',
-        //   name: 'description',
-        //   value: ''
-        // }
       ]
     };
   },

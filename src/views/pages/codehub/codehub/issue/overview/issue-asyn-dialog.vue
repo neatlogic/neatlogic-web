@@ -62,9 +62,9 @@ export default {
           name: 'systemUuid',
           transfer: true,
           dynamicUrl: '/api/rest/codehub/system/search',
-          rootName: 'list',
+          rootName: 'tbodyList',
           textName: 'name',
-          valueName: 'uuid',
+          valueName: 'id',
           validateList: ['required'],
           onChange: (val) => {
             this.editData.systemUuid = val;
@@ -77,10 +77,10 @@ export default {
         label: this.$t('page.subsystem'),
         name: 'subsystemUuid',
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/subsystem/search',
-        rootName: 'list',
+        dynamicUrl: '/api/rest/codehub/appmodule/search',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         params: {},
         validateList: ['required'],
         onChange: (val) => {
@@ -147,8 +147,8 @@ export default {
           label: this.$t('page.subsystem'),
           name: 'subsystemUuid',
           transfer: true,
-          dynamicUrl: '/api/rest/codehub/subsystem/search',
-          rootName: 'list',
+          dynamicUrl: '/api/rest/codehub/appmodule/search',
+          rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
           params: {systemId: val},
@@ -178,7 +178,7 @@ export default {
             this.saving = false;
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.syncsuccess'));
-              this.$emit('close');
+              this.$emit('close', true);
             }
           }).catch(e => {
             this.saving = false;

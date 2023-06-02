@@ -11,9 +11,9 @@
             </span>
             <div class="action-top">
               <span class="action-group">
-                <span class="action-item tsfont-modules" @click="editTemplateList('overview')">模板列表</span>
-                <span class="action-item tsfont-barlist" @click="editParamList">参数列表</span>
-                <span class="action-item tsfont-warning-o" @click="editUser">异常通知</span>
+                <span class="action-item tsfont-modules" @click="editTemplateList('overview')">{{ $t('page.templatelist') }}</span>
+                <span class="action-item tsfont-barlist" @click="editParamList">{{ $t('page.paramslist') }}</span>
+                <span class="action-item tsfont-warning-o" @click="editUser">{{ $t('term.codehub.exceptionnotification') }}</span>
               </span>
             </div>
           </template>
@@ -37,7 +37,7 @@
               <Input
                 v-model="keyword"
                 prefix="i-icon ts-search"
-                placeholder="请输入触发点名称"
+                :placeholder="$t('term.codehub.pleaseenterthetriggerpointname')"
                 clearable
                 @on-enter="searchTacticsList"
                 @on-clear="searchTacticsList"
@@ -61,21 +61,15 @@
                     <span class="trigger-name">
                       {{ row.triggerName }}
                     </span>
-                    <!-- <Tooltip placement="bottom" max-width="300" theme="light" transfer>
-                      <i class="tsfont-info-o cursor-pointer text-href"></i>
-                      <div slot="content">
-                        <p>{{ row.description || row.triggerName }}</p>
-                      </div>
-                    </Tooltip> -->
                   </div>
                   <div v-if="row.notifyList && row.notifyList.length > 0">
                     <div class="number-box text-title">
-                      <span>动作</span>
+                      <span>{{ $t('page.actions') }}</span>
                       <span class="border-color number">{{ row.notifyList.length }}</span>
                     </div>
                     <div class="action-btn bg-block" :class="{'block':row.isDel || row.isDelActive || row.isShowDetail, 'text-mask': row.isDel || row.isDelActive}">
-                      <span class="tsfont-plus text-action" @click="addCondition(row)">动作</span>
-                      <span class="tsfont-broom text-action" @click.stop="emptyData('all', row)">清空配置</span>
+                      <span class="tsfont-plus text-action" @click="addCondition(row)">{{ $t('page.actions') }}</span>
+                      <span class="tsfont-broom text-action" @click.stop="emptyData('all', row)">{{ $t('page.clearconfig') }}</span>
                     </div>
                   </div>
                 </div>
@@ -89,7 +83,7 @@
                         :class="index > 0 ? 'dividing-color' : ''"
                       >
                         <template v-if="index < 3">
-                          <div class="name text-tip">动作{{ numberChinese(index) }}</div>
+                          <div class="name text-tip">{{ $t('page.actions') }}{{ numberChinese(index) }}</div>
                           <div class="type">
                             <span
                               v-for="action in item.actionList"
@@ -101,7 +95,7 @@
                         </template>
                       </div>
                     </div>
-                    <div v-else class="tsfont-plus add-active text-action" @click="addCondition(row)">动作</div>
+                    <div v-else class="tsfont-plus add-active text-action" @click="addCondition(row)">{{ $t('page.actions') }}</div>
                   </div>
                   <div v-if="row.notifyList.length > 0" class="trigger-detail bg-block bottom-shadow" :class="row.isDel || row.isDelActive || row.isShowDetail ? 'block' : ''">
                     <div @click.stop>
@@ -114,7 +108,7 @@
                     </div>
                     <div :class="row.isDel || row.isDelActive ? 'text-mask' : ''">
                       <div v-for="(detail, dindex) in row.notifyList" :key="dindex" class="list border-color">
-                        <div class="name bg-block">动作{{ numberChinese(dindex) }}</div>
+                        <div class="name bg-block">{{ $t('page.actions') }}{{ numberChinese(dindex) }}</div>
                         <div v-for="n in detail.actionList" :key="n.templateId" class="active-li overflow">
                           <span>{{ n.notifyHandlerName }}：</span>
                           <span v-if="n.receiverObjList && n.receiverObjList.length > 0">
@@ -154,14 +148,6 @@
                           </span>
                         </div>
                         <div class="li-btn bg-block">
-                          <!-- <span class="text-tip-active">
-                            <Poptip ref="pop" placement="bottom" width="400" word-wrap @on-popper-show="showDetail(row, 'detail_' + detail.id)" @on-popper-hide="hideDetail(row, 'detail_' + detail.id)">
-                              <i class="tsfont-formlist text-tip-active" title="详情">{{ row.visible }}</i>
-                              <div slot="content">
-                                <ActiveDetail :config="detail" :conditionList="conditionOptionList"></ActiveDetail>
-                              </div>
-                            </Poptip>
-                          </span> -->
                           <span class="tsfont-edit text-tip-active" @click="editTactics(row, detail)"></span>
                           <span class="tsfont-trash-s text-tip-active" @click.stop="emptyData('active', row, detail, dindex)"></span>
                         </div>
@@ -206,7 +192,6 @@
   </div>
 </template>
 <script>
-// import ActiveDetail from './tacticsedit/active-detail.vue';
 export default {
   name: '',
   components: {
@@ -220,7 +205,6 @@ export default {
     SettingParameter: resolve => require(['./tacticsedit/setting/setting-parameter'], resolve),
     DelItme: resolve => require(['./tacticsedit/setting/del-item.vue'], resolve),
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
-    // ActiveDetail
   },
   provide() {
     return {
@@ -234,7 +218,7 @@ export default {
       loadingShow: true,
       prevPath: {
         router: '/notifytactics-overview',
-        name: '策略列表'
+        name: this.$t('term.codehub.policylist')
       },
       id: null, //策略id
       handler: null, //模块
@@ -249,25 +233,25 @@ export default {
       hasAction: -1,
       selectTrigger: [
         {
-          text: '全部',
+          text: this.$t('page.all'),
           value: -1
         },
         {
-          text: '仅看有动作的',
+          text: this.$t('term.framework.triggeraction'),
           value: 1
         },
         {
-          text: '仅看无动作的',
+          text: this.$t('term.framework.nottriggeraction'),
           value: 0
         }
       ],
-      delTitle: '确定清空配置：',
+      delTitle: this.$t('term.codehub.confirmclearconfiguration'),
       delType: 'all',
       conditionDialogShow: false, //添加动作弹框
       activeConfig: null, // 策略动作数据
       trigger: null, //触发动作
       authorityConfig: null, //角色权限
-      activeTitle: '添加动作',
+      activeTitle: this.$t('dialog.title.addtarget', {'target': this.$t('page.actions')}),
       avtiveConfig: {
         name: null,
         id: null
@@ -423,7 +407,7 @@ export default {
     },
     async addCondition(item) {
       this.activeConfig = null;
-      this.activeTitle = '添加动作';
+      this.activeTitle = this.$t('dialog.title.addtarget', {'target': this.$t('page.actions')});
       this.trigger = item.trigger;
       await this.getNotifyList();
       this.conditionDialogShow = true;
@@ -432,17 +416,13 @@ export default {
       this.conditionDialogShow = needRefresh;
     },
     async editTactics(item, obj) {
-      this.activeTitle = '编辑动作';
+      this.activeTitle = this.$t('dialog.title.edittarget', {'target': this.$t('page.actions')});
       this.trigger = item.trigger;
       await this.getNotifyList();
       this.activeConfig = JSON.parse(JSON.stringify(obj));
       this.conditionDialogShow = true;
     },
     emptyData(type, row, item, index) {
-      // let listPop = this.$refs.pop;
-      // listPop.forEach(item => {
-      //   item.visible = false;
-      // });
       this.triggerList.forEach(e => {
         if (row.trigger != e.trigger) {
           this.$set(e, 'isDelActive', false);
@@ -451,13 +431,13 @@ export default {
       });
       if (type && type == 'active') {
         this.delType = 'active';
-        this.delTitle = '确定删除该配置：动作' + this.numberChinese(index);
+        this.delTitle = this.$t('term.codehub.confirmdeleteconfig') + this.numberChinese(index);
         this.$set(row, 'isDelActive', true);
         this.avtiveConfig.name = this.numberChinese(index);
         this.avtiveConfig.id = item.id;
       } else {
         this.delType = 'all';
-        this.delTitle = '确定清空配置：' + row.triggerName;
+        this.delTitle = this.$t('term.codehub.confirmclearconfiguration') + row.triggerName;
         this.$set(row, 'isDel', true);
       }
     },
@@ -470,7 +450,7 @@ export default {
         this.$api.codehub.tactics.cleanHandlerNotify(data).then(res => {
           if (res.Status == 'OK') {
             this.$Notice.success({
-              title: '清除成功',
+              title: this.$t('message.clearsuccess'),
               duration: 1.5
             });
             this.getTacticsData();
@@ -486,7 +466,7 @@ export default {
         this.$api.codehub.tactics.delTriggerConfig(data).then(res => {
           if (res.Status == 'OK') {
             this.$Notice.success({
-              title: '刪除成功',
+              title: this.$t('message.deletesuccess'),
               duration: 1.5
             });
             this.getTacticsData();
@@ -596,7 +576,6 @@ export default {
         position: absolute;
         text-align: center;
         top: 16px;
-        // transform: translateY(-50%);
         font-size: 16px;
       }
       .trigger-overview {

@@ -22,13 +22,13 @@
         <div class="notify-card">
           <div class="search-box">
             <div class="add-tactics">
-              <span class="ts-plus text-action" @click="addTactics">策略</span>
+              <span class="ts-plus text-action" @click="addTactics">{{ $t('term.process.policy') }}</span>
             </div>
             <div class="search-right input-border">
               <Input
                 v-model="keyword"
                 class="search"
-                placeholder="关键字"
+                :placeholder="$t('page.keyword')"
                 prefix="i-icon ts-search"
                 clearable
                 style="width: 300px"
@@ -55,7 +55,7 @@
                       {{ row.name }}
                     </div>
                     <div class="text-grey top-typename overflow" :title="getContent(row)">
-                      {{ row.actionUser }} 于 {{ row.actionTime | formatDate }}
+                      {{ row.actionUser }} {{ $t('page.in') }} {{ row.actionTime | formatDate }}
                       {{ row.actionName }}
                     </div>
                   </div>
@@ -66,15 +66,15 @@
                   <TsRow :gutter="0">
                     <Col :xs="12" align="center">
                       <div class="action-item" @click="copyTactics(row)">
-                        <div class="text-action">复制</div>
+                        <div class="text-action">{{ $t('page.copy') }}</div>
                       </div>
                     </Col>
                     <Col :xs="12" align="center">
                       <div v-if="row.invokerCount > 0" class="action-item disable last">
-                        删除
+                        {{ $t('page.delete') }}
                       </div>
                       <div v-else-if="row.invokerCount == 0" class="action-item last" @click="delTactics(row)">
-                        删除
+                        {{ $t('page.delete') }}
                       </div>
                     </Col>
                   </TsRow>
@@ -92,12 +92,12 @@
       :hasFooter="true"
     >
       <template v-slot:header>
-        <div>{{ isCopy ? '复制策略' : '新建策略' }}</div>
+        <div>{{ isCopy ? $t('dialog.title.copytarget',{'target':$t('term.process.policy')}) : $t('dialog.title.addtarget',{'target':$t('term.process.policy')}) }}</div>
       </template>
       <TsForm ref="addTacticsForm" :itemList="tacticsForm" type="type"></TsForm>
       <template v-slot:footer>
-        <Button type="text" @click="tacticsDialog = false">取消</Button>
-        <Button type="primary" @click="okAddTactics">确定</Button>
+        <Button type="text" @click="tacticsDialog = false">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="okAddTactics">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -113,7 +113,6 @@ export default {
   },
   props: {},
   data() {
-    let _this = this;
     return {
       handler: null,
       handlerList: [],
@@ -134,18 +133,9 @@ export default {
           name: 'name',
           value: '',
           maxlength: 50,
-          label: '名称',
+          label: this.$t('page.name'),
           validateList: ['required', 'name-special']
         }
-        // {
-        //   type: 'select',
-        //   name: 'handler',
-        //   value: '',
-        //   dataList: [],
-        //   label: '模块',
-        //   transfer: true,
-        //   validateList: ['required']
-        // }
       ]
     };
   },
@@ -251,8 +241,8 @@ export default {
     },
     delTactics(obj) {
       this.$createDialog({
-        title: '警告',
-        content: '确定删除该策略：' + obj.name + '?',
+        title: this.$t('page.warning'),
+        content: $t('dialog.content.deleteconfirm', {target: obj.name}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {
@@ -261,7 +251,7 @@ export default {
           this.$api.codehub.tactics.delNotify(data).then(res => {
             if (res.Status == 'OK') {
               this.$Notice.success({
-                title: '刪除成功',
+                title: this.$t('message.deletesuccess'),
                 duration: 1.5
               });
               vnode.isShow = false;
@@ -285,7 +275,7 @@ export default {
           this.$api.codehub.tactics.copyNotify(data).then(res => {
             if (res.Status == 'OK') {
               this.$Notice.success({
-                title: '复制成功',
+                title: this.$t('message.copysuccess'),
                 duration: 1.5
               });
               this.tacticsDialog = false;
@@ -316,7 +306,7 @@ export default {
       let text = '';
       if (config) {
         let time = this.$utils.getDateByFormat(config.actionTime);
-        text = config.actionUser + '于' + time + config.actionName;
+        text = config.actionUser + this.$t('page.in') + time + config.actionName;
       }
       return text;
     }

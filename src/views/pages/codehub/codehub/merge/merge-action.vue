@@ -168,9 +168,9 @@ export default {
             label: '系统',
             transfer: true,
             dynamicUrl: '/api/rest/codehub/system/search',
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;
@@ -183,7 +183,7 @@ export default {
             type: 'select',
             label: '子系统',
             transfer: true,
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
             valueName: 'uuid',
             value: this.subsystemUuid,
@@ -315,7 +315,7 @@ export default {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'subsystemUuid')) {
             this.$set(item, 'params', {systemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
