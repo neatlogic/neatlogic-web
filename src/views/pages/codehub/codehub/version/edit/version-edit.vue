@@ -116,9 +116,9 @@ export default {
         transfer: true,
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         value: this.systemUuid,
         onChange: (val) => {
           this.changeSubsys(val);
@@ -141,9 +141,9 @@ export default {
         transfer: true,
         validateList: ['required'],
         url: '/api/rest/codehub/versiontype/search?isActive=1',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         onChange: (val) => {
           this.versionData.versionTypeUuid = val;
           this.autofillName(this.versionData);
@@ -161,9 +161,9 @@ export default {
         transfer: true,
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/appmodule/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid' 
+        valueName: 'id' 
       },
       saving: false
     };

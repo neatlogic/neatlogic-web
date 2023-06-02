@@ -169,7 +169,7 @@
     "linuxpkg": "Linux | Unix installation package: agent_ linux.tar",
     "windowspkg": "Windows installation package: agent_ windows_ x32.tar、tagent_ windows_ X64.tar (the Windows installation package contains the Perl runtime and 7z tools)",
     "autoinstallwindows": "Get install.sh or install.vbs under the subdirectory bin (Windows)",
-    "autoinstalltagent": "Automatic installation requires placing the installation package of the agent in a place that can be downloaded via http or ftp. The address and tenant name in the following installation sample script need to be modified according to the actual situation  nVariable: RUNNER_ ADDR is the URL of the execution node, which is selected based on whether the network can be connected. As long as the network can be connected, selecting any one of the RUNNER options has the same effect. \\Tenant selection is based on the tenant set by the system installation.",
+    "autoinstalltagent": "Automatic installation requires placing the installation package of the agent in a place that can be downloaded via http or ftp. The address and tenant name in the following installation sample script need to be modified according to the actual situation  <br/>Variable: RUNNER_ ADDR is the URL of the execution node, which is selected based on whether the network can be connected. As long as the network can be connected, selecting any one of the RUNNER options has the same effect. <br/>Tenant selection is based on the tenant set by the system installation.",
     "autolinuxscripts": "Linux installation, running as root",
     "autounixscripts": "Linux installation, running as an app user, listening to port 2020",
     "manualdectip": "Upload the installation package to the server and unzip it to/opt/tmagent",

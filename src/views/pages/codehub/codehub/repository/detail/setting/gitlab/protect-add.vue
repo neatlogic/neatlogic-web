@@ -48,7 +48,7 @@ export default {
           params: {
             repositoryUuid: _this.uuid
           },
-          rootName: 'list',
+          rootName: 'tbodyList',
           textName: 'name',
           valueName: 'name',
           allowCreate: true,

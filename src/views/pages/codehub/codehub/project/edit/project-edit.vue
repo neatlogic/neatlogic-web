@@ -26,19 +26,18 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
 </template>
 <script>
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormSelect
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   filters: {},
   props: {
@@ -55,7 +54,7 @@ export default {
     let _this = this;
     return {
       setting: {//弹窗设置
-        title: '编辑映射',
+        title: this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')}),
         maskClose: false
       },
       selectSub: null,
@@ -65,21 +64,21 @@ export default {
       statusVal: [],
       formConfig: [{
         type: 'select',
-        label: '系统',
+        label: this.$t('page.system'),
         name: 'systemUuid',
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
-        idListName: 'uuid',
+        valueName: 'id',
+        idListName: 'id',
         validateList: ['required'],
         onChange: function(val) {
           _this.changeSubsys(val);
         }
       }, {
         type: 'slot',
-        label: '子系统',
+        label: this.$t('page.subsystem'),
         name: 'subsystemUuid',
         isHidden: true
       }],
@@ -87,21 +86,19 @@ export default {
       projectValuelist: {},
       subsystemConfig: {
         transfer: true,
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
-        idListName: 'uuid',
+        valueName: 'id',
+        idListName: 'id',
         dynamicUrl: '/api/rest/codehub/appmodule/search'
       },
       saving: false
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -138,13 +135,13 @@ export default {
           this.saving = true;
           this.$api.codehub.project.save(param).then(res => {
             this.saving = false;
-            this.$Message.success('操作成功');
+            this.$Message.success(this.$t('message.executesuccess'));
             this.$emit('close', true);
           }).catch(e => {
             this.saving = false;
           });
         } else {
-          this.$Message.error('请选择项目');
+          this.$Message.error(this.$t('term.codehub.pleaseselectaproject'));
         }
       }
     },
@@ -217,44 +214,6 @@ export default {
         });
       }
     },
-    // getAllval(uuid) {
-    //   let _this = this;
-    //   this.$api.codehub.project.getDetail({subsystemUuid: uuid}).then(res => {
-    //     if (res && res.Status == 'OK') {
-    //       if (res.Return.list && res.Return.list.length > 0) {
-    //         res.Return.list.forEach(li => {
-    //           if (_this.projectValuelist['source-' + li.sourceUuid.toString()]) {
-    //             _this.projectValuelist['source-' + li.sourceUuid.toString()].push(li);
-    //           }
-    //         });
-    //         let lists = _this.$utils.deepClone(res.Return.list);
-    //         let list = lists.filter(li => {
-    //           let sameli = lists.filter(l => { 
-    //             if ((l.sourceUuid == li.sourceUuid) && (l.projectName != li.projectName) && typeof l.projectKey == 'string') {
-    //               _this.$set(l, 'isRepeat', true);
-    //             }
-    //             return (l.sourceUuid == li.sourceUuid) && (l.projectName != li.projectName); 
-    //           });
-    //           if (sameli.length && !li.isRepeat) {
-    //             let list = [];
-    //             list.push(li.projectKey);
-    //             sameli.forEach(s => {
-    //               list.push(s.projectKey);
-    //             });
-    //             li.projectKey = list;
-    //           } else {
-    //             li.projectKey = typeof li.projectKey == 'string' ? [li.projectKey] : li.projectKey;
-    //           }
-            
-    //           return !li.isRepeat;
-    //         });
-    //         list.forEach(li => {
-    //           _this.setProjectval(li.sourceUuid, li.projectKey);
-    //         });
-    //       }
-    //     }
-    //   });
-    // },
     setProjectval(uuid, value) {
       let _this = this;
       this.projectConfig.forEach(pro => {
@@ -264,8 +223,7 @@ export default {
       });
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     selectSub: {
       handler: function(val) {
@@ -300,7 +258,7 @@ export default {
             _this.updataVal('subsystemUuid', val.uuid);
           }
         }
-        this.setting.title = '编辑映射';
+        this.setting.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')});
         if (val.projectList && val.projectList.length > 0) {
           if (this.projectConfig && this.projectConfig.length > 0) {
             this.projectConfig.forEach((pro) => {

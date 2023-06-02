@@ -118,9 +118,9 @@ export default {
             label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;
@@ -133,9 +133,9 @@ export default {
             type: 'select',
             label: this.$t('page.subsystem'),
             transfer: true,
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.subsystemUuid,
             onChange: (val) => {
               this.subsystemUuid = val;

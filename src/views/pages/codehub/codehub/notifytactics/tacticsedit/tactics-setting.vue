@@ -1,13 +1,13 @@
 <template>
   <div class="tactics-setting bg-grey" :style="{ width: rightWidth + 'px' }">
     <Tabs v-model="tabValue">
-      <TabPane label="参数" name="SettingParameter">
+      <TabPane :label="$t('page.param')" name="SettingParameter">
         <SettingParameter :id="id" :handler="handler"></SettingParameter>
       </TabPane>
-      <TabPane label="模板" name="SettingTemplate">
+      <TabPane :label="$t('page.template')" name="SettingTemplate">
         <SettingTemplate :id="id"></SettingTemplate>
       </TabPane>
-      <TabPane label="其他" name="SettingOther">
+      <TabPane :label="$t('page.others')" name="SettingOther">
         <SettingOther :id="id" :userList="config.userList"></SettingOther>
       </TabPane>
     </Tabs>

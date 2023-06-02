@@ -7,8 +7,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="actionData.id">编辑配置</div>
-        <div v-if="!actionData.id">添加配置</div>
+        <div v-if="actionData.id">{{ $t('dialog.title.edittarget',{'target':$t('page.config')}) }}</div>
+        <div v-if="!actionData.id">{{ $t('dialog.title.addtarget',{'target':$t('page.config')}) }}</div>
       </template>
       <template v-slot>
         <TsForm ref="actionForm" :item-list="actionFormConfig">
@@ -23,20 +23,12 @@
           <template slot="subSystemUuid">
             <TsFormSelect v-model="actionData.subSystemUuid" v-bind="subSystemConfig" :dataList="subSystemList" />
           </template>
-          <!--<template v-slot:targetBranch>
-            <TsFormSelect
-              ref="targetBranch"
-              v-model="actionData.targetBranch"
-              v-bind="branchConfig"
-              :dataList="targetBranchList"
-            />
-          </template>-->
           <template v-slot:arguments>
             <Tabs v-model="activedTab" name="actionEditTabs">
-              <TabPane label="参数设置" name="arguments" tab="actionEditTabs">
+              <TabPane :label="$t('term.pbc.paramconfig')" name="arguments" tab="actionEditTabs">
                 <Argument ref="argument" :action="actionData" @setArguments="setArguments"></Argument>
               </TabPane>
-              <TabPane label="参数说明" name="param" tab="actionEditTabs">
+              <TabPane :label="$t('page.paramdesc')" name="param" tab="actionEditTabs">
                 <Helpparam></Helpparam>
               </TabPane>
             </Tabs>
@@ -44,44 +36,37 @@
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" :loading="isSaving" @click="saveAction()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :loading="isSaving" @click="saveAction()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
-import TsForm from '@/resources/plugins/TsForm/TsForm';
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
-import Argument from './argument-edit.vue';
-import Helpparam from './helpparam.vue';
-
 export default {
   components: {
-    TsForm,
-    TsFormSelect,
-    Argument,
-    Helpparam
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    Argument: resolve => require(['./argument-edit.vue'], resolve),
+    Helpparam: resolve => require(['./helpparam.vue'], resolve)
   },
   props: {
     uuid: { type: Number },
     isShow: { type: Boolean, default: false }
   },
   data() {
-    var _this = this;
     return {
       isSaving: false,
       activedTab: 'arguments',
       allowEditParam: 0,
       actionData: { arguments: {} },
       triggerStatusList: [
-        { value: 'conflict', text: '冲突' },
-        { value: 'failed', text: '失败' },
-        { value: 'finish', text: '结束' },
-        { value: 'closed', text: '已关闭' }
+        { value: 'conflict', text: this.$t('page.conflict') },
+        { value: 'failed', text: this.$t('page.fail') },
+        { value: 'finish', text: this.$t('page.finish') },
+        { value: 'closed', text: this.$t('term.rdm.isclosed') }
       ],
       subSystemList: [],
-      //targetBranchList: [],
       actionDialogConfig: {
         type: 'modal',
         maskClose: false,
@@ -97,30 +82,35 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: '动作名称：',
+          label: this.$t('term.codehub.actionname'),
           maxlength: 50,
           validateList: ['required'],
           width: '30%',
-          onChange: function(name) {
-            _this.actionData.name = name;
+          onChange: (name) => {
+            this.actionData.name = name;
           }
         },
-        { type: 'slot', name: 'triggerStatus', label: '触发状态：', validateList: ['required'] },
+        { 
+          type: 'slot', 
+          name: 'triggerStatus', 
+          label: this.$t('term.deploy.triggerstate'), 
+          validateList: ['required'] 
+        },
         {
           type: 'select',
           name: 'systemUuid',
-          label: '触发系统：',
+          label: this.$t('term.codehub.triggersystem'),
           width: '30%',
           url: '/api/rest/codehub/appsystem/search',
-          rootName: 'list',
-          valueName: 'uuid',
+          rootName: 'tbodyList',
+          valueName: 'id',
           textName: 'name',
           search: true,
-          onChange: function(val) {
-            _this.actionData.systemUuid = val;
-            _this.actionData.subSystemUuid = '';
-            _this.actionData.versionUuid = '';
-            _this.actionFormConfig.forEach(element => {
+          onChange: (val) => {
+            this.actionData.systemUuid = val;
+            this.actionData.subSystemUuid = '';
+            this.actionData.versionUuid = '';
+            this.actionFormConfig.forEach(element => {
               if (element.name == 'versionUuid') {
                 element.params = {
                   systemUuid: val || -1,
@@ -128,55 +118,57 @@ export default {
                 };
               }
             });
-            _this.changeSubsys();
+            this.changeSubsys();
           }
         },
-        { type: 'slot', name: 'subSystemUuid', label: '触发子系统：' },
+        { 
+          type: 'slot', 
+          name: 'subSystemUuid', 
+          label: this.$t('term.codehub.triggersubsystem') 
+        },
         {
           type: 'select',
           name: 'versionUuid',
-          label: '触发版本：',
+          label: this.$t('term.codehub.triggerversion'),
           width: '30%',
           url: '/api/rest/codehub/version/search',
-          rootName: 'list',
-          valueName: 'uuid',
+          rootName: 'tbodyList',
+          valueName: 'id',
           textName: 'name',
           search: true,
           params: {
             systemUuid: -1,
             subSystemUuid: -1
           },
-          onChange: function(val) {
-            _this.actionData.versionUuid = val;
-            //_this.actionData.targetBranch = '';
-            //_this.getTargetBranch();
+          onChange: (val) => {
+            this.actionData.versionUuid = val;
           }
         },
         {
           type: 'text',
           name: 'targetBranch',
-          label: '目标分支：',
+          label: this.$t('page.targetbranch'),
           width: '30%',
-          desc: '用英文逗号分隔输入多个分支，支持通配符匹配',
+          desc: this.$t('term.codehub.targetbranchdesc'),
           clearable: true,
-          onChange: function(val) {
-            _this.actionData.targetBranch = val;
+          onChange: (val) => {
+            this.actionData.targetBranch = val;
           }
         },
         {
           type: 'radio',
           name: 'isActive',
-          label: '激活：',
+          label: this.$t('page.enable'),
           default: 1,
           dataList: [
-            { text: '是', value: 1 },
-            { text: '否', value: 0 }
+            { text: this.$t('page.yes'), value: 1 },
+            { text: this.$t('page.no'), value: 0 }
           ],
-          onChange: function(isActive) {
-            _this.actionData.isActive = isActive;
+          onChange: (isActive) => {
+            this.actionData.isActive = isActive;
           }
         },
-        { type: 'slot', name: 'arguments', label: '发送邮件：' }
+        { type: 'slot', name: 'arguments', label: this.$t('term.inspect.sendanemail') }
       ],
       statusConfig: {
         validateList: ['required'],
@@ -187,27 +179,21 @@ export default {
       subSystemConfig: {
         search: true,
         width: '30%',
-        rootName: 'list',
-        valueName: 'uuid',
+        rootName: 'tbodyList',
+        valueName: 'id',
         textName: 'name',
-        onChange: function(val) {
-          _this.actionData.versionUuid = '';
-          _this.actionFormConfig.forEach(element => {
+        onChange: (val) => {
+          this.actionData.versionUuid = '';
+          this.actionFormConfig.forEach(element => {
             if (element.name == 'versionUuid') {
               element.params = {
-                systemUuid: _this.actionData.systemUuid || -1,
+                systemUuid: this.actionData.systemUuid || -1,
                 subSystemUuid: val || 0
               };
             }
           });
         }
       }
-      /*branchConfig: {
-        clearable: false,
-        search: true,
-        width: '30%',
-        multiple: true
-      }*/
     };
   },
   beforeCreate() {},
@@ -227,9 +213,7 @@ export default {
           if (res.Status == 'OK') {
             this.actionData = res.Return;
             this.changeSubsys();
-            //this.getTargetBranch();
             this.actionData.triggerStatus = JSON.parse(this.actionData.triggerStatus);
-            //this.actionData.targetBranch = JSON.parse(this.actionData.targetBranch);
             this.actionFormConfig.forEach(element => {
               element.value = this.actionData[element.name];
             });
@@ -237,7 +221,6 @@ export default {
         });
       } else {
         this.subSystemList = [];
-        //this.targetBranchList = [];
         this.actionData = {
           id: null,
           name: '',
@@ -255,20 +238,19 @@ export default {
       }
     },
     changeSubsys() {
-      let _this = this;
-      if (_this.actionData.systemUuid) {
+      if (this.actionData.systemUuid) {
         this.$axios({
           method: 'post',
-          url: '/balantflow/api/rest/codehub/appmodule/search',
+          url: '/api/rest/codehub/appmodule/search',
           data: {
             systemId: this.actionData.systemUuid
           }
         }).then(res => {
-          _this.subSystemList = res.data.Return.list;
+          this.subSystemList = res.data.Return.list;
 
           this.actionFormConfig.forEach(element => {
             if (element.name == 'versionUuid') {
-              element.value = _this.actionData.versionUuid;
+              element.value = this.actionData.versionUuid;
             }
           });
         });
@@ -276,23 +258,6 @@ export default {
         this.subSystemList = [];
       }
     },
-    /*getTargetBranch: function() {
-      var _this = this;
-      if (this.actionData.versionUuid) {
-        let param = { uuid: this.actionData.versionUuid, expandBranch: true };
-        _this.$api.codehub.version.getDetail(param, {}).then(res => {
-          if (res && res.Status == 'OK') {
-            _this.versionData = res.Return;
-            if (_this.versionData.targetBranchList) {
-              _this.targetBranchList = _this.versionData.targetBranchList || [];
-            }
-          } else {
-            _this.targetBranchList = [];
-          }
-        });
-      }
-    },*/
-
     setArguments: function(argumentSettingForm) {
       this.actionData.arguments = JSON.stringify(argumentSettingForm);
     },
@@ -305,7 +270,7 @@ export default {
           .saveAction(this.actionData)
           .then(res => {
             if (res.Status == 'OK') {
-              this.$Message.success('保存成功');
+              this.$Message.success(this.$t('message.savesuccess'));
               this.close(true);
             }
           })

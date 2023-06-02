@@ -19,30 +19,27 @@ export default {
       maxSearchCount: '300', //检索提交日志条数
       tabledata: {
         theadList: [{
-          title: '需求编号',
+          title: $t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: '描述',
+          title: $t('page.description'),
           key: 'name'
         }, {
-          title: '负责人',
+          title: $t('page.responsibleperson'),
           key: 'handleUserId'
         }, {
-          title: '有效性',
+          title: $t('page.effectiveness'),
           key: 'isValid'
         }, {
-          title: '状态',
+          title: $t('page.status'),
           key: 'status'
         }, {
-          title: '更新时间',
+          title: $t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: '来源',
+          title: $t('page.source'),
           key: 'sourceUuid'
         }
-        // , {
-        //   key: 'action'
-        // }
         ],
         rowKey: 'no',
         selectedRemain: true,
@@ -50,25 +47,25 @@ export default {
       },
       showtabledata: {
         theadList: [{
-          title: '需求编号',
+          title: $t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: '名称',
+          title: $t('page.name'),
           key: 'name'
         }, {
-          title: '处理人',
+          title: $t('term.process.dealwithuser'),
           key: 'lcu'
         }, {
-          title: '需求有效性',
+          title: $t('term.codehub.issuesvalid'),
           key: 'isValid'
         }, {
-          title: '状态',
+          title: $t('page.status'),
           key: 'status'
         }, {
-          title: '更新时间',
+          title: $t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: '来源',
+          title: $t('page.source'),
           key: 'sourceUuid'
         }, {
           key: 'action'
@@ -83,16 +80,13 @@ export default {
   mounted() {
     this.getSouce();
     this.getList();
-
     if (this.versiondata && this.versiondata.subSystemVo) {
       let subSystemId = this.versiondata.subSystemVo.id;
       let count = this.$utils.getCookie(subSystemId + '_searchCommitCount') || '300';
       this.maxSearchCount = parseInt(count);
     }
   },
-  beforeDestroy() {
-
-  },
+  beforeDestroy() {},
   methods: {
     changeCurrent(page) {
       this.tabledata.currentPage = page;

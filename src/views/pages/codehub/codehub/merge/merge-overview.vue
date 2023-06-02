@@ -63,16 +63,16 @@ export default {
       systemConf: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         onChange: function(val) {
           _this.updateSub(val);
           _this.getSearch();
         }
       },
       subsystemConf: {
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
         valueName: 'uuid',
         onChange: function(val) {
@@ -94,9 +94,9 @@ export default {
             label: '系统',
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;
@@ -109,9 +109,9 @@ export default {
             type: 'select',
             label: '子系统',
             transfer: true,
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.subsystemUuid,
             onChange: (val) => {
               this.subsystemUuid = val;

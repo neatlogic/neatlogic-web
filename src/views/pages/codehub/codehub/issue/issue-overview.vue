@@ -59,12 +59,11 @@
         </TsTable>
       </div>
     </TsContain>
-    <IssueAsyn
+    <IssueAsynDialog
       v-if="showEdit"
-      :isShow="showEdit"
       :sourceList="syncSourceList"
-      @close="saveAsyn"
-    ></IssueAsyn>
+      @close="closeIssueAsyncDialog"
+    ></IssueAsynDialog>
   </div>
 </template>
 
@@ -75,7 +74,7 @@ export default {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    IssueAsyn: resolve => require(['./overview/issue-asyn'], resolve)
+    IssueAsynDialog: resolve => require(['./overview/issue-asyn-dialog'], resolve)
   },
   props: [''],
   data() {
@@ -116,9 +115,9 @@ export default {
       systemConf: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         onChange: (val) => {
           this.getSearch();
         }
@@ -126,9 +125,9 @@ export default {
       subsystemConf: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appmodule/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         onChange: (val) => {
           this.getSearch();
         }        
@@ -152,9 +151,11 @@ export default {
     sysnIssue() {
       this.showEdit = true;
     },
-    saveAsyn() {
+    closeIssueAsyncDialog(needRefresh) {
       this.showEdit = false;
-      this.getList();
+      if (needRefresh) {
+        this.getList();
+      }
     },
     changePageSize(size) {
       this.tabledata.pageSize = size;

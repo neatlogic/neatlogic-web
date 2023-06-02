@@ -86,9 +86,9 @@ export default {
             label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;

@@ -4,11 +4,9 @@
   </div>
 </template>
 <script>
-import TsForm from '@/resources/plugins/TsForm/TsForm';
-
 export default {
   components: {
-    TsForm
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: { action: { type: Object } },
   data() {
@@ -16,10 +14,10 @@ export default {
       argumentSettingFormConfig: {
         toUsers: {
           type: 'select',
-          label: '收件人：',
+          label: this.$t('page.recipient'),
           dynamicUrl: '/api/rest/codehub/user/search',
           idListName: 'idList',
-          rootName: 'list',
+          rootName: 'tbodyList',
           value: '',
           validateList: ['required'],
           valueName: 'userId',
@@ -29,13 +27,13 @@ export default {
           multiple: true
         },
         subject: {
-          label: '主题：',
+          label: this.$t('page.theme'),
           type: 'text',
           validateList: ['required'],
           value: ''
         },
         content: {
-          label: '内容：',
+          label: this.$t('page.content'),
           type: 'codemirror'
         }
       }
@@ -73,7 +71,6 @@ export default {
         }
       },
       deep: true
-      //immediate: true
     },
     returnJson: {
       handler: function(val) {

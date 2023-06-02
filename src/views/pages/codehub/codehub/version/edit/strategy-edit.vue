@@ -99,10 +99,10 @@ export default {
           transfer: true,
           name: 'versionTypeUuid',
           dynamicUrl: '/api/rest/codehub/versiontype/search?isActive=1',
-          rootName: 'list',
+          rootName: 'tbodyList',
           textName: 'name',
-          valueName: 'uuid',
-          idListName: 'uuid',
+          valueName: 'id',
+          idListName: 'id',
           onChange: (val) => {
             this.editvalList.versionTypeUuid = val;
           }
@@ -131,10 +131,10 @@ export default {
           name: 'systemUuid',
           transfer: true,
           dynamicUrl: '/api/rest/codehub/appsystem/search',
-          rootName: 'list',
+          rootName: 'tbodyList',
           textName: 'name',
-          valueName: 'uuid',
-          idListName: 'uuid',
+          valueName: 'id',
+          idListName: 'id',
           validateList: ['required'],
           value: '',
           onChange: (val) => {
@@ -180,10 +180,10 @@ export default {
         transfer: true,
         isHidden: true,
         dynamicUrl: '/api/rest/codehub/appmodule/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
-        idListName: 'uuid',
+        valueName: 'id',
+        idListName: 'id',
         validateList: ['required']
       },
       usepatternConfig: {
@@ -201,7 +201,7 @@ export default {
       srcbranchConfig: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/repository/branch/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
         valueName: 'name',
         idListName: 'keyword',
@@ -210,7 +210,7 @@ export default {
       targetbranchConfig: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/repository/branch/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
         valueName: 'name',
         idListName: 'keyword',
@@ -230,9 +230,9 @@ export default {
       issueStatusconfig: {
         transfer: true,
         url: '/api/rest/codehub/issue/status/get',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'displayName',
-        valueName: 'uuid',
+        valueName: 'id',
         multiple: true,
         params: {}
       },

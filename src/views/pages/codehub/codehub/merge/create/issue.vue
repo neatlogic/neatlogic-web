@@ -4,8 +4,8 @@
       <div class="input-border" style="padding:0 16px;margin-bottom:10px;">
         <Row :gutter="16">
           <Col span="18">
-            <Checkbox v-model="isValid">有效需求</Checkbox>
-            <span class="ml-10">检索提交日志</span>
+            <Checkbox v-model="isValid">{{ $t('term.codehub.effectivedemand') }}</Checkbox>
+            <span class="ml-10">{{ $t('term.codehub.retrievesubmissionlogs') }}</span>
             <Input
               v-model="maxSearchCount"
               number
@@ -14,10 +14,9 @@
               style="width:60px;"
               @on-change="getVaildlist()"
             />
-            <span class="ml-10">条</span>
+            <span class="ml-10">{{ $t('page.strip') }}</span>
           </Col>
           <Col span="6">
-          <!-- <FormInput v-model.trim="keyword" suffix="i-icon ts-search" placeholder="关键字" @keyup.enter.native="searchList()"></FormInput> -->
           </Col>
         </Row>
       </div>
@@ -37,8 +36,8 @@
             {{ getsource(row.sourceUuid) }}
           </template>
           <template slot="isValid" slot-scope="{row}">
-            <span v-if="row.isValid===1" class="text-success">有效需求</span>
-            <span v-else-if="row.isValid === 0" class="text-warning">无效需求</span>
+            <span v-if="row.isValid===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
+            <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
             <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
           </template>      
           <template slot="issueUpdateTime" slot-scope="{row}">
@@ -50,7 +49,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.uuid)">详情</li>
+                <li class="ts-list" @click="viewIssue(row.uuid)"> {{ $t('page.detail') }} </li>
               </ul>
             </div>
           </template>
@@ -63,12 +62,12 @@
               v-model.trim="addItem"
               type="textarea"
               autosize
-              placeholder="手工输入需求号，逗号分隔"
+              :placeholder="$t('term.codehub.inputissuesnumberdesc')"
               @on-enter="addIssue()"
             />
           </Col>
           <Col span="4">
-            <Button type="primary" @click="addIssue()">加入待合并需求</Button>
+            <Button type="primary" @click="addIssue()">{{ $t('term.codehub.addmergeissues') }}</Button>
           </Col>
         </Row>
       </div>
@@ -79,8 +78,8 @@
           {{ getsource(row.sourceUuid) }}
         </template>
         <template slot="isValid" slot-scope="{row}">
-          <span v-if="row.isValid===1" class="text-success">有效需求</span>
-          <span v-else-if="row.isValid === 0" class="text-warning">无效需求</span>
+          <span v-if="row.isValid===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
+          <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
           <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
         </template>  
         <template slot="issueUpdateTime" slot-scope="{row}">
@@ -89,28 +88,24 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <!-- <li class="ts-list" @click="viewIssue(row.uuid)">详情</li> -->
-              <li class="ts-trash" @click="deleteIssue(row.no)">删除</li>
+              <li class="ts-trash" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>        
       </TsTable>
     </div>
-    <div class="input-border padding-md"><Input v-model="description" type="textarea" placeholder="MR描述" /></div>
+    <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
   </div>
-  <div v-else class="text-tip text-center" style="line-height:2">请选择源分支和目标分支</div>
+  <div v-else class="text-tip text-center" style="line-height:2">{{ $t('term.codehub.selectoriginbranchandtargetbranch') }}</div>
 </template>
 
 <script>
 // 需求型的mr创建先获取需求状态再获取其他字段
-//import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import mixins from './createmixin.js';
 export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
-    // ,
-    // FormInput
   },
   mixins: [mixins],
   props: {
@@ -129,30 +124,27 @@ export default {
         theadList: [{
           key: 'selection'
         }, {
-          title: '需求编号',
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: '描述',
+          title: this.$t('page.description'),
           key: 'name'
         }, {
-          title: '负责人',
+          title: this.$t('page.responsibleperson'),
           key: 'handleUserId'
         }, {
-          title: '有效性',
+          title: this.$t('page.effectiveness'),
           key: 'isValid'
         }, {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'status'
         }, {
-          title: '更新时间',
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: '来源',
+          title: this.$t('page.source'),
           key: 'sourceUuid'
         }
-        // , {
-        //   key: 'action'
-        // }
         ],
         rowKey: 'no',
         selectedRemain: true,
@@ -161,36 +153,22 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
-
-  created() {
-  },
-
+  created() {},
   beforeMount() {},
-
-  mounted() {
-  },
-
+  mounted() {},
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {
     //取消正在搜索的请求
     let cancel = this.cancelAxios;
     cancel && cancel.cancel();
   },
-
   destroyed() {},
-
   methods: {
     addIssue() {
-      //this.addLi = [];
       let addlist = [];
       try {
         if (this.addItem) {
@@ -228,11 +206,6 @@ export default {
               }
             }
           } else if (list && list.length > 0) {
-            // list.forEach((m) => {
-            //   if (this.selectIssuelist.indexOf(m) == -1) {
-            //     this.selectIssuelist.push(m);
-            //   }
-            // });
             addlist = list;
           }
         }
@@ -312,7 +285,7 @@ export default {
         return;
       }
       if (this.type == 'issue' && this.maxSearchCount < 1) {
-        this.$Message.error('检索提交日志条数不能小于1');
+        this.$Message.error(this.$t('term.codehub.issueslogmaxcount'));
         return;
       }
       let _this = this;
@@ -363,9 +336,7 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {
     getTbody() {
       return function(tbodyList) {
@@ -394,7 +365,6 @@ export default {
       };
     }
   },
-
   watch: {
     srcBranch(val) {
       this.selectIssuelist = [];
@@ -409,7 +379,6 @@ export default {
       this.getVaildlist();      
     }
   }
-
 };
 
 </script>

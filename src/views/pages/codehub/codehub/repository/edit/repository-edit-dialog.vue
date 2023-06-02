@@ -5,7 +5,7 @@
   >
     <template v-slot>
       <div>
-        <TsForm ref="editform" :itemList="formConfig">
+        <TsForm ref="editform" v-model="editData" :itemList="formConfig">
           <template slot="repoServiceUuid">
             <TsFormSelect
               v-model="editData.repoServiceUuid"
@@ -35,7 +35,7 @@
     <template v-slot:footer>
       <div class="footer-btn-contain">
         <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
+        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -49,7 +49,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
-    uuid: {type: [String, Boolean]},
+    id: {type: [String, Number]},
     subsystemUuid: String,
     systemUuid: String
   },
@@ -58,7 +58,7 @@ export default {
       vaildConfig: ['required'],
       repoName: '',
       setting: {
-        title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('term.deploy.warehouse')}) : this.$t('page.newtarget', {'target': this.$t('term.deploy.warehouse')}),
+        title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.deploy.warehouse')}) : this.$t('page.newtarget', {'target': this.$t('term.deploy.warehouse')}),
         maskClose: false,
         width: 'medium',
         height: '360px',
@@ -120,9 +120,9 @@ export default {
         name: 'systemUuid',
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid',
+        valueName: 'id',
         validateList: ['required'],
         onChange: (val) => {
           this.changeSubsys(val);
@@ -165,27 +165,26 @@ export default {
       subsysConfig: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appmodule/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid'
+        valueName: 'id'
       },
       serviceType: null,
       serviceConfig: {
         transfer: true,
         validateList: ['required'],
         url: '/api/rest/codehub/repositoryservice/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
-        valueName: 'uuid'
+        valueName: 'id'
       },
-      serveList: {},
-      isSubmit: false//是否提交中，需要禁用调提交按钮
+      serveList: {}
     };
   },
   beforeCreate() {},
   created() {
-    if (this.uuid) {
-      this.getDetail(this.uuid);
+    if (this.id) {
+      this.getDetail(this.id);
     } else {
       Object.assign(this.editData, {
         repoServiceUuid: '',
@@ -221,20 +220,16 @@ export default {
           this.$delete(param, 'branchesPath');
           this.$delete(param, 'tagsPath');
         }
-        this.uuid && Object.assign(param, {uuid: this.uuid});
-        this.isSubmit = true;
+        this.id && Object.assign(param, {id: this.id});
         this.$api.codehub.repository.save(param).then((res) => {
-          this.isSubmit = false;
           this.$emit('close', true);
-        }).catch((error) => {
-          this.isSubmit = false;
         });
       }
     },
-    getDetail(uuid) {
+    getDetail(id) {
       let param = {};
-      if (uuid) {
-        Object.assign(param, {uuid: uuid});
+      if (id) {
+        Object.assign(param, {id: id});
       }
       this.$api.codehub.repository.getDetail(param).then(res => {
         if (res.Return) {
@@ -323,7 +318,7 @@ export default {
     },
     serveList: {
       handler: function(val) {
-        if (val && val.uuid) {
+        if (val && val.id) {
           if (val.type == 'svn') {
             this.formConfig.forEach(form => {
               if (form.name == 'createMode') {
@@ -331,7 +326,7 @@ export default {
                 this.$set(form, 'value', 'import');
               }
             });
-            this.$api.codehub.service.getDetail({uuid: val.uuid, getDelegation: true}).then(res => {
+            this.$api.codehub.service.getDetail({id: val.id, getDelegation: true}).then(res => {
               if (res && res.Status == 'OK') {
                 this.formConfig.forEach(form => {
                   if (form.name == 'createMode') {
@@ -351,7 +346,7 @@ export default {
             });
           }
         }
-        this.editData.repoServiceUuid = val.uuid;
+        this.editData.repoServiceUuid = val.id;
         this.repoName = val.name;
         this.serviceType = val.type;
       },

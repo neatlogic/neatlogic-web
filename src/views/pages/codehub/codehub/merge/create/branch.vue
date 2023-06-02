@@ -1,20 +1,7 @@
 <template>
   <div>
-    <!-- <div class="input-border" style="padding:0 16px;margin-bottom:10px;">
-      <Row :gutter="16">
-        <Col span="18">
-        <Checkbox v-model="isValid" class="ml-10">有效需求</Checkbox>
-        <span class="mr-10">检索提交日志</span>
-        <Input v-model="maxSearchCount" number type="number" min="1" style="width:60px;" @on-change="getVaildlist()" />
-        <span class="ml-10">条</span>
-        </Col>
-        <Col span="6">
-          <FormInput v-model.trim="keyword" suffix="i-icon ts-search" placeholder="关键字" @keyup.enter.native="searchList()"></FormInput>
-        </Col>
-      </Row>
-    </div> -->
     <div>
-      <div v-if="!srcBranch" class="text-tip text-center" style="line-height:2">请选择源分支和目标分支</div>
+      <div v-if="!srcBranch" class="text-tip text-center" style="line-height:2">{{ $t('term.codehub.selectoriginbranchandtargetbranch') }}</div>
       <Loading v-if="isLoad" loadingShow></Loading>
       <div v-else-if="srcBranch && targetBranch" :class="'issue-' + isValid">
         <TsTable
@@ -26,14 +13,14 @@
           @changePageSize="changePageSize"
         >
           <template slot="no" slot-scope="{ row }">
-            {{ row.no || '未知需求' }}
+            {{ row.no || $t('term.codehub.unknownrequirement') }}
           </template>
           <template slot="sourceUuid" slot-scope="{ row }">
             {{ getsource(row.sourceUuid) }}
           </template>
           <template slot="isValid" slot-scope="{ row }">
-            <span v-if="row.isValid === 1" class="text-success">有效需求</span>
-            <span v-else-if="row.isValid === 0" class="text-warning">无效需求</span>
+            <span v-if="row.isValid === 1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
+            <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
             <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
           </template>
           <template slot="issueUpdateTime" slot-scope="{ row }">
@@ -48,7 +35,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.uuid)">详情</li>
+                <li class="ts-list" @click="viewIssue(row.uuid)">{{ $t('page.detail') }}</li>
               </ul>
             </div>
           </template>
@@ -58,20 +45,18 @@
         </TsTable>
       </div>
     </div>
-    <div v-if="srcBranch && targetBranch" class="input-border padding-md"><Input v-model="description" type="textarea" placeholder="MR描述" /></div>
+    <div v-if="srcBranch && targetBranch" class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
   </div>
 </template>
 
 <script>
 // 分支型的mr创建先获取需求状态再获取其他字段
-//import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import mixins from './createmixin.js';
 export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     CommitDetail: resolve => require(['./commit-table.vue'], resolve)
-    //,FormInput
   },
   mixins: [mixins],
   props: {},
@@ -83,31 +68,20 @@ export default {
       cancelAxios: null //取消接口调用用
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {
     //取消正在搜索的请求
     let cancel = this.cancelAxios;
     cancel && cancel.cancel();
   },
-
   destroyed() {},
-
   methods: {
     getissueStatuslist() {
       this.$api.codehub.merge.getStatusList({ type: 'issue' }).then(res => {
@@ -234,9 +208,7 @@ export default {
         });
     }
   },
-
   filter: {},
-
   computed: {
     getTbody() {
       return function() {
@@ -246,12 +218,10 @@ export default {
             return this.isValid ? tbody.isValid : tbody;
           });
         }
-
         return list;
       };
     }
   },
-
   watch: {
     srcBranch(val) {
       this.$emit('getIsuuelist', []);

@@ -65,6 +65,7 @@
     "selectprotocol": "Please select a protocol",
     "filecount": "Upload up to {target} files",
     "leastonetarget": "Please add at least one {target}",
-    "pleaseinputcorrecttarget": "Please enter the correct {target}"
+    "pleaseinputcorrecttarget": "Please enter the correct {target}",
+    "completetheform": "Complete the form"
   }
 }

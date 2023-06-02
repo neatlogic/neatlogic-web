@@ -63,17 +63,11 @@ export default {
           textName: 'name',
           valueName: 'name',
           dynamicUrl: '/api/rest/codehub/repository/branch/search',
-          rootName: 'list',
+          rootName: 'tbodyList',
           params: {
             repositoryUuid: _this.repositoryUuid
           }
         }
-        // {
-        //   type: 'text',
-        //   label: '描述',
-        //   name: 'description',
-        //   value: ''
-        // }
       ]
     };
   },
