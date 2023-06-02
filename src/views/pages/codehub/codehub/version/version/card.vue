@@ -12,43 +12,44 @@
       </div>
     </template>
     <template slot-scope="{ row }">
-      <div>
-        <table class="table" style="table-layout:fixed;">
-          <tbody>
-            <tr>
-              <td>
-                <span class="text-success h3">{{ row.name }}</span>
-                <Tag v-if="row.versionTypeVo" color="default" class="tag-label">{{ row.versionTypeVo.description }}</Tag>
-                <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]" style="opacity:.7;margin-left:10px">{{ typeTxt[row.versionTypeStrategyRelationVo.versionStrategyType] }}</Tag>
-                
-              </td>
-              <td rowspan="2">
-                <div v-if="row.versionTypeStrategyRelationVo">
-                  <i class="ts-branch text-tip h3 text-icon mr-10"></i>
-                  {{ row.versionTypeStrategyRelationVo.srcBranch }}
-                  <i class="ts-long-arrow-right text-tip h2 branch-sep mr-20 ml-20"></i>
-                  <i class="ts-branch text-tip h3 text-icon mr-10"></i>
-                  {{ row.versionTypeStrategyRelationVo.targetBranch }}
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <Tooltip v-if="showtips(row)" theme="light" max-width="300">
-                  <div>{{ setTxt(row,'text') }}</div>
-                  <div slot="content">
-                    <div>{{ setTxt(row,'tips') }}</div>
-                  </div>
-                </Tooltip>
-                <div v-else>{{ setTxt(row,'text') }}</div>
-              </td>
-              <td width="300" class="text-right">
-                <span>{{ row.fcu }}</span>
-                <span class="text-tip ml-10">{{ row.fcd | formatDate }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="padding-sm">
+        <TsRow class="mb-sm">
+          <Col span="24">
+            <span class="text-success h3">{{ row.version }}</span>
+            <Tag v-if="row.versionTypeVo" color="default" class="tag-label">{{ row.versionTypeVo.description }}</Tag>
+            <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]" class="ml-sm">
+              {{ typeTxt[row.versionTypeStrategyRelationVo.versionStrategyType] }}
+            </Tag>
+          </Col>
+        </TsRow>
+        <TsRow>
+          <Col span="8">
+            <Tooltip v-if="showtips(row)" theme="light" max-width="300">
+              <div>{{ setTxt(row,'text') }}</div>
+              <div slot="content">
+                <div>{{ setTxt(row,'tips') }}</div>
+              </div>
+            </Tooltip>
+            <div v-else>{{ setTxt(row,'text') }}</div>
+          </Col>
+          <Col span="8">
+            <div v-if="row.versionTypeStrategyRelationVo">
+              <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+              {{ row.versionTypeStrategyRelationVo.srcBranch }}
+              <span class="ts-long-arrow-right text-tip h2 branch-sep mr-sm"></span>
+              <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+              {{ row.versionTypeStrategyRelationVo.targetBranch }}
+            </div>
+          </Col>
+          <Col span="8">
+            <UserCard
+              v-if="row.fcu"
+              :uuid="row.fcu"
+              :hideAvatar="true"
+            ></UserCard>
+            <span class="text-tip pl-sm">{{ row.fcd | formatDate }}</span>
+          </Col>
+        </TsRow>
       </div>
     </template>
   </TsCard>
@@ -58,7 +59,8 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   props: {
     versionData: {
@@ -86,6 +88,7 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
+        padding: false,
         pageType: 'number',
         cardList: []
       },
@@ -154,7 +157,7 @@ export default {
     showtips() {
       return function(config) {
         let isshow = false;
-        if ((config.systemVo && config.systemVo.description) || (config.subSystemVo && config.subSystemVo.description)) {
+        if ((config.appSystemVo && config.appSystemVo.abbrName) || (config.appModuleVo && config.appModuleVo.abbrName)) {
           isshow = true;
         }
         return isshow;
@@ -163,12 +166,12 @@ export default {
     setTxt() {
       return function(config, type) {
         let text = '';
-        let prev = config.systemVo || '';
-        let next = config.subSystemVo || '';
+        let prev = config.appSystemVo || '';
+        let next = config.appModuleVo || '';
         if (prev) {
-          text = prev.name + (prev.description ? ('(' + prev.description + ')') : '');
+          text = prev.abbrName + (prev.name ? ('(' + prev.name + ')') : '');
           if (next) {
-            text += ' / ' + next.name + (next.description ? ('(' + next.description + ')') : '');
+            text += ' / ' + (next.abbrName ? next.abbrName : '') + (next.name ? ('(' + next.name + ')') : '');
           }
         }
         return text;

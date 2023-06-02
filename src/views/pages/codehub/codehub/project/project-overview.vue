@@ -126,7 +126,7 @@ export default {
             type: 'select',
             label: '系统',
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/system/search',
+            dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'list',
             textName: 'name',
             valueName: 'uuid',
@@ -194,7 +194,7 @@ export default {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'subsystemUuid')) {
             this.$set(item, 'params', {systemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {

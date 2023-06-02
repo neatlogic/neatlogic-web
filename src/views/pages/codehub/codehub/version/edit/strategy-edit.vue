@@ -130,7 +130,7 @@ export default {
           label: this.$t('page.system'),
           name: 'systemUuid',
           transfer: true,
-          dynamicUrl: '/api/rest/codehub/system/search',
+          dynamicUrl: '/api/rest/codehub/appsystem/search',
           rootName: 'list',
           textName: 'name',
           valueName: 'uuid',
@@ -179,7 +179,7 @@ export default {
       subsystemConfig: {
         transfer: true,
         isHidden: true,
-        dynamicUrl: '/api/rest/codehub/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',

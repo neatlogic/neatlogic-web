@@ -74,8 +74,8 @@ export default {
       },
       searchVal: {},
       statusList: {
-        'succeed': 'success',
-        'failed': 'error'
+        succeed: 'success',
+        failed: 'error'
       },
       searchConfig: {
         search: true,
@@ -85,7 +85,7 @@ export default {
             type: 'select',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/system/search',
+            dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'list',
             textName: 'name',
             valueName: 'uuid',
@@ -101,9 +101,9 @@ export default {
             type: 'select',
             label: this.$t('page.subsystem'),
             transfer: true,
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.subsystemUuid,
             onChange: (val) => {
               this.subsystemUuid = val;
@@ -198,7 +198,7 @@ export default {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'subsystemUuid')) {
             this.$set(item, 'params', {systemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {

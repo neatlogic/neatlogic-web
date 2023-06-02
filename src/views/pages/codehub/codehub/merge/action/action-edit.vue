@@ -111,7 +111,7 @@ export default {
           name: 'systemUuid',
           label: '触发系统：',
           width: '30%',
-          url: '/api/rest/codehub/system/search',
+          url: '/api/rest/codehub/appsystem/search',
           rootName: 'list',
           valueName: 'uuid',
           textName: 'name',
@@ -259,7 +259,7 @@ export default {
       if (_this.actionData.systemUuid) {
         this.$axios({
           method: 'post',
-          url: '/balantflow/api/rest/codehub/subsystem/search',
+          url: '/balantflow/api/rest/codehub/appmodule/search',
           data: {
             systemId: this.actionData.systemUuid
           }

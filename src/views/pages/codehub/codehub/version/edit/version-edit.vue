@@ -5,7 +5,6 @@
         <TsForm
           ref="editform"
           :itemList="formConfig"
-          itemWidth="50%"
           :labelWidth="80"
         >
           <template slot="subsystemUuid">
@@ -20,7 +19,6 @@
         <TsForm
           ref="versionform"
           :itemList="versionConfig"
-          itemWidth="50%"
           :labelWidth="80"
         >
           <template slot="name">
@@ -117,7 +115,7 @@ export default {
         name: 'systemUuid',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/api/rest/codehub/system/search',
+        dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
@@ -162,7 +160,7 @@ export default {
         width: '100%',
         transfer: true,
         validateList: ['required'],
-        dynamicUrl: '/api/rest/codehub/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid' 
@@ -240,7 +238,7 @@ export default {
       this.hideName();
       if (val) {
         this.$set(this.subsystemConfig, 'params', {systemId: val});
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
       } else {
         this.$set(this.subsystemConfig, 'params', {});
         this.$set(this.subsystemConfig, 'dynamicUrl', '');
@@ -327,7 +325,7 @@ export default {
         if (val) {
           this.setVal('systemUuid', val);
           this.$set(this.subsystemConfig, 'params', {systemId: val});
-          this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+          this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
         }
       },
       immediate: true

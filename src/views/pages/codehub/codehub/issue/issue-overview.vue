@@ -115,7 +115,7 @@ export default {
       showEdit: false,
       systemConf: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/system/search',
+        dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',
@@ -125,7 +125,7 @@ export default {
       },
       subsystemConf: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/subsystem/search',
+        dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'list',
         textName: 'name',
         valueName: 'uuid',

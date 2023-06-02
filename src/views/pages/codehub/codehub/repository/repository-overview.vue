@@ -158,7 +158,7 @@ export default {
             value: '',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/system/search',
+            dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'list',
             textName: 'name',
             valueName: 'uuid',
@@ -338,7 +338,7 @@ export default {
         this.searchConfig.searchList.forEach((item) => {
           if (item && item.name == 'subsystemUuid') {
             item.params = { systemId: val };
-            item.dynamicUrl = '/api/rest/codehub/subsystem/search';
+            item.dynamicUrl = '/api/rest/codehub/appmodule/search';
           }
         });
       } else {
