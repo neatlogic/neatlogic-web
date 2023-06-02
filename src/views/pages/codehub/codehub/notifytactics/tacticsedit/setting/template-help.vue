@@ -4,7 +4,7 @@
       :isShow="isDialog"
       width="large"
       height="404px"
-      title="帮助"
+      :title="$t('page.help')"
       :bgOp="true"
       @on-close="close"
     >
@@ -24,11 +24,11 @@
           <Col span="16">
             <div class="detali">
               <div class="title">
-                <div class="text-title">标题</div>
+                <div class="text-title">{{ $t('page.title') }}</div>
                 <div v-if="templateConfig" class="content-text">{{ templateConfig.title }}</div>
               </div>
               <div class="content">
-                <div class="text-title">内容</div>
+                <div class="text-title">{{ $t('page.content') }}</div>
                 <div v-if="templateConfig" class="content-text">{{ templateConfig.content }}</div>
               </div>
             </div>
@@ -36,8 +36,8 @@
         </TsRow>
       </template>
       <template v-slot:footer>
-        <Button type="text" @click="isDialog = false">取消</Button>
-        <Button type="primary" @click="addTemplate">添加模板</Button>
+        <Button type="text" @click="isDialog = false">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="addTemplate">{{ $t('dialog.title.addtarget',{'target':$t('page.template')}) }}</Button>
       </template>
     </TsDialog>
   </div>

@@ -4,10 +4,10 @@
       <div class="title overflow" :title="delName">{{ delName }}</div>
       <div class="btn-list">
         <span class="btn-style" @click="close">
-          取消
+          {{ $t('page.cancel') }}
         </span>
         <Button type="error" :size="buttonSize" @click="delData">
-          确定
+          {{ $t('page.confirm') }}
         </Button>
       </div>
     </div>

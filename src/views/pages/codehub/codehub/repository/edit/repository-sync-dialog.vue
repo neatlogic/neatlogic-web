@@ -20,7 +20,7 @@ export default {
   },
   filters: {},
   props: {
-    uuid: {type: [String, Boolean]}
+    id: {type: [String, Number]}
   },
   data() {
     return {
@@ -39,11 +39,11 @@ export default {
         validateList: ['required'],
         transfer: true,
         url: '/api/rest/codehub/repository/branch/search',
-        rootName: 'list',
+        rootName: 'tbodyList',
         textName: 'name',
         valueName: 'name',
         multiple: true,
-        params: {'repositoryUuid': this.uuid},
+        params: {'repositoryUuid': this.id},
         onChange: (val) => {
           this.checkoutBranchesVal = val;
         }
@@ -52,7 +52,7 @@ export default {
       editvalList: {
         name: '',
         type: '',
-        uuid: ''
+        id: ''
       },
       saving: false
     };
@@ -74,7 +74,7 @@ export default {
     confirmSync() {
       if (this.$refs.editform.valid() && this.checkoutBranchesVal.length > 0) {
         let param = {
-          'uuid': this.uuid,
+          'id': this.id,
           'checkoutBranches': this.checkoutBranchesVal
         };
         this.saving = true;

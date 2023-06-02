@@ -49,73 +49,81 @@ EsLint、vetur、Prettier - Code formatter、i18nhelper(自动进行i18n键值�
 #### 设置>命令面板>输入“setting”>选择“首选项：打开设置”>打开 settings.json
 ```
 {
-  "git.user.name": "自己的git用户名",
-  "git.user.email": "自己的git邮箱",
-  "editor.fontSize": 13,
-  "git.enableCommitSigning": true,
-  "gitlens.views.repositories.files.layout": "list",
-  "files.autoSave": "afterDelay",
-  "git.confirmSync": false,
-  "gitlens.advanced.similarityThreshold": null,
-  "editor.tabSize": 2,
-  "vetur.validation.script": true,
-  "vetur.validation.style": true,
-  "vetur.format.defaultFormatter.html": "js-beautify-html",
-  "editor.formatOnSave": false,
-  "vetur.format.defaultFormatterOptions": {
-    "js-beautify-html": {
-      "wrap_attributes": "auto",
-      "indent_size": 2,
-      "indent_char": " ",
-      "indent_with_tabs": false,
-      "eol": "\n",
-      "end_with_newline": true,
-      "preserve_newlines": true,
-      "max-preserve-newlines": 3,
-      "indent-inner-html": true,
-      "wrap_line_length": 120,
-      "editorconfig": true
-    }
-  },
-  "prettier.semi": true,
-  "prettier.singleQuote": true,
-  "html.format.maxPreserveNewLines": 3,
-  "html.format.enable": false,
-  "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[less]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "gitlens.advanced.blame.customArguments": [],
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "HookyQR.beautify"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "javascript.updateImportsOnFileMove.enabled": "always",
-
-    "[json]": {
-    "editor.defaultFormatter": "HookyQR.beautify"
-  },
-  "window.zoomLevel": 1,
-  "[git-commit]": {
-    "editor.rulers": [
-      72
-    ],
-    "workbench.editor.restoreViewState": false
-  },
-  "gitlens.advanced.messages": {},  
-  "gitlens.gitCommands.closeOnFocusOut": true,
-  "workbench.startupEditor": "newUntitledFile",
-  "npm.enableRunFromFolder": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  }
+   "gitlens.views.repositories.files.layout": "list",
+    "git.confirmSync": false,
+    "gitlens.advanced.similarityThreshold": null,
+    "editor.tabSize": 2,
+    "vetur.validation.script": true,
+    "vetur.validation.style": true,
+    "vetur.format.defaultFormatter.html": "js-beautify-html",
+    "editor.formatOnSave": false,
+    "vetur.format.defaultFormatterOptions": {
+      "js-beautify-html": {
+        "wrap_attributes": "auto",
+        "indent_size": 2,
+        "indent_char": " ",
+        "indent_with_tabs": false,
+        "eol": "\n",
+        "end_with_newline": true,
+        "preserve_newlines": true,
+        "max-preserve-newlines": 3,
+        "indent-inner-html": true,
+        "wrap_line_length": 120,
+        "editorconfig": true
+      }
+    },
+    "html.format.maxPreserveNewLines": 3,
+    "html.format.enable": false,
+    "[vue]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[less]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "gitlens.advanced.blame.customArguments": [],
+    "[javascript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always",
+  
+      "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[git-commit]": {
+      "editor.rulers": [
+        72
+      ],
+      "workbench.editor.restoreViewState": false
+    },
+    "gitlens.advanced.messages": {},  
+    "gitlens.gitCommands.closeOnFocusOut": true,
+    "workbench.startupEditor": "newUntitledFile",
+    "npm.enableRunFromFolder": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.autoClosingBrackets":"always",
+    "security.workspace.trust.untrustedFiles": "newWindow",
+    "workbench.editorAssociations": {
+      "*.html": "default"
+    },
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "eslint.alwaysShowStatus": true,
+    "eslint.format.enable": true,
+    "extensions.ignoreRecommendations": true,
+    "npm.keybindingsChangedWarningShown": true,
+    "settingsSync.ignoredSettings": [],
+    "window.zoomLevel": 1,
+    "typescript.disableAutomaticTypeAcquisition": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "eslint.codeActionsOnSave.rules": null
 }
 
 ```

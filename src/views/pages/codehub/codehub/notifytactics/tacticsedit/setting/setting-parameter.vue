@@ -1,7 +1,7 @@
 <template>
   <div class="setting-parameter">
     <TsDialog
-      title="参数列表"
+      :title="$t('page.paramslist')"
       width="large"
       height="650px"
       className="setting-dialog"
@@ -18,7 +18,7 @@
               v-model="keyword"
               class="input-border"
               prefix="i-icon ts-search"
-              placeholder="关键字"
+              :placeholder="$t('page.keyword')"
               clearable
               @on-enter="getParamList(1)"
               @on-clear="getParamList(1)"
@@ -39,7 +39,7 @@
           >
             <template slot="firstBtn">
               <div class="add text-action" @click.stop="addSetting">
-                <i class="ts-plus">参数</i>
+                <i class="ts-plus">{{ $t('page.param') }}</i>
               </div>
               <div v-if="isAddParam" class="param-edit">
                 <EditParam
@@ -53,7 +53,7 @@
             </template>
             <template slot-scope="{ row }">
               <div>
-                <div class="parma-item" :title="row.isEditable ? '' : '系统参数不允许操作'">
+                <div class="parma-item" :title="row.isEditable ? '' : $t('term.framework.sysparamsnotedit')">
                   <div :class="row.isDel?'text-mask':''">
                     <div class="title">
                       <div class="type-block text-tip bg-grey">{{ row.paramTypeName }}</div>
@@ -63,13 +63,13 @@
                       {{ row.label }}
                     </div>
                     <div v-if="row.isEditable" class="operation text-tip bg-block" :class="row.isDel?'block':''">
-                      <i class="tsfont-edit" title="编辑" @click.stop="editSetting(row)"></i>
-                      <i class="tsfont-trash-s" title="删除" @click="delSetting(row)"></i>s
+                      <i class="tsfont-edit" :title="$t('page.edit')" @click.stop="editSetting(row)"></i>
+                      <i class="tsfont-trash-s" :title="$t('page.delete')" @click="delSetting(row)"></i>s
                     </div>
                   </div>
                   <DelItme
                     v-if="row.isDel"
-                    :delName="'确定删除该参数：' + row.name + '?'"
+                    :delName="$t('dialog.content.deleteconfirm', {target: row.name})"
                     buttonSize="small"
                     @on-del="delParam(row)"
                     @on-close="closeParam(row)"
@@ -117,7 +117,6 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       cardData: {
         classname: 'card-item',
@@ -211,7 +210,7 @@ export default {
       };
       this.$api.codehub.tactics.paramDelete(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('删除成功');
+          this.$Message.success(this.$t('message.deletesuccess'));
           const list = this.cardData.cardList.filter(p => p.name != item.name);
           this.cardData.cardList = list;
         }

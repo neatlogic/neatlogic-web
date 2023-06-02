@@ -2,7 +2,7 @@
   <div>
     <TsDialog
       v-if="params.type === 'tacticsName'"
-      title="重命名"
+      :title="$t('page.rename')"
       :isShow="isShow"
       @on-ok="saveTacticsName"
       @on-close="close"
@@ -11,7 +11,7 @@
     </TsDialog>
     <TsDialog
       v-if="params.type === 'tacticsUser'"
-      title="异常通知"
+      :title="$t('term.codehub.exceptionnotification')"
       :isShow="isShow"
       @on-ok="saveTacticsUser"
       @on-close="close"
@@ -37,7 +37,7 @@ export default {
         {
           name: 'name',
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           value: null,
           readonly: false,
           className: 'name-input',
@@ -49,7 +49,7 @@ export default {
         {
           name: 'userList',
           type: 'userselect',
-          label: '对象',
+          label: this.$t('page.object'),
           transfer: true,
           multiple: true,
           value: null,
@@ -84,7 +84,7 @@ export default {
       this.$api.codehub.tactics.saveNotify(data).then(res => {
         if (res.Status == 'OK') {
           this.$Notice.success({
-            title: '重命名成功',
+            title: this.$t('message.executesuccess'),
             duration: 1.5
           });
           this.$emit('update:isShow', false);
@@ -99,7 +99,7 @@ export default {
       };
       this.$api.codehub.tactics.addAdminUser(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('保存成功');
+          this.$Message.success(this.$t('message.savesuccess'));
           this.$emit('update:isShow', false);
           this.$emit('updateTactics', { userList: this.formUser[0].value });
         }

@@ -12,67 +12,8 @@
       <template>
         <div class="notify-condition">
           <Loading :loadingShow="loadingShow" type="fix"></Loading>
-          <!-- <div id="conditionBox" class="edit-condition conditionContent">
-            <div class="add-condition">
-              <span class="ts-plus text-action text-primary" @click="addGroup">条件</span>
-            </div>
-            <div v-if="conditionConfig && conditionConfig.conditionGroupList && conditionConfig.conditionGroupList.length > 0" style="padding-bottom: 16px;">
-              <div v-for="(item, groupIndex) in conditionConfig.conditionGroupList" :key="groupIndex" class="group-border dividing-color">
-                <div class="group-content bg-op">
-                  <div v-for="(conItem, conIdex) in item.conditionList" :key="conIdex" class="condition-content input-border">
-                    <TsRow :gutter="8">
-                      <Col span="6">
-                      <div>
-                        <TsFormSelect v-model="conItem.name" :dataList="paramList" valueName="name" textName="name" showName="showName" @on-change="changeConItem(conItem, getExpressionList(conItem.name))"></TsFormSelect>
-                      </div>
-                      </Col>
-                      <Col :span="conItem.isShowConditionValue && conItem.isShowConditionValue == 1?'6':'16'">
-                      <div>
-                        <TsFormSelect v-model="conItem.expression" :dataList="getExpressionList(conItem.name).expressionList" valueName="expression" textName="expressionName" @on-change="changeExpression(conItem)"></TsFormSelect>
-                      </div>
-                      </Col>
-                      <Col v-if="conItem.isShowConditionValue && conItem.isShowConditionValue == 1" span="10">
-                      <div v-if="!loadingShow">
-                        <div :is="handlerType(conItem.name)" v-model="conItem.valueList" :config="getselectConfig(conItem.name)"></div>
-                      </div>
-                      </Col>
-                      <Col span="2">
-                      <div class="btn-group">
-                        <span class="ts-plus" style="padding-right:8px;" @click="addCondition(item)"></span>
-                        <span class="ts-minus" @click="delCondition(item, conIdex, groupIndex)"></span>
-                      </div>
-                      </Col>
-                    </TsRow>
-                    <div v-if="conIdex < item.conditionList.length - 1">
-                      <Row>
-                        <Col span="12"></Col>
-                        <Col span="10">
-                        <div class="condition-joinType text-href">
-                          <TsFormSelect v-model="item.conditionRelList[conIdex].joinType" :dataList="relList" :clearable="false" border="none" size="small"></TsFormSelect>
-                        </div>
-                        </Col>
-                      </Row>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="groupIndex < conditionConfig.conditionGroupList.length - 1">
-                  <Row>
-                    <Col span="1"></Col>
-                    <Col span="20">
-                    <div class="condition-joinType text-href">
-                      <TsFormSelect v-model="conditionConfig.conditionGroupRelList[groupIndex].joinType" :dataList="relList" :clearable="false" border="none" size="small"></TsFormSelect>
-                    </div>
-                    </Col>
-                  </Row>
-                </div>
-                <div class="delGroup" @click="delGroup(groupIndex)">
-                  <i class="ts-remove-s"></i>
-                </div>
-              </div>
-            </div>
-          </div> -->
           <div class="select-action">
-            <div class="text-title require-label" style="padding-bottom: 8px;">动作</div>
+            <div class="text-title require-label" style="padding-bottom: 8px;">{{ $t('page.actions') }}</div>
             <div class="action-main bg-grey">
               <div v-for="(item, index) in actionList" :key="index" class="input-border action-list">
                 <div>
@@ -84,7 +25,7 @@
                       <Col span="12">
                         <TsFormSelect
                           v-model="item.templateId"
-                          placeholder="请选择通知模板"
+                          :placeholder="$t('term.codehub.pleaseselectanotificationtemplate')"
                           :validateList="validateSetting.required"
                           :dataList="item.template"
                           valueName="id"
@@ -93,7 +34,7 @@
                         >
                           <template slot="first-ul">
                             <li class="ts-plus text-href first-slot" @click.stop="toEditTemplate()">
-                              创建模板
+                              {{ $t('dialog.title.createtarget',{'target':$t('page.template')}) }}
                             </li>
                           </template>
                         </TsFormSelect>
@@ -103,10 +44,10 @@
                           <span
                             v-if="item.templateId"
                             class="ts-edit text-tip-active"
-                            title="编辑"
+                            :title="$t('page.edit')"
                             @click="toEditTemplate(item.templateId)"
                           ></span>
-                          <span class="ts-refresh text-tip-active" title="刷新" @click="getNotifyTemplate('refresh')"></span>
+                          <span class="ts-refresh text-tip-active" :title="$t('page.refresh')" @click="getNotifyTemplate('refresh')"></span>
                         </div>
                       </Col>
                     </TsRow>
@@ -114,7 +55,7 @@
                   <div class="pd-bottom">
                     <UserSelect
                       :value.sync="item.receiverList"
-                      placeholder="请选择通知对象"
+                      :placeholder="$t('term.codehub.pleaseselectthenotificationobject')"
                       :groupList="authorityConfig.groupList"
                       :validateList="validateSetting.required"
                       :excludeList="authorityConfig.excludeList"
@@ -129,23 +70,18 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button type="text" @click="cancelEdit">取消</Button>
-        <Button type="primary" :disabled="saving" @click="okEdit">确定</Button>
+        <Button type="text" @click="cancelEdit">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="saving" @click="okEdit">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
-// import Items from '@/views/pages/process/form/formedit/items';
 export default {
   name: '',
   components: {
-    // TsForm: resolve => require(["@/resources/plugins/TsForm/TsForm"], resolve),
-    // TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    // TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
     UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve)
-    // ...Items
   },
   inject: {
     $notifyBox: {
@@ -176,7 +112,9 @@ export default {
     },
     activeTitle: {
       type: String,
-      default: '添加动作'
+      default: () => {
+        return this.$t('dialog.title.addtarget', {'target': this.$t('page.actions')});
+      }
     }
   },
   data() {
@@ -192,15 +130,15 @@ export default {
         conditionGroupRelList: []
       }, //条件
       validateSetting: {
-        required: [{ name: 'required', message: '请选择' }]
+        required: [{ name: 'required', message: this.$t('page.pleaseselect') }]
       },
       relList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ],
@@ -270,7 +208,7 @@ export default {
         })
         .catch(error => {
           this.$Notice.error({
-            title: '错误信息',
+            title: this.$t('term.framework.errorinfo'),
             desc: error.data.Message
           });
         });
@@ -324,7 +262,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             if (type && type == 'refresh') {
-              this.$Message.success('刷新成功');
+              this.$Message.success(this.$t('message.refreshsuccess'));
             }
             let template = res.Return.templateList || [];
             this.actionList.forEach(a => {
@@ -358,7 +296,7 @@ export default {
           if (this.actionList[i].isSet && (!this.actionList[i].templateId || this.actionList[i].receiverList.length == 0)) {
             isDisable = false;
             this.$Notice.error({
-              title: '请选择模板和收件人',
+              title: this.$t('term.codehub.pleaseselecttemplateandreceiver'),
               duration: 1.5
             });
             break;
@@ -377,7 +315,7 @@ export default {
                     if (key != 'type' && !val && row.isShowConditionValue == 1) {
                       isDisable = false;
                       this.$Notice.error({
-                        title: '请把条件填写完整',
+                        title: this.$t('term.framework.reqcondition'),
                         duration: 1.5
                       });
                       return false;
@@ -392,7 +330,7 @@ export default {
         }
       } else {
         this.$Notice.error({
-          title: '请选择动作',
+          title: this.$t('term.codehub.pleaseselectanaction'),
           duration: 1.5
         });
       }
@@ -439,7 +377,7 @@ export default {
           this.saving = false;
           if (res.Status == 'OK') {
             this.$Notice.success({
-              title: '保存成功',
+              title: this.$t('message.savesuccess'),
               duration: 1.5
             });
             this.notifyDialog = false;
@@ -541,13 +479,10 @@ export default {
       }
     },
     toEditTemplate(templateId) {
-      // let obj = HOME + '/framework.html#/notifytactics-edit?step=2&&templateDialog=true&trigger=' + this.trigger + '&id=' + this.tacticsId;
       if (templateId) {
         this.$notifyBox.editTemplateList('edit', templateId);
-        // window.open(obj + '&templateId=' + templateId, '_blank');
       } else {
         this.$notifyBox.editTemplateList('edit');
-        // window.open(obj, '_blank');
       }
     },
     changeExpression(item) {

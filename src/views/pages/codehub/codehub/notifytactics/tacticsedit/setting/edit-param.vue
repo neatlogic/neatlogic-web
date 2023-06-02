@@ -7,8 +7,8 @@
             <TsForm ref="parameterFormConfig" :labelWidth="80" :itemList="parameterFormConfig"></TsForm>
           </div>
           <div class="btn-list">
-            <Button type="text" @click="close">取消</Button>
-            <Button type="primary" :disabled="saving" @click="saveParame">确定</Button>
+            <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+            <Button type="primary" :disabled="saving" @click="saveParame">{{ $t('page.confirm') }}</Button>
           </div>
         </div>
       </div>
@@ -16,12 +16,10 @@
   </div>
 </template>
 <script>
-import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
-
 export default {
   name: '',
   components: {
-    TsForm
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   filters: {},
   props: {
@@ -46,13 +44,12 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       parameterFormConfig: [
         {
           type: 'text',
           name: 'name',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
           width: '100%',
           validateList: ['required']
@@ -60,7 +57,7 @@ export default {
         {
           type: 'select',
           name: 'paramType',
-          label: '类型',
+          label: this.$t('page.type'),
           validateList: ['required'],
           transfer: true,
           width: '100%'
@@ -68,7 +65,7 @@ export default {
         {
           type: 'textarea',
           name: 'label',
-          label: '说明',
+          label: this.$t('page.explain'),
           width: '100%',
           validateList: ['required']
         }
@@ -104,7 +101,7 @@ export default {
           this.saving = false;
           if (res.Status == 'OK') {
             let config = res.Return;
-            this.$Message.success('保存成功');
+            this.$Message.success(this.$t('message.savesuccess'));
             this.$emit('updateParam', config);
             this.close();
           }

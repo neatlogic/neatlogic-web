@@ -28,7 +28,7 @@ export default {
       setting: {
         title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versiontype')}) : this.$t('page.newtarget', {'target': this.$t('page.versiontype')}),
         maskClose: false,
-        width: '800px',
+        width: 'medium',
         isShow: true
       },
       formConfig: [{

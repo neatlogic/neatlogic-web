@@ -43,36 +43,41 @@
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
               <div class="action-item">
-                <div class="text-action tsfont-edit" @click="editServe(row.uuid)">{{ $t('page.edit') }}</div>
+                <div class="text-action tsfont-edit" @click.stop="editServe(row.id)">{{ $t('page.edit') }}</div>
               </div>
               <div class="action-item">
-                <div class="text-action tsfont-trash" @click="deleteServe(row.uuid)">{{ $t('page.delete') }}</div>
+                <div class="text-action tsfont-trash-o" @click.stop="deleteServe(row.id)">{{ $t('page.delete') }}</div>
               </div>
             </div>
           </template>
           <template slot-scope="{ row }">
-            <div class="cursor-pointer" @click="gotoRepository(row.uuid)">
-              <div>
-                <table class="table" style="table-layout:fixed;">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <h4>{{ row.name }}</h4>
-                      </td>
-                      <td>{{ row.address }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>{{ typeConfig[row.type] }}</td>
-                      <td><span style="font-size:80%;" class="text-tip">{{ row.username }}</span>
-                        <div style="float:right;">{{ $t('term.codehub.recentlyupdate') }}：{{ row.lcu || '-' }}<span
-                          class="text-tip"
-                          style="font-size:80%;margin-left:10px;"
-                        >{{ row.lcd | formatDate }}</span></div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div class="padding-sm">
+              <div class="cursor-pointer" @click="gotoRepository(row.id)">
+                <TsRow class="mb-sm">
+                  <Col span="8">
+                    {{ row.name }}
+                  </Col>
+                  <Col span="8">
+                    {{ row.address }}
+                  </Col>
+                </TsRow>
+                <TsRow>
+                  <Col span="8">
+                    {{ typeConfig[row.type] }}
+                  </Col>
+                  <Col span="8">
+                    <span class="text-grey">{{ row.username }}</span>
+                  </Col>
+                  <Col span="8">
+                    <div style="float:right;">
+                      {{ $t('term.codehub.recentlyupdate') }}：
+                      <UserCard v-if="row.lcu" :uuid="row.lcu" :hideAvatar="true"></UserCard>
+                      <span
+                        class="text-tip"
+                        style="font-size:80%;margin-left:10px;"
+                      >{{ row.lcd | formatDate }}</span></div>
+                  </Col>
+                </TsRow>
               </div>
             </div>
           </template>
@@ -81,7 +86,7 @@
     </TsContain>
     <ServeEditDialog
       v-if="isShowServeEditDialog"
-      :uuid="editUuid"
+      :id="repositoryServiceId"
       @close="close"
     ></ServeEditDialog>
   </div>
@@ -92,6 +97,7 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     ServeEditDialog: resolve => require(['./edit/serve-edit-dialog.vue'], resolve)
@@ -100,10 +106,10 @@ export default {
   data() {
     return {
       loadingShow: true,
-      isShowServeEditDialog: false, //是否编辑
-      editUuid: null, //编辑弹窗对应的仓库id
+      isShowServeEditDialog: false,
+      repositoryServiceId: null, // 仓库id
       search: {
-        type: '',
+        type: 'all',
         keyword: ''
       },
       reposData: {
@@ -113,12 +119,13 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        keyName: 'uuid',
+        keyName: 'id',
         classname: 'repository-list',
+        padding: false,
         cardList: []
       },
       typeList: [
-        { text: this.$t('page.allofthem'), value: '' },
+        { text: this.$t('page.allofthem'), value: 'all' },
         { text: 'GITLAB', value: 'gitlab' },
         { text: 'SVN', value: 'svn' }
       ],
@@ -145,7 +152,7 @@ export default {
   methods: {
     getSearch(key, value) {
       //顶部搜索条件拼接
-      this.$set(this.search, key, value);
+      this.$set(this.search, key, value == 'all' ? '' : value);
       this.$set(this.reposData, 'currentPage', 1);
       this.searchList();
     },
@@ -157,8 +164,10 @@ export default {
       let param = {};
       this.reposData.pageSize && Object.assign(param, { pageSize: this.reposData.pageSize });
       this.reposData.currentPage && Object.assign(param, { currentPage: this.reposData.currentPage });
+      let searchParams = this.$utils.deepClone(this.search);
       if (this.search) {
         Object.assign(param, this.search);
+        param.type = searchParams.type == 'all' ? '' : searchParams.type;
       }
       this.loadingShow = true;
       this.$api.codehub.service.getList(param).then(res => {
@@ -167,7 +176,7 @@ export default {
           this.$set(this.reposData, 'rowNum', res.Return.rowNum);
           this.$set(this.reposData, 'pageSize', res.Return.pageSize);
           this.$set(this.reposData, 'currentPage', res.Return.currentPage);
-          this.$set(this.reposData, 'cardList', res.Return.list);
+          this.$set(this.reposData, 'cardList', res.Return.tbodyList);
         } else {
           this.$set(this.reposData, 'cardList', []);
         }
@@ -175,20 +184,20 @@ export default {
         this.loadingShow = false;
       });
     },
-    editServe(uuid) {
+    editServe(id) {
       this.isShowServeEditDialog = true;
-      this.editUuid = '';
-      if (uuid) {
-        this.editUuid = uuid;
+      this.repositoryServiceId = null;
+      if (id) {
+        this.repositoryServiceId = id;
       }
     },
-    deleteServe(uuid) {
+    deleteServe(id) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deletetargetconfirm', {target: this.$t('term.process.catalog')}),
         btnType: 'error',
         'on-ok': (vnode) => {
-          this.$api.codehub.service.delete({ uuid: uuid }).then(res => {
+          this.$api.codehub.service.delete({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.searchList();
@@ -198,31 +207,15 @@ export default {
         }
       });
     },
-    testServe(list) {
-      let param = {
-        type: list.type,
-        address: list.address || ''
-      };
-      this.$api.codehub.service.check(param).then(res => {
-        if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.executesuccess'));
-          //this.searchList();
-        }
-      });
-    },
     close(isreload) {
       this.isShowServeEditDialog = false;
-      this.editUuid = null;
+      this.repositoryServiceId = null;
       if (isreload) {
         this.searchList();
       }
     },
-    gotoRepository(uuid) {
-      try {
-        window.open(HOME + '/codehub.html#/repository-manage?serveuuid=' + uuid, '_blank');
-      } catch (error) {
-        this.$router.push({ path: '/repository-manage', query: { serveuuid: uuid } });
-      }
+    gotoRepository(id) {
+      window.open(HOME + '/codehub.html#/repository-overview?serveid=' + id, '_blank');
     }
   },
 

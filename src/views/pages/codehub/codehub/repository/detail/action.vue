@@ -117,7 +117,7 @@ export default {
         valueName: 'userId',
         dynamicUrl: '/api/rest/codehub/user/search',
         idListName: 'idList',
-        rootName: 'list',
+        rootName: 'tbodyList',
         hasReturn: true
       },
       objectConfig: {

@@ -3,8 +3,8 @@
     <TsContain class="bg-block">
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="editProject()">映射</span>
-          <span v-if="selectList && selectList.length>0" class="action-item tsfont-delete" @click="deleteProject()">删除</span>
+          <span class="action-item tsfont-plus" @click="editProject()">{{ $t('page.mapping') }}</span>
+          <span v-if="selectList && selectList.length>0" class="action-item tsfont-delete" @click="deleteProject()">{{ $t('page.delete') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -59,8 +59,8 @@
           <template slot="action" slot-scope="{ row }">
             <div v-if="row.canEdit" class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-edit" @click="editProject(row)">编辑</li>
-                <li class="ts-trash" @click="deleteProject(row)">删除</li>
+                <li class="ts-edit" @click="editProject(row)">{{ $t('page.edit') }}</li>
+                <li class="ts-trash" @click="deleteProject(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -99,13 +99,13 @@ export default {
         theadList: [{
           key: 'selection'
         }, {
-          title: '系统',
+          title: this.$t('page.system'),
           key: 'systemVo'
         }, {
-          title: '子系统',
+          title: this.$t('page.subsystem'),
           key: 'name'
         }, {
-          title: '项目',
+          title: this.$t('term.rdm.project'),
           key: 'projectList'
         }, {
           key: 'action'
@@ -124,12 +124,12 @@ export default {
           {
             name: 'systemUuid',
             type: 'select',
-            label: '系统',
+            label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/system/search',
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.systemUuid,
             onChange: (val) => {
               this.systemUuid = val;
@@ -140,11 +140,11 @@ export default {
           {
             name: 'subsystemUuid',
             type: 'select',
-            label: '子系统',
+            label: this.$t('page.subsystem'),
             transfer: true,
-            rootName: 'list',
+            rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
+            valueName: 'id',
             value: this.subsystemUuid,
             onChange: (val) => {
               this.subsystemUuid = val;
@@ -194,7 +194,7 @@ export default {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'subsystemUuid')) {
             this.$set(item, 'params', {systemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/subsystem/search');
+            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
@@ -256,13 +256,13 @@ export default {
         }
       }
       this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该映射',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.mapping')}),
         btnType: 'error',
         'on-ok': (vnode) => {
           this.$api.codehub.project.delete(param).then((res) => {
             if (res && res.Status == 'OK') {
-              this.$Message.success('删除成功');
+              this.$Message.success(this.$t('message.deletesuccess'));
               this.getSearch();
               vnode.isShow = false;
             } else {
