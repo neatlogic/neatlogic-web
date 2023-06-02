@@ -26,6 +26,7 @@
       :clearable="false"
       :disabled="disabled"
       :readonly="readonly"
+      :showStatusIcon="false"
       @resize="$emit('resize')"
       @emit="
         val => {
@@ -94,6 +95,28 @@ export default {
         this.$set(this.formItem, '_selected', true);
         this.$emit('select', this.formItem);
       }
+    },
+    async validData() {
+      const errorList = [];
+      if (this.$refs) {
+        for (let name in this.$refs) {
+          if (this.$refs[name]) {
+            let formitem = this.$refs[name];
+            if (this.$refs[name] instanceof Array) {
+              formitem = this.$refs[name][0];
+            } else {
+              formitem = this.$refs[name];
+            }
+            if (formitem) {
+              const err = await formitem.validData();
+              if (err && err.length > 0) {
+                errorList.push(...err);
+              }
+            }
+          }
+        }
+      }
+      return errorList;
     }
   },
   filter: {},
