@@ -109,7 +109,7 @@ export default {
         rowNum: this.versionData.rowNum,
         pageSize: this.versionData.pageSize,
         currentPage: this.versionData.currentPage,
-        cardList: this.versionData.list
+        cardList: this.versionData.tbodyList
       });
     }
   },
