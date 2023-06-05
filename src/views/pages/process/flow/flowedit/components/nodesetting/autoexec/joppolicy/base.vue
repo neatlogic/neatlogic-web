@@ -40,7 +40,6 @@ export default {
   created() {
     this.autoexecConfig = this.config;
     if (this.allFormitemList && this.allFormitemList.length > 0) {
-      debugger;
       this.formDataList = this.$utils.deepClone(this.allFormitemList).filter(item => {
         return item.handler === 'formtext' || item.handler === 'formtextarea';
       });
