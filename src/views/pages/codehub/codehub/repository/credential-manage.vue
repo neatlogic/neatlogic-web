@@ -12,7 +12,7 @@
           <template slot-scope="{ row }">
             <div>
               <div class="credential-img">
-                <span :class="getClassName(row.type)"></span>
+                <span :class="getClassName(row.repoType)"></span>
               </div>
               <CredentialEdit :item="row" :typeDataList="typeDataList" @close="close">
               </CredentialEdit>
@@ -220,12 +220,18 @@ export default {
       height: 80px;
       text-align: center;
       margin-top: -40px;
-      img {
+      span {
         width: 40px;
         height: 40px;
         display: block;
-        margin-top: 20px;
         margin-left: 20px;
+        font-size: xxx-large;
+      }
+      .tsfont-gitlab {
+        color: red;
+      }
+      .tsfont-svn {
+        color: rgb(0, 179, 255);
       }
     }
   }
