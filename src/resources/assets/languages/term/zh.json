@@ -2256,6 +2256,11 @@
     "policylist": "策略列表",
     "confirmclearconfiguration": "确定清空配置",
     "confirmdeleteconfig": "确定删除该配置：动作",
-    "pleaseselectaproject": "请选择项目"
+    "pleaseselectaproject": "请选择项目",
+    "temporarilyunavailablecreatemr": "暂时无法创建MR",
+    "pleaseselectatleastonerequirement": "请至少选择一个需求",
+    "mergertype": "MR类型",
+    "versionnobuildnewmerger": "该版本无法创建新的MR",
+    "chooseastrategtfromtable": "请从表格里勾选一个策略"
   }
 }

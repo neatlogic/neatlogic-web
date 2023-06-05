@@ -12,7 +12,6 @@ const mergeHandler = () => import('@/views/pages/codehub/codehub/merge/merge-han
 const mergeReview = () => import('@/views/pages/codehub/codehub/merge/merge-review.vue');
 const mergeOverview = () => import('@/views/pages/codehub/codehub/merge/merge-overview.vue');
 const repositoryDetail = () => import('@/views/pages/codehub/codehub/repository/repository-detail.vue');
-const codehubApi = () => import('@/views/pages/codehub/codehub/api/api-overview.vue');
 const projectOverview = () => import('@/views/pages/codehub/codehub/project/project-overview.vue');
 const credentialManage = () => import('@/views/pages/codehub/codehub/repository/credential-manage.vue');
 import { $t } from '@/resources/init.js';
@@ -184,18 +183,6 @@ export default [
       title: $t('router.codehub.repositorydetail'),
       ismenu: false,
       icon: 'ts-dev-iplist',
-      authrity: '',
-      type: 'codehub'
-    }
-  }, 
-  {
-    path: '/api',
-    name: 'api',
-    component: codehubApi,
-    meta: {
-      title: $t('router.codehub.apilist'),
-      ismenu: true,
-      icon: 'ts-cube',
       authrity: '',
       type: 'codehub'
     }

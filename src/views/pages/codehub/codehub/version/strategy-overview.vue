@@ -15,58 +15,56 @@
       </template>
       <div slot="content">
         <div>
-          <div>
-            <Loading v-if="loadingShow" loadingShow></Loading>
-            <TsCard
-              v-else
-              v-bind="strategyData"
-              headerPosition="right"
-              @updatePage="changeCurrentPage"
-            >
-              <template slot="header" slot-scope="{ row }">
-                <div v-if="row.canEdit" class="action-group">
-                  <div class="action-item tsfont-plus" @click="addVersion(row)">{{ $t('dialog.title.addtarget',{'target':$t('page.versions')}) }}</div>
-                  <div class="action-item tsfont-edit" @click="editStrategy(row.id)">{{ $t('page.edit') }}</div>
-                  <div class="action-item tsfont-trash-o" @click="deleteLi(row.id)">{{ $t('page.delete') }}</div>
-                </div>
-              </template>
-              <template slot-scope="{ row }">
-                <div class="padding-sm">
-                  <TsRow class="mb-xs">
-                    <Col span="24">
-                      {{ row.name }}
-                      <Tag :color="typeList[row.type].color" class="ml-sm">{{ typeList[row.type].name }}</Tag>
-                    </Col>
-                  </TsRow>
-                  <TsRow>
-                    <Col span="8">
-                      <span v-if="row.versionPrefix" class="ts-version text-icon">
-                        {{ row.versionPrefix }}
-                      </span>
-                    </Col>
-                    <Col span="8">
-                      <span class="ts-branch text-tip text-icon mr-sm"></span>
-                      {{ row.srcBranch }}
-                      <span class="ts-long-arrow-right text-tip h2 branch-sep ml-sm mr-sm"></span>
-                      <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
-                      {{ row.targetBranch }}
-                    </Col>
-                    <Col span="8">
-                      <span>
-                        {{ $t('term.codehub.recentlyupdate') }}：
-                        <UserCard
-                          v-if="row.lcu"
-                          :uuid="row.lcu"
-                          :hideAvatar="true"
-                        ></UserCard>
-                      </span>
-                      <span v-if="row.lcd" class="text-tip pl-sm">{{ row.lcd | formatDate }}</span>
-                    </Col>
-                  </TsRow>
-                </div>
-              </template>              
-            </TsCard>
-          </div>
+          <Loading v-if="loadingShow" loadingShow></Loading>
+          <TsCard
+            v-else
+            v-bind="strategyData"
+            headerPosition="right"
+            @updatePage="changeCurrentPage"
+          >
+            <template slot="header" slot-scope="{ row }">
+              <div v-if="row.canEdit" class="action-group">
+                <div class="action-item tsfont-plus" @click="addVersion(row)">{{ $t('page.versions') }}</div>
+                <div class="action-item tsfont-edit" @click="editStrategy(row.id)">{{ $t('page.edit') }}</div>
+                <div class="action-item tsfont-trash-o" @click="deleteLi(row.id)">{{ $t('page.delete') }}</div>
+              </div>
+            </template>
+            <template slot-scope="{ row }">
+              <div class="padding-sm">
+                <TsRow class="mb-xs">
+                  <Col span="24">
+                    {{ row.name }}
+                    <Tag :color="typeList[row.type].color" class="ml-sm">{{ typeList[row.type].name }}</Tag>
+                  </Col>
+                </TsRow>
+                <TsRow>
+                  <Col span="8">
+                    <span v-if="row.versionPrefix" class="ts-version text-icon">
+                      {{ row.versionPrefix }}
+                    </span>
+                  </Col>
+                  <Col span="8">
+                    <span class="ts-branch text-tip text-icon mr-sm"></span>
+                    {{ row.srcBranch }}
+                    <span class="ts-long-arrow-right text-tip h2 branch-sep ml-sm mr-sm"></span>
+                    <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+                    {{ row.targetBranch }}
+                  </Col>
+                  <Col span="8">
+                    <span>
+                      {{ $t('term.codehub.recentlyupdate') }}：
+                      <UserCard
+                        v-if="row.lcu"
+                        :uuid="row.lcu"
+                        :hideAvatar="true"
+                      ></UserCard>
+                    </span>
+                    <span v-if="row.lcd" class="text-tip pl-sm">{{ row.lcd | formatDate }}</span>
+                  </Col>
+                </TsRow>
+              </div>
+            </template>              
+          </TsCard>
         </div>
       </div>
     </TsContain>
@@ -77,11 +75,11 @@
       :appModuleId="searchVal.appModuleId"
       @close="closeStrategyEditDialog"
     ></StrategyEditDialog>
-    <VersionAdd
+    <VersionAddDialog
       v-if="isShowVersionAddDialog"
-      :list="versionlist"
+      :versionData="versionData"
       @close="closeVersion"
-    ></VersionAdd>
+    ></VersionAddDialog>
   </div>
 </template>
 
@@ -93,12 +91,12 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     StrategyEditDialog: resolve => require(['./edit/strategy-edit-dialog.vue'], resolve),
-    VersionAdd: resolve => require(['./edit/version-add.vue'], resolve)
+    VersionAddDialog: resolve => require(['./edit/version-add-dialog.vue'], resolve)
   },
   props: [''],
   data() {
     return {
-      versionlist: null,
+      versionData: null,
       loadingShow: true,
       isShowStrategyEditDialog: false,
       isShowVersionAddDialog: false,
@@ -205,8 +203,8 @@ export default {
         this.loadingShow = false;
       });
     },
-    addVersion(list) {
-      this.versionlist = list;
+    addVersion(row) {
+      this.versionData = row;
       this.isShowVersionAddDialog = true;
     },
     editStrategy(id) {
@@ -240,7 +238,7 @@ export default {
     },
     closeVersion() {
       this.isShowVersionAddDialog = false;
-      this.versionlist = null;      
+      this.versionData = null;      
     }
   },
   filter: {},

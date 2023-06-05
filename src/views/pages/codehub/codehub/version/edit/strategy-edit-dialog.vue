@@ -7,7 +7,6 @@
             v-model="editvalList.appModuleId"
             v-bind="subsystemConfig"
             :validateList="vaildConfig"
-            :selectItemList.sync="selectSub"
             @on-change="updatesystemsetting"
           />
         </template>
@@ -60,7 +59,6 @@ export default {
         maskClose: false,
         isShow: true
       },
-      selectSub: null,
       vaildConfig: ['required'],
       statusVal: [], //需求状态
       formConfig: [
@@ -90,7 +88,6 @@ export default {
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
-          idListName: 'id',
           onChange: (val) => {
             this.editvalList.versionTypeId = val;
           }
@@ -123,8 +120,8 @@ export default {
           dealDataByUrl: this.$utils.getAppForselect,
           idListName: 'id',
           validateList: ['required'],
-          value: '',
           onChange: (val) => {
+            this.editvalList.appSystemId = val;
             this.changeSubsys(val);
           }
         }, {
@@ -170,7 +167,6 @@ export default {
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'id',
-        idListName: 'id',
         validateList: ['required']
       },
       usepatternConfig: {
@@ -191,7 +187,6 @@ export default {
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'name',
-        idListName: 'keyword',
         params: {}
       },
       targetbranchConfig: {
@@ -249,7 +244,7 @@ export default {
             this.$set(form, 'value', '');
           }
         });
-        this.$set(this.subsystemConfig, 'params', {systemId: this.appSystemId});
+        this.$set(this.subsystemConfig, 'params', {appSystemId: this.appSystemId});
         this.updataVal('appSystemId', this.appSystemId);
         if (this.appSystemId) {
           this.formConfig.forEach((form) => {
@@ -319,7 +314,7 @@ export default {
           this.$set(form, 'isHidden', !val);
         }
       });
-      this.$set(this.subsystemConfig, 'params', {systemId: val}); 
+      this.$set(this.subsystemConfig, 'params', {appSystemId: val}); 
       this.updatesystemsetting('');
     },
     getDetail(strategyId) {
@@ -380,16 +375,6 @@ export default {
   },
   computed: {},
   watch: {
-    selectSub: {
-      handler: function(val, oldeval) {
-        if (val && val.systemVo) {
-          this.updataVal('appSystemId', val.systemVo.uuid);
-          this.$set(this.subsystemConfig, 'params', {systemId: val.systemVo.uuid});
-        }
-      },
-      immediate: true,
-      deep: true
-    },
     editvalList: {
       handler: function(val) {
         if (val && val.name) {

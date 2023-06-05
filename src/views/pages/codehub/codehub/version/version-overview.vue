@@ -168,6 +168,9 @@ export default {
         pageSize: this.versionData.pageSize,
         ...this.searchVal
       };
+      this.$addWatchData('searchVal', this.searchVal);
+      this.$addWatchData('currentPage', param.currentPage);
+      this.$addWatchData('pageSize', param.pageSize);
       this.loadingShow = true;
       this.$api.codehub.version.getList(param).then(res => {
         if (res && res.Status == 'OK') {
@@ -178,6 +181,17 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    restoreHistory(historyData) {
+      if (historyData['searchVal']) {
+        this.searchVal = historyData['searchVal'];
+      }
+      if (historyData['currentPage']) {
+        this.versionData.currentPage = historyData['currentPage'];
+      }
+      if (historyData['pageSize']) {
+        this.versionData.pageSize = historyData['pageSize'];
+      }
     },
     close(isreload) {
       this.isEdit = false;

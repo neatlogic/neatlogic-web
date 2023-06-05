@@ -15,7 +15,7 @@
     <template v-slot:footer>
       <div class="footer-btn-contain">
         <Button type="text" @click="close">取消</Button>
-        <Button type="error" :disabled="canSubmit" @click="saveDelete">确定</Button>
+        <Button type="error" :disabled="canSubmit" @click="saveDelete">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
