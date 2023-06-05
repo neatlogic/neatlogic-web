@@ -2259,6 +2259,11 @@
     "policylist": "Policy List",
     "confirmclearconfiguration": "Confirm Clear Configuration",
     "confirmdeleteconfig": "Confirm to delete the configuration: Action",
-    "pleaseselectaproject": "Please select a project"
+    "pleaseselectaproject": "Please select a project",
+    "temporarilyunavailablecreatemr": "Unable to create MR temporarily",
+    "pleaseselectatleastonerequirement": "Please select at least one requirement",
+    "mergertype": "MR type",
+    "versionnobuildnewmerger": "This version cannot create a new MR",
+    "chooseastrategtfromtable": "Please select a strategy from the table"
   }
 }

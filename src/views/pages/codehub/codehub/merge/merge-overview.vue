@@ -35,8 +35,8 @@
     </TsContain>
     <MergeAddDialog
       v-if="isEdit"
-      :systemUuid="systemUuid"
-      :subsystemUuid="subsystemUuid"
+      :appSystemId="appSystemId"
+      :appModuleId="appModuleId"
       @close="close"
     ></MergeAddDialog>
   </div>
@@ -55,27 +55,26 @@ export default {
   filters: {},
   props: [''],
   data() {
-    let _this = this;
     return {
       keyword: '',
-      systemUuid: '',
-      subsystemUuid: '',
+      appSystemId: '',
+      appModuleId: '',
       systemConf: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect,
-        onChange: function(val) {
-          _this.updateSub(val);
-          _this.getSearch();
+        onChange: (val) => {
+          this.updateSub(val);
+          this.getSearch();
         }
       },
       subsystemConf: {
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'uuid',
-        onChange: function(val) {
-          _this.getSearch();
+        onChange: (val) => {
+          this.getSearch();
         }        
       },
       mrData: {pageSize: 20},
@@ -88,31 +87,31 @@ export default {
         search: true,
         searchList: [
           {
-            name: 'systemUuid',
+            name: 'appSystemId',
             type: 'select',
             label: '系统',
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.systemUuid,
+            value: this.appSystemId,
             onChange: (val) => {
-              this.systemUuid = val;
+              this.appSystemId = val;
               this.updateSubSystem(val);
               this.getSearch();
             }
           },
           {
-            name: 'subsystemUuid',
+            name: 'appModuleId',
             type: 'select',
             label: '子系统',
             transfer: true,
             rootName: 'tbodyList',
             textName: 'name',
             valueName: 'id',
-            value: this.subsystemUuid,
+            value: this.appModuleId,
             onChange: (val) => {
-              this.subsystemUuid = val;
+              this.appModuleId = val;
               this.getSearch();
             }
           }
@@ -122,7 +121,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getList();
+    this.getMergeList();
   },
   beforeMount() {},
   mounted() {},
@@ -135,45 +134,45 @@ export default {
   methods: {
     getSearch() {
       this.mrData.currentPage = 1;
-      this.getList();
+      this.getMergeList();
     },
     updatePage(page) {
       this.mrData.pageSize = page;
       this.mrData.currentPage = 1;
-      this.getList();
+      this.getMergeList();
     },
     updateCurrent(page) {
       this.mrData.currentPage = page;
-      this.getList();
+      this.getMergeList();
     },
     updateSubSystem(val) {
-      this.subsystemUuid = '';
+      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {systemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {});
             this.$set(item, 'dynamicUrl', '');
           } 
         });
       }
     },
-    async getList() {
+    async getMergeList() {
       await this.getStatuslist();
       let param = {};
       this.mrData.pageSize && Object.assign(param, {pageSize: this.mrData.pageSize});
       this.mrData.currentPage && Object.assign(param, {currentPage: this.mrData.currentPage});
-      if (this.subsystemUuid) {
-        Object.assign(param, {subsystemUuid: this.subsystemUuid});
+      if (this.appModuleId) {
+        Object.assign(param, {appModuleId: this.appModuleId});
       }
-      if (this.systemUuid) {
-        Object.assign(param, {systemVo: {uuid: this.systemUuid}});
+      if (this.appSystemId) {
+        Object.assign(param, {systemVo: {uuid: this.appSystemId}});
       }
       if (this.keyword) {
         Object.assign(param, {keyword: this.keyword});
@@ -189,7 +188,7 @@ export default {
           this.mrData.pageCount = res.Return.pageCount;
           this.mrData.pageSize = res.Return.pageSize;
           this.mrData.rowNum = res.Return.rowNum;
-          this.mrData.tbodyList = res.Return.list || [];
+          this.mrData.tbodyList = res.Return.tbodyList || [];
         } else {
           this.mrData.tbodyList = [];
         }
@@ -200,11 +199,11 @@ export default {
     },
     getStatuslist() {
       let param = {};
-      this.subsystemUuid && Object.assign(param, {
-        subsystemUuid: this.subsystemUuid
+      this.appModuleId && Object.assign(param, {
+        appModuleId: this.appModuleId
       });
-      this.systemUuid && Object.assign(param, {
-        systemUuid: this.systemUuid
+      this.appSystemId && Object.assign(param, {
+        appSystemId: this.appSystemId
       });
       this.keyword && Object.assign(param, {
         keyword: this.keyword

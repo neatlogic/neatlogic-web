@@ -39,7 +39,7 @@ export default {
         isShow: true
       },
       formValue: {
-        name: '',
+        version: '',
         versionStrategyId: null
       },
       versionStrategyId: null,
@@ -118,7 +118,7 @@ export default {
           maxlength: 100,
           label: this.$t('term.framework.pkgversion'),
           width: '100%',
-          name: 'name',
+          name: 'version',
           isHidden: true,
           prepend: this.strategyPre,
           validateList: ['required']
@@ -182,7 +182,7 @@ export default {
         let param = {};
         Object.assign(param, this.formValue);
         Object.assign(param, {
-          name: this.strategyPre + this.formValue.name
+          version: this.strategyPre + this.formValue.version
         });
         if (this.id) {
           Object.assign(param, {id: this.id});
@@ -209,7 +209,7 @@ export default {
     },
     hideName(id) {
       this.formConfig.forEach((form, findex) => {
-        if (form.name == 'name') {
+        if (form.name == 'version') {
           form.isHidden = !id;
         }
       });
@@ -257,7 +257,7 @@ export default {
       let versionStrategyId = config.versionStrategyId || '';
       let versionTypeId = config.versionTypeId || '';
       Object.assign(this.formValue, {
-        name: ''
+        version: ''
       });
       if (appModuleId && versionStrategyId && versionTypeId) {
         let param = {
@@ -268,7 +268,7 @@ export default {
         this.$api.codehub.version.autofillName(param).then((res) => {
           if (res && res.Status == 'OK' && res.Return.version) {
             Object.assign(this.formValue, {
-              name: res.Return.version.replace(this.strategyPre, '')
+              version: res.Return.version.replace(this.strategyPre, '')
             });
           }
         });

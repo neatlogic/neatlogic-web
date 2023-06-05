@@ -1,6 +1,6 @@
 export default {
   props: {
-    versionid: [String, Number],
+    versionId: [String, Number],
     versiondata: Object,
     srcBranch: [String, Number],
     targetBranch: [String, Number],
@@ -19,25 +19,25 @@ export default {
       maxSearchCount: '300', //检索提交日志条数
       tabledata: {
         theadList: [{
-          title: $t('term.codehub.issuesnumber'),
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: $t('page.description'),
+          title: this.$t('page.description'),
           key: 'name'
         }, {
-          title: $t('page.responsibleperson'),
+          title: this.$t('page.responsibleperson'),
           key: 'handleUserId'
         }, {
-          title: $t('page.effectiveness'),
+          title: this.$t('page.effectiveness'),
           key: 'isValid'
         }, {
-          title: $t('page.status'),
+          title: this.$t('page.status'),
           key: 'status'
         }, {
-          title: $t('page.updatetime'),
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: $t('page.source'),
+          title: this.$t('page.source'),
           key: 'sourceUuid'
         }
         ],
@@ -47,25 +47,22 @@ export default {
       },
       showtabledata: {
         theadList: [{
-          title: $t('term.codehub.issuesnumber'),
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: $t('page.name'),
+          title: this.$t('page.name'),
           key: 'name'
         }, {
-          title: $t('term.process.dealwithuser'),
+          title: this.$t('term.process.dealwithuser'),
           key: 'lcu'
         }, {
-          title: $t('term.codehub.issuesvalid'),
+          title: this.$t('term.codehub.issuesvalid'),
           key: 'isValid'
         }, {
-          title: $t('page.status'),
-          key: 'status'
-        }, {
-          title: $t('page.updatetime'),
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: $t('page.source'),
+          title: this.$t('page.source'),
           key: 'sourceUuid'
         }, {
           key: 'action'
@@ -80,13 +77,13 @@ export default {
   mounted() {
     this.getSouce();
     this.getList();
-    if (this.versiondata && this.versiondata.subSystemVo) {
-      let subSystemId = this.versiondata.subSystemVo.id;
-      let count = this.$utils.getCookie(subSystemId + '_searchCommitCount') || '300';
+    if (this.versiondata && this.versiondata.appModuleVo) {
+      let appModuleId = this.versiondata.appModuleVo.id;
+      let count = this.$utils.getCookie(appModuleId + '_searchCommitCount') || '300';
       this.maxSearchCount = parseInt(count);
     }
   },
-  beforeDestroy() {},
+  beforeDestroy() { },
   methods: {
     changeCurrent(page) {
       this.tabledata.currentPage = page;
@@ -97,7 +94,7 @@ export default {
       this.getList();
     },
     getSouce() { //获取需求列表
-      this.$api.codehub.issue.getSource({type: 'issue'}).then(res => {
+      this.$api.codehub.issue.getSource({ type: 'issue' }).then(res => {
         if (res && res.Status == 'OK') {
           this.syncSourceList = res.Return.syncSourceList;
         }
@@ -116,11 +113,11 @@ export default {
       if (list.length > 0) {
         list.forEach((l) => {
           Object.assign(l, {
-            isValid: 0              
+            isValid: 0
           });
           if (l.no == no) {
             Object.assign(l, {
-              isValid: 1              
+              isValid: 1
             });
           }
         });
@@ -130,7 +127,7 @@ export default {
   },
   computed: {
     getsource() {
-      return function(uuid) {
+      return (uuid) => {
         let txt = '';
         this.syncSourceList.forEach(sync => {
           if (sync.uuid == uuid) {
@@ -141,7 +138,7 @@ export default {
       };
     },
     tableheight() {
-      return function() {
+      return () => {
         return window.innerHeight / 2;
       };
     }
@@ -151,7 +148,7 @@ export default {
       this.$emit('getDes', val);
     },
     maxSearchCount: {
-      handler: function(val) {
+      handler(val) {
         this.$emit('getMaxSearchCount', val);
       },
       immediate: true

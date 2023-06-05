@@ -7,8 +7,8 @@
   >
     <template slot="header" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="action-group">
-        <div v-if="row.canEdit" class="action-item text-action ts-plus-o" @click="addMr(row.uuid,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
-        <div v-if="canDelete" class="action-item text-action ts-trash" @click="deleteVersion(row.uuid)">{{ $t('page.delete') }}</div>
+        <div v-if="row.canEdit" class="action-item text-action ts-plus-o" @click="addMr(row.id,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
+        <div v-if="canDelete" class="action-item text-action ts-trash" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
       </div>
     </template>
     <template slot-scope="{ row }">
@@ -24,18 +24,7 @@
         </TsRow>
         <TsRow>
           <Col span="8">
-            <Tooltip
-              v-if="showtips(row)"
-              theme="light"
-              max-width="300"
-              placement="top-start"
-            >
-              <div>{{ setTxt(row,'text') }}</div>
-              <div slot="content">
-                <div>{{ setTxt(row,'tips') }}</div>
-              </div>
-            </Tooltip>
-            <div v-else>{{ setTxt(row,'text') }}</div>
+            <div>{{ setAbbrNameAndName(row) }}</div>
           </Col>
           <Col span="8">
             <div v-if="row.versionTypeStrategyRelationVo">
@@ -80,11 +69,6 @@ export default {
   },
   data() {
     return {
-      openval: {
-        true: 1,
-        false: 0
-      },
-      isInit: false,
       cardData: {
         classname: 'version-card',
         classKey: 'isOpen',
@@ -134,47 +118,23 @@ export default {
     updateSize(size) {
       this.$emit('updateSize', size);
     },
-    addMr(uuid) {
-      this.$emit('addMr', uuid);
+    addMr(id) {
+      this.$emit('addMr', id);
     },
-    changeOpen(val, list) {
-      let listdata = {};
-      Object.assign(listdata, {
-        uuid: list.uuid,
-        isOpen: val
-      });
-      this.$api.codehub.version.updateOpen(listdata).then(res => {
-        if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.executesuccess'));
-        } else {
-          this.$set(list, 'isOpen', val ? 0 : 1);
-        }
-      }).catch(error => {
-        this.$set(list, 'isOpen', val ? 0 : 1);
-      });
-    },
-    deleteVersion(uuid) {
-      this.$emit('deleteVersion', uuid);
+    deleteVersion(id) {
+      this.$emit('deleteVersion', id);
     }
   },
   filter: {},
-  computed: { 
-    showtips() {
+  computed: {
+    setAbbrNameAndName() {
+      // 获取应用模块【简称和名称】
       return function(config) {
-        let isshow = false;
-        if ((config.appSystemVo && config.appSystemVo.abbrName) || (config.appModuleVo && config.appModuleVo.abbrName)) {
-          isshow = true;
-        }
-        return isshow;
-      };
-    },
-    setTxt() {
-      return function(config, type) {
         let text = '';
         let prev = config.appSystemVo || '';
         let next = config.appModuleVo || '';
         if (prev) {
-          text = prev.abbrName + (prev.name ? ('(' + prev.name + ')') : '');
+          text = prev.abbrName + (prev.name ? `(${prev.name})` : '');
           if (next) {
             text += ' / ' + (next.abbrName ? next.abbrName : '') + (next.name ? ('(' + next.name + ')') : '');
           }
