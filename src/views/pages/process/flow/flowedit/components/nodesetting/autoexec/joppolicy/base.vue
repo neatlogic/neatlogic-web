@@ -34,12 +34,17 @@ export default {
         }
       ],
       validateList: ['required'],
-      formDataList: []
+      formDataList: [] //表单赋值：仅支持文本框、文本域类型的控件赋值
     };
   },
   created() {
     this.autoexecConfig = this.config;
-    this.formDataList = this.$utils.deepClone(this.allFormitemList);
+    if (this.allFormitemList && this.allFormitemList.length > 0) {
+      debugger;
+      this.formDataList = this.$utils.deepClone(this.allFormitemList).filter(item => {
+        return item.handler === 'formtext' || item.handler === 'formtextarea';
+      });
+    }
   },
   methods: {
     executeMappingModeList(key) {
