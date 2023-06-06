@@ -1,15 +1,9 @@
 <template>
-  <TsDialog v-bind="setting" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close" @on-ok="saveEdit">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -30,17 +24,6 @@ export default {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.process.catalog')}) : this.$t('page.newtarget', {'target': this.$t('term.process.catalog')}),
         maskClose: false,
         isShow: true
-      },
-      editData: {
-        id: this.id,
-        type: '',
-        address: '',
-        name: '',
-        username: '',
-        password: '',
-        agentUrl: '',
-        agentPassword: '',
-        agentUsername: ''
       },
       formConfig: [{
         type: 'select',
@@ -74,13 +57,14 @@ export default {
         type: 'text',
         label: this.$t('term.process.catalogname'),
         name: 'name',
-        maxlength: 100,
+        maxlength: 50,
         validateList: ['required']
       },
       {
         type: 'text',
         label: this.$t('page.user'),
         name: 'username',
+        maxlength: 50,
         validateList: ['required']
       },
       {
@@ -111,16 +95,13 @@ export default {
         aliasName: 'password',
         isHidden: true
       }
-      ],
-      runningtest: false,
-      saving: false,
-      address: ''//地址
+      ]
     };
   },
   beforeCreate() {},
   created() {
     if (this.id) {
-      this.getDetail(this.id);
+      this.getServiceDetail(this.id);
     }
   },
   beforeMount() {},
@@ -143,18 +124,14 @@ export default {
           this.$delete(param, 'agentUsername');
           this.$delete(param, 'agentPassword');
         }
-        this.saving = true;
         this.$api.codehub.service.save(param).then(res => {
-          this.saving = false;
           if (res && res.Status == 'OK') {
             this.$emit('close', true);
           }
-        }).catch(() => {
-          this.saving = false;
         });
       }
     },
-    getDetail(id) {
+    getServiceDetail(id) {
       this.$api.codehub.service.getDetail({id: id}).then(res => {
         if (res && res.Status == 'OK') {
           this.updataVal(res.Return);

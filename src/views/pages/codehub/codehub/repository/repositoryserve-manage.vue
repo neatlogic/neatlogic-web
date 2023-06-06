@@ -10,19 +10,19 @@
         <TsRow>
           <Col :span="8">
             <TsFormSelect
-              v-model="search.type"
+              v-model="searchParams.type"
               :dataList="typeList"
               :clearable="false"
               transfer
               :placeholder="$t('form.placeholder.pleaseselect',{target:$t('page.type')})"
               border="border"
-              @on-change="() => getSearch('type', search.type)"
+              @on-change="() => getSearch('type', searchParams.type)"
             ></TsFormSelect>
           </Col>
           <Col :span="16">
             <InputSearcher
-              v-model="search.keyword"
-              @change="() => getSearch('keyword', search.keyword)"
+              v-model="searchParams.keyword"
+              @change="() => getSearch('keyword', searchParams.keyword)"
             ></InputSearcher>
           </Col>
         </TsRow>
@@ -38,7 +38,8 @@
           v-else
           v-bind="reposData"
           headerPosition="right"
-          @updatePage="updatePage"
+          @updatePage="changeCurrentPage"
+          @updateSize="changePageSize"
         >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
@@ -108,7 +109,7 @@ export default {
       loadingShow: true,
       isShowServeEditDialog: false,
       repositoryServiceId: null, // 仓库id
-      search: {
+      searchParams: {
         type: 'all',
         keyword: ''
       },
@@ -122,7 +123,11 @@ export default {
         keyName: 'id',
         classname: 'repository-list',
         padding: false,
-        cardList: []
+        cardList: [],
+        pageType: 'number',
+        currentPage: 1,
+        pageSize: 10,
+        rowNum: 0
       },
       typeList: [
         { text: this.$t('page.allofthem'), value: 'all' },
@@ -152,21 +157,28 @@ export default {
   methods: {
     getSearch(key, value) {
       //顶部搜索条件拼接
-      this.$set(this.search, key, value == 'all' ? '' : value);
+      this.$set(this.searchParams, key, value == 'all' ? '' : value);
       this.$set(this.reposData, 'currentPage', 1);
       this.searchList();
     },
-    updatePage(page) {
-      this.reposData.currentPage = page;
+    changeCurrentPage(currentPage) {
+      this.reposData.currentPage = currentPage;
+      this.searchList();
+    },
+    changePageSize(pageSize) {
+      // 切换页码
+      this.reposData.currentPage = 1;
+      this.reposData.pageSize = pageSize;
       this.searchList();
     },
     searchList() {
-      let param = {};
-      this.reposData.pageSize && Object.assign(param, { pageSize: this.reposData.pageSize });
-      this.reposData.currentPage && Object.assign(param, { currentPage: this.reposData.currentPage });
-      let searchParams = this.$utils.deepClone(this.search);
-      if (this.search) {
-        Object.assign(param, this.search);
+      let param = {
+        currentPage: this.reposData.currentPage,
+        pageSize: this.reposData.pageSize
+      };
+      let searchParams = this.$utils.deepClone(this.searchParams);
+      if (this.searchParams) {
+        Object.assign(param, this.searchParams);
         param.type = searchParams.type == 'all' ? '' : searchParams.type;
       }
       this.loadingShow = true;

@@ -1,36 +1,40 @@
 <template>
   <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveEdit">
     <div>
-      <TsForm ref="editform" :itemList="formConfig">
+      <Loading
+        :loadingShow="loadingShow"
+        type="fix"
+      ></Loading>
+      <TsForm v-if="!loadingShow" ref="editform" :itemList="formConfig">
         <template slot="appModuleId">
           <TsFormSelect
-            v-model="editvalList.appModuleId"
+            v-model="formValue.appModuleId"
             v-bind="subsystemConfig"
             :validateList="vaildConfig"
             @on-change="updatesystemsetting"
           />
         </template>
-        <template slot="issueStatusUuid">
+        <template slot="issueStatusId">
           <TsFormSelect v-model="statusVal" v-bind="issueStatusconfig" />
         </template>
         <template slot="usePattern">
           <TsFormRadio
-            v-model="editvalList.usePattern"
+            v-model="formValue.usePattern"
             v-bind="usepatternConfig"
             :validateList="vaildConfig"
           />
         </template>
         <template slot="srcBranch">
           <TsFormSelect
-            v-if="editvalList.usePattern=='0'"
-            v-model="editvalList.srcBranch"
+            v-if="formValue.usePattern=='0'"
+            v-model="formValue.srcBranch"
             v-bind="srcbranchConfig"
           />
-          <TsFormInput v-else v-model.trim="editvalList.srcBranch"></TsFormInput>
+          <TsFormInput v-else v-model.trim="formValue.srcBranch"></TsFormInput>
         </template>
         <template slot="targetBranch">
           <div>
-            <TsFormSelect v-model="editvalList.targetBranch" v-bind="targetbranchConfig" />
+            <TsFormSelect v-model="formValue.targetBranch" v-bind="targetbranchConfig" />
           </div>
         </template>
       </TsForm>
@@ -59,6 +63,7 @@ export default {
         maskClose: false,
         isShow: true
       },
+      loadingShow: true,
       vaildConfig: ['required'],
       statusVal: [], //需求状态
       formConfig: [
@@ -68,7 +73,7 @@ export default {
           name: 'name',
           validateList: ['required'],
           onChange: (val) => {
-            this.editvalList.name = val;
+            this.formValue.name = val;
           }
         }, 
         {
@@ -76,7 +81,7 @@ export default {
           label: this.$t('term.deploy.versionprefix'),
           name: 'versionPrefix',
           onChange: (val) => {
-            this.editvalList.versionPrefix = val;
+            this.formValue.versionPrefix = val;
           }
         }, 
         {
@@ -89,7 +94,7 @@ export default {
           textName: 'name',
           valueName: 'id',
           onChange: (val) => {
-            this.editvalList.versionTypeId = val;
+            this.formValue.versionTypeId = val;
           }
         }, 
         {
@@ -108,7 +113,7 @@ export default {
           }],
           value: 'branch',
           onChange: (val) => {
-            this.editvalList.type = val;
+            this.formValue.type = val;
           }
         }, {
           type: 'select',
@@ -118,10 +123,8 @@ export default {
           dynamicUrl: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
           dealDataByUrl: this.$utils.getAppForselect,
-          idListName: 'id',
           validateList: ['required'],
           onChange: (val) => {
-            this.editvalList.appSystemId = val;
             this.changeSubsys(val);
           }
         }, {
@@ -133,7 +136,7 @@ export default {
         }, {
           type: 'slot',
           label: this.$t('term.codehub.issuesstatus'),
-          name: 'issueStatusUuid',
+          name: 'issueStatusId',
           isHidden: true
         },  
         {
@@ -165,8 +168,7 @@ export default {
         isHidden: true,
         dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
+        dealDataByUrl: this.$utils.getAppForselect,
         validateList: ['required']
       },
       usepatternConfig: {
@@ -184,7 +186,7 @@ export default {
       srcbranchConfig: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/repository/branch/search',
-        rootName: 'tbodyList',
+        rootName: 'list',
         textName: 'name',
         valueName: 'name',
         params: {}
@@ -192,15 +194,16 @@ export default {
       targetbranchConfig: {
         transfer: true,
         dynamicUrl: '/api/rest/codehub/repository/branch/search',
-        rootName: 'tbodyList',
+        rootName: 'list',
         textName: 'name',
         valueName: 'name',
         idListName: 'keyword',
         params: {}
       },
-      editvalList: {
+      formValue: {
         name: '',
         srcBranch: '',
+        appSystemId: this.appSystemId,
         appModuleId: this.appModuleId,
         targetBranch: '',
         type: '',
@@ -212,7 +215,7 @@ export default {
       issueStatusconfig: {
         transfer: true,
         url: '/api/rest/codehub/issue/status/get',
-        rootName: 'tbodyList',
+        rootName: 'list',
         textName: 'displayName',
         valueName: 'id',
         multiple: true,
@@ -235,7 +238,7 @@ export default {
   methods: {
     initData() {
       if (this.id) {
-        this.getDetail(this.id);
+        this.getDetail();
       } else {
         this.formConfig.forEach(form => {
           if (form.name == 'isActive') {
@@ -253,20 +256,21 @@ export default {
             }
           });
         }
-        this.$set(this.editvalList, 'appModuleId', this.appModuleId);
+        this.$set(this.formValue, 'appModuleId', this.appModuleId);
         this.updataVal('appModuleId', this.appModuleId);
         this.updateRelate(this.appModuleId);
+        this.loadingShow = false;
       }
     },
     close() {
       this.$emit('close');
     },
     updatesystemsetting(val) {
-      let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      this.editvalList.appModuleId = val;
-      this.editvalList.usePattern = '1';
-      this.editvalList.srcBranch = '';
-      this.editvalList.targetBranch = '';
+      let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusId'];
+      this.formValue.appModuleId = val;
+      this.formValue.usePattern = '1';
+      this.formValue.srcBranch = '';
+      this.formValue.targetBranch = '';
       this.statusVal = [];
       this.formConfig.forEach((form, findex) => {
         if (hideList.indexOf(form.name) > -1) {
@@ -285,13 +289,13 @@ export default {
     },
     saveEdit() {
       if (this.$refs.editform.valid()) {
-        let param = this.$utils.deepClone(this.editvalList);
+        let param = this.$utils.deepClone(this.formValue);
         Object.assign(param, {
-          usePattern: parseInt(this.editvalList.usePattern)
+          usePattern: parseInt(this.formValue.usePattern)
         });
         if (this.statusVal) {
           Object.assign(param, {
-            issueStatusUuid: this.statusVal.length > 0 ? this.statusVal.join(',') : ''
+            issueStatusId: this.statusVal.length > 0 ? this.statusVal.join(',') : ''
           });
         }
         if (this.id) {
@@ -304,11 +308,11 @@ export default {
     },
     changeSubsys(val) {
       //根据系统改变子系统
-      let hideList = ['appModuleId', 'usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
-      this.editvalList.appModuleId = '';
-      this.editvalList.usePattern = '1';
-      this.editvalList.srcBranch = '';
-      this.editvalList.targetBranch = '';
+      let hideList = ['appModuleId', 'usePattern', 'srcBranch', 'targetBranch', 'issueStatusId'];
+      this.formValue.appModuleId = '';
+      this.formValue.usePattern = '1';
+      this.formValue.srcBranch = '';
+      this.formValue.targetBranch = '';
       this.formConfig.forEach((form, findex) => {
         if (hideList.indexOf(form.name) > -1) {
           this.$set(form, 'isHidden', !val);
@@ -317,34 +321,33 @@ export default {
       this.$set(this.subsystemConfig, 'params', {appSystemId: val}); 
       this.updatesystemsetting('');
     },
-    getDetail(strategyId) {
-      this.$set(this.editvalList, 'appModuleId', '');
-      if (strategyId) {
-        this.$api.codehub.strategy.getDetail({id: strategyId}).then(res => {
-          if (res && res.Status == 'OK') {
-            if (res.Return.appModuleId) {
-              this.updatesystemsetting(res.Return.appModuleId);
-            }
-            Object.assign(this.editvalList, {
-              name: res.Return.name || '',
-              srcBranch: res.Return.srcBranch || '',
-              appModuleId: res.Return.appModuleId || '',
-              targetBranch: res.Return.targetBranch || '',
-              type: res.Return.type || '',
-              usePattern: String(res.Return.usePattern),
-              id: res.Return.id || '',
-              versionPrefix: res.Return.versionPrefix || '',
-              versionTypeId: res.Return.versionTypeId || ''
-            });
-            this.statusVal = res.Return.issueStatusUuid ? res.Return.issueStatusUuid.split(',') : [];
-          } else {
-            this.editvalList = {};
-            this.statusVal = [];
+    getDetail() {
+      this.loadingShow = true;
+      this.$api.codehub.strategy.getDetail({id: this.id}).then(res => {
+        if (res && res.Status == 'OK') {
+          if (res.Return.appModuleId) {
+            this.updatesystemsetting(res.Return.appModuleId);
           }
-        });
-      } else {
-        this.editvalList = {};
-      }
+          Object.assign(this.formValue, {
+            name: res.Return.name || '',
+            srcBranch: res.Return.srcBranch || '',
+            appSystemId: res.Return.appSystemId,
+            appModuleId: res.Return.appModuleId || '',
+            targetBranch: res.Return.targetBranch || '',
+            type: res.Return.type || '',
+            usePattern: String(res.Return.usePattern),
+            id: res.Return.id || '',
+            versionPrefix: res.Return.versionPrefix || '',
+            versionTypeId: res.Return.versionTypeId || ''
+          });
+          this.statusVal = res.Return.issueStatusId ? res.Return.issueStatusId.split(',') : [];
+        } else {
+          this.formValue = {};
+          this.statusVal = [];
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     },
     updataVal(name, val) {
       this.formConfig.forEach(form => {
@@ -356,7 +359,7 @@ export default {
     },
     updateRelate(val) {
       //单独更新子系统相关的参数（不改变值
-      let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusUuid'];
+      let hideList = ['usePattern', 'srcBranch', 'targetBranch', 'issueStatusId'];
       this.formConfig.forEach((form, findex) => {
         if (hideList.indexOf(form.name) > -1) {
           this.$set(form, 'isHidden', !val);
@@ -375,19 +378,16 @@ export default {
   },
   computed: {},
   watch: {
-    editvalList: {
+    formValue: {
       handler: function(val) {
         if (val && val.name) {
           if (val.appModuleId) {
-            this.$set(this.dialogSetting, 'height', '500px');
             Object.assign(this.srcbranchConfig.params, {
               appModuleId: val.appModuleId
             });
             Object.assign(this.targetbranchConfig.params, {
               appModuleId: val.appModuleId
             });
-          } else {
-            this.$set(this.dialogSetting, 'height', '300px');
           }
           this.formConfig.forEach(form => {
             if (val[form.name]) {
