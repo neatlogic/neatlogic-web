@@ -1,23 +1,18 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
-          <template slot="subsystemUuid">
-            <TsFormSelect
-              v-model="subsystemUuid"
-              v-bind="subsystemConfig"
-              width="75%"
-              :selectItemList.sync="selectSub"
-            />
+          <template slot="appModuleId">
+            <TsFormSelect :selectItemList.sync="selectSub" />
           </template>
         </TsForm>
         <TsForm ref="projectForm" :itemList="projectConfig">
-          <template v-for="(project,pindex) in projectConfig" :slot="project.name">
+          <template v-for="(project, pindex) in projectConfig" :slot="project.name">
             <TsFormSelect
-              :key="pindex"
+              :key="pindex" 
               v-model="project.value"
-              v-bind="project"
+              v-bind="project" 
               width="75%"
             />
           </template>
@@ -41,61 +36,62 @@ export default {
   },
   filters: {},
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
     projectList: Array, //项目分类对应数据
-    list: Object, //如果是从行点击进来的有数据
-    uuid: String, //外部携带的子系统uuid
-    systemUuid: String//外部携带的系统uuid
+    rowLi: Object //如果是从行点击进来的有数据
   },
   data() {
     let _this = this;
     return {
-      setting: {//弹窗设置
-        title: this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')}),
-        maskClose: false
+      setting: {
+        //弹窗设置
+        title: this.$t('dialog.title.edittarget', { target: this.$t('page.mapping') }),
+        maskClose: false,
+        isShow: true
       },
       selectSub: null,
       vaildConfig: ['required'],
-      subsystemUuid: '',
-      systemId: '',
+      appModuleId: null,
+      appSystemId: null,
       statusVal: [],
-      formConfig: [{
-        type: 'select',
-        label: this.$t('page.system'),
-        name: 'systemUuid',
-        transfer: true,
-        dynamicUrl: '/api/rest/codehub/appsystem/search',
-        rootName: 'tbodyList',
-        dealDataByUrl: this.$utils.getAppForselect,
-        idListName: 'id',
-        validateList: ['required'],
-        onChange: function(val) {
-          _this.changeSubsys(val);
+      formValue: {},
+      formConfig: [
+        {
+          type: 'select',
+          label: this.$t('page.system'),
+          name: 'appSystemId',
+          transfer: true,
+          dynamicUrl: 'api/rest/deploy/app/config/appsystem/search',
+          rootName: 'tbodyList',
+          dealDataByUrl: this.$utils.getAppForselect,
+          validateList: ['required'],
+          value: this.appSystemId,
+          onChange: function(val) {
+            _this.changeAppModule(val);
+          }
+        },
+        {
+          type: 'select',
+          label: this.$t('page.module'),
+          name: 'appModuleId',
+          isHidden: false,
+          transfer: true,
+          value: this.appModuleId,
+          dealDataByUrl: this.$utils.getAppForselect,
+          dynamicUrl: '/api/rest/deploy/app/config/module/list',
+          onChange: function(val) {
+            _this.setModule(val);
+          }
         }
-      }, {
-        type: 'slot',
-        label: this.$t('page.subsystem'),
-        name: 'subsystemUuid',
-        isHidden: true
-      }],
+      ],
       projectConfig: [],
       projectValuelist: {},
-      subsystemConfig: {
-        transfer: true,
-        rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
-        idListName: 'id',
-        dynamicUrl: '/api/rest/codehub/appmodule/search'
-      },
       saving: false
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initData();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -108,6 +104,54 @@ export default {
     close() {
       this.$emit('close');
     },
+
+    initData() {
+      if (this.rowLi && this.rowLi.id) {
+        this.appSystemId = this.rowLi.appSystemVo.id;
+        this.appModuleId = this.rowLi.id;
+        if (this.appSystemId) {
+          this.setVal('appSystemId', this.appSystemId);
+          this.changeAppModule(this.appSystemId);
+        }
+        if (this.appModuleId) {
+          this.setVal('appModuleId', this.appModuleId);
+        }
+      }
+      
+      if (this.projectList && this.projectList.length > 0) {
+        this.initProjectconfig(this.projectList);
+      }
+
+      let val = this.rowLi;
+      let _this = this;
+      this.setting.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')});
+      if (val.projectList && val.projectList.length > 0) {
+        if (this.projectConfig && this.projectConfig.length > 0) {
+          this.projectConfig.forEach((pro) => {
+            let lis = val.projectList.filter((p) => {
+              return p.sourceId == pro.name;
+            });
+            let li = lis.map((r) => {
+              return r.projectKey;
+            });
+            Object.assign(pro, {
+              value: li
+            });
+            _this.changeProject(lis, pro.name);
+          });
+          this.$forceUpdate();
+        }
+      }
+    },
+
+    setVal(name, val) {
+      this.formConfig.forEach((form, findex) => {
+        if (form.name == name) {
+          this.$set(form, 'value', val);
+        }
+      });
+    },
+
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let projectList = [];
@@ -117,68 +161,72 @@ export default {
             isValidproject = true;
             let li = this.projectValuelist[i].map(p => {
               return {
-                sourceUuid: p.sourceUuid,
+                sourceId: p.sourceId,
                 projectKey: p.projectKey,
                 projectName: p.projectName
               };
-            }); 
+            });
             projectList = projectList.concat(li);
           }
         }
         if (isValidproject) {
           let param = {
-            subsystemUuid: this.subsystemUuid || '0',
+            appModuleId: this.appModuleId || 0,
             projectList: projectList,
-            systemUuid: this.systemId || '0'
+            appSystemId: this.appSystemId || 0
           };
           this.saving = true;
-          this.$api.codehub.project.save(param).then(res => {
-            this.saving = false;
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.$emit('close', true);
-          }).catch(e => {
-            this.saving = false;
-          });
+          this.$api.codehub.project
+            .save(param)
+            .then(res => {
+              this.saving = false;
+              this.$Message.success(this.$t('message.executesuccess'));
+              this.$emit('close', true);
+            })
+            .catch(e => {
+              this.saving = false;
+            });
         } else {
           this.$Message.error(this.$t('term.codehub.pleaseselectaproject'));
         }
       }
     },
-    changeSubsys(val) {
+    changeAppModule(val) {
       let _this = this;
-      _this.systemId = val;
-      _this.subsystemUuid = '';
+      _this.appSystemId = val;
       if (val) {
-        this.$set(this.subsystemConfig, 'params', {systemId: val});
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-        this.showSub(true);
+        this.formConfig.forEach(fo => {
+          if (fo.name == 'appModuleId') {
+            //this.$set(fo, 'isHidden', !isshow);
+            this.$set(fo, 'params', { appSystemId: val });
+            this.$set(fo, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
+            this.showSub(true);
+          }
+        });
       } else {
-        this.$set(this.subsystemConfig, 'params', {});
-        this.$set(this.subsystemConfig, 'dynamicUrl', '');        
-        this.showSub(false);
+        this.formConfig.forEach(fo => {
+          if (fo.name == 'appModuleId') {
+            this.$set(fo, 'params', {});
+            this.$set(fo, 'dynamicUrl', '');
+            this.showSub(true);
+          }
+        });
       }
     },
+
+    setModule(val) {
+      let _this = this;
+      _this.appModuleId = val;
+    },
+
     showSub(isshow) {
       this.formConfig.forEach(fo => {
-        if (fo.name == 'subsystemUuid') {
+        if (fo.name == 'appModuleId') {
           this.$set(fo, 'isHidden', !isshow);
         }
       });
     },
-    updataVal(name, val) {
-      this.formConfig.forEach(fo => {
-        if (fo.name == name) {
-          this.$set(fo, 'value', val);
-          this.$set(fo, 'isHidden', !val);
-        }
-      });
-      if (name == 'systemUuid') {
-        this.systemId = val;
-        this.$set(this.subsystemConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-        this.$set(this.subsystemConfig, 'params', {systemId: val});
-        this.showSub(true);
-      }
-    },
+
     changeProject(li, uuid) {
       this.projectValuelist['source-' + uuid.toString()] = li;
     },
@@ -190,24 +238,24 @@ export default {
           let dataLi = [];
           if (d.dataList.length > 0) {
             dataLi = d.dataList.filter(da => {
-              da.sourceUuid = d.sourceUuid;
+              da.sourceId = d.sourceId;
               return da;
             });
           }
-          this.projectValuelist['source-' + d.sourceUuid.toString()] = [];
+          this.projectValuelist['source-' + d.sourceId.toString()] = [];
           this.projectConfig.push({
-            type: 'slot',
+            type: 'select',
             label: d.sourceName,
-            name: d.sourceUuid,
+            name: d.sourceId.toString(),
             transfer: true,
             multiple: true,
             valueName: 'projectKey',
             textName: 'projectName',
             dataList: dataLi,
             search: true,
-            value: '',
+            validateList: ['required'],
             onChange: function(val, vals, items) {
-              _this.changeProject(items, d.sourceUuid);
+              _this.changeProject(items, d.sourceId);
             }
           });
         });
@@ -224,78 +272,6 @@ export default {
   },
   computed: {},
   watch: {
-    selectSub: {
-      handler: function(val) {
-        let _this = this;
-        if (val && val.systemVo) {
-          _this.updataVal('systemUuid', val.systemVo.uuid);
-        }
-      },
-      immediate: true,
-      deep: true
-    },
-    projectList: {
-      handler: function(val) {
-        this.projectConfig = [];
-        if (val && val.length > 0) {
-          this.initProjectconfig(val);
-        }
-      },
-      immediate: true,
-      deep: true    
-    },
-    list: {
-      handler: function(val) {
-        let _this = this;
-        if (val && Object.keys(val).length) {
-          if (val.systemVo) {
-            _this.updataVal('systemUuid', val.systemVo.uuid);
-            _this.changeSubsys(val.systemVo.uuid);
-          }
-          if (val.uuid) {
-            _this.subsystemUuid = val.uuid;
-            _this.updataVal('subsystemUuid', val.uuid);
-          }
-        }
-        this.setting.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')});
-        if (val.projectList && val.projectList.length > 0) {
-          if (this.projectConfig && this.projectConfig.length > 0) {
-            this.projectConfig.forEach((pro) => {
-              let lis = val.projectList.filter((p) => {
-                return p.sourceUuid == pro.name;
-              });
-              let li = lis.map((r) => {
-                return r.projectKey;
-              });
-              Object.assign(pro, {
-                value: li
-              });
-              _this.changeProject(lis, pro.name);
-            });
-            this.$forceUpdate();
-          }
-        }
-      },
-      immediate: true,
-      deep: true      
-    },
-    uuid: {
-      handler: function(val) {
-        if (!this.list || !this.list.uuid && val) {
-          this.subsystemUuid = val;
-        }
-      },
-      immediate: true
-    },
-    systemUuid: {
-      handler: function(val) {
-        if (!this.list || !this.list.uuid && val) {
-          this.updataVal('systemUuid', val);
-        }
-      },
-      immediate: true      
-    }
-
   }
 };
 </script>

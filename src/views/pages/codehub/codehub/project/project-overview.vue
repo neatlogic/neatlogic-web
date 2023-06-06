@@ -11,7 +11,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
-          @change="getTableList(1)"
+          @change="getList(1)"
         ></CombineSearcher>
       </template>
       <div slot="content">
@@ -21,33 +21,33 @@
           @changePageSize="changePageSize"
           @getSelected="getSelected"
         >
-          <template slot="systemVo" slot-scope="{row}">
+          <template slot="appSystemVo" slot-scope="{row}">
             <Tooltip
-              v-if="row.systemVo.description"
+              v-if="row.appSystemVo.abbrName"
               theme="light"
               max-width="300"
               transfer
             >
-              <div>{{ row.systemVo.name }}</div>
+              <div>{{ row.appSystemVo.abbrName }}</div>
               <div slot="content">
-                <div>{{ row.systemVo.description }}</div>
+                <div>{{ row.appSystemVo.name }}</div>
               </div>
             </Tooltip>
-            <div v-else>{{ row.systemVo.name }}</div>
+            <div v-else>{{ row.appSystemVo.abbrName }}</div>
           </template>
           <template slot="name" slot-scope="{row}">
             <Tooltip
-              v-if="row.description"
+              v-if="row.name"
               theme="light"
               max-width="300"
               transfer
             >
-              <div>{{ row.name }}</div>
+              <div>{{ row.abbrName }}</div>
               <div slot="content">
-                <div>{{ row.description }}</div>
+                <div>{{ row.name }}</div>
               </div>
             </Tooltip>
-            <div v-else>{{ row.name }}</div>
+            <div v-else>{{ row.abbrName }}</div>
           </template>
           <template slot="projectList" slot-scope="{row}">
             <template v-if="row.projectList.length>0">
@@ -69,11 +69,10 @@
     </TsContain>
     <ProjectEdit
       v-if="isEdit"
-      :isShow.sync="isEdit"
       :projectList="projectList"
-      :list="editLi"
-      :uuid="subsystemUuid"
-      :systemUuid="systemUuid"
+      :rowLi="editLi"
+      :rowModuleId="appModuleId"
+      :rowSystemId="appSystemId"
       @close="close"
     ></ProjectEdit>
   </div>
@@ -92,17 +91,18 @@ export default {
   data() {
     return {
       keyword: '',
-      systemUuid: '',
-      subsystemUuid: '',
+      appSystemId: null,
+      appModuleId: null,
       tableData: {
+        multiple: true,
         hideAction: false,
         theadList: [{
           key: 'selection'
         }, {
           title: this.$t('page.system'),
-          key: 'systemVo'
+          key: 'appSystemVo'
         }, {
-          title: this.$t('page.subsystem'),
+          title: this.$t('page.module'),
           key: 'name'
         }, {
           title: this.$t('term.rdm.project'),
@@ -122,31 +122,28 @@ export default {
         search: true,
         searchList: [
           {
-            name: 'systemUuid',
+            name: 'appSystemId',
             type: 'select',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/appsystem/search',
+            dynamicUrl: 'api/rest/deploy/app/config/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.systemUuid,
             onChange: (val) => {
-              this.systemUuid = val;
-              this.updateSubSystem(val);
+              this.appSystemId = val;
+              this.updateAppModule(val);
               this.getSearch();
             }
           },
           {
-            name: 'subsystemUuid',
+            name: 'appModuleId',
             type: 'select',
-            label: this.$t('page.subsystem'),
+            label: this.$t('page.module'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
-            value: this.subsystemUuid,
+            dealDataByUrl: this.$utils.getAppForselect,
             onChange: (val) => {
-              this.subsystemUuid = val;
+              this.appModuleId = val;
               this.getSearch();
             }
           }
@@ -187,18 +184,18 @@ export default {
       this.tableData.currentPage = 1;
       this.getList();
     },
-    updateSubSystem(val) {
-      this.subsystemUuid = '';
+    updateAppModule(val) {
+      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
-            this.$set(item, 'params', {systemId: val});
+          if (item && (item.name == 'appModuleId')) {
+            this.$set(item, 'params', {appSystemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {});
             this.$set(item, 'dynamicUrl', '');
           } 
@@ -209,11 +206,11 @@ export default {
       let param = {};
       this.tableData.pageSize && Object.assign(param, {pageSize: this.tableData.pageSize});
       this.tableData.currentPage && Object.assign(param, {currentPage: this.tableData.currentPage});
-      if (this.subsystemUuid) {
-        Object.assign(param, {subsystemUuid: this.subsystemUuid});
+      if (this.appModuleId) {
+        Object.assign(param, {id: this.appModuleId});
       }
-      if (this.systemUuid) {
-        Object.assign(param, {systemUuid: this.systemUuid});
+      if (this.appSystemId) {
+        Object.assign(param, {appSystemId: this.appSystemId});
       }
       if (this.keyword) {
         Object.assign(param, {keyword: this.keyword});
@@ -224,7 +221,7 @@ export default {
           this.$set(this.tableData, 'rowNum', res.Return.rowNum);
           this.$set(this.tableData, 'pageSize', res.Return.pageSize);
           this.$set(this.tableData, 'currentPage', res.Return.currentPage);
-          this.$set(this.tableData, 'tbodyList', res.Return.list);
+          this.$set(this.tableData, 'tbodyList', res.Return.tbodyList);
         } else {
           this.$set(this.tableData, 'tbodyList', []);
         }
@@ -232,25 +229,24 @@ export default {
     },
     deleteProject(row) {
       let param = {
-        systemUuid: '',
-        subsystemUuid: ''
+        systemArray: []
       };
-      if (row) { //删除单个从列里获取单个子系统
-        Object.assign(param, {
-          systemUuid: row.systemVo.uuid || 0,
-          subsystemUuid: row.uuid || 0
-        });
+      if (row) { //删除单个从列里获取单个模块
+        Object.assign(param.systemArray, [{
+          appSystemId: row.appSystemVo.id || 0,
+          appModuleId: row.id || 0
+        }]);
       } else { //删除批量从全局选中获取
         if (this.selectList.length > 0) {
           let subsList = this.selectList.map((se) => {
-            return se.uuid || 0;
+            return se.id || 0;
           });
           let sysList = this.selectList.map((se) => {
-            return se.systemVo.uuid || 0;
+            return se.appSystemVo.id || 0;
           });
-          Object.assign(param, {
-            systemUuid: sysList.join(','),
-            subsystemUuid: subsList.join(',')
+          Object.assign(param.systemArray, {
+            appSystemId: sysList.join(','),
+            appModuleId: subsList.join(',')
           });
         }
       }
@@ -275,6 +271,8 @@ export default {
       this.isEdit = true;
       if (row) {
         this.editLi = row;
+        this.appModuleId = row.id;
+        this.appSystemId = row.appSystemVo.id;
       } else {
         this.editLi = {};
       }
