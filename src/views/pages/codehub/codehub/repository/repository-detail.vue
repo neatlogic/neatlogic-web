@@ -1,39 +1,42 @@
 <template>
   <div>
     <TsContain v-if="reposData">
-      <template slot="top">
-        <div class="clearfix">
-          <div class="ts-angle-left d_f cursor-pointer" @click="gotoList">{{ $t('term.codehub.repositorylist') }}</div>
-          <div class="d_f top-title">
-            <h3 class="title">{{ reposData.name||'-' }}</h3>
-            <div class="text-tip desc">
-              <Tooltip v-if="showtips(reposData)" theme="light" max-width="300">
-                <div>{{ setTxt(reposData,'text') }}</div>
-                <div slot="content">
-                  <div>{{ setTxt(reposData,'tips') }}</div>
-                </div>
-              </Tooltip>
-              <div v-else>{{ setTxt(reposData,'text') }}</div>
-            </div>
+      <template v-slot:navigation>
+        <span class="ts-angle-left text-action" @click="$back('/repository-overview')">{{ $getFromPage($t('router.codehub.repository')) }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <span>{{ reposData.name ||'-' }}</span>
+        <Tooltip
+          v-if="showtips(reposData)"
+          class="pl-sm"
+          theme="light"
+          max-width="300"
+        >
+          <div>{{ setTxt(reposData,'text') }}</div>
+          <div slot="content">
+            <div>{{ setTxt(reposData,'tips') }}</div>
           </div>
-          <div v-if="!isLoad" class="action-group d_f_r">
-            <div v-if="reposData.agentName" class="action-item"><span class="text-tip">{{ $t('page.node') }}</span><span>{{ reposData.agentName||'-' }}</span>
-              <span
-                class="text-action ts-refresh"
-                style="margin-left:5px;"
-                :title="$t('page.switchnode')"
-                @click.stop="updateNode(reposData)"
-              ></span>
-            </div>
-            <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
-            <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copyok" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
-            <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.uuid)">{{ $t('page.synchronous') }}</div>
+        </Tooltip>
+        <div v-else>{{ setTxt(reposData,'text') }}</div>
+      </template>
+      <template v-slot:topRight>
+        <div v-if="!isLoad" class="action-group">
+          <div v-if="reposData.agentName" class="action-item"><span class="text-tip">{{ $t('page.node') }}</span><span>{{ reposData.agentName||'-' }}</span>
+            <span
+              class="text-action ts-refresh"
+              style="margin-left:5px;"
+              :title="$t('page.switchnode')"
+              @click.stop="updateNode(reposData)"
+            ></span>
           </div>
+          <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
+          <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copyok" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
+          <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.id)">{{ $t('page.synchronous') }}</div>
         </div>
       </template>
       <div slot="content">
         <Loading v-if="isLoad || isLoadBranch" loadingShow style="height:120px"></Loading>
-        <div v-else style="padding:10px;">
+        <div v-else>
           <Tabs v-model="activetab" :animated="animated">
             <TabPane
               v-for="(tab,tabindex) in tabList"
@@ -44,7 +47,7 @@
               <div
                 :is="tab.name"
                 v-if="activetab == tab.name"
-                :uuid="uuid"
+                :id="id"
                 :reposData="reposData"
                 @updateStatus="updateTabstatus"
               ></div>
@@ -56,14 +59,14 @@
     <Loading v-else type="fix" loadingShow></Loading>
     <RepositoryEditDialog
       v-if="isEdit && editType=='repository'"
-      :uuid="editUuid"
+      :id="editUuid"
       :isShow="isEdit"
       :serveList="serveList"
       @close="close"
     ></RepositoryEditDialog>
     <RepositorySyncDialog
       v-if="isEdit && editType=='sync'"
-      :uuid="editUuid"
+      :id="editUuid"
       :isShow="isEdit"
       @close="close"
     ></RepositorySyncDialog>
@@ -109,7 +112,7 @@ export default {
         text: this.$t('page.browse')
       }],
       activetab: 'action',
-      uuid: null,
+      id: null,
       editUuid: null,
       reposData: null,
       statusList: {
@@ -127,9 +130,10 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.$route.query.uuid) {
-      this.uuid = this.$route.query.uuid;
+    if (this.$route.query.id) {
+      this.id = Number(this.$route.query.id);
     }
+    this.initData();
   },
   beforeUpdate() {},
   updated() {},
@@ -138,13 +142,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      if (this.id) {
+        this.getDetail(this.id);
+      } else {
+        this.reposData = null;
+      }
+    },
     editRepository() {
       this.isEdit = true;
-      this.editUuid = this.$utils.deepClone(this.uuid);
+      this.editUuid = this.$utils.deepClone(this.id);
     },
     deleteRepository() {
       //详情页删除当前仓库的功能已经去掉
-      let param = { uuid: this.uuid };
+      let param = { id: this.id };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.warehouse')}),
@@ -160,11 +171,11 @@ export default {
         }
       });
     },
-    syncRepository(uuid) {
+    syncRepository(id) {
       this.editType = 'sync';
       this.isEdit = true;
-      if (uuid) {
-        this.editUuid = uuid;
+      if (id) {
+        this.editUuid = id;
       }
     },
     close() {
@@ -176,10 +187,10 @@ export default {
         path: '/repository-overview'
       });
     },
-    getDetail(uuid) {
+    getDetail(id) {
       let param = {};
-      if (uuid) {
-        Object.assign(param, {uuid: uuid, getDelegation: true});
+      if (id) {
+        Object.assign(param, {id: id, getDelegation: true});
       }
       this.isLoad = true;
       this.$api.codehub.repository.getDetail(param).then((res) => {
@@ -210,14 +221,14 @@ export default {
   filter: {},
   computed: {
     setTxt() {
-      return function(config, type) {
+      return function(config) {
         let text = '';
-        let prev = config.systemVo || '';
-        let next = config.subSystemVo || '';
+        let prev = config.appSystemVo || '';
+        let next = config.appModuleVo || '';
         if (prev) {
-          text = prev.name + (prev.description ? ('(' + prev.description + ')') : '');
+          text = prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : '';
           if (next) {
-            text += ' / ' + next.name + (next.description ? ('(' + next.description + ')') : '');
+            text += ' / ' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : (next.name || ''));
           }
         }
         return text;
@@ -226,25 +237,14 @@ export default {
     showtips() {
       return function(config) {
         let isshow = false;
-        if ((config.systemVo && config.systemVo.description) || (config.subSystemVo && config.subSystemVo.description)) {
+        if ((config.appSystemVo && config.appSystemVo.abbrName) || (config.appModuleVo && config.appModuleVo.name)) {
           isshow = true;
         }
         return isshow;
       };
     }
   },
-  watch: {
-    uuid: {
-      handler: function(val) {
-        if (val) {
-          this.getDetail(val);
-        } else {
-          this.reposData = null;
-        }
-      },
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

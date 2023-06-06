@@ -3,53 +3,56 @@
     <div
       ref="top"
       class="input-border"
-      style="padding:0 16px;"
     >
-      <Row :gutter="16">
-        <i-col span="18" class="top-search">
-          <span class="mr-10" style="display:inline-block;">
-            <FormSelect
+      <TsRow>
+        <Col span="18">
+          <div style="display: flex;">
+            <TsFormSelect
               v-model="user"
               v-bind="userConfig"
-              class="mr-10"
+              class="mr-sm"
               :dataList="userList"
-              @on-change="searchList('init')"
-            ></FormSelect>
-          </span>
-          <TimeSelect
-            v-model="time"
-            v-bind="timeConfig"
-            class="mr-10"
-            @on-change="searchList('init')"
-          ></TimeSelect>
-          <FormSelect
-            v-model="objectVal"
-            v-bind="objectConfig"
-            class="mr-10"
-            :dataList="subjectList"
-            @on-change="searchList('init')"
-          ></FormSelect>
-          <FormSelect
-            v-model="typeVal"
-            v-bind="typeConfig"
-            :dataList="actionTypeList"
-            @on-change="searchList('init')"
-          ></FormSelect>
-        </i-col>
-        <i-col span="6">
-          <FormInput
-            v-model.trim="keyword"
-            suffix="i-icon ts-search"
-            placeholder="关键字"
-            @keyup.enter.native="searchList('init')"
-          ></FormInput>
-        </i-col>
-      </Row>
+              @on-change="() => changeCurrent(1)"
+            ></TsFormSelect>
+            <TimeSelect
+              v-model="time"
+              v-bind="timeConfig"
+              class="mr-sm"
+              style="width: 140px;"
+              @on-change="() => changeCurrent(1)"
+            ></TimeSelect>
+            <TsFormSelect
+              v-model="objectVal"
+              v-bind="objectConfig"
+              class="mr-sm"
+              :dataList="subjectList"
+              @on-change="() => changeCurrent(1)"
+            ></TsFormSelect>
+            <TsFormSelect
+              v-model="typeVal"
+              v-bind="typeConfig"
+              :dataList="actionTypeList"
+              @on-change="() => changeCurrent(1)"
+            ></TsFormSelect>
+          </div>
+        </Col>
+        <Col span="6">
+          <InputSearcher
+            v-model="keyword"
+            :placeholder="$t('page.keyword')"
+            @change="() => changeCurrent(1)"
+          ></InputSearcher>
+        </Col>
+      </TsRow>
     </div>
-    <div ref="table" class="padding-md" style="padding-bottom:0">
+    <div ref="table" class="mt-sm">
+      <Loading
+        :loadingShow="loadingShow"
+        type="fix"
+      ></Loading>
       <TsTable
         v-bind="tableConfig"
-        :tbodyList="actionList"
+        :theadList="theadList"
         :height="height"
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
@@ -61,14 +64,13 @@
           {{ row.endTime | formatDate }}
         </template>
         <template slot="actions" slot-scope="{row}">
-          <div class="text-action ts-pages" @click="showDetail(row)">详情</div>
+          <div class="text-action ts-pages" @click="showDetail(row)">{{ $t('page.detail') }}</div>
         </template>
       </TsTable>
     </div>
     <TsDialog
       v-if="isShow"
       v-bind="setting"
-      :isShow="isShow"
       @on-close="close"
     >
       <div>
@@ -90,32 +92,28 @@
 </template>
 
 <script>
-import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
-import FormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
-import TimeSelect from '@/resources/components/TimeSelect/TimeSelect.vue';
 import editmixin from './edittabmixin.js';
 export default {
   name: 'Action',
   components: {
-    FormInput,
-    FormSelect,
-    TimeSelect,
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
   },
   mixins: [editmixin],
   props: {},
   data() {
-    let _this = this;
     return {
       keyword: '',
       userConfig: {
-        placeholder: '操作人',
+        placeholder: this.$t('term.autoexec.operator'),
         transfer: true,
         width: 150,
         search: true,
         textName: 'userName',
         valueName: 'userId',
-        dynamicUrl: '/api/rest/codehub/user/search',
+        dynamicUrl: '/api/rest/user/search',
         idListName: 'idList',
         rootName: 'tbodyList',
         hasReturn: true
@@ -123,38 +121,38 @@ export default {
       objectConfig: {
         width: 140,
         transfer: true,
-        placeholder: '操作对象'
+        placeholder: this.$t('term.codehub.actionsubject')
       },
       typeConfig: {
         width: 140,
         transfer: true,
-        placeholder: '操作类型'
+        placeholder: this.$t('page.actiontype')
       },
       timeConfig: {
         width: '180px',
         transfer: true
       },
+      theadList: [{
+        title: this.$t('term.autoexec.operator'),
+        key: 'userId'
+      }, {
+        title: this.$t('term.codehub.actionsubject'),
+        key: 'actionSubjectName'
+      }, {
+        title: this.$t('page.actiontype'),
+        key: 'actionTypeName'
+      }, {
+        title: this.$t('page.starttime'),
+        key: 'startTime'
+      }, {
+        title: this.$t('page.endtime'),
+        key: 'endTime'
+      }, {
+        width: '80',
+        key: 'actions'
+      }],
       tableConfig: {
-        theadList: [{
-          title: '操作人',
-          key: 'userId'
-        }, {
-          title: '操作对象',
-          key: 'actionSubjectName'
-        }, {
-          title: '操作类型',
-          key: 'actionTypeName'
-        }, {
-          title: '开始时间',
-          key: 'startTime'
-        }, {
-          title: '结束时间',
-          key: 'endTime'
-        }, {
-          width: '80',
-          key: 'actions'
-        }],
-        rowKey: 'uuid',
+        rowKey: 'id',
         tbodyList: [],
         currentPage: 1,
         pageSize: 20
@@ -165,26 +163,23 @@ export default {
       user: '',
       objectVal: '',
       typeVal: '',
-      actionList: [],
-      searching: true,
+      loadingShow: true,
       userList: [],
       showInfo: null,
       isShow: false,
       setting: {
-        title: '查看详情',
+        title: this.$t('page.viewdetails'),
         width: 'medium',
         type: 'slider',
         maskClose: true,
-        hasFooter: false
+        hasFooter: false,
+        isShow: true
       },
       height: null
-
     };
   },
   beforeCreate() {},
-  created() {
-
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.getActiveObject();
@@ -196,75 +191,52 @@ export default {
   },
   beforeUpdate() {},
   updated() {},
-  activated() {
-
-  },
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
-    searchList(isInit) {
-      isInit && (this.currentPage = 1);
+    searchList() {
       let param = {
         belongType: 'repo',
-        belongUuid: this.uuid
+        belongId: this.id,
+        actionType: this.typeVal,
+        userId: this.user,
+        keyword: this.keyword,
+        currentPage: this.tableConfig.currentPage,
+        pageSize: this.tableConfig.pageSize
       };
-
       if (this.time) {
         Object.assign(param, this.time);
       }
-      this.user && Object.assign(param, {userId: this.user});
-      this.objectVal && Object.assign(param, {actionSubject: this.objectVal});
-      this.typeVal && Object.assign(param, {actionType: this.typeVal});
-      this.keyword && Object.assign(param, {keyword: this.keyword});
-      this.searching = true;
-      this.tableConfig.currentPage && Object.assign(param, {currentPage: this.tableConfig.currentPage});
-      this.tableConfig.pageSize && Object.assign(param, {pageSize: this.tableConfig.pageSize});
+      if (this.objectVal) {
+        Object.assign(param, { actionSubject: this.objectVal});
+      }
+      this.loadingShow = true;
       this.$api.codehub.repositorydetail.getActives(param).then(res => {
         if (res.Status == 'OK') {
-          Object.assign(this.tableConfig, {
-            currentPage: res.Return.currentPage,
-            pageCount: res.Return.pageCount,
-            pageSize: res.Return.pageSize,
-            rowNum: res.Return.rowNum
-          });
-          this.actionList = res.Return.list || [];
+          Object.assign(this.tableConfig, res.Return);
         } else {
           Object.assign(this.tableConfig, {
             currentPage: 1,
             pageCount: 1,
             pageSize: 1,
-            rowNum: 1
+            rowNum: 1,
+            tbodyList: []
           });
-          this.actionList = [];
         }
-      }).finally(res => {
-        this.searching = false;
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
-    changeCurrent(val) {
-      this.tableConfig.currentPage = val;
+    changeCurrent(currentPage) {
+      this.tableConfig.currentPage = currentPage;
       this.searchList();
     },
-    changePageSize(val) {
-      this.tableConfig.pageSize = val;
+    changePageSize(pageSize) {
       this.tableConfig.currentPage = 1;
+      this.tableConfig.pageSize = pageSize;
       this.searchList();
-    },
-    getUserlist() {
-      // let param = {
-      //   mode: 0
-      // };
-      // this.$https.post('/user/searchUserByNameJson.do', param).then(res => {
-      //   if (res && typeof res == 'object') {
-      //     this.userList = res || [];
-      //   } else {
-      //     this.userList = [];
-      //   }
-      // });
     },
     getActiveObject() {
       let param = {
@@ -285,16 +257,10 @@ export default {
       this.showInfo = null;
       this.isShow = false;
     }
-
   },
-
   filter: {},
-
-  computed: {
-  },
-
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
 
 </script>

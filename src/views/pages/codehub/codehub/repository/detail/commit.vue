@@ -7,27 +7,20 @@
       style="padding:0 16px;"
     >
       <Row :gutter="16">
-        <Col span="18">
-          <div class="clearfix">
-            <div class="d_f">当前已加载 {{ allCount }} 条，找到满足条件的提交 {{ activeConfig.cardList.length || 0 }} 条</div>
-            <div class="d_f_r" style="width:30%">
-              <GroupSelect
-                v-model.trim="queryName"
-                v-bind="selectConfig"
-                :dataList="searchGrouplist"
-                @on-change="getSearch"
-              ></GroupSelect>
-            </div>
-            <div class="d_f_r text-tip text-label">标签或分支</div>
-          </div>
+        <Col span="16">
+          <div>当前已加载 {{ allCount }} 条，找到满足条件的提交 {{ activeConfig.cardList.length || 0 }} 条</div>
         </Col>
-        <Col span="6">
-          <FormInput
-            v-model.trim="keyword"
-            suffix="i-icon ts-search"
-            placeholder="提交人或提交日志关键字"
-            @keyup.enter.native="searchList()"
-          ></FormInput>
+        <Col span="8">
+          <div style="display: flex;">
+            <TsForm
+              :item-list="selectConfig"
+            ></TsForm>
+            <InputSearcher
+              v-model="keyword"
+              placeholder="提交人或提交日志关键字"
+              @change="() => searchList()"
+            ></InputSearcher>
+          </div>
         </Col>
       </Row>
     </div>
@@ -55,7 +48,7 @@
                   <td colspan="2">
                     <CommitDiff
                       v-if="row.commitdiffInfo"
-                      :uuid="uuid"
+                      :id="id"
                       :queryName="queryName"
                       :queryType="queryType"
                       :subsystemUuid="reposData.subsystemUuid"
@@ -82,7 +75,7 @@
       </div>
       <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
     </div>
-    <NoData v-else text="没有数据"></NoData>
+    <NoData v-else></NoData>
     <TsDialog
       v-bind="dialogConfig"
       :isShow.sync="isshowIssue"
@@ -90,7 +83,7 @@
       :maskClose="true"
       @on-close="closeIssue"
     >
-      <table v-if="issueData && issueData.uuid" class="table">
+      <table v-if="issueData && issueData.id" class="table">
         <tbody>
           <tr v-for="(issue,iindex ) in issueList" :key="iindex+'_'+issueData.issueNo">
             <td class="text-right text-tip" width="120">{{ issue.title }}</td>
@@ -105,21 +98,18 @@
 </template>
 
 <script>
-import GroupSelect from '@/resources/components/GroupList/GroupList.vue';
-import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import editmixin from './edittabmixin.js';
 export default {
   name: 'Commit',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    GroupSelect,
-    FormInput,
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     CommitDiff: resolve => require(['./commit/commit-diff.vue'], resolve)
   },
   mixins: [editmixin],
   props: {},
   data() {
-    let _this = this;
     return {
       activeList: null,
       activeValue: '',
@@ -142,8 +132,14 @@ export default {
         cardList: []
       },
       selectConfig: {
-        clearable: false,
-        multiple: false
+        queryName: {
+          type: 'select',
+          label: '标签或分支',
+          transfer: true,
+          childrenName: 'dataList',
+          dataList: this.searchGrouplist,
+          mode: 'group'
+        }
       },
       issueList: [{
         title: '需求编号',
@@ -177,17 +173,16 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.uuid && this.reposData) {
+    if (this.id && this.reposData) {
       this.queryName = this.reposData.defaultBranch || this.reposData.mainBranch;
       this.queryType = 'branch';
     }
-
     this.getSouce();
   },
   beforeMount() {},
   async mounted() {
     await this.initGroupsearch();
-    if (this.uuid && this.reposData) {
+    if (this.id && this.reposData) {
       if (this.queryName) {
         this.$set(this.selectConfig, 'valueList', [{value: this.queryName, group: this.queryType}]);
       } else if (this.checkHasBranch(this.searchGrouplist)) {
@@ -204,23 +199,16 @@ export default {
   },
   beforeUpdate() {},
   updated() {},
-  activated() {
-
-  },
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getSearch(val, vallist) {
-      // if(val){
       this.queryName = vallist.value ? vallist.value : '';
       this.queryType = vallist.group ? vallist.group : '';
       this.startCommitId = null;
       this.getList();
-      //this.updatePage(1);
     },
     searchList() {
       this.startCommitId = null;
@@ -231,17 +219,15 @@ export default {
       if (!this.hasBranch) {
         return;
       }
-
       this.allCount = 0;
       this.isAllloaded = false;
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         queryName: this.queryName,
         queryType: this.queryType,
         pageSize: this.pageSize
       };
       // 前端过滤
-      //this.keyword && Object.assign(param, {keyword: this.keyword});
       this.activeConfig && this.activeConfig.currentPage && Object.assign(param, {currentPage: this.activeConfig.currentPage});
       this.startCommitId && Object.assign(param, {startCommitId: this.startCommitId});
       this.isload = true;
@@ -249,7 +235,6 @@ export default {
       this.$api.codehub.repositorydetail.getActive(param).then(res => {
         this.isload = false;
         this.isResponsed = true;
-
         // 每次执行搜索操作，都会清空页面已有的内容
         this.activeConfig.cardList = [];
         if (res && res.Status == 'OK') {
@@ -258,7 +243,6 @@ export default {
       }).catch(error => {
         this.isResponsed = true;
         this.isload = false;
-
         Object.assign(this.activeConfig, {
           cardList: []
         });
@@ -305,21 +289,17 @@ export default {
       if (!this.isResponsed) {
         return;
       }
-
       if (!this.isAllloaded) {
         // 加载更多时，仅当页面没有 commit 列表，才显示“加载中”的提示
         this.isload = !this.activeConfig.cardList || !this.activeConfig.cardList.length;
-
         let param = {
-          repositoryUuid: this.uuid,
+          repositoryId: this.id,
           queryName: this.queryName,
           queryType: this.queryType,
           startCommitId: this.startCommitId,
           pageSize: this.pageSize
         };
-
         // 前端根据返回值过滤，不在后端过滤
-        //this.keyword && Object.assign(param, {keyword: this.keyword});
         this.isResponsed = false;
         this.$api.codehub.repositorydetail.getActive(param).then((res) => {
           // “加载更多”会保留已有内容，点“搜索”不会保留已有内容
@@ -338,7 +318,7 @@ export default {
       if (!item.commitdiffInfo) {
         //没有就加载
         let param = {
-          repositoryUuid: this.uuid,
+          repositoryId: this.id,
           rightCommitId: item.commitId
         };
         this.$set(item, 'showcommitdiffInfo', true);
@@ -384,16 +364,14 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {
     setIssue() {
       return function(key, value) {
         let text = '';
         if (key == 'sourceUuid') {
           let sourceLi = this.sourceList.filter(sync => {
-            return sync.uuid == value;
+            return sync.id == value;
           });
           text = sourceLi.length > 0 ? sourceLi[0].source : '';
         } else if (key == 'issueUpdateTime') {
@@ -424,8 +402,6 @@ export default {
     }
   }
 };
-
 </script>
 <style lang="less">
-// @import '~@/resources/assets/css/codehub/commit.less';
 </style>
