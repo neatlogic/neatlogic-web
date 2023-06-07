@@ -34,7 +34,7 @@
             <div :key="index">
               <AttrHandler
                 v-if="isSearchReady"
-                :projectId="app.projectId"
+                :projectId="app && app.projectId"
                 :attrConfig="attr"
                 :value="attr.isPrivate ? searchValue[attr.name] : searchValue['attr_' + attr.id]"
                 mode="search"
@@ -149,6 +149,9 @@ export default {
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
     app: { type: Object },
+    isMine: {type: Number}, //我的任务
+    isEnd: {type: Number}, //是否结束
+    displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     linkAppType: {
       type: Array,
@@ -198,6 +201,7 @@ export default {
   async created() {
     //首先获取用户配置
     await this.getAppSetting();
+    this.initTheadList();
     this.initSearchConfig();
     this.initAppList();
     this.searchIssue(1);
@@ -214,6 +218,18 @@ export default {
     //供外部调用，刷新查询数据
     refresh(currentPage) {
       this.searchIssue(currentPage);
+    },
+    initTheadList() {
+      if (this.displayAttrList && this.displayAttrList.length > 0) {
+        this.displayAttrList.forEach(attr => {
+          this.theadList.push({ key: attr.id.toString(), title: attr.label });
+          this.searchConfig.searchList.push({
+            type: 'slot',
+            name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+            label: attr.label
+          });
+        });
+      }
     },
     initAppList() {
       if (this.app && this.linkAppType && this.linkAppType.length > 0) {
@@ -409,6 +425,8 @@ export default {
       this.searchIssueData.appId = this.app && this.app.id;
       this.searchIssueData.catalog = this.catalog;
       this.searchIssueData.iteration = this.iteration;
+      this.searchIssueData.isMine = this.isMine;
+      this.searchIssueData.isEnd = this.isEnd;
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -450,11 +468,12 @@ export default {
       return list;
     },
     attrList() {
-      if (!this.app || !this.app.attrList) {
-        return [];
-      } else {
+      if (this.app && this.app.attrList) {
         return this.app.attrList;
+      } else if (this.displayAttrList) {
+        return this.displayAttrList;
       }
+      return [];
     },
     getAppByType() {
       return type => {

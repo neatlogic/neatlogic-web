@@ -2096,7 +2096,9 @@
     "bugmanage": "缺陷管理",
     "iteration": "迭代",
     "isopened": "已开启",
-    "isclosed": "已关闭"
+    "isclosed": "已关闭",
+    "startdate": "预计开始",
+    "enddate": "预计结束"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

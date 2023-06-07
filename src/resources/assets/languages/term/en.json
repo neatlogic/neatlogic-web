@@ -2099,7 +2099,9 @@
     "bugmanage": "defect management ",
     "iteration": "iteration",
     "isopened": "Opened",
-    "isclosed": "Closed"
+    "isclosed": "Closed",
+    "startdate": "Expected start",
+    "enddate": "Expected end"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

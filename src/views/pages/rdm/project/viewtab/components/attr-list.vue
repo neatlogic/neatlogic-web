@@ -8,26 +8,29 @@
       labelPosition="left"
       :labelWidth="120"
     >
-      <AttrHandler
-        v-if="attr._isReady"
-        ref="attrHandler"
-        border="none"
-        :projectId="projectId"
-        :readonly="editingField != 'attr_' + attr.id"
-        :attrConfig="attr"
-        :issueData="issueDataLocal"
-        @click.native="activeController('attr_' + attr.id)"
-      ></AttrHandler>
-      <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
-        <span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
-        <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
-        <Icon
-          v-if="isEditing"
-          type="ios-loading"
-          size="16"
-          class="loading"
-        ></Icon>
+      <div v-if="!issueData.isEnd">
+        <AttrHandler
+          v-if="attr._isReady"
+          ref="attrHandler"
+          border="none"
+          :projectId="projectId"
+          :readonly="editingField != 'attr_' + attr.id"
+          :attrConfig="attr"
+          :issueData="issueDataLocal"
+          @click.native="activeController('attr_' + attr.id)"
+        ></AttrHandler>
+        <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
+          <span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
+          <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
+          <Icon
+            v-if="isEditing"
+            type="ios-loading"
+            size="16"
+            class="loading"
+          ></Icon>
+        </div>
       </div>
+      <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
     </TsFormItem>
   </div>
 </template>
@@ -36,10 +39,11 @@ export default {
   name: '',
   components: {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
-    projectId: {type: Number},
+    projectId: { type: Number },
     appId: { type: Number },
     issueData: { type: Object }
   },
