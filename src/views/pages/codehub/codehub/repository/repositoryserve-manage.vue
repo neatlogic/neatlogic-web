@@ -36,7 +36,7 @@
         ></Loading>
         <TsCard
           v-else
-          v-bind="reposData"
+          v-bind="repositoryData"
           headerPosition="right"
           @updatePage="changeCurrentPage"
           @updateSize="changePageSize"
@@ -88,7 +88,7 @@
     <ServeEditDialog
       v-if="isShowServeEditDialog"
       :id="repositoryServiceId"
-      @close="close"
+      @close="closeServeEditDialog"
     ></ServeEditDialog>
   </div>
 </template>
@@ -113,7 +113,7 @@ export default {
         type: 'all',
         keyword: ''
       },
-      reposData: {
+      repositoryData: {
         //卡片的数据
         span: 24,
         sm: 24,
@@ -143,11 +143,11 @@ export default {
   },
 
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    this.searchList();
+  created() {
+    this.searchRepository();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -158,23 +158,23 @@ export default {
     getSearch(key, value) {
       //顶部搜索条件拼接
       this.$set(this.searchParams, key, value == 'all' ? '' : value);
-      this.$set(this.reposData, 'currentPage', 1);
-      this.searchList();
+      this.$set(this.repositoryData, 'currentPage', 1);
+      this.searchRepository();
     },
     changeCurrentPage(currentPage) {
-      this.reposData.currentPage = currentPage;
-      this.searchList();
+      this.repositoryData.currentPage = currentPage;
+      this.searchRepository();
     },
     changePageSize(pageSize) {
       // 切换页码
-      this.reposData.currentPage = 1;
-      this.reposData.pageSize = pageSize;
-      this.searchList();
+      this.repositoryData.currentPage = 1;
+      this.repositoryData.pageSize = pageSize;
+      this.searchRepository();
     },
-    searchList() {
+    searchRepository() {
       let param = {
-        currentPage: this.reposData.currentPage,
-        pageSize: this.reposData.pageSize
+        currentPage: this.repositoryData.currentPage,
+        pageSize: this.repositoryData.pageSize
       };
       let searchParams = this.$utils.deepClone(this.searchParams);
       if (this.searchParams) {
@@ -184,13 +184,13 @@ export default {
       this.loadingShow = true;
       this.$api.codehub.service.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.$set(this.reposData, 'pageCount', res.Return.pageCount);
-          this.$set(this.reposData, 'rowNum', res.Return.rowNum);
-          this.$set(this.reposData, 'pageSize', res.Return.pageSize);
-          this.$set(this.reposData, 'currentPage', res.Return.currentPage);
-          this.$set(this.reposData, 'cardList', res.Return.tbodyList);
+          this.$set(this.repositoryData, 'pageCount', res.Return.pageCount);
+          this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
+          this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
+          this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
+          this.$set(this.repositoryData, 'cardList', res.Return.tbodyList);
         } else {
-          this.$set(this.reposData, 'cardList', []);
+          this.$set(this.repositoryData, 'cardList', []);
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -212,18 +212,18 @@ export default {
           this.$api.codehub.service.delete({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.searchList();
+              this.searchRepository();
               vnode.isShow = false;
             }
           });
         }
       });
     },
-    close(isreload) {
+    closeServeEditDialog(needRefresh) {
       this.isShowServeEditDialog = false;
       this.repositoryServiceId = null;
-      if (isreload) {
-        this.searchList();
+      if (needRefresh) {
+        this.searchRepository();
       }
     },
     gotoRepository(id) {

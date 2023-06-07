@@ -1,8 +1,8 @@
 <template>
-  <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveEdit">
+  <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveVersion">
     <template v-slot>
       <div>
-        <TsForm ref="editform" v-model="formData" :itemList="formConfig">
+        <TsForm ref="form" v-model="formData" :itemList="formConfig">
         </TsForm>
       </div>
     </template>
@@ -19,14 +19,13 @@ export default {
   },
   data() {
     return {
-      textPrev: '',
+      versionPrefix: '',
       dialogSetting: {
-        title: this.uuid ? this.$t('dialog.title.edittarget', {'target': this.$t('page.versions')}) : this.$t('page.newtarget', {'target': this.$t('page.versions')}),
+        title: this.$t('page.newtarget', {'target': this.$t('page.versions')}),
         maskClose: false,
         isShow: true,
         height: '200px'
       },
-      vaildConfig: ['required'],
       formConfig: [
         {
           type: 'text',
@@ -44,21 +43,21 @@ export default {
           textName: 'name',
           valueName: 'id',
           onChange: (val) => {
-            this.formData.versionTypeId = val;
-            this.autofillName(val);
+            this.getAutoCreateVersionName(val);
           }
         },
         {
           type: 'text',
           label: this.$t('term.framework.pkgversion'),
-          name: 'name',
+          name: 'version',
           prepend: '',
           validateList: ['required'],
           maxlength: 100
         }
       ],
       formData: {
-        name: '',
+        versionName: '',
+        version: '',
         versionTypeId: '',
         versionStrategyId: '',
         appStsyemId: ''
@@ -81,35 +80,33 @@ export default {
     initData() {
       Object.assign(this.formData, {
         versionStrategyId: this.versionData.id,
-        name: '',
+        versionName: this.versionData.name,
+        version: '',
         versionTypeId: this.versionData.versionTypeId || '',
-        appModuleId: this.versionData.appModuleId
+        appModuleId: this.versionData.appModuleId,
+        versionPrefix: this.versionData.versionPrefix
       });
+      if (this.formData.versionTypeId) {
+        this.getAutoCreateVersionName(this.formData.versionTypeId);
+      }
       this.formConfig.forEach(form => {
-        if (form.name == 'versionName') {
-          this.$set(form, 'value', this.formData.name);
-        }
-        if (form.name == 'versionTypeId' && this.formData.versionTypeId) {
-          this.$set(form, 'value', this.formData.versionTypeId);
-          this.autofillName(this.formData.versionTypeId);
-        }
-        if (form.name == 'name') {
+        if (form.name == 'version') {
           this.$set(form, 'prepend', this.formData.versionPrefix);
-          this.textPrev = this.formData.versionPrefix;
+          this.versionPrefix = this.formData.versionPrefix;
         }
       });
     },
     close() {
       this.$emit('close');
     },
-    saveEdit() {
-      if (this.$refs.editform.valid() && this.$refs.nameInput.valid()) {
+    saveVersion() {
+      if (this.$refs.form.valid()) {
         let param = {};
         Object.assign(param, {
-          name: this.textPrev + this.formData.name,
+          version: this.versionPrefix + this.formData.version,
           versionTypeId: this.formData.versionTypeId,
           versionStrategyId: this.formData.versionStrategyId,
-          appStsyemId: this.formData.appStsyemId
+          appModuleId: this.formData.appModuleId
         });
         this.$api.codehub.version.save(param).then(res => {
           if (res.Status == 'OK') {
@@ -120,11 +117,10 @@ export default {
         });
       }
     },
-    autofillName(versionTypeId) {
-      Object.assign(this.formData, {
-        name: ''
-      });
-      if (this.formData.appModuleId && this.formData.appModuleId && versionTypeId) {
+    getAutoCreateVersionName(versionTypeId) {
+      // 获取根据规则来生成的版本号
+      this.formData.version = '';
+      if (this.formData.appModuleId && versionTypeId) {
         let param = {
           appModuleId: this.formData.appModuleId,
           versionStrategyId: this.formData.versionStrategyId,
@@ -132,9 +128,7 @@ export default {
         };
         this.$api.codehub.version.autofillName(param).then(res => {
           if (res && res.Status == 'OK' && res.Return.version) {
-            Object.assign(this.formData, {
-              name: res.Return.version.replace(this.textPrev, '')
-            });
+            this.formData.version = res.Return.version.replace(this.versionPrefix, '');
           }
         });
       }

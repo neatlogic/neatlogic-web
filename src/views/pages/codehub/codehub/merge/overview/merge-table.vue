@@ -1,20 +1,18 @@
 <template>
   <div>
     <TsTable
-      v-bind="tabledata"
+      v-bind="tableData"
+      :theadList="theadList"
       class="mrtable"
       @changeCurrent="changeCurrent"
       @changePageSize="changePageSize"
       @clickTr="goDetail"
     >
-      <!-- <template slot="versionStrategyVo" slot-scope="{row}">
-        {{ row.versionStrategyVo.name }}
-      </template> -->
-      <template slot="versionUuid" slot-scope="{row}">
-        {{ row.versionUuid }}
+      <template slot="versionId" slot-scope="{row}">
+        {{ row.versionId }}
       </template>
       <template slot="status" slot-scope="{row}">
-        {{ showtxt(row.status) }}
+        {{ getStatus(row.status) }}
       </template>
       <template slot="lcd" slot-scope="{row}">
         {{ row.lcd|formatDate }}
@@ -41,65 +39,58 @@ export default {
   },
   filters: {},
   props: {
-    mrData: Object,
-    mrList: Array
+    mergeData: Object,
+    mergeTypeList: Array
   },
   data() {
     return {
-      tabledata: {
-        theadList: [{
-          title: 'MR编号',
-          key: 'uuid'
-        }, {
-          title: '描述',
-          key: 'description'
-        }, {
-          title: '源分支',
-          key: 'srcBranch'
-        }, {
-          title: '目标分支',
-          key: 'targetBranch'
-        }, {
-          title: '版本',
-          key: 'versionVo'
-        }, {
-          title: '状态',
-          key: 'status'
-        }, {
-          title: '所有需求',
-          key: 'allIssueCount'
-        }, {
-          title: '冲突需求',
-          key: 'conflictIssueCount'
-        }, {
-        //   title: '已撤销需求',
-        //   key: 'canceledIssueCount'
-        // }, {
-        //   title: '撤销冲突需求',
-        //   key: 'cancelConflictIssueCount'
-        // }, {
-          title: '已合并需求',
-          key: 'mergedIssueCount'
-        }, {
-          title: '提交人',
-          key: 'fcu'
-        }, {
-          title: '处理人',
-          key: 'handleUser'
-        }, {
-          title: '更新时间',
-          key: 'lcd'
-        }],
+      theadList: [{
+        title: this.$t('term.codehub.mergenumber'),
+        key: 'id'
+      }, {
+        title: this.$t('page.description'),
+        key: 'description'
+      }, {
+        title: this.$t('page.sourcebranch'),
+        key: 'srcBranch'
+      }, {
+        title: this.$t('page.targetbranch'),
+        key: 'targetBranch'
+      }, {
+        title: this.$t('page.versions'),
+        key: 'versionVo'
+      }, {
+        title: this.$t('page.status'),
+        key: 'status'
+      }, {
+        title: this.$t('term.codehub.allrequirements'),
+        key: 'allIssueCount'
+      }, {
+        title: this.$t('term.codehub.conflictingneeds'),
+        key: 'conflictIssueCount'
+      }, {
+        title: this.$t('term.codehub.mergedrequirements'),
+        key: 'mergedIssueCount'
+      }, {
+        title: this.$t('page.presenter'),
+        key: 'fcu'
+      }, {
+        title: this.$t('term.process.dealwithuser'),
+        key: 'handleUser'
+      }, {
+        title: this.$t('page.updatetime'),
+        key: 'lcd'
+      }],
+      tableData: {
         tbodyList: [],
-        rowKey: 'uuid'
+        rowKey: 'id'
       }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -107,21 +98,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changePageSize(size) {
-      this.$emit('changePageSize', size);
+    changePageSize(pageSize) {
+      this.$emit('changePageSize', pageSize);
     },
-    changeCurrent(page) {
-      this.$emit('changeCurrent', page);
+    changeCurrent(currentPage) {
+      this.$emit('changeCurrent', currentPage);
     },
     goDetail(val) {
-      this.$router.push({ path: 'merge-review', query: {uuid: val.uuid} });
+      this.$router.push({ path: 'merge-review', query: {id: val.id} });
     }
   },
   computed: {
-    showtxt() {
+    getStatus() {
       return function(status) {
         let text = '';
-        this.mrList.forEach(m => {
+        this.mergeTypeList.forEach(m => {
           if (m.status == status) {
             text = m.text;
           }
@@ -131,14 +122,14 @@ export default {
     }
   },
   watch: {
-    mrData: {
+    mergeData: {
       handler: function(val) {
-        Object.assign(this.tabledata, {
-          'pageCount': val.pageCount,
-          'rowNum': val.rowNum,
-          'pageSize': val.pageSize,
-          'currentPage': val.currentPage,
-          'tbodyList': val.tbodyList
+        Object.assign(this.tableData, {
+          pageCount: val.pageCount,
+          rowNum: val.rowNum,
+          pageSize: val.pageSize,
+          currentPage: val.currentPage,
+          tbodyList: val.tbodyList
         });
       },
       deep: true,

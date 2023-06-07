@@ -2,26 +2,50 @@
   <TsDialog
     v-bind="dialogSetting"
     @on-close="close"
-    @on-ok="saveEdit"
+    @on-ok="saveRepository"
   >
     <template v-slot>
       <div>
-        <TsForm ref="editform" v-model="editData" :itemList="formConfig">
+        <Loading
+          v-if="loadingShow"
+          :loadingShow="loadingShow"
+          type="fix"
+        ></Loading>
+        <TsForm
+          v-else
+          ref="editform"
+          v-model="editData"
+          :itemList="formConfig"
+        >
+          <template slot="repoServiceId">
+            <TsFormSelect
+              v-model="editData.repoServiceId"
+              :validateList="['required']"
+              :transfer="true"
+              url="/api/rest/codehub/repositoryservice/search"
+              rootName="tbodyList"
+              textName="name"
+              valueName="id"
+              border="border"
+              @update:selectItemList="updateSelectItemList"
+              @on-change="changeRepoService"
+            ></TsFormSelect>
+          </template>
           <template slot="address">
-            <div v-if="repoName">
+            <div v-if="!$utils.isEmpty(selectedReposService)">
               <TsFormInput
                 v-model="editData.address"
                 type="text"
-                :validateList="vaildConfig"
+                :validateList="['required']"
                 maxlength="50"
-                :prepend="getRepositoryUrl(serveObj)"
+                :prepend="getRepositoryUrlPrepend"
                 width="75%"
               />
             </div>
             <div v-else class="text-tip">{{ $t('term.codehub.pleaserepositoryservice') }}</div>
           </template>
           <template slot="appModuleId">
-            <TsFormSelect v-model="editData.appModuleId" v-bind="subsysConfig" />
+            <TsFormSelect v-model="editData.appModuleId" v-bind="appModuleConfig" />
           </template>
         </TsForm>
       </div>
@@ -43,8 +67,7 @@ export default {
   },
   data() {
     return {
-      vaildConfig: ['required'],
-      repoName: '',
+      loadingShow: true,
       dialogSetting: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.deploy.warehouse')}) : this.$t('page.newtarget', {'target': this.$t('term.deploy.warehouse')}),
         maskClose: false,
@@ -63,19 +86,9 @@ export default {
         tagsPath: ''
       },
       formConfig: [{
-        type: 'select',
+        type: 'slot',
         label: this.$t('term.codehub.warehouseservices'),
-        name: 'repoServiceId',
-        validateList: ['required'],
-        transfer: true,
-        url: '/api/rest/codehub/repositoryservice/search',
-        rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id',
-        onChange: (id, valueObject, selectItem) => {
-          this.serveObj = selectItem;
-          this.changeRepository(selectItem);
-        }
+        name: 'repoServiceId'
       },
       {
         type: 'radio',
@@ -90,10 +103,7 @@ export default {
           text: this.$t('page.manualcreation'),
           value: 'manual',
           disabled: true
-        }],
-        onChange: (val) => {
-          this.editData.createMode = val;
-        }
+        }]
       },
       {
         type: 'slot',
@@ -105,10 +115,7 @@ export default {
         type: 'text',
         label: this.$t('term.deploy.warehousename'),
         name: 'name',
-        validateList: ['required'],
-        onChange: (val) => {
-          this.editData.name = val;
-        }
+        validateList: ['required']
       },
       {
         type: 'select',
@@ -133,58 +140,33 @@ export default {
         type: 'text',
         label: this.$t('page.trunk'),
         name: 'mainBranch',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.mainBranch = val;
-        }
+        isHidden: true
       },
       {
         type: 'text',
         label: this.$t('term.codehub.branchpath'),
         name: 'branchesPath',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.branchesPath = val;
-        }
+        isHidden: true
       },
       {
         type: 'text',
         label: this.$t('term.codehub.tagpath'),
         name: 'tagsPath',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.tagsPath = val;
-        }
+        isHidden: true
       }
       ],
-      subsysConfig: {
+      appModuleConfig: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect
       },
       serviceType: null,
-      serveObj: {}
+      selectedReposService: {} // 选中的仓库服务，主要是拿到服务地址的前缀
     };
   },
   beforeCreate() {},
   created() {
-    if (this.id) {
-      this.getDetail(this.id);
-    } else {
-      Object.assign(this.editData, {
-        repoServiceId: '',
-        createMode: 'import',
-        address: '',
-        name: '',
-        appModuleId: this.appModuleId || '',
-        appSystemId: this.appSystemId || ''
-      });
-      if (this.appSystemId) {
-        this.$set(this.subsysConfig, 'params', {appSystemId: this.appSystemId});
-      }
-      this.updataVal(this.editData);
-    }
+    this.initData();
   },
   beforeMount() {},
   mounted() {},
@@ -195,6 +177,33 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      if (this.id) {
+        this.getRepositoryDetail(this.id);
+      } else {
+        Object.assign(this.editData, {
+          repoServiceId: '',
+          createMode: 'import',
+          address: '',
+          name: '',
+          appModuleId: this.appModuleId || '',
+          appSystemId: this.appSystemId || ''
+        });
+        if (this.appSystemId) {
+          this.$set(this.appModuleConfig, 'params', {appSystemId: this.appSystemId});
+          this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
+        }
+        this.hiddenFormByValue(this.editData);
+        this.loadingShow = false;
+      }
+    },
+    changeRepoService(id, valueObject, selectItem) {
+      this.changeRepository(selectItem);
+    },
+    updateSelectItemList(selectedObj) {
+      // 主要为了拿到仓库地址前缀
+      this.selectedReposService = selectedObj;
+    },
     changeRepository(selectedItem) {
       // 仓库改变
       if (selectedItem && selectedItem.id) {
@@ -226,13 +235,12 @@ export default {
         }
       }
       this.editData.repoServiceId = selectedItem.id;
-      this.repoName = selectedItem.name;
       this.serviceType = selectedItem.type;
     },
     close() {
       this.$emit('close');
     },
-    saveEdit() {
+    saveRepository() {
       if (this.$refs.editform.valid()) {
         let param = this.$utils.deepClone(this.editData);
         if (this.serviceType != 'svn') {
@@ -243,18 +251,19 @@ export default {
         if (param && param.address) {
           param.address = param.address + '/' + param.name;
         }
-        this.id && Object.assign(param, {id: this.id});
+        if (this.id) {
+          param.id = this.id;
+        }
         this.$api.codehub.repository.save(param).then((res) => {
-          this.$emit('close', true);
+          if (res && res.Status == 'OK') {
+            this.$emit('close', true);
+          }
         });
       }
     },
-    getDetail(id) {
-      let param = {};
-      if (id) {
-        Object.assign(param, {id: id});
-      }
-      this.$api.codehub.repository.getDetail(param).then(res => {
+    getRepositoryDetail(id) {
+      this.loadingShow = true;
+      this.$api.codehub.repository.getDetail({id: id}).then(res => {
         if (res.Return) {
           this.serviceType = res.Return.repositoryServiceVo.type;
           Object.assign(this.editData, {
@@ -262,33 +271,32 @@ export default {
             createMode: res.Return.createMode || 'import',
             address: res.Return.address || '',
             name: res.Return.name || '',
-            appModuleId: res.Return.subSystemVo && res.Return.subSystemVo.uuid || '',
-            appSystemId: res.Return.systemVo && res.Return.systemVo.uuid || '',
+            appModuleId: res.Return.appModuleId,
+            appSystemId: res.Return.appSystemVo && res.Return.appSystemVo.id || '',
             mainBranch: res.Return.mainBranch || '',
             branchesPath: res.Return.branchesPath || '',
             tagsPath: res.Return.tagsPath || ''
           });
-
-          this.updataVal(this.editData);
+          this.hiddenFormByValue(this.editData);
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
-    updataVal(data) {
+    hiddenFormByValue(data) {
       this.formConfig.forEach(form => {
         if (form.name && data[form.name]) {
           this.$set(form, 'value', data[form.name]);
         }
       });
-      if (data.repoServiceId) { //回显服务名称
-        this.repoName = this.serveObj.name;
-      }
       if (data.appSystemId) { //系统的话显示子系统Q、
         this.formConfig.forEach(form => {
           if (form.name == 'appModuleId') {
             this.$set(form, 'isHidden', false);
           }
         });
-        this.$set(this.subsysConfig, 'params', {appSystemId: data.appSystemId});
+        this.$set(this.appModuleConfig, 'params', {appSystemId: data.appSystemId});
+        this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
       }
     },
     changeAppModule(val) {
@@ -299,12 +307,8 @@ export default {
           this.$set(form, 'isHidden', !val);
         }
       });
-      this.$set(this.subsysConfig, 'params', {appSystemId: val});
-    },
-    updateServe(val, list, alllist) {
-      this.editData.repoServiceId = val;
-      this.repoName = list.text;
-      this.serviceType = alllist.type;
+      this.$set(this.appModuleConfig, 'params', {appSystemId: val});
+      this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
     },
     initSvnsetting(isShow) {
       let items = ['mainBranch', 'branchesPath', 'tagsPath'];
@@ -322,15 +326,13 @@ export default {
   },
   filter: {},
   computed: {
-    getRepositoryUrl() {
-      // 获取仓库地址
-      return function(serveObj) {
-        let urlpre = '';
-        if (serveObj && serveObj.address) {
-          urlpre = serveObj.address;
-        }
-        return urlpre;
-      };
+    getRepositoryUrlPrepend() {
+      // 获取仓库地址前缀
+      let urlPrepend = '';
+      if (!this.$utils.isEmpty(this.selectedReposService) && this.selectedReposService.address) {
+        urlPrepend = this.selectedReposService.address;
+      }
+      return urlPrepend;
     }
   },
   watch: {
