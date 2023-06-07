@@ -7,6 +7,9 @@
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+            <TsFormItem :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
+            </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>
                 <TsFormRadio
@@ -122,6 +125,9 @@
                 </div>
                 <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
               </div>
+            </TsFormItem>
+            <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>

@@ -18,6 +18,9 @@
                 border="border"
               ></TsFormSelect>
             </TsFormItem>
+            <TsFormItem :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
+            </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')" style="margin-bottom:16px">
               <!--由于最后一个formitem去掉了margin-bottom，这里补充回来-->
               <TsFormInput v-model="propertyLocal.config.defaultValue" :validateList="propertyLocal.config.validate? [propertyLocal.config.validate]:[]" :type="propertyLocal.handler.replace('form', '')"></TsFormInput>
@@ -50,6 +53,9 @@
                 textName="name"
                 valueName="uuid"
                 transfer
+                @on-change="(val)=>{
+                  changeMatrixUuid(val);
+                }"
               ></TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
@@ -115,6 +121,9 @@
                 </div>
                 <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
               </div>
+            </TsFormItem>
+            <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>
@@ -183,6 +192,7 @@
                 :name="key"
               >
                 <ConditionGroup
+                  v-if="key !== 'filter'"
                   :ref="'condition_' + key"
                   :value="r"
                   :formItemList="formItemList"
@@ -209,6 +219,20 @@
                     "
                   ></FormItem>
                 </div>
+                <div v-else-if="key === 'filter'">
+                  <ReactionFilter
+                    :ref="'condition_' + key"
+                    :value="r"
+                    :martixAttrList="mappingDataList"
+                    :formItem="propertyLocal"
+                    :formItemList="formItemList"
+                    @input="
+                      rule => {
+                        setReaction(key, rule);
+                      }
+                    "
+                  ></ReactionFilter>
+                </div>
               </TabPane>
             </Tabs>
           </template>
@@ -234,7 +258,8 @@ export default {
     StaticDataEditor: resolve => require(['../common/static-data-editor.vue'], resolve),
     ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
     TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
+    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve)
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -258,7 +283,8 @@ export default {
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
-        required: this.$t('page.require')
+        required: this.$t('page.require'),
+        filter: this.$t('page.filters')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -485,6 +511,14 @@ export default {
           this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
       });
+    },
+    changeMatrixUuid(val) {
+      this.$set(this.propertyLocal.config, 'defaultValue', null);
+      if (val) {
+        this.$set(this.propertyLocal.reaction, 'filter', {});
+      } else {
+        this.$delete(this.propertyLocal.reaction, 'filter');
+      }
     }
   },
   filter: {},
