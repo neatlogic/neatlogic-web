@@ -16,5 +16,5 @@ export default {
     'isMask': false,
     'isHide': false
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'required': {} }
 };

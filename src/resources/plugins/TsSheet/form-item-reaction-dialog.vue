@@ -14,6 +14,7 @@
               :ref="'condition_' + key"
               :value="r"
               :formItemList="formItemList"
+              :formItem="formItem"
               @input="
                 rule => {
                   setReaction(key, rule);
@@ -110,7 +111,8 @@ export default {
         filter: this.$t('page.filters'),
         hiderow: this.$t('term.framework.hiderow'),
         displayrow: this.$t('term.framework.displayrow'),
-        emit: this.$t('page.emit')
+        emit: this.$t('page.emit'),
+        required: this.$t('page.require')
       },
       emitTypeList: emitTypeList,
       dialogConfig: {

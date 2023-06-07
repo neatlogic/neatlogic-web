@@ -23,6 +23,7 @@ export default {
     'display': {},
     'readonly': {},
     'disable': {},
-    'setvalue': {}
+    'setvalue': {},
+    'required': {}
   }
 };

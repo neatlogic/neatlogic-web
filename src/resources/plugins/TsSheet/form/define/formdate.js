@@ -21,5 +21,5 @@ export default {
     'styleType': '-',
     'placeholder': $t('form.placeholder.pleaseselect', {'target': $t('page.date')})
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'required': {} }
 };

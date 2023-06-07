@@ -2264,6 +2264,10 @@
     "mergertype": "MR类型",
     "versionnobuildnewmerger": "该版本无法创建新的MR",
     "chooseastrategtfromtable": "请从表格里勾选一个策略",
-    "actionsubject": "操作对象"
+    "actionsubject": "操作对象",
+    "mergenumber": "MR编号",
+    "allrequirements": "所有需求",
+    "conflictingneeds": "冲突需求",
+    "mergedrequirements": "已合并需求"
   }
 }

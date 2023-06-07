@@ -2267,6 +2267,10 @@
     "mergertype": "MR type",
     "versionnobuildnewmerger": "This version cannot create a new MR",
     "chooseastrategtfromtable": "Please select a strategy from the table",
-    "actionsubject": "Operation object"
+    "actionsubject": "Operation object",
+    "mergenumber": "MR number",
+    "allrequirements": "All requirements",
+    "conflictingneeds": "Conflicting needs",
+    "mergedrequirements": "Merged requirements"
   }
 }

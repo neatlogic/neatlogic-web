@@ -25,5 +25,5 @@ export default {
     'mapping': { 'value': '', 'text': '' },
     'direction': 'vertical'
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'filter': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'filter': {}, 'required': {} }
 };
