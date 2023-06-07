@@ -70,7 +70,7 @@
     <ProjectEdit
       v-if="isEdit"
       :projectList="projectList"
-      :rowLi="editLi"
+      :projectData="projectData"
       :rowModuleId="appModuleId"
       :rowSystemId="appSystemId"
       @close="close"
@@ -90,7 +90,6 @@ export default {
   props: [''],
   data() {
     return {
-      keyword: '',
       appSystemId: null,
       appModuleId: null,
       tableData: {
@@ -114,7 +113,7 @@ export default {
         currentPage: 1
       },
       isEdit: false,
-      editLi: {},
+      projectData: {},
       selectList: [],
       projectList: [],
       searchVal: {},
@@ -167,7 +166,7 @@ export default {
   methods: {
     close(isReload) {
       this.isEdit = false;
-      this.editLi = {};
+      this.projectData = {};
       if (isReload) {
         this.getSearch();
       }
@@ -203,7 +202,9 @@ export default {
       }
     },
     getList() {
-      let param = {};
+      let param = {
+        ...this.searchVal
+      };
       this.tableData.pageSize && Object.assign(param, {pageSize: this.tableData.pageSize});
       this.tableData.currentPage && Object.assign(param, {currentPage: this.tableData.currentPage});
       if (this.appModuleId) {
@@ -211,9 +212,6 @@ export default {
       }
       if (this.appSystemId) {
         Object.assign(param, {appSystemId: this.appSystemId});
-      }
-      if (this.keyword) {
-        Object.assign(param, {keyword: this.keyword});
       }
       this.$api.codehub.project.getList(param).then(res => {
         if (res && res.Status == 'OK') {
@@ -238,16 +236,11 @@ export default {
         }]);
       } else { //删除批量从全局选中获取
         if (this.selectList.length > 0) {
-          let subsList = this.selectList.map((se) => {
-            return se.id || 0;
+          let array = [];
+          this.selectList.forEach((se) => {
+            array.push({'appModuleId': se.id || 0, 'appSystemId': se.appSystemVo.id});
           });
-          let sysList = this.selectList.map((se) => {
-            return se.appSystemVo.id || 0;
-          });
-          Object.assign(param.systemArray, {
-            appSystemId: sysList.join(','),
-            appModuleId: subsList.join(',')
-          });
+          Object.assign(param.systemArray, array);
         }
       }
       this.$createDialog({
@@ -270,14 +263,12 @@ export default {
     editProject(row) {
       this.isEdit = true;
       if (row) {
-        this.editLi = row;
-        this.appModuleId = row.id;
-        this.appSystemId = row.appSystemVo.id;
+        this.projectData = row;
       } else {
-        this.editLi = {};
+        this.projectData = {};
       }
     },
-    getSelected(li, list) { 
+    getSelected(li, list) {
       this.selectList = list;
     },
     getProjectdetail() {
