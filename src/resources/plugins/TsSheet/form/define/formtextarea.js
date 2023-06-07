@@ -18,5 +18,5 @@ export default {
     'isReadOnly': false,
     'isDisabled': false
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'emit': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'emit': {}, 'required': {} }
 };

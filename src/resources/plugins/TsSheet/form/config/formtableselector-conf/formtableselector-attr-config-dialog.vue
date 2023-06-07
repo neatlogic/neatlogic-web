@@ -215,6 +215,7 @@
                   :ref="'condition_' + key"
                   :value="r"
                   :formItemList="formItemList"
+                  :formItem="propertyLocal"
                   @input="
                     rule => {
                       setReaction(key, rule);
@@ -283,7 +284,8 @@ export default {
         hide: this.$t('page.hide'),
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
-        disable: this.$t('page.disable')
+        disable: this.$t('page.disable'),
+        required: this.$t('page.require')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -358,7 +360,7 @@ export default {
       }
     }
     if (!this.propertyLocal.reaction) {
-      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {} });
+      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {} });
     }
   },
   beforeMount() {},

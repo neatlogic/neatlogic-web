@@ -20,6 +20,7 @@ export default {
     'hide': {},
     'display': {},
     'readonly': {},
-    'disable': {}
+    'disable': {},
+    'required': {}
   }
 };

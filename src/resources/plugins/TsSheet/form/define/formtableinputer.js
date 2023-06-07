@@ -21,5 +21,5 @@ export default {
     'lineNumber': 1,
     'isCanAdd': true
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'emit': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'emit': {}, 'required': {} }
 };

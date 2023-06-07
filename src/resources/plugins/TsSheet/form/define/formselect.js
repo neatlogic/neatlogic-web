@@ -24,5 +24,5 @@ export default {
     'defaultValueType': 'self',
     'mapping': { 'value': '', 'text': '' }
   },
-  'reaction': {'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'filter': {}, 'emit': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'filter': {}, 'emit': {}, 'required': {} }
 };
