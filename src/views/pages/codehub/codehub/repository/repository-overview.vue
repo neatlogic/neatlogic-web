@@ -20,6 +20,7 @@
           v-bind="repositoryData"
           headerPosition="right"
           @updatePage="updatePage"
+          @updateSize="changePageSize"
         >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
@@ -46,13 +47,14 @@
               </TsRow>
               <TsRow>
                 <Col span="8">
-                  <Tooltip v-if="showtips(row)" theme="light" max-width="300">
-                    <div>{{ setTxt(row, 'text') }}</div>
-                    <div slot="content">
-                      <div>{{ setTxt(row, 'tips') }}</div>
-                    </div>
-                  </Tooltip>
-                  <div v-else>{{ setTxt(row, 'text') }}</div>
+                  <div>
+                    <Tooltip placement="top">
+                      <div>{{ setAbbraNameAndName(row) }}</div>
+                      <div slot="content">
+                        {{ setAbbraNameAndName(row) }}
+                      </div>
+                    </Tooltip>
+                  </div>
                 </Col>
                 <Col span="8">
                   <div v-if="row.runnerName" class="nodename-item">
@@ -133,7 +135,11 @@ export default {
         classKey: 'syncStatus',
         classname: 'repository-list',
         padding: false,
-        cardList: []
+        cardList: [],
+        pageType: 'number',
+        currentPage: 1,
+        pageSize: 10,
+        rowNum: 0
       },
       typeList: [
         { text: this.$t('page.allofthem'), value: '' },
@@ -213,9 +219,10 @@ export default {
       this.repositoryData.currentPage = page;
       this.searchList();
     },
-    clearPage() {
-      //搜索时重置分页等信息
-      this.$set(this.repositoryData, 'currentPage', 1);
+    changePageSize(pageSize) {
+      this.repositoryData.currentPage = 1;
+      this.repositoryData.pageSize = pageSize;
+      this.searchList();
     },
     searchList(flushParam) {
       let param = {};
@@ -247,9 +254,8 @@ export default {
           this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
           this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
           this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
-
-          this.searchTime && clearTimeout(this.searchTime);
-          // this.searchTime = setTimeout(() => { // 暂时注释，接口10秒钟刷新一次
+          // this.searchTime && clearTimeout(this.searchTime);
+          // this.searchTime = setTimeout(() => {
           //   this.searchList(param);
           // }, 10 * 1000);
         }
@@ -267,7 +273,6 @@ export default {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.warehouse')}),
-        btnType: 'confirm',
         'on-ok': (vnode) => {
           this.$api.codehub.repository.delete(param).then(res => {
             if (res && res.Status == 'OK') {
@@ -325,15 +330,6 @@ export default {
   },
   filter: {},
   computed: {
-    showtips() {
-      return function(config) {
-        let isshow = false;
-        if ((config.appSystemVo && config.appSystemVo.abbrName) || (config.appModuleVo && config.appModuleVo.name)) {
-          isshow = true;
-        }
-        return isshow;
-      };
-    },
     setServetxt() {
       return function(val) {
         let txt = '';
@@ -345,15 +341,15 @@ export default {
         return txt;
       };
     },
-    setTxt() {
-      return function(config, type) {
+    setAbbraNameAndName() {
+      return function(config) {
         let text = '';
         let prev = config.appSystemVo || '';
         let next = config.appModuleVo || '';
         if (prev) {
-          text = prev.name + (prev.description ? ('(' + prev.description + ')') : '');
+          text = prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : '';
           if (next) {
-            text += ' / ' + next.name + (next.description ? ('(' + next.description + ')') : '');
+            text += ' / ' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : (next.name || ''));
           }
         }
         return text;

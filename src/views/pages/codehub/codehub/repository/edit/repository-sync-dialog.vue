@@ -39,7 +39,7 @@ export default {
         validateList: ['required'],
         transfer: true,
         url: '/api/rest/codehub/repository/branch/search',
-        rootName: 'tbodyList',
+        rootName: 'list',
         textName: 'name',
         valueName: 'name',
         multiple: true,

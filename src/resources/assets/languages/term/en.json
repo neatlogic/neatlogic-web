@@ -2264,6 +2264,7 @@
     "pleaseselectatleastonerequirement": "Please select at least one requirement",
     "mergertype": "MR type",
     "versionnobuildnewmerger": "This version cannot create a new MR",
-    "chooseastrategtfromtable": "Please select a strategy from the table"
+    "chooseastrategtfromtable": "Please select a strategy from the table",
+    "actionsubject": "Operation object"
   }
 }

@@ -3232,5 +3232,11 @@
     "css": "tsfont-svn",
     "hexCodepoint": "0xea1a",
     "codepoint": 59930
+  },
+  {
+    "name": "merge",
+    "css": "tsfont-merge",
+    "hexCodepoint": "0xea1b",
+    "codepoint": 59931
   }
 ]
