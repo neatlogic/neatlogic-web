@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-container">
+  <div>
     <TsForm ref="editform" :itemList="formConfig" :labelWidth="90">
       <template slot="repoType">
         <TsFormInput
@@ -18,7 +18,7 @@
         ></TsFormInput>
       </template>
       <template slot="repoCredential-label">
-        {{ editConfig.credType =='password'?'密码':'token' }}
+        {{ editConfig.credType =='password'?$t('page.password'):'token' }}
       </template>
     </TsForm>
     <div class="edit-btn">
@@ -34,27 +34,25 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
-    item: {
-      type: [Boolean, Object],
-      default: false      
-    },
-    typeDataList: {
-      type: Array
+    credentialData: {
+      type: Object,
+      default: () => {
+        return {};
+      } 
     }
   },
   data() {
     return {
-      vaildConfig: ['required'],
-      setting: {
-        title: this.item ? this.$t('dialog.title.edittarget', {'target': this.$t('page.voucher')}) : this.$t('page.newtarget', {'target': this.$t('page.voucher')}),
-        maskClose: false,
-        width: 'medium',
-        height: '250px'
-      },
+      typeDataList: [
+        {
+          text: 'GITLAB',
+          value: 'gitlab'
+        },
+        {
+          text: 'SVN',
+          value: 'svn'
+        }
+      ],
       editConfig: {
         repoType: 'gitlab',
         credType: 'password',
@@ -114,11 +112,12 @@ export default {
       }],
       validateList: ['required'],
       saving: false//保存中时不可以再调保存的接口
-      
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initData();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -128,6 +127,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      if (!this.$utils.isEmpty(this.credentialData)) {
+        Object.assign(this.editConfig, {
+          repoType: this.credentialData.repoType || 'gitlab',
+          credType: this.credentialData.credType || 'password',
+          repoUsername: this.credentialData.repoUsername || null,
+          repoCredential: this.credentialData.repoCredential || null          
+        });
+      }
+    },
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let param = {
@@ -143,12 +152,10 @@ export default {
         }
         this.saving = true;
         this.$api.codehub.credential.save(param).then((res) => {
-          this.saving = false;
           if (res && res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
-            this.$emit('close', true);
           }
-        }).catch((e) => {
+        }).finally(() => {
           this.saving = false;
         });
       }
@@ -221,36 +228,22 @@ export default {
   },
   watch: {
     'editConfig.repoType': {
-      handler: function(val) {
+      handler(val) {
         this.updateConfigByStatus(val);
       },
       immediate: true
     },
     'editConfig.credType': {
-      handler: function(val) {
+      handler(val) {
         this.updateTypeConfigByStatus(val);
       },
       immediate: true
     },
     'editConfig.repoUsername': {
-      handler: function(val) {
+      handler(val) {
         this.setFormValue('repoUsername', val);
       },
       immediate: true
-    },
-    item: {
-      handler: function(val) {
-        if (val) {
-          Object.assign(this.editConfig, {
-            repoType: val.repoType || 'gitlab',
-            credType: val.credType || 'password',
-            repoUsername: val.repoUsername || null,
-            repoCredential: val.repoCredential || null          
-          });
-        }
-      },
-      immediate: true,
-      deep: true   
     }
   }
 };
@@ -269,5 +262,6 @@ export default {
   width: 75%;
   text-align: right;
   margin-left: 25px;
+  margin-top: 16px;
 }
 </style>
