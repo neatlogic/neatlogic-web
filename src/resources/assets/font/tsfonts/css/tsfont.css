@@ -2,12 +2,12 @@
 
 @font-face {
   font-family: 'tsfont';
-  src: url('../font/tsfont-fb2bb5a729.eot');
-  src: url('../font/tsfont-fb2bb5a729.eot?#iefix') format('embedded-opentype'),
-       url('../font/tsfont-fb2bb5a729.woff2') format('woff2'),
-       url('../font/tsfont-fb2bb5a729.woff') format('woff'),
-       url('../font/tsfont-fb2bb5a729.ttf') format('truetype'),
-       url('../font/tsfont-fb2bb5a729.svg?#tsfont') format('svg');
+  src: url('../font/tsfont-d5176bdee7.eot');
+  src: url('../font/tsfont-d5176bdee7.eot?#iefix') format('embedded-opentype'),
+       url('../font/tsfont-d5176bdee7.woff2') format('woff2'),
+       url('../font/tsfont-d5176bdee7.woff') format('woff'),
+       url('../font/tsfont-d5176bdee7.ttf') format('truetype'),
+       url('../font/tsfont-d5176bdee7.svg?#tsfont') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -580,3 +580,4 @@
 .tsfont-neatlogic:before { content: '\ea18'; } /* '' */
 .tsfont-gitlab:before { content: '\ea19'; } /* '' */
 .tsfont-svn:before { content: '\ea1a'; } /* '' */
+.tsfont-merge:before { content: '\ea1b'; } /* '' */

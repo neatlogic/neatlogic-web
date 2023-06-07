@@ -1,6 +1,6 @@
 export default {
   props: {
-    uuid: [String], //仓库uuid
+    id: Number, //仓库uuid
     reposData: [Object] //通过外层调用接口获取的仓库数据
   },
   data() {
@@ -9,11 +9,8 @@ export default {
       groupSeaching: false
     };
   },
-  mounted() {
-  },
-  beforeDestroy() {
-
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
     checkHasBranch(list) {
       let isExist = false;
@@ -32,14 +29,14 @@ export default {
         this.searchGrouplist.forEach((v) => {
           if (v.value == 'branch' && v.dataList.length > 0) {
             this.$set(this, 'queryName', v.dataList[0].value);
-            this.$set(this.selectConfig, 'valueList', [{value: v.dataList[0].value, group: 'branch'}]);
+            this.$set(this.selectConfig, 'dataList', [{value: v.dataList[0].value, group: 'branch'}]);
           }
         });
       }
     },
     initGroupsearch() {
       this.groupSeaching = true;
-      return this.$api.codehub.repositorydetail.getSeachgroup({repositoryUuid: this.uuid}).then((res) => {
+      return this.$api.codehub.repositorydetail.getSeachgroup({repositoryId: this.id}).then((res) => {
         this.groupSeaching = false;
         if (res && res.Status == 'OK') {
           this.searchGrouplist = res.Return || [];
@@ -52,8 +49,6 @@ export default {
       });       
     }
   },
-  computed: {
-  },
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
