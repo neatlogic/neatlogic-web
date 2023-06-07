@@ -122,7 +122,11 @@ export default {
   },
   props: {
     value: { type: Object },
-    formItemList: { type: Array }
+    formItemList: { type: Array },
+    formItem: {
+      type: Object,
+      default: () => {}
+    }
   },
   data() {
     return {
@@ -314,7 +318,7 @@ export default {
   filter: {},
   computed: {
     hasValueFormItemList() {
-      return this.formItemList.filter(d => d.hasValue);
+      return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)));
     },
     isNeedAttrValue() {
       return condition => {

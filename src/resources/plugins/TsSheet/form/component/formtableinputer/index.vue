@@ -28,6 +28,7 @@
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
             :formData="row"
+            :formItemList="$utils.deepClone(extraList)"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
@@ -230,7 +231,6 @@ export default {
           }
         }
       }
-      errorList.push(...this.validDataForAllItem());
       return errorList;
     },
     changeRow(row, index) {

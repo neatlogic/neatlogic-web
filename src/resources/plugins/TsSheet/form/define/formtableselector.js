@@ -24,5 +24,5 @@ export default {
     'pageSize': 10,
     'needPage': true
   },
-  'reaction': {'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'filter': {}, 'emit': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'filter': {}, 'emit': {}, 'required': {} }
 };

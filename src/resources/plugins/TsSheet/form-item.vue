@@ -323,6 +323,16 @@ export default {
                       this.$emit('emit', emitData);
                       this.addExecuteCount('emit');
                     }
+                  } else if (action === 'required') {
+                    if (!overrideConfig.isRequired) {
+                      const result = this.executeReaction(reaction, newVal, oldVal);
+                      if (result) {
+                        this.$set(this.formItem.config, 'isRequired', true);
+                      } else {
+                        this.$set(this.formItem.config, 'isRequired', false);
+                      }
+                      this.addExecuteCount('required');
+                    }
                   }
                 }
               }

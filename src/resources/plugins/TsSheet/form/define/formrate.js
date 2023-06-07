@@ -19,5 +19,5 @@ export default {
     'showText': false,
     'count': 5
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'disable': {}, 'setvalue': {}, 'emit': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'disable': {}, 'setvalue': {}, 'emit': {}, 'required': {} }
 };

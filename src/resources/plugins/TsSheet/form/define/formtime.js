@@ -20,5 +20,5 @@ export default {
     'isDisabled': false
   },
   'override_config': {},
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'required': {} }
 };
