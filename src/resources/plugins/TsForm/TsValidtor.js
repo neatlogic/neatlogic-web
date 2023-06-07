@@ -330,7 +330,7 @@ let validtor = {
   },
   enchar: {
     validator: function(rule, value) {
-      return /^[a-zA-Z\d\.\_]*$/.test(value);
+      return /^[a-zA-Z\d]*$/.test(value);
     },
     trigger: 'change',
     message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.alphabetornumber')})
