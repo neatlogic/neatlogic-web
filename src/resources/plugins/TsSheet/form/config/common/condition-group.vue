@@ -318,7 +318,6 @@ export default {
   filter: {},
   computed: {
     hasValueFormItemList() {
-      // && (d.uuid != this.formItem.uuid)
       return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)));
     },
     isNeedAttrValue() {
