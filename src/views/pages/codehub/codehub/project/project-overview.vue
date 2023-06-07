@@ -11,7 +11,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
-          @change="getList(1)"
+          @change="() => changeCurrent(1)"
         ></CombineSearcher>
       </template>
       <div slot="content">
@@ -71,8 +71,6 @@
       v-if="isEdit"
       :projectList="projectList"
       :projectData="projectData"
-      :rowModuleId="appModuleId"
-      :rowSystemId="appSystemId"
       @close="close"
     ></ProjectEdit>
   </div>
@@ -110,7 +108,8 @@ export default {
           key: 'action'
         }],
         tbodyList: [],
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 20
       },
       isEdit: false,
       projectData: {},
@@ -129,9 +128,7 @@ export default {
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
             onChange: (val) => {
-              this.appSystemId = val;
               this.updateAppModule(val);
-              this.getSearch();
             }
           },
           {
@@ -140,11 +137,7 @@ export default {
             label: this.$t('page.module'),
             transfer: true,
             rootName: 'tbodyList',
-            dealDataByUrl: this.$utils.getAppForselect,
-            onChange: (val) => {
-              this.appModuleId = val;
-              this.getSearch();
-            }
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -203,16 +196,11 @@ export default {
     },
     getList() {
       let param = {
+        pageSize: this.tableData.pageSize,
+        currentPage: this.tableData.currentPage,
         ...this.searchVal
       };
-      this.tableData.pageSize && Object.assign(param, {pageSize: this.tableData.pageSize});
-      this.tableData.currentPage && Object.assign(param, {currentPage: this.tableData.currentPage});
-      if (this.appModuleId) {
-        Object.assign(param, {id: this.appModuleId});
-      }
-      if (this.appSystemId) {
-        Object.assign(param, {appSystemId: this.appSystemId});
-      }
+      
       this.$api.codehub.project.getList(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$set(this.tableData, 'pageCount', res.Return.pageCount);

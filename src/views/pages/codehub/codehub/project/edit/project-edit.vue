@@ -111,7 +111,6 @@ export default {
       }
 
       let val = this.projectData;
-      let _this = this;
       this.setting.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')});
       if (val.projectList && val.projectList.length > 0) {
         if (this.projectConfig && this.projectConfig.length > 0) {
@@ -125,9 +124,8 @@ export default {
             Object.assign(pro, {
               value: li
             });
-            _this.changeProject(lis, pro.name);
+            this.changeProject(lis, pro.name);
           });
-          this.$forceUpdate();
         }
       }
     },
