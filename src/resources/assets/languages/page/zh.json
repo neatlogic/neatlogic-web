@@ -909,5 +909,6 @@
   "presenter": "提交人",
   "submitinformation": "提交信息",
   "effectiveness": "有效性",
-  "strip": "条"
+  "strip": "条",
+  "globalsearch": "全局搜索"
 }

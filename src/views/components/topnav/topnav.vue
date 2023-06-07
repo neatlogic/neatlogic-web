@@ -11,6 +11,7 @@
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
     <div class="topnav-right-container">
+      <TopnavHelp class="pr-nm"></TopnavHelp>
       <TopnavMessage :style="{'margin-right': '15px'}" />
       <TopnavUser />
     </div>
@@ -27,7 +28,8 @@ export default {
   components: {
     TopnavUser,
     TopnavMessage,
-    TopnavMenu: resolve => require(['./topnav-menu.vue'], resolve)
+    TopnavMenu: resolve => require(['./topnav-menu.vue'], resolve),
+    TopnavHelp: resolve => require(['./topnav-help.vue'], resolve)
   },
   data() {
     return {

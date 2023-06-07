@@ -907,5 +907,6 @@
   "presenter": "submitter",
   "submitinformation": "Submit Information",
   "effectiveness": "Validity",
-  "strip": "strip"
+  "strip": "strip",
+  "globalsearch": "global search "
 }
