@@ -301,7 +301,7 @@ export default {
       this.formConfig.forEach((form, findex) => {
         if (form.name == 'appModuleId') {
           form.isHidden = !val;
-          form.params = {systemId: val};
+          form.params = {appSystemId: val};
         }
       });
     },

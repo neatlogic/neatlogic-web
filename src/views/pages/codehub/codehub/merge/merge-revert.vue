@@ -120,30 +120,18 @@ export default {
       submiting: false
     };
   },
-
   beforeCreate() {},
-
-  created() {
-  },
-
+  created() {},
   beforeMount() {},
-
   mounted() {
     this.getSouce();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     gotoPrev() {
       this.$emit('resetRevert', true);
@@ -156,7 +144,6 @@ export default {
       });
     },
     submitMr() {
-      let _this = this;
       let param = {
         versionUuid: this.mrData.versionUuid,
         description: this.description,
@@ -169,16 +156,14 @@ export default {
       this.$api.codehub.merge.save(param).then(res => {
         this.submiting = false;
         if (res && res.Status == 'OK') {
-          _this.$router.push({ path: 'merge-review', query: { uuid: res.Return } });
+          this.$router.push({ path: 'merge-review', query: { uuid: res.Return } });
         }
       }).catch(e => {
         this.submiting = false;
       });
     }
   },
-
   filter: {},
-
   computed: {
     showtips() {
       return function(config) {
@@ -214,7 +199,6 @@ export default {
       };
     }
   },
-
   watch: {
     issueList: {
       handler: function(val) {

@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import parseInt from '@antv/util/lib/to-integer.js';
 // 分支型的mr创建先获取需求状态再获取其他字段
 import mixins from './createmixin.js';
 export default {
@@ -111,10 +110,10 @@ export default {
         return;
       }
       let param = {
-        appModuleId: this.versiondata.appModuleId,
+        appModuleId: this.versionData.appModuleId,
         targetBranch: this.targetBranch,
         srcBranch: this.srcBranch,
-        versionId: this.versiondata.id,
+        versionId: this.versionData.id,
         currentPage: this.tabledata.currentPage,
         pageSize: this.tabledata.pageSize
       };
