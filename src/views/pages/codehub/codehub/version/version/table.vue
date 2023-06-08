@@ -1,5 +1,10 @@
 <template>
-  <TsTable v-bind="tableData" @changeCurrent="updatePage" @changePageSize="updateSize">
+  <TsTable
+    v-bind="tableData"
+    :theadList="theadList"
+    @changeCurrent="updatePage"
+    @changePageSize="updateSize"
+  >
     <template slot="appSystemVo" slot-scope="{ row }">
       <div v-if="row.appSystemVo">
         <div>{{ getAppSystemVoName(row.appSystemVo) }}</div>
@@ -46,46 +51,42 @@ export default {
   },
   data() {
     return {
+      theadList: [
+        {
+          title: this.$t('page.name'),
+          key: 'version'
+        },
+        {
+          title: this.$t('page.sourcebranch'),
+          key: 'sourceBranch'
+        },
+        {
+          title: this.$t('page.targetbranch'),
+          key: 'targetBranch'
+        },
+        {
+          title: this.$t('page.system'),
+          key: 'appSystemVo'
+        },
+        {
+          title: this.$t('page.subsystem'),
+          key: 'appModuleVo'
+        },
+        {
+          title: this.$t('term.process.dealwithuser'),
+          key: 'fcu',
+          type: 'user'
+        },
+        {
+          title: this.$t('page.time'),
+          key: 'fcd',
+          type: 'time'
+        },
+        {
+          key: 'action'
+        }
+      ],
       tableData: {
-        theadList: [
-          {
-            title: this.$t('page.name'),
-            key: 'version'
-          },
-          {
-            title: this.$t('page.sourcebranch'),
-            key: 'sourceBranch'
-          },
-          {
-            title: this.$t('page.targetbranch'),
-            key: 'targetBranch'
-          },
-          {
-            title: this.$t('page.system'),
-            key: 'appSystemVo'
-          },
-          {
-            title: this.$t('page.subsystem'),
-            key: 'appModuleVo'
-          },
-          {
-            title: this.$t('term.process.dealwithuser'),
-            key: 'fcu',
-            type: 'user'
-          },
-          {
-            title: this.$t('page.status'),
-            key: 'status'
-          },
-          {
-            title: this.$t('page.time'),
-            key: 'fcd',
-            type: 'time'
-          },
-          {
-            key: 'action'
-          }
-        ],
         tbodyList: []
       }
     };

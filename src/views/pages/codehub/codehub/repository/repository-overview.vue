@@ -10,7 +10,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
-          @change="() => searchList()"
+          @change="() => changeCurrentPage(1)"
         ></CombineSearcher>
       </template>
       <div slot="content">
@@ -19,11 +19,11 @@
           v-else
           v-bind="repositoryData"
           headerPosition="right"
-          @updatePage="updatePage"
+          @updatePage="changeCurrentPage"
           @updateSize="changePageSize"
         >
           <template slot="header" slot-scope="{ row }">
-            <div class="action-group">
+            <div class="action-group" @click.stop>
               <div class="action-item text-action ts-link" @click="copyWorkingPath(row)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
               <div v-clipboard="(row.repositoryServiceVo && row.repositoryServiceVo.address) + row.address" v-clipboard:success="copyok" class="action-item text-action ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
               <div class="action-item text-action ts-refresh" @click="syncRepository(row.id)">{{ $t('page.synchronous') }}</div>
@@ -84,14 +84,12 @@
     </TsContain>
     <RepositoryEditDialog
       v-if="isShowRepositoryEditDialog"
-      :id="editId"
-      :appSystemId="searchVal.appSystemId"
-      :appModuleId="searchVal.appModuleId"
+      :id="repositoryId"
       @close="close"
     ></RepositoryEditDialog>
     <RepositorySyncDialog
       v-if="isShowRepositorySyncDialog"
-      :id="editId"
+      :id="repositoryId"
       @close="close"
     ></RepositorySyncDialog>
   </div>
@@ -123,7 +121,7 @@ export default {
       isLoad: true,
       isShowRepositoryEditDialog: false,
       isShowRepositorySyncDialog: false,
-      editId: null, //编辑弹窗对应的仓库id
+      repositoryId: null,
       repositoryData: {
         //卡片的数据
         span: 24,
@@ -198,9 +196,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
     this.searchConfig && this.searchConfig.searchList.forEach((item) => {
       if (item && item.name == 'type') {
         item.dataList = this.typeList;
@@ -208,6 +204,8 @@ export default {
     });
     this.searchList();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -215,7 +213,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    updatePage(page) {
+    changeCurrentPage(page) {
       this.repositoryData.currentPage = page;
       this.searchList();
     },
@@ -265,7 +263,7 @@ export default {
       });
     },
     editRepository(id) {
-      this.editId = id || null;
+      this.repositoryId = id || null;
       this.isShowRepositoryEditDialog = true;
     },
     deleteRepository(id) {
@@ -287,13 +285,13 @@ export default {
     syncRepository(id) {
       this.isShowRepositorySyncDialog = true;
       if (id) {
-        this.editId = id;
+        this.repositoryId = id;
       }
     },
     close(isreload) {
       this.isShowRepositorySyncDialog = false;
       this.isShowRepositoryEditDialog = false;
-      this.editId = null;
+      this.repositoryId = null;
       if (isreload) {
         this.searchList();
       }

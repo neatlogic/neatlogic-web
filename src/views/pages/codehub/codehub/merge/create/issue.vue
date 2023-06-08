@@ -1,7 +1,7 @@
 <template>
   <div v-if="srcBranch && targetBranch">
     <div>
-      <div class="input-border" style="padding:0 16px;margin-bottom:10px;">
+      <div class="input-border mb-sm">
         <Row :gutter="16">
           <Col span="18">
             <Checkbox v-model="isValid">{{ $t('term.codehub.effectivedemand') }}</Checkbox>
@@ -25,15 +25,16 @@
         <TsTable
           ref="showtable"
           v-model="selectIssuelist"
-          v-bind="tabledata"
-          :tbodyList="getTbody(tabledata.tbodyList)"
+          v-bind="tableData"
+          :theadList="theadList"
+          :tbodyList="filterValidTbodyList(tableData.tbodyList)"
           :height="tableheight()"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @getSelected="getSelected"
         >
-          <template slot="sourceUuid" slot-scope="{row}">
-            {{ getsource(row.sourceUuid) }}
+          <template slot="sourceId" slot-scope="{row}">
+            {{ getsource(row.sourceId) }}
           </template>
           <template slot="isValid" slot-scope="{row}">
             <span v-if="row.isValid===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
@@ -49,22 +50,23 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.uuid)"> {{ $t('page.detail') }} </li>
+                <li class="ts-list" @click="viewIssue(row.id)"> {{ $t('page.detail') }} </li>
               </ul>
             </div>
           </template>
         </TsTable>
       </div>
-      <div class="input-border" style="padding:0 16px;margin-top:10px;margin-bottom:10px;">
+      <div class="mt-sm mb-sm">
         <Row :gutter="16">
           <Col span="20">
-            <Input
+            <TsFormInput
               v-model.trim="addItem"
-              type="textarea"
-              autosize
               :placeholder="$t('term.codehub.inputissuesnumberdesc')"
+              :rows="1"
+              type="textarea"
+              border="border"
               @on-enter="addIssue()"
-            />
+            ></TsFormInput>
           </Col>
           <Col span="4">
             <Button type="primary" @click="addIssue()">{{ $t('term.codehub.addmergeissues') }}</Button>
@@ -72,13 +74,13 @@
         </Row>
       </div>
     </div>
-    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" style="padding-top:10px;">
+    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" class="pt-sm">
       <TsTable v-bind="showtabledata" :tbodyList="allIssue (selectIssuelist,addLi)||[]">
-        <template slot="sourceUuid" slot-scope="{row}">
-          {{ getsource(row.sourceUuid) }}
+        <template slot="sourceId" slot-scope="{row}">
+          {{ getsource(row.sourceId) }}
         </template>
         <template slot="isValid" slot-scope="{row}">
-          <span v-if="row.isValid===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
+          <span v-if="row.isValid ===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
           <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
           <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
         </template>  
@@ -88,13 +90,20 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-trash" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
+              <li class="tsfont-trash-o" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>        
       </TsTable>
     </div>
-    <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
+    <div>
+      <TsFormInput
+        v-model="description"
+        :placeholder="$t('term.codehub.mergerequestdesc')"
+        type="textarea"
+        border="border"
+      ></TsFormInput>
+    </div>
   </div>
   <div v-else class="text-tip text-center" style="line-height:2">{{ $t('term.codehub.selectoriginbranchandtargetbranch') }}</div>
 </template>
@@ -105,12 +114,13 @@ import mixins from './createmixin.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   mixins: [mixins],
   props: {
-    versionid: [String, Number],
-    versiondata: Object,
+    versionId: [String, Number],
+    versionData: Object,
     srcBranch: [String, Number],
     issueNoList: Array
   },
@@ -120,32 +130,32 @@ export default {
       addItem: '', //手动输入的需求号
       addLi: [], //手动添加的不在原来的需求列表里的数据
       height: '600px',
-      tabledata: {
-        theadList: [{
-          key: 'selection'
-        }, {
-          title: this.$t('term.codehub.issuesnumber'),
-          key: 'no'
-        }, {
-          title: this.$t('page.description'),
-          key: 'name'
-        }, {
-          title: this.$t('page.responsibleperson'),
-          key: 'handleUserId'
-        }, {
-          title: this.$t('page.effectiveness'),
-          key: 'isValid'
-        }, {
-          title: this.$t('page.status'),
-          key: 'status'
-        }, {
-          title: this.$t('page.updatetime'),
-          key: 'issueUpdateTime'
-        }, {
-          title: this.$t('page.source'),
-          key: 'sourceUuid'
-        }
-        ],
+      theadList: [{
+        key: 'selection'
+      }, {
+        title: this.$t('term.codehub.issuesnumber'),
+        key: 'no'
+      }, {
+        title: this.$t('page.description'),
+        key: 'name'
+      }, {
+        title: this.$t('page.responsibleperson'),
+        key: 'handleUserId'
+      }, {
+        title: this.$t('page.effectiveness'),
+        key: 'isValid'
+      }, {
+        title: this.$t('page.status'),
+        key: 'status'
+      }, {
+        title: this.$t('page.updatetime'),
+        key: 'issueUpdateTime'
+      }, {
+        title: this.$t('page.source'),
+        key: 'sourceId'
+      }
+      ],
+      tableData: {
         rowKey: 'no',
         selectedRemain: true,
         classKey: 'isValid',
@@ -184,14 +194,13 @@ export default {
             return l != '';
           });
           //先过滤掉已经在上面的table列表里的
-          if (this.tabledata && this.tabledata.tbodyList && this.tabledata.tbodyList.length) {
-            let tableli = this.tabledata.tbodyList.map((t) => {
+          if (this.tableData && this.tableData.tbodyList && this.tableData.tbodyList.length) {
+            let tableli = this.tableData.tbodyList.map((t) => {
               return t.no;
             });
             addlist = list.filter((l) => {
               return tableli.indexOf(l) == -1;
             });
-
             //不相等就是有上面的table的数据，要把属于table的数组先取出来，再在选中列表加上没加上的
             if (addlist.length != list.length) {
               let morelist = list.filter((l) => {
@@ -222,41 +231,39 @@ export default {
     totalIssue(li1, li2) {
       return Array.from(new Set(li1.concat(li2)));
     },
-    deleteIssue(uuid) {
-      if (this.addLi.length > 0 && this.addLi.indexOf(uuid) > -1) {
+    deleteIssue(id) {
+      if (this.addLi.length > 0 && this.addLi.indexOf(id) > -1) {
         let li = this.addLi.filter((ad) => {
-          return ad != uuid;
+          return ad != id;
         });
         this.addLi = li;
         let totalIssue = this.totalIssue(this.selectIssuelist, li);
-        this.$forceUpdate();
         this.$emit('getIsuuelist', totalIssue);
-      } else if (this.selectIssuelist.length && this.selectIssuelist.indexOf(uuid) > -1) {
+      } else if (this.selectIssuelist.length && this.selectIssuelist.indexOf(id) > -1) {
         this.selectIssuelist = this.selectIssuelist.filter(s => {
-          return s != uuid;
+          return s != id;
         });        
         if (this.$refs.showtable) {
-          this.$refs.showtable.removeSelectlist(uuid);
+          this.$refs.showtable.removeSelectlist(id);
         }
       }
     },
     getList(srcBranch) {
       //获取需求列表（不含有效性）
-      let param = {};
-      if (this.versionid) {
-        Object.assign(param, {versionUuid: this.versionid});
-      }
-      this.keyword && Object.assign(param, {keyword: this.keyword});
-      this.tabledata.pageSize && Object.assign(param, {pageSize: this.tabledata.pageSize});
-      this.tabledata.currentPage && Object.assign(param, {currentPage: this.tabledata.currentPage});
+      let param = {
+        versionId: this.versionId,
+        keyword: this.keyword,
+        currentPage: this.tableData.currentPage,
+        pageSize: this.tableData.pageSize
+      };
       this.isLoad = true;
       this.$api.codehub.merge.getIssuelist(param).then((res) => {
         this.isLoad = false;
         if (res && res.Status == 'OK') {
-          this.$set(this.tabledata, 'pageCount', res.Return.pageCount);
-          this.$set(this.tabledata, 'rowNum', res.Return.rowNum);
-          this.$set(this.tabledata, 'pageSize', res.Return.pageSize);
-          this.$set(this.tabledata, 'currentPage', res.Return.currentPage);
+          this.$set(this.tableData, 'pageCount', res.Return.pageCount);
+          this.$set(this.tableData, 'rowNum', res.Return.rowNum);
+          this.$set(this.tableData, 'pageSize', res.Return.pageSize);
+          this.$set(this.tableData, 'currentPage', res.Return.currentPage);
           let tbodylist = res.Return.list || [];
           if (tbodylist && tbodylist.length > 0) {
             //单独添加是否有效的字段
@@ -269,13 +276,13 @@ export default {
           } else {
             this.$emit('getIssue', false);
           }
-          this.$set(this.tabledata, 'tbodyList', tbodylist);
+          this.$set(this.tableData, 'tbodyList', tbodylist);
           this.getVaildlist(tbodylist);
         } else {
-          this.$set(this.tabledata, 'tbodyList', []);
+          this.$set(this.tableData, 'tbodyList', []);
         }
       }).catch((error) => {
-        this.$set(this.tabledata, 'tbodyList', []);
+        this.$set(this.tableData, 'tbodyList', []);
         this.isLoad = false;
       }); 
     },
@@ -288,42 +295,37 @@ export default {
         this.$Message.error(this.$t('term.codehub.issueslogmaxcount'));
         return;
       }
-      let _this = this;
-      let param = {};
       let list = resList.map((r) => {
         return r.no;
       });
-      if (this.versiondata.subsystemUuid) {
-        Object.assign(param, {subsystemUuid: this.versiondata.subsystemUuid});//需补充
-
-        this.$utils.setCookie(this.versiondata.subsystemUuid + '_searchCommitCount', this.maxSearchCount);
+      let param = {
+        srcBranch: this.srcBranch,
+        issueList: list || [],
+        searchCommitCount: parseInt(this.maxSearchCount),
+        currentPage: this.tableData.currentPage,
+        pageSize: this.tableData.pageSize
+      };
+      if (this.versionData.appModuleId) {
+        this.$set(param, 'appModuleId', this.versionData.appModuleId);
+        this.$utils.setCookie(this.versionData.appModuleId + '_searchCommitCount', this.maxSearchCount);
       }
-      //repositoryUuid
       if (this.targetBranch) {
-        Object.assign(param, {targetBranch: this.targetBranch});
+        this.$set(param, 'targetBranch', this.targetBranch);
       }
-      Object.assign(param, {srcBranch: this.srcBranch});
-      //Object.assign(param, {searchCommitCount: parseInt(this.maxSearchCount)});
-      Object.assign(param, {issueList: list || []});
-      Object.assign(param, {searchCommitCount: parseInt(this.maxSearchCount)});
-        
-      this.tabledata.pageSize && Object.assign(param, {pageSize: this.tabledata.pageSize});
-      this.tabledata.currentPage && Object.assign(param, {currentPage: this.tabledata.currentPage});
       //取消正在搜索的请求
       let cancel = this.cancelAxios;
       cancel && cancel.cancel();
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      this.tabledata.tbodyList && (resList = this.tabledata.tbodyList);
-      this.$api.merge.getVaildlist(param, { cancelToken: _this.cancelAxios.token }).then((res) => {
-        //this.$api.codehub.merge.getList(param).then(res => {//这里待确定究竟调哪个获取需求的接口
+      this.tableData.tbodyList && (resList = this.tableData.tbodyList);
+      this.$api.codehub.merge.getVaildlist(param, { cancelToken: this.cancelAxios.token }).then((res) => {
         if (res && res.Status == 'OK') {
           let newlist = res.Return.list || [];
-          _this.tabledata.tbodyList.forEach((l) => {
+          this.tableData.tbodyList.forEach((l) => {
             Object.assign(l, {
               isValid: 0              
             });
-            newlist.forEach((n) => {
+            newlist.forEach((n) => { // 需求有效性，需求编号和commit的需求编号相同，就设置需求的有效性
               if (l.no == n.issueNo) {
                 Object.assign(l, {
                   isValid: 1              
@@ -331,14 +333,14 @@ export default {
               }
             });
           });
-          _this.$forceUpdate();
         }
       });
     }
   },
   filter: {},
   computed: {
-    getTbody() {
+    filterValidTbodyList() {
+      // 过滤有效需求
       return function(tbodyList) {
         let list = [];
         if (tbodyList && tbodyList.length > 0) {
@@ -352,7 +354,7 @@ export default {
     allIssue() {
       return function(selectIssuelist, li) {
         let issueList = this.totalIssue(selectIssuelist, li);
-        let tlist = this.tabledata.tbodyList || [];
+        let tlist = this.tableData.tbodyList || [];
         let totalIssue = issueList.map(to => {
           let totalLi = tlist.filter(tbody => {
             return tbody.no == to;
