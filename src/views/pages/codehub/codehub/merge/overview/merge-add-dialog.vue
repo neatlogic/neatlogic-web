@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveEdit">
+  <TsDialog v-bind="dialogSetting" @on-close="close" @on-ok="saveMerge">
     <template v-slot>
       <div>
         <TsForm
@@ -10,7 +10,7 @@
         >
         </TsForm>
         <!-- 不创建新版本——start    -->
-        <div v-if="!isNewVersion &&versionTable.tbodyList && versionData.appModuleId" class="mt-nm">
+        <div v-if="!isNewVersion &&versionTable.tbodyList && formValue.appModuleId" class="mt-nm">
           <TsTable v-bind="versionTable" @getSelected="getversionSelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
@@ -19,7 +19,7 @@
         </div>
         <!-- 不创建新版本——end    -->
         <!-- 创建新版本——start    -->
-        <div v-if="isNewVersion && strategyData.tbodyList && versionData.appModuleId">
+        <div v-if="isNewVersion && strategyData.tbodyList && formValue.appModuleId">
           <TsTable v-bind="strategyData" @getSelected="getstrategySelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
@@ -49,13 +49,10 @@ export default {
         maskClose: false,
         isShow: true
       },
-      formValue: {
-        isNewversion: '1'
-      },
       versionPrefix: '',
       versionTable: {
         multiple: false,
-        rowKey: 'uuid', 
+        rowKey: 'id', 
         theadList: [{
           key: 'selection'
         }, {
@@ -76,8 +73,9 @@ export default {
         }],
         tbodyList: null
       },
-      versionData: {
-        uuid: '',
+      formValue: {
+        isNewversion: '1',
+        id: '',
         name: '',
         versionTypeId: '',
         versionStrategyId: '',
@@ -98,8 +96,8 @@ export default {
           value: '0'          
         }],
         onChange: (val) => {
-          if (this.versionData.appModuleId) {
-            this.getVersion(this.versionData.appModuleId);
+          if (this.formValue.appModuleId) {
+            this.getVersion(this.formValue.appModuleId);
           }
         }
       }, 
@@ -113,7 +111,6 @@ export default {
         dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect,
-        value: this.appSystemId,
         onChange: (val) => {
           this.changeAppModule(val);
         }
@@ -129,8 +126,7 @@ export default {
         dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect,
-        value: this.appModuleId,
-        params: {systemId: this.appSystemId},
+        params: {appSystemId: this.appSystemId},
         onChange: (val) => {
           this.getVersion(val);
         }   
@@ -147,7 +143,7 @@ export default {
         textName: 'name',
         valueName: 'id',
         onChange: (val) => {
-          this.versionData.versionTypeId = val;
+          this.formValue.versionTypeId = val;
           this.autofillName();
         } 
       }, 
@@ -169,7 +165,7 @@ export default {
       selectedversion: {},
       strategyData: {
         multiple: false,
-        rowKey: 'uuid', 
+        rowKey: 'id', 
         theadList: [{
           key: 'selection'
         }, {
@@ -203,7 +199,7 @@ export default {
   destroyed() {},
   methods: {
     initData() {
-      this.$set(this.versionData, 'appModuleId', this.appModuleId);
+      this.$set(this.formValue, 'appModuleId', this.appModuleId);
       this.$set(this.versionTable, 'tbodyList', null);
       if (this.appModuleId) {
         this.setVal('appModuleId', this.appModuleId);
@@ -217,18 +213,18 @@ export default {
     close() {
       this.$emit('close');
     },
-    saveEdit() {
+    saveMerge() {
       if (this.$refs.form.valid()) {
-        if (this.versionData.versionStrategyId) {
+        if (this.formValue.versionStrategyId) {
           let param = {};
           if (this.isNewVersion) {
             //如果是新建的要校验必填信息
             if (this.$refs.versionform && this.$refs.versionform.valid() && this.$refs.nameInput.valid()) {
               Object.assign(param, {
-                version: this.versionPrefix + this.versionData.version,
-                versionTypeId: this.versionData.versionTypeId,
-                versionStrategyId: this.versionData.versionStrategyId,
-                appModuleId: this.versionData.appModuleId
+                version: this.versionPrefix + this.formValue.version,
+                versionTypeId: this.formValue.versionTypeId,
+                versionStrategyId: this.formValue.versionStrategyId,
+                appModuleId: this.formValue.appModuleId
               });
               this.$api.codehub.version.save(param).then(res => {
                 if (res && res.Status == 'OK') {
@@ -243,12 +239,12 @@ export default {
               if (this.selectedversion[0].canEdit) {
                 Object.assign(param, {
                   name: this.versionPrefix + this.selectedversion[0].name,
-                  uuid: this.selectedversion[0].uuid,
+                  id: this.selectedversion[0].id,
                   versionTypeId: this.selectedversion[0].versionTypeId,
                   versionStrategyId: this.selectedversion[0].versionStrategyId,
-                  appModuleId: this.versionData.appModuleId
+                  appModuleId: this.formValue.appModuleId
                 });
-                this.gotoCreate(this.selectedversion[0].uuid, this.selectedversion[0].type);
+                this.gotoCreate(this.selectedversion[0].id, this.selectedversion[0].type);
                 this.$emit('close', true);
               } else {
                 this.$Notice.error({
@@ -265,29 +261,29 @@ export default {
     getversionSelected(val, vals) {
       //不新建版本，选中对应版本
       if (val.length > 0) {
-        this.versionData.versionStrategyId = vals[0].uuid;
+        this.formValue.versionStrategyId = vals[0].id;
         this.versionPrefix = vals[0].versionPrefix;
         this.selectedversion = vals;
       } else {
-        this.versionData.versionStrategyId = '';
+        this.formValue.versionStrategyId = '';
         this.versionPrefix = '';
         this.selectedversion = {};
       }
-      this.hideName(this.versionData.versionStrategyId);
+      this.hideName(this.formValue.versionStrategyId);
     },
     getstrategySelected(val, vals) {
       //新建版本，策略选中的话，
       if (val.length > 0) {
-        this.versionData.versionStrategyId = vals[0].uuid;
+        this.formValue.versionStrategyId = vals[0].id;
         this.versionPrefix = vals[0].versionPrefix;
         this.selectedversion = vals;
         this.autofillName();
       } else {
-        this.versionData.versionStrategyId = '';
+        this.formValue.versionStrategyId = '';
         this.versionPrefix = '';
         this.selectedversion = {};
       }
-      this.hideName(this.versionData.versionStrategyId);
+      this.hideName(this.formValue.versionStrategyId);
     },
     hideName(id) {
       this.formConfig.forEach((form, findex) => {
@@ -298,9 +294,9 @@ export default {
     },
     changeAppModule(val, iskeep) {
       // 改变子系统的入参
-      this.versionData.appSystemId = val;
-      this.versionData.appModuleId = !iskeep ? '' : this.versionData.appModuleId;
-      this.versionData.versionStrategyId = '';
+      this.formValue.appSystemId = val;
+      this.formValue.appModuleId = !iskeep ? '' : this.formValue.appModuleId;
+      this.formValue.versionStrategyId = '';
       this.hideName();
       this.formConfig.forEach((form, findex) => {
         if (form.name == 'appModuleId') {
@@ -310,11 +306,11 @@ export default {
       });
     },
     getVersion(val) {
-      this.versionData.appModuleId = val;
+      this.formValue.appModuleId = val;
       let param = {};
       Object.assign(param, {needPage: false});
       this.versionPrefix = '';
-      this.versionData.versionStrategyId = '';
+      this.formValue.versionStrategyId = '';
       this.hideName();
       if (val) {
         Object.assign(param, {appModuleId: val});
@@ -322,7 +318,7 @@ export default {
           this.$api.codehub.strategy.getList(param).then(res => {
             this.isLoad = false;
             if (res && res.Status == 'OK') {
-              this.$set(this.strategyData, 'tbodyList', res.Return.list);
+              this.$set(this.strategyData, 'tbodyList', res.Return.tbodyList);
             } else {
               this.$set(this.strategyData, 'tbodyList', []);
             }
@@ -331,9 +327,9 @@ export default {
           this.$api.codehub.version.getList(param).then(res => {
             this.isLoad = false;
             if (res && res.Status == 'OK') {
-              let list = res.Return.list || [];
-              if (list.length > 0) {
-                list.forEach(li => {
+              let tbodyList = res.Return.tbodyList || [];
+              if (tbodyList.length > 0) {
+                tbodyList.forEach(li => {
                   if (li.versionStrategyVo) {
                     let versionArr = li.versionStrategyVo;
                     Object.assign(li, {
@@ -350,7 +346,7 @@ export default {
                   }
                 });
               }
-              this.$set(this.versionTable, 'tbodyList', list);
+              this.$set(this.versionTable, 'tbodyList', tbodyList);
             } else {
               this.$set(this.versionTable, 'tbodyList', []);
             }
@@ -368,22 +364,22 @@ export default {
         }
       });
     },
-    gotoCreate(uuid, type) {
-      this.$router.push({ path: 'merge-create', query: {versionid: uuid, type: type} });
+    gotoCreate(id, type) {
+      this.$router.push({ path: 'merge-create', query: {versionid: id, type: type} });
     },
     autofillName() {
-      Object.assign(this.versionData, {
+      Object.assign(this.formValue, {
         name: ''
       });
-      if (this.versionData.appModuleId && this.versionData.versionStrategyId && this.versionData.versionTypeId) {
+      if (this.formValue.appModuleId && this.formValue.versionStrategyId && this.formValue.versionTypeId) {
         let param = {
-          appModuleId: this.versionData.appModuleId,
-          versionStrategyId: this.versionData.versionStrategyId, 
-          versionTypeId: this.versionData.versionTypeId
+          appModuleId: this.formValue.appModuleId,
+          versionStrategyId: this.formValue.versionStrategyId, 
+          versionTypeId: this.formValue.versionTypeId
         };
         this.$api.codehub.version.autofillName(param).then((res) => {
           if (res && res.Status == 'OK' && res.Return.version) {
-            Object.assign(this.versionData, {
+            Object.assign(this.formValue, {
               name: res.Return.version.replace(this.versionPrefix, '')
             });
           }

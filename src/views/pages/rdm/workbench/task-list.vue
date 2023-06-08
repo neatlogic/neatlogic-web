@@ -1,6 +1,7 @@
 <template>
   <div>
-    <TsContain><template v-slot:navigation><span>导航</span></template>
+    <TsContain>
+      <template v-slot:navigation><span>导航</span></template>
       <template v-slot:topLeft>上左</template>
       <template v-slot:topCenter>上中</template>
       <template v-slot:topRight>上右</template>
@@ -9,7 +10,10 @@
           <IssueList
             v-if="isReady"
             ref="issueList"
+            :isMine="1"
+            :isEnd="0"
             :mode="displayMode"
+            :displayAttrList="displayAttrList"
             :canSearch="true"
             :isShowEmptyTable="true"
           ></IssueList>
@@ -27,12 +31,15 @@ export default {
   props: {},
   data() {
     return {
-      isReady: true,
-      displayMode: 'level'
+      isReady: false,
+      displayMode: 'level',
+      needAttr: ['priority', 'startdate', 'enddate'],
+      attrList: []
     };
   },
   beforeCreate() {},
-  async created() {
+  created() {
+    this.getPrivateAttrList();
   },
   beforeMount() {},
   mounted() {},
@@ -43,11 +50,23 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getPrivateAttrList() {
+      this.$api.rdm.attr.getPrivateAttrList().then(res => {
+        this.attrList = res.Return;
+        this.isReady = true;
+      });
+    }
   },
   filter: {},
-  computed: {},
+  computed: {
+    displayAttrList() {
+      if (this.attrList && this.attrList.length > 0) {
+        return this.attrList.filter(attr => this.needAttr.includes(attr.type));
+      }
+      return [];
+    }
+  },
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

@@ -2099,7 +2099,9 @@
     "bugmanage": "defect management ",
     "iteration": "iteration",
     "isopened": "Opened",
-    "isclosed": "Closed"
+    "isclosed": "Closed",
+    "startdate": "Expected start",
+    "enddate": "Expected end"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
@@ -2266,6 +2268,10 @@
     "versionnobuildnewmerger": "This version cannot create a new MR",
     "chooseastrategtfromtable": "Please select a strategy from the table",
     "actionsubject": "Operation object",
-    "triggerlog": "View trigger records"
+    "triggerlog": "View trigger records",
+    "mergenumber": "MR number",
+    "allrequirements": "All requirements",
+    "conflictingneeds": "Conflicting needs",
+    "mergedrequirements": "Merged requirements"
   }
 }

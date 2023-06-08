@@ -1,6 +1,9 @@
 <template>
   <div>
-    <span v-if="priority">{{ priorityName }}</span>
+    <span v-if="priority">
+      <span :style="{ color: priorityColor }" class="mr-xs">●</span>
+      <span>{{ priorityName }}</span>
+    </span>
     <span v-else class="text-grey">-</span>
   </div>
 </template>
@@ -9,13 +12,13 @@ import { AttrBase } from './base-privateattr.js';
 
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   extends: AttrBase,
   props: {},
   data() {
     return {
       priorityName: this.issueData && this.issueData.priorityName,
+      priorityColor: this.issueData && this.issueData.priorityColor,
       priority: (this.issueData && this.issueData.priority) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
     };
   },
@@ -37,11 +40,9 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

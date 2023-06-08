@@ -163,7 +163,6 @@ export default {
     async validData() {
       const errorList = [];
       //TODO 需要补充校验方法
-      errorList.push(...this.validDataForAllItem());
       if (this.$refs.dataList && this.$refs.dataList.validData) {
         let dataListValid = await this.$refs.dataList.validData();
         errorList.push(...dataListValid);

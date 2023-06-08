@@ -21,6 +21,7 @@ export default {
   'reaction': {
     'hide': {},
     'display': {},
-    'readonly': {}
+    'readonly': {},
+    'required': {}
   }
 };

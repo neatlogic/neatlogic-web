@@ -7,6 +7,9 @@
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+            <TsFormItem :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
+            </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>
                 <TsFormRadio
@@ -123,6 +126,9 @@
                 <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
               </div>
             </TsFormItem>
+            <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
+              <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
+            </TsFormItem>
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>
                 <TsFormRadio
@@ -215,6 +221,7 @@
                   :ref="'condition_' + key"
                   :value="r"
                   :formItemList="formItemList"
+                  :formItem="propertyLocal"
                   @input="
                     rule => {
                       setReaction(key, rule);
@@ -283,7 +290,8 @@ export default {
         hide: this.$t('page.hide'),
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
-        disable: this.$t('page.disable')
+        disable: this.$t('page.disable'),
+        required: this.$t('page.require')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -358,7 +366,7 @@ export default {
       }
     }
     if (!this.propertyLocal.reaction) {
-      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {} });
+      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {} });
     }
   },
   beforeMount() {},
