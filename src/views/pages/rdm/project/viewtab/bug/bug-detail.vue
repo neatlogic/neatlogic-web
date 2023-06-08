@@ -50,6 +50,7 @@
                   :canAppend="false"
                   :canSearch="false"
                   :canAction="true"
+                  :projectId="projectId"
                   :toId="id"
                   :app="getApp('story')"
                   @refresh="init"

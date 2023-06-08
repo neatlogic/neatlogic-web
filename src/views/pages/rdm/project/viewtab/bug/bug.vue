@@ -17,6 +17,7 @@
           v-if="appData"
           ref="issueList"
           :app="appData"
+          :projectId="projectId"
           :isShowEmptyTable="true"
         ></IssueList>
       </template>

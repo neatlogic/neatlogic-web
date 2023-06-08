@@ -37,6 +37,7 @@
                 <IssueList
                   v-if="id && getApp('task')"
                   ref="taskList"
+                  :projectId="projectId"
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
@@ -52,6 +53,7 @@
                 <IssueList
                   v-if="id && getApp('bug')"
                   ref="bugList"
+                  :projectId="projectId"
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
@@ -67,6 +69,7 @@
                 <IssueList
                   v-if="id && getApp('story')"
                   ref="requestList"
+                  :projectId="projectId"
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
