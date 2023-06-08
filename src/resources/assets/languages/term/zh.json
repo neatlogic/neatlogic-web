@@ -2262,6 +2262,7 @@
     "mergertype": "MR类型",
     "versionnobuildnewmerger": "该版本无法创建新的MR",
     "chooseastrategtfromtable": "请从表格里勾选一个策略",
-    "actionsubject": "操作对象"
+    "actionsubject": "操作对象",
+    "triggerlog": "查看触发记录"
   }
 }
