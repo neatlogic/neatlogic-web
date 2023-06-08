@@ -17,7 +17,6 @@
             <span class="ml-10">条</span>
           </Col>
           <Col span="6">
-          <!-- <FormInput v-model.trim="keyword" suffix="i-icon ts-search" placeholder="关键字" @keyup.enter.native="searchList()"></FormInput> -->
           </Col>
         </Row>
       </div>
@@ -88,7 +87,6 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <!-- <li class="ts-list" @click="viewIssue(row.uuid)">详情</li> -->
               <li class="ts-trash" @click="deleteIssue(row.no)">删除</li>
             </ul>
           </div>
@@ -100,14 +98,11 @@
 </template>
 
 <script>
-//import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import mixins from './createmixin.js';
 export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
-    // ,
-    // FormInput
   },
   mixins: [mixins],
   props: {

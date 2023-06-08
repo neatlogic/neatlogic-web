@@ -73,7 +73,7 @@
           ref="issueList" 
           :versionId="versionId" 
           :type="type" 
-          :versiondata="versionData" 
+          :versionData="versionData" 
           :srcBranch="srcBranch" 
           :targetBranch="targetBranch"
           :issueNoList="issueNoList" 
@@ -142,13 +142,13 @@ export default {
   },
   destroyed() {},
   methods: {
-    getVersion(val) {
+    getVersion(versionId) {
       //取消正在搜索的请求
       let cancel = this.cancelAxios;
       cancel && cancel.cancel();
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      let param = { id: val, expandBranch: true };
+      let param = { id: versionId, expandBranch: true };
       this.isOk = false;
       this.$api.codehub.version.getDetail(param, { cancelToken: this.cancelAxios.token }).then(res => {
         if (res && res.Status == 'OK') {

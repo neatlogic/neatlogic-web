@@ -39,7 +39,6 @@
                 :validateList="['required']"
                 maxlength="50"
                 :prepend="getRepositoryUrlPrepend"
-                width="75%"
               />
             </div>
             <div v-else class="text-tip">{{ $t('term.codehub.pleaserepositoryservice') }}</div>
@@ -61,9 +60,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
-    id: {type: Number},
-    appModuleId: String,
-    appSystemId: String
+    id: {type: Number}
   },
   data() {
     return {
@@ -75,6 +72,7 @@ export default {
         isShow: true
       },
       editData: {
+        id: null,
         repoServiceId: '',
         name: '',
         address: '',
@@ -186,13 +184,9 @@ export default {
           createMode: 'import',
           address: '',
           name: '',
-          appModuleId: this.appModuleId || '',
-          appSystemId: this.appSystemId || ''
+          appModuleId: '',
+          appSystemId: ''
         });
-        if (this.appSystemId) {
-          this.$set(this.appModuleConfig, 'params', {appSystemId: this.appSystemId});
-          this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-        }
         this.hiddenFormByValue(this.editData);
         this.loadingShow = false;
       }
@@ -248,12 +242,6 @@ export default {
           this.$delete(param, 'branchesPath');
           this.$delete(param, 'tagsPath');
         }
-        if (param && param.address) {
-          param.address = param.address + '/' + param.name;
-        }
-        if (this.id) {
-          param.id = this.id;
-        }
         this.$api.codehub.repository.save(param).then((res) => {
           if (res && res.Status == 'OK') {
             this.$emit('close', true);
@@ -264,19 +252,12 @@ export default {
     getRepositoryDetail(id) {
       this.loadingShow = true;
       this.$api.codehub.repository.getDetail({id: id}).then(res => {
-        if (res.Return) {
-          this.serviceType = res.Return.repositoryServiceVo.type;
-          Object.assign(this.editData, {
-            repoServiceId: res.Return.repoServiceId || '',
-            createMode: res.Return.createMode || 'import',
-            address: res.Return.address || '',
-            name: res.Return.name || '',
-            appModuleId: res.Return.appModuleId,
-            appSystemId: res.Return.appSystemVo && res.Return.appSystemVo.id || '',
-            mainBranch: res.Return.mainBranch || '',
-            branchesPath: res.Return.branchesPath || '',
-            tagsPath: res.Return.tagsPath || ''
-          });
+        if (res && res.Status == 'OK') {
+          Object.assign(this.editData, res.Return);
+          this.serviceType = this.editData.repositoryServiceVo.type;
+          if (this.editData && this.editData.appSystemVo) {
+            this.editData.appSystemId = this.editData.appSystemVo.id;
+          }
           this.hiddenFormByValue(this.editData);
         }
       }).finally(() => {
@@ -322,7 +303,6 @@ export default {
         }
       });
     }
-
   },
   filter: {},
   computed: {

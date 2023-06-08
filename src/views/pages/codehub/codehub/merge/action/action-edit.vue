@@ -243,7 +243,7 @@ export default {
           method: 'post',
           url: '/api/rest/codehub/appmodule/search',
           data: {
-            systemId: this.actionData.systemUuid
+            appSystemId: this.actionData.systemUuid
           }
         }).then(res => {
           this.subSystemList = res.data.Return.list;
