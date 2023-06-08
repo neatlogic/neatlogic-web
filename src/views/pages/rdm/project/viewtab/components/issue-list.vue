@@ -34,7 +34,7 @@
             <div :key="index">
               <AttrHandler
                 v-if="isSearchReady"
-                :projectId="app.projectId"
+                :projectId="app && app.projectId"
                 :attrConfig="attr"
                 :value="attr.isPrivate ? searchValue[attr.name] : searchValue['attr_' + attr.id]"
                 mode="search"
@@ -49,10 +49,10 @@
                         $delete(textConfig, attr.name);
                       }
                     } else {
-                      if(val != null){
+                      if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
                         $set(textConfig, 'attr_' + attr.id, text);
-                      }else{
+                      } else {
                         $delete(valueConfig, 'attr_' + attr.id);
                         $delete(textConfig, 'attr_' + attr.id);
                       }
@@ -84,7 +84,7 @@
             @click="toggleChildIssue(row)"
           ></span>
           <span class="overflow">
-            <a href="javascript:void(0)" @click="toIssueDetail(row.id, row.appId)">{{ row.name }}</a>
+            <a href="javascript:void(0)" @click="toIssueDetail(row)">{{ row.name }}</a>
           </span>
         </div>
       </template>
@@ -149,6 +149,9 @@ export default {
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
     app: { type: Object },
+    isMine: {type: Number}, //我的任务
+    isEnd: {type: Number}, //是否结束
+    displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     linkAppType: {
       type: Array,
@@ -185,17 +188,6 @@ export default {
             type: 'text',
             name: 'keyword',
             label: this.$t('page.keyword')
-          },
-          {
-            type: 'select',
-            name: 'status',
-            label: this.$t('page.status'),
-            multiple: true,
-            valueName: 'id',
-            textName: 'label',
-            url: '/api/rest/rdm/status/list',
-            params: { appId: this.app.id },
-            transfer: true
           }
         ]
       },
@@ -209,23 +201,9 @@ export default {
   async created() {
     //首先获取用户配置
     await this.getAppSetting();
-    if (this.app.attrList && this.app.attrList.length > 0) {
-      this.app.attrList.forEach(attr => {
-        if (['all', 'list'].includes(attr.showType)) {
-          this.theadList.push({ key: attr.id.toString(), title: attr.label });
-          this.searchConfig.searchList.push({
-            type: 'slot',
-            name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
-            label: attr.label
-          });
-        }
-      });
-    }
-    if (this.linkAppType && this.linkAppType.length > 0) {
-      this.$api.rdm.project.getAppByProjectId(this.app.projectId).then(res => {
-        this.appList = res.Return;
-      });
-    }
+    this.initTheadList();
+    this.initSearchConfig();
+    this.initAppList();
     this.searchIssue(1);
   },
   beforeMount() {},
@@ -241,27 +219,75 @@ export default {
     refresh(currentPage) {
       this.searchIssue(currentPage);
     },
-    async getAppSetting() {
-      await this.$api.rdm.app.getAppUserSetting(this.app.id).then(res => {
-        this.appSetting = res.Return;
-        if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
-          this.appSetting.config.attrList.forEach(attrconf => {
-            const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
-            if (attr) {
-              this.$set(attr, 'sort', attrconf.sort);
-              this.$set(attr, 'showType', attrconf.showType || 'all');
+    initTheadList() {
+      if (this.displayAttrList && this.displayAttrList.length > 0) {
+        this.displayAttrList.forEach(attr => {
+          this.theadList.push({ key: attr.id.toString(), title: attr.label });
+          this.searchConfig.searchList.push({
+            type: 'slot',
+            name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+            label: attr.label
+          });
+        });
+      }
+    },
+    initAppList() {
+      if (this.app && this.linkAppType && this.linkAppType.length > 0) {
+        this.$api.rdm.project.getAppByProjectId(this.app.projectId).then(res => {
+          this.appList = res.Return;
+        });
+      }
+    },
+    initSearchConfig() {
+      if (this.app) {
+        this.searchConfig.searchList.push({
+          type: 'select',
+          name: 'status',
+          label: this.$t('page.status'),
+          multiple: true,
+          valueName: 'id',
+          textName: 'label',
+          url: '/api/rest/rdm/status/list',
+          params: { appId: this.app.id },
+          transfer: true
+        });
+        if (this.app.attrList && this.app.attrList.length > 0) {
+          this.app.attrList.forEach(attr => {
+            if (['all', 'list'].includes(attr.showType)) {
+              this.theadList.push({ key: attr.id.toString(), title: attr.label });
+              this.searchConfig.searchList.push({
+                type: 'slot',
+                name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+                label: attr.label
+              });
             }
           });
         }
-        this.app.attrList.forEach(attr => {
-          if (!attr.showType) {
-            this.$set(attr, 'showType', 'all');
+      }
+    },
+    async getAppSetting() {
+      if (this.app) {
+        await this.$api.rdm.app.getAppUserSetting(this.app.id).then(res => {
+          this.appSetting = res.Return;
+          if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
+            this.appSetting.config.attrList.forEach(attrconf => {
+              const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
+              if (attr) {
+                this.$set(attr, 'sort', attrconf.sort);
+                this.$set(attr, 'showType', attrconf.showType || 'all');
+              }
+            });
           }
+          this.app.attrList.forEach(attr => {
+            if (!attr.showType) {
+              this.$set(attr, 'showType', 'all');
+            }
+          });
+          this.app.attrList.sort((a, b) => {
+            return (a.sort || 0) - (b.sort || 0);
+          });
         });
-        this.app.attrList.sort((a, b) => {
-          return (a.sort || 0) - (b.sort || 0);
-        });
-      });
+      }
     },
     toggleChildIssue(row) {
       if (!row._loading) {
@@ -314,8 +340,8 @@ export default {
       this.pageSize = pageSize;
       this.searchIssue(1);
     },
-    toIssueDetail(id, appId) {
-      this.$router.push({ path: '/' + this.app.type + '-detail/' + this.app.projectId + '/' + appId + '/' + id });
+    toIssueDetail(issue) {
+      this.$router.push({ path: '/' + issue.appType + '-detail/' + issue.projectId + '/' + issue.appId + '/' + issue.id });
     },
     closeLinkIssue(needRefresh) {
       this.linkApp = null;
@@ -399,6 +425,8 @@ export default {
       this.searchIssueData.appId = this.app && this.app.id;
       this.searchIssueData.catalog = this.catalog;
       this.searchIssueData.iteration = this.iteration;
+      this.searchIssueData.isMine = this.isMine;
+      this.searchIssueData.isEnd = this.isEnd;
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -440,11 +468,12 @@ export default {
       return list;
     },
     attrList() {
-      if (!this.app.attrList) {
-        return [];
-      } else {
+      if (this.app && this.app.attrList) {
         return this.app.attrList;
+      } else if (this.displayAttrList) {
+        return this.displayAttrList;
       }
+      return [];
     },
     getAppByType() {
       return type => {

@@ -174,6 +174,7 @@ export default {
       this.$set(this.config, 'sourceColumnList', []);
     },
     changeMatrixUuid() {
+      this.$set(this.config, 'defaultValue', null);
       this.$set(this.config.mapping, 'value', '');
       this.$set(this.config.mapping, 'text', '');
       this.$set(this.config, 'sourceColumnList', []);

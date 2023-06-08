@@ -1,41 +1,53 @@
 <template>
   <TsDialog
-    v-bind="setting"
+    v-bind="dialogSetting"
     @on-close="close"
+    @on-ok="saveRepository"
   >
     <template v-slot>
       <div>
-        <TsForm ref="editform" v-model="editData" :itemList="formConfig">
-          <template slot="repoServiceUuid">
+        <Loading
+          v-if="loadingShow"
+          :loadingShow="loadingShow"
+          type="fix"
+        ></Loading>
+        <TsForm
+          v-else
+          ref="editform"
+          v-model="editData"
+          :itemList="formConfig"
+        >
+          <template slot="repoServiceId">
             <TsFormSelect
-              v-model="editData.repoServiceUuid"
-              v-bind="serviceConfig"
-              :selectItemList.sync="serveList"
-            />
+              v-model="editData.repoServiceId"
+              :validateList="['required']"
+              :transfer="true"
+              url="/api/rest/codehub/repositoryservice/search"
+              rootName="tbodyList"
+              textName="name"
+              valueName="id"
+              border="border"
+              @update:selectItemList="updateSelectItemList"
+              @on-change="changeRepoService"
+            ></TsFormSelect>
           </template>
           <template slot="address">
-            <div v-if="repoName">
+            <div v-if="!$utils.isEmpty(selectedReposService)">
               <TsFormInput
                 v-model="editData.address"
                 type="text"
-                :validateList="vaildConfig"
-                maxlength="100"
-                :prepend="getUrl(serveList)"
+                :validateList="['required']"
+                maxlength="50"
+                :prepend="getRepositoryUrlPrepend"
                 width="75%"
               />
             </div>
             <div v-else class="text-tip">{{ $t('term.codehub.pleaserepositoryservice') }}</div>
           </template>
-          <template slot="subsystemUuid">
-            <TsFormSelect v-model="editData.subsystemUuid" v-bind="subsysConfig" />
+          <template slot="appModuleId">
+            <TsFormSelect v-model="editData.appModuleId" v-bind="appModuleConfig" />
           </template>
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -49,37 +61,34 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
-    id: {type: [String, Number]},
-    subsystemUuid: String,
-    systemUuid: String
+    id: {type: Number},
+    appModuleId: String,
+    appSystemId: String
   },
   data() {
     return {
-      vaildConfig: ['required'],
-      repoName: '',
-      setting: {
+      loadingShow: true,
+      dialogSetting: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.deploy.warehouse')}) : this.$t('page.newtarget', {'target': this.$t('term.deploy.warehouse')}),
         maskClose: false,
         width: 'medium',
-        height: '360px',
         isShow: true
       },
       editData: {
-        repoServiceUuid: '',
-        createMode: 'import',
-        address: '',
+        repoServiceId: '',
         name: '',
-        subsystemUuid: '',
-        systemUuid: '',
+        address: '',
         mainBranch: '',
         branchesPath: '',
+        createMode: 'import',
+        appModuleId: null,
+        appSystemId: null,
         tagsPath: ''
       },
       formConfig: [{
         type: 'slot',
         label: this.$t('term.codehub.warehouseservices'),
-        name: 'repoServiceUuid',
-        validateList: ['required']
+        name: 'repoServiceId'
       },
       {
         type: 'radio',
@@ -94,10 +103,7 @@ export default {
           text: this.$t('page.manualcreation'),
           value: 'manual',
           disabled: true
-        }],
-        onChange: (val) => {
-          this.editData.createMode = val;
-        }
+        }]
       },
       {
         type: 'slot',
@@ -109,95 +115,58 @@ export default {
         type: 'text',
         label: this.$t('term.deploy.warehousename'),
         name: 'name',
-        validateList: ['required'],
-        onChange: (val) => {
-          this.editData.name = val;
-        }
+        validateList: ['required']
       },
       {
         type: 'select',
         label: this.$t('term.codehub.associatedsystem'),
-        name: 'systemUuid',
+        name: 'appSystemId',
         transfer: true,
         dynamicUrl: '/api/rest/codehub/appsystem/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect,
         validateList: ['required'],
         onChange: (val) => {
-          this.changeSubsys(val);
+          this.changeAppModule(val);
         }
       },
       {
         type: 'slot',
         label: this.$t('term.codehub.associatedsubsystems'),
-        name: 'subsystemUuid',
+        name: 'appModuleId',
         isHidden: true
       },
       {
         type: 'text',
         label: this.$t('page.trunk'),
         name: 'mainBranch',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.mainBranch = val;
-        }
+        isHidden: true
       },
       {
         type: 'text',
         label: this.$t('term.codehub.branchpath'),
         name: 'branchesPath',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.branchesPath = val;
-        }
+        isHidden: true
       },
       {
         type: 'text',
         label: this.$t('term.codehub.tagpath'),
         name: 'tagsPath',
-        isHidden: true,
-        onChange: (val) => {
-          this.editData.tagsPath = val;
-        }
+        isHidden: true
       }
       ],
-      subsysConfig: {
+      appModuleConfig: {
         transfer: true,
-        dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id'
+        dealDataByUrl: this.$utils.getAppForselect
       },
       serviceType: null,
-      serviceConfig: {
-        transfer: true,
-        validateList: ['required'],
-        url: '/api/rest/codehub/repositoryservice/search',
-        rootName: 'tbodyList',
-        textName: 'name',
-        valueName: 'id'
-      },
-      serveList: {}
+      selectedReposService: {} // 选中的仓库服务，主要是拿到服务地址的前缀
     };
   },
   beforeCreate() {},
   created() {
-    if (this.id) {
-      this.getDetail(this.id);
-    } else {
-      Object.assign(this.editData, {
-        repoServiceUuid: '',
-        createMode: 'import',
-        address: '',
-        name: '',
-        subsystemUuid: this.subsystemUuid || '',
-        systemUuid: this.systemUuid || ''
-      });
-      if (this.systemUuid) {
-        this.$set(this.subsysConfig, 'params', {systemId: this.systemUuid});
-      }
-      this.updataVal(this.editData);
-    }
+    this.initData();
   },
   beforeMount() {},
   mounted() {},
@@ -208,10 +177,70 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      if (this.id) {
+        this.getRepositoryDetail(this.id);
+      } else {
+        Object.assign(this.editData, {
+          repoServiceId: '',
+          createMode: 'import',
+          address: '',
+          name: '',
+          appModuleId: this.appModuleId || '',
+          appSystemId: this.appSystemId || ''
+        });
+        if (this.appSystemId) {
+          this.$set(this.appModuleConfig, 'params', {appSystemId: this.appSystemId});
+          this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
+        }
+        this.hiddenFormByValue(this.editData);
+        this.loadingShow = false;
+      }
+    },
+    changeRepoService(id, valueObject, selectItem) {
+      this.changeRepository(selectItem);
+    },
+    updateSelectItemList(selectedObj) {
+      // 主要为了拿到仓库地址前缀
+      this.selectedReposService = selectedObj;
+    },
+    changeRepository(selectedItem) {
+      // 仓库改变
+      if (selectedItem && selectedItem.id) {
+        if (selectedItem.type == 'svn') {
+          this.formConfig.forEach(form => {
+            if (form.name == 'createMode') {
+              this.$set(form.dataList[1], 'disabled', true);
+              this.$set(form, 'value', 'import');
+            }
+          });
+          this.$api.codehub.service.getDetail({id: selectedItem.id, getDelegation: true}).then(res => {
+            if (res && res.Status == 'OK') {
+              this.formConfig.forEach(form => {
+                if (form.name == 'createMode') {
+                  this.$set(form.dataList[1], 'disabled', !res.Return.delegation);
+                  if (!res.Return.delegation) {
+                    this.$set(form, 'value', 'import');
+                  }
+                }
+              });
+            }
+          });
+        } else {
+          this.formConfig.forEach(form => {
+            if (form.name == 'createMode') {
+              this.$set(form.dataList[1], 'disabled', false);
+            }
+          });
+        }
+      }
+      this.editData.repoServiceId = selectedItem.id;
+      this.serviceType = selectedItem.type;
+    },
     close() {
       this.$emit('close');
     },
-    saveEdit() {
+    saveRepository() {
       if (this.$refs.editform.valid()) {
         let param = this.$utils.deepClone(this.editData);
         if (this.serviceType != 'svn') {
@@ -219,68 +248,67 @@ export default {
           this.$delete(param, 'branchesPath');
           this.$delete(param, 'tagsPath');
         }
-        this.id && Object.assign(param, {id: this.id});
+        if (param && param.address) {
+          param.address = param.address + '/' + param.name;
+        }
+        if (this.id) {
+          param.id = this.id;
+        }
         this.$api.codehub.repository.save(param).then((res) => {
-          this.$emit('close', true);
+          if (res && res.Status == 'OK') {
+            this.$emit('close', true);
+          }
         });
       }
     },
-    getDetail(id) {
-      let param = {};
-      if (id) {
-        Object.assign(param, {id: id});
-      }
-      this.$api.codehub.repository.getDetail(param).then(res => {
+    getRepositoryDetail(id) {
+      this.loadingShow = true;
+      this.$api.codehub.repository.getDetail({id: id}).then(res => {
         if (res.Return) {
           this.serviceType = res.Return.repositoryServiceVo.type;
           Object.assign(this.editData, {
-            repoServiceUuid: res.Return.repoServiceUuid || '',
+            repoServiceId: res.Return.repoServiceId || '',
             createMode: res.Return.createMode || 'import',
             address: res.Return.address || '',
             name: res.Return.name || '',
-            subsystemUuid: res.Return.subSystemVo && res.Return.subSystemVo.uuid || '',
-            systemUuid: res.Return.systemVo && res.Return.systemVo.uuid || '',
+            appModuleId: res.Return.appModuleId,
+            appSystemId: res.Return.appSystemVo && res.Return.appSystemVo.id || '',
             mainBranch: res.Return.mainBranch || '',
             branchesPath: res.Return.branchesPath || '',
             tagsPath: res.Return.tagsPath || ''
           });
-
-          this.updataVal(this.editData);
+          this.hiddenFormByValue(this.editData);
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
-    updataVal(data) {
+    hiddenFormByValue(data) {
       this.formConfig.forEach(form => {
         if (form.name && data[form.name]) {
           this.$set(form, 'value', data[form.name]);
         }
       });
-      if (data.repoServiceUuid) { //回显服务名称
-        this.repoName = this.serveList.name;
-      }
-      if (data.systemUuid) { //系统的话显示子系统Q、
+      if (data.appSystemId) { //系统的话显示子系统Q、
         this.formConfig.forEach(form => {
-          if (form.name == 'subsystemUuid') {
+          if (form.name == 'appModuleId') {
             this.$set(form, 'isHidden', false);
           }
         });
-        this.$set(this.subsysConfig, 'params', {systemId: data.systemUuid});
+        this.$set(this.appModuleConfig, 'params', {appSystemId: data.appSystemId});
+        this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
       }
     },
-    changeSubsys(val) {
-      this.editData.systemUuid = val;
-      this.$set(this.editData, 'subsystemUuid', '');
+    changeAppModule(val) {
+      this.editData.appSystemId = val;
+      this.$set(this.editData, 'appModuleId', '');
       this.formConfig.forEach(form => {
-        if (form.name == 'subsystemUuid') {
+        if (form.name == 'appModuleId') {
           this.$set(form, 'isHidden', !val);
         }
       });
-      this.$set(this.subsysConfig, 'params', {systemId: val});
-    },
-    updateServe(val, list, alllist) {
-      this.editData.repoServiceUuid = val;
-      this.repoName = list.text;
-      this.serviceType = alllist.type;
+      this.$set(this.appModuleConfig, 'params', {appSystemId: val});
+      this.$set(this.appModuleConfig, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
     },
     initSvnsetting(isShow) {
       let items = ['mainBranch', 'branchesPath', 'tagsPath'];
@@ -298,14 +326,13 @@ export default {
   },
   filter: {},
   computed: {
-    getUrl() {
-      return function(serveList) {
-        let urlpre = '';
-        if (serveList && serveList.address) {
-          urlpre = serveList.address;
-        }
-        return urlpre;
-      };
+    getRepositoryUrlPrepend() {
+      // 获取仓库地址前缀
+      let urlPrepend = '';
+      if (!this.$utils.isEmpty(this.selectedReposService) && this.selectedReposService.address) {
+        urlPrepend = this.selectedReposService.address;
+      }
+      return urlPrepend;
     }
   },
   watch: {
@@ -314,43 +341,6 @@ export default {
         this.initSvnsetting(!!(val && val == 'svn'));
       },
       immediate: true
-    },
-    serveList: {
-      handler: function(val) {
-        if (val && val.id) {
-          if (val.type == 'svn') {
-            this.formConfig.forEach(form => {
-              if (form.name == 'createMode') {
-                this.$set(form.dataList[1], 'disabled', true);
-                this.$set(form, 'value', 'import');
-              }
-            });
-            this.$api.codehub.service.getDetail({id: val.id, getDelegation: true}).then(res => {
-              if (res && res.Status == 'OK') {
-                this.formConfig.forEach(form => {
-                  if (form.name == 'createMode') {
-                    this.$set(form.dataList[1], 'disabled', !res.Return.delegation);
-                    if (!res.Return.delegation) {
-                      this.$set(form, 'value', 'import');
-                    }
-                  }
-                });
-              }
-            });
-          } else {
-            this.formConfig.forEach(form => {
-              if (form.name == 'createMode') {
-                this.$set(form.dataList[1], 'disabled', false);
-              }
-            });
-          }
-        }
-        this.editData.repoServiceUuid = val.id;
-        this.repoName = val.name;
-        this.serviceType = val.type;
-      },
-      immediate: true,
-      deep: true
     }
   }
 };

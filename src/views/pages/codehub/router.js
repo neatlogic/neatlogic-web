@@ -62,7 +62,7 @@ export default [
     meta: {
       title: $t('router.codehub.repositoryservice'),
       ismenu: true,
-      icon: 'tsfont-file-single',
+      icon: 'tsfont-softwareservice',
       authority: '',
       type: 'codehub'
     }
@@ -86,7 +86,7 @@ export default [
     meta: {
       title: $t('router.codehub.versiontype'),
       ismenu: true,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-type',
       authrity: '',
       type: 'codehub'
     }
@@ -98,7 +98,7 @@ export default [
     meta: {
       title: $t('router.codehub.versioning'),
       ismenu: true,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-version',
       authrity: '',
       type: 'codehub'
     }
@@ -110,7 +110,7 @@ export default [
     meta: {
       title: $t('router.codehub.versionstrategy'),
       ismenu: true,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-filter',
       authrity: '',
       type: 'codehub'
     }
@@ -158,7 +158,7 @@ export default [
     meta: {
       title: $t('router.codehub.mergerequestlist'),
       ismenu: true,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-merge',
       authrity: '',
       type: 'codehub'
     }
@@ -170,7 +170,7 @@ export default [
     meta: {
       title: $t('router.codehub.mergeactionmanage'),
       ismenu: true,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-action',
       authrity: '',
       type: 'codehub'
     }
@@ -194,7 +194,7 @@ export default [
     meta: {
       title: $t('router.codehub.projectmapping'),
       ismenu: true,
-      icon: 'ts-cube',
+      icon: 'tsfont-task',
       authrity: '',
       type: 'codehub'
     }
@@ -206,7 +206,7 @@ export default [
     meta: {
       title: $t('router.codehub.repositoryvoucher'),
       ismenu: true,
-      icon: 'ts-cube',
+      icon: 'tsfont-permission',
       authrity: '',
       type: 'codehub'
     }

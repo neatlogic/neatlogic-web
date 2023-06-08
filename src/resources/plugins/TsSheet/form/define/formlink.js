@@ -17,7 +17,6 @@ export default {
   },
   'reaction': {
     'hide': {},
-    'display': {},
-    'readonly': {}
+    'display': {}
   }
 };

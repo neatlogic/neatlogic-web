@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <div slot="content">
-        <Loading v-if="loading" loadingShow style="min-height:100px"></Loading>
+        <Loading v-if="loading" loadingShow type="fix"></Loading>
         <TsCard
           v-else
           v-bind="cardConfig"
@@ -14,7 +14,7 @@
               <div class="credential-img">
                 <span :class="getClassName(row.repoType)"></span>
               </div>
-              <CredentialEdit :item="row" :typeDataList="typeDataList" @close="close">
+              <CredentialEdit :credentialData="row">
               </CredentialEdit>
             </div>
           </template>
@@ -35,33 +35,8 @@ export default {
   props: [''],
   data() {
     return {
-      loading: false, //加载中
-      credentialList: [
-        {'repoType': 'gitlab'},
-        {'repoType': 'svn'}
-      ], //凭证列表（最多2个，svn或者git，一个的时候直接不通过tab渲染）
-      editItem: null, //编辑的数据
-      isEdit: false, //是否处于编辑模式
-      typeDataList: [
-        {
-          text: 'GITLAB',
-          value: 'gitlab'
-        },
-        {
-          text: 'SVN',
-          value: 'svn'
-        }
-      ],
-      credTypeList: [
-        {
-          text: this.$t('page.password'),
-          value: 'password'
-        },
-        {
-          text: 'token',
-          value: 'token'
-        }
-      ],
+      loading: true, //加载中
+      credentialList: [],
       cardConfig: {
         span: 24,
         xs: 24,
@@ -75,11 +50,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
     this.getList();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -92,103 +67,31 @@ export default {
       this.$api.codehub.credential
         .getList()
         .then(res => {
-          this.loading = false;
           if (res && res.Status == 'OK') {
-            let resultList = res.Return || [];
-            if (resultList && resultList.length > 0) {
-              this.credentialList.forEach((c) => {
-                let matchList = resultList.filter((r) => {
-                  return r.repoType === c.repoType;
-                });
-                if (matchList.length) {
-                  let resultConfig = matchList[0];
-                  Object.assign(c, resultConfig);
-                }
-              });
+            this.credentialList = res.Return || [];
+            if (this.$utils.isEmpty(this.credentialList)) {
+              this.credentialList = [
+                {repoType: 'gitlab'},
+                {repoType: 'svn'}
+              ];
             }
           }
         })
-        .finally(e => {
+        .finally(() => {
           this.loading = false;
         });
-    },
-    editCredential(item) {
-      //没有入参数则为新增，有则为修改
-      this.editItem = item || null;
-      this.isEdit = true;
-    },
-    close(isreload) {
-      //如果有修改的需要更新页面
-      this.isEdit = false;
-      this.editItem = null;
-      if (isreload) {
-        this.getList();
-      }
-    },
-    saveEdit() {
-      if (this.$refs.editform.valid()) {
-        let param = {
-          repoType: this.editConfig.repoType,
-          credType: this.editConfig.credType,
-          repoUsername: null,
-          repoCredential: this.editConfig.repoCredential        
-        };
-        if (this.editConfig.credType == 'password') {
-          Object.assign(param, {
-            repoUsername: this.editConfig.repoUsername
-          });
-        }
-        this.saving = true;
-        this.$api.codehub.credential.save(param).then((res) => {
-          this.saving = false;
-          if (res && res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.$emit('close', true);
-          }
-        }).finally(() => {
-          this.saving = false;
-        });
-      }
-    },
-    hidePassword(text) {
-      let str = '';
-      if (text && text.toString().length > 0) { 
-        str = text.toString().replace(/./g, '*');
-      }
-      return str;
     }
   },
   computed: {
-    setTypeText() {
-      return function(type, list) {
-        let str = '';
-        list.forEach(t => {
-          if (t.value == type) {
-            str = t.text;
-          }
-        });
-        return str;
-      };
-    },
-    hideText() {
-      return function(text) {
-        let str = '';
-        if (text && text.toString().length > 0) { 
-          str = text.toString().replace(/./g, '*');
-        }
-        return str;
-      };
-    },
     getClassName() {
       return function(type) {
         let className = {
-          gitlab: 'tsfont-gitlab',
-          svn: 'tsfont-svn'
+          gitlab: 'tsfont-gitlab text-danger',
+          svn: 'tsfont-svn text-info'
         };
         return className[type];
       };
     }
-    
   },
   watch: {}
 };
@@ -221,24 +124,16 @@ export default {
       text-align: center;
       margin-top: -40px;
       span {
-        width: 40px;
-        height: 40px;
-        display: block;
+        display: inline-block;
         margin-left: 20px;
-        font-size: xxx-large;
-      }
-      .tsfont-gitlab {
-        color: red;
-      }
-      .tsfont-svn {
-        color: rgb(0, 179, 255);
+        font-size: 40px;
       }
     }
   }
 }
 .credential-container.tscard-container{
   /deep/ .tscard-li{
-    padding: 20px 20%;
+    padding: 20px 20% !important;
   }
 }
 </style>

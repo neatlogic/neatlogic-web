@@ -2096,7 +2096,9 @@
     "bugmanage": "缺陷管理",
     "iteration": "迭代",
     "isopened": "已开启",
-    "isclosed": "已关闭"
+    "isclosed": "已关闭",
+    "startdate": "预计开始",
+    "enddate": "预计结束"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
@@ -2261,6 +2263,11 @@
     "pleaseselectatleastonerequirement": "请至少选择一个需求",
     "mergertype": "MR类型",
     "versionnobuildnewmerger": "该版本无法创建新的MR",
-    "chooseastrategtfromtable": "请从表格里勾选一个策略"
+    "chooseastrategtfromtable": "请从表格里勾选一个策略",
+    "actionsubject": "操作对象",
+    "mergenumber": "MR编号",
+    "allrequirements": "所有需求",
+    "conflictingneeds": "冲突需求",
+    "mergedrequirements": "已合并需求"
   }
 }

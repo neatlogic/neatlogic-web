@@ -17,5 +17,5 @@ export default {
     'isHide': false,
     'ciList': []
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'required': {} }
 };

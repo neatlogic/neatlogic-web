@@ -39,15 +39,15 @@
                 </TsRow>
                 <TsRow>
                   <Col span="8">
-                    <span v-if="row.versionPrefix" class="ts-version text-icon">
+                    <span v-if="row.versionPrefix" class="tsfont-version text-grey">
                       {{ row.versionPrefix }}
                     </span>
                   </Col>
                   <Col span="8">
-                    <span class="ts-branch text-tip text-icon mr-sm"></span>
+                    <span class="ts-branch text-grey fz16" :class="row.srcBranch ? 'mr-sm' : ''"></span>
                     {{ row.srcBranch }}
-                    <span class="ts-long-arrow-right text-tip h2 branch-sep ml-sm mr-sm"></span>
-                    <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+                    <span class="tsfont-arrow-right text-grey ml-sm mr-sm fz16"></span>
+                    <span class="ts-branch text-grey mr-sm fz16"></span>
                     {{ row.targetBranch }}
                   </Col>
                   <Col span="8">
@@ -108,7 +108,10 @@ export default {
         xl: 24,
         xxl: 24,
         padding: false,
-        cardList: []        
+        cardList: [],
+        currentPage: 1,
+        pageSize: 10,
+        rowNum: 0     
       },
       typeList: {
         branch: {name: this.$t('term.codehub.branchmerge'), color: 'primary'},
@@ -136,8 +139,7 @@ export default {
             label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id'
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }

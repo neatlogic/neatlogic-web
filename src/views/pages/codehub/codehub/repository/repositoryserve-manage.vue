@@ -10,19 +10,19 @@
         <TsRow>
           <Col :span="8">
             <TsFormSelect
-              v-model="search.type"
+              v-model="searchParams.type"
               :dataList="typeList"
               :clearable="false"
               transfer
               :placeholder="$t('form.placeholder.pleaseselect',{target:$t('page.type')})"
               border="border"
-              @on-change="() => getSearch('type', search.type)"
+              @on-change="() => getSearch('type', searchParams.type)"
             ></TsFormSelect>
           </Col>
           <Col :span="16">
             <InputSearcher
-              v-model="search.keyword"
-              @change="() => getSearch('keyword', search.keyword)"
+              v-model="searchParams.keyword"
+              @change="() => getSearch('keyword', searchParams.keyword)"
             ></InputSearcher>
           </Col>
         </TsRow>
@@ -36,9 +36,10 @@
         ></Loading>
         <TsCard
           v-else
-          v-bind="reposData"
+          v-bind="repositoryData"
           headerPosition="right"
-          @updatePage="updatePage"
+          @updatePage="changeCurrentPage"
+          @updateSize="changePageSize"
         >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
@@ -87,7 +88,7 @@
     <ServeEditDialog
       v-if="isShowServeEditDialog"
       :id="repositoryServiceId"
-      @close="close"
+      @close="closeServeEditDialog"
     ></ServeEditDialog>
   </div>
 </template>
@@ -108,11 +109,11 @@ export default {
       loadingShow: true,
       isShowServeEditDialog: false,
       repositoryServiceId: null, // 仓库id
-      search: {
+      searchParams: {
         type: 'all',
         keyword: ''
       },
-      reposData: {
+      repositoryData: {
         //卡片的数据
         span: 24,
         sm: 24,
@@ -122,7 +123,11 @@ export default {
         keyName: 'id',
         classname: 'repository-list',
         padding: false,
-        cardList: []
+        cardList: [],
+        pageType: 'number',
+        currentPage: 1,
+        pageSize: 10,
+        rowNum: 0
       },
       typeList: [
         { text: this.$t('page.allofthem'), value: 'all' },
@@ -138,11 +143,11 @@ export default {
   },
 
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    this.searchList();
+  created() {
+    this.searchRepository();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -152,33 +157,40 @@ export default {
   methods: {
     getSearch(key, value) {
       //顶部搜索条件拼接
-      this.$set(this.search, key, value == 'all' ? '' : value);
-      this.$set(this.reposData, 'currentPage', 1);
-      this.searchList();
+      this.$set(this.searchParams, key, value == 'all' ? '' : value);
+      this.$set(this.repositoryData, 'currentPage', 1);
+      this.searchRepository();
     },
-    updatePage(page) {
-      this.reposData.currentPage = page;
-      this.searchList();
+    changeCurrentPage(currentPage) {
+      this.repositoryData.currentPage = currentPage;
+      this.searchRepository();
     },
-    searchList() {
-      let param = {};
-      this.reposData.pageSize && Object.assign(param, { pageSize: this.reposData.pageSize });
-      this.reposData.currentPage && Object.assign(param, { currentPage: this.reposData.currentPage });
-      let searchParams = this.$utils.deepClone(this.search);
-      if (this.search) {
-        Object.assign(param, this.search);
+    changePageSize(pageSize) {
+      // 切换页码
+      this.repositoryData.currentPage = 1;
+      this.repositoryData.pageSize = pageSize;
+      this.searchRepository();
+    },
+    searchRepository() {
+      let param = {
+        currentPage: this.repositoryData.currentPage,
+        pageSize: this.repositoryData.pageSize
+      };
+      let searchParams = this.$utils.deepClone(this.searchParams);
+      if (this.searchParams) {
+        Object.assign(param, this.searchParams);
         param.type = searchParams.type == 'all' ? '' : searchParams.type;
       }
       this.loadingShow = true;
       this.$api.codehub.service.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.$set(this.reposData, 'pageCount', res.Return.pageCount);
-          this.$set(this.reposData, 'rowNum', res.Return.rowNum);
-          this.$set(this.reposData, 'pageSize', res.Return.pageSize);
-          this.$set(this.reposData, 'currentPage', res.Return.currentPage);
-          this.$set(this.reposData, 'cardList', res.Return.tbodyList);
+          this.$set(this.repositoryData, 'pageCount', res.Return.pageCount);
+          this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
+          this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
+          this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
+          this.$set(this.repositoryData, 'cardList', res.Return.tbodyList);
         } else {
-          this.$set(this.reposData, 'cardList', []);
+          this.$set(this.repositoryData, 'cardList', []);
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -200,18 +212,18 @@ export default {
           this.$api.codehub.service.delete({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.searchList();
+              this.searchRepository();
               vnode.isShow = false;
             }
           });
         }
       });
     },
-    close(isreload) {
+    closeServeEditDialog(needRefresh) {
       this.isShowServeEditDialog = false;
       this.repositoryServiceId = null;
-      if (isreload) {
-        this.searchList();
+      if (needRefresh) {
+        this.searchRepository();
       }
     },
     gotoRepository(id) {

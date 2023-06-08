@@ -17,7 +17,12 @@
           :loadingShow="loadingShow"
           type="fix"
         ></Loading>
-        <TsCard v-bind="versionData" headerPosition="right" @updatePage="changeCurrentPage">
+        <TsCard
+          v-bind="versionData"
+          headerPosition="right"
+          @updatePage="changeCurrentPage"
+          @updateSize="changePageSize"
+        >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
               <div v-if="!row.isReserve" class="action-item text-action">
@@ -92,7 +97,10 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        cardList: []
+        cardList: [],
+        currentPage: 1,
+        pageSize: 10,
+        pageType: 'number'
       }
     };
   },
@@ -139,6 +147,11 @@ export default {
     },
     changeCurrentPage(currentPage) {
       this.versionData.currentPage = currentPage;
+      this.searchList();
+    },
+    changePageSize(pageSize) {
+      this.versionData.currentPage = 1;
+      this.versionData.pageSize = pageSize;
       this.searchList();
     },
     searchList() {

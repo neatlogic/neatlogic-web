@@ -19,5 +19,5 @@ export default {
     'actionAdd': false,
     'dataConfig': []
   },
-  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {} }
+  'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'required': {} }
 };

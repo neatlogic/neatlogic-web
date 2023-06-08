@@ -540,3 +540,4 @@
 .tsfont-neatlogic:before { content: '\ea18'; } /* '' */
 .tsfont-gitlab:before { content: '\ea19'; } /* '' */
 .tsfont-svn:before { content: '\ea1a'; } /* '' */
+.tsfont-merge:before { content: '\ea1b'; } /* '' */
