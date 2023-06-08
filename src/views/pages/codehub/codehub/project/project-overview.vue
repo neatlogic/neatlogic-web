@@ -11,7 +11,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
-          @change="getTableList(1)"
+          @change="() => changeCurrent(1)"
         ></CombineSearcher>
       </template>
       <div slot="content">
@@ -21,33 +21,33 @@
           @changePageSize="changePageSize"
           @getSelected="getSelected"
         >
-          <template slot="systemVo" slot-scope="{row}">
+          <template slot="appSystemVo" slot-scope="{row}">
             <Tooltip
-              v-if="row.systemVo.description"
+              v-if="row.appSystemVo.abbrName"
               theme="light"
               max-width="300"
               transfer
             >
-              <div>{{ row.systemVo.name }}</div>
+              <div>{{ row.appSystemVo.abbrName }}</div>
               <div slot="content">
-                <div>{{ row.systemVo.description }}</div>
+                <div>{{ row.appSystemVo.name }}</div>
               </div>
             </Tooltip>
-            <div v-else>{{ row.systemVo.name }}</div>
+            <div v-else>{{ row.appSystemVo.abbrName }}</div>
           </template>
           <template slot="name" slot-scope="{row}">
             <Tooltip
-              v-if="row.description"
+              v-if="row.name"
               theme="light"
               max-width="300"
               transfer
             >
-              <div>{{ row.name }}</div>
+              <div>{{ row.abbrName }}</div>
               <div slot="content">
-                <div>{{ row.description }}</div>
+                <div>{{ row.name }}</div>
               </div>
             </Tooltip>
-            <div v-else>{{ row.name }}</div>
+            <div v-else>{{ row.abbrName }}</div>
           </template>
           <template slot="projectList" slot-scope="{row}">
             <template v-if="row.projectList.length>0">
@@ -69,11 +69,8 @@
     </TsContain>
     <ProjectEdit
       v-if="isEdit"
-      :isShow.sync="isEdit"
       :projectList="projectList"
-      :list="editLi"
-      :uuid="subsystemUuid"
-      :systemUuid="systemUuid"
+      :projectData="projectData"
       @close="close"
     ></ProjectEdit>
   </div>
@@ -91,18 +88,18 @@ export default {
   props: [''],
   data() {
     return {
-      keyword: '',
-      systemUuid: '',
-      subsystemUuid: '',
+      appSystemId: null,
+      appModuleId: null,
       tableData: {
+        multiple: true,
         hideAction: false,
         theadList: [{
           key: 'selection'
         }, {
           title: this.$t('page.system'),
-          key: 'systemVo'
+          key: 'appSystemVo'
         }, {
-          title: this.$t('page.subsystem'),
+          title: this.$t('page.module'),
           key: 'name'
         }, {
           title: this.$t('term.rdm.project'),
@@ -111,10 +108,11 @@ export default {
           key: 'action'
         }],
         tbodyList: [],
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 20
       },
       isEdit: false,
-      editLi: {},
+      projectData: {},
       selectList: [],
       projectList: [],
       searchVal: {},
@@ -122,33 +120,24 @@ export default {
         search: true,
         searchList: [
           {
-            name: 'systemUuid',
+            name: 'appSystemId',
             type: 'select',
             label: this.$t('page.system'),
             transfer: true,
-            dynamicUrl: '/api/rest/codehub/appsystem/search',
+            dynamicUrl: 'api/rest/deploy/app/config/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.systemUuid,
             onChange: (val) => {
-              this.systemUuid = val;
-              this.updateSubSystem(val);
-              this.getSearch();
+              this.updateAppModule(val);
             }
           },
           {
-            name: 'subsystemUuid',
+            name: 'appModuleId',
             type: 'select',
-            label: this.$t('page.subsystem'),
+            label: this.$t('page.module'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
-            value: this.subsystemUuid,
-            onChange: (val) => {
-              this.subsystemUuid = val;
-              this.getSearch();
-            }
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -170,7 +159,7 @@ export default {
   methods: {
     close(isReload) {
       this.isEdit = false;
-      this.editLi = {};
+      this.projectData = {};
       if (isReload) {
         this.getSearch();
       }
@@ -187,18 +176,18 @@ export default {
       this.tableData.currentPage = 1;
       this.getList();
     },
-    updateSubSystem(val) {
-      this.subsystemUuid = '';
+    updateAppModule(val) {
+      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
-            this.$set(item, 'params', {systemId: val});
+          if (item && (item.name == 'appModuleId')) {
+            this.$set(item, 'params', {appSystemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
       } else {
         this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+          if (item && (item.name == 'appModuleId')) {
             this.$set(item, 'params', {});
             this.$set(item, 'dynamicUrl', '');
           } 
@@ -206,25 +195,19 @@ export default {
       }
     },
     getList() {
-      let param = {};
-      this.tableData.pageSize && Object.assign(param, {pageSize: this.tableData.pageSize});
-      this.tableData.currentPage && Object.assign(param, {currentPage: this.tableData.currentPage});
-      if (this.subsystemUuid) {
-        Object.assign(param, {subsystemUuid: this.subsystemUuid});
-      }
-      if (this.systemUuid) {
-        Object.assign(param, {systemUuid: this.systemUuid});
-      }
-      if (this.keyword) {
-        Object.assign(param, {keyword: this.keyword});
-      }
+      let param = {
+        pageSize: this.tableData.pageSize,
+        currentPage: this.tableData.currentPage,
+        ...this.searchVal
+      };
+      
       this.$api.codehub.project.getList(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$set(this.tableData, 'pageCount', res.Return.pageCount);
           this.$set(this.tableData, 'rowNum', res.Return.rowNum);
           this.$set(this.tableData, 'pageSize', res.Return.pageSize);
           this.$set(this.tableData, 'currentPage', res.Return.currentPage);
-          this.$set(this.tableData, 'tbodyList', res.Return.list);
+          this.$set(this.tableData, 'tbodyList', res.Return.tbodyList);
         } else {
           this.$set(this.tableData, 'tbodyList', []);
         }
@@ -232,26 +215,20 @@ export default {
     },
     deleteProject(row) {
       let param = {
-        systemUuid: '',
-        subsystemUuid: ''
+        systemArray: []
       };
-      if (row) { //删除单个从列里获取单个子系统
-        Object.assign(param, {
-          systemUuid: row.systemVo.uuid || 0,
-          subsystemUuid: row.uuid || 0
-        });
+      if (row) { //删除单个从列里获取单个模块
+        Object.assign(param.systemArray, [{
+          appSystemId: row.appSystemVo.id || 0,
+          appModuleId: row.id || 0
+        }]);
       } else { //删除批量从全局选中获取
         if (this.selectList.length > 0) {
-          let subsList = this.selectList.map((se) => {
-            return se.uuid || 0;
+          let array = [];
+          this.selectList.forEach((se) => {
+            array.push({'appModuleId': se.id || 0, 'appSystemId': se.appSystemVo.id});
           });
-          let sysList = this.selectList.map((se) => {
-            return se.systemVo.uuid || 0;
-          });
-          Object.assign(param, {
-            systemUuid: sysList.join(','),
-            subsystemUuid: subsList.join(',')
-          });
+          Object.assign(param.systemArray, array);
         }
       }
       this.$createDialog({
@@ -274,12 +251,12 @@ export default {
     editProject(row) {
       this.isEdit = true;
       if (row) {
-        this.editLi = row;
+        this.projectData = row;
       } else {
-        this.editLi = {};
+        this.projectData = {};
       }
     },
-    getSelected(li, list) { 
+    getSelected(li, list) {
       this.selectList = list;
     },
     getProjectdetail() {
