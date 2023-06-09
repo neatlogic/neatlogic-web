@@ -7,8 +7,8 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div v-if="actionData.id">{{ $t('dialog.title.edittarget',{'target':$t('page.config')}) }}</div>
-        <div v-if="!actionData.id">{{ $t('dialog.title.addtarget',{'target':$t('page.config')}) }}</div>
+        <div v-if="actionData.id">{{ $t('dialog.title.edittarget', { target: $t('page.config') }) }}</div>
+        <div v-if="!actionData.id">{{ $t('dialog.title.addtarget', { target: $t('page.config') }) }}</div>
       </template>
       <template v-slot>
         <TsForm ref="actionForm" :item-list="actionFormConfig">
@@ -20,8 +20,8 @@
               :dataList="triggerStatusList"
             />
           </template>
-          <template slot="subSystemUuid">
-            <TsFormSelect v-model="actionData.subSystemUuid" v-bind="subSystemConfig" :dataList="subSystemList" />
+          <template slot="appModuleId">
+            <TsFormSelect v-model="actionData.appModuleId" v-bind="appModuleConfig" :dataList="appModuleList" />
           </template>
           <template v-slot:arguments>
             <Tabs v-model="activedTab" name="actionEditTabs">
@@ -51,7 +51,7 @@ export default {
     Helpparam: resolve => require(['./helpparam.vue'], resolve)
   },
   props: {
-    uuid: { type: Number },
+    id: { type: Number },
     isShow: { type: Boolean, default: false }
   },
   data() {
@@ -66,12 +66,12 @@ export default {
         { value: 'finish', text: this.$t('page.finish') },
         { value: 'closed', text: this.$t('term.rdm.isclosed') }
       ],
-      subSystemList: [],
+      appModuleList: [],
       actionDialogConfig: {
         type: 'modal',
         maskClose: false,
         isShow: false,
-        width: '900px'
+        width: '65%'
       },
       actionFormConfig: [
         {
@@ -85,73 +85,81 @@ export default {
           label: this.$t('term.codehub.actionname'),
           maxlength: 50,
           validateList: ['required'],
-          width: '30%',
-          onChange: (name) => {
+          width: '60%',
+          onChange: name => {
             this.actionData.name = name;
           }
         },
-        { 
-          type: 'slot', 
-          name: 'triggerStatus', 
-          label: this.$t('term.deploy.triggerstate'), 
-          validateList: ['required'] 
+        {
+          type: 'slot',
+          name: 'triggerStatus',
+          label: this.$t('term.deploy.triggerstate'),
+          validateList: ['required']
         },
         {
           type: 'select',
-          name: 'systemUuid',
+          name: 'appSystemId',
           label: this.$t('term.codehub.triggersystem'),
-          width: '30%',
+          width: '60%',
           url: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
           search: true,
-          onChange: (val) => {
-            this.actionData.systemUuid = val;
-            this.actionData.subSystemUuid = '';
-            this.actionData.versionUuid = '';
+          onChange: val => {
+            this.actionData.appSystemId = val;
+            this.actionData.appModuleId = null;
+            this.actionData.versionId = null;
             this.actionFormConfig.forEach(element => {
-              if (element.name == 'versionUuid') {
+              if (element.name == 'versionId') {
                 element.params = {
-                  systemUuid: val || -1,
-                  subSystemUuid: 0
+                  appSystemId: val || -1,
+                  appModuleId: 0
                 };
               }
             });
-            this.changeSubsys();
+            this.changeAppModule();
           }
-        },
-        { 
-          type: 'slot', 
-          name: 'subSystemUuid', 
-          label: this.$t('term.codehub.triggersubsystem') 
         },
         {
           type: 'select',
-          name: 'versionUuid',
+          label: this.$t('term.codehub.triggerappmodule'),
+          name: 'appModuleId',
+          isHidden: false,
+          transfer: true,
+          value: this.appModuleId,
+          dealDataByUrl: this.$utils.getAppForselect,
+          dynamicUrl: '/api/rest/deploy/app/config/module/list',
+          onChange: val => {
+            this.appModuleId = val;
+          }
+        },
+        {
+          type: 'select',
+          name: 'versionId',
           label: this.$t('term.codehub.triggerversion'),
-          width: '30%',
+          width: '60%',
           url: '/api/rest/codehub/version/search',
           rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
           search: true,
           params: {
-            systemUuid: -1,
-            subSystemUuid: -1
+            appSystemId: -1,
+            appModuleId: -1
           },
-          onChange: (val) => {
-            this.actionData.versionUuid = val;
+          onChange: val => {
+            this.actionData.versionId = val;
           }
         },
         {
           type: 'text',
           name: 'targetBranch',
           label: this.$t('page.targetbranch'),
-          width: '30%',
+          width: '60%',
           desc: this.$t('term.codehub.targetbranchdesc'),
           clearable: true,
-          onChange: (val) => {
+          onChange: val => {
             this.actionData.targetBranch = val;
           }
         },
@@ -164,7 +172,7 @@ export default {
             { text: this.$t('page.yes'), value: 1 },
             { text: this.$t('page.no'), value: 0 }
           ],
-          onChange: (isActive) => {
+          onChange: isActive => {
             this.actionData.isActive = isActive;
           }
         },
@@ -176,19 +184,19 @@ export default {
         width: '55%',
         multiple: true
       },
-      subSystemConfig: {
+      appModuleConfig: {
         search: true,
-        width: '30%',
+        width: '60%',
         rootName: 'tbodyList',
         valueName: 'id',
         textName: 'name',
-        onChange: (val) => {
-          this.actionData.versionUuid = '';
+        onChange: val => {
+          this.actionData.versionId = '';
           this.actionFormConfig.forEach(element => {
-            if (element.name == 'versionUuid') {
+            if (element.name == 'versionId') {
               element.params = {
-                systemUuid: this.actionData.systemUuid || -1,
-                subSystemUuid: val || 0
+                appSystemId: this.actionData.appSystemId || -1,
+                appModuleId: val || 0
               };
             }
           });
@@ -212,7 +220,7 @@ export default {
         this.$api.codehub.merge.getActionById({ id: id }).then(res => {
           if (res.Status == 'OK') {
             this.actionData = res.Return;
-            this.changeSubsys();
+            this.changeAppModule();
             this.actionData.triggerStatus = JSON.parse(this.actionData.triggerStatus);
             this.actionFormConfig.forEach(element => {
               element.value = this.actionData[element.name];
@@ -220,14 +228,14 @@ export default {
           }
         });
       } else {
-        this.subSystemList = [];
+        this.appModuleList = [];
         this.actionData = {
           id: null,
           name: '',
           triggerStatus: null,
-          systemUuid: '',
-          subSystemUuid: '',
-          versionUuid: '',
+          appSystemId: null,
+          appModuleId: null,
+          versionId: null,
           targetBranch: null,
           isActive: 1,
           arguments: {}
@@ -237,25 +245,29 @@ export default {
         });
       }
     },
-    changeSubsys() {
-      if (this.actionData.systemUuid) {
-        this.$axios({
-          method: 'post',
-          url: '/api/rest/codehub/appmodule/search',
-          data: {
-            systemId: this.actionData.systemUuid
+    changeAppModule(val) {
+      if (val) {
+        this.formConfig.forEach(fo => {
+          if (fo.name == 'appModuleId') {
+            this.$set(fo, 'params', { appSystemId: val });
+            this.$set(fo, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
+            this.showSub(true);
           }
-        }).then(res => {
-          this.subSystemList = res.data.Return.list;
+        });
 
-          this.actionFormConfig.forEach(element => {
-            if (element.name == 'versionUuid') {
-              element.value = this.actionData.versionUuid;
-            }
-          });
+        this.actionFormConfig.forEach(element => {
+          if (element.name == 'versionId') {
+            element.value = this.actionData.versionId;
+          }
         });
       } else {
-        this.subSystemList = [];
+        this.formConfig.forEach(fo => {
+          if (fo.name == 'appModuleId') {
+            this.$set(fo, 'params', {});
+            this.$set(fo, 'dynamicUrl', '');
+            this.showSub(true);
+          }
+        });
       }
     },
     setArguments: function(argumentSettingForm) {
@@ -292,7 +304,7 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    uuid: {
+    id: {
       handler: function(val) {
         this.getAction(val);
       },
