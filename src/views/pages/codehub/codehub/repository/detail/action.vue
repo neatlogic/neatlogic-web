@@ -57,6 +57,13 @@
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
       >
+        <template slot="userUuid" slot-scope="{row}">
+          <UserCard
+            v-if="row.userUuid"
+            :uuid="row.userUuid"
+            :hideAvatar="true"
+          ></UserCard>
+        </template>
         <template slot="startTime" slot-scope="{row}">
           {{ row.startTime | formatDate }}
         </template>
@@ -99,12 +106,14 @@ export default {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   mixins: [editmixin],
   props: {},
   data() {
     return {
+      user: '',
       keyword: '',
       userConfig: {
         placeholder: this.$t('term.autoexec.operator'),
@@ -112,9 +121,8 @@ export default {
         width: 150,
         search: true,
         textName: 'userName',
-        valueName: 'userId',
+        valueName: 'uuid',
         dynamicUrl: '/api/rest/user/search',
-        idListName: 'idList',
         rootName: 'tbodyList',
         hasReturn: true
       },
@@ -134,7 +142,7 @@ export default {
       },
       theadList: [{
         title: this.$t('term.autoexec.operator'),
-        key: 'userId'
+        key: 'userUuid'
       }, {
         title: this.$t('term.codehub.actionsubject'),
         key: 'actionSubjectName'
@@ -160,7 +168,6 @@ export default {
       time: null,
       actionTypeList: [],
       subjectList: [],
-      user: '',
       objectVal: '',
       typeVal: '',
       loadingShow: true,
@@ -201,16 +208,18 @@ export default {
         belongType: 'repo',
         belongId: this.id,
         actionType: this.typeVal,
-        userId: this.user,
         keyword: this.keyword,
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize
       };
+      if (this.user) {
+        this.$set(param, 'userUuid', this.user);
+      }
       if (this.time) {
         Object.assign(param, this.time);
       }
       if (this.objectVal) {
-        Object.assign(param, { actionSubject: this.objectVal});
+        this.$set(param, 'actionSubject', this.objectVal);
       }
       this.loadingShow = true;
       this.$api.codehub.repositorydetail.getActives(param).then(res => {

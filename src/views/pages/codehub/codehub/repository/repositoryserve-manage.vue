@@ -74,9 +74,9 @@
                       {{ $t('term.codehub.recentlyupdate') }}：
                       <UserCard v-if="row.lcu" :uuid="row.lcu" :hideAvatar="true"></UserCard>
                       <span
-                        class="text-tip"
-                        style="font-size:80%;margin-left:10px;"
-                      >{{ row.lcd | formatDate }}</span></div>
+                        class="text-tip ml-sm"
+                      >{{ row.lcd | formatDate }}</span>
+                    </div>
                   </Col>
                 </TsRow>
               </div>
@@ -85,11 +85,11 @@
         </TsCard>
       </div>
     </TsContain>
-    <ServeEditDialog
+    <RepositoryserveEditDialog
       v-if="isShowServeEditDialog"
       :id="repositoryServiceId"
       @close="closeServeEditDialog"
-    ></ServeEditDialog>
+    ></RepositoryserveEditDialog>
   </div>
 </template>
 
@@ -101,7 +101,7 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ServeEditDialog: resolve => require(['./edit/serve-edit-dialog.vue'], resolve)
+    RepositoryserveEditDialog: resolve => require(['./edit/repositoryserve-edit-dialog'], resolve)
   },
   props: [''],
   data() {
@@ -230,25 +230,10 @@ export default {
       window.open(HOME + '/codehub.html#/repository-overview?serveid=' + id, '_blank');
     }
   },
-
   filter: {},
   computed: {},
   watch: {}
 };
 </script>
 <style lang="less" scoped>
-/deep/ .tscard-li {
-  .repository-list {
-    .tscard-header,
-    .btn-test {
-      opacity: 0;
-    }
-    &:hover {
-      .tscard-header,
-      .btn-test {
-        opacity: 1;
-      }
-    }
-  }
-}
 </style>

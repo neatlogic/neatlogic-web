@@ -35,13 +35,10 @@
     </TsContain>
     <MergeAddDialog
       v-if="isShowMergeAddDialog"
-      :appSystemId="searchVal.appSystemId"
-      :appModuleId="searchVal.appModuleId"
       @close="close"
     ></MergeAddDialog>
   </div>
 </template>
-
 <script>
 export default {
   name: 'MergeOverview',
@@ -81,8 +78,7 @@ export default {
             label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id'
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -136,7 +132,7 @@ export default {
         ...this.searchVal
       };
       if (this.activetab) {
-        Object.assign(param, {status: this.activetab == 'all' ? '' : this.activetab});
+        this.$set(param, 'status', this.activetab == 'all' ? '' : this.activetab);
       }
       this.isLoad = true;
       this.$api.codehub.merge.getList(param).then(res => {

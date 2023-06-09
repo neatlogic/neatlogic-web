@@ -910,5 +910,7 @@
   "strip": "strip",
   "maxlength": "Maximum length",
   "forceflush": "force refresh ",
-  "personnel": "personnel"
+  "personnel": "personnel",
+  "isexpired": "Timed out or not",
+  "nottimedout": "Not timed out"
 }

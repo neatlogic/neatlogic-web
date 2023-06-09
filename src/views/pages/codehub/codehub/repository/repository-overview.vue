@@ -213,8 +213,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeCurrentPage(page) {
-      this.repositoryData.currentPage = page;
+    changeCurrentPage(currentPage) {
+      this.repositoryData.currentPage = currentPage;
       this.searchList();
     },
     changePageSize(pageSize) {

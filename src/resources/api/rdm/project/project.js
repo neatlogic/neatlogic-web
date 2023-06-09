@@ -13,8 +13,12 @@ const project = {
   listCustomAttrType() {
     return axios.post('/api/rest/rdm/project/app/customattrtype/list', {});
   },
-  getAppByProjectId(projectId) {
-    return axios.post('/api/rest/rdm/project/app/get', { projectId: projectId });
+  getAppByProjectId(projectId, needIssueCount, isMine) {
+    return axios.post('/api/rest/rdm/project/app/get', {
+      projectId: projectId,
+      needIssueCount: needIssueCount ? 1 : 0,
+      isMine: isMine ? 1 : 0
+    });
   },
   getProjectById(projectId) {
     return axios.post('/api/rest/rdm/project/get', { id: projectId });
