@@ -1,21 +1,20 @@
 <template>
-  <div>
+  <div class="padding-xs">
     <div v-if="!isChildren" class="tree-top">
-      <div>
+      <div style="display: flex;align-items: center;">
         <RadioGroup
           v-model="showType"
           type="button"
           size="small"
-          class="mr-10"
         >
           <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name"><i :class="type.icon"></i></Radio>
         </RadioGroup>
-        <FormSelect
+        <TsFormSelect
           v-model="fileName"
           v-bind="nameConfig"
           :dataList="diffList"
           @on-change="selectFilename"
-        ></FormSelect>
+        ></TsFormSelect>
       </div>
     </div>
     <ul v-if="showType =='list'" :class="isChildren?'diff-treeul':'diff-treecontaner'" @scroll.stop="scrollContainer($event)">
@@ -88,11 +87,11 @@
 
 </template>
 <script>
-import FormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: 'TreeLi',
   components: {
-    FormSelect
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TreeLi: resolve => require(['./tree-li'], resolve)
   },
   filters: {},
   props: {
@@ -225,9 +224,9 @@ export default {
         if (li.type != 'file') {
           str += 'diff-treefile ';
           if (this.supportTypeList.includes(li.type)) {
-            str += 'ts-mm-' + li.type;
+            str += 'tsfont-mm-' + li.type;
           } else {
-            str += 'ts-mm-txt';
+            str += 'tsfont-mm-txt';
           }
         } else {
           if (li.showChild) {

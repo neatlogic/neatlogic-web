@@ -25,36 +25,6 @@
                   :style="colorConfig[active.status]?('color:'+colorConfig[active.status]):''"
                 >{{ active.statusName }}</span>
               </h3>
-              <!--  <h6 class="clearfix">
-                <span class="ts-user user-name d_f">{{ active.userName || active.userId }}</span>
-                <span
-                  v-if="active.hidedetail"
-                  class="d_f_r ts-angle-down text-action"
-                  style="font-size:10px;font-weight:normal;margin-top: 13px;"
-                  @click="showdetail(active,false)"
-                >展开详情</span> 
-              </h6>-->
-              <!-- <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length && !active.hidedetail">
-                <Divider style="margin: 10px 0;" />
-                <div class="ts-angle-up block text-action text-left" style="font-size:10px;opacity: .2;" @click="showdetail(active,true)">收起详情</div>
-                <table class="table">
-                  <colgroup>
-                    <col width="120" />
-                    <col />
-                  </colgroup>
-                  <tbody>
-                    <tr v-for="(detail,dindex) in getDetail(active.detail)" :key="dindex">
-                      <td class="text-tip" style="background:transparent;">{{ detail.label }}</td>
-                      <td style="background:transparent;">
-                        <div v-if="typeof detail.text =='object'">
-                          {{ detail.text.toString() }}
-                        </div>
-                        <div v-else-if="detail.text" v-html="detail.text"></div>
-                        <div v-else>-</div>
-                      </td></tr>
-                  </tbody>
-                </table>
-              </div> -->
               <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length" style="margin-top:10px;">
                 <table class="table table-small">
                   <colgroup>
@@ -80,7 +50,7 @@
         <TimelineItem v-if="pageCount>currentPage" class="active-li">
           <Icon slot="dot" custom="ts-round-s"></Icon>
           <div class="time"></div>
-          <div class="content"><div class="text-href" @click="getNext">查看更多</div></div>
+          <div class="content"><div class="text-href" @click="getNext">{{ $t('page.viewmore') }}</div></div>
         </TimelineItem>
       </Timeline>
       <NoData v-else></NoData>
@@ -129,10 +99,8 @@ export default {
   methods: {
     getList(page) {
       let param = {
-        belongUuid: this.uuid,
+        belongId: this.id,
         belongType: 'mr'
-        // subjectUuid: this.uuid,
-        // actionSubject: 'mr'
       };
       page && Object.assign(param, {
         currentPage: page
@@ -176,7 +144,6 @@ export default {
       return function(list) {
         let filterList = [];//需要过滤掉源分支、目标分支
         let excludeName = [];
-        //let excludeName = ['源分支', '目标分支'];
         if (list) {
           if (typeof list == 'object') {
             filterList = list.filter(s => {
@@ -195,7 +162,6 @@ export default {
     }
   },
   watch: {}
-
 };
 
 </script>

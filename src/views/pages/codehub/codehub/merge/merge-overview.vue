@@ -57,7 +57,7 @@ export default {
       mergeData: {currentPage: 1, pageSize: 20},
       mergeTypeList: [],
       activetab: 'open',
-      isLoad: false,
+      isLoad: true,
       isShowMergeAddDialog: false,
       searchVal: {},
       searchConfig: {
@@ -205,7 +205,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .detail-container{
-  padding:8px;
+  padding: 8px;
   /deep/ .ivu-badge{
     vertical-align: top;
     transform: scale(0.8);

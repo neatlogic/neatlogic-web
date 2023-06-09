@@ -4,11 +4,11 @@
       <i class="btn-toggle text-action" :class="isShow ? 'ts-angle-down' : 'ts-angle-up'" @click="toggleShow()"></i>
       <i 
         class="ts-file file-name cursor-pointer" 
-        :class="type != 'file' ? (supportTypeList.includes(type) ? 'ts-mm-' + type : 'ts-mm-txt') : 'ts-folder'"
+        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'"
         :title="diff.modifiedType && diff.modifiedType=='R'?'文件名由 '+diff.fromFileName+' 修改为 '+diff.toFileName:getName(diff)"
         @dblclick.stop="goToTree(diff)"
       >
-        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<i class="ts-long-arrow-right text-primary small"></i>{{ diff.toFileName }}</span>
+        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<i class="ts-long-arrow-right text-primary small"></i>11111111111{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
       </i>
       <i 
@@ -21,7 +21,7 @@
         v-clipboard="getName(diff,true)" 
         v-clipboard:success="clipboardSuc" 
         class="btn-copy" 
-        :class="type != 'file' ? (supportTypeList.includes(type) ? 'ts-mm-' + type : 'ts-mm-txt') : 'ts-folder'" 
+        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'" 
         title="复制文件名字"      
         style="right:22px"
       ></i>
@@ -160,7 +160,6 @@
                   <!-- 最后一行_end -->
                 </template>
               </template>
-
             </tbody>
           </table>
         </div>

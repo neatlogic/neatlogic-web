@@ -1,7 +1,7 @@
 export default {
   props: {
     mrData: Object,
-    uuid: String, //mruuid
+    id: Number, //mruuid
     mrstatusList: Array,
     statusList: Array,
     commitId: {//从需求选中的commituuid
@@ -14,19 +14,9 @@ export default {
     return {
     };
   },
-  mounted() {
-
-  },
-  beforeDestroy() {
-
-  },
-  methods: {
-
-  },
-  computed: {
-
-  },
-  watch: {
-
-  }
+  mounted() {},
+  beforeDestroy() {},
+  methods: {},
+  computed: {},
+  watch: {}
 };

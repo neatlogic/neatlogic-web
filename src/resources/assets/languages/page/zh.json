@@ -910,5 +910,7 @@
   "submitinformation": "提交信息",
   "effectiveness": "有效性",
   "strip": "条",
-  "maxlength": "最大长度"
+  "maxlength": "最大长度",
+  "forceflush": "强制刷新",
+  "personnel": "人员"
 }
