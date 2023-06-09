@@ -46,6 +46,7 @@
               <div v-if="currentTab == 'story'" class="pl-nm pr-nm">
                 <IssueList
                   v-if="id && getApp('story')"
+                  :projectId="projectId"
                   :canAppend="false"
                   :canSearch="false"
                   :canAction="true"

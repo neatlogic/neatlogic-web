@@ -24,6 +24,7 @@
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
+          :projectId="projectId"
           :mode="displayMode"
           :app="appData"
           :canSearch="true"

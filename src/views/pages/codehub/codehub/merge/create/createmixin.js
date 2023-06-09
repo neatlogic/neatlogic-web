@@ -1,7 +1,7 @@
 export default {
   props: {
     versionId: [String, Number],
-    versiondata: Object,
+    versionData: Object,
     srcBranch: [String, Number],
     targetBranch: [String, Number],
     issueNoList: Array,
@@ -77,8 +77,8 @@ export default {
   mounted() {
     this.getSouce();
     this.getList();
-    if (this.versiondata && this.versiondata.appModuleVo) {
-      let appModuleId = this.versiondata.appModuleVo.id;
+    if (this.versionData && this.versionData.appModuleVo) {
+      let appModuleId = this.versionData.appModuleVo.id;
       let count = this.$utils.getCookie(appModuleId + '_searchCommitCount') || '300';
       this.maxSearchCount = parseInt(count);
     }
@@ -127,10 +127,10 @@ export default {
   },
   computed: {
     getsource() {
-      return (uuid) => {
+      return (id) => {
         let txt = '';
         this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
+          if (sync.id == id) {
             txt = sync.source;
           }
         });

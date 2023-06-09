@@ -9,6 +9,7 @@
             :canAppend="false"
             :canSearch="true"
             :needSearch="true"
+            :projectId="projectId"
             :app="app"
             @selected="selectIssue"
           ></IssueList>

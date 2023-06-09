@@ -21,9 +21,10 @@
             v-bind="strategyData"
             headerPosition="right"
             @updatePage="changeCurrentPage"
+            @updateSize="changePageSize"
           >
             <template slot="header" slot-scope="{ row }">
-              <div v-if="row.canEdit" class="action-group">
+              <div v-if="row.canEdit" class="action-group" @click.stop>
                 <div class="action-item tsfont-plus" @click="addVersion(row)">{{ $t('page.versions') }}</div>
                 <div class="action-item tsfont-edit" @click="editStrategy(row.id)">{{ $t('page.edit') }}</div>
                 <div class="action-item tsfont-trash-o" @click="deleteLi(row.id)">{{ $t('page.delete') }}</div>
@@ -71,8 +72,6 @@
     <StrategyEditDialog
       v-if="isShowStrategyEditDialog"
       :id="strategyId"
-      :appSystemId="searchVal.appSystemId"
-      :appModuleId="searchVal.appModuleId"
       @close="closeStrategyEditDialog"
     ></StrategyEditDialog>
     <VersionAddDialog
@@ -109,6 +108,7 @@ export default {
         xxl: 24,
         padding: false,
         cardList: [],
+        pageType: 'number',
         currentPage: 1,
         pageSize: 10,
         rowNum: 0     
@@ -130,7 +130,7 @@ export default {
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
             onChange: (val) => {
-              this.updateSubSystem(val);
+              this.updateAppModule(val);
             }
           },
           {
@@ -158,20 +158,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getSearch() {
-      this.strategyData.currentPage = 1;
-      this.getStrategyList();
-    },
     changeCurrentPage(currentPage) {
       this.strategyData.currentPage = currentPage;
       this.getStrategyList();
     },
-    updateSubSystem(val) {
-      this.appModuleId = '';
-      if (val) {
+    changePageSize(pageSize) {
+      this.strategyData.currentPage = 1;
+      this.strategyData.pageSize = pageSize;
+      this.getStrategyList();
+    },
+    updateAppModule(appSystemId) {
+      if (appSystemId) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {systemId: val});
+            this.$set(item, 'params', {appSystemId: appSystemId});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });
@@ -224,7 +224,7 @@ export default {
           this.$api.codehub.strategy.delete({id: id}).then((res) => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.getSearch();
+              this.changeCurrentPage(1);
               vnode.isShow = false;
             }
           });
@@ -235,7 +235,7 @@ export default {
       this.isShowStrategyEditDialog = false;
       this.strategyId = null;
       if (needRefresh) {
-        this.getSearch();
+        this.changeCurrentPage(1);
       }
     },
     closeVersion() {

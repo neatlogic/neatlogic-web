@@ -54,6 +54,7 @@
                 v-if="currentApp === app.type"
                 :canAppend="true"
                 :app="app"
+                :projectId="projectId"
                 :mode="displayMode"
                 :iteration="iterationData && iterationData.id"
                 :isShowEmptyTable="true"
