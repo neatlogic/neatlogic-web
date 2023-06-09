@@ -34,7 +34,7 @@ export default {
         isShow: true
       },
       formValue: {
-        id: '',
+        id: this.id,
         name: '',
         usePattern: 1,
         srcBranch: '',
@@ -44,7 +44,7 @@ export default {
         type: '',
         versionPrefix: '',
         versionTypeId: '',
-        issueStatusIdListText: ''
+        issueStatusIdList: []
       },
       formConfig: [
         {
@@ -119,7 +119,7 @@ export default {
         {
           type: 'select',
           label: this.$t('term.codehub.issuesstatus'),
-          name: 'issueStatusIdListText',
+          name: 'issueStatusIdList',
           transfer: true,
           url: '/api/rest/codehub/issue/status/get',
           rootName: 'list',
@@ -233,7 +233,7 @@ export default {
     },
     updateComponentStatusByAppModuleId(appModuleId) {
       // 根据模块id，更新组件的组件【需求状态/源分支/目标分支】组件是否显示
-      let hideComponentList = ['srcBranch', 'targetBranch', 'issueStatusIdListText'];
+      let hideComponentList = ['srcBranch', 'targetBranch', 'issueStatusIdList'];
       this.formConfig.forEach(item => {
         if (hideComponentList.includes(item.name)) {
           this.$set(item, 'isHidden', !appModuleId);
@@ -269,9 +269,9 @@ export default {
     saveStrategy() {
       if (this.$refs.form.valid()) {
         let param = this.$utils.deepClone(this.formValue);
-        if (param.issueStatusIdListText) {
-          param.issueStatusIdListText = param.issueStatusIdListText.length > 0 ? param.issueStatusIdListText.join(',') : '';
-          delete param.issueStatusIdListText; // 删除这个属性
+        if (param.issueStatusIdList) {
+          param.issueStatusIdListText = param.issueStatusIdList.length > 0 ? param.issueStatusIdList.join(',') : '';
+          delete param.issueStatusIdList; // 删除这个属性
         }
         if (!param.usePattern && param.srcBranchSelect) {
           param.srcBranch = param.srcBranchSelect;
@@ -296,7 +296,7 @@ export default {
           if (this.formValue.name) {
             this.showUsePatternComponent();
           }
-          this.formValue.issueStatusIdListText = res.Return.issueStatusIdListText ? res.Return.issueStatusIdListText.split(',') : [];
+          this.formValue.issueStatusIdList = res.Return.issueStatusIdListText ? res.Return.issueStatusIdListText.split(',') : [];
         }
       }).finally(() => {
         this.loadingShow = false;
