@@ -41,8 +41,6 @@
     <VersionEditDialog
       v-if="isEdit"
       :id="versionId"
-      :appModuleId="appModuleId"
-      :appSystemId="appSystemId"
       @close="close"
     ></VersionEditDialog>
   </div>
@@ -61,8 +59,6 @@ export default {
   data() {
     return {
       showType: 'cardtab',
-      appSystemId: null,
-      appModuleId: null,
       keyword: '',
       loadingShow: true,
       isEdit: false, //是否编辑
@@ -87,11 +83,8 @@ export default {
             dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.appSystemId,
             onChange: (val) => {
-              this.appSystemId = val;
               this.updateSubSystem(val);
-              this.getSearch();
             }
           },
           {
@@ -101,23 +94,18 @@ export default {
             transfer: true,
             rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'id',
-            value: this.appModuleId,
-            onChange: (val) => {
-              this.appModuleId = val;
-              this.getSearch();
-            }
+            valueName: 'id'
           }
         ]
       }
     };
   },
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
     this.searchList();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -201,11 +189,10 @@ export default {
       }
     },
     updateSubSystem(val) {
-      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {systemId: val});
+            this.$set(item, 'params', {appSystemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });

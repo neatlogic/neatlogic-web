@@ -67,6 +67,7 @@ export default {
             }
           }
         },
+        { title: this.$t('page.maxlength'), key: 'maxLength' },
         { title: this.$t('page.explain'), key: 'help' }
       ]),
       outputColumns: Object.freeze([
@@ -79,7 +80,7 @@ export default {
   },
   created() {
     // eslint-disable-next-line generator-star-spacing
-    this.counter = (function*() {
+    this.counter = (function* () {
       let i = 1;
       while (true) yield i++;
     })();
@@ -98,7 +99,7 @@ export default {
         .then(res => {
           this.helpData = this.addId(res);
           if (!Object.values(this.helpData).length) {
-            this.helpMessage = this.$t('message.framework.notapihelp', {target: this.rowData.token});
+            this.helpMessage = this.$t('message.framework.notapihelp', { target: this.rowData.token });
           }
         })
         .catch(error => {

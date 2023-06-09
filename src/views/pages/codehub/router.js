@@ -69,7 +69,7 @@ export default [
   },
   {
     path: '/repository-overview',
-    name: 'repositoryOverview',
+    name: 'repository-overview',
     component: repositoryOverview,
     meta: {
       title: $t('router.codehub.repository'),

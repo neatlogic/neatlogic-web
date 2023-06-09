@@ -150,7 +150,7 @@ export default {
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
-          params: {systemId: val},
+          params: {appSystemId: val},
           validateList: ['required'],
           onChange: (val) => {
             this.editData.subsystemUuid = val;

@@ -245,8 +245,8 @@ export default {
         });
       }
     },
-    changeAppModule(val) {
-      if (val) {
+    changeSubsys() {
+      if (this.actionData.systemUuid) {
         this.formConfig.forEach(fo => {
           if (fo.name == 'appModuleId') {
             this.$set(fo, 'params', { appSystemId: val });
@@ -254,7 +254,6 @@ export default {
             this.showSub(true);
           }
         });
-
         this.actionFormConfig.forEach(element => {
           if (element.name == 'versionId') {
             element.value = this.actionData.versionId;

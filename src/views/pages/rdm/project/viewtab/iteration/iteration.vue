@@ -53,6 +53,7 @@
                 <IssueList
                   v-if="currentApp === app.type"
                   :app="app"
+                  :projectId="projectId"
                   :canAppend="true"
                   :mode="displayMode"
                   :iteration="selectedIteration && selectedIteration.id"
