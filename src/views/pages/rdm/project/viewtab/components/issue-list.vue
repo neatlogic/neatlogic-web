@@ -1,5 +1,10 @@
 <template>
   <div>
+    <Loading
+      v-if="isLoading"
+      :loadingShow="isLoading"
+      type="fix"
+    ></Loading>
     <div class="mb-md grid">
       <div>
         <span>
@@ -173,6 +178,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       isEditIssueShow: false,
       issueData: {},
       theadList: [
@@ -418,6 +424,7 @@ export default {
         });
     },
     searchIssue(currentPage) {
+      this.isLoading = true;
       this.searchIssueData = {};
       this.searchIssueData.projectId = this.projectId;
       this.searchIssueData.pageSize = this.pageSize;
@@ -455,6 +462,8 @@ export default {
       this.$api.rdm.issue.searchIssue(this.searchIssueData).then(res => {
         this.issueData = res.Return;
         this.isSearchReady = true;
+      }).finally(() => {
+        this.isLoading = false;
       });
     }
   },
