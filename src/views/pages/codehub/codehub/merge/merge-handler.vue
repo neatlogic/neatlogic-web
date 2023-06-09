@@ -45,13 +45,6 @@
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-10">{{ mrData.targetBranch }}</span>
             </div>
           </div>
-          <!-- 只有分支型并且已经合并的才可以全局revert -->
-          <!-- <div v-if="mrData.versionTypeStrategyRelationVo && mrData.versionTypeStrategyRelationVo.versionStrategyType && (mrData.versionTypeStrategyRelationVo.versionStrategyType=='branch') && (mrData.status=='finish')" class="d_f_r">
-            <Button v-if="!duringAction" type="error" @click="revertMr()"><i class="ts-rotate-left"></i>撤销</Button>
-          </div> -->
-          <!-- <div v-if="mrData.status =='failed'" class="d_f_r">
-            <Button type="error" @click="showError()">错误信息</Button>
-          </div> -->
         </div>
       </template>
       <div slot="content">
@@ -74,18 +67,15 @@
       v-bind="revertConfig"
       @resetRevert="resetRevert"
     ></MergeRevert>
-    <!-- <Loading v-else type="fix" loadingShow></Loading> -->
   </div>
 </template>
 <script>
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
-import MergeDetail from './handler/detail.vue';
 export default {
   name: '',
   components: {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    MergeDetail,
-    MergeRevert: resolve => require(['./merge-revert.vue'], resolve)
+    MergeRevert: resolve => require(['./merge-revert.vue'], resolve),
+    MergeDetail: resolve => require(['./handler/detail.vue'], resolve)
   },
   props: [''],
   data() {
@@ -109,9 +99,7 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
-
   created() {
     this.getStatuslist();
     this.getissueStatuslist();
@@ -126,23 +114,14 @@ export default {
       this.getDetail();
     }
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     gotoPrev() {
       this.$router.push({
@@ -150,16 +129,15 @@ export default {
       });
     },
     getDetail(status) {
-      let _this = this;
       let param = { uuid: this.uuid };
-      _this.$api.codehub.merge.getDetail(param).then(res => {
+      this.$api.codehub.merge.getDetail(param).then(res => {
         if (res && res.Status == 'OK') {
-          _this.mrData = res.Return;
+          this.mrData = res.Return;
         } else {
-          _this.mrData = null;
+          this.mrData = null;
         }
       }).catch((e) => {
-        _this.mrData = null;
+        this.mrData = null;
       });
     },
     getStatuslist() {
@@ -192,7 +170,6 @@ export default {
               this.$Message.success('撤销合并成功');
               this.getDetail();
             }
-            //this.
           })
           .catch(error => {
             this.duringAction = false;
@@ -230,9 +207,7 @@ export default {
       this.mrActionType = 'revert';
     }
   },
-
   filter: {},
-
   computed: {
     showtips() {
       //如果系统、子系统的描述都没有，不显示提示tooltip
@@ -279,13 +254,11 @@ export default {
         let styles = {
           'display': 'inline-block',
           'max-width': status == 'failed' ? 'calc(100vw - 240px)' : 'calc(100vw - 220px)'
-
         };
         return styles;
       };
     }
   },
-
   watch: {},
   beforeRouteEnter(to, from, next) {
     if (from.fullPath && from.fullPath != '/') {

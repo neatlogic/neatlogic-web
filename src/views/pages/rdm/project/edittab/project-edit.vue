@@ -110,7 +110,7 @@ export default {
         },
         {
           type: 'userselect',
-          name: 'memberIdList',
+          name: 'userIdList',
           transfer: true,
           groupList: ['user'],
           label: this.$t('term.rdm.projectmember')

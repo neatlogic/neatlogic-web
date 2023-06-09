@@ -27,9 +27,7 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
   },
   props: {
-    id: {type: Number},
-    appModuleId: [String, Number],
-    appSystemId: [String, Number]
+    id: {type: Number}
   },
   data() {
     return {
@@ -145,17 +143,6 @@ export default {
   methods: {
     initData() {
       this.$set(this.strategyData, 'tbodyList', null);
-      if (this.appSystemId) {
-        this.formConfig && this.formConfig.forEach((item) => {
-          if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', {systemId: this.appSystemId});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          }
-        });
-      }
-      if (this.appModuleId) {
-        this.$set(this.formValue, 'appModuleId', this.appModuleId);
-      }
     },
     close() {
       this.$emit('close');
@@ -222,7 +209,7 @@ export default {
       if (val) {
         this.formConfig && this.formConfig.forEach((item) => {
           if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', {systemId: val});
+            this.$set(item, 'params', {appSystemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           }
         });

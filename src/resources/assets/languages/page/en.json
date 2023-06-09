@@ -908,5 +908,6 @@
   "submitinformation": "Submit Information",
   "effectiveness": "Validity",
   "strip": "strip",
-  "globalsearch": "global search "
+  "globalsearch": "global search ",
+  "maxlength": "Maximum length"
 }

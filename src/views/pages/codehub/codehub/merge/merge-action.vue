@@ -313,7 +313,7 @@ export default {
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'subsystemUuid')) {
-            this.$set(item, 'params', {systemId: val});
+            this.$set(item, 'params', {appSystemId: val});
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
           } 
         });

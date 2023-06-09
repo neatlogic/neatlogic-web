@@ -1,17 +1,25 @@
 <template>
   <div>
     <TsContain>
-      <template v-slot:navigation><span>导航</span></template>
-      <template v-slot:topLeft>上左</template>
-      <template v-slot:topCenter>上中</template>
-      <template v-slot:topRight>上右</template>
+      <template v-slot:top>
+        <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject">
+          <TabPane
+            v-for="(project,index) in projectList"
+            :key="index"
+            :label="project.name"
+            :name="'p'+project.id"
+          ></TabPane>
+        </Tabs>
+      </template>
       <template v-slot:content>
         <div>
           <IssueList
-            v-if="isReady"
+            v-if="isReady && currentProjectId"
             ref="issueList"
             :isMine="1"
             :isEnd="0"
+            :projectId="currentProjectId"
+            :isExpired="0"
             :mode="displayMode"
             :displayAttrList="displayAttrList"
             :canSearch="true"
@@ -34,11 +42,14 @@ export default {
       isReady: false,
       displayMode: 'level',
       needAttr: ['priority', 'startdate', 'enddate'],
-      attrList: []
+      attrList: [],
+      projectList: [],
+      currentProject: null
     };
   },
   beforeCreate() {},
   created() {
+    this.getProjectList();
     this.getPrivateAttrList();
   },
   beforeMount() {},
@@ -55,10 +66,29 @@ export default {
         this.attrList = res.Return;
         this.isReady = true;
       });
+    },
+    getProjectList() {
+      this.$api.rdm.project
+        .searchProject({
+          isMine: 1,
+          isClose: 0
+        })
+        .then(res => {
+          this.projectList = res.Return.tbodyList;
+          if (this.projectList && this.projectList.length > 0) {
+            this.currentProject = 'p' + this.projectList[0].id;
+          }
+        });
     }
   },
   filter: {},
   computed: {
+    currentProjectId() {
+      if (this.currentProject) {
+        return parseInt(this.currentProject.replace('p', ''));
+      }
+      return null;
+    },
     displayAttrList() {
       if (this.attrList && this.attrList.length > 0) {
         return this.attrList.filter(attr => this.needAttr.includes(attr.type));
@@ -66,7 +96,18 @@ export default {
       return [];
     }
   },
-  watch: {}
+  watch: {
+    currentProject: {
+      handler: function(val) {
+        if (val) {
+          this.isReady = false;
+          this.$nextTick(() => {
+            this.isReady = true;
+          });
+        }
+      }
+    }
+  }
 };
 </script>
 <style lang="less"></style>
