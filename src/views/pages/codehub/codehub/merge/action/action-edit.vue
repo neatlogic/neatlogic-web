@@ -84,8 +84,16 @@ export default {
           name: 'name',
           label: this.$t('term.codehub.actionname'),
           maxlength: 50,
-          validateList: ['required'],
           width: '30%',
+          validateList: [
+            'required', 
+            'name-special',
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/mergerequest/action/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
+              params: { id: this.id}
+            }],
           onChange: (name) => {
             this.actionData.name = name;
           }

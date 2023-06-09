@@ -34,7 +34,7 @@ export default {
         isShow: true
       },
       formValue: {
-        id: '',
+        id: this.id,
         name: '',
         usePattern: 1,
         srcBranch: '',
@@ -52,7 +52,14 @@ export default {
           label: this.$t('page.name'),
           name: 'name',
           maxlength: 50,
-          validateList: ['required'],
+          validateList: [
+            'required', 
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/versionstrategy/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
+              params: { id: this.id}
+            }],
           onChange: () => {
             this.showUsePatternComponent();
           }
