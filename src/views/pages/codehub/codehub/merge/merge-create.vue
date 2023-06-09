@@ -11,18 +11,7 @@
         <Col span="20">
           <div>
             <div v-if="versionData">
-              <Tooltip
-                v-if="showtips(versionData)"
-                class="mr-sm"
-                theme="light"
-                max-width="300"
-              >
-                <div>{{ setTxt(versionData, 'text') }}</div>
-                <div slot="content">
-                  <div>{{ setTxt(versionData, 'tips') }}</div>
-                </div>
-              </Tooltip>
-              <span v-else class="mr-sm">{{ setTxt(versionData, 'text') }}</span>
+              <span class="mr-sm">{{ getAbbrNameAndName(versionData, 'text') }}</span>
               <Tag color="success">{{ versionData.version }}</Tag>
               <span v-if="versionData && versionData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
               <span v-if="versionData && versionData.versionTypeStrategyRelationVo" class="ml-sm srcbranch-container">
@@ -261,43 +250,19 @@ export default {
   },
   filter: {},
   computed: {
-    showtips() {
-      return function(config) {
-        let isshow = false;
-        if ((config.appSystemVo && config.appSystemVo.abbrName) || (config.appModuleVo && config.appModuleVo.name)) {
-          isshow = true;
-        }
-        return isshow;
-      };
-    },
-    setTxt() {
+    getAbbrNameAndName() {
       return function(config, type) {
         let text = '';
         let prev = config.appSystemVo || '';
         let next = config.appModuleVo || '';
         if (type == 'text') {
-          text = (prev ? prev.name : '') + (next ? '/' + next.name : '');
-        } else if (type == 'tips') {
-          text = (prev && prev.name ? prev.name : '') + (next && next.name ? '/' + next.name : '');
+          text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : prev.name) : '') + (next ? '/' + (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : '') : '');
         }
         return text;
       };
     }
   },
-  watch: {},
-  beforeRouteEnter(to, from, next) {
-    if (from.fullPath && !(from.fullPath == '/' || from.path == '/merge-review' || from.path == '/merge-create')) {
-      let prevsetting = {
-        path: from.fullPath,
-        name: from.meta.title
-      };
-      sessionStorage.setItem('mergecreatePrev', JSON.stringify(prevsetting));
-    }
-    next();
-  },
-  beforeRouteLeave(to, from, next) {
-    next();
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
