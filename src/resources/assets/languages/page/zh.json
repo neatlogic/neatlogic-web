@@ -911,6 +911,8 @@
   "effectiveness": "有效性",
   "strip": "条",
   "maxlength": "最大长度",
+  "forceflush": "强制刷新",
+  "personnel": "人员",
   "isexpired": "是否超时",
   "nottimedout": "未超时"
 }

@@ -1,14 +1,16 @@
 <template>
   <div class="comment-container">
     <div class="top">
-      <div style="padding:0 16px;">
+      <div class="pl-nm pl-nm">
         <TsCkeditor 
           ref="editor"
           v-model.trim="commitText"
           width="100%" 
         ></TsCkeditor>
       </div>
-      <div class="padding-md text-right"><Button type="primary" :disabled="!commitText || submiting" @click="submitCommit">发布评论</Button></div>
+      <div class="padding-md text-right">
+        <Button type="primary" :disabled="!commitText || submiting" @click="submitCommit">{{ $t('term.codehub.postcomments') }}</Button>
+      </div>
     </div>
     <div class="main border-color" style="height: calc(100vh - 370px);overflow:auto;">
       <Loading v-if="loading" loadingShow style="height:100px"></Loading>
@@ -22,14 +24,12 @@
   </div>
 </template>
 <script>
-import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';
-import CommentList from './comment/comment-list.vue';
 import mixins from './tabmixins.js';
 export default {
   name: '',
   components: {
-    TsCkeditor,
-    CommentList
+    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
+    CommentList: resolve => require(['./comment/comment-list.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
@@ -58,8 +58,8 @@ export default {
     submitCommit() {
       if (this.commitText) {
         let param = {
-          uuid: '',
-          mrUuid: this.uuid,
+          id: '',
+          mrId: this.id,
           comment: this.commitText
         };
         this.submiting = true;
@@ -80,13 +80,12 @@ export default {
     },
     getList() {
       let urlList = [];
-      let _this = this;
-      urlList.push(_this.getLineList());
-      urlList.push(_this.getMrList());
-      _this.loading = true;
-      _this.$axios.all(urlList).then(
-        _this.$axios.spread(function(...arr) {
-          _this.loading = false;
+      urlList.push(this.getLineList());
+      urlList.push(this.getMrList());
+      this.loading = true;
+      this.$axios.all(urlList).then(
+        this.$axios.spread(function(...arr) {
+          this.loading = false;
           let list = [];
           if (arr && arr.length > 0) {
             arr.forEach((a) => {
@@ -95,23 +94,23 @@ export default {
               }
             });
           }
-          _this.commitList = _this.initList(list);
+          this.commitList = this.initList(list);
         })
       ).catch((e) => {
-        _this.loading = false;
+        this.loading = false;
       });
     },
     getLineList() {
       let param = {
         needPage: false,
-        mrUuid: this.uuid
+        mrId: this.id
       };
       return this.$api.codehub.merge.getCommentOfLine(param);
     },
     getMrList() {
       let param = {
         needPage: false,
-        mrUuid: this.uuid
+        mrId: this.id
       };
       return this.$api.codehub.merge.getComment(param);
     },
@@ -119,7 +118,7 @@ export default {
       let firstList = list.filter((l) => {
         //获取下一层
         let childrenList = list.filter((s) => {
-          return s.parentUuid == l.uuid;
+          return s.parentId == l.id;
         });
         if (childrenList.length) {
           Object.assign(l, {
@@ -128,7 +127,7 @@ export default {
         }
         //是否有上一层
         let parentLi = list.filter((s) => {
-          return s.uuid == l.parentUuid;
+          return s.id == l.parentId;
         });
         if (parentLi.length) {
           Object.assign(l, {
@@ -145,10 +144,7 @@ export default {
   },
   computed: {},
   watch: {}
-
 };
-
 </script>
 <style lang='less'>
-
 </style>
