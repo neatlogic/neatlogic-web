@@ -910,5 +910,7 @@
   "submitinformation": "提交信息",
   "effectiveness": "有效性",
   "strip": "条",
-  "maxlength": "最大长度"
+  "maxlength": "最大长度",
+  "isexpired": "是否超时",
+  "nottimedout": "未超时"
 }

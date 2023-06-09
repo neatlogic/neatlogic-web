@@ -908,5 +908,7 @@
   "submitinformation": "Submit Information",
   "effectiveness": "Validity",
   "strip": "strip",
-  "maxlength": "Maximum length"
+  "maxlength": "Maximum length",
+  "isexpired": "Timed out or not",
+  "nottimedout": "Not timed out"
 }

@@ -4,27 +4,55 @@
       <template v-slot:top>
         <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject">
           <TabPane
-            v-for="(project,index) in projectList"
-            :key="index"
+            v-for="(project) in projectList"
+            :key="project.id"
             :label="project.name"
-            :name="'p'+project.id"
+            :name="'p' + project.id"
           ></TabPane>
         </Tabs>
       </template>
       <template v-slot:content>
         <div>
-          <IssueList
-            v-if="isReady && currentProjectId"
-            ref="issueList"
-            :isMine="1"
-            :isEnd="0"
-            :projectId="currentProjectId"
-            :isExpired="0"
-            :mode="displayMode"
-            :displayAttrList="displayAttrList"
-            :canSearch="true"
-            :isShowEmptyTable="true"
-          ></IssueList>
+          <Tabs
+            v-if="isReady && appList && appList.length > 0"
+            v-model="currentApp[currentProject]"
+            :animated="false"
+            type="card"
+          >
+            <TabPane :label="'所有 ' + allIssueCount" name="#">
+              <div class="bg-op padding-md">
+                <IssueList
+                  v-if="isReady && currentProjectId && currentApp[currentProject] === '#'"
+                  :isMine="1"
+                  :isEnd="0"
+                  :projectId="currentProjectId"
+                  :mode="displayMode"
+                  :displayAttrList="displayAttrList"
+                  :canSearch="true"
+                  :isShowEmptyTable="true"
+                ></IssueList>
+              </div>
+            </TabPane>
+            <TabPane
+              v-for="(app) in appList"
+              :key="app.id"
+              :label="app.name + ' ' + app.issueCount"
+              :name="'app' + app.id"
+            >
+              <div class="bg-op padding-md">
+                <IssueList
+                  v-if="isReady && currentProjectId && currentApp[currentProject] === 'app' + app.id"
+                  :isMine="1"
+                  :isEnd="0"
+                  :app="app"
+                  :projectId="currentProjectId"
+                  :mode="displayMode"
+                  :canSearch="true"
+                  :isShowEmptyTable="true"
+                ></IssueList>
+              </div>
+            </TabPane>
+          </Tabs>
         </div>
       </template>
     </TsContain>
@@ -41,10 +69,13 @@ export default {
     return {
       isReady: false,
       displayMode: 'level',
-      needAttr: ['priority', 'startdate', 'enddate'],
+      needAttr: ['status', 'priority', 'startdate', 'enddate'],
       attrList: [],
+      appList: [],
       projectList: [],
-      currentProject: null
+      currentProject: null,
+      currentApp: {},
+      allIssueCount: 0
     };
   },
   beforeCreate() {},
@@ -78,6 +109,9 @@ export default {
           if (this.projectList && this.projectList.length > 0) {
             this.currentProject = 'p' + this.projectList[0].id;
           }
+          this.projectList.forEach(p => {
+            this.$set(this.currentApp, 'p' + p.id, '#');
+          });
         });
     }
   },
@@ -97,15 +131,25 @@ export default {
     }
   },
   watch: {
-    currentProject: {
+    currentProjectId: {
       handler: function(val) {
         if (val) {
           this.isReady = false;
+          this.$api.rdm.project.getAppByProjectId(val, 1, 1).then(res => {
+            this.appList = res.Return;
+            this.allIssueCount = 0;
+            if (this.appList && this.appList.length > 0) {
+              this.appList.forEach(app => {
+                this.allIssueCount += app.issueCount;
+              });
+            }
+          });
           this.$nextTick(() => {
             this.isReady = true;
           });
         }
-      }
+      },
+      immediate: true
     }
   }
 };
