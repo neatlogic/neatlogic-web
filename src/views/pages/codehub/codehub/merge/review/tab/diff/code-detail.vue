@@ -8,7 +8,7 @@
         :title="diff.modifiedType && diff.modifiedType=='R'?'文件名由 '+diff.fromFileName+' 修改为 '+diff.toFileName:getName(diff)"
         @dblclick.stop="goToTree(diff)"
       >
-        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<i class="ts-long-arrow-right text-primary small"></i>11111111111{{ diff.toFileName }}</span>
+        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<i class="ts-long-arrow-right text-primary small"></i>{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
       </i>
       <i 
