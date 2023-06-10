@@ -152,6 +152,7 @@ export default {
     toId: { type: Number }, //目标任务id
     app: { type: Object },
     isMine: { type: Number }, //我的任务
+    isMyCreated: {type: Number}, //我创建的
     isEnd: { type: Number }, //是否结束
     isExpired: { type: Number }, //是否过期
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
@@ -447,6 +448,7 @@ export default {
       this.searchIssueData.catalog = this.catalog;
       this.searchIssueData.iteration = this.iteration;
       this.searchIssueData.isMine = this.isMine;
+      this.searchIssueData.isMyCreated = this.isMyCreated;
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       if (!this.$utils.isEmpty(this.searchValue)) {

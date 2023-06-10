@@ -4,15 +4,15 @@
       <template v-slot:top>
         <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject">
           <TabPane
-            v-for="(project) in projectList"
+            v-for="project in projectList"
             :key="project.id"
-            :label="project.name"
+            :label="project.name + ' ' + project.issueCount"
             :name="'p' + project.id"
           ></TabPane>
         </Tabs>
       </template>
       <template v-slot:content>
-        <div>
+        <div v-if="projectList && projectList.length > 0">
           <Tabs
             v-if="isReady && appList && appList.length > 0"
             v-model="currentApp[currentProject]"
@@ -23,8 +23,9 @@
               <div class="bg-op padding-md">
                 <IssueList
                   v-if="isReady && currentProjectId && currentApp[currentProject] === '#'"
-                  :isMine="1"
-                  :isEnd="0"
+                  :isMine="isMine"
+                  :isMyCreated="isMyCreated"
+                  :isEnd="isEnd"
                   :projectId="currentProjectId"
                   :mode="displayMode"
                   :displayAttrList="displayAttrList"
@@ -34,7 +35,7 @@
               </div>
             </TabPane>
             <TabPane
-              v-for="(app) in appList"
+              v-for="app in appList"
               :key="app.id"
               :label="app.name + ' ' + app.issueCount"
               :name="'app' + app.id"
@@ -42,8 +43,9 @@
               <div class="bg-op padding-md">
                 <IssueList
                   v-if="isReady && currentProjectId && currentApp[currentProject] === 'app' + app.id"
-                  :isMine="1"
-                  :isEnd="0"
+                  :isMine="isMine"
+                  :isMyCreated="isMyCreated"
+                  :isEnd="isEnd"
                   :app="app"
                   :projectId="currentProjectId"
                   :mode="displayMode"
@@ -54,6 +56,7 @@
             </TabPane>
           </Tabs>
         </div>
+        <div v-else><NoData></NoData></div>
       </template>
     </TsContain>
   </div>
@@ -64,7 +67,9 @@ export default {
   components: {
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
   },
-  props: {},
+  props: {
+    type: { type: String }
+  },
   data() {
     return {
       isReady: false,
@@ -99,24 +104,39 @@ export default {
       });
     },
     getProjectList() {
-      this.$api.rdm.project
-        .searchProject({
-          isMine: 1,
-          isClose: 0
-        })
-        .then(res => {
-          this.projectList = res.Return.tbodyList;
-          if (this.projectList && this.projectList.length > 0) {
-            this.currentProject = 'p' + this.projectList[0].id;
-          }
+      this.$api.rdm.project.getProjectIssueCount(this.isMine, this.isMyCreated, this.isEnd).then(res => {
+        this.projectList = res.Return;
+        if (this.projectList && this.projectList.length > 0) {
+          this.currentProject = 'p' + this.projectList[0].id;
           this.projectList.forEach(p => {
             this.$set(this.currentApp, 'p' + p.id, '#');
           });
-        });
+        }
+      });
     }
   },
   filter: {},
   computed: {
+    isMyCreated() {
+      if (this.type === 'mycreated') {
+        return 1;
+      }
+      return null;
+    },
+    isMine() {
+      if (this.type === 'doing' || this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
+    isEnd() {
+      if (this.type === 'doing') {
+        return 0;
+      } else if (this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
     currentProjectId() {
       if (this.currentProject) {
         return parseInt(this.currentProject.replace('p', ''));
@@ -135,7 +155,7 @@ export default {
       handler: function(val) {
         if (val) {
           this.isReady = false;
-          this.$api.rdm.project.getAppByProjectId(val, 1, 1).then(res => {
+          this.$api.rdm.project.getAppByProjectId(val, 1, this.isMine, this.isMyCreated, this.isEnd).then(res => {
             this.appList = res.Return;
             this.allIssueCount = 0;
             if (this.appList && this.appList.length > 0) {
