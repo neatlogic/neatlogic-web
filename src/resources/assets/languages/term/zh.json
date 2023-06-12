@@ -2269,6 +2269,7 @@
     "mergenumber": "MR编号",
     "allrequirements": "所有需求",
     "conflictingneeds": "冲突需求",
-    "mergedrequirements": "已合并需求"
+    "mergedrequirements": "已合并需求",
+    "triggerappmodule": "触发模块"
   }
 }

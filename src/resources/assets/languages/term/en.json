@@ -2272,6 +2272,7 @@
     "mergenumber": "MR number",
     "allrequirements": "All requirements",
     "conflictingneeds": "Conflicting needs",
-    "mergedrequirements": "Merged requirements"
+    "mergedrequirements": "Merged requirements",
+    "triggerappmodule": "Trigger module"
   }
 }
