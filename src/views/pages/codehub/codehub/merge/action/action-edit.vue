@@ -85,7 +85,6 @@ export default {
           label: this.$t('term.codehub.actionname'),
           maxlength: 50,
           validateList: ['required'],
-          width: '60%',
           onChange: name => {
             this.actionData.name = name;
           }
@@ -100,7 +99,6 @@ export default {
           type: 'select',
           name: 'appSystemId',
           label: this.$t('term.codehub.triggersystem'),
-          width: '60%',
           url: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
           valueName: 'id',
@@ -132,13 +130,13 @@ export default {
           dynamicUrl: '/api/rest/deploy/app/config/module/list',
           onChange: val => {
             this.appModuleId = val;
+            this.actionData.appModuleId = val;
           }
         },
         {
           type: 'select',
           name: 'versionId',
           label: this.$t('term.codehub.triggerversion'),
-          width: '60%',
           url: '/api/rest/codehub/version/search',
           rootName: 'tbodyList',
           valueName: 'id',
@@ -156,7 +154,6 @@ export default {
           type: 'text',
           name: 'targetBranch',
           label: this.$t('page.targetbranch'),
-          width: '60%',
           desc: this.$t('term.codehub.targetbranchdesc'),
           clearable: true,
           onChange: val => {
@@ -186,12 +183,11 @@ export default {
       },
       appModuleConfig: {
         search: true,
-        width: '60%',
         rootName: 'tbodyList',
         valueName: 'id',
         textName: 'name',
         onChange: val => {
-          this.actionData.versionId = '';
+          this.actionData.versionId = null;
           this.actionFormConfig.forEach(element => {
             if (element.name == 'versionId') {
               element.params = {
@@ -245,13 +241,12 @@ export default {
         });
       }
     },
-    changeSubsys() {
-      if (this.actionData.systemUuid) {
-        this.formConfig.forEach(fo => {
+    changeAppModule() {
+      if (this.actionData.appSystemId) {
+        this.actionFormConfig.forEach(fo => {
           if (fo.name == 'appModuleId') {
-            this.$set(fo, 'params', { appSystemId: val });
+            this.$set(fo, 'params', { appSystemId: this.actionData.appSystemId });
             this.$set(fo, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
-            this.showSub(true);
           }
         });
         this.actionFormConfig.forEach(element => {
@@ -260,11 +255,11 @@ export default {
           }
         });
       } else {
-        this.formConfig.forEach(fo => {
+        this.actionFormConfig.forEach(fo => {
           if (fo.name == 'appModuleId') {
             this.$set(fo, 'params', {});
             this.$set(fo, 'dynamicUrl', '');
-            this.showSub(true);
+            // this.showSub(true);
           }
         });
       }
