@@ -458,7 +458,8 @@
     "singlecreatejob": "Single Create Job",
     "triggertiming": "Trigger timing",
     "notificationpolicysettings": "Notification Policy Settings",
-    "templateparametermapping": "Template parameter mapping"
+    "templateparametermapping": "Template parameter mapping",
+    "targetparams": "Target parameters"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
