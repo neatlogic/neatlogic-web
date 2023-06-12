@@ -254,7 +254,8 @@
     "mydoing": "To-Do List",
     "mycompleted": "Completed List",
     "prioritymanage": "Priority Management",
-    "manage": "System Management"
+    "manage": "System Management",
+    "myreported": "What I Reported"
   },
   "codehub": {
     "codehub": "Code Center",

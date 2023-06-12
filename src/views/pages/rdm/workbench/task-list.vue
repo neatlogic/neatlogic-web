@@ -4,28 +4,59 @@
       <template v-slot:top>
         <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject">
           <TabPane
-            v-for="(project,index) in projectList"
-            :key="index"
-            :label="project.name"
-            :name="'p'+project.id"
+            v-for="project in projectList"
+            :key="project.id"
+            :label="project.name + ' ' + project.issueCount"
+            :name="'p' + project.id"
           ></TabPane>
         </Tabs>
       </template>
       <template v-slot:content>
-        <div>
-          <IssueList
-            v-if="isReady && currentProjectId"
-            ref="issueList"
-            :isMine="1"
-            :isEnd="0"
-            :projectId="currentProjectId"
-            :isExpired="0"
-            :mode="displayMode"
-            :displayAttrList="displayAttrList"
-            :canSearch="true"
-            :isShowEmptyTable="true"
-          ></IssueList>
+        <div v-if="projectList && projectList.length > 0">
+          <Tabs
+            v-if="isReady && appList && appList.length > 0"
+            v-model="currentApp[currentProject]"
+            :animated="false"
+            type="card"
+          >
+            <TabPane :label="'所有 ' + allIssueCount" name="#">
+              <div class="bg-op padding-md">
+                <IssueList
+                  v-if="isReady && currentProjectId && currentApp[currentProject] === '#'"
+                  :isMine="isMine"
+                  :isMyCreated="isMyCreated"
+                  :isEnd="isEnd"
+                  :projectId="currentProjectId"
+                  :mode="displayMode"
+                  :displayAttrList="displayAttrList"
+                  :canSearch="true"
+                  :isShowEmptyTable="true"
+                ></IssueList>
+              </div>
+            </TabPane>
+            <TabPane
+              v-for="app in appList"
+              :key="app.id"
+              :label="app.name + ' ' + app.issueCount"
+              :name="'app' + app.id"
+            >
+              <div class="bg-op padding-md">
+                <IssueList
+                  v-if="isReady && currentProjectId && currentApp[currentProject] === 'app' + app.id"
+                  :isMine="isMine"
+                  :isMyCreated="isMyCreated"
+                  :isEnd="isEnd"
+                  :app="app"
+                  :projectId="currentProjectId"
+                  :mode="displayMode"
+                  :canSearch="true"
+                  :isShowEmptyTable="true"
+                ></IssueList>
+              </div>
+            </TabPane>
+          </Tabs>
         </div>
+        <div v-else><NoData></NoData></div>
       </template>
     </TsContain>
   </div>
@@ -36,15 +67,20 @@ export default {
   components: {
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
   },
-  props: {},
+  props: {
+    type: { type: String }
+  },
   data() {
     return {
       isReady: false,
       displayMode: 'level',
-      needAttr: ['priority', 'startdate', 'enddate'],
+      needAttr: ['status', 'priority', 'startdate', 'enddate'],
       attrList: [],
+      appList: [],
       projectList: [],
-      currentProject: null
+      currentProject: null,
+      currentApp: {},
+      allIssueCount: 0
     };
   },
   beforeCreate() {},
@@ -68,21 +104,39 @@ export default {
       });
     },
     getProjectList() {
-      this.$api.rdm.project
-        .searchProject({
-          isMine: 1,
-          isClose: 0
-        })
-        .then(res => {
-          this.projectList = res.Return.tbodyList;
-          if (this.projectList && this.projectList.length > 0) {
-            this.currentProject = 'p' + this.projectList[0].id;
-          }
-        });
+      this.$api.rdm.project.getProjectIssueCount(this.isMine, this.isMyCreated, this.isEnd).then(res => {
+        this.projectList = res.Return;
+        if (this.projectList && this.projectList.length > 0) {
+          this.currentProject = 'p' + this.projectList[0].id;
+          this.projectList.forEach(p => {
+            this.$set(this.currentApp, 'p' + p.id, '#');
+          });
+        }
+      });
     }
   },
   filter: {},
   computed: {
+    isMyCreated() {
+      if (this.type === 'mycreated') {
+        return 1;
+      }
+      return null;
+    },
+    isMine() {
+      if (this.type === 'doing' || this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
+    isEnd() {
+      if (this.type === 'doing') {
+        return 0;
+      } else if (this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
     currentProjectId() {
       if (this.currentProject) {
         return parseInt(this.currentProject.replace('p', ''));
@@ -97,15 +151,25 @@ export default {
     }
   },
   watch: {
-    currentProject: {
+    currentProjectId: {
       handler: function(val) {
         if (val) {
           this.isReady = false;
+          this.$api.rdm.project.getAppByProjectId(val, 1, this.isMine, this.isMyCreated, this.isEnd).then(res => {
+            this.appList = res.Return;
+            this.allIssueCount = 0;
+            if (this.appList && this.appList.length > 0) {
+              this.appList.forEach(app => {
+                this.allIssueCount += app.issueCount;
+              });
+            }
+          });
           this.$nextTick(() => {
             this.isReady = true;
           });
         }
-      }
+      },
+      immediate: true
     }
   }
 };

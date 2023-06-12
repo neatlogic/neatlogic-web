@@ -909,5 +909,9 @@
   "effectiveness": "Validity",
   "strip": "strip",
   "globalsearch": "global search ",
-  "maxlength": "Maximum length"
+  "maxlength": "Maximum length",
+  "forceflush": "force refresh ",
+  "personnel": "personnel",
+  "isexpired": "Timed out or not",
+  "nottimedout": "Not timed out"
 }

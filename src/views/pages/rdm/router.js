@@ -83,6 +83,7 @@ let routerArr = [
     path: '/task-list/doing',
     name: 'taskList',
     component: taskList,
+    props: { type: 'doing' },
     meta: {
       title: $t('router.rdm.mydoing'),
       ismenu: true,
@@ -94,9 +95,23 @@ let routerArr = [
   {
     path: '/task-list/done',
     name: 'taskList',
+    props: { type: 'done' },
     component: taskList,
     meta: {
       title: $t('router.rdm.mycompleted'),
+      ismenu: true,
+      type: 'workbrench',
+      authority: 'RDM_BASE',
+      icon: 'tsfont-check-o'
+    }
+  },
+  {
+    path: '/task-list/mycreated',
+    name: 'taskList',
+    props: { type: 'mycreated' },
+    component: taskList,
+    meta: {
+      title: $t('router.rdm.myreported'),
       ismenu: true,
       type: 'workbrench',
       authority: 'RDM_BASE',

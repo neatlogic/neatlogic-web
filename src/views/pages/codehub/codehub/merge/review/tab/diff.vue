@@ -6,7 +6,7 @@
         <span class="font-bold text-title count-text">{{ getFileCount(diffList) }}</span>
         <span>个文件变更,</span>
         <span v-if="getFileCount(diffList,'addCount')" class="font-bold text-primary count-text">{{ getFileCount(diffList,'addCount') }}</span>
-        <span v-if="getFileCount(diffList,'addCount')" class="mr-10">行添加</span>
+        <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">行添加</span>
         <span v-if="getFileCount(diffList,'addCount') && getFileCount(diffList,'deleteCount')"></span>
         <span v-if="getFileCount(diffList,'deleteCount')" class="font-bold text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
         <span v-if="getFileCount(diffList,'deleteCount')">行删除</span>
@@ -14,16 +14,16 @@
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'" style="height:calc(100vh - 170px)">
       <div class="clearfix" style="margin-bottom: 4px;">
-        <div v-if="commitId" class="d_f ml-10 font-bold" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="d_f_r mr-10">
-          <FormSelect
+        <div v-if="commitId" class="d_f ml-sm font-bold" style="line-height: 2;">{{ commitInfo }}</div>
+        <div class="d_f_r mr-sm" style="display: flex;justify-content: end;">
+          <TsFormSelect
             v-if="!loading && commitList && commitList.length"
             v-model="selectedCommit"
             :dataList="commitList"
             v-bind="selectConfig"
-            class="mr-10"
+            class="mr-sm"
             @on-change="getDiff()"
-          ></FormSelect>
+          ></TsFormSelect>
           <RadioGroup v-if="!loading" v-model="showType" type="button">
             <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
           </RadioGroup>
@@ -54,7 +54,7 @@
           :selectedFile="selectedFile"
           :leftCommitId="leftCommitId"
           :rightCommitId="selectedCommit || rightCommitId"
-          :mrUuid="uuid"
+          :mrId="id"
           @endScroll="finishScroll =true"
           @hasFixtop="showFixtop"
           @affix="affix"
@@ -76,22 +76,17 @@
         @click="toggleshowTree"
       ></div>
     </div>
-
   </div>
-
 </template>
 <script>
 import mixins from './tabmixins.js';
-import TreeLi from './diff/tree-li.vue';
-import DiffDetail from './diff/diff-detail.vue';
 import axios from '@/resources/api/http.js';
-import FormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: '',
   components: {
-    TreeLi,
-    DiffDetail,
-    FormSelect
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    DiffDetail: resolve => require(['./diff/diff-detail.vue'], resolve),
+    TreeLi: resolve => require(['./diff/tree-li.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
@@ -102,7 +97,7 @@ export default {
       subsystemuuid: this.mrData.subsystemUuid || null,
       repositoryuuid: this.mrData.subsystemUuid || null,
       branchname: this.mrData.srcBranch || null,
-      smruuid: this.uuid || null
+      smruuid: this.id || null
     };
   },
   data() {
@@ -122,17 +117,16 @@ export default {
       showType: 'combine', //代码对比显示的模式
       typeList: [{
         name: 'combine',
-        label: '逐行对比'
+        label: this.$t('term.codehub.linebylinecomparison')
       }, {
         name: 'separate',
-        label: '左右对比'        
+        label: this.$t('term.codehub.leftandrightcomparison')        
       }],
       showTree: true,
       selectedCommit: null, //选中哪个对比的commit
       selectConfig: {
         width: 160,
         border: 'border',
-        placeholder: '请选择commit',
         clearable: false,
         textName: 'commitId',
         valueName: 'commitId',
@@ -189,8 +183,7 @@ export default {
     this.loading = true;
   },
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {
     if (this.commitId) {
       this.selectedCommit = this.commitId;
@@ -215,10 +208,10 @@ export default {
   methods: {
     getDiff(forceFlush) {
       let param = {
-        mrUuid: this.uuid
+        mrId: this.id
       };
       let _this = this;
-      if (!this.uuid) {
+      if (!this.id) {
         return;
       }
       if (this.selectedCommit || this.commitId) {
@@ -385,11 +378,10 @@ export default {
     },
     getMore(path, index) {
       let param = {
-        mrUuid: this.uuid,
+        mrId: this.id,
         filePath: path
       };
-      let _this = this;
-      if (!this.uuid) {
+      if (!this.id) {
         return;
       }
       if (this.selectedCommit || this.commitId) {
@@ -480,18 +472,7 @@ export default {
       immediate: true,
       deep: true
     }
-    // ,
-    // selectFilepath: {
-    //   handler: function(val) {
-    //     if (val) {
-    //       this.selectFile(val);
-    //     }
-    //   },
-    //   immediate: true,
-    //   deep: true      
-    // }
   }
-
 };
 
 </script>

@@ -5,110 +5,80 @@
       class="bg-block" 
       v-bind="layoutConfig"
     >
-      <template slot="top">
-        <div class="clearfix">
-          <div 
-            class="ts-angle-left d_f cursor-pointer" 
-            @click="gotoPrev()"
-          >{{ prevPath.name }}</div>
-          <div v-if="mrData" class="d_f top-title">
-            <h3 class="title">
-              <span 
-                class="overflow" 
-                :style="setTitlewidth(mrData.status)"
-                :title="mrData.description"
-              >{{ mrData.description ||'代码评审' }}</span>
-              <span 
-                v-clipboard="urlPath" 
-                v-clipboard:success="clipboardSuc" 
-                class="ts-link text-href btn-copy" 
-                title="复制当前URL"
-              ></span>
-              <Tag 
-                :color="setStatus('color',mrData.status)" 
-                class="ml-10 status-tag"
-              >
-                {{ setStatus('text',mrData.status) }}
-              </Tag>
+      <template v-slot:navigation>
+        <span class="ts-angle-left text-action" @click="$back('/merge-overview')">{{ $getFromPage($t('router.codehub.mergerequestlist')) }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <div v-if="mrData" style="display: flex;">
+          <div class="title">
+            <span 
+              class="overflow" 
+              :style="setTitlewidth(mrData.status)"
+              :title="mrData.description"
+            >{{ mrData.description || $t('term.codehub.codereview') }}</span>
+            <span 
+              v-clipboard="urlPath" 
+              v-clipboard:success="clipboardSuc" 
+              class="ts-link text-href btn-copy ml-sm" 
+              :title="$t('term.codehub.copycurrenturl')"
+            ></span>
+            <Tag 
+              :color="setStatus('color',mrData.status)" 
+              class="ml-sm status-tag"
+            >
+              {{ setStatus('text',mrData.status) }}
+            </Tag>
               
-              <Tooltip 
-                v-if="errorMessage && mrData.status == 'failed'" 
-                theme="light" 
-                max-width="400" 
-                transfer
-              >
-                <div class="text-error cursor-pointer ts-info"></div>
-                <div slot="content">
-                  <div v-html="errorMessage"></div>
-                </div>
-              </Tooltip>
-              <div 
-                v-else-if="mrData.status == 'failed'" 
-                class="ivu-tooltip"
-              >
-                <div class="ivu-tooltip-rel">
-                  <div class="text-error cursor-pointer ts-info" @click="showError()">
-                  </div>
+            <Tooltip 
+              v-if="errorMessage && mrData.status == 'failed'" 
+              theme="light" 
+              max-width="400" 
+              transfer
+            >
+              <div class="text-error cursor-pointer ts-info"></div>
+              <div slot="content">
+                <div v-html="errorMessage"></div>
+              </div>
+            </Tooltip>
+            <div 
+              v-else-if="mrData.status == 'failed'" 
+              class="ivu-tooltip"
+            >
+              <div class="ivu-tooltip-rel">
+                <div class="text-error cursor-pointer ts-info" @click="showError()">
                 </div>
               </div>
-            </h3>
-            <div v-if="mrData" class="desc">
-              <Tooltip v-if="showtips(mrData)" theme="light" max-width="300">
-                <div>{{ setTxt(mrData, 'text') }}</div>
-                <div slot="content">
-                  <div>{{ setTxt(mrData, 'tips') }}</div>
-                </div>
-              </Tooltip>
-              <span v-else>{{ setTxt(mrData, 'text') }}</span>
-              <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">源分支:</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-10">{{ mrData.srcBranch }}</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">目标分支:</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-10">{{ mrData.targetBranch }}</span>
             </div>
           </div>
-          <div class="d_f_r">
-            <Button
-              v-if="mrData"
-              class="ml-10"
-              type="error"
-              size="small"
-            ><div class="ts-refresh" title="强制刷新" @click="forceFlush"></div></Button></div>
+          <div class="desc">
+            <Tooltip theme="light" max-width="300">
+              <div>{{ setTxt(mrData) }}</div>
+              <div slot="content">
+                <div>{{ setTxt(mrData) }}</div>
+              </div>
+            </Tooltip>
+            <Tag v-if="mrData.versionVo && mrData.versionVo.name" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
+            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
+            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
+            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
+          </div>
         </div>
       </template>
-      <div slot="right" class="review-right border-color">
-        <div v-if="mrData">
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <div class="ts-info text-tilte mr-10"></div>基本信息
-            </div>
-            <CellGroup>
-              <Cell label="UUID">
-                <div>{{ mrData.uuid }}              
-                  <span 
-                    v-clipboard="mrData.uuid" 
-                    class="ts-link text-href btn-copy" 
-                    title="复制当前UUID"
-                  ></span></div>
-              </Cell>
-            </CellGroup>
-          </Card>
-          <Divider />
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <div class="ts-user text-tilte mr-10"></div>人员
-            </div>
-            <CellGroup>
-              <Cell :title="mrData.fcu" label="提交人" />
-              <Cell v-if="mrData.handleUser" :title="mrData.handleUser||'暂无'" label="处理人" />
-            </CellGroup>
-          </Card>
-        </div>
-      </div>
-      <div slot="left" class="review-container">
+      <template v-slot:topRight>
+        <Button
+          v-if="mrData"
+          class="ml-sm"
+          type="error"
+          size="small"
+        >
+          <span class="tsfont-refresh" @click="forceFlush">{{ $t('page.forceflush') }}</span>
+        </Button>
+      </template>
+      <div slot="content" class="review-container">
         <Loading v-if="isLoading" loadingShow></Loading>
         <div v-else-if="mrData" class="review-main padding-md">
-          <Tabs v-model="activeTab" :animated="false" @on-click="selectedCommitUuid=null;selectFilepath=null">
+          <Tabs v-model="activeTab" :animated="false" @on-click="selectedCommitId=null;selectFilepath=null">
             <TabPane 
               v-for="(tab,tindex) in tabList" 
               :key="tindex" 
@@ -119,24 +89,66 @@
                 <div 
                   :is="tab.name"
                   v-if="activeTab==tab.name"
+                  :id="id" 
                   :mrData="mrData" 
-                  :uuid="uuid" 
                   :mrstatusList="statusList" 
                   :statusList="issuestatusList" 
-                  :commitId="selectedCommitUuid"
+                  :commitId="selectedCommitId"
                   :refreshItem="refreshItem"
                   :selectFilepath="selectFilepath"
                   @reload="getDetail"
                   @updateStatus="updateStatus"
                   @revert="revertIssue"
                   @getCommit="getCommit"
-                  @clearCommit="selectedCommitUuid=null"
+                  @clearCommit="selectedCommitId=null"
                   @clearItem="clearItem"
                   @selectFile="selectFile"
                 ></div>
               </keep-alive>
             </TabPane>
           </Tabs>
+        </div>
+      </div>
+      <div slot="right" class="review-right border-color">
+        <div v-if="mrData">
+          <Card :padding="0" :bordered="false">
+            <div slot="title">
+              <span class="tsfont-info-o text-tilte mr-sm">{{ $t('page.basicinfo') }}</span>
+            </div>
+            <CellGroup>
+              <Cell label="id">
+                <div>{{ mrData.id }}              
+                  <span 
+                    v-clipboard="mrData.id" 
+                    class="ts-link text-href btn-copy" 
+                    :title="$t('term.codehub.copycurrentid')"
+                  ></span>
+                </div>
+              </Cell>
+            </CellGroup>
+          </Card>
+          <Divider />
+          <Card :padding="0" :bordered="false">
+            <div slot="title">
+              <span class="tsfont-userinfo text-tilte mr-sm">{{ $t('page.personnel') }}</span>
+            </div>
+            <CellGroup>
+              <Cell :label="$t('page.presenter')">
+                <UserCard
+                  v-if="mrData.fcu"
+                  :uuid="mrData.fcu"
+                  :hideAvatar="true"
+                ></UserCard>
+              </Cell>
+              <Cell :label="$t('term.process.dealwithuser')">
+                <UserCard
+                  v-if="mrData.handleUser"
+                  :uuid="mrData.handleUser"
+                  :hideAvatar="true"
+                ></UserCard>
+              </Cell>
+            </CellGroup>
+          </Card>
         </div>
       </div>
     </TsContain>
@@ -155,6 +167,7 @@ import tabs from './review/tab/index.js';
 export default {
   name: '',
   components: {
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     MergeRevert: resolve => require(['./merge-revert.vue'], resolve),
     ...tabs
   },
@@ -164,13 +177,8 @@ export default {
   props: [''],
   data() {
     return {
-      uuid: null, //mrid
+      id: null, //mrid
       mrData: null, //接口返回的mr数据
-      prevPath: {
-        //上一步
-        path: '/merge-overview',
-        name: 'MR列表'
-      },
       statusList: [], //需单独通过接口获取的状态下拉，用于mr状态中文回显
       issuestatusList: [], //需单独通过接口获取的需求状态下拉，用于需求状态中文回显，最外层获取减少调用次数
       duringAction: false, //是否是调用接口的操作标志，操作中的禁用改操作按钮防止重复点击
@@ -190,20 +198,20 @@ export default {
       activeTab: 'issue',
       tabList: [{
         name: 'issue',
-        label: '需求'
+        label: this.$t('term.rdm.request')
       }, {
         name: 'diff',
-        label: '变更'
+        label: this.$t('page.change')
       }, {
         name: 'comment',
-        label: '评论'
+        label: this.$t('page.comment')
       }, {
         name: 'active',
-        label: '活动'
+        label: this.$t('page.activity')
       }],
       isLoading: false,
       switchValue: true,
-      selectedCommitUuid: null, //从需求切换变更指定的哪个commit
+      selectedCommitId: null, //从需求切换变更指定的哪个commit
       leftCommitId: null,
       rightCommitId: null,
       refreshItem: [], //新增的用于强制刷新数组
@@ -215,14 +223,8 @@ export default {
     this.urlPath = window.location.href;
     this.getStatuslist();
     this.getissueStatuslist();
-    if (sessionStorage.getItem('mergehandlerPrev')) {
-      let prevsetting = JSON.parse(sessionStorage.getItem('mergehandlerPrev'));
-      if (prevsetting.router != '/') {
-        this.prevPath = prevsetting;
-      }
-    }
-    if (this.$route.query.uuid) {
-      this.uuid = this.$route.query.uuid;
+    if (this.$route.query.id) {
+      this.id = parseInt(this.$route.query.id);
       this.getDetail();
     }
   },
@@ -235,28 +237,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    gotoPrev() {
-      this.$router.push({
-        path: this.prevPath.path
-      });
-    },
     getDetail(isRefreshStatus) {
-      let _this = this;
-      let param = { uuid: this.uuid };
+      let param = { id: this.id };
       if (!isRefreshStatus) {
-        _this.isLoading = true;
+        this.isLoading = true;
       }
       this.errorMessage = null;
-      _this.$api.codehub.merge.getDetail(param).then(res => {
-        _this.isLoading = false;
+      this.$api.codehub.merge.getDetail(param).then(res => {
+        this.isLoading = false;
         if (res && res.Status == 'OK') {
-          _this.mrData = res.Return;
+          this.mrData = res.Return;
         } else {
-          _this.mrData = null;
+          this.mrData = null;
         }
       }).catch((e) => {
-        _this.isLoading = false;
-        _this.mrData = null;
+        this.isLoading = false;
+        this.mrData = null;
       });
     },
     getStatuslist() {
@@ -280,13 +276,13 @@ export default {
     showError() {
       //查看失败的mr的错误消息
       let param = {
-        mrUuid: this.uuid 
+        mrUuid: this.id 
       };
       this.$api.codehub.merge.getError(param).then((res) => {
         if (res.Status == 'OK' && res.Return) {
-          this.errorMessage = res.Return.errorMessage || '暂无错误信息';
+          this.errorMessage = res.Return.errorMessage || this.$t('term.codehub.thereiscurrentlynoerrormessage');
         } else {
-          this.$Message.info('暂无错误信息');
+          this.$Message.info(this.$t('term.codehub.thereiscurrentlynoerrormessage'));
         }
       });
     },
@@ -308,11 +304,11 @@ export default {
       this.mrActionType = 'revert';
     },
     clipboardSuc() {
-      this.$Message.success('复制当前URL成功');
+      this.$Message.success(this.$t('message.copysuccess'));
     },
-    getCommit(commitUuid) {
+    getCommit(commitId) {
       //从需求切换到变更并选中指定的commit
-      this.selectedCommitUuid = commitUuid;
+      this.selectedCommitId = commitId;
       this.activeTab = 'diff';
     },
     forceFlush() {
@@ -329,31 +325,15 @@ export default {
       this.selectFilepath = path;
     }
   },
-
   filter: {},
-
   computed: {
-    showtips() {
-      //如果系统、子系统的描述都没有，不显示提示tooltip
-      return function(config) {
-        let isshow = false;
-        if ((config.systemVo && config.systemVo.description) || (config.subSystemVo && config.subSystemVo.description)) {
-          isshow = true;
-        }
-        return isshow;
-      };
-    },
     setTxt() {
       //回显对应的系统、子系统的描述
       return function(config, type) {
         let text = '';
-        let prev = config.systemVo || '';
-        let next = config.subSystemVo || '';
-        if (type == 'text') {
-          text = (prev ? prev.name : '') + (next ? '/' + next.name : '');
-        } else if (type == 'tips') {
-          text = (prev && prev.description ? prev.description : '') + (next && next.description ? '/' + next.description : '');
-        }
+        let prev = config.appSystemVo || '';
+        let next = config.appModuleVo || '';
+        text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : prev.name) : '') + (next ? '/' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : next.name) : '');
         return text;
       };
     },
@@ -384,27 +364,9 @@ export default {
       };
     }
   },
-
-  watch: {},
-  beforeRouteEnter(to, from, next) {
-    if (from.fullPath && from.fullPath != '/') {
-      let prevsetting = {
-        path: from.fullPath,
-        name: from.meta.title
-      };
-      sessionStorage.setItem('mergehandlerPrev', JSON.stringify(prevsetting));
-    }
-    next();
-  },
-  beforeRouteLeave(to, from, next) {
-    sessionStorage.removeItem('mergehandlerPrev');
-    next();
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-// @import '~@/resources/assets/css/codehub/commit.less';
-</style>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .action-item {

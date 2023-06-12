@@ -2271,6 +2271,13 @@
     "mergenumber": "MR number",
     "allrequirements": "All requirements",
     "conflictingneeds": "Conflicting needs",
-    "mergedrequirements": "Merged requirements"
+    "mergedrequirements": "Merged requirements",
+    "codereview": "code review",
+    "copycurrenturl": "Copy current URL",
+    "thereiscurrentlynoerrormessage": "There is currently no error message",
+    "copycurrentid": "Copy current ID",
+    "linebylinecomparison": "Line by line comparison",
+    "leftandrightcomparison": "Left and right comparison",
+    "postcomments": "Post comments"
   }
 }

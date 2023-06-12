@@ -10,7 +10,7 @@
         >
         </TsForm>
         <!-- 不创建新版本——start    -->
-        <div v-if="!isNewVersion &&versionTable.tbodyList && formValue.appModuleId" class="mt-nm">
+        <div v-if="!isNewVersion && !$utils.isEmpty(versionTable.tbodyList) && formValue.appModuleId" class="mt-nm">
           <TsTable v-bind="versionTable" @getSelected="getversionSelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
@@ -19,7 +19,7 @@
         </div>
         <!-- 不创建新版本——end    -->
         <!-- 创建新版本——start    -->
-        <div v-if="isNewVersion && strategyData.tbodyList && formValue.appModuleId">
+        <div v-if="isNewVersion && !$utils.isEmpty(strategyData.tbodyList) && formValue.appModuleId">
           <TsTable v-bind="strategyData" @getSelected="getstrategySelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
@@ -38,10 +38,7 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
   },
-  props: {
-    appModuleId: [String, Number], // 子系统id
-    appSystemId: [String, Number] // 系统id
-  },
+  props: {},
   data() {
     return {
       dialogSetting: {
@@ -71,15 +68,15 @@ export default {
           title: this.$t('page.versiontype'),
           key: 'versiontypeName' //这个没有可取字段,用的版本类型名字
         }],
-        tbodyList: null
+        tbodyList: []
       },
       formValue: {
         isNewversion: '1',
         id: '',
-        name: '',
+        version: '',
         versionTypeId: '',
         versionStrategyId: '',
-        appModuleId: this.appModuleId
+        appModuleId: null
       },
       formConfig: [{
         type: 'radio',
@@ -95,10 +92,8 @@ export default {
           text: this.$t('page.no'),
           value: '0'          
         }],
-        onChange: (val) => {
-          if (this.formValue.appModuleId) {
-            this.getVersion(this.formValue.appModuleId);
-          }
+        onChange: () => {
+          this.getVersion(this.formValue.appModuleId);
         }
       }, 
       {
@@ -126,7 +121,7 @@ export default {
         dynamicUrl: '/api/rest/codehub/appmodule/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getAppForselect,
-        params: {appSystemId: this.appSystemId},
+        params: {appSystemId: null},
         onChange: (val) => {
           this.getVersion(val);
         }   
@@ -181,16 +176,14 @@ export default {
           title: this.$t('page.targetbranch'),
           key: 'targetBranch'
         }],
-        tbodyList: null
+        tbodyList: []
       }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.initData();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -198,18 +191,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    initData() {
-      this.$set(this.formValue, 'appModuleId', this.appModuleId);
-      this.$set(this.versionTable, 'tbodyList', null);
-      if (this.appModuleId) {
-        this.setVal('appModuleId', this.appModuleId);
-        this.getVersion(this.appModuleId);
-      }
-      if (this.appSystemId) {
-        this.setVal('appSystemId', this.appSystemId);
-        this.changeAppModule(this.appSystemId, true);
-      }
-    },
     close() {
       this.$emit('close');
     },
@@ -219,7 +200,7 @@ export default {
           let param = {};
           if (this.isNewVersion) {
             //如果是新建的要校验必填信息
-            if (this.$refs.versionform && this.$refs.versionform.valid() && this.$refs.nameInput.valid()) {
+            if (this.$refs.versionform && this.$refs.versionform.valid()) {
               Object.assign(param, {
                 version: this.versionPrefix + this.formValue.version,
                 versionTypeId: this.formValue.versionTypeId,
@@ -238,7 +219,7 @@ export default {
             if (this.selectedversion.length > 0) {
               if (this.selectedversion[0].canEdit) {
                 Object.assign(param, {
-                  name: this.versionPrefix + this.selectedversion[0].name,
+                  version: this.versionPrefix + this.selectedversion[0].name,
                   id: this.selectedversion[0].id,
                   versionTypeId: this.selectedversion[0].versionTypeId,
                   versionStrategyId: this.selectedversion[0].versionStrategyId,
@@ -264,12 +245,13 @@ export default {
         this.formValue.versionStrategyId = vals[0].id;
         this.versionPrefix = vals[0].versionPrefix;
         this.selectedversion = vals;
+        this.setVersionPrefix(vals[0].versionPrefix);
       } else {
         this.formValue.versionStrategyId = '';
         this.versionPrefix = '';
         this.selectedversion = {};
       }
-      this.hideName(this.formValue.versionStrategyId);
+      this.hideVersion(this.formValue.versionStrategyId);
     },
     getstrategySelected(val, vals) {
       //新建版本，策略选中的话，
@@ -278,54 +260,62 @@ export default {
         this.versionPrefix = vals[0].versionPrefix;
         this.selectedversion = vals;
         this.autofillName();
+        this.setVersionPrefix(this.versionPrefix);
       } else {
         this.formValue.versionStrategyId = '';
         this.versionPrefix = '';
         this.selectedversion = {};
+        this.setVersionPrefix(this.versionPrefix);
       }
-      this.hideName(this.formValue.versionStrategyId);
+      this.hideVersion(this.formValue.versionStrategyId);
     },
-    hideName(id) {
-      this.formConfig.forEach((form, findex) => {
+    hideVersion(id) {
+      this.formConfig.forEach((form) => {
         if (form.name == 'version') {
           form.isHidden = !id;
         }
       });
     },
-    changeAppModule(val, iskeep) {
-      // 改变子系统的入参
-      this.formValue.appSystemId = val;
-      this.formValue.appModuleId = !iskeep ? '' : this.formValue.appModuleId;
-      this.formValue.versionStrategyId = '';
-      this.hideName();
-      this.formConfig.forEach((form, findex) => {
-        if (form.name == 'appModuleId') {
-          form.isHidden = !val;
-          form.params = {appSystemId: val};
+    setVersionPrefix(versionPrefix) {
+      // 设置版本前缀
+      this.formConfig.forEach((item) => {
+        if (item && item.name == 'version') {
+          item.prepend = versionPrefix;
         }
       });
     },
-    getVersion(val) {
-      this.formValue.appModuleId = val;
-      let param = {};
-      Object.assign(param, {needPage: false});
-      this.versionPrefix = '';
+    changeAppModule(appSystemId) {
+      // 改变子系统的入参
+      this.formValue.appSystemId = appSystemId;
       this.formValue.versionStrategyId = '';
-      this.hideName();
-      if (val) {
-        Object.assign(param, {appModuleId: val});
+      this.hideVersion();
+      this.formConfig.forEach((item) => {
+        if (item.name == 'appModuleId') {
+          item.isHidden = !appSystemId;
+          item.params = {appSystemId: appSystemId};
+        }
+      });
+    },
+    getVersion(appModuleId) {
+      let param = {
+        needPage: false
+      };
+      this.formValue.versionStrategyId = '';
+      this.hideVersion();
+      if (appModuleId) {
+        Object.assign(param, {appModuleId: appModuleId});
         if (this.isNewVersion) {
           this.$api.codehub.strategy.getList(param).then(res => {
-            this.isLoad = false;
             if (res && res.Status == 'OK') {
               this.$set(this.strategyData, 'tbodyList', res.Return.tbodyList);
             } else {
               this.$set(this.strategyData, 'tbodyList', []);
             }
+          }).finally(() => {
+            this.isLoad = false;
           });
         } else {
           this.$api.codehub.version.getList(param).then(res => {
-            this.isLoad = false;
             if (res && res.Status == 'OK') {
               let tbodyList = res.Return.tbodyList || [];
               if (tbodyList.length > 0) {
@@ -350,27 +340,20 @@ export default {
             } else {
               this.$set(this.versionTable, 'tbodyList', []);
             }
+          }).finally(() => {
+            this.isLoad = false;
           });
         }
       } else {
-        this.$set(this.versionTable, 'tbodyList', null);
-        this.$set(this.strategyData, 'tbodyList', null);
+        this.$set(this.versionTable, 'tbodyList', []);
+        this.$set(this.strategyData, 'tbodyList', []);
       }
-    },
-    setVal(name, val) {
-      this.formConfig.forEach((form, findex) => {
-        if (form.name == name) {
-          this.$set(form, 'value', val);
-        }
-      });
     },
     gotoCreate(id, type) {
       this.$router.push({ path: 'merge-create', query: {versionid: id, type: type} });
     },
     autofillName() {
-      Object.assign(this.formValue, {
-        name: ''
-      });
+      this.formValue.version = '';
       if (this.formValue.appModuleId && this.formValue.versionStrategyId && this.formValue.versionTypeId) {
         let param = {
           appModuleId: this.formValue.appModuleId,
@@ -379,9 +362,7 @@ export default {
         };
         this.$api.codehub.version.autofillName(param).then((res) => {
           if (res && res.Status == 'OK' && res.Return.version) {
-            Object.assign(this.formValue, {
-              name: res.Return.version.replace(this.versionPrefix, '')
-            });
+            this.formValue.version = res.Return.version.replace(this.versionPrefix, '');
           }
         });
       }

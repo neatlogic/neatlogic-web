@@ -14,9 +14,6 @@
       <template slot="status" slot-scope="{row}">
         {{ getStatus(row.status) }}
       </template>
-      <template slot="lcd" slot-scope="{row}">
-        {{ row.lcd|formatDate }}
-      </template>
       <template slot="versionVo" slot-scope="{row}">
         {{ row.versionName || row.versionVo.name }}
       </template>
@@ -73,13 +70,16 @@ export default {
         key: 'mergedIssueCount'
       }, {
         title: this.$t('page.presenter'),
-        key: 'fcu'
+        key: 'fcu',
+        type: 'user'
       }, {
         title: this.$t('term.process.dealwithuser'),
-        key: 'handleUser'
+        key: 'handleUser',
+        type: 'user'
       }, {
         title: this.$t('page.updatetime'),
-        key: 'lcd'
+        key: 'lcd',
+        type: 'time'
       }],
       tableData: {
         tbodyList: [],
