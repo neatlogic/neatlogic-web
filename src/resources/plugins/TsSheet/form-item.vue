@@ -59,6 +59,7 @@
       :filter="filter"
       :readonly="(mode != 'defaultvalue'?formItem.config && formItem.config.isReadOnly:false) || readonly"
       :disabled="(mode != 'defaultvalue'?formItem.config && formItem.config.isDisabled:false) || disabled"
+      :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       @setValue="setValue"
@@ -132,7 +133,8 @@ export default {
         readonly: 0,
         disable: 0,
         setvalue: 0,
-        emit: 0
+        emit: 0,
+        require: 0
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
       filter: [] //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
@@ -181,6 +183,9 @@ export default {
         }
         if (this.formItem.override_config.isMask) {
           this.formItem.config.isMask = true;
+        }
+        if (this.formItem.override_config.isRequired) {
+          this.formItem.config.isRequired = true;
         }
       }
     },

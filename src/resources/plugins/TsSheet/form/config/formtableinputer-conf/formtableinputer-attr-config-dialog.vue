@@ -501,7 +501,7 @@ export default {
     changeHandler(val) {
       this.propertyLocal.reaction = null;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}});
+        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
         this.$set(this.propertyLocal, 'value', null);
         if (val != 'formtable') {
           this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
