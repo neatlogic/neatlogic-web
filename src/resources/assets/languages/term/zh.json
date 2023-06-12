@@ -2270,6 +2270,13 @@
     "allrequirements": "所有需求",
     "conflictingneeds": "冲突需求",
     "mergedrequirements": "已合并需求",
-    "triggerappmodule": "触发模块"
+    "triggerappmodule": "触发模块",
+    "codereview": "代码评审",
+    "copycurrenturl": "复制当前URL",
+    "thereiscurrentlynoerrormessage": "暂无错误信息",
+    "copycurrentid": "复制当前id",
+    "linebylinecomparison": "逐行对比",
+    "leftandrightcomparison": "左右对比",
+    "postcomments": "发布评论"
   }
 }

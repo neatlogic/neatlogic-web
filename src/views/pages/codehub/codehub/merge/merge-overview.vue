@@ -35,13 +35,10 @@
     </TsContain>
     <MergeAddDialog
       v-if="isShowMergeAddDialog"
-      :appSystemId="searchVal.appSystemId"
-      :appModuleId="searchVal.appModuleId"
       @close="close"
     ></MergeAddDialog>
   </div>
 </template>
-
 <script>
 export default {
   name: 'MergeOverview',
@@ -57,7 +54,7 @@ export default {
       mergeData: {currentPage: 1, pageSize: 20},
       mergeTypeList: [],
       activetab: 'open',
-      isLoad: false,
+      isLoad: true,
       isShowMergeAddDialog: false,
       searchVal: {},
       searchConfig: {
@@ -81,8 +78,7 @@ export default {
             label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id'
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -136,7 +132,7 @@ export default {
         ...this.searchVal
       };
       if (this.activetab) {
-        Object.assign(param, {status: this.activetab == 'all' ? '' : this.activetab});
+        this.$set(param, 'status', this.activetab == 'all' ? '' : this.activetab);
       }
       this.isLoad = true;
       this.$api.codehub.merge.getList(param).then(res => {
@@ -205,7 +201,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .detail-container{
-  padding:8px;
+  padding: 8px;
   /deep/ .ivu-badge{
     vertical-align: top;
     transform: scale(0.8);

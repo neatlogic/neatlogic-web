@@ -120,7 +120,7 @@ const merge = {
   },
   getActive(data) {
     //获取活动
-    return axios.post('/api/rest/codehub/codehub/action/search', data);
+    return axios.post('/api/rest/codehub/action/search', data);
   }
 };
 export default merge;

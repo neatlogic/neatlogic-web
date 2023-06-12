@@ -41,7 +41,7 @@ export default {
             url: '/api/rest/codehub/versiontype/save', 
             key: 'name',
             message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
-            params: { id: ''}
+            params: { id: this.id}
           }],
         maxlength: 255,
         disabled: !!this.id

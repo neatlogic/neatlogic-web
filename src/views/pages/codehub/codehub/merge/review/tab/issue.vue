@@ -2,14 +2,14 @@
   <div>
     <template v-if="!isLoading">
       <div v-if="mrData.status == 'open' && !duringAction" style="height:48px;" class="text-right">
-        <span v-if="mergetype == 'issue'" class="bottom-text mr-10">遇到冲突需求</span>
+        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">遇到冲突需求</span>
         <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
           <Radio label="stop">终止</Radio>
           <Radio label="continus">继续</Radio>
         </RadioGroup>
         <Button
           type="primary"
-          class="mr-20 ml-10"
+          class="mr-sm ml-sm"
           :disabled="duringAction"
           size="small"
           @click="handlerMr()"
@@ -22,14 +22,14 @@
         >关闭</Button>
       </div>
       <div v-if="(mrData.status == 'conflict' || mrData.status == 'failed') && !duringAction" style="height:48px;" class="text-right">
-        <span v-if="mergetype == 'issue'" class="bottom-text mr-10">遇到冲突需求</span>
+        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">遇到冲突需求</span>
         <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
           <Radio label="stop">终止</Radio>
           <Radio label="continus">继续</Radio>
         </RadioGroup>
         <Button
           type="primary"
-          class="ml-10"
+          class="ml-sm"
           :disabled="duringAction"
           size="small"
           @click="handlerMr()"
@@ -38,7 +38,7 @@
       <div v-if="(mrData && mrData.versionTypeStrategyRelationVo && mrData.versionTypeStrategyRelationVo.versionStrategyType && mrData.versionTypeStrategyRelationVo.versionStrategyType=='branch' && mrData.status=='finish') && !duringAction" style="height:48px;" class="text-right">
         <Button
           type="error"
-          class="ml-10"
+          class="ml-sm"
           :disabled="duringAction"
           size="small"
           @click="revertMr()"
@@ -81,7 +81,7 @@
         <template slot="folder" slot-scope="{ row }">
           <CommitDetail
             v-if="row.showFolder != undefined && row.commitList"
-            :mrUuid="uuid"
+            :mrId="id"
             :commitList="row.commitList"
             :statusList="commitstatusList"
             @getCommit="getCommit"
@@ -197,7 +197,7 @@ export default {
   methods: {
     getList(forceFlush) {
       let param = {
-        mrUuid: this.uuid
+        mrId: this.id
       };
       if (forceFlush) {
         Object.assign(param, {
@@ -250,13 +250,9 @@ export default {
       let _this = this;
       if (type == 'branch') {
         _this.duringAction = true;
-        let param = { mrUuid: _this.uuid };
+        let param = { mrId: _this.id };
         this.$api.codehub.merge.mergebyBranch(param).then(res => {
           _this.duringAction = false;
-          // let status = (res.Return && res.Return.status) || '';
-          // _this.$emit('updateStatus', status);
-          // _this.mrData.status = status;
-          //_this.$emit('reload', true);
           _this.reloadStatus = true;
           if (res && res.Status == 'OK') {
             _this.flushIssueStatus();
@@ -265,7 +261,6 @@ export default {
         })
           .catch(error => {
             _this.duringAction = false;
-            //_this.$emit('reload', true);
             _this.reloadStatus = true;
           });
       } else {
@@ -276,8 +271,7 @@ export default {
       let _this = this;
       if (this.mrData.versionTypeStrategyRelationVo && this.mrData.versionTypeStrategyRelationVo.versionStrategyType && this.mrData.versionTypeStrategyRelationVo.versionStrategyType == 'branch' && this.mrData.status == 'finish') {
         //分支类型且状态为已结束的才可以revert
-        let param = { mrUuid: this.uuid };
-
+        let param = { mrId: this.id };
         _this.$createDialog({
           title: '确认撤销MR',
           content: '是否确认撤销MR？',
@@ -293,7 +287,6 @@ export default {
                   versionid: _this.mrData.versionUuid,
                   mrType: 'revert',
                   description: 'MR撤销'
-                  // description: "Revert MR '" + _this.uuid + "'"
                 };
                 _this.$router.push({ path: 'merge-create', query: param });
               }
@@ -308,7 +301,7 @@ export default {
     },
     closeMr() {
       let params = {
-        uuid: this.uuid,
+        id: this.id,
         status: 'closed'
       };
       this.$api.codehub.merge.updateStatus(params).then(res => {
@@ -320,13 +313,12 @@ export default {
     mergeIssue() {
       let _this = this;
       _this.duringAction = true;
-      let param = { mrUuid: _this.uuid, continueMergeOnException: _this.reslove != 'stop' };
+      let param = { mrId: _this.id, continueMergeOnException: _this.reslove != 'stop' };
       this.$api.codehub.merge
         .mergebyIssue(param)
         .then(res => {
           if (res && res.Status == 'OK') {
             _this.flushIssueStatus();
-            //_this.$emit('reload', _this.reslove);
           } else {
             _this.duringAction = false;
           }
@@ -339,7 +331,7 @@ export default {
       let _this = this;
       let notFinish = false;
       _this.$api.codehub.merge
-        .getDetail({ uuid: _this.uuid })
+        .getDetail({ id: _this.id })
         .then(res => {
           if (res && res.Status == 'OK') {
             //所有的issue列表
@@ -370,13 +362,6 @@ export default {
                 _this.issueList.push(retIssue);
               }
             });
-
-            //if (notFinish && _this.reslove != 'stop' && mr.status != 'failed') {
-            //if (_this.reslove != 'stop' && (mr.status != 'failed' || notFinish)) {
-            //if ((_this.reslove != 'stop' && mr.status == 'merging') || notFinish) {
-            //20210611——无刷新是因为勾选了不继续，需去掉this.reslove的判断
-            //--bug=1008144 --user=庄倩萍 【代码中心】合并时选择遇到冲突需求终止 , 当MR变为冲突状态时前端状态无更新 https://www.tapd.cn/54247054/s/1158985
-            // if (mr.status == 'merging' || notFinish) {
             if (mr.status == 'merging') {
               _this.flushTimer && clearTimeout(_this.flushTimer);
               _this.flushTimer = setTimeout(function() {
@@ -395,10 +380,8 @@ export default {
     },
     revertIssue(item) {
       //revert需求
-      //20201118_zqp_需求改成新建一个只有当前需求的mr，创建新的
-      //20201120_zqp_在撤销跳转前调接口校验撤销有效性
       let mrParam = {
-        mrUuid: this.uuid,
+        mrId: this.id,
         issueNo: item.no
       };
       this.$api.codehub.merge.checkRevert(mrParam).then(res => {
@@ -420,7 +403,7 @@ export default {
         }
       });
     },
-    getCommit(uuid) {
+    getCommit(id) {
       this.$emit('getCommit', uuid);
     }
   },

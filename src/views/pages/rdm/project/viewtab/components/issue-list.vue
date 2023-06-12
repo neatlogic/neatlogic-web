@@ -1,10 +1,6 @@
 <template>
   <div>
-    <Loading
-      v-if="isLoading"
-      :loadingShow="isLoading"
-      type="fix"
-    ></Loading>
+    <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
     <div class="mb-md grid">
       <div>
         <span>
@@ -150,14 +146,15 @@ export default {
     canAction: { type: Boolean, default: false },
     canSelect: { type: Boolean, default: false },
     iteration: { type: Number }, //迭代id
-    projectId: {type: Number}, //项目id
+    projectId: { type: Number }, //项目id
     parentId: { type: Number }, //父任务id
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
     app: { type: Object },
-    isMine: {type: Number}, //我的任务
-    isEnd: {type: Number}, //是否结束
-    isExpired: {type: Number}, //是否过期
+    isMine: { type: Number }, //我的任务
+    isMyCreated: {type: Number}, //我创建的
+    isEnd: { type: Number }, //是否结束
+    isExpired: { type: Number }, //是否过期
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     linkAppType: {
@@ -196,6 +193,21 @@ export default {
             type: 'text',
             name: 'keyword',
             label: this.$t('page.keyword')
+          },
+          {
+            type: 'radio',
+            name: 'isExpired',
+            label: this.$t('page.isexpired'),
+            dataList: [
+              {
+                value: 1,
+                text: this.$t('term.process.timedout')
+              },
+              {
+                value: 0,
+                text: this.$t('page.nottimedout')
+              }
+            ]
           }
         ]
       },
@@ -436,6 +448,7 @@ export default {
       this.searchIssueData.catalog = this.catalog;
       this.searchIssueData.iteration = this.iteration;
       this.searchIssueData.isMine = this.isMine;
+      this.searchIssueData.isMyCreated = this.isMyCreated;
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       if (!this.$utils.isEmpty(this.searchValue)) {
@@ -459,12 +472,15 @@ export default {
         this.searchIssueData.currentPage = 1;
       }
       this.isSearchReady = false;
-      this.$api.rdm.issue.searchIssue(this.searchIssueData).then(res => {
-        this.issueData = res.Return;
-        this.isSearchReady = true;
-      }).finally(() => {
-        this.isLoading = false;
-      });
+      this.$api.rdm.issue
+        .searchIssue(this.searchIssueData)
+        .then(res => {
+          this.issueData = res.Return;
+          this.isSearchReady = true;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     }
   },
   filter: {},
