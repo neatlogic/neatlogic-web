@@ -26,15 +26,14 @@ export default {
       default: false
     },
     uuid: {type: [String, Boolean]},
-    repositoryUuid: {type: String}
+    repositoryId: {type: Number}
   },
   data() {
-    let _this = this;
     return {
       vaild: ['required'],
       canSubmit: false,
       setting: {
-        title: _this.uuid ? '编辑分支' : '新增分支',
+        title: this.uuid ? '编辑分支' : '新增分支',
         maskClose: false
       },
       formConfig: [
@@ -55,10 +54,10 @@ export default {
           multiple: false,
           textName: 'name',
           valueName: 'name',
-          rootName: 'tbodyList',
+          rootName: 'list',
           url: '/api/rest/codehub/repository/branch/search',
           params: {
-            repositoryUuid: _this.repositoryUuid,
+            repositoryId: this.repositoryId,
             hasCommit: 1
           }
         
@@ -84,11 +83,9 @@ export default {
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let param = Object.assign(this.$refs.editform.getFormValue(), {
-          repositoryUuid: this.repositoryUuid
+          repositoryId: this.repositoryId
         });
-        this.uuid && Object.assign(param, {
-          uuid: this.uuid
-        });
+        this.uuid && this.$set(param, 'uuid', this.uuid);
         if (!param.description) {
           this.$delete(param, 'description');
         }
@@ -121,19 +118,19 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    uuid: {
-      handler: function(val) {
-        if (val) {
-          this.getDetail(val);
-        } else {
-          this.formConfig.forEach(form => {
-            this.$set(form, 'value', '');
-          });
-        }
-        this.$set(this.setting, 'title', val ? '编辑标签' : '新增标签');
-      },
-      immediate: true
-    }
+    // uuid: {
+    //   handler: function(val) {
+    //     if (val) {
+    //       this.getDetail(val);
+    //     } else {
+    //       this.formConfig.forEach(form => {
+    //         this.$set(form, 'value', '');
+    //       });
+    //     }
+    //     this.$set(this.setting, 'title', val ? '编辑标签' : '新增标签');
+    //   },
+    //   immediate: true
+    // }
   }
 };
 </script>

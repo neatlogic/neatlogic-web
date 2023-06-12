@@ -2276,6 +2276,13 @@
     "copycurrentid": "复制当前id",
     "linebylinecomparison": "逐行对比",
     "leftandrightcomparison": "左右对比",
-    "postcomments": "发布评论"
+    "postcomments": "发布评论",
+    "branchname": "分支名",
+    "editbranch": "编辑分支",
+    "addbranch": "新增分支",
+    "confirmactiondatamessage": "此动作会导致数据丢失。为防止有意外操作，所以要求额外的操作来确认你的实际意图。请输入分支名 <span class='text-danger'>{target}</span> 继续操作或关闭本对话框取消操作。",
+    "confirmdeletebranch": "确认删除分支",
+    "branchnotsame": "分支名称不匹配",
+    "confirmdeletetag": "是否确认删除该标签"
   }
 }

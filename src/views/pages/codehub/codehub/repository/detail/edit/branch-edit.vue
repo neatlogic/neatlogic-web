@@ -26,34 +26,34 @@ export default {
       default: false
     },
     uuid: {type: [String, Boolean]},
-    repositoryUuid: {type: String},
+    repositoryId: {type: Number},
     branchList: {type: Array}
   },
   data() {
-    let _this = this;
     return {
       vaild: ['required'],
       setting: {
-        title: _this.uuid ? '编辑分支' : '新增分支',
+        title: this.uuid ? this.$t('term.codehub.editbranch') : this.$t('term.codehub.addbranch'),
         maskClose: false
       },
       canSubmit: false,
-      editData: {
-        repositoryUuid: _this.repositoryUuid,
-        branchName: '',
-        startBranchName: '',
-        description: ''
-      },
+      // editData: {
+      //   repositoryId: this.repositoryId,
+      //   branchName: '',
+      //   startBranchName: '',
+      //   description: ''
+      // },
       formConfig: [
         {
           type: 'text',
-          label: '分支名',
+          label: this.$t('term.codehub.branchname'),
           name: 'branchName',
           value: '',
           validateList: ['required']
-        }, {
+        }, 
+        {
           type: 'select',
-          label: '源分支',
+          label: this.$t('page.sourcebranch'),
           transfer: true,
           value: '',
           name: 'startBranchName',
@@ -62,10 +62,10 @@ export default {
           multiple: false,
           textName: 'name',
           valueName: 'name',
-          dynamicUrl: '/api/rest/codehub/repository/branch/search',
-          rootName: 'tbodyList',
+          url: '/api/rest/codehub/repository/branch/search',
+          rootName: 'list',
           params: {
-            repositoryUuid: _this.repositoryUuid
+            repositoryId: this.repositoryId
           }
         }
       ]
@@ -89,7 +89,7 @@ export default {
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let param = Object.assign(this.$refs.editform.getFormValue(), {
-          repositoryUuid: this.repositoryUuid
+          repositoryId: this.repositoryId
         });
         this.uuid && Object.assign(param, {
           uuid: this.uuid
@@ -126,19 +126,19 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    uuid: {
-      handler: function(val) {
-        if (val) {
-          this.getDetail(val);
-        } else {
-          this.formConfig.forEach(form => {
-            this.$set(form, 'value', '');
-          });
-        }
-        this.$set(this.setting, 'title', val ? '编辑分支' : '新增分支');
-      },
-      immediate: true
-    }
+    // uuid: {
+    //   handler: function(val) {
+    //     if (val) {
+    //       this.getDetail(val);
+    //     } else {
+    //       this.formConfig.forEach(form => {
+    //         this.$set(form, 'value', '');
+    //       });
+    //     }
+    //     this.$set(this.setting, 'title', val ? '编辑分支' : '新增分支');
+    //   },
+    //   immediate: true
+    // }
   }
 };
 </script>
