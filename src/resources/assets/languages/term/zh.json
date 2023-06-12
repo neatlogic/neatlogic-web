@@ -457,7 +457,8 @@
     "singlecreatejob": "单次创建作业",
     "triggertiming": "触发时机",
     "notificationpolicysettings": "通知策略设置",
-    "templateparametermapping": "模板参数映射"
+    "templateparametermapping": "模板参数映射",
+    "targetparams": "目标参数"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
