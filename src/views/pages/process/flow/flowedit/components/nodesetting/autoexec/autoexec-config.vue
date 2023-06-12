@@ -170,6 +170,8 @@ export default {
       this.loadingShow = false;
     },
     changeAutoexecCombopId(val) {
+      this.autoexecConfig.jobNamePrefix = '';
+      this.autoexecConfig.createJobPolicy = 'single';
       if (!val) {
         return;
       }
