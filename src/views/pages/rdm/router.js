@@ -115,7 +115,20 @@ let routerArr = [
       ismenu: true,
       type: 'workbrench',
       authority: 'RDM_BASE',
-      icon: 'tsfont-check-o'
+      icon: 'tsfont-upload'
+    }
+  },
+  {
+    path: '/task-list/favorite',
+    name: 'taskList',
+    props: { type: 'favorite' },
+    component: taskList,
+    meta: {
+      title: $t('router.rdm.favorite'),
+      ismenu: true,
+      type: 'workbrench',
+      authority: 'RDM_BASE',
+      icon: 'tsfont-star'
     }
   },
   {

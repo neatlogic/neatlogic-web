@@ -255,7 +255,8 @@
     "mycompleted": "我的已办",
     "prioritymanage": "优先级管理",
     "manage": "系统管理",
-    "myreported": "我上报的"
+    "myreported": "我上报的",
+    "favorite": "我的关注"
   },
   "codehub": {
     "codehub": "代码中心",
