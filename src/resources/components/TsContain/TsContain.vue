@@ -73,7 +73,7 @@
         <Sider
           v-if="$slots.right"
           v-model="rightSiderHide"
-          :width="$slots.right && rightWidth ? rightWidth : 200"
+          :width="$slots.right && rightWidth ? rightWidth : 0"
           collapsible
           :collapsed-width="0"
           hide-trigger

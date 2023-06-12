@@ -2,40 +2,55 @@
   <div class="topnav">
     <div class="topnav-left-container">
       <a :href="`${home}/${defaultModuleId}.html`" class="homeLink" @click.prevent="toHomePage()">
-        <!-- <h1 class="topnav-logo"></h1> -->
         <img
           class="topnav-newlogo"
           :src="setLogo"
         />
       </a>
-      <TopnavMenu v-if="!isAtNaviPage" />
+      <span class="text-href h3 pl-lg" @click="toDocumentonlinePage()">帮助中心</span>
     </div>
     <div class="topnav-right-container">
-      <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
-      <TopnavMessage :style="{'margin-right': '15px'}" />
+      <div v-if="!isDocumentonline" class="pr-lg">
+        <InputSearcher
+          v-model="keyword"
+          placeholder="搜索帮助"
+          @change="searchDocument"
+        ></InputSearcher>
+      </div>
       <TopnavUser />
     </div>
   </div>
 </template>
-
 <script>
 import {store} from '@/views/pages/framework/theme/state.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
-import TopnavUser from './topnav-user.vue';
-import TopnavMessage from './topnav-message/topnav-message';
 export default {
-  name: 'TopNav',
+  name: '',
   components: {
-    TopnavUser,
-    TopnavMessage,
-    TopnavMenu: resolve => require(['./topnav-menu.vue'], resolve),
-    TopnavHelp: resolve => require(['./topnav-help.vue'], resolve)
+    TopnavUser: resolve => require(['@/views/components/topnav/topnav-user.vue'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
   },
+  props: {},
   data() {
     return {
-      home: HOME
+      home: HOME,
+      keyword: ''
     };
   },
+  beforeCreate() {},
+  created() {
+    if (this.$route.query) {
+      this.keyword = this.$route.query.keyword;
+    }
+  },
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
   methods: {
     toHomePage() {
       if (MODULEID === this.defaultModuleId) {
@@ -44,12 +59,25 @@ export default {
         let that = this.$root.$children[0] ? this.$root.$children[0].$refs.root : null;//获取router-view 的vue 对象
         this.$utils.gotoHref(HOME + '/' + this.defaultModuleId + '.html', that);
       }
+    },
+    searchDocument(val) {
+      if (val.trim()) {
+        this.$router.push({
+          path: '/documentonline-search',
+          query: {
+            keyword: val
+          }
+        });
+      } else {
+        this.$router.push({path: '/documentonline'});
+      }
+    },
+    toDocumentonlinePage() {
+      this.$router.push({path: '/documentonline'});
     }
   },
+  filter: {},
   computed: {
-    isAtNaviPage() {
-      return MODULEID === 'index' && this.$route.fullPath == '/navigation';
-    },
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
     },
@@ -64,7 +92,13 @@ export default {
         src = require('@/resources/assets/images/' + logo);
       }
       return src;
+    },
+    isDocumentonline() {
+      return this.$route.fullPath == '/documentonline';
     }
-  }
+  },
+  watch: {}
 };
 </script>
+<style lang="less">
+</style>
