@@ -9,6 +9,16 @@
     ></TsForm>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div v-if="autoexecConfig.autoexecCombopId && !loadingShow" class="pt-sm">
+      <TsFormItem :label="$t('page.namepre')" labelPosition="left">
+        <TsFormSelect
+          v-model="autoexecConfig.jobNamePrefix"
+          :dataList="autoexecParamsList"
+          textName="name"
+          valueName="key"
+          :placeholder="$t('term.process.targetparams')+' / '+ $t('term.autoexec.jobparam')"
+          transfer
+        ></TsFormSelect>
+      </TsFormItem>
       <TsFormItem :label="$t('term.process.jobpolicy')" labelPosition="left">
         <RadioGroup v-model="autoexecConfig.createJobPolicy" @on-change="changeJobPolicy">
           <Radio v-for="policy in jobPolicyTypeList" :key="policy.value" :label="policy.value">
@@ -55,6 +65,7 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     Batchjobpolicy: resolve => require(['./joppolicy/batchjobpolicy.vue'], resolve),
     Singlejobpolicy: resolve => require(['./joppolicy/singlejobpolicy.vue'], resolve)
@@ -68,6 +79,7 @@ export default {
       autoexecConfig: {
         autoexecCombopId: null,
         jobName: '',
+        jobNamePrefix: '',
         createJobPolicy: 'single',
         runtimeParamList: [], //作业参数列表
         executeParamList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
@@ -150,7 +162,9 @@ export default {
   methods: {
     init() {
       if (!this.$utils.isEmpty(this.config)) {
-        this.autoexecConfig = this.config;
+        Object.keys(this.config).forEach(key => {
+          this.$set(this.autoexecConfig, key, this.config[key]);
+        });
       }
       this.isFirst = false;
       this.loadingShow = false;
@@ -227,6 +241,16 @@ export default {
   computed: {
     allFormitemList() {
       return store.allFormitemList;
+    },
+    autoexecParamsList() {
+      let dataList = [];
+      if (this.autoexecConfig.executeParamList && this.autoexecConfig.executeParamList.length) {
+        dataList.push(...this.autoexecConfig.executeParamList);
+      }
+      if (this.autoexecConfig.runtimeParamList && this.autoexecConfig.runtimeParamList.length) {
+        dataList.push(...this.autoexecConfig.runtimeParamList);
+      }
+      return dataList;
     }
   },
   watch: {
