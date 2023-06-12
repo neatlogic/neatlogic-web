@@ -117,21 +117,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    // uuid: {
-    //   handler: function(val) {
-    //     if (val) {
-    //       this.getDetail(val);
-    //     } else {
-    //       this.formConfig.forEach(form => {
-    //         this.$set(form, 'value', '');
-    //       });
-    //     }
-    //     this.$set(this.setting, 'title', val ? '编辑标签' : '新增标签');
-    //   },
-    //   immediate: true
-    // }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

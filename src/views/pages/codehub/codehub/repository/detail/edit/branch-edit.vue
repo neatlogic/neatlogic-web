@@ -37,12 +37,6 @@ export default {
         maskClose: false
       },
       canSubmit: false,
-      // editData: {
-      //   repositoryId: this.repositoryId,
-      //   branchName: '',
-      //   startBranchName: '',
-      //   description: ''
-      // },
       formConfig: [
         {
           type: 'text',
@@ -125,21 +119,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    // uuid: {
-    //   handler: function(val) {
-    //     if (val) {
-    //       this.getDetail(val);
-    //     } else {
-    //       this.formConfig.forEach(form => {
-    //         this.$set(form, 'value', '');
-    //       });
-    //     }
-    //     this.$set(this.setting, 'title', val ? '编辑分支' : '新增分支');
-    //   },
-    //   immediate: true
-    // }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
