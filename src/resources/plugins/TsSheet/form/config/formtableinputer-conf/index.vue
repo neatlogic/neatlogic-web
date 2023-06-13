@@ -26,7 +26,7 @@
     </TsFormItem>
     <div class="th-setting">
       <div class="title pb-sm">
-        <div class="require-label pr-xs">{{ $t('term.framework.thsetting') }}</div>
+        <div class="require-label pr-xs text-title">{{ $t('term.framework.thsetting') }}</div>
         <div v-if="formItem.hasOwnProperty('inherit') && !formItem.inherit" class="text-href">
           <span @click="updateTh()">{{ $t('term.framework.syncsceneattr') }}</span>
           <Tooltip
