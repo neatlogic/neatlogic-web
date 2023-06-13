@@ -24,7 +24,7 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
-    <div class="th-setting">
+    <div class="th-setting pb-sm">
       <div class="title pb-sm">
         <div class="require-label pr-xs text-title">{{ $t('term.framework.thsetting') }}</div>
         <div v-if="formItem.hasOwnProperty('inherit') && !formItem.inherit" class="text-href">
