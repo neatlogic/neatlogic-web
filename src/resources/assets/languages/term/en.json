@@ -2279,6 +2279,20 @@
     "copycurrentid": "Copy current ID",
     "linebylinecomparison": "Line by line comparison",
     "leftandrightcomparison": "Left and right comparison",
-    "postcomments": "Post comments"
+    "postcomments": "Post comments",
+    "branchname": "Branch name",
+    "editbranch": "Edit Branch",
+    "addbranch": "Add Branch",
+    "confirmactiondatamessage": "This action will cause data loss. To prevent unexpected operations, additional actions are required to confirm your actual intention. Please enter the branch name <span class='text-danger'>{target}</span> to continue the operation or close this dialog box to cancel the operation.",
+    "confirmdeletebranch": "Confirm Delete Branch",
+    "branchnotsame": "Branch name mismatch",
+    "confirmdeletetag": "Are you sure to delete the label",
+    "tagorbranch": "Label or Branch",
+    "finalcommit": "Final submission:",
+    "backparent": "Return to upper level",
+    "nocommitfile": "This warehouse has not yet executed code submission, and there are currently no files available",
+    "edittag": "Edit Label",
+    "addtag": "Add tags",
+    "tagname": "Tag name"
   }
 }
