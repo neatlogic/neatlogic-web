@@ -46,7 +46,8 @@
                     max-width="300"
                     transfer
                   >
-                    <div>{{ row.appModuleInfo }}</div>npm
+                    <div>{{ row.appModuleInfo }}</div>
+                    npm
                     <div slot="content">
                       <div>{{ row.appModuleInfo }}</div>
                     </div>
@@ -136,7 +137,7 @@ export default {
             key: 'appSystemInfo'
           },
           {
-            title: this.$t('page.subsystem'),
+            title: this.$t('page.module'),
             key: 'appModuleInfo'
           },
           {
@@ -207,15 +208,15 @@ export default {
     searchList(currentPage) {
       let param = {};
       if (this.tableData) {
-        this.tableData.pageSize && Object.assign(param, { pageSize: this.tableData.pageSize });
-        this.tableData.currentPage && Object.assign(param, { currentPage: this.tableData.currentPage });
+        this.tableData.pageSize && (param.pageSize = this.tableData.pageSize);
+        this.tableData.currentPage && (param.currentPage = this.tableData.currentPage);
         if (currentPage) {
           this.tableData.currentPage = currentPage;
         }
       }
-      this.keyword && Object.assign(param, { keyword: this.keyword });
-      this.appModuleId && Object.assign(param, { appModuleId: this.appModuleId });
-      this.appSystemId && Object.assign(param, { appSystemId: this.appSystemId });
+      this.keyword && (param.keyword = this.keyword);
+      this.appModuleId && (param.appModuleId = this.appModuleId);
+      this.appSystemId && (param.appSystemId = this.appSystemId);
       this.isLoad = true;
       this.$api.codehub.merge
         .getActionList(param)

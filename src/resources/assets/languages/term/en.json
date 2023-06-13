@@ -2280,6 +2280,9 @@
     "copycurrentid": "Copy current ID",
     "linebylinecomparison": "Line by line comparison",
     "leftandrightcomparison": "Left and right comparison",
-    "postcomments": "Post comments"
+    "postcomments": "Post comments",
+    "addconfig": "Edit Configuration",
+    "editconfig": "Add Configuration",
+    "triggerstatus": "Trigger status:"
   }
 }

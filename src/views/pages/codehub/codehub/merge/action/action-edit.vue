@@ -120,7 +120,7 @@ export default {
               if (element.name == 'versionId') {
                 element.params = {
                   appSystemId: val || -1,
-                  appModuleId: 0
+                  appModuleId: null
                 };
               }
             });
@@ -137,7 +137,6 @@ export default {
           dealDataByUrl: this.$utils.getAppForselect,
           dynamicUrl: '/api/rest/deploy/app/config/module/list',
           onChange: val => {
-            this.appModuleId = val;
             this.actionData.appModuleId = val;
           }
         },
@@ -145,14 +144,15 @@ export default {
           type: 'select',
           name: 'versionId',
           label: this.$t('term.codehub.triggerversion'),
-          url: '/api/rest/codehub/version/search',
+          dynamicUrl: '/api/rest/codehub/version/search',
           rootName: 'tbodyList',
           valueName: 'id',
-          textName: 'name',
+          textName: 'version',
           search: true,
+          value: null,
           params: {
-            appSystemId: -1,
-            appModuleId: -1
+            appSystemId: null,
+            appModuleId: null
           },
           onChange: val => {
             this.actionData.versionId = val;
@@ -259,7 +259,8 @@ export default {
         });
         this.actionFormConfig.forEach(element => {
           if (element.name == 'versionId') {
-            element.value = this.actionData.versionId;
+            this.$set(element, 'params', { appSystemId: this.actionData.appSystemId, appModuleId: this.actionData.appModuleId });
+            this.$set(element, 'dynamicUrl', '/api/rest/codehub/version/search');
           }
         });
       } else {

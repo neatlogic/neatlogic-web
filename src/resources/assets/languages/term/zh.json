@@ -2277,6 +2277,9 @@
     "copycurrentid": "复制当前id",
     "linebylinecomparison": "逐行对比",
     "leftandrightcomparison": "左右对比",
-    "postcomments": "发布评论"
+    "postcomments": "发布评论",
+    "addconfig": "编辑配置",
+    "editconfig": "添加配置",
+    "triggerstatus": "触发状态："
   }
 }

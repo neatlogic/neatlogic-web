@@ -15,7 +15,7 @@ export default {
         toUsers: {
           type: 'select',
           label: this.$t('page.recipient'),
-          dynamicUrl: '/api/rest/codehub/user/search',
+          dynamicUrl: '/api/rest/user/search',
           idListName: 'idList',
           rootName: 'tbodyList',
           value: '',
