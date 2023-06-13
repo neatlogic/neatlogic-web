@@ -124,6 +124,14 @@ export default {
         });
       }
     },
+    restoreHistory(historyData) {
+      this.activetab = historyData['activetab'];
+      this.searchVal = historyData['searchVal'];
+      if (historyData['searchPage']) {
+        this.mergeData.currentPage = historyData['searchPage']['currentPage'];
+        this.mergeData.pageSize = historyData['searchPage']['pageSize'];
+      }
+    },
     async getMergeList() {
       await this.getStatuslist();
       let param = {
@@ -135,6 +143,9 @@ export default {
         this.$set(param, 'status', this.activetab == 'all' ? '' : this.activetab);
       }
       this.isLoad = true;
+      this.$addHistoryData('activetab', this.activetab);
+      this.$addHistoryData('searchVal', this.searchVal);
+      this.$addHistoryData('searchPage', {currentPage: this.mergeData.currentPage, pageSize: this.mergeData.pageSize});
       this.$api.codehub.merge.getList(param).then(res => {
         if (res && res.Status == 'OK') {
           this.mergeData.currentPage = res.Return.currentPage;

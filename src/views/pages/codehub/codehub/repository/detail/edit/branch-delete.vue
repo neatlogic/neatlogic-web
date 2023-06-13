@@ -1,12 +1,14 @@
 <template>
   <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
     <template v-slot:header>
-      <div>确认删除分支</div>
+      <div>{{ $t('term.codehub.confirmdelebranch') }}</div>
     </template>
     <template v-slot>
       <div>
-        此动作会导致数据丢失。为防止有意外操作，所以要求额外的操作来确认你的实际意图。请输入分支名 <span class="text-danger">{{ branchName }}</span>
-        继续操作或关闭本对话框取消操作。
+        <div 
+          v-html="$t('term.codehub.confirmactiondatamessage', {target: branchName}) "
+        >
+        </div>
         <Divider plain style="font-size:12px" />
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
@@ -14,7 +16,7 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
         <Button type="error" :disabled="canSubmit" @click="saveDelete">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
@@ -32,26 +34,21 @@ export default {
       default: false
     },
     uuid: { type: [String, Boolean] },
-    repositoryUuid: { type: String },
+    repositoryId: { type: Number },
     branchName: { type: String }
   },
   data() {
-    let _this = this;
     return {
       vaild: ['required'],
       setting: {
-        title: '确认删除分支',
+        title: this.$t('term.codehub.confirmdeletebranch'),
         maskClose: false
       },
       canSubmit: false,
-      editData: {
-        repositoryUuid: _this.repositoryUuid,
-        branchName: ''
-      },
       formConfig: [
         {
           type: 'text',
-          label: '分支名',
+          label: this.$t('term.codehub.branchname'),
           name: 'branchName',
           value: '',
           validateList: ['required']
@@ -76,21 +73,20 @@ export default {
     saveDelete() {
       if (this.$refs.editform.valid()) {
         let param = Object.assign(this.$refs.editform.getFormValue(), {
-          repositoryUuid: this.repositoryUuid
+          repositoryId: this.repositoryId
         });
         if (param.branchName != this.branchName) {
-          this.$Message.error('分支名称不匹配');
+          this.$Message.error(this.$t('term.codehub.branchnotsame'));
           return;
         }
-        let _this = this;
         this.canSubmit = true;
-        _this.$api.codehub.repositorydetail.deleteBranch(param).then((res) => {
+        this.$api.codehub.repositorydetail.deleteBranch(param).then((res) => {
           this.canSubmit = false;
           if (res && res.Status == 'OK') {
-            _this.$Message.success('删除成功');
+            this.$Message.success(this.$t('message.deletesuccess'));
             this.$emit('close', true);
           } else {
-            _this.$Message.error(res.Message);
+            this.$Message.error(res.Message);
           }
         }).catch(error => {
           this.canSubmit = false;
