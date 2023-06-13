@@ -2278,6 +2278,12 @@
     "copycurrentid": "Copy current ID",
     "linebylinecomparison": "Line by line comparison",
     "leftandrightcomparison": "Left and right comparison",
-    "postcomments": "Post comments"
+    "postcomments": "Post comments",
+    "encounteringconflictingneeds": "Encountering conflicting needs",
+    "mergerequeststatus": "Merge Status",
+    "consolidationresult": "Merge Results",
+    "postmergerequestcomments": "Posted MR comments",
+    "changestofiletarget": "Changes to file {target}",
+    "commentedonaline": "Commented on a line"
   }
 }

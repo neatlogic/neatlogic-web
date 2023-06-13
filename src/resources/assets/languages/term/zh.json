@@ -2275,6 +2275,12 @@
     "copycurrentid": "复制当前id",
     "linebylinecomparison": "逐行对比",
     "leftandrightcomparison": "左右对比",
-    "postcomments": "发布评论"
+    "postcomments": "发布评论",
+    "encounteringconflictingneeds": "遇到冲突需求",
+    "mergerequeststatus": "合并状态",
+    "consolidationresult": "合并结果",
+    "postmergerequestcomments": "发表了MR评论",
+    "changestofiletarget": "对文件{target}的变更",
+    "commentedonaline": "发表了行评论"
   }
 }

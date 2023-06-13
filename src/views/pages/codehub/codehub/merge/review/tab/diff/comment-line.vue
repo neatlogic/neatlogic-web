@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:6px;">
+  <div class="padding-xs">
     <TsCkeditor 
       ref="editor"
       v-model.trim="commitText"
@@ -11,11 +11,11 @@
         :disabled="!commitText || submiting"
         size="small"
         @click="submitCommit"
-      >评论</Button>
-      <Button size="small" class="ml-10" @click="close">取消</Button>
+      >{{ $t('page.comment') }}</Button>
+      <Button size="small" class="ml-10" @click="close">{{ $t('page.cancel') }}</Button>
     </div>
     <div v-if="commentList && commentList.length>0" class="padding-md">
-      <CommentList :list="commentList" tab="diff" @reload="getList"></CommentList>
+      <CommentList :commentList="commentList" tab="diff" @reload="getList"></CommentList>
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ export default {
         this.$api.codehub.merge.saveCommentByLine(param).then((res) => {
           this.submiting = false;
           if (res && res.Status == 'OK') {
-            this.$Message.success('评论成功');
+            this.$Message.success(this.$t('message.commentsucces'));
             this.$emit('updateComment');
             this.commitText = null;
           }
@@ -91,10 +91,8 @@ export default {
   },
   computed: {},
   watch: {}
-
 };
 
 </script>
 <style lang='less'>
-
 </style>
