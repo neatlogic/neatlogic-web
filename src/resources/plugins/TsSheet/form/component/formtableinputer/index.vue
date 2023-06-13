@@ -32,6 +32,7 @@
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
+            :disabled="disabled"
             style="min-width:130px"
             @change="changeRow(row,index)"
           ></FormItem>

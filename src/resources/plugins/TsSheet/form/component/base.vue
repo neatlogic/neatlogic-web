@@ -8,6 +8,7 @@ export default {
     filter: { type: Array }, //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
+    required: { type: Boolean, default: false },
     formData: Object,
     readonlyTextIsHighlight: {type: Boolean, default: false} // 只读模式下，是否需要高亮显示值
   },
@@ -20,9 +21,6 @@ export default {
     //在非条件模式下，用默认值替换空的value值
     if (this.mode === 'read' && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
-    }
-    if (this.mode === 'read' && this.config && this.config.isRequired) {
-      this.validateList.push({name: 'required', message: ' '});
     }
   },
   methods: {
@@ -114,6 +112,15 @@ export default {
         this.$emit('resize');
       },
       deep: true
+    },
+    required: {
+      handler(val) {
+        this.validateList = [];
+        if (this.mode === 'read' && val) {
+          this.validateList.push({name: 'required', message: ' '});
+        }
+      },
+      immediate: true
     }
   }
 };

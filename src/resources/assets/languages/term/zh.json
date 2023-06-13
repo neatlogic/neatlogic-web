@@ -457,7 +457,8 @@
     "singlecreatejob": "单次创建作业",
     "triggertiming": "触发时机",
     "notificationpolicysettings": "通知策略设置",
-    "templateparametermapping": "模板参数映射"
+    "templateparametermapping": "模板参数映射",
+    "targetparams": "目标参数"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -2275,6 +2276,20 @@
     "copycurrentid": "复制当前id",
     "linebylinecomparison": "逐行对比",
     "leftandrightcomparison": "左右对比",
-    "postcomments": "发布评论"
+    "postcomments": "发布评论",
+    "branchname": "分支名",
+    "editbranch": "编辑分支",
+    "addbranch": "新增分支",
+    "confirmactiondatamessage": "此动作会导致数据丢失。为防止有意外操作，所以要求额外的操作来确认你的实际意图。请输入分支名 <span class='text-danger'>{target}</span> 继续操作或关闭本对话框取消操作。",
+    "confirmdeletebranch": "确认删除分支",
+    "branchnotsame": "分支名称不匹配",
+    "confirmdeletetag": "是否确认删除该标签",
+    "tagorbranch": "标签或分支",
+    "finalcommit": "最后提交：",
+    "backparent": "返回上层",
+    "nocommitfile": "此仓库尚未执行过代码提交,暂无文件",
+    "edittag": "编辑标签",
+    "addtag": "新增标签",
+    "tagname": "标签名"
   }
 }

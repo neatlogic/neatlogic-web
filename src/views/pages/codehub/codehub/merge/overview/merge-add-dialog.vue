@@ -6,12 +6,11 @@
           ref="form"
           v-model="formValue"
           :itemList="formConfig"
-          :labelWidth="120"
         >
         </TsForm>
         <!-- 不创建新版本——start    -->
         <div v-if="!isNewVersion && !$utils.isEmpty(versionTable.tbodyList) && formValue.appModuleId" class="mt-nm">
-          <TsTable v-bind="versionTable" @getSelected="getversionSelected">
+          <TsTable :theadList="versionTheadList" v-bind="versionTable" @getSelected="getversionSelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
             </template>
@@ -20,7 +19,7 @@
         <!-- 不创建新版本——end    -->
         <!-- 创建新版本——start    -->
         <div v-if="isNewVersion && !$utils.isEmpty(strategyData.tbodyList) && formValue.appModuleId">
-          <TsTable v-bind="strategyData" @getSelected="getstrategySelected">
+          <TsTable :theadList="strategyTheadList" v-bind="strategyData" @getSelected="getstrategySelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
             </template>
@@ -47,27 +46,27 @@ export default {
         isShow: true
       },
       versionPrefix: '',
+      versionTheadList: [{
+        key: 'selection'
+      }, {
+        title: this.$t('term.framework.pkgversion'),
+        key: 'version'
+      }, {
+        title: this.$t('term.codehub.mergertype'),
+        key: 'type'
+      }, { 
+        title: this.$t('page.sourcebranch'),
+        key: 'srcBranch'
+      }, {
+        title: this.$t('page.targetbranch'),
+        key: 'targetBranch'
+      }, {
+        title: this.$t('page.versiontype'),
+        key: 'versiontypeName' //这个没有可取字段,用的版本类型名字
+      }],
       versionTable: {
         multiple: false,
-        rowKey: 'id', 
-        theadList: [{
-          key: 'selection'
-        }, {
-          title: this.$t('term.framework.pkgversion'),
-          key: 'version'
-        }, {
-          title: this.$t('term.codehub.mergertype'),
-          key: 'type'
-        }, { 
-          title: this.$t('page.sourcebranch'),
-          key: 'srcBranch'
-        }, {
-          title: this.$t('page.targetbranch'),
-          key: 'targetBranch'
-        }, {
-          title: this.$t('page.versiontype'),
-          key: 'versiontypeName' //这个没有可取字段,用的版本类型名字
-        }],
+        rowKey: 'id',
         tbodyList: []
       },
       formValue: {
@@ -158,24 +157,24 @@ export default {
         issue: this.$t('term.codehub.issuemerge')
       },
       selectedversion: {},
+      strategyTheadList: [{
+        key: 'selection'
+      }, {
+        title: this.$t('term.codehub.strategyname'),
+        key: 'name'
+      }, {
+        title: this.$t('page.type'),
+        key: 'type'
+      }, { 
+        title: this.$t('page.sourcebranch'),
+        key: 'srcBranch'
+      }, {
+        title: this.$t('page.targetbranch'),
+        key: 'targetBranch'
+      }],
       strategyData: {
         multiple: false,
-        rowKey: 'id', 
-        theadList: [{
-          key: 'selection'
-        }, {
-          title: this.$t('term.codehub.strategyname'),
-          key: 'name'
-        }, {
-          title: this.$t('page.type'),
-          key: 'type'
-        }, { 
-          title: this.$t('page.sourcebranch'),
-          key: 'srcBranch'
-        }, {
-          title: this.$t('page.targetbranch'),
-          key: 'targetBranch'
-        }],
+        rowKey: 'id',
         tbodyList: []
       }
     };
