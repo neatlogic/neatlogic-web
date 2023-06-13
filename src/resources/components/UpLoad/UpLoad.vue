@@ -125,9 +125,9 @@ export default {
       }
     },
     //上传参数
-    dataType: {
+    dataType: { //用于后台文档管理，标识模块或者功能等
       type: String,
-      default: 'itsm'
+      default: ''
     },
     dataParam: {
       type: String,
