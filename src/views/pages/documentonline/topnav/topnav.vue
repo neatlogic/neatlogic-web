@@ -24,6 +24,7 @@
 <script>
 import {store} from '@/views/pages/framework/theme/state.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+import {documentonlineStore} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {
@@ -38,11 +39,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.$route.query) {
-      this.keyword = this.$route.query.keyword;
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -95,9 +92,18 @@ export default {
     },
     isDocumentonline() {
       return this.$route.fullPath == '/documentonline';
+    },
+    globalSearchKeyword() {
+      return documentonlineStore.globalSearchKeyword;
     }
   },
-  watch: {}
+  watch: {
+    globalSearchKeyword(val) {
+      if (val) {
+        this.keyword = val;
+      }
+    }
+  }
 };
 </script>
 <style lang="less">

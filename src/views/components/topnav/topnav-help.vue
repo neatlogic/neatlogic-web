@@ -97,7 +97,7 @@ export default {
       }
     },
     openHelpManage() {
-      window.open(HOME + '/documentonline.html#/', '_blank');
+      window.open(HOME + '/documentonline.html#/documentonline', '_blank');
     }
   },
   filter: {},

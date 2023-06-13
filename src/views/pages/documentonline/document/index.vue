@@ -28,6 +28,7 @@
   </div>
 </template>
 <script>
+import {documentonlineMutations} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {
@@ -96,6 +97,7 @@ export default {
     },
     searchDocument(val) {
       if (val) {
+        documentonlineMutations.setGlobalSearchKeyword(val);
         this.$router.push({
           path: '/documentonline-search',
           query: {

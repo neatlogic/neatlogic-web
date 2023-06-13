@@ -4,6 +4,7 @@
   </div>
 </template>
 <script>
+import {documentonlineStore} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {
@@ -17,11 +18,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.$route.query) {
-      this.keyword = this.$route.query.keyword;
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -29,8 +26,14 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {},
-  destroyed() {},
-  methods: {},
+  destroyed() {
+    this.clearObservable();
+  },
+  methods: {
+    clearObservable() { //清空状态管理的数据
+      documentonlineStore.globalSearchKeyword = '';
+    }
+  },
   filter: {},
   computed: {},
   watch: {}
