@@ -2102,7 +2102,12 @@
     "isopened": "Opened",
     "isclosed": "Closed",
     "startdate": "Expected start",
-    "enddate": "Expected end"
+    "enddate": "Expected end",
+    "testcase": "test case",
+    "templatesetting": "Template Settings",
+    "testcondition": "Preconditions",
+    "teststep": "Use Case Steps",
+    "testresult": "Expected results"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

@@ -95,13 +95,9 @@ export default {
   methods: {
     getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project
-          .getAppByProjectId({
-            projectId: this.projectId
-          })
-          .then(res => {
-            this.allList = res.Return;
-          });
+        this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+          this.allList = res.Return;
+        });
       }
     },
     close() {

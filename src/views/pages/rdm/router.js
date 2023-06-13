@@ -10,10 +10,12 @@ const appModules = {
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
   taskDetail: () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue'),
   iterationDetail: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration-detail.vue'),
+  testcaseDetail: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase-detail.vue'),
   story: () => import('@/views/pages/rdm/project/viewtab/story/story.vue'),
   bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
   task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
-  iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue')
+  iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue'),
+  testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -144,7 +146,7 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase'];
 appList.forEach(app => {
   routerArr.push({
     path: '/' + app + '/:projectId/:appId',
