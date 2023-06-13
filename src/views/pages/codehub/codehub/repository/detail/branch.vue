@@ -4,14 +4,14 @@
       <Row :gutter="16">
         <Col span="18">
           <Button type="primary" @click="editLi()">
-            <i class="ts-plus"></i>分支
+            <i class="ts-plus"></i>{{ $t('page.branch') }}
           </Button>        
         </Col>
         <Col span="6">
           <FormInput
             v-model.trim="keyword"
             suffix="i-icon ts-search"
-            placeholder="关键字"
+            :placeholder="$t('page.keyword')"
             @keyup.enter.native="getList()"
           ></FormInput>
         </Col>
@@ -28,11 +28,11 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">删除</div>
+            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
-          <table class="table" style="table-layout:fixed">
+          <table class="table" style="table-layout:fixed;width:100%;">
             <colgroup>
               <col />
               <col width="200" />
@@ -62,7 +62,7 @@
     <BranchEdit
       v-if="isEdit"
       :uuid="editUuid"
-      :repositoryUuid="uuid"
+      :repositoryId="id"
       :isShow="isEdit"
       :branchList="activeConfig.cardList||[]"
       @close="close"
@@ -70,7 +70,7 @@
     <BranchDelete
       v-if="isDelete"
       :branchName="branchName"
-      :repositoryUuid="uuid"
+      :repositoryId="id"
       :isShow="isDelete"
       @close="close"
     ></BranchDelete>
@@ -107,6 +107,8 @@ export default {
         xxl: 24,
         keyName: 'uuid',
         classname: 'repository-list',
+        currentPage: 1,
+        pageSize: 10,
         cardList: []
       },
       typeList: {
@@ -123,9 +125,7 @@ export default {
   beforeMount() {},
 
   mounted() {
-    if (this.uuid) {
-      this.getList();
-    }
+    this.getList();
   },
 
   beforeUpdate() {},
@@ -144,12 +144,12 @@ export default {
   methods: {
     getList() {
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         hasCommit: 1
       };
-      this.keyword && Object.assign(param, {keyword: this.keyword});
-      this.activeConfig.pageSize && Object.assign(param, {pageSize: this.activeConfig.pageSize});
-      this.activeConfig.currentPage && Object.assign(param, {currentPage: this.activeConfig.currentPage});
+      this.keyword && this.$set(param, 'keyword', this.keyword);
+      this.activeConfig.pageSize && this.$set(param, 'pageSize', this.activeConfig.pageSize);
+      this.activeConfig.currentPage && this.$set(param, 'currentPage', this.activeConfig.currentPage);
       this.isload = true;
       this.$api.codehub.repositorydetail.getBranch(param).then(res => {
         this.isload = false;

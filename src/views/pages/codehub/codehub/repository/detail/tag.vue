@@ -4,14 +4,14 @@
       <Row :gutter="16">
         <Col span="18">
           <Button type="primary" @click="editLi()">
-            <i class="ts-plus"></i>标签
+            <i class="ts-plus"></i>{{ $t('page.tag') }}
           </Button>         
         </Col>
         <Col span="6">
           <FormInput
             v-model.trim="keyword"
             suffix="i-icon ts-search"
-            placeholder="关键字"
+            :placeholder="$t('page.keyword')"
             @keyup.enter.native="getList()"
           ></FormInput>
         </Col>
@@ -28,11 +28,11 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">删除</div>
+            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
-          <table class="table" style="table-layout:fixed">
+          <table class="table" style="table-layout:fixed;width:100%;">
             <colgroup>
               <col />
               <col width="200" />
@@ -42,7 +42,7 @@
               <tr>
                 <td><h4><i class="ts-tag text-primary" style="margin-right:4px;"></i>{{ row.name }}</h4></td>
                 <td rowspan="2" colspan="2" class="text-right text-tip">{{ row.commit.shortId }}</td>
-                <!--  -->
+                <td></td>
               </tr>
               <tr>
                 <td>
@@ -57,7 +57,7 @@
     <TagEdit
       v-if="isEdit"
       :uuid="editUuid"
-      :repositoryUuid="uuid"
+      :repositoryId="id"
       :isShow="isEdit"
       @close="close"
     ></TagEdit>
@@ -89,8 +89,10 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        pageType: 'numbet',
+        //pageType: 'numbet',
         keyName: 'name',
+        currentPage: 1,
+        pageSize: 10,
         cardList: []
       }
     };
@@ -103,9 +105,7 @@ export default {
   beforeMount() {},
 
   mounted() {
-    if (this.uuid) {
-      this.getList();
-    }
+    this.getList();
   },
 
   beforeUpdate() {},
@@ -133,21 +133,18 @@ export default {
       this.getList();
     },
     getList() {
-      let _this = this;
       let param = {
-        repositoryUuid: _this.uuid,
+        repositoryId: this.id,
         hasCommit: 1
       };
-      _this.keyword && Object.assign(param, {keyword: _this.keyword});
-      _this.tagConfig.pageCount && Object.assign(param, {pageCount: _this.tagConfig.pageCount});
-      _this.tagConfig.rowNum && Object.assign(param, {rowNum: _this.tagConfig.rowNum});
-      _this.tagConfig.pageSize && Object.assign(param, {pageSize: _this.tagConfig.pageSize});
-      _this.tagConfig.currentPage && Object.assign(param, {currentPage: _this.tagConfig.currentPage});
-      _this.isload = true;
-      _this.$api.codehub.repositorydetail.getTag(param).then(res => {
-        _this.isload = false;
+      this.keyword && Object.assign(param, {keyword: this.keyword});
+      this.tagConfig.pageSize && Object.assign(param, {pageSize: this.tagConfig.pageSize});
+      this.tagConfig.currentPage && Object.assign(param, {currentPage: this.tagConfig.currentPage});
+      this.isload = true;
+      this.$api.codehub.repositorydetail.getTag(param).then(res => {
+        this.isload = false;
         if (res && res.Status == 'OK') {
-          Object.assign(_this.tagConfig, {
+          Object.assign(this.tagConfig, {
             pageCount: res.Return.pageCount,
             rowNum: res.Return.rowNum,
             pageSize: res.Return.pageSize,
@@ -155,10 +152,10 @@ export default {
             cardList: res.Return.list || [{}]
           });
         } else {
-          _this.tagConfig = null;
+          this.tagConfig = null;
         }
       }).catch(error => {
-        _this.isload = false;
+        this.isload = false;
       });
     },
     editLi(val) {
@@ -175,23 +172,21 @@ export default {
     deleteLi(name) {
       if (name) {
         let param = {
-          repositoryUuid: this.uuid,
+          repositoryId: this.id,
           tagName: name
         };
-        let _this = this;
-        _this.$createDialog({
-          title: '删除确认',
-          //content: '是否确认删除当前仓库下的该标签',
-          content: '是否确认删除该标签',
+        this.$createDialog({
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('term.codehub.confirmdeletetag'),
           btnType: 'error',
-          'on-ok': function(vnode) {
-            _this.$api.codehub.repositorydetail.deleteTag(param).then((res) => {
+          'on-ok': (vnode) => {
+            this.$api.codehub.repositorydetail.deleteTag(param).then((res) => {
               if (res && res.Status == 'OK') {
-                _this.$Message.success('删除成功');
-                _this.getList();
+                this.$Message.success(this.$t('message.deletesuccess'));
+                this.getList();
                 vnode.isShow = false;
               } else {
-                _this.$Message.error(res.Message);
+                this.$Message.error(res.Message);
               }
             }); 
           }
