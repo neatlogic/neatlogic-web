@@ -1094,7 +1094,8 @@
     "saverolechange": "Do you want to save changes to the current role?",
     "backtorolelist": "Return to Role List",
     "defaultpolicy": "Default Policy",
-    "defultpolicysetting": "Default Policy Settings"
+    "defultpolicysetting": "Default Policy Settings",
+    "syncsceneattr": "Synchronize default scene attributes"
   },
   "knowledge": {
     "document": "Document",

@@ -28,15 +28,14 @@
       <div class="title pb-sm">
         <div class="require-label pr-xs">{{ $t('term.framework.thsetting') }}</div>
         <div v-if="formItem.hasOwnProperty('inherit') && !formItem.inherit" class="text-href">
-          <span @click="updateTh()">同步默认场景属性</span>
+          <span @click="updateTh()">{{ $t('term.framework.syncsceneattr') }}</span>
           <Tooltip
             theme="light"
-            max-width="300px"
-            placement="bottom-start"
+            max-width="300"
             transfer
           >
             <i class="tsfont-info-o"></i>
-            <div slot="content">默认场景包含属性A、B、C，且当前场景不包含A、B、C，将A、B、C属性添加至当前场景</div>
+            <div slot="content">{{ $t('message.framework.syncsceneattrtip') }}</div>
           </Tooltip>
         </div>
       </div>
