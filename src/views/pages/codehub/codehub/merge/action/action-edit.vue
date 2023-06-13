@@ -3,13 +3,8 @@
     <TsDialog
       v-if="actionData"
       v-bind="actionDialogConfig"
-      :is-show="isShow"
       @on-close="close"
     >
-      <template v-slot:header>
-        <div v-if="actionData.id">{{ $t('dialog.title.edittarget', { target: $t('page.config') }) }}</div>
-        <div v-if="!actionData.id">{{ $t('dialog.title.addtarget', { target: $t('page.config') }) }}</div>
-      </template>
       <template v-slot>
         <TsForm ref="actionForm" :item-list="actionFormConfig">
           <template v-slot:triggerStatus>
@@ -51,8 +46,7 @@ export default {
     Helpparam: resolve => require(['./helpparam.vue'], resolve)
   },
   props: {
-    id: { type: Number },
-    isShow: { type: Boolean, default: false }
+    id: { type: Number }
   },
   data() {
     return {
@@ -70,8 +64,9 @@ export default {
       actionDialogConfig: {
         type: 'modal',
         maskClose: false,
-        isShow: false,
-        width: 'large'
+        isShow: true,
+        width: 'large',
+        title: this.id ? this.$t('dialog.title.edittarget', { target: this.$t('page.config') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.config') })
       },
       actionFormConfig: [
         {

@@ -90,9 +90,9 @@
       </div>
     </TsContain>
     <ActionEdit
+      v-if="isActionDialogShow"
       :id="id"
       ref="ActionEdit"
-      :is-show="isActionDialogShow"
       @close="closeActionDialog"
     ></ActionEdit>
     <ActionLog v-if="actionId" :id="actionId" @close="actionId = null"></ActionLog>
@@ -251,7 +251,6 @@ export default {
     },
     btnSetActive(row, isActive) {
       let id = row.id;
-      let _this = this;
       if (isActive) {
         isActive = 1;
       } else {
@@ -259,11 +258,11 @@ export default {
       }
       row.isActive = isActive;
 
-      _this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
+      this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
         if (res && res.Status == 'OK') {
-          _this.$Message.success(this.$t('message.executesuccess'));
+          this.$Message.success(this.$t('message.executesuccess'));
         } else {
-          _this.$Message.error(res.Message);
+          this.$Message.error(res.Message);
         }
       });
     },
@@ -283,19 +282,18 @@ export default {
       this.isActionDialogShow = true;
     },
     deleteAction(id) {
-      let _this = this;
-      _this.$createDialog({
+      this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.actions') }),
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.merge.deleteAction({ id: id }).then(res => {
+        'on-ok': vnode => {
+          this.$api.codehub.merge.deleteAction({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success(this.$t('message.deletesuccess'));
-              _this.getSearch();
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getSearch();
               vnode.isShow = false;
             } else {
-              _this.$Message.error(res.Message);
+              this.$Message.error(res.Message);
             }
           });
         }
