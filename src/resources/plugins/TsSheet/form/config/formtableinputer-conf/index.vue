@@ -24,11 +24,22 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem
-      :label="$t('term.framework.thsetting')"
-      labelPosition="top"
-      required
-    >
+    <div class="th-setting">
+      <div class="title pb-sm">
+        <div class="require-label pr-xs">{{ $t('term.framework.thsetting') }}</div>
+        <div v-if="formItem.hasOwnProperty('inherit') && !formItem.inherit" class="text-href">
+          <span @click="updateTh()">同步默认场景属性</span>
+          <Tooltip
+            theme="light"
+            max-width="300px"
+            placement="bottom-start"
+            transfer
+          >
+            <i class="tsfont-info-o"></i>
+            <div slot="content">默认场景包含属性A、B、C，且当前场景不包含A、B、C，将A、B、C属性添加至当前场景</div>
+          </Tooltip>
+        </div>
+      </div>
       <div class="padding-md radius-md" :class="validClass('dataConfig')">
         <div class="tstable-container tstable-normal radius-sm bg-block">
           <table class="tstable-body" width="100%">
@@ -81,7 +92,7 @@
           </div>
         </div>
       </div>
-    </TsFormItem>
+    </div>
     <TsFormItem :label="$t('term.framework.defalinenum')" labelPosition="top">
       <TsFormInput
         :value="config.lineNumber"
@@ -114,7 +125,12 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   extends: base,
-  props: {},
+  props: {
+    initFormItemList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       isAttrConfigDialogShow: false,
@@ -129,6 +145,7 @@ export default {
     if (!this.config.hasOwnProperty('isCanAdd')) {
       this.$set(this.config, 'isCanAdd', true);
     }
+    console.log(this.initFormItemList);
   },
   beforeUpdate() {},
   updated() {},
@@ -174,6 +191,17 @@ export default {
           isRequired: true
         }
       });
+    },
+    updateTh() {
+      let itemConfig = this.initFormItemList.find(item => item.uuid === this.formItem.uuid);
+      if (itemConfig && itemConfig.config) {
+        itemConfig.config.dataConfig.forEach(th => {
+          let findItem = this.config.dataConfig.find(d => d.uuid === th.uuid);
+          if (!findItem) {
+            this.config.dataConfig.push(th);
+          }
+        });
+      }
     }
   },
   filter: {},
@@ -196,4 +224,10 @@ export default {
 /deep/ .ivu-checkbox-wrapper {
   margin-right: 0;
 }
+.th-setting {
+  .title {
+    display: flex;
+  }
+}
+
 </style>
