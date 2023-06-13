@@ -71,7 +71,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: false,
-        width: '65%'
+        width: 'large'
       },
       actionFormConfig: [
         {
