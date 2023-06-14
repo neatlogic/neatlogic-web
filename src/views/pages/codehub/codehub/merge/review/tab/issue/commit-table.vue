@@ -10,7 +10,7 @@
         v-for="(tbody,bindex) in commitList"
         :key="bindex"
         class="cursor-pointer"
-        @click.stop="showDetail(tbody)"
+        @click.stop="toDiffDetail(tbody)"
       >
         <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
           <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
@@ -67,10 +67,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getmrCommitlist() {
-    },
-    showDetail(item) {
-      this.$emit('getCommit', item.commitId);
+    toDiffDetail(item) {
+      // 跳转到变更详情
+      this.$emit('toDiffDetail', item.commitId);
     }
   },
   computed: {

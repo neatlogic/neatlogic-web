@@ -59,8 +59,8 @@ export default {
       type: String,
       default: 'combine'     
     },
-    mrUuid: {
-      type: String
+    mrId: {
+      type: Number
     },
     readOnly: {
       type: Boolean,
@@ -101,7 +101,6 @@ export default {
   methods: {
     selectFile(path) {
       if (path) {
-        let _this = this;
         if (!this.$el) {
           return;
         }
@@ -118,9 +117,9 @@ export default {
         if (this.$refs['file_' + path] && this.$refs['file_' + path][0] && this.$refs['file_' + path][0].showDetail) {
           this.$refs['file_' + path][0].showDetail();
         }
-        _this.scrollFn && clearTimeout(_this.scrollFn);
-        _this.scrollFn = setTimeout(function() {
-          _this.$emit('endScroll');
+        this.scrollFn && clearTimeout(this.scrollFn);
+        this.scrollFn = setTimeout(function() {
+          this.$emit('endScroll');
         }, 200);
       }
     },
@@ -144,7 +143,7 @@ export default {
       if (this.diffList && this.diffList.length > 0) {
         let param = {
           needPage: false,
-          mrUuid: this.mrUuid
+          mrId: this.mrId
         };
         this.$api.codehub.merge.getCommentOfLine(param).then((res) => {
           if (res.Status == 'OK') {

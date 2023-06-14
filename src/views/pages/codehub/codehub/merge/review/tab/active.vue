@@ -1,71 +1,69 @@
 <template>
   <div class="merge-request-box pt-nm" @scroll="scroll($event)">
-    <div v-if="currentPage">
-      <Timeline v-if="activeList && activeList.length>0">
-        <TimelineItem
-          v-for="(active,aindex) in activeList"
-          :key="active.startTime+'_'+aindex"
-          class="active-li"
-        >
-          <template slot="dot">
-            <span v-if="active.status == 'merged' || active.status == 'finish'" class="tsfont-check-s text-success text-icon-font-size"></span>
-            <span
-              v-else-if="active.status == 'failed' || active.status == 'conflict'"
-              class="tsfont-info-s text-error text-icon-font-size"
-            ></span>
-            <span v-else-if="active.status == 'add' || active.status == 'open'" class="tsfont-circle-o text-primary text-icon-font-size"></span>
-            <span v-else class="tsfont-circle-o text-icon-font-size"></span>
-          </template>
-          <div class="time">
-            <div>{{ active.endTime | formatDate }}</div>
-          </div>
-          <div class="content">
-            <div class="active-div pb-sm pr-nm">
-              <div class="flex-between">
-                <div>
-                  <UserCard
-                    v-if="active.userUuid"
-                    :uuid="active.userUuid"
-                  ></UserCard>
-                  <span class="text-success ml-xs">
-                    {{ active.actionTypeName || active.actionType }}{{ active.actionSubjectName || active.actionSubject }}
-                  </span>
-                </div>
-              </div>
-              <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length">
-                <table style="border-spacing: 12px;">
-                  <colgroup>
-                    <col width="100" />
-                    <col />
-                  </colgroup>
-                  <tbody>
-                    <tr v-for="(detail,dindex) in getDetail(active.detail)" :key="dindex">
-                      <td class="text-grey text-right mr-sm">{{ detail.label }}</td>
-                      <td>
-                        <div v-if="typeof detail.text =='object'">
-                          {{ detail.text.toString() }}
-                        </div>
-                        <div v-else-if="detail.text" v-html="detail.text"></div>
-                        <div v-else>-</div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
+    <Timeline v-if="activeList && activeList.length>0">
+      <TimelineItem
+        v-for="(active,aindex) in activeList"
+        :key="active.startTime+'_'+aindex"
+        class="active-li"
+      >
+        <template slot="dot">
+          <span v-if="active.status == 'merged' || active.status == 'finish'" class="tsfont-check-s text-success text-icon-font-size"></span>
+          <span
+            v-else-if="active.status == 'failed' || active.status == 'conflict'"
+            class="tsfont-info-s text-error text-icon-font-size"
+          ></span>
+          <span v-else-if="active.status == 'add' || active.status == 'open'" class="tsfont-circle-o text-primary text-icon-font-size"></span>
+          <span v-else class="tsfont-circle-o text-icon-font-size"></span>
+        </template>
+        <div class="time">
+          <div>{{ active.endTime | formatDate }}</div>
+        </div>
+        <div class="content">
+          <div class="active-div pb-sm pr-nm">
+            <div class="flex-between">
+              <div>
+                <UserCard
+                  v-if="active.userUuid"
+                  :uuid="active.userUuid"
+                ></UserCard>
+                <span class="text-success ml-xs">
+                  {{ active.actionTypeName || active.actionType }}{{ active.actionSubjectName || active.actionSubject }}
+                </span>
               </div>
             </div>
+            <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length">
+              <table style="border-spacing: 12px;">
+                <colgroup>
+                  <col width="100" />
+                  <col />
+                </colgroup>
+                <tbody>
+                  <tr v-for="(detail,dindex) in getDetail(active.detail)" :key="dindex">
+                    <td class="text-grey text-right mr-sm">{{ detail.label }}</td>
+                    <td>
+                      <div v-if="typeof detail.text =='object'">
+                        {{ detail.text.toString() }}
+                      </div>
+                      <div v-else-if="detail.text" v-html="detail.text"></div>
+                      <div v-else>-</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </TimelineItem>
-        <TimelineItem v-if="pageCount>currentPage" class="active-li">
-          <Icon slot="dot" custom="ts-round-s"></Icon>
-          <div class="time"></div>
-          <div class="content">
-            <span class="text-href" @click="getNext">{{ $t('page.viewmore') }}</span>
-          </div>
-        </TimelineItem>
-      </Timeline>
-      <NoData v-else></NoData>
-    </div>
-    <Loading v-else loadingShow style="height:100px"></Loading>
+        </div>
+      </TimelineItem>
+      <TimelineItem v-if="pageCount>currentPage" class="active-li">
+        <Icon slot="dot" custom="ts-round-s"></Icon>
+        <div class="time"></div>
+        <div class="content">
+          <span class="text-href" @click="getNext">{{ $t('page.viewmore') }}</span>
+        </div>
+      </TimelineItem>
+    </Timeline>
+    <NoData v-else></NoData>
   </div>
 </template>
 <script>
@@ -80,7 +78,7 @@ export default {
   props: [''],
   data() {
     return {
-      loading: false,
+      loadingShow: true,
       activeList: [],
       currentPage: 0, //当前页面
       pageCount: 0//总页数
@@ -106,21 +104,16 @@ export default {
         belongType: 'mr',
         currentPage: currentPage
       };
-      this.loading = true;
+      this.loadingShow = true;
       this.$api.codehub.merge.getActive(param).then((res) => {
-        this.loading = false;
         if (res.Status == 'OK') {
           let newlist = res.Return.tbodyList || [];
           this.activeList = this.$utils.concatArr(this.activeList, newlist);
           this.currentPage = res.Return.currentPage || 1;
           this.pageCount = res.Return.pageCount || 1;
-        } else {
-          this.activeList = [];
-          this.currentPage = 0;
         }
-      }).catch((e) => {
-        this.loading = false;
-        this.activeList = [];
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     showdetail(item, value) {
@@ -129,7 +122,7 @@ export default {
     scroll(e) {
       //向下滚动时调用分页接口,预留100像素高度差缓存,当上次滚动完成后再调用接口
       let isNext = (e.target.scrollHeight - e.target.scrollTop - 100) < e.target.clientHeight;
-      if (isNext && !this.loading && (this.pageCount > this.currentPage)) {
+      if (isNext && !this.loadingShow && (this.pageCount > this.currentPage)) {
         this.getNext();
       }
     },
@@ -166,7 +159,7 @@ export default {
 </script>
 <style lang='less' scoped>
 .merge-request-box {
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 157px); // 头部+导航栏+tab高度+16上间隙+底部间隙
   overflow: auto;
 }
 /deep/.active-li{

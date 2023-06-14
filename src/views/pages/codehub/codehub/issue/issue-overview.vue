@@ -24,8 +24,8 @@
       </template>
       <div slot="content">
         <TsTable v-bind="tabledata" @changeCurrent="changeCurrent" @changePageSize="changePageSize">
-          <template slot="sourceUuid" slot-scope="{row}">
-            {{ getsource(row.sourceUuid) }}
+          <template slot="sourceId" slot-scope="{row}">
+            {{ getsource(row.sourceId) }}
           </template>
           <template slot="issueUpdateTime" slot-scope="{row}">
             {{ row.issueUpdateTime|formatDate }}

@@ -84,7 +84,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     ...tabs
   },
-  props: [''],
+  props: {},
   data() {
     return {
       type: null, //合并类型
@@ -256,7 +256,7 @@ export default {
         let prev = config.appSystemVo || '';
         let next = config.appModuleVo || '';
         if (type == 'text') {
-          text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : prev.name) : '') + (next ? '/' + (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : '') : '');
+          text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : prev.name) : '') + (next ? '/' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : '') : (next.name || '')) : '');
         }
         return text;
       };

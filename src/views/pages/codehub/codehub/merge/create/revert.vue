@@ -24,7 +24,8 @@
       <div v-else :class="'issue-'+isValid">
         <TsTable
           ref="showtable"
-          v-bind="tabledata"
+          v-bind="tableData"
+          :theadList="theadList"
           :tbodyList="getTbody()"
           :height="tableheight()"
           @changeCurrent="changeCurrent"
@@ -105,78 +106,27 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
   },
   mixins: [mixins],
-  props: {
-    versionid: [String, Number],
-    versiondata: Object,
-    srcBranch: [String, Number],
-    issueNoList: Array
-  },
+  props: {},
   data() {
     return {
       isEdit: false, //是否编辑
       addItem: '',
       addLi: [],
-      height: '600px',
-      tabledata: {
-        theadList: [{
-          key: 'selection'
-        }, {
-          title: '需求编号',
-          key: 'no'
-        }, {
-          title: '描述',
-          key: 'name'
-        }, {
-          title: '负责人',
-          key: 'handleUserId'
-        }, {
-          title: '有效性',
-          key: 'isValid'
-        }, {
-          title: '状态',
-          key: 'status'
-        }, {
-          title: '更新时间',
-          key: 'issueUpdateTime'
-        }, {
-          title: '来源',
-          key: 'sourceUuid'
-        }
-        // , {
-        //   key: 'action'
-        // }
-        ],
-        rowKey: 'no',
-        selectedRemain: true,
-        classKey: 'isValid'
-      }
+      height: '600px'
     };
   },
-
   beforeCreate() {},
-
-  created() {
-  },
-
+  created() {},
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     addIssue() {
-      //this.addLi = [];
       let addlist = [];
       try {
         if (this.addItem) {
@@ -187,7 +137,7 @@ export default {
             list = [this.addItem];
           }
           //先过滤掉已经在上面的table列表里的
-          let tableli = this.tabledata.tbodyList.map((t) => {
+          let tableli = this.tableData.tbodyList.map((t) => {
             return t.no;
           });
           addlist = list.filter((l) => {
@@ -236,15 +186,13 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {
     getTbody() {
       return function() {
         let list = [];
-        if (this.tabledata.tbodyList && this.tabledata.tbodyList.length > 0) {
-          list = this.tabledata.tbodyList.filter(tbody => {
+        if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
+          list = this.tableData.tbodyList.filter(tbody => {
             return this.isValid ? tbody.isValid : tbody;
           });
         }
@@ -255,7 +203,7 @@ export default {
       return function(selectIssuelist, li) {
         let issueList = this.totalIssue(selectIssuelist, li);
         let totalIssue = issueList.map(to => {
-          let totalLi = this.tabledata.tbodyList.filter(tbody => {
+          let totalLi = this.tableData.tbodyList.filter(tbody => {
             return tbody.no == to;
           });
           return totalLi.length > 0 ? totalLi[0] : {
@@ -266,7 +214,6 @@ export default {
       };
     }
   },
-
   watch: {
     srcBranch(val) {
       this.selectIssuelist = [];
@@ -275,10 +222,7 @@ export default {
       this.getVaildlist();
     }
   }
-
 };
-
 </script>
 <style lang='less' scoped>
-
 </style>

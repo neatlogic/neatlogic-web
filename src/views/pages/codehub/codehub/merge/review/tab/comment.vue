@@ -1,5 +1,5 @@
 <template>
-  <div class="padding">
+  <div class="merge-request-comment-box padding">
     <div class="mb-sm">
       <div class="pb-sm">
         <TsCkeditor 
@@ -148,5 +148,9 @@ export default {
   watch: {}
 };
 </script>
-<style lang='less'>
+<style lang='less' scoped>
+.merge-request-comment-box {
+  max-height: calc(100vh - 157px);
+  overflow-y: scroll;
+}
 </style>
