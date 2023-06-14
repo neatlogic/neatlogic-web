@@ -1,46 +1,54 @@
 <template>
-  <div class="padding-md" style="max-height: calc(100vh - 140px);overflow: auto;" @scroll="scroll($event)">
+  <div class="merge-request-box pt-nm" @scroll="scroll($event)">
     <div v-if="currentPage">
       <Timeline v-if="activeList && activeList.length>0">
         <TimelineItem
           v-for="(active,aindex) in activeList"
           :key="active.startTime+'_'+aindex"
           class="active-li"
-          :color="colorConfig[active.status]?colorConfig[active.status]:'#999999'"
         >
-          <Icon slot="dot" custom="ts-round-s"></Icon>
+          <template slot="dot">
+            <span v-if="active.status == 'merged' || active.status == 'finish'" class="tsfont-check-s text-success text-icon-font-size"></span>
+            <span
+              v-else-if="active.status == 'failed' || active.status == 'conflict'"
+              class="tsfont-info-s text-error text-icon-font-size"
+            ></span>
+            <span v-else-if="active.status == 'add' || active.status == 'open'" class="tsfont-circle-o text-primary text-icon-font-size"></span>
+            <span v-else class="tsfont-circle-o text-icon-font-size"></span>
+          </template>
           <div class="time">
-            <div>{{ active.endTime|formatDate }}</div>
-            <div style="font-weight: normal;"><span class="ts-user user-name">{{ active.userName || active.userId }}</span></div>
+            <div>{{ active.endTime | formatDate }}</div>
           </div>
           <div class="content">
-            <div class="border-color active-div" :class="aindex%2==0?'':'bg-grey'">
-              <h3 class="clearfix">
-                <span class="d_f">{{ active.actionSubjectName || active.actionSubject }}</span>
-                <span class="d_f text-tip ml-10" style="font-size: 10px;line-height: 26px;font-weight: normal;">{{ active.actionTypeName ||active.actionType }}{{ active.actionSubjectName || active.actionSubject }}</span>
-                <span
-                  v-if="active.status"
-                  class="ml-10 text-tip d_f_r"
-                  style="font-size:10px;font-weight:normal;"
-                  :style="colorConfig[active.status]?('color:'+colorConfig[active.status]):''"
-                >{{ active.statusName }}</span>
-              </h3>
-              <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length" style="margin-top:10px;">
-                <table class="table table-small">
+            <div class="active-div pb-sm pr-nm">
+              <div class="flex-between">
+                <div>
+                  <UserCard
+                    v-if="active.userUuid"
+                    :uuid="active.userUuid"
+                  ></UserCard>
+                  <span class="text-success ml-xs">
+                    {{ active.actionTypeName || active.actionType }}{{ active.actionSubjectName || active.actionSubject }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="active.detail && getDetail(active.detail) && getDetail(active.detail).length">
+                <table style="border-spacing: 12px;">
                   <colgroup>
-                    <col width="120" />
+                    <col width="100" />
                     <col />
                   </colgroup>
                   <tbody>
                     <tr v-for="(detail,dindex) in getDetail(active.detail)" :key="dindex">
-                      <td class="text-tip" style="background:transparent;padding-left:0">{{ detail.label }}</td>
-                      <td style="background:transparent;">
+                      <td class="text-grey text-right mr-sm">{{ detail.label }}</td>
+                      <td>
                         <div v-if="typeof detail.text =='object'">
                           {{ detail.text.toString() }}
                         </div>
                         <div v-else-if="detail.text" v-html="detail.text"></div>
                         <div v-else>-</div>
-                      </td></tr>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -50,7 +58,9 @@
         <TimelineItem v-if="pageCount>currentPage" class="active-li">
           <Icon slot="dot" custom="ts-round-s"></Icon>
           <div class="time"></div>
-          <div class="content"><div class="text-href" @click="getNext">{{ $t('page.viewmore') }}</div></div>
+          <div class="content">
+            <span class="text-href" @click="getNext">{{ $t('page.viewmore') }}</span>
+          </div>
         </TimelineItem>
       </Timeline>
       <NoData v-else></NoData>
@@ -63,6 +73,7 @@ import mixins from './tabmixins.js';
 export default {
   name: '',
   components: {
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
@@ -71,14 +82,6 @@ export default {
     return {
       loading: false,
       activeList: [],
-      colorConfig: {//状态需要加颜色的
-        merged: '#2ed373',
-        conflict: '#e42332',
-        failed: '#e42332',
-        add: '#336eff',
-        finish: '#2ed373',
-        open: '#336eff'
-      },
       currentPage: 0, //当前页面
       pageCount: 0//总页数
     };
@@ -97,20 +100,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getList(page) {
+    getList(currentPage) {
       let param = {
         belongId: this.id,
-        belongType: 'mr'
+        belongType: 'mr',
+        currentPage: currentPage
       };
-      page && Object.assign(param, {
-        currentPage: page
-      });
-      //第一次进来没有当前页面，需要加一个加载中的全局动画
       this.loading = true;
       this.$api.codehub.merge.getActive(param).then((res) => {
         this.loading = false;
         if (res.Status == 'OK') {
-          let newlist = res.Return.list || [];
+          let newlist = res.Return.tbodyList || [];
           this.activeList = this.$utils.concatArr(this.activeList, newlist);
           this.currentPage = res.Return.currentPage || 1;
           this.pageCount = res.Return.pageCount || 1;
@@ -156,7 +156,6 @@ export default {
             });
           }
         }
-
         return filterList;
       };
     }
@@ -166,6 +165,10 @@ export default {
 
 </script>
 <style lang='less' scoped>
+.merge-request-box {
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+}
 /deep/.active-li{
   padding-left: 200px;
   .ivu-timeline-item-tail{
@@ -173,34 +176,26 @@ export default {
   }
   .ivu-timeline-item-head{
     left: 200px;
+    top: 4px;
   }
   .time{
     position: absolute;
     right: 100%;
-    top: 0;
+    top: 5px;
     width: 190px;
     text-align: right;
     padding-right: 20px;
-    font-weight: bold;
     font-size: 14px;
   }
   .content{
     padding-left: 30px;
     .active-div{
-      padding: 10px 16px;
-      border: 1px solid;
       width: 90%;
-      border-radius: 4px;
       min-height:70px;
     }
   }
-  .user-name{
-    margin-top: 10px;
-    &:before{
-      margin-right: 6px;
-    }
+  .text-icon-font-size {
+    font-size: 22px;
   }
-
 }
-
 </style>

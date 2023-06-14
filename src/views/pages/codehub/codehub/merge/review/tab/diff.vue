@@ -14,8 +14,8 @@
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'" style="height:calc(100vh - 170px)">
       <div class="clearfix" style="margin-bottom: 4px;">
-        <div v-if="commitId" class="d_f ml-sm font-bold" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="d_f_r mr-sm" style="display: flex;justify-content: end;">
+        <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
+        <div class="pt-sm mr-sm" style="display: flex;justify-content: end;">
           <TsFormSelect
             v-if="!loading && commitList && commitList.length"
             v-model="selectedCommit"

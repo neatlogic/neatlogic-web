@@ -1,22 +1,24 @@
 <template>
-  <div class="comment-container">
-    <div class="top">
-      <div class="pl-nm pl-nm">
+  <div class="padding">
+    <div class="mb-sm">
+      <div class="pb-sm">
         <TsCkeditor 
           ref="editor"
           v-model.trim="commitText"
           width="100%" 
         ></TsCkeditor>
       </div>
-      <div class="padding-md text-right">
-        <Button type="primary" :disabled="!commitText || submiting" @click="submitCommit">{{ $t('term.codehub.postcomments') }}</Button>
+      <div class="text-right">
+        <Button type="primary" :disabled="!commitText || submiting" @click="submitCommit">
+          {{ $t('term.codehub.postcomments') }}
+        </Button>
       </div>
     </div>
-    <div class="main border-color" style="height: calc(100vh - 370px);overflow:auto;">
-      <Loading v-if="loading" loadingShow style="height:100px"></Loading>
+    <div class="border-color">
+      <Loading v-if="loading" loadingShow type="fix"></Loading>
       <CommentList
-        v-else
-        :list="commitList"
+        v-if="!loading"
+        :commitList="commitList"
         @reload="getList"
         @selectFile="selectFile"
       ></CommentList>
@@ -38,7 +40,7 @@ export default {
     return {
       commitText: '',
       submiting: false, //是否正在提交评论
-      loading: false, //评论列表加载中
+      loading: true, //评论列表加载中
       commitList: []
     };
   },
@@ -83,18 +85,18 @@ export default {
       urlList.push(this.getLineList());
       urlList.push(this.getMrList());
       this.loading = true;
-      this.$axios.all(urlList).then(
-        this.$axios.spread(function(...arr) {
-          this.loading = false;
+      this.$axios.all(urlList).then( // 执行多个并发请求
+        this.$axios.spread((...arr) => {
           let list = [];
           if (arr && arr.length > 0) {
             arr.forEach((a) => {
-              if (a.Status == 'OK' && a.Return && a.Return.list && a.Return.list.length > 0) {
-                list.push(...a.Return.list);
+              if (a.Status == 'OK' && a.Return && a.Return.tbodyList && a.Return.tbodyList.length > 0) {
+                list.push(...a.Return.tbodyList);
               }
             });
           }
           this.commitList = this.initList(list);
+          this.loading = false;
         })
       ).catch((e) => {
         this.loading = false;

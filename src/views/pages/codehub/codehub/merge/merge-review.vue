@@ -75,10 +75,15 @@
           <span class="tsfont-refresh" @click="forceFlush">{{ $t('page.forceflush') }}</span>
         </Button>
       </template>
-      <div slot="content" class="review-container">
+      <template v-slot:content>
         <Loading v-if="isLoading" loadingShow></Loading>
-        <div v-else-if="mrData" class="review-main padding-md">
-          <Tabs v-model="activeTab" :animated="false" @on-click="selectedCommitId=null;selectFilepath=null">
+        <div v-else-if="mrData" class="review-main mr-sm">
+          <Tabs
+            v-model="activeTab"
+            :animated="false"
+            class="block-tabs"
+            @on-click="selectedCommitId=null;selectFilepath=null"
+          >
             <TabPane 
               v-for="(tab,tindex) in tabList" 
               :key="tindex" 
@@ -108,47 +113,46 @@
             </TabPane>
           </Tabs>
         </div>
-      </div>
-      <div slot="right" class="review-right border-color">
-        <div v-if="mrData">
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-info-o text-tilte mr-sm">{{ $t('page.basicinfo') }}</span>
-            </div>
-            <CellGroup>
-              <Cell label="id">
-                <div>{{ mrData.id }}              
-                  <span 
-                    v-clipboard="mrData.id" 
-                    class="ts-link text-href btn-copy" 
-                    :title="$t('term.codehub.copycurrentid')"
-                  ></span>
-                </div>
-              </Cell>
-            </CellGroup>
-          </Card>
-          <Divider />
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-userinfo text-tilte mr-sm">{{ $t('page.personnel') }}</span>
-            </div>
-            <CellGroup>
-              <Cell :label="$t('page.presenter')">
+      </template>
+      <div slot="right">
+        <div v-if="mrData" class="bg-op radius-lg padding-sm">
+          <div>{{ $t('page.basicinfo') }}</div>
+          <ul>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">id</div>
+              <div>
+                <span 
+                  v-clipboard="mrData.id" 
+                  class="ts-link text-href btn-copy" 
+                  :title="$t('term.codehub.copycurrentid')"
+                ></span>
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('page.presenter') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.fcu"
                   :uuid="mrData.fcu"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-              <Cell :label="$t('term.process.dealwithuser')">
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('term.process.dealwithuser') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.handleUser"
                   :uuid="mrData.handleUser"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-            </CellGroup>
-          </Card>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </TsContain>
@@ -410,14 +414,16 @@ export default {
     margin-right: 0;
   }
 }
-.review-right{
-  border-left: 1px solid;
-  height: 100%;
-  padding: 10px;
-}
 .review-main{
   /deep/.ivu-tabs{
     overflow: visible;
+  }
+}
+.basic-info-box {
+  display: flex;
+  .left-lable-box {
+    width: 90px;
+    margin-right: 10px;
   }
 }
 </style>

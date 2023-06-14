@@ -23,7 +23,7 @@
     </tbody>
     <tbody v-else>
       <tr>
-        <td :colspan="titleList.length || 0" class="text-center">暂无数据</td>
+        <td :colspan="titleList.length || 0" class="text-center">{{ $t('page.nodata') }}</td>
       </tr>
     </tbody>
   </table>
@@ -40,48 +40,32 @@ export default {
     return {
       titleList: [{
         key: 'commitId',
-        title: '提交id'
+        title: this.$t('term.deploy.commitid')
       },
       {
         key: 'committer',
-        title: '提交人'
+        title: this.$t('page.presenter')
       },
       {
         key: 'committerDate',
-        title: '提交时间'
+        title: this.$t('page.committime')
       },
-      // {
-      //   key: 'mergeStatus',
-      //   title: '合并状态'
-      // },
       {
         key: 'message',
-        title: '提交信息'     
+        title: this.$t('page.submitinformation')    
       }]
-
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-  mounted() {
-  },
-
+  mounted() {},
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getmrCommitlist() {
     },
@@ -104,8 +88,7 @@ export default {
       };
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
