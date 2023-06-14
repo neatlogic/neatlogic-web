@@ -2104,7 +2104,8 @@
     "templatesetting": "模板设置",
     "testcondition": "前置条件",
     "teststep": "用例步骤",
-    "testresult": "预期结果"
+    "testresult": "预期结果",
+    "pleasesetstatus": "请先定义状态"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

@@ -1,15 +1,19 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true">
+    <TsContain :rightWidth="250" :enableCollapse="true">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
-        <span>
-          <strong>[{{ issueData.id }}]{{ issueData.name }}</strong>
-        </span>
-        <IssueStatus :issueData="issueData"></IssueStatus>
+        <div class="action-group">
+          <div class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></div>
+          <div class="action-item">
+            <strong>[{{ issueData.id }}]{{ issueData.name }}</strong>
+          </div>
+          <div class="action-item">
+            <IssueStatus :issueData="issueData"></IssueStatus>
+          </div>
+        </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group" style="text-align:right">
@@ -51,6 +55,8 @@
                   :canSearch="false"
                   :canAction="true"
                   :projectId="projectId"
+                  relType="extend"
+                  relAppType="story"
                   :toId="id"
                   :app="getApp('story')"
                   @refresh="init"

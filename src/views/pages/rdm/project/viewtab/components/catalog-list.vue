@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div><a class="tsfont-plus" @click="addRootCatalog()">目录</a></div>
+    <div>
+      <a @click="addRootCatalog()">
+        <span class="tsfont-plus" style="margin-left: 3px; margin-right: 4px"></span>
+        <span>{{ $t('page.catalogue') }}</span>
+      </a>
+    </div>
     <TsZtree
       :nodes="catalogList"
       :hoverDomList="hoverDomList"
@@ -65,7 +70,7 @@ export default {
           clickFn: treeNode => {
             this.$createDialog({
               title: this.$t('dialog.title.deleteconfirm'),
-              content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.catalogue')}),
+              content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.catalogue') }),
               btnType: 'error',
               'on-ok': vnode => {
                 this.$api.rdm.catalog.deleteCatalog(treeNode.id).then(res => {
