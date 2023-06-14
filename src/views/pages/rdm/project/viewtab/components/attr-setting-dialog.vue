@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig">
+  <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot>
       <div>
         <div class="grid">

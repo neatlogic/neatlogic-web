@@ -255,7 +255,8 @@
     "mycompleted": "Completed List",
     "prioritymanage": "Priority Management",
     "manage": "System Management",
-    "myreported": "What I Reported"
+    "myreported": "My Reported",
+    "favorite": "My Favorited"
   },
   "codehub": {
     "codehub": "Code Center",

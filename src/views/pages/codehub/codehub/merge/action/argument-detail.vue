@@ -1,7 +1,9 @@
 <template>
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
-      <template v-slot><pre>{{ contentFormated }}</pre></template>
+      <template v-slot>
+        <pre>{{ contentFormated }}</pre>
+      </template>
     </TsDialog>
   </div>
 </template>
@@ -9,9 +11,8 @@
 export default {
   name: '',
   directives: {},
-  components: {
-  },
-  props: { argument: {type: String}},
+  components: {},
+  props: { argument: { type: String } },
   data() {
     return {
       dialogConfig: {
@@ -20,7 +21,8 @@ export default {
         isShow: false,
         width: 'large',
         title: this.$t('page.detailcontent')
-      }};
+      }
+    };
   },
   beforeCreate() {},
   created() {},
@@ -34,10 +36,10 @@ export default {
   destroyed() {},
   methods: {
     getArgument: function() {
-      this.isShow = true;
+      this.dialogConfig.isShow = true;
     },
     close: function() {
-      this.isShow = false;
+      this.dialogConfig.isShow = false;
       this.$emit('close');
     }
   },
@@ -56,11 +58,13 @@ export default {
     }
   },
   watch: {
-    argument: {handler: function(val) {
-      if (val) {
-        this.getArgument();
+    argument: {
+      handler: function(val) {
+        if (val) {
+          this.getArgument();
+        }
       }
-    }}
+    }
   }
 };
 </script>

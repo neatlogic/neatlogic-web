@@ -13,21 +13,15 @@ const project = {
   listCustomAttrType() {
     return axios.post('/api/rest/rdm/project/app/customattrtype/list', {});
   },
-  getProjectIssueCount(isMine, isMyCreated, isEnd) {
-    return axios.post('/api/rest/rdm/project/issuecount/get', {
-      isMine: isMine,
-      isMyCreated: isMyCreated,
-      isEnd: isEnd 
-    });
+  getProjectIssueCount(params) {
+    return axios.post('/api/rest/rdm/project/issuecount/get', params);
   },
-  getAppByProjectId(projectId, needIssueCount, isMine, isMyCreated, isEnd) {
-    return axios.post('/api/rest/rdm/project/app/get', {
-      projectId: projectId,
-      needIssueCount: needIssueCount,
-      isMine: isMine,
-      isMyCreated: isMyCreated,
-      isEnd: isEnd 
-    });
+  getAppByProjectId(projectId, params) {
+    const param = { projectId: projectId};
+    if (params) {
+      Object.assign(param, params);
+    }
+    return axios.post('/api/rest/rdm/project/app/get', param);
   },
   getProjectById(projectId) {
     return axios.post('/api/rest/rdm/project/get', { id: projectId });
