@@ -11,15 +11,13 @@
             @click="addIssue()"
           >{{ $t('dialog.title.addtarget', { target: app.name }) }}</a>
         </span>
-        <span v-if="linkAppType && linkAppType.length > 0 && (fromId || toId)">
-          <span v-for="(apptype, index) in linkAppType" :key="index" class="ml-xs">
-            <a
-              v-if="getAppByType(apptype.from || apptype.to)"
-              href="javascript:void(0)"
-              class="tsfont-bind"
-              @click="linkIssue(apptype)"
-            >{{ $t('dialog.title.linktarget', { target: getAppByType(apptype.from || apptype.to).name }) }}</a>
-          </span>
+        <span v-if="relType && relAppType && (fromId || toId)" class="ml-xs">
+          <a
+            v-if="getAppByType(relAppType)"
+            href="javascript:void(0)"
+            class="tsfont-bind"
+            @click="linkIssue()"
+          >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
       </div>
       <div>
@@ -113,15 +111,18 @@
       :catalog="catalog"
       :iteration="iteration"
       :fromId="fromId"
+      :toId="toId"
       :parentId="parentId"
+      :relType="relType"
       @close="closeEditIssue"
     ></EditIssue>
     <IssueListDialog
-      v-if="linkApp && (fromId || toId)"
+      v-if="isLinkShow && getAppByType(relAppType) && (fromId || toId)"
       :id="fromId || toId"
-      :app="linkApp"
+      :app="getAppByType(relAppType)"
       :direction="fromId ? 'from' : 'to'"
-      :reltype="linkRelType"
+      :reltype="relType"
+      :projectId="projectId"
       @close="closeLinkIssue"
     ></IssueListDialog>
   </div>
@@ -147,7 +148,7 @@ export default {
     canSelect: { type: Boolean, default: false },
     iteration: { type: Number }, //迭代id
     projectId: { type: Number }, //项目id
-    parentId: { type: Number }, //父任务id
+    parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
     app: { type: Object },
@@ -158,26 +159,19 @@ export default {
     isFavorite: { type: Number }, //是否关注
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
-    linkAppType: {
-      type: Array,
-      validator: function(value) {
-        if (value && value.length > 0) {
-          for (let i = 0; i < value.length; i++) {
-            const v = value[i];
-            if (!((v.hasOwnProperty('to') || v.hasOwnProperty('from')) && v.hasOwnProperty('rel'))) {
-              return false;
-            }
-          }
-        }
-        return true;
-      }
-    },
+    relType: {type: String, validator: function(value) {
+      return ['extend', 'relative', 'repeat'].includes(value);
+    }},
+    relAppType: {type: String, validator: function(value) {
+      return ['story', 'testcase', 'bug', 'task'].includes(value);
+    }},
     catalog: { type: Number }
   },
   data() {
     return {
       isLoading: true,
       isEditIssueShow: false,
+      isLinkShow: false,
       issueData: {},
       theadList: [
         { key: 'name', title: this.$t('page.name') },
@@ -253,8 +247,8 @@ export default {
       }
     },
     initAppList() {
-      if (this.projectId && this.linkAppType && this.linkAppType.length > 0) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+      if (this.projectId && this.relAppType) {
+        this.$api.rdm.project.getAppByProjectId(this.projectId, {appType: this.relAppType}).then(res => {
           this.appList = res.Return;
         });
       }
@@ -333,10 +327,9 @@ export default {
     getSelected(idList, itemList) {
       this.$emit('selected', itemList);
     },
-    linkIssue(linkType) {
+    linkIssue() {
       this.isLinkShow = true;
-      this.linkApp = this.getAppByType(linkType.from || linkType.to);
-      this.linkRelType = linkType.rel;
+      this.linkApp = this.getAppByType(this.relAppType);
     },
     deleteIssue(issue) {
       this.$createDialog({
@@ -365,7 +358,7 @@ export default {
       this.$router.push({ path: '/' + issue.appType + '-detail/' + issue.projectId + '/' + issue.appId + '/' + issue.id });
     },
     closeLinkIssue(needRefresh) {
-      this.linkApp = null;
+      this.isLinkShow = false;
       if (needRefresh) {
         this.searchIssue(1);
         this.$emit('refresh');

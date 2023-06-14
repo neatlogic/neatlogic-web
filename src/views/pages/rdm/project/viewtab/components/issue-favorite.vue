@@ -17,13 +17,15 @@ export default {
   },
   data() {
     return {
-      isFavorite: null
+      isFavorite: 0
     };
   },
   beforeCreate() {},
   created() {
     if (!this.issueData) {
       this.getIssueFavorityById();
+    } else {
+      this.isFavorite = this.issueData.isFavorite;
     }
   },
   beforeMount() {},

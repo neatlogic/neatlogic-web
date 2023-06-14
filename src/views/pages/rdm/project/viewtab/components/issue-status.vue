@@ -2,7 +2,7 @@
   <span
     v-if="id"
     :class="{ actived: actived }"
-    class="cursor ml-xs pl-sm pr-sm radius-lg issue-status fz10"
+    class="cursor pl-sm pr-sm radius-lg issue-status fz10"
     :style="{
       '--color': color,
       'border-color': color,

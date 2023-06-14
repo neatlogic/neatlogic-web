@@ -30,6 +30,7 @@ export default {
   },
   props: {
     id: { type: Number },
+    projectId: { type: Number },
     app: { type: Object },
     direction: {
       type: String,
