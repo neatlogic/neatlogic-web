@@ -2,14 +2,10 @@
   <div>
     <TsContain class="bg-block">
       <template slot="topLeft">
-        <span class="tsfont-plus text-action" @click="addAction()">动作</span>
+        <span class="tsfont-plus text-action" @click="addAction()">{{ $t('page.actions') }}</span>
       </template>
       <template slot="topRight">
-        <CombineSearcher
-          v-model="searchVal"
-          v-bind="searchConfig"
-          @change="getTableList(1)"
-        ></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchList(1)"></CombineSearcher>
       </template>
       <div slot="content">
         <div>
@@ -26,33 +22,34 @@
                   {{ status.text }}
                 </span>
               </template>
-              <template slot="systemInfo" slot-scope="{ row }">
-                <div v-if="row.systemInfo">
+              <template slot="appSystemInfo" slot-scope="{ row }">
+                <div v-if="row.appSystemInfo">
                   <Tooltip
-                    v-if="row.systemInfo"
+                    v-if="row.appSystemInfo"
                     theme="light"
                     max-width="300"
                     transfer
                   >
-                    <div>{{ row.systemInfo }}</div>
+                    <div>{{ row.appSystemInfo }}</div>
                     <div slot="content">
-                      <div>{{ row.systemInfo }}</div>
+                      <div>{{ row.appSystemInfo }}</div>
                     </div>
                   </Tooltip>
                 </div>
                 <div v-else>-</div>
               </template>
-              <template slot="subSystemInfo" slot-scope="{ row }">
-                <div v-if="row.subSystemInfo">
+              <template slot="appModuleInfo" slot-scope="{ row }">
+                <div v-if="row.appModuleInfo">
                   <Tooltip
-                    v-if="row.subSystemInfo"
+                    v-if="row.appModuleInfo"
                     theme="light"
                     max-width="300"
                     transfer
                   >
-                    <div>{{ row.subSystemInfo }}</div>
+                    <div>{{ row.appModuleInfo }}</div>
+                    npm
                     <div slot="content">
-                      <div>{{ row.subSystemInfo }}</div>
+                      <div>{{ row.appModuleInfo }}</div>
                     </div>
                   </Tooltip>
                 </div>
@@ -75,15 +72,15 @@
                     }
                   "
                 ></i-switch>
-                <span v-if="row.isActive == 1" class="text-tip">启用</span>
-                <span v-else class="text-tip">禁用</span>
+                <span v-if="row.isActive == 1" class="text-tip">{{ $t('page.enabled') }}</span>
+                <span v-else class="text-tip">{{ $t('page.disable') }}</span>
               </template>
               <template slot="action" slot-scope="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li class="action-item text-action ts-edit" @click="editAction(row.id)">编辑</li>
-                    <li class="action-item text-action ts-trash" @click="deleteAction(row.id)">删除</li>
-                    <li class="action-item text-action ts-catalogue" @click="actionId = row.id">查看触发记录</li>
+                    <li class="action-item text-action ts-edit" @click="editAction(row.id)">{{ $t('page.edit') }}</li>
+                    <li class="action-item text-action ts-trash" @click="deleteAction(row.id)">{{ $t('page.delete') }}</li>
+                    <li class="action-item text-action ts-catalogue" @click="actionId = row.id">{{ $t('term.codehub.triggerlog') }}</li>
                   </ul>
                 </div>
               </template>
@@ -93,12 +90,12 @@
       </div>
     </TsContain>
     <ActionEdit
+      v-if="isActionDialogShow"
+      :id="id"
       ref="ActionEdit"
-      :uuid="id"
-      :is-show="isActionDialogShow"
       @close="closeActionDialog"
     ></ActionEdit>
-    <ActionLog v-if="actionId" :uuid="actionId" @close="actionId = null"></ActionLog>
+    <ActionLog v-if="actionId" :id="actionId" @close="actionId = null"></ActionLog>
   </div>
 </template>
 
@@ -114,8 +111,8 @@ export default {
   props: [''],
   data() {
     return {
-      systemUuid: '',
-      subsystemUuid: '',
+      appSystemId: '',
+      appModuleId: '',
       isLoad: false,
       isActionDialogShow: false,
       id: null,
@@ -124,35 +121,35 @@ export default {
       tableData: {
         theadList: [
           {
-            title: '名称',
+            title: this.$t('page.name'),
             key: 'name'
           },
           {
-            title: '触发状态',
+            title: this.$t('term.deploy.triggerstate'),
             key: 'status'
           },
           {
-            title: '状态',
+            title: this.$t('page.status'),
             key: 'isActive'
           },
           {
-            title: '系统',
-            key: 'systemInfo'
+            title: this.$t('page.system'),
+            key: 'appSystemInfo'
           },
           {
-            title: '子系统',
-            key: 'subSystemInfo'
+            title: this.$t('page.module'),
+            key: 'appModuleInfo'
           },
           {
-            title: '版本',
+            title: this.$t('page.versions'),
             key: 'versionName'
           },
           {
-            title: '目标分支',
+            title: this.$t('page.targetbranch'),
             key: 'targetBranch'
           },
           {
-            title: '操作',
+            title: this.$t('page.action'),
             key: 'action'
           }
         ],
@@ -163,31 +160,31 @@ export default {
         search: true,
         searchList: [
           {
-            name: 'systemUuid',
+            name: 'appSystemId',
             type: 'select',
-            label: '系统',
+            label: this.$t('page.system'),
             transfer: true,
             dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.systemUuid,
-            onChange: (val) => {
-              this.systemUuid = val;
-              this.updateSubSystem(val);
+            value: this.appSystemId,
+            onChange: val => {
+              this.appSystemId = val;
+              this.updateModule(val);
               this.getSearch();
             }
           },
           {
-            name: 'subsystemUuid',
+            name: 'appModuleId',
             type: 'select',
-            label: '子系统',
+            label: this.$t('page.module'),
             transfer: true,
             rootName: 'tbodyList',
             textName: 'name',
-            valueName: 'uuid',
-            value: this.subsystemUuid,
-            onChange: (val) => {
-              this.subsystemUuid = val;
+            valueName: 'id',
+            value: this.appModuleId,
+            onChange: val => {
+              this.appModuleId = val;
               this.getSearch();
             }
           }
@@ -208,31 +205,37 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchList() {
+    searchList(currentPage) {
       let param = {};
       if (this.tableData) {
-        this.tableData.pageSize && Object.assign(param, { pageSize: this.tableData.pageSize });
-        this.tableData.currentPage && Object.assign(param, { currentPage: this.tableData.currentPage });
-      }
-      this.keyword && Object.assign(param, { keyword: this.keyword });
-      this.subsystemUuid && Object.assign(param, { subsystemUuid: this.subsystemUuid });
-      this.systemUuid && Object.assign(param, { systemUuid: this.systemUuid });
-      this.isLoad = true;
-      this.$api.codehub.merge.getActionList(param).then(res => {
-        if (res && res.Status == 'OK') {
-          Object.assign(this.tableData, {
-            pageCount: res.Return.pageCount,
-            rowNum: res.Return.rowNum,
-            pageSize: res.Return.pageSize,
-            currentPage: res.Return.currentPage,
-            tbodyList: res.Return.list
-          });
-        } else {
-          this.tableData = null;
+        this.tableData.pageSize && (param.pageSize = this.tableData.pageSize);
+        this.tableData.currentPage && (param.currentPage = this.tableData.currentPage);
+        if (currentPage) {
+          this.tableData.currentPage = currentPage;
         }
-      }).finally(() => {
-        this.isLoad = false;
-      });
+      }
+      this.keyword && (param.keyword = this.keyword);
+      this.appModuleId && (param.appModuleId = this.appModuleId);
+      this.appSystemId && (param.appSystemId = this.appSystemId);
+      this.isLoad = true;
+      this.$api.codehub.merge
+        .getActionList(param)
+        .then(res => {
+          if (res && res.Status == 'OK') {
+            Object.assign(this.tableData, {
+              pageCount: res.Return.pageCount,
+              rowNum: res.Return.rowNum,
+              pageSize: res.Return.pageSize,
+              currentPage: res.Return.currentPage,
+              tbodyList: res.Return.tbodyList
+            });
+          } else {
+            this.tableData = null;
+          }
+        })
+        .finally(() => {
+          this.isLoad = false;
+        });
     },
     updatePage(page) {
       this.tableData.currentPage = page;
@@ -248,7 +251,6 @@ export default {
     },
     btnSetActive(row, isActive) {
       let id = row.id;
-      let _this = this;
       if (isActive) {
         isActive = 1;
       } else {
@@ -256,11 +258,11 @@ export default {
       }
       row.isActive = isActive;
 
-      _this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
+      this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
         if (res && res.Status == 'OK') {
-          _this.$Message.success('操作成功');
+          this.$Message.success(this.$t('message.executesuccess'));
         } else {
-          _this.$Message.error(res.Message);
+          this.$Message.error(res.Message);
         }
       });
     },
@@ -280,19 +282,18 @@ export default {
       this.isActionDialogShow = true;
     },
     deleteAction(id) {
-      let _this = this;
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该动作',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.actions') }),
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.merge.deleteAction({ id: id }).then(res => {
+        'on-ok': vnode => {
+          this.$api.codehub.merge.deleteAction({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.getSearch();
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getSearch();
               vnode.isShow = false;
             } else {
-              _this.$Message.error(res.Message);
+              this.$Message.error(res.Message);
             }
           });
         }
@@ -308,21 +309,21 @@ export default {
         this.getSearch();
       }
     },
-    updateSubSystem(val) {
-      this.subsystemUuid = '';
+    updateModule(val) {
+      this.appModuleId = '';
       if (val) {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
-            this.$set(item, 'params', {appSystemId: val});
+        this.searchConfig.searchList.forEach(item => {
+          if (item && item.name == 'appModuleId') {
+            this.$set(item, 'params', { appSystemId: val });
             this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          } 
+          }
         });
       } else {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'subsystemUuid')) {
+        this.searchConfig.searchList.forEach(item => {
+          if (item && item.name == 'appModuleId') {
             this.$set(item, 'params', {});
             this.$set(item, 'dynamicUrl', '');
-          } 
+          }
         });
       }
     }

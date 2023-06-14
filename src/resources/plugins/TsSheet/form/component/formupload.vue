@@ -12,6 +12,7 @@
         :disabled="readonly || disabled" 
         :defaultList="actualValue"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        dataType="formuploadfile"
         @remove="remove"
         @getFileList="getFileList"
       >
