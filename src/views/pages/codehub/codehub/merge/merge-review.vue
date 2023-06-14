@@ -57,7 +57,7 @@
                 <div>{{ setTxt(mrData) }}</div>
               </div>
             </Tooltip>
-            <Tag v-if="mrData.versionVo && mrData.versionVo.name" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+            <Tag v-if="mrData.versionVo && mrData.versionVo.version" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.version }}</Tag>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
