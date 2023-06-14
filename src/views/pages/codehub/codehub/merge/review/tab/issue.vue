@@ -51,7 +51,8 @@
         :height="tableHeight"
         v-bind="tableData"
         :theadList="theadList"
-        hasFolder
+        class="inner-table"
+        canExpand
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
       >
@@ -74,10 +75,12 @@
             </ul>
           </div>
         </template>
-        <template slot="folder" slot-scope="{ row }">
+        <template v-slot:showFolderTable="{ row, index }">
+          <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="table-icon" @click.stop="openInnerTable(row, index)"></span>
+        </template>
+        <template v-slot:expand="{ row }">
           <CommitDetail
-            v-if="row.showFolder != undefined && row.commitList"
-            :mrId="id"
+            v-if="row.commitList"
             :commitList="row.commitList"
             :statusList="commitstatusList"
             @getCommit="getCommit"
@@ -105,6 +108,10 @@ export default {
       isLoading: false,
       syncSourceList: [],
       theadList: [
+        {
+          title: '',
+          key: 'showFolderTable'
+        },
         {
           title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
@@ -134,8 +141,8 @@ export default {
         }
       ],
       tableData: {
+        keyName: 'id',
         hideAction: false,
-        rowKey: 'no',
         selectedRemain: true,
         classKey: 'isExtra',
         tbodyList: []
@@ -395,6 +402,16 @@ export default {
     },
     getCommit(id) {
       this.$emit('getCommit', uuid);
+    },
+    openInnerTable(row, index) {
+      // 展开收起内嵌表格
+      if (row['_expand']) {
+        row._expand = false;
+        this.$set(this.tableData.tbodyList, index, row);
+      } else {
+        row._expand = true;
+        this.$set(this.tableData.tbodyList, index, row);
+      }
     }
   },
   computed: {
