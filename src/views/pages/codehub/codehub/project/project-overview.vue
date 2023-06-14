@@ -4,7 +4,7 @@
       <template slot="topLeft">
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="editProject()">{{ $t('page.mapping') }}</span>
-          <span v-if="selectList && selectList.length>0" class="action-item tsfont-delete" @click="deleteProject()">{{ $t('page.delete') }}</span>
+          <span v-if="selectList && selectList.length>0" class="action-item tsfont-trash-o" @click="deleteProject()">{{ $t('page.delete') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -164,12 +164,13 @@ export default {
         this.getSearch();
       }
     },
-    changePageSize(size) {
-      this.tableData.pageSize = size;
+    changePageSize(pageSize) {
+      this.tableData.currentPage = 1;
+      this.tableData.pageSize = pageSize;
       this.getList();
     },
-    changeCurrent(page) {
-      this.tableData.currentPage = page;
+    changeCurrent(currentPage) {
+      this.tableData.currentPage = currentPage;
       this.getList();
     },
     getSearch() {
