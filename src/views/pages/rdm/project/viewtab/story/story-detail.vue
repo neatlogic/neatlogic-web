@@ -120,11 +120,8 @@
           </Tabs>
           <div class="padding">
             <Divider />
-            <div class="item-grid">
-              <div>
-                <strong class="text-grey">{{ $t('page.accessory') }}</strong>
-              </div>
-              <div><TsUpLoad
+            <TsFormItem v-bind="formItemConf" :label="$t('page.accessory')">
+              <TsUpLoad
                 styleType="text"
                 dataType="issue"
                 className="smallUpload"
@@ -133,43 +130,32 @@
                 :multiple="true"
                 :isDeleteRemote="true"
                 :defaultList="issueData.fileList"
-              ></TsUpLoad></div>
-            </div>
-            <div v-if="issueData.commentCount" class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.comment') }}</strong>
-              </div>
-              <div>
-                <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('term.rdm.nextstatus') }}</strong>
-              </div>
-              <div>
-                <StatusRequiredAttrList
-                  v-if="isReady && !$utils.isEmpty(issueData)"
-                  ref="requiredAttrList"
-                  :appId="appId"
-                  :issueData="issueData"
-                ></StatusRequiredAttrList>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.reply') }}</strong>
-              </div>
-              <div>
-                <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div></div>
-              <div>
-                <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-              </div>
-            </div>
+              ></TsUpLoad>
+            </TsFormItem>
+            <TsFormItem
+              v-if="issueData.commentCount"
+              v-bind="formItemConf"
+              :label="$t('page.comment')"
+            ><CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('term.rdm.nextstatus')"
+            ><StatusRequiredAttrList
+              v-if="isReady && !$utils.isEmpty(issueData)"
+              ref="requiredAttrList"
+              :appId="appId"
+              :issueData="issueData"
+            ></StatusRequiredAttrList></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('page.reply')"
+            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              label=""
+            >
+              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
+            </TsFormItem>
           </div>
         </div>
       </div>
@@ -182,6 +168,7 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
@@ -198,6 +185,7 @@ export default {
   props: {},
   data() {
     return {
+      formItemConf: { labelWidth: 80, labelPosition: 'left', labelStrong: true },
       isSiderHide: true,
       currentTab: 'main',
       issueData: {},
@@ -249,13 +237,6 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    issueData: {
-      handler: function(val) {
-        //console.log(JSON.stringify(val, null, 2));
-      },
-      deep: true
-    }
-  }
+  watch: {}
 };
 </script>
