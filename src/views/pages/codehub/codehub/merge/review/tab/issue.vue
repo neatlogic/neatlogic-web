@@ -56,14 +56,8 @@
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
       >
-        <template slot="issueUpdateTime" slot-scope="{ row }">
-          {{ row.issueUpdateTime | formatDate }}
-        </template>
         <template slot="issueMrStatus" slot-scope="{ row }">
           <span :class="'text-' + setStatus('color', row.issueMrStatus)">{{ setStatus('text', row.issueMrStatus) }}</span>
-        </template>
-        <template slot="sourceUuid" slot-scope="{ row }">
-          {{ getsource(row.sourceUuid) }}
         </template>
         <template slot="handleUserId" slot-scope="{ row }">
           {{ row.handleUserId || row.issueCreator }}
@@ -76,15 +70,15 @@
           </div>
         </template>
         <template v-slot:showFolderTable="{ row, index }">
-          <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="table-icon" @click.stop="openInnerTable(row, index)"></span>
+          <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="cursor" @click.stop="openInnerTable(row, index)"></span>
         </template>
         <template v-slot:expand="{ row }">
-          <CommitDetail
+          <CommitTable
             v-if="row.commitList"
             :commitList="row.commitList"
             :statusList="commitstatusList"
-            @getCommit="getCommit"
-          ></CommitDetail>
+            @toDiffDetail="toDiffDetail"
+          ></CommitTable>
           <div v-else-if="!row.commitList" class="text-tip text-center">{{ $t('page.nodata') }}</div>
         </template>
       </TsTable>
@@ -98,7 +92,7 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    CommitDetail: resolve => require(['./issue/commit-table.vue'], resolve)
+    CommitTable: resolve => require(['./issue/commit-table.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
@@ -106,7 +100,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      syncSourceList: [],
       theadList: [
         {
           title: '',
@@ -130,7 +123,8 @@ export default {
         },
         {
           title: this.$t('page.updatetime'),
-          key: 'issueUpdateTime'
+          key: 'issueUpdateTime',
+          type: 'time'
         },
         {
           title: this.$t('page.source'),
@@ -164,7 +158,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.mergetype = this.mrData.versionTypeStrategyRelationVo.versionStrategyType;
-    this.getCommitstatus();
+    this.getCommitstatusList();
   },
   beforeUpdate() {},
   updated() {},
@@ -239,14 +233,6 @@ export default {
     changePageSize(size) {
       this.tableData.pageSize = size;
       this.getList();
-    },
-    getSouce() {
-      //获取需求列表
-      this.$api.codehub.issue.getSource({ type: 'issue' }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.syncSourceList = res.Return.syncSourceList;
-        }
-      });
     },
     handlerMr() {
       let type = this.mergetype;
@@ -393,15 +379,15 @@ export default {
         }
       });
     },
-    getCommitstatus() {
+    getCommitstatusList() {
       this.$api.codehub.merge.getStatusList({ type: 'commit' }).then(res => {
         if (res && res.Status == 'OK') {
           this.commitstatusList = res.Return.list;
         }
       });
     },
-    getCommit(id) {
-      this.$emit('getCommit', uuid);
+    toDiffDetail(commitId) {
+      this.$emit('toDiffDetail', commitId);
     },
     openInnerTable(row, index) {
       // 展开收起内嵌表格
@@ -415,17 +401,6 @@ export default {
     }
   },
   computed: {
-    getsource() {
-      return function(uuid) {
-        let txt = '';
-        this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
-            txt = sync.source;
-          }
-        });
-        return txt;
-      };
-    },
     setStatus() {
       return function(type, val) {
         let text = '';
@@ -480,21 +455,5 @@ export default {
 .bottom-text {
   margin-right: 8px;
   line-height: 32px;
-}
-/deep/ .tr-1 {
-  .folder-handle {
-    position: relative;
-    .folder-icon {
-      display: none;
-    }
-    &:after {
-      content: '附加需求';
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: scale(0.8);
-      color: @default-error-color;
-    }
-  }
 }
 </style>

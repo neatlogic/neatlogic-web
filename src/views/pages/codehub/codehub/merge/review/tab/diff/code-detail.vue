@@ -227,7 +227,7 @@ export default {
   },
   filters: {},
   directives: {clipboard, download},
-  inject: ['subsystemuuid', 'branchname', 'leftcommitid', 'rightcommitid'],
+  inject: ['appSystemId', 'branchname', 'leftcommitid', 'rightcommitid'],
   props: {
     diffList: [Array, Object],
     type: {
@@ -263,13 +263,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
@@ -304,7 +302,7 @@ export default {
     searchLine(startLine, endLine, hunk, type, toNo) {
     //调用获取行内容的接口
       let param = {
-        subsystemUuid: this.subsystemuuid,
+        appModuleId: this.appSystemId,
         filePath: this.diff && this.diff.modifiedType == 'R' ? this.diff.fromFileName : this.diff.toFileName,
         commitId: this.leftcommitid,
         lineStart: startLine,
@@ -513,7 +511,7 @@ export default {
             return {
               url: '/module/codehub/api/binary/repository/file/download',
               params: {
-                subsystemUuid: this.subsystemuuid,
+                appModuleId: this.appSystemId,
                 branchName: this.queryName,
                 commitId: this.rightcommitid,
                 filePath: diff.toFileName
@@ -524,7 +522,7 @@ export default {
             return {
               url: '/module/codehub/api/binary/repository/file/download',
               params: {
-                subsystemUuid: this.subsystemuuid,
+                appModuleId: this.appSystemId,
                 tagName: this.queryName,
                 commitId: this.rightcommitid,
                 filePath: diff.toFileName
@@ -536,7 +534,7 @@ export default {
           return {
             url: '/module/codehub/api/binary/repository/file/download',
             params: {
-              subsystemUuid: this.subsystemuuid,
+              appModuleId: this.subsystemuuid,
               branchName: this.branchname,
               commitId: this.rightcommitid,
               filePath: diff.toFileName

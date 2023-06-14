@@ -12,8 +12,8 @@
         </span>
         <span>{{ $t('term.codehub.commentedonaline') }}</span>
       </div>
-      <div v-if="li.filePath && tab !='diff'" class="mt-xs ml-nm" v-html="li.comment"></div>
-      <div v-else class="mt-xs ml-nm" v-html="li.comment"></div>
+      <div v-if="li.filePath && tab !='diff'" class="mt-xs ml-nm mr-nm" v-html="li.comment"></div>
+      <div v-else class="mt-xs ml-nm mr-nm" v-html="li.comment"></div>
     </div>
     <div :class="showReply ? 'mt-sm' : ''">
       <div v-if="!showReply" class="block-reply">
@@ -186,8 +186,8 @@ export default {
   position: relative;
   .block-reply{
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 127px;
+    top: -28px;
     opacity: 0;
     .action-group{
       .action-item{
@@ -200,5 +200,4 @@ export default {
     }
   }
 }
-
 </style>

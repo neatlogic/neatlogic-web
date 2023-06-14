@@ -1,6 +1,6 @@
 <template>
   <div v-if="!$utils.isEmpty(commitList)" :class="!isChildren?'commitlist-ul':'commitlist-next'">
-    <div v-for="(li, lindex) in commitList" :key="lindex" class="commitlist-li border-color">
+    <div v-for="(li, lindex) in commitList" :key="lindex" class="commitlist-li border-color pt-xs pb-xs">
       <div class="flex-between">
         <div class="flex-start">
           <UserCard
@@ -115,21 +115,20 @@ export default {
 
   }
 }
+.theme(@primary-grey){
 .commitlist-li{
-  padding: 6px 0;
-  .user-name{
-    line-height: 2;
-    font-weight: bold;
-    &:before{
-      margin-right: 5px;
-      font-size: 18px;
-    }
-  }
   &:hover{
-    background: @default-primary-grey;
+    background: @primary-grey;
     /deep/.block-reply{
       opacity: 1;
     }
+  }
+}
+}
+html {
+  .theme(@default-primary-grey);
+  &.theme-dark {
+    .theme(@dark-primary-grey );
   }
 }
 </style>

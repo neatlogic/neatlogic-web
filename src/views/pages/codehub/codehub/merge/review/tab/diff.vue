@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="padding">
     <div>
       <div v-if="!loading && diffList && diffList.length" class="text-tip tips" style="height:30px;">
         <span>共计</span>
@@ -90,12 +90,11 @@ export default {
   },
   filters: {},
   mixins: [mixins],
-  props: {
-  },
+  props: {},
   provide() {
     return {
-      subsystemuuid: this.mrData.subsystemUuid || null,
-      repositoryuuid: this.mrData.subsystemUuid || null,
+      appSystemId: (this.mrData.appSystemVo && this.mrData.appSystemVo.id) || null,
+      repositoryuuid: this.mrData.appModuleId || null,
       branchname: this.mrData.srcBranch || null,
       smruuid: this.id || null
     };

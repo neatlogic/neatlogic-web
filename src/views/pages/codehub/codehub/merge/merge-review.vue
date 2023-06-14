@@ -104,7 +104,7 @@
                   @reload="getDetail"
                   @updateStatus="updateStatus"
                   @revert="revertIssue"
-                  @getCommit="getCommit"
+                  @toDiffDetail="toDiffDetail"
                   @clearCommit="selectedCommitId=null"
                   @clearItem="clearItem"
                   @selectFile="selectFile"
@@ -310,7 +310,7 @@ export default {
     clipboardSuc() {
       this.$Message.success(this.$t('message.copysuccess'));
     },
-    getCommit(commitId) {
+    toDiffDetail(commitId) {
       //从需求切换到变更并选中指定的commit
       this.selectedCommitId = commitId;
       this.activeTab = 'diff';
