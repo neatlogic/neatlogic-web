@@ -14,9 +14,9 @@
           <Loading :loadingShow="loadingShow" type="fix"></Loading>
           <div v-for="(item,index) in list" :key="index" class="list bg-block">
             <span class="tsfont-file-single pr-xs text-primary"></span>
-            <div class="item overflow border-color pb-nm mb-nm">
-              <div class="title pb-xs">{{ item.fileName }}</div>
-              <div class="text-tip line-2" v-text="item.content"></div>
+            <div class="item border-color">
+              <div class="title pb-xs text-action" @click="gototDetail(item)">{{ item.fileName }}</div>
+              <div class="text-tip line-2" v-html="item.content"></div>
             </div>
           </div>
           <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
@@ -84,6 +84,15 @@ export default {
     changePage() {
       let currentPage = this.tableData.currentPage + 1;
       this.getDocumentList(currentPage);
+    },
+    gototDetail(item) {
+      this.$router.push({
+        path: '/documentonline-detail',
+        query: {
+          upwardNameList: item.upwardNameList.join('/'),
+          filePath: item.filePath
+        }
+      });
     }
   },
   filter: {},

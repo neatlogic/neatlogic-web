@@ -4,7 +4,7 @@
     <div v-for="(item,index) in list" :key="index" class="list">
       <span class="tsfont-file-single pr-xs text-primary"></span>
       <div class="item overflow border-color pb-nm mb-nm">
-        <div class="title pb-xs">{{ item.fileName }}</div>
+        <div class="title pb-xs text-action" @click="getDetail(item)">{{ item.fileName }}</div>
         <div class="text-tip line-2" v-text="item.content"></div>
       </div>
     </div>
@@ -15,8 +15,7 @@
 <script>
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
     keyword: String,
     moduleGroup: String,
@@ -24,9 +23,11 @@ export default {
   },
   data() {
     return {
-      loadingShow: true,
+      loadingShow: false,
       list: [],
-      tableData: {}
+      tableData: {},
+      isShowDetail: false,
+      filePath: ''
     };
   },
   beforeCreate() {},
@@ -47,12 +48,6 @@ export default {
         currentPage: currentPage || 1,
         keyword: this.keyword
       };
-      if (this.moduleGroup) {
-        this.$set(data, 'moduleGroup', this.moduleGroup);
-      }
-      if (this.menu) {
-        this.$set(data, 'menu', this.menu);
-      }
       this.$api.documentonline.searchDocument(data).then(res => {
         if (res.Status === 'OK') {
           this.tableData = res.Return || {};
@@ -67,6 +62,9 @@ export default {
     changePage() {
       let currentPage = this.tableData.currentPage + 1;
       this.searchDocument(currentPage);
+    },
+    getDetail(item) {
+      this.$emit('getDetail', item);
     }
   },
   filter: {},

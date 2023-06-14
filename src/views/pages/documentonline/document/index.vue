@@ -40,15 +40,6 @@ export default {
       loadingShow: true,
       pageSize: 5,
       moduleList: [],
-      icon: {
-        '配置': 'tsfont-peizhiguanli',
-        '自动化': 'tsfont-zidonghua',
-        '仪表盘': 'tsfont-chart-gauge',
-        '巡检': 'tsfont-inspection',
-        '系统配置': 'tsfont-xitongpeizhi',
-        '知识库': 'tsfont-zhishiku',
-        '报表': 'tsfont-baobiao'
-      },
       keyword: ''
     };
   },

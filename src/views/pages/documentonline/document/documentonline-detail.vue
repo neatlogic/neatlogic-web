@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain
       :isSiderHide="isSiderHide"
       :siderWidth="300"
@@ -17,7 +16,7 @@
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
-        <div class="markdown-body pr-nm" v-html="content"></div>
+        <DocumentonlineContent :filePath="filePath"></DocumentonlineContent>
       </template>
       <template v-slot:right>
         <div class="right-list border-color pl-nm">
@@ -37,26 +36,20 @@
   </div>
 </template>
 <script>
-import 'github-markdown-css';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
-import {marked} from 'marked';
-
 export default {
   name: '',
   components: {
     DocumentonlineTree: resolve => require(['./documentonline-tree.vue'], resolve),
-    DocumentonlineNav: resolve => require(['./documentonline-nav.vue'], resolve)
+    DocumentonlineNav: resolve => require(['./documentonline-nav.vue'], resolve),
+    DocumentonlineContent: resolve => require(['./documentonline-content.vue'], resolve)
   },
   props: {},
   data() {
     return {
       isSiderHide: true,
       rightWidth: 300,
-      loadingShow: true,
       filePath: '',
       upwardNameList: [],
-      content: '',
       list: [],
       tableData: {},
       preUpwardNameList: [] //文档上层目录列表
@@ -75,11 +68,7 @@ export default {
         this.isSiderHide = false;
       }
     }
-    this.getDocumentDetail();
     this.getDocumentonlineList();
-    this.$nextTick(() => {
-      hljs.highlightAll();
-    });
   },
   beforeMount() {},
   mounted() {},
@@ -90,21 +79,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getDocumentDetail() {
-      if (!this.filePath) {
-        return;
-      }
-      let data = {
-        filePath: this.filePath
-      };
-      this.$api.documentonline.getDocumentDetail(data).then(res => {
-        if (res.Status === 'OK') {
-          this.content = marked(res.Return.content); 
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
-    },
     getDocumentonlineList(currentPage) {
       let data = {
         currentPage: currentPage || 1,

@@ -47,3 +47,9 @@ export default {
   watch: {}
 };
 </script>
+<style lang="less" scoped>
+.centermain {
+ width: 1100px;
+ margin: 0 auto;
+}
+</style>

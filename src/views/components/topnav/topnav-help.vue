@@ -9,21 +9,37 @@
       width="350"
       className="help-drawer"
     >
-      <Loading :loadingShow="loadingShow" type="fix"></Loading>
-      <InputSearcher
-        v-model="keyword"
-        :placeholder="$t('page.globalsearch')"
-        @change="searchDocument"
-      ></InputSearcher>
-      <div v-if="!keyword" class="pt-nm">
-        <div class="tsfont-file-single pb-nm">当前页面相关帮助</div>
-        <div v-for="(item,index) in list" :key="index" class="tsfont-dot text-title overflow pb-nm">
-          {{ item.fileName }}
+      <template v-slot:header>
+        <div v-if="isShowDetail" class="text-action" @click="goBack()">
+          {{ $t('page.back') }}>
         </div>
-        <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
-        <NoData v-if="!loadingShow && !list.length" />
+        <div v-else>{{ $t('page.help') }}</div>
+      </template>
+      <Loading :loadingShow="loadingShow" type="fix"></Loading>
+      <div v-if="!isShowDetail">
+        <InputSearcher
+          v-model="keyword"
+          :placeholder="$t('page.globalsearch')"
+          @change="searchDocument"
+        ></InputSearcher>
+        <div v-if="!keyword" class="pt-nm">
+          <div class="tsfont-file-single pb-nm">当前页面相关帮助</div>
+          <div
+            v-for="(item,index) in list"
+            :key="index"
+            class="tsfont-dot text-title overflow pb-nm"
+            @click="getDetail(item)"
+          >
+            {{ item.fileName }}
+          </div>
+          <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
+          <NoData v-if="!loadingShow && !list.length" />
+        </div>
+        <GlobalSearch v-if="keyword" :keyword="keyword" @getDetail="getDetail"></GlobalSearch>
       </div>
-      <GlobalSearch v-if="keyword" :keyword="keyword"></GlobalSearch>
+      <div v-else>
+        <DocumentonlineContent :filePath="filePath"></DocumentonlineContent>
+      </div>
       <div class="text-href help-center bg-op" @click="openHelpManage()">打开帮助中心> </div>
     </Drawer>
   </div>
@@ -33,17 +49,20 @@ export default {
   name: '',
   components: {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    GlobalSearch: resolve => require(['@/views/pages/documentonline/search/global-search.vue'], resolve)
+    GlobalSearch: resolve => require(['@/views/pages/documentonline/search/global-search.vue'], resolve),
+    DocumentonlineContent: resolve => require(['@/views/pages/documentonline/document/documentonline-content.vue'], resolve)
   },
   props: {},
   data() {
     return {
-      loadingShow: true,
+      loadingShow: false,
       menu: '',
       isDrawerShow: false,
       keyword: '',
       list: [],
-      tableData: {}
+      tableData: {},
+      isShowDetail: false,
+      filePath: ''
     };
   },
   beforeCreate() {},
@@ -62,6 +81,7 @@ export default {
     openDrawerShowDocument() {
       this.keyword = '';
       this.list = [];
+      this.isShowDetail = false;
       this.isDrawerShow = !this.isDrawerShow;
       if (this.isDrawerShow) {
         this.getDocumentonlineList();
@@ -96,8 +116,16 @@ export default {
         this.getDocumentonlineList();
       }
     },
+    getDetail(item) {
+      this.filePath = item.filePath;
+      this.isShowDetail = true;
+    },
     openHelpManage() {
       window.open(HOME + '/documentonline.html#/documentonline', '_blank');
+    },
+    goBack() {
+      this.isShowDetail = false;
+      this.filePath = '';
     }
   },
   filter: {},
@@ -131,6 +159,7 @@ export default {
     }
   }
   .help-center{
+    width: 320px;
     position: fixed;
     bottom: 0;
     padding: 8px 0;

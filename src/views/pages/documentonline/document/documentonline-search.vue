@@ -6,7 +6,7 @@
         <span class="tsfont-file-single pr-xs text-primary"></span>
         <div class="item overflow border-color pb-nm mb-nm">
           <div class="title pb-xs text-action" @click="gotoPage(item)">{{ item.fileName }}</div>
-          <div class="text-tip line-2" v-text="item.content"></div>
+          <div class="text-tip line-2" v-html="item.content"></div>
         </div>
       </div>
       <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
@@ -86,8 +86,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .documentonline-search {
-  width: 60%;
-  margin: 0 auto;
+  width: 100%;
   padding-top: 30px;
   .search-main {
     padding: 16px 0;
