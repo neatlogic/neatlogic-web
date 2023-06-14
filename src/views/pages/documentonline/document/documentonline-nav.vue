@@ -5,7 +5,7 @@
         帮助中心
       </BreadcrumbItem>
       <BreadcrumbItem v-for="(item,index) in filepathList" :key="index" :to="index<filepathList.length-1? goto(item):''">
-        {{ getNavLabel(item) }}
+        {{ item }}
       </BreadcrumbItem>
     </Breadcrumb>
   </div>
@@ -52,16 +52,6 @@ export default {
           }
         }
       }
-    },
-    getNavLabel(item) {
-      if (item === 'documentonline') {
-        return '帮助中心';
-      } else if (item.indexOf('.md') != -1) {
-        return item;
-      } else if (this.labelConfig[item]) {
-        return this.labelConfig[item];
-      }
-      return '';
     },
     goto(filePath) {
       if (filePath === 'documentonline') {

@@ -6,16 +6,13 @@
       </template>
       <template v-slot:sider>
         <DocumentonlineTree
-          :id="id"
-          :moduleGroup="moduleGroup"
-          :menu="menu"
-          :filePath="filePath"
+          :filepathList="filepathList"
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
         <div class="document-main">
           <Loading :loadingShow="loadingShow" type="fix"></Loading>
-          <div v-for="(item,index) in list" :key="index" class="list">
+          <div v-for="(item,index) in list" :key="index" class="list bg-block">
             <span class="tsfont-file-single pr-xs text-primary"></span>
             <div class="item overflow border-color pb-nm mb-nm">
               <div class="title pb-xs">{{ item.fileName }}</div>
@@ -51,16 +48,9 @@ export default {
   beforeCreate() {},
   created() {
     if (this.$route.query) {
-      this.id = this.$route.query.id || '';
       this.filePath = this.$route.query.filePath;
-      this.moduleGroup = this.$route.query.moduleGroup;
-      this.menu = this.$route.query.menu;
       if (this.filePath) {
         this.filepathList = this.filePath.split('/');
-      }
-      if (this.$route.query.type && this.$route.query.type === 'moduleGroup') {
-        this.id = this.moduleGroup;
-        this.filepathList = [this.moduleGroup];
       }
     }
   },
@@ -78,8 +68,7 @@ export default {
     getDocumentList(currentPage) {
       let data = {
         currentPage: currentPage || 1,
-        moduleGroup: this.moduleGroup,
-        menu: this.menu
+        upwardNameList: this.filepathList
       };
       this.$api.documentonline.getDocumentList(data).then(res => {
         if (res.Status === 'OK') {
@@ -108,9 +97,12 @@ export default {
   .list {
     position: relative;
     display: flex;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 6px;
     .item {
       flex: 1;
-      border-bottom: 1px solid;
+      // border-bottom: 1px solid;
       overflow: hidden;
     }
   }

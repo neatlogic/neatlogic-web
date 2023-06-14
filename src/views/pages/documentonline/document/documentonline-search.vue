@@ -18,7 +18,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$route.query) {
+      this.keyword = this.$route.query.keyword || '';
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

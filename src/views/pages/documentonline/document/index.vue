@@ -13,13 +13,13 @@
     <div v-if="moduleList && moduleList.length>0" class="module-main">
       <div v-for="(item,index) in moduleList" :key="index" class="module-list">
         <div class="tsfont-zhishiku pb-nm name">
-          <span class="pl-xs">{{ item.moduleGroupName }}</span>
+          <span class="pl-xs">{{ item.firstLevelDirectory }}</span>
         </div>
         <div
           v-for="(td,tindex) in item.tbodyList"
           :key="tindex"
           class="text-tip-active tsfont-dot text-title overflow pb-nm pl-xs"
-          @click="gotoPage(item, td)"
+          @click="gotoPage(td)"
         >{{ td.fileName }}</div>
         <!-- v-if="item.currentPage < item.pageCount" -->
         <div class="text-href pl-xs" @click="gotoPage(item)">查看更多</div>
@@ -69,28 +69,27 @@ export default {
     getDocumentTableList() {
       this.$api.documentonline.getDocumentTableList({pageSize: this.pageSize}).then(res => {
         if (res.Status === 'OK') {
-          this.moduleList = res.Return || [];
+          this.moduleList = res.Return.tableList || [];
           console.log(res);
         }
       }).finally(() => {
         this.loadingShow = false;
       });
     },
-    gotoPage(item, td) {
-      if (td) {
+    gotoPage(item) {
+      if (item.isFile) {
         this.$router.push({
           path: '/documentonline-detail',
           query: {
-            moduleGroup: item.moduleGroup,
-            menu: td.menu,
-            filePath: td.filePath
+            upwardNameList: item.upwardNameList.join('/'),
+            filePath: item.filePath.join('/')
           }
         });
       } else {
         this.$router.push({
           path: '/documentonline-manage',
           query: {
-            moduleGroup: item.moduleGroup
+            filePath: item.firstLevelDirectory
           }
         });
       }
