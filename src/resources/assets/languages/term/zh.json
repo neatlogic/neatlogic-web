@@ -2099,7 +2099,12 @@
     "isopened": "已开启",
     "isclosed": "已关闭",
     "startdate": "预计开始",
-    "enddate": "预计结束"
+    "enddate": "预计结束",
+    "testcase": "测试用例",
+    "templatesetting": "模板设置",
+    "testcondition": "前置条件",
+    "teststep": "用例步骤",
+    "testresult": "预期结果"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

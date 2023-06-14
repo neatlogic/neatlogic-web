@@ -152,9 +152,10 @@ export default {
     toId: { type: Number }, //目标任务id
     app: { type: Object },
     isMine: { type: Number }, //我的任务
-    isMyCreated: {type: Number}, //我创建的
+    isMyCreated: { type: Number }, //我创建的
     isEnd: { type: Number }, //是否结束
     isExpired: { type: Number }, //是否过期
+    isFavorite: { type: Number }, //是否关注
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     linkAppType: {
@@ -451,6 +452,7 @@ export default {
       this.searchIssueData.isMyCreated = this.isMyCreated;
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
+      this.searchIssueData.isFavorite = this.isFavorite;
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
