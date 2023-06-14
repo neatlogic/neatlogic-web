@@ -4,7 +4,7 @@
       <BreadcrumbItem to="/documentonline">
         帮助中心
       </BreadcrumbItem>
-      <BreadcrumbItem v-for="(item,index) in filepathList" :key="index" :to="index<filepathList.length-1? goto(item):''">
+      <BreadcrumbItem v-for="(item,index) in upwardNameList" :key="index" :to="index < upwardNameList.length-1? goto(item,index):''">
         {{ item }}
       </BreadcrumbItem>
     </Breadcrumb>
@@ -16,9 +16,7 @@ export default {
   components: {
   },
   props: {
-    moduleGroup: String,
-    menu: String,
-    filepathList: Array
+    upwardNameList: Array
   },
   data() {
     return {
@@ -28,9 +26,7 @@ export default {
   beforeCreate() {},
   created() { },
   beforeMount() {},
-  mounted() {
-    this.init();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -38,30 +34,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    init() {
-      if (this.moduleGroup) {
-        let module = this.moduleList.find(m => m.moduleId === this.moduleGroup);
-        let routerConfig = this.$utils.getRouterConfig();
-        if (module) {
-          this.$set(this.labelConfig, this.moduleGroup, module.moduleName);
-        }
-        if (this.menu && routerConfig[this.moduleGroup]) {
-          let findItem = routerConfig[this.moduleGroup].find(i => (i.name === this.menu));
-          if (findItem) {
-            this.$set(this.labelConfig, this.menu, findItem.meta.title);
-          }
-        }
-      }
-    },
-    goto(filePath) {
+    goto(filePath, index) {
       if (filePath === 'documentonline') {
         return {path: '/documentonline'};
       } else if (filePath.indexOf('.md') == -1) {
+        let upwardNameList = this.upwardNameList.slice(0, index + 1);
         return {
           path: '/documentonline-manage',
           query: {
-            moduleGroup: this.moduleGroup,
-            menu: filePath
+            upwardNameList: upwardNameList.join('/')
           }
         };
       }

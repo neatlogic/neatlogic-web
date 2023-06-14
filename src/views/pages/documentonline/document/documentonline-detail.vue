@@ -9,14 +9,11 @@
       @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:topLeft>
-        <DocumentonlineNav :filepathList="filepathList" :moduleGroup="moduleGroup" :menu="menu"></DocumentonlineNav>
+        <DocumentonlineNav :upwardNameList="upwardNameList"></DocumentonlineNav>
       </template>
       <template v-slot:sider>
         <DocumentonlineTree
-          :id="id"
-          :moduleGroup="moduleGroup"
-          :menu="menu"
-          :filePath="filePath"
+          :upwardNameList="upwardNameList"
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
@@ -51,26 +48,24 @@ export default {
     return {
       rightWidth: 0,
       loadingShow: true,
-      id: '',
-      moduleGroup: '',
-      menu: '',
       filePath: '',
+      upwardNameList: [],
       content: '',
-      filepathList: [],
       isSiderHide: true,
       list: [],
-      tableData: {}
+      tableData: {},
+      preUpwardNameList: [] //文档上层目录列表
     };
   },
   beforeCreate() {},
   created() {
     if (this.$route.query) {
-      this.id = this.$route.query.id;
       this.filePath = this.$route.query.filePath;
-      this.moduleGroup = this.$route.query.moduleGroup;
-      this.menu = this.$route.query.menu;
-      if (this.filePath) {
-        this.filepathList = this.filePath.split('/');
+      let upwardNameList = this.$route.query.upwardNameList;
+      if (upwardNameList) {
+        this.upwardNameList = upwardNameList.split('/');
+        this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
+        console.log(this.upwardNameList, this.preUpwardNameList);
       }
     }
     this.getDocumentDetail();
@@ -93,7 +88,7 @@ export default {
         return;
       }
       let data = {
-        filePath: this.id
+        filePath: this.filePath
       };
       this.$api.documentonline.getDocumentDetail(data).then(res => {
         if (res.Status === 'OK') {
@@ -106,8 +101,7 @@ export default {
     getDocumentonlineList(currentPage) {
       let data = {
         currentPage: currentPage || 1,
-        moduleGroup: this.moduleGroup,
-        menu: this.menu
+        upwardNameList: this.preUpwardNameList
       };
       this.$api.documentonline.getDocumentList(data).then(res => {
         if (res.Status === 'OK') {

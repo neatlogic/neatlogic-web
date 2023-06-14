@@ -77,19 +77,19 @@ export default {
       });
     },
     gotoPage(item) {
-      if (item.isFile) {
+      if (item.firstLevelDirectory) {
         this.$router.push({
-          path: '/documentonline-detail',
+          path: '/documentonline-manage',
           query: {
-            upwardNameList: item.upwardNameList.join('/'),
-            filePath: item.filePath.join('/')
+            upwardNameList: item.firstLevelDirectory
           }
         });
       } else {
         this.$router.push({
-          path: '/documentonline-manage',
+          path: '/documentonline-detail',
           query: {
-            filePath: item.firstLevelDirectory
+            upwardNameList: item.upwardNameList.join('/'),
+            filePath: item.filePath
           }
         });
       }

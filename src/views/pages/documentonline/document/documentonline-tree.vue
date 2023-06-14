@@ -14,7 +14,7 @@ export default {
   components: {
   },
   props: {
-    filepathList: Array
+    upwardNameList: Array
   },
   data() {
     return {
@@ -38,7 +38,7 @@ export default {
       this.$api.documentonline.getDirectory().then(res => {
         if (res.Status === 'OK') {
           let tbodyList = res.Return.tbodyList || [];
-          this.setTreeDataSelect(this.filepathList, tbodyList, 0);
+          this.setTreeDataSelect(this.upwardNameList, tbodyList, 0);
           this.tbodyList = tbodyList;
         }
       });
@@ -77,14 +77,15 @@ export default {
           this.$router.push({
             path: '/documentonline-detail',
             query: {
-              filePath: node.upwardNameList.join('/')
+              filePath: node.path,
+              upwardNameList: node.upwardNameList.join('/')
             }
           });
         } else {
           this.$router.push({
             path: '/documentonline-manage',
             query: {
-              filePath: node.upwardNameList.join('/')
+              upwardNameList: node.upwardNameList.join('/')
             }
           });
         }

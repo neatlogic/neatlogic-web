@@ -2,11 +2,11 @@
   <div>
     <TsContain :siderWidth="300" enableCollapse>
       <template v-slot:topLeft>
-        <DocumentonlineNav :filepathList="filepathList" :moduleGroup="moduleGroup" :menu="menu"></DocumentonlineNav>
+        <DocumentonlineNav :upwardNameList="upwardNameList"></DocumentonlineNav>
       </template>
       <template v-slot:sider>
         <DocumentonlineTree
-          :filepathList="filepathList"
+          :upwardNameList="upwardNameList"
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
@@ -40,7 +40,7 @@ export default {
       id: '',
       moduleGroup: '',
       menu: '',
-      filepathList: [],
+      upwardNameList: [],
       tableData: {},
       list: []
     };
@@ -48,9 +48,9 @@ export default {
   beforeCreate() {},
   created() {
     if (this.$route.query) {
-      this.filePath = this.$route.query.filePath;
-      if (this.filePath) {
-        this.filepathList = this.filePath.split('/');
+      let upwardNameList = this.$route.query.upwardNameList;
+      if (upwardNameList) {
+        this.upwardNameList = upwardNameList.split('/');
       }
     }
   },
@@ -68,7 +68,7 @@ export default {
     getDocumentList(currentPage) {
       let data = {
         currentPage: currentPage || 1,
-        upwardNameList: this.filepathList
+        upwardNameList: this.upwardNameList
       };
       this.$api.documentonline.getDocumentList(data).then(res => {
         if (res.Status === 'OK') {
