@@ -3,23 +3,46 @@
     <template v-slot>
       <div>
         <div v-if="Object.keys(helpData).length">
-          <Divider orientation="start">{{ $t('page.interface') }}</Divider>
-          <div>{{ rowData.url }}</div>
-          <Divider v-if="helpData.description" orientation="start">{{ $t('page.description') }}</Divider>
-          <div v-if="helpData.description">{{ helpData.description }}</div>
-          <Divider v-if="helpData.input" orientation="start">{{ $t('page.inputparam') }}</Divider>
-          <Table v-if="helpData.input" :columns="inputColumns" :data="helpData.input"></Table>
-          <Divider v-if="helpData.output" orientation="start">{{ $t('page.outputparam') }}</Divider>
-          <Table
+          <TsFormItem :label="$t('page.interface')" labelPosition="left" labelWidth="80">
+            {{ rowData.url }}
+          </TsFormItem>
+          <TsFormItem
+            v-if="helpData.description"
+            :label="$t('page.description')"
+            labelPosition="left"
+            labelWidth="80"
+          >
+            {{ helpData.description }}
+          </TsFormItem>
+          <TsFormItem
+            v-if="helpData.input"
+            :label="$t('page.inputparam')"
+            labelPosition="left"
+            labelWidth="80"
+          >
+            <Table size="small" :columns="inputColumns" :data="helpData.input"></Table>
+          </TsFormItem>
+          <TsFormItem
             v-if="helpData.output"
-            row-key="id"
-            :columns="outputColumns"
-            :data="helpData.output"
-          ></Table>
-          <Divider v-if="helpData.example" orientation="start">{{ $t('term.report.example') }}</Divider>
-          <div v-if="helpData.example">
+            :label="$t('page.outputparam')"
+            labelPosition="left"
+            labelWidth="80"
+          >
+            <Table
+              size="small"
+              row-key="id"
+              :columns="outputColumns"
+              :data="helpData.output"
+            ></Table>
+          </TsFormItem>
+          <TsFormItem
+            v-if="helpData.example"
+            :label="$t('term.report.example')"
+            labelPosition="left"
+            labelWidth="80"
+          >
             <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
-          </div>
+          </TsFormItem>
         </div>
         <div v-else>{{ helpMessage }}</div>
       </div>
@@ -31,6 +54,7 @@
 export default {
   name: 'ApiHelp',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     JsonViewer: resolve => require(['vue-json-viewer'], resolve)
   },
   props: {
@@ -55,6 +79,7 @@ export default {
         { title: this.$t('page.name'), key: 'name' },
         { title: this.$t('page.description'), key: 'description' },
         { title: this.$t('page.type'), key: 'type' },
+        { title: this.$t('page.rule'), key: 'rule' },
         {
           title: this.$t('page.isrequired'),
           key: 'isRequired',

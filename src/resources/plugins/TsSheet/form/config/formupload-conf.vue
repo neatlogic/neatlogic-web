@@ -35,6 +35,7 @@
         :multiple="false"
         :defaultList="config.templateList || []"
         :disabled="disabled"
+        dataType="formuploadfiletemplate"
         @remove="remove"
         @getFileList="getFileList"
       >

@@ -2,6 +2,7 @@
   <div>
     <div>
       <div class="clearfix searchBox">
+        <div v-if="dataCount" class="datacount"><span class="text-grey">{{ $t('page.datacapacity') }}</span><span class="ml-xs">{{ dataCount == dataLimit ? dataLimit - 1 + '+' : dataCount }}</span></div>
         <div class="search">
           <div v-if="!isAdvancedSearch" class="displayinline">
             <TsFormInput
@@ -34,7 +35,7 @@
         <Card
           v-if="attrList && attrList.length > 0"
           dis-hover
-          style="margin-bottom:10px"
+          style="margin-bottom: 10px"
           class="radius-md"
         >
           <TsRow>
@@ -77,12 +78,19 @@
                       }
                     "
                   ></AttrSearcher>
-                  <TsFormInput v-else @change="val=>{ setConstAttrData(attr, 'value', { value: val, actualValue: val });}"></TsFormInput>
+                  <TsFormInput
+                    v-else
+                    @change="
+                      val => {
+                        setConstAttrData(attr, 'value', { value: val, actualValue: val });
+                      }
+                    "
+                  ></TsFormInput>
                 </Col>
               </TsRow>
             </Col>
           </TsRow>
-          <div style="text-align:right" class="mt-md">
+          <div style="text-align: right" class="mt-md">
             <Button type="primary" class="mr-md" @click="searchCustomViewData()">{{ $t('page.search') }}</Button>
             <Button
               v-download="exportUrl()"
@@ -90,7 +98,8 @@
               ghost
               :loading="isExporting"
               :disabled="isExporting"
-            >{{ $t('page.export') }}</Button></div>
+            >{{ $t('page.export') }}</Button>
+          </div>
         </Card>
       </div>
     </div>
@@ -121,7 +130,7 @@
           <div>
             <div v-if="!row._isPager">
               <span v-if="row._isGroup" :style="row._filterList ? 'padding-left:' + row._filterList.length * 8 + 'px' : ''">
-                <i :class="!row._hasChild ? 'tsfont-right' : 'tsfont-down'" style="cursor:pointer" @click="showChild(row)"></i>
+                <i :class="!row._hasChild ? 'tsfont-right' : 'tsfont-down'" style="cursor: pointer" @click="showChild(row)"></i>
                 <span class="text-grey">{{ row._attrAlias }}：</span>
                 <span>{{ row._value }}</span>
                 <span>（{{ row._count }}）</span>
@@ -133,7 +142,7 @@
             <div v-else>
               <span
                 class="text-grey"
-                style="cursor:pointer"
+                style="cursor: pointer"
                 :style="row._filterList ? 'padding-left:' + (row._filterList.length * 8 + (row._pagerMode == 'normal' ? 8 : 0)) + 'px' : ''"
                 @click="showMoreData(row)"
               >再显示{{ searchParam.pageSize }}条</span>
@@ -143,13 +152,12 @@
         <template slot="action" slot-scope="{ row }">
           <div v-if="!row._isGroup && !row._isPager" class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="icon tsfont-file-single" @click.stop="toViewDetail(row)">详情</li>
+              <li class="icon tsfont-file-single" @click.stop="toViewDetail(row)">{{ $t('page.detail') }}</li>
             </ul>
           </div>
         </template>
       </TsTable>
     </div>
-
   </div>
 </template>
 <script>
@@ -173,6 +181,8 @@ export default {
       searchParam: { id: _this.viewId, keyword: '', pageSize: 20, searchMode: 'normal' }, //视图查询参数
       viewData: { theadList: [], tbodyList: [] },
       tableHeight: 1000,
+      dataCount: 0, //数据量
+      dataLimit: 10000, //数据上限
       groupList: [],
       attrList: [], //属性列表,
       constAttrList: [], //内部属性列表
@@ -181,10 +191,10 @@ export default {
       attrConditionHideData: {}, //控制属性条件是否隐藏
       isAdvancedSearch: false,
       constAttrExpressionList: [
-        {value: 'equal', text: this.$t('term.expression.eq')},
-        {value: 'notequal', text: this.$t('term.expression.ne')},
-        {value: 'like', text: this.$t('term.expression.like')},
-        {value: 'notlike', text: this.$t('term.expression.notlike')}
+        { value: 'equal', text: this.$t('term.expression.eq') },
+        { value: 'notequal', text: this.$t('term.expression.ne') },
+        { value: 'like', text: this.$t('term.expression.like') },
+        { value: 'notlike', text: this.$t('term.expression.notlike') }
       ]
     };
   },
@@ -271,7 +281,9 @@ export default {
         this.constAttrList = res.Return.constAttrList;
         this.viewData.theadList.push({ key: 'id', title: '#' });
         const theadList = [...this.attrList, ...this.constAttrList];
-        theadList.sort((a, b) => { return a.sort - b.sort; });
+        theadList.sort((a, b) => {
+          return a.sort - b.sort;
+        });
         if (theadList && theadList.length > 0) {
           theadList.forEach(attr => {
             this.viewData.theadList.push({
@@ -332,7 +344,7 @@ export default {
       this.setTableHeight();
     },
     exportUrl() {
-      const params = {id: this.viewId, searchMode: 'normal', attrFilterList: []};
+      const params = { id: this.viewId, searchMode: 'normal', attrFilterList: [] };
       params.keyword = this.searchParam.keyword;
       for (const key in this.attrFilterList) {
         const d = this.attrFilterList[key];
@@ -430,6 +442,8 @@ export default {
       this.$api.cmdb.customview.searchCustomViewData(this.searchParam).then(res => {
         this.loadingShow = false;
         let valueList = [];
+        this.dataCount = res.Return.dataCount || 0;
+        this.dataLimit = res.Return.dataLimit || 0;
         if (this.searchParam.groupBy) {
           res.Return.dataList.forEach((d, index) => {
             if (index < res.Return.pageSize) {
@@ -495,10 +509,15 @@ export default {
   computed: {
     searchAttrList: function() {
       if ((this.attrList && this.attrList.length > 0) || (this.constAttrList && this.constAttrList.length > 0)) {
-        const searchAttrList = [...this.attrList.filter(attr => {
-          return attr.attrVo && attr.attrVo.canSearch;
-        }), ...this.constAttrList];
-        searchAttrList.sort((a, b) => { return a.sort - b.sort; });
+        const searchAttrList = [
+          ...this.attrList.filter(attr => {
+            return attr.attrVo && attr.attrVo.canSearch;
+          }),
+          ...this.constAttrList
+        ];
+        searchAttrList.sort((a, b) => {
+          return a.sort - b.sort;
+        });
         return searchAttrList;
       } else {
         return null;
@@ -527,26 +546,30 @@ export default {
     text-align: right;
   }
 }
-.searchBox{
+.searchBox {
   position: relative;
-  margin-bottom:10px;
+  margin-bottom: 10px;
   height: 30px;
-  .search{
-    position:absolute;
-    right:0;
-    .displayinline{
+  .datacount {
+    position: absolute;
+    left: 0;
+    line-height:30px;
+  }
+  .search {
+    position: absolute;
+    right: 0;
+    .displayinline {
       display: inline-block;
     }
-    .marl10{
-      margin-left:10px;
+    .marl10 {
+      margin-left: 10px;
     }
-    .advancedSearch{
+    .advancedSearch {
       display: inline-block;
-      cursor:pointer;
-      line-height:30px;
-      margin-left:10px
+      cursor: pointer;
+      line-height: 30px;
+      margin-left: 10px;
     }
   }
 }
-
 </style>

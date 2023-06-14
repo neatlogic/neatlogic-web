@@ -10,10 +10,12 @@ const appModules = {
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
   taskDetail: () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue'),
   iterationDetail: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration-detail.vue'),
+  testcaseDetail: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase-detail.vue'),
   story: () => import('@/views/pages/rdm/project/viewtab/story/story.vue'),
   bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
   task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
-  iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue')
+  iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue'),
+  testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -115,7 +117,20 @@ let routerArr = [
       ismenu: true,
       type: 'workbrench',
       authority: 'RDM_BASE',
-      icon: 'tsfont-check-o'
+      icon: 'tsfont-upload'
+    }
+  },
+  {
+    path: '/task-list/favorite',
+    name: 'taskList',
+    props: { type: 'favorite' },
+    component: taskList,
+    meta: {
+      title: $t('router.rdm.favorite'),
+      ismenu: true,
+      type: 'workbrench',
+      authority: 'RDM_BASE',
+      icon: 'tsfont-star'
     }
   },
   {
@@ -131,7 +146,7 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase'];
 appList.forEach(app => {
   routerArr.push({
     path: '/' + app + '/:projectId/:appId',
