@@ -5,7 +5,7 @@
       :key="index"
       class="relative"
       :label="attr.label"
-      labelPosition="left"
+      labelPosition="top"
       :labelWidth="120"
     >
       <div v-if="!issueData.isEnd">

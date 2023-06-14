@@ -69,6 +69,10 @@ export default {
   props: {
     parentId: { type: Number },
     fromId: { type: Number },
+    toId: { type: Number },
+    relType: {type: String, validator: function(value) {
+      return ['extend', 'relative', 'repeat'].includes(value);
+    }},
     id: { type: Number },
     app: { type: Object },
     catalog: { type: Number },
@@ -164,6 +168,10 @@ export default {
       if (isValid) {
         if (this.fromId) {
           this.issueData.fromId = this.fromId;
+          this.issueData.relType = this.relType;
+        } else if (this.toId) {
+          this.issueData.toId = this.toId;
+          this.issueData.relType = this.relType;
         } else if (this.parentId) {
           this.issueData.parentId = this.parentId;
         }

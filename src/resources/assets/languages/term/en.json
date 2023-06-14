@@ -2107,7 +2107,8 @@
     "templatesetting": "Template Settings",
     "testcondition": "Preconditions",
     "teststep": "Use Case Steps",
-    "testresult": "Expected results"
+    "testresult": "Expected results",
+    "pleasesetstatus": "Please define the status first"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

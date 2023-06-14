@@ -1,6 +1,11 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true" :isSiderHide="true">
+    <TsContain
+      :rightWidth="250"
+      :enableCollapse="true"
+      :isSiderHide="isSiderHide"
+      @toggleSiderHide="toggleSiderHide"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -14,9 +19,15 @@
           <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
         </div>
       </template>
-      <template v-slot:topRight>
+      <template v-slot:topRight></template>
+      <template v-slot:sider>
+        <MyDoingIssueList
+          v-if="projectId && appId && id"
+          :projectId="projectId"
+          :appId="appId"
+          :issueId="id"
+        ></MyDoingIssueList>
       </template>
-      <template v-slot:sider>侧边栏</template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
@@ -44,7 +55,8 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
-                  :linkAppType="[{ to: 'task', rel: 'extend' }]"
+                  relType="extend"
+                  relAppType="task"
                   :fromId="id"
                   :app="getApp('task')"
                   @refresh="init"
@@ -60,7 +72,8 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
-                  :linkAppType="[{ to: 'bug', rel: 'extend' }]"
+                  relType="extend"
+                  relAppType="bug"
                   :fromId="id"
                   :app="getApp('bug')"
                   @refresh="init"
@@ -78,6 +91,23 @@
                   :canAction="true"
                   :parentId="id"
                   :app="getApp('story')"
+                  @refresh="init"
+                ></IssueList>
+              </div>
+            </TabPane>
+            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.testcase'), 'testcase', 'relative', 'from')" name="testcase">
+              <div v-if="currentTab == 'testcase'" class="pl-nm pr-nm">
+                <IssueList
+                  v-if="id && getApp('testcase')"
+                  ref="testcaseList"
+                  :projectId="projectId"
+                  :canAppend="true"
+                  :canSearch="false"
+                  :canAction="true"
+                  relType="relative"
+                  relAppType="testcase"
+                  :fromId="id"
+                  :app="getApp('testcase')"
                   @refresh="init"
                 ></IssueList>
               </div>
@@ -124,12 +154,20 @@
                   :appId="appId"
                   :issueData="issueData"
                 ></StatusRequiredAttrList>
-                <div class="mb-md">
-                  <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-                </div>
-                <div>
-                  <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-                </div>
+              </div>
+            </div>
+            <div class="item-grid mt-md">
+              <div>
+                <strong class="text-grey">{{ $t('page.reply') }}</strong>
+              </div>
+              <div>
+                <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
+              </div>
+            </div>
+            <div class="item-grid mt-md">
+              <div></div>
+              <div>
+                <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
               </div>
             </div>
           </div>
@@ -140,6 +178,7 @@
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
+
 export default {
   name: '',
   components: {
@@ -152,12 +191,14 @@ export default {
     AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
     StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},
   data() {
     return {
+      isSiderHide: true,
       currentTab: 'main',
       issueData: {},
       issueDataSnapshot: {},
@@ -170,7 +211,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$localStore.get('isSiderHide') != null) {
+      this.isSiderHide = this.$localStore.get('isSiderHide');
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -180,6 +225,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isHide) {
+      this.isSiderHide = isHide;
+      this.$localStore.set('isSiderHide', isHide);
+    },
     goToNext() {
       const requiredAttrList = this.$refs['requiredAttrList'];
       if (!requiredAttrList || requiredAttrList.valid()) {

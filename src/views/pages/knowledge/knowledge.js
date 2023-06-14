@@ -6,6 +6,7 @@ import store from '@/resources/store';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import {$t} from '@/resources/init.js';
+import LocalStore from '@/resources/assets/js/localStore.js';
 
 import VueI18n from 'vue-i18n';
 //公共的全局组件、样式等
@@ -27,7 +28,7 @@ let i18n = initI18n(VueI18n, {});//语言包配置
 Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
-// Vue.prototype.i18n = i18n;
+Vue.prototype.$localStore = new LocalStore('knowledge', router);
 
 //知识库的路由拦截有自己逻辑，因此需要覆盖公共方法
 const gettingUserInfo = store.dispatch('getUserInfo');

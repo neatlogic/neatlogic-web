@@ -12,10 +12,9 @@ import * as filters from '@/resources/filters/index'; //时间过滤器
 import HistoryUtil from '@/resources/assets/js/historyUtil.js';
 
 import auth from '@/resources/directives/auth.js'; // 权限指令
-import Particles from 'particles.vue';//粒子效果
+import Particles from 'particles.vue'; //粒子效果
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
-import AuthUtils from '@/resources/assets/js/authUtil.js';//权限判断
-import common from '@/resources/api/common/common.js';// 全局通用接口
+import AuthUtils from '@/resources/assets/js/authUtil.js'; //权限判断
 
 // common.checkTenant().then(res => {
 //   if (res) {
@@ -51,6 +50,7 @@ Vue.use(HistoryUtil);
 Vue.use(Particles);
 Vue.prototype.$utils = utils;
 Vue.prototype.$AuthUtils = AuthUtils;
+
 import 'assets/index.js';
 
 Vue.directive('auth', auth);
