@@ -77,8 +77,9 @@ export default {
           this.$router.push({
             path: '/documentonline-detail',
             query: {
-              filePath: node.path,
-              upwardNameList: node.upwardNameList.join('/')
+              filePath: node.filePath,
+              upwardNameList: node.upwardNameList.join('/'),
+              isSiderHide: false
             }
           });
         } else {

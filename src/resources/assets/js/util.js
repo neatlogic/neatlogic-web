@@ -968,14 +968,5 @@ export default {
     str = str.replace(/ /gi, '');
     str = str.replace(/&nbsp;/ig, ' '); //替换HTML空格
     return str;
-  },
-  getRouterConfig() {
-    const requireRouter = require.context('@/views/pages', true, /router.js$/);
-    return requireRouter.keys().reduce((routerConfig, routerPath) => {
-      const moduleId = routerPath.split('/')[1];
-      const routeList = requireRouter(routerPath).default || [];
-      routerConfig[moduleId] = routeList;
-      return routerConfig;
-    }, {});
   }
 };

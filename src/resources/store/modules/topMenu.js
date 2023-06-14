@@ -56,7 +56,7 @@ const actions = {
         if (!description || !description.trim()) { description = `${moduleName}平台`; }
         const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
         const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
-        if (routerConfig[moduleId] && moduleId != 'documentonline') {
+        if (routerConfig[moduleId]) {
           const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && (route.meta.istitle && authList.length > 0));
           if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1) && authList.length > 0) {
             //有权限菜单的模块才让显示

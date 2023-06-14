@@ -2,7 +2,7 @@
   <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain
-      v-model="isSiderHide"
+      :isSiderHide="isSiderHide"
       :siderWidth="300"
       :rightWidth="rightWidth"
       enableCollapse
@@ -22,7 +22,12 @@
       <template v-slot:right>
         <div class="right-list border-color pl-nm">
           <div class="tsfont-file-single pb-nm">相关知识</div>
-          <div v-for="(item,index) in list" :key="index" class="tsfont-dot text-title overflow pb-nm">
+          <div
+            v-for="(item,index) in list"
+            :key="index"
+            class="tsfont-dot text-tip-active overflow pb-nm"
+            @click="gotoPage(item)"
+          >
             {{ item.fileName }}
           </div>
           <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
@@ -46,12 +51,12 @@ export default {
   props: {},
   data() {
     return {
-      rightWidth: 0,
+      isSiderHide: true,
+      rightWidth: 300,
       loadingShow: true,
       filePath: '',
       upwardNameList: [],
       content: '',
-      isSiderHide: true,
       list: [],
       tableData: {},
       preUpwardNameList: [] //文档上层目录列表
@@ -65,7 +70,9 @@ export default {
       if (upwardNameList) {
         this.upwardNameList = upwardNameList.split('/');
         this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
-        console.log(this.upwardNameList, this.preUpwardNameList);
+      }
+      if (this.$route.query.isSiderHide && this.$route.query.isSiderHide === 'false') {
+        this.isSiderHide = false;
       }
     }
     this.getDocumentDetail();
@@ -117,16 +124,29 @@ export default {
       this.getDocumentonlineList(currentPage);
     },
     toggleSiderHide(siderHide) {
-      if (!siderHide) {
+      this.isSiderHide = siderHide;
+    },
+    gotoPage(item) {
+      this.$router.push({
+        path: '/documentonline-detail',
+        query: {
+          filePath: item.filePath,
+          upwardNameList: item.upwardNameList.join('/')
+        }
+      });
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {
+    isSiderHide(val) {
+      if (!val) {
         this.rightWidth = 0;
       } else {
         this.rightWidth = 300;
       }
     }
-  },
-  filter: {},
-  computed: {},
-  watch: {}
+  }
 };
 </script>
 <style lang="less" scoped>

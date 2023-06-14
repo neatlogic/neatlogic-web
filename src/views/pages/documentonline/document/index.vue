@@ -21,8 +21,7 @@
           class="text-tip-active tsfont-dot text-title overflow pb-nm pl-xs"
           @click="gotoPage(td)"
         >{{ td.fileName }}</div>
-        <!-- v-if="item.currentPage < item.pageCount" -->
-        <div class="text-href pl-xs" @click="gotoPage(item)">查看更多</div>
+        <div v-if="item.currentPage < item.pageCount" class="text-href pl-xs" @click="gotoPage(item)">查看更多</div>
       </div>
     </div>
   </div>
@@ -70,7 +69,6 @@ export default {
       this.$api.documentonline.getDocumentTableList({pageSize: this.pageSize}).then(res => {
         if (res.Status === 'OK') {
           this.moduleList = res.Return.tableList || [];
-          console.log(res);
         }
       }).finally(() => {
         this.loadingShow = false;
