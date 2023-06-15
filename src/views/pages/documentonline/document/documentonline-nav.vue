@@ -4,7 +4,7 @@
       <BreadcrumbItem to="/documentonline">
         {{ $t('term.documentonline.helpcenter') }}
       </BreadcrumbItem>
-      <BreadcrumbItem v-for="(item,index) in upwardNameList" :key="index" :to="index < upwardNameList.length-1? goto(item,index):''">
+      <BreadcrumbItem v-for="(item,index) in upwardNameList" :key="index" :to="index < upwardNameList.length-1? goto(index):''">
         {{ item }}
       </BreadcrumbItem>
     </Breadcrumb>
@@ -34,26 +34,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    goto(filePath, index) {
-      if (filePath === 'documentonline') {
-        return {path: '/documentonline'};
-      } else if (filePath.indexOf('.md') == -1) {
-        let upwardNameList = this.upwardNameList.slice(0, index + 1);
-        return {
-          path: '/documentonline-manage',
-          query: {
-            upwardNameList: upwardNameList.join('/')
-          }
-        };
-      }
+    goto(index) {
+      let upwardNameList = this.upwardNameList.slice(0, index + 1);
+      return '/documentonline-manage?upwardNameList=' + upwardNameList.join('/');
     }
   },
   filter: {},
-  computed: {
-    moduleList() {
-      return this.$store.state.topMenu.moduleList;
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
