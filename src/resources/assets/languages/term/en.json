@@ -2317,6 +2317,7 @@
     "edittag": "Edit Label",
     "addtag": "Add tags",
     "tagname": "Tag name",
+    "nogroupmembers": "There are currently no group members available",
     "userauth": "User Authorization",
     "groupauth": "Group Authorization",
     "delauth": "Are you sure to delete this permission",

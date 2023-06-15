@@ -2314,6 +2314,7 @@
     "edittag": "编辑标签",
     "addtag": "新增标签",
     "tagname": "标签名",
+    "nogroupmembers": "暂无分组成员",
     "exportexcel": "导出Excel",
     "userauth": "用户授权",
     "groupauth": "分组授权",
