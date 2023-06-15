@@ -2046,7 +2046,11 @@
     "complexname": "Compound Attribute Name",
     "restraint": "constraint",
     "enumitem": "Enumerate Members",
-    "deletepropertyconfirm": "Are you sure to delete the attribute: {target}?"
+    "deletepropertyconfirm": "Are you sure to delete the attribute: {target}?",
+    "selectdataurl": "Query data processing status address",
+    "errorcode": "Error code",
+    "facilitycategory": "Data element classification identifier",
+    "facilitydescriptor": "Data element facility identifier"
   },
   "rdm": {
     "project": "project",
@@ -2108,7 +2112,9 @@
     "testcondition": "Preconditions",
     "teststep": "Use Case Steps",
     "testresult": "Expected results",
-    "pleasesetstatus": "Please define the status first"
+    "pleasesetstatus": "Please define the status first",
+    "listview": "List View",
+    "levelview": "hierarchy view "
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

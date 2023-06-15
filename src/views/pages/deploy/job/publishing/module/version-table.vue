@@ -76,7 +76,7 @@ export default {
           key: 'version'
         },
         {
-          title: this.$t('page.creatTime'),
+          title: this.$t('page.createtime'),
           type: 'time',
           key: 'fcd'
         },
