@@ -11,7 +11,7 @@
     >
       <template v-slot:header>
         <div v-if="isShowDetail" class="text-action" @click="goBack()">
-          {{ $t('page.back') }}>
+          {{ $t('page.back') }} >
         </div>
         <div v-else>{{ $t('page.help') }}</div>
       </template>
@@ -22,25 +22,33 @@
           :placeholder="$t('page.globalsearch')"
           @change="searchDocument"
         ></InputSearcher>
-        <div v-if="!keyword" class="pt-nm">
-          <div class="tsfont-file-single pb-nm">当前页面相关帮助</div>
+        <div v-if="!isGlobalSearch" class="pt-nm">
+          <div class="tsfont-file-single pb-nm">{{ $t('term.documentonline.currentpagesearch') }}</div>
           <div
             v-for="(item,index) in list"
             :key="index"
-            class="tsfont-dot text-title overflow pb-nm"
+            class="tsfont-dot text-title overflow pb-nm text-action"
             @click="getDetail(item)"
           >
             {{ item.fileName }}
           </div>
-          <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
-          <NoData v-if="!loadingShow && !list.length" />
         </div>
-        <GlobalSearch v-if="keyword" :keyword="keyword" @getDetail="getDetail"></GlobalSearch>
+        <div v-else class="global-search">
+          <div v-for="(item,index) in list" :key="index" class="list">
+            <span class="tsfont-file-single pr-xs text-primary"></span>
+            <div class="item overflow border-color pb-nm mb-nm">
+              <div class="title pb-xs text-action" @click="getDetail(item)">{{ item.fileName }}</div>
+              <div class="text-tip line-2" v-html="item.content"></div>
+            </div>
+          </div>
+        </div>
+        <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
+        <NoData v-if="!loadingShow && !list.length" />
       </div>
       <div v-else>
         <DocumentonlineContent :filePath="filePath"></DocumentonlineContent>
       </div>
-      <div class="text-href help-center bg-op" @click="openHelpManage()">打开帮助中心> </div>
+      <div class="text-href help-center bg-op" @click="openHelpManage()">{{ isShowDetail? $t('term.documentonline.openhelpdocument') : $t('term.documentonline.openhelp') }} > </div>
     </Drawer>
   </div>
 </template>
@@ -49,26 +57,25 @@ export default {
   name: '',
   components: {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    GlobalSearch: resolve => require(['@/views/pages/documentonline/search/global-search.vue'], resolve),
     DocumentonlineContent: resolve => require(['@/views/pages/documentonline/document/documentonline-content.vue'], resolve)
   },
   props: {},
   data() {
     return {
-      loadingShow: false,
-      menu: '',
+      loadingShow: true,
       isDrawerShow: false,
       keyword: '',
       list: [],
       tableData: {},
       isShowDetail: false,
-      filePath: ''
+      filePath: '',
+      upwardNameList: [],
+      blacklist: ['welcome'], //不需要搜索的路由名单
+      isGlobalSearch: false
     };
   },
   beforeCreate() {},
-  created() {
-    console.log(this.$route);
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -82,20 +89,39 @@ export default {
       this.keyword = '';
       this.list = [];
       this.isShowDetail = false;
-      this.isDrawerShow = !this.isDrawerShow;
-      if (this.isDrawerShow) {
-        this.getDocumentonlineList();
-      }
+      this.isDrawerShow = true;
+      this.getDocumentonlineList();
     },
-    getDocumentonlineList(currentPage) {
+    getDocumentonlineList(currentPage) { //当前模块、路由相关文档列表
       let data = {
         currentPage: currentPage || 1,
         moduleGroup: MODULEID
       };
-      if (this.$route) {
+      if (this.$route && !this.blacklist.includes(this.$route.name)) {
         this.$set(data, 'menu', this.$route.name);
       }
+      this.loadingShow = true;
       this.$api.documentonline.getDocumentList(data).then(res => {
+        if (res.Status === 'OK') {
+          this.tableData = res.Return || {};
+          if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
+            this.list.push(...this.tableData.tbodyList);
+          }
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    globalSearch(currentPage) { //全局搜索文档
+      if (!this.keyword) {
+        return;
+      }
+      let data = {
+        currentPage: currentPage || 1,
+        keyword: this.keyword
+      };
+      this.loadingShow = true;
+      this.$api.documentonline.searchDocument(data).then(res => {
         if (res.Status === 'OK') {
           this.tableData = res.Return || {};
           if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
@@ -108,24 +134,38 @@ export default {
     },
     changePage() {
       let currentPage = this.tableData.currentPage + 1;
-      this.getDocumentonlineList(currentPage);
+      if (this.keyword) {
+        this.globalSearch(currentPage);
+      } else {
+        this.getDocumentonlineList(currentPage);
+      }
     },
     searchDocument(val) {
       this.list = [];
-      if (!val) {
+      if (val) {
+        this.isGlobalSearch = true;
+        this.globalSearch();
+      } else {
+        this.isGlobalSearch = false;
         this.getDocumentonlineList();
       }
     },
     getDetail(item) {
       this.filePath = item.filePath;
+      this.upwardNameList = item.upwardNameList;
       this.isShowDetail = true;
     },
     openHelpManage() {
-      window.open(HOME + '/documentonline.html#/documentonline', '_blank');
+      if (this.isShowDetail) {
+        window.open(HOME + '/documentonline.html#/documentonline-detail?upwardNameList=' + this.upwardNameList.join('/') + '&filePath=' + this.filePath, '_blank');
+      } else {
+        window.open(HOME + '/documentonline.html#/documentonline', '_blank');
+      }
     },
     goBack() {
       this.isShowDetail = false;
       this.filePath = '';
+      this.upwardNameList = [];
     }
   },
   filter: {},
@@ -138,6 +178,18 @@ export default {
   .help-container {
     position: relative;
     cursor: pointer;
+  }
+}
+.global-search {
+  padding: 16px 0;
+  .list {
+    position: relative;
+    display: flex;
+    .item {
+      flex: 1;
+      border-bottom: 1px solid;
+      overflow: hidden;
+    }
   }
 }
 </style>

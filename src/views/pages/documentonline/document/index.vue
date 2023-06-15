@@ -1,11 +1,11 @@
 <template>
   <div class="search-main">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <div class="text-center top text-tip">请问有什么能帮到您？</div>
+    <div class="text-center top text-tip">{{ $t('term.documentonline.whathelp') }}</div>
     <div class="text-center">
       <InputSearcher
         v-model="keyword"
-        placeholder="问题描述"
+        :placeholder="$t('term.documentonline.problemdes')"
         :width="600"
         @change="searchDocument"
       ></InputSearcher>
@@ -21,13 +21,12 @@
           class="text-tip-active tsfont-dot text-title overflow pb-nm pl-xs"
           @click="gotoPage(td)"
         >{{ td.fileName }}</div>
-        <div v-if="item.currentPage < item.pageCount" class="text-href pl-xs" @click="gotoPage(item)">查看更多</div>
+        <div v-if="item.currentPage < item.pageCount" class="text-href pl-xs" @click="gotoPage(item)">{{ $t('page.viewmore') }}</div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import {documentonlineMutations} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {
@@ -85,11 +84,11 @@ export default {
     },
     searchDocument(val) {
       if (val) {
-        documentonlineMutations.setGlobalSearchKeyword(val);
+        this.$localStore.set('searchKeyword', val, 'common');
         this.$router.push({
           path: '/documentonline-search',
           query: {
-            keyword: val
+            searchKeyword: val
           }
         });
       }

@@ -15,7 +15,6 @@
   </div>
 </template>
 <script>
-import {documentonlineStore} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {},
@@ -74,9 +73,6 @@ export default {
           upwardNameList: item.upwardNameList.join('/')
         }
       });
-    },
-    clearObservable() { //清空状态管理的数据
-      documentonlineStore.globalSearchKeyword = '';
     }
   },
   filter: {},

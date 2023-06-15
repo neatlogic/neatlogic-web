@@ -2311,5 +2311,14 @@
     "edittag": "Edit Label",
     "addtag": "Add tags",
     "tagname": "Tag name"
+  },
+  "documentonline": {
+    "currentpagesearch": "Help related to the current page",
+    "openhelp": "Open Help Center",
+    "openhelpdocument": "Open Help on a New Page",
+    "searchhelp": "Search Help",
+    "helpcenter": "Help Center",
+    "whathelp": "May I help you?",
+    "problemdes": "Problem Description"
   }
 }

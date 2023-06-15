@@ -14,7 +14,7 @@ export default [
     name: 'documentonline',
     component: documentonline,
     meta: {
-      title: '帮助中心'
+      title: $t('router.documentonline.documentonline')
     }
   },
   {
@@ -22,7 +22,7 @@ export default [
     name: 'documentonline-manage',
     component: documentonlineManage,
     meta: {
-      title: '文档列表'
+      title: $t('router.documentonline.documentmanage')
     }
   },
   {
@@ -30,7 +30,7 @@ export default [
     name: 'documentonline-detail',
     component: documentonlineDetail,
     meta: {
-      title: '文档详情'
+      title: $t('router.documentonline.documentdetail')
     }
   }, 
   {
@@ -38,7 +38,7 @@ export default [
     name: 'documentonline-search',
     component: documentonlineSearch,
     meta: {
-      title: '文档搜索'
+      title: $t('router.documentonline.documentsearch')
     }
   }
 ];

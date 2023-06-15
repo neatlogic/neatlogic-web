@@ -2,7 +2,7 @@
   <div>
     <Breadcrumb separator=">">
       <BreadcrumbItem to="/documentonline">
-        帮助中心
+        {{ $t('term.documentonline.helpcenter') }}
       </BreadcrumbItem>
       <BreadcrumbItem v-for="(item,index) in upwardNameList" :key="index" :to="index < upwardNameList.length-1? goto(item,index):''">
         {{ item }}

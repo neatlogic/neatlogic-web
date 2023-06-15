@@ -20,7 +20,7 @@
       </template>
       <template v-slot:right>
         <div class="right-list border-color pl-nm">
-          <div class="tsfont-file-single pb-nm">相关知识</div>
+          <div class="tsfont-file-single pb-nm">{{ $t('term.process.relateknowledge') }}</div>
           <div
             v-for="(item,index) in list"
             :key="index"

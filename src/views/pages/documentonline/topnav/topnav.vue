@@ -7,13 +7,13 @@
           :src="setLogo"
         />
       </a>
-      <span class="text-href h3 pl-lg" @click="toDocumentonlinePage()">帮助中心</span>
+      <span class="text-href h3 pl-lg" @click="toDocumentonlinePage()">{{ $t('term.documentonline.helpcenter') }}</span>
     </div>
     <div class="topnav-right-container">
       <div v-if="!isDocumentonline" class="pr-lg">
         <InputSearcher
           v-model="keyword"
-          placeholder="搜索帮助"
+          :placeholder="$t('term.documentonline.searchhelp')"
           @change="searchDocument"
         ></InputSearcher>
       </div>
@@ -24,7 +24,6 @@
 <script>
 import {store} from '@/views/pages/framework/theme/state.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
-import {documentonlineStore} from '@/views/pages/documentonline/common/observableData.js';
 export default {
   name: '',
   components: {
@@ -39,7 +38,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$route.query) {
+      this.keyword = this.$route.query.searchKeyword;
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -62,7 +65,7 @@ export default {
         this.$router.push({
           path: '/documentonline-search',
           query: {
-            keyword: val
+            searchKeyword: val
           }
         });
       } else {
@@ -92,16 +95,16 @@ export default {
     },
     isDocumentonline() {
       return this.$route.fullPath == '/documentonline';
-    },
-    globalSearchKeyword() {
-      return documentonlineStore.globalSearchKeyword;
     }
   },
   watch: {
-    globalSearchKeyword(val) {
-      if (val) {
-        this.keyword = val;
-      }
+    $route: {
+      handler(val) {
+        if (this.$localStore.get('searchKeyword', 'common') != null) {
+          this.keyword = this.$localStore.get('searchKeyword', 'common');
+        }
+      },
+      deep: true
     }
   }
 };

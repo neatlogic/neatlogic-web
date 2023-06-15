@@ -2308,5 +2308,14 @@
     "edittag": "编辑标签",
     "addtag": "新增标签",
     "tagname": "标签名"
+  },
+  "documentonline": {
+    "currentpagesearch": "当前页面相关帮助",
+    "openhelp": "打开帮助中心",
+    "openhelpdocument": "在新页面打开帮助",
+    "searchhelp": "搜索帮助",
+    "helpcenter": "帮助中心",
+    "whathelp": "请问有什么能帮到您？",
+    "problemdes": "问题描述"
   }
 }
