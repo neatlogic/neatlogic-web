@@ -42,7 +42,10 @@
             <div><IssueRing v-if="issueCountData" :data="issueCountData"></IssueRing></div>
           </div>
         </div>
-        <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
+        <Tabs
+          v-if="issueAppList && issueAppList.length > 0"
+          v-model="currentApp"
+        >
           <TabPane
             v-for="(app, index) in issueAppList"
             :key="index"
