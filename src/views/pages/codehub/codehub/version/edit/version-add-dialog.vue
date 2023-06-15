@@ -42,6 +42,7 @@ export default {
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
+          validateList: ['required'],
           onChange: (val) => {
             this.getAutoCreateVersionName(val);
           }

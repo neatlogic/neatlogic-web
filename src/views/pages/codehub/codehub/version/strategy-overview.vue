@@ -110,7 +110,7 @@ export default {
         cardList: [],
         pageType: 'number',
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 20,
         rowNum: 0     
       },
       typeList: {
