@@ -2303,6 +2303,15 @@
     "nocommitfile": "This warehouse has not yet executed code submission, and there are currently no files available",
     "edittag": "Edit Label",
     "addtag": "Add tags",
-    "tagname": "Tag name"
+    "tagname": "Tag name",
+    "userauth": "User Authorization",
+    "groupauth": "Group Authorization",
+    "delauth": "Are you sure to delete this permission",
+    "expiresat": "Deadline",
+    "usergourpname": "User Name/Group Name",
+    "readwrite": "Reading and writing",
+    "notauth": "No permissions",
+    "exporting": "Exporting",
+    "editauth": "Edit Authorization"
   }
 }
