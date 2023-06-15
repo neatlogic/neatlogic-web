@@ -30,7 +30,7 @@ export default {
   beforeCreate() {},
   created() {
     if (this.$route.query) {
-      this.keyword = this.$route.query.keyword || '';
+      this.keyword = this.$route.query.searchKeyword || '';
     }
     this.searchDocument();
   },
@@ -41,9 +41,7 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {},
-  destroyed() {
-    this.clearObservable();
-  },
+  destroyed() {},
   methods: {
     searchDocument(currentPage) {
       let data = {
