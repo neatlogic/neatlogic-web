@@ -1,9 +1,11 @@
 <template>
   <div>
     <TsContain 
-      v-if="mrActionType =='standard'" 
-      class="bg-block" 
-      v-bind="layoutConfig"
+      v-if="mrActionType =='standard'"
+      siderPosition="right"
+      :isSiderHide="!isSiderHide"
+      :rightBtn="true"
+      @rightSiderToggle="rightSiderToggle"
     >
       <template v-slot:navigation>
         <span class="ts-angle-left text-action" @click="$back('/merge-overview')">{{ $getFromPage($t('router.codehub.mergerequestlist')) }}</span>
@@ -92,7 +94,7 @@
               <keep-alive>
                 <div 
                   :is="tab.name"
-                  v-if="activeTab==tab.name"
+                  v-if="activeTab == tab.name"
                   :id="id" 
                   :mrData="mrData" 
                   :mrstatusList="statusList" 
@@ -113,7 +115,7 @@
           </Tabs>
         </div>
       </template>
-      <div slot="right">
+      <template v-slot:right>
         <div v-if="mrData" class="bg-op radius-lg padding-sm">
           <div>{{ $t('page.basicinfo') }}</div>
           <ul>
@@ -153,7 +155,7 @@
             </li>
           </ul>
         </div>
-      </div>
+      </template>
     </TsContain>
     <MergeRevert 
       v-else-if="mrActionType =='revert'" 
@@ -177,9 +179,10 @@ export default {
   directives: {
     clipboard
   },
-  props: [''],
+  props: {},
   data() {
     return {
+      isSiderHide: true, // 是否展示右侧基本信息
       id: null, //mrid
       mrData: null, //接口返回的mr数据
       statusList: [], //需单独通过接口获取的状态下拉，用于mr状态中文回显
@@ -193,11 +196,6 @@ export default {
         targetBranch: null      
       },
       urlPath: null, //当前页面完整路径
-      layoutConfig: {//当前布局的设置
-        canFolded: true,
-        type: 'layout',
-        right: '200px'
-      },
       activeTab: 'issue',
       tabList: [{
         name: 'issue',
@@ -223,13 +221,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.urlPath = window.location.href;
-    this.getStatuslist();
-    this.getissueStatuslist();
-    if (this.$route.query.id) {
-      this.id = parseInt(this.$route.query.id);
-      this.getDetail();
-    }
+    this.initData();
   },
   beforeMount() {},
   mounted() {},
@@ -240,22 +232,34 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      this.urlPath = window.location.href;
+      this.getStatuslist();
+      this.getissueStatuslist();
+      if (this.$route.query.id) {
+        this.id = parseInt(this.$route.query.id);
+        this.getDetail();
+      }
+      if (this.$localStore.get('isSiderHide') != null) {
+        this.isSiderHide = this.$localStore.get('isSiderHide');
+      } 
+    },
+    rightSiderToggle() {
+      // 展开收起右边基本信息
+      this.isSiderHide = !this.isSiderHide;
+      this.$localStore.set('isSiderHide', this.isSiderHide);
+    },
     getDetail(isRefreshStatus) {
-      let param = { id: this.id };
       if (!isRefreshStatus) {
         this.isLoading = true;
       }
       this.errorMessage = null;
-      this.$api.codehub.merge.getDetail(param).then(res => {
-        this.isLoading = false;
+      this.$api.codehub.merge.getDetail({id: this.id}).then(res => {
         if (res && res.Status == 'OK') {
-          this.mrData = res.Return;
-        } else {
-          this.mrData = null;
+          this.mrData = res.Return || null;
         }
-      }).catch((e) => {
+      }).finally(() => {
         this.isLoading = false;
-        this.mrData = null;
       });
     },
     getStatuslist() {

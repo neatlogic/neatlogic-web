@@ -14,9 +14,18 @@
       >
         <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
           <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
-          <div v-else-if="title.key=='mergeStatus'" v-html="showText(tbody['mergeStatus']) "></div>
           <div v-else-if="title.key=='committerDate'">{{ tbody.committerDate | formatDate }}</div>
-          <span v-else-if="title.key=='commitId'" class="tag-item">{{ tbody.commitId }}<i v-if="tbody.isNew" class="tag-new">new</i></span>
+          <span v-else-if="title.key=='commitId'" class="tag-item">
+            {{ tbody.commitId }}
+            <span v-if="tbody.isNew" class="tag-new">new</span>
+          </span>
+          <span v-else-if="title.key == 'committer'">
+            <UserCard
+              v-if="tbody.committer"
+              :uuid="tbody.committer"
+              :hideAvatar="true"
+            ></UserCard>
+          </span>
           <div v-else>{{ tbody[title.key] }}</div>
         </td>
       </tr>
@@ -31,9 +40,10 @@
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+  },
   props: {
-    statusList: Array,
     commitList: Array
   },
   data() {
@@ -72,21 +82,7 @@ export default {
       this.$emit('toDiffDetail', item.commitId);
     }
   },
-  computed: {
-    showText() {
-      return function(val) {
-        let str = ``;
-        if (val && this.statusList && this.statusList.length > 0) {
-          this.statusList.forEach((s) => {
-            if (s.value == val) {
-              str = `<div class="text-${s.color}">${s.text}</div>`;
-            }
-          });
-        }
-        return str;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

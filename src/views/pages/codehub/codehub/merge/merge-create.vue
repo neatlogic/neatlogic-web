@@ -36,7 +36,6 @@
                 </span>
               </span>
             </div>
-            <div v-else-if="!isOk">{{ $t('term.codehub.temporarilyunavailablecreatemr') }}</div>
           </div>
         </Col>
         <Col span="4">

@@ -2316,6 +2316,7 @@
     "nocommitfile": "This warehouse has not yet executed code submission, and there are currently no files available",
     "edittag": "Edit Label",
     "addtag": "Add tags",
-    "tagname": "Tag name"
+    "tagname": "Tag name",
+    "nogroupmembers": "There are currently no group members available"
   }
 }

@@ -76,7 +76,6 @@
           <CommitTable
             v-if="row.commitList"
             :commitList="row.commitList"
-            :statusList="commitstatusList"
             @toDiffDetail="toDiffDetail"
           ></CommitTable>
           <div v-else-if="!row.commitList" class="text-tip text-center">{{ $t('page.nodata') }}</div>
@@ -146,7 +145,6 @@ export default {
       mergetype: 'branch',
       duringAction: false,
       showList: false,
-      commitstatusList: [],
       flushTimer: null, //定时刷新的定时器
       cancelAxios: null, //取消接口调用用
       reloadStatus: false,
@@ -158,7 +156,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.mergetype = this.mrData.versionTypeStrategyRelationVo.versionStrategyType;
-    this.getCommitstatusList();
   },
   beforeUpdate() {},
   updated() {},
@@ -256,12 +253,13 @@ export default {
       }
     },
     revertMr() {
+      // 撤销合并请求
       if (this.mrData.versionTypeStrategyRelationVo && this.mrData.versionTypeStrategyRelationVo.versionStrategyType && this.mrData.versionTypeStrategyRelationVo.versionStrategyType == 'branch' && this.mrData.status == 'finish') {
         //分支类型且状态为已结束的才可以revert
         let param = { mrId: this.id };
         this.$createDialog({
-          title: '确认撤销MR',
-          content: '是否确认撤销MR？',
+          title: this.$t('dialog.title.revocationconfirm'),
+          content: this.$t('dialog.content.revocationconfirm', {target: 'MR'}),
           btnType: 'error',
           'on-ok': (vnode) => {
             this.duringAction = true;
@@ -271,9 +269,9 @@ export default {
                 let param = {
                   srcBranch: res.Return.srcBranch,
                   targetBranch: res.Return.targetBranch,
-                  versionid: this.mrData.versionUuid,
+                  versionid: this.mrData.versionId,
                   mrType: 'revert',
-                  description: 'MR撤销'
+                  description: 'MR' + this.$t('page.revocation')
                 };
                 this.$router.push({ path: 'merge-create', query: param });
               }
@@ -348,7 +346,7 @@ export default {
             });
             if (mr.status == 'merging') {
               this.flushTimer && clearTimeout(this.flushTimer);
-              this.flushTimer = setTimeout(function() {
+              this.flushTimer = setTimeout(() => {
                 this.flushIssueStatus();
               }, 5000);
             } else {
@@ -376,13 +374,6 @@ export default {
             targetBranch: res.Return.targetBranch
           };
           this.$emit('revert', param);
-        }
-      });
-    },
-    getCommitstatusList() {
-      this.$api.codehub.merge.getStatusList({ type: 'commit' }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.commitstatusList = res.Return.list;
         }
       });
     },
@@ -442,7 +433,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
 .btn-bottom {
   position: fixed;
   bottom: 0;
