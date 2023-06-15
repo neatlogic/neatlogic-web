@@ -12,8 +12,7 @@
         <div v-if="mrData" style="display: flex;">
           <div class="title">
             <span 
-              class="overflow" 
-              :style="setTitlewidth(mrData.status)"
+              class="overflow header-descrition-text"
               :title="mrData.description"
             >{{ mrData.description || $t('term.codehub.codereview') }}</span>
             <span 
@@ -356,16 +355,6 @@ export default {
         }
         return text;
       };
-    },
-    setTitlewidth() {
-      return function(status) {
-        let styles = {
-          'display': 'inline-block',
-          'max-width': status == 'failed' ? 'calc(100vw - 320px)' : 'calc(100vw - 280px)'
-
-        };
-        return styles;
-      };
     }
   },
   watch: {}
@@ -379,6 +368,7 @@ export default {
 .top-title {
   .title {
     line-height: 26px;
+   
   }
   .desc {
     line-height: 20px;
@@ -426,4 +416,8 @@ export default {
     margin-right: 10px;
   }
 }
+ .header-descrition-text {
+    display: inline-block;
+    max-width: 300px;
+  }
 </style>
