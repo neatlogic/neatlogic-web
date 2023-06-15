@@ -61,7 +61,6 @@ export default {
       }
     },
     searchDocument(val) {
-      this.$localStore.set('searchKeyword', val, 'common');
       if (val.trim()) {
         this.$router.push({
           path: '/documentonline-search',
@@ -102,9 +101,11 @@ export default {
     $route: {
       handler(val) {
         this.keyword = '';
-        if (this.$localStore.get('searchKeyword', 'common') != null) {
-          this.keyword = this.$localStore.get('searchKeyword', 'common');
-        }
+        this.$nextTick(() => {
+          if (this.$localStore.get('searchKeyword', 'common') != null) {
+            this.keyword = this.$localStore.get('searchKeyword', 'common');
+          }
+        });
       },
       deep: true
     }

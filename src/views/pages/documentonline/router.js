@@ -1,4 +1,4 @@
-const documentonline = () => import('./document/index.vue');
+const documentonline = () => import('./document/documentonline-help-center.vue');
 const documentonlineManage = () => import('./document/documentonline-manage.vue');
 const documentonlineDetail = () => import('./document/documentonline-detail.vue');
 const documentonlineSearch = () => import('./document/documentonline-search.vue');

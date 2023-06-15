@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !showmenu }">
+    <div v-if="hasAuthorization" class="home">
       <TopNav></TopNav>
       <div class="centermain">
         <div>
@@ -25,7 +25,6 @@ export default {
   },
   data() {
     return {
-      showmenu: false, //菜单收起时的class
       hasAuthorization: true,
       isRouterAlive: true
     };

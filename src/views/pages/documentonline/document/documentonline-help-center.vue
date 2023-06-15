@@ -100,6 +100,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .search-main{
+  padding: 0 16px;
   .top {
     font-size: 30px;
     font-weight: bold;
@@ -108,11 +109,10 @@ export default {
   }
   .module-main {
     width: 100%;
-    margin: 45px auto 0;
+    margin: 45px auto;
     display: grid;
     grid-template-columns: repeat(3, 33.33%);
     row-gap: 32px;
-    margin-bottom: 30px;
     .module-list {
       .name {
         font-size: 14px;

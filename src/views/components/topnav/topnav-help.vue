@@ -90,6 +90,7 @@ export default {
       this.keyword = '';
       this.list = [];
       this.isShowDetail = false;
+      this.isGlobalSearch = false;
       this.isDrawerShow = true;
       this.getDocumentonlineList();
     },
