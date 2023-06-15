@@ -47,6 +47,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.$localStore.remove('searchKeyword', 'common');
     if (this.$route.query) {
       let upwardNameList = this.$route.query.upwardNameList;
       if (upwardNameList) {

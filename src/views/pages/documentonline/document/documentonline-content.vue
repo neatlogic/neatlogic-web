@@ -52,6 +52,11 @@ export default {
       this.$api.documentonline.getDocumentDetail(data).then(res => {
         if (res.Status === 'OK') {
           this.content = marked(res.Return.content); 
+          this.$nextTick(() => {
+            if (res.Return.anchorPoint) {
+              this.$utils.jumpTo('#' + res.Return.anchorPoint, 'smooth');
+            }
+          });
         }
       }).finally(() => {
         this.loadingShow = false;

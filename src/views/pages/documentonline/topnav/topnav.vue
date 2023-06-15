@@ -101,6 +101,7 @@ export default {
   watch: {
     $route: {
       handler(val) {
+        this.keyword = '';
         if (this.$localStore.get('searchKeyword', 'common') != null) {
           this.keyword = this.$localStore.get('searchKeyword', 'common');
         }

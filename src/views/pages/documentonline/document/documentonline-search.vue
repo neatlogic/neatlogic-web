@@ -31,6 +31,7 @@ export default {
   created() {
     if (this.$route.query) {
       this.keyword = this.$route.query.searchKeyword || '';
+      this.$localStore.set('searchKeyword', this.keyword, 'common');
     }
     this.searchDocument();
   },

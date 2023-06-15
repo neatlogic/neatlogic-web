@@ -84,7 +84,6 @@ export default {
     },
     searchDocument(val) {
       if (val) {
-        this.$localStore.set('searchKeyword', val, 'common');
         this.$router.push({
           path: '/documentonline-search',
           query: {

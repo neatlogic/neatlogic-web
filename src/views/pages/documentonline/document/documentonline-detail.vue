@@ -57,6 +57,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.$localStore.remove('searchKeyword', 'common');
     if (this.$route.query) {
       this.filePath = this.$route.query.filePath;
       let upwardNameList = this.$route.query.upwardNameList;

@@ -3655,6 +3655,20 @@
     border-top: 1px solid var(--border-color, @border-color-base);
   }
 
+  //breadcrumb
+  .@{iv-prev}breadcrumb {
+    a {
+      color: @text-color;
+      &:hover {
+        color: var(--primary-hover-color, @primary-hover-color);
+      }
+    }
+    >span:last-child {
+      color: @text-color;
+    }
+  }
+ 
+
   //水波纹
   @sglqprefix: sg-liquid-;
 
