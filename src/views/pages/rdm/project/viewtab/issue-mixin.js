@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     getAppById() {
-      this.$api.rdm.app.getAppById(this.appId).then(res => {
+      this.$api.rdm.app.getAppById(this.appId, 1).then(res => {
         this.appData = res.Return;
       });
     },

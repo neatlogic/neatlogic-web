@@ -1,22 +1,40 @@
 <template>
   <div>
     <div v-if="result" class="grid">
-      <div class="title">{{ $t('term.pbc.groupid') }}：</div>
-      <div>{{ result.groupId }}</div>
+      <div class="title">{{ $t('term.pbc.batchid') }}：</div>
+      <div>{{ result.branchId }}</div>
       <div class="title">{{ $t('page.returncode') }}：</div>
       <div>{{ result.code }}</div>
       <div class="title">{{ $t('term.pbc.message') }}：</div>
       <div>{{ result.msg }}</div>
+      <div class="title">{{ $t('page.exception') }}：</div>
+      <div>
+        <TsTable
+          v-if="result.data && result.data.length>0"
+          :theadList="theadList"
+          :tbodyList="result.data"
+        >
+        </TsTable>
+      </div>
     </div>
   </div>
 </template>
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+  },
   props: { phase: { type: Object } },
   data() {
-    return {};
+    return {
+      theadList: [
+        {key: 'code', title: this.$t('term.pbc.errorcode')},
+        {key: 'msg', title: this.$t('term.pbc.message')},
+        {key: 'facilityCategory', title: this.$t('term.pbc.facilitycategory')},
+        {key: 'facilityDescriptor', title: this.$t('term.pbc.facilitydescriptor')}
+      ]
+    };
   },
   beforeCreate() {},
   created() {},

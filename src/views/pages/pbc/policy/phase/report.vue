@@ -61,7 +61,7 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: 100px auto;
+  grid-template-columns: 50px auto;
   grid-gap: 10px;
   .title {
     text-align: right;

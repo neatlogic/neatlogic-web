@@ -60,7 +60,7 @@ export default {
         type: 'modal',
         maskClose: true,
         isShow: true,
-        width: 'medium',
+        width: 'large',
         title: this.$t('term.autoexec.executionrecord')
       },
       auditData: {},
