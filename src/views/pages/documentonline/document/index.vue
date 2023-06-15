@@ -11,8 +11,8 @@
       ></InputSearcher>
     </div>
     <div v-if="moduleList && moduleList.length>0" class="module-main">
-      <div v-for="(item,index) in moduleList" :key="index" class="module-list">
-        <div class="tsfont-zhishiku pb-nm name">
+      <div v-for="(item,index) in moduleList" :key="index" class="module-list pr-nm">
+        <div class="tsfont-zhishiku pb-lg name">
           <span class="pl-xs">{{ item.firstLevelDirectory }}</span>
         </div>
         <div
@@ -107,11 +107,11 @@ export default {
     padding-bottom: 30px;
   }
   .module-main {
-    width: 900px;
+    width: 100%;
     margin: 45px auto 0;
     display: grid;
-    grid-template-columns: repeat(3,380px);
-    grid-gap: 20px;
+    grid-template-columns: repeat(3, 33.33%);
+    row-gap: 32px;
     margin-bottom: 30px;
     .module-list {
       .name {

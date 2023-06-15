@@ -16,7 +16,7 @@
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
-        <DocumentonlineContent :filePath="filePath"></DocumentonlineContent>
+        <DocumentonlineContent :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
       </template>
       <template v-slot:right>
         <div class="right-list border-color pl-nm">
@@ -52,7 +52,8 @@ export default {
       upwardNameList: [],
       list: [],
       tableData: {},
-      preUpwardNameList: [] //文档上层目录列表
+      preUpwardNameList: [], //文档上层目录列表
+      anchorPoint: ''
     };
   },
   beforeCreate() {},
@@ -61,6 +62,7 @@ export default {
     if (this.$route.query) {
       this.filePath = this.$route.query.filePath;
       let upwardNameList = this.$route.query.upwardNameList;
+      this.anchorPoint = this.$route.query.anchorPoint || '';
       if (upwardNameList) {
         this.upwardNameList = upwardNameList.split('/');
         this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);

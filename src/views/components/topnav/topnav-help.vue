@@ -46,7 +46,7 @@
         <NoData v-if="!loadingShow && !list.length" />
       </div>
       <div v-else>
-        <DocumentonlineContent :filePath="filePath"></DocumentonlineContent>
+        <DocumentonlineContent :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
       </div>
       <div class="text-href help-center bg-op" @click="openHelpManage()">{{ isShowDetail? $t('term.documentonline.openhelpdocument') : $t('term.documentonline.openhelp') }} > </div>
     </Drawer>
@@ -70,6 +70,7 @@ export default {
       isShowDetail: false,
       filePath: '',
       upwardNameList: [],
+      anchorPoint: '',
       blacklist: ['welcome'], //不需要搜索的路由名单
       isGlobalSearch: false
     };
@@ -153,11 +154,16 @@ export default {
     getDetail(item) {
       this.filePath = item.filePath;
       this.upwardNameList = item.upwardNameList;
+      this.anchorPoint = item.anchorPoint || '';
       this.isShowDetail = true;
     },
     openHelpManage() {
       if (this.isShowDetail) {
-        window.open(HOME + '/documentonline.html#/documentonline-detail?upwardNameList=' + this.upwardNameList.join('/') + '&filePath=' + this.filePath, '_blank');
+        let url = HOME + '/documentonline.html#/documentonline-detail?upwardNameList=' + this.upwardNameList.join('/') + '&filePath=' + this.filePath;
+        if (this.anchorPoint) {
+          url += '&anchorPoint=' + this.anchorPoint;
+        }
+        window.open(url, '_blank');
       } else {
         window.open(HOME + '/documentonline.html#/documentonline', '_blank');
       }

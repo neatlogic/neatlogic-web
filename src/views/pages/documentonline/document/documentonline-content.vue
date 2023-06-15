@@ -16,7 +16,8 @@ export default {
    
   },
   props: {
-    filePath: String
+    filePath: String,
+    anchorPoint: String //锚点id
   },
   data() {
     return {
@@ -53,8 +54,8 @@ export default {
         if (res.Status === 'OK') {
           this.content = marked(res.Return.content); 
           this.$nextTick(() => {
-            if (res.Return.anchorPoint) {
-              this.$utils.jumpTo('#' + res.Return.anchorPoint, 'smooth');
+            if (this.anchorPoint) {
+              this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
             }
           });
         }
