@@ -13,7 +13,7 @@
               >{{ mrData.description ||'处理MR' }}</span>
               <Tag 
                 :color="setStatus('color',mrData.status)" 
-                class="ml-10 status-tag"
+                class="ml-sm status-tag"
               >
                 {{ setStatus('text',mrData.status) }}
               </Tag>
@@ -40,9 +40,9 @@
               <span v-else>{{ setTxt(mrData, 'text') }}</span>
               <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">源分支:</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-10">{{ mrData.srcBranch }}</span>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">目标分支:</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-10">{{ mrData.targetBranch }}</span>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
             </div>
           </div>
         </div>

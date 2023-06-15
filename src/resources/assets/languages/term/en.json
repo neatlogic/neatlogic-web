@@ -2326,6 +2326,11 @@
     "readwrite": "Reading and writing",
     "notauth": "No permissions",
     "exporting": "Exporting",
-    "editauth": "Edit Authorization"
+    "editauth": "Edit Authorization",
+    "group": "group",
+    "protectbranch": "Protect Branch",
+    "delprotectbranch": "Are you sure to delete the protected branch",
+    "addprotectbranch": "Add Branch Protection",
+    "selectresource": "Selected resources"
   }
 }

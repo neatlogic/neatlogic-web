@@ -12,7 +12,7 @@
         size="small"
         @click="submitCommit"
       >{{ $t('page.comment') }}</Button>
-      <Button size="small" class="ml-10" @click="close">{{ $t('page.cancel') }}</Button>
+      <Button size="small" class="ml-sm" @click="close">{{ $t('page.cancel') }}</Button>
     </div>
     <div v-if="commentList && commentList.length>0" class="padding-md">
       <CommentList :commentList="commentList" tab="diff" @reload="getList"></CommentList>

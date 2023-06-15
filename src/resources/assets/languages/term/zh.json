@@ -2325,6 +2325,11 @@
     "notauth": "无权限",
     "exporting": "导出中",
     "editauth": "编辑授权",
-    "addauth": "添加授权"
+    "addauth": "添加授权",
+    "group": "组",
+    "protectbranch": "保护分支",
+    "delprotectbranch": "是否确认删除该保护分支",
+    "addprotectbranch": "添加分支保护",
+    "selectresource": "已选资源"
   }
 }

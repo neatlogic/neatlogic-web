@@ -58,7 +58,7 @@ export default {
             text: this.$t('page.user'),
             value: 'member'
           }, {
-            text: '组',
+            text: this.$t('term.codehub.group'),
             value: 'group'
           }],
           onChange: (val) => {

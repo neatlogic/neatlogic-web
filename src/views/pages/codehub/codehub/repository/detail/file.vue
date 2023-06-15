@@ -35,10 +35,10 @@
         <div v-if="list && list.length">
           <div class="clearfix lastcommit-container">
             <div v-if="lastConfig" class="d_f">
-              <span>{{ lastConfig.author }}</span><span class="text-tip ml-10">{{ lastConfig.message }}</span>
+              <span>{{ lastConfig.author }}</span><span class="text-tip ml-sm">{{ lastConfig.message }}</span>
             </div>
             <div class="d_f_r">
-              <span class="text-tip">最后提交：</span><span>{{ showCommitId(lastConfig.commitId) }}</span><span class="text-tip ml-10">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
+              <span class="text-tip">最后提交：</span><span>{{ showCommitId(lastConfig.commitId) }}</span><span class="text-tip ml-sm">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
           class="cursor-pointer text-left h4"
           title="返回上层"
           @click="gotoPrev()"
-        ><span class="text-tip ml-10 ts-option-horizontal"></span></div>
+        ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
         <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
           <table v-if="!currentfilePath && list && list.length" class="table file-table">
             <colgroup>

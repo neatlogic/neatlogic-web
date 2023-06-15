@@ -38,10 +38,10 @@
                 <tr>
                   <td>
                     <h6>{{ row.comment }}</h6>
-                    <div><span>{{ row.committer }}</span><span class="text-tip ml-10">{{ row.committerDateStamp | formatDate }}</span></div>
+                    <div><span>{{ row.committer }}</span><span class="text-tip ml-sm">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
-                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-10" @click="showIssue(row)">需求</span>
+                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-sm" @click="showIssue(row)">需求</span>
                   </td>
                 </tr>
                 <tr v-show="row.showcommitdiffInfo">

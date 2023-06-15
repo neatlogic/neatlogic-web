@@ -2,8 +2,8 @@
   <div>
     <div style="margin-bottom:10px;">
       <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>{{ $t('page.authority') }}</Button> 
-      <Button v-if="!isDowning" v-download="downloadPath" class="ml-10">{{ $t('term.codehub.exportexcel') }}</Button> 
-      <Button v-else loading class="ml-10">导出中</Button> 
+      <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button> 
+      <Button v-else loading class="ml-sm">$t('term.codehub.exporting')</Button> 
     </div>
     <h4>{{ $t('term.codehub.userauth') }}</h4>
     <div v-if="!isLoading">
