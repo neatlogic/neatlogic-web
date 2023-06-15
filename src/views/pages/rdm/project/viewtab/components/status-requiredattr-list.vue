@@ -17,6 +17,7 @@
         :key="index"
         :statusData="status"
         :actived="targetStatus === status.id"
+        class="mr-xs"
         @click="
           status => {
             changeTargetStatus(status);

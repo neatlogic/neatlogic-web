@@ -20,6 +20,7 @@ const merge = {
     return axios.post('/api/rest/codehub/mergerequest/status/count', data);
   },
   getIssuelist(data) {
+    // 获取所有需求列表
     return axios.post('/api/rest/codehub/issue/realtime/search', data);
   },
   getActionList(data) {

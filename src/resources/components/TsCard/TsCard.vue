@@ -229,7 +229,7 @@
               :current="currentPage"
               :page-size="pageSize"
               transfer
-              show-elevator
+              :show-elevator="showElevator"
               show-total
               show-sizer
               :page-size-opts="sizeList"
@@ -438,6 +438,11 @@ export default {
       //每页条数切换的配置
       type: Array,
       default: () => [12, 24, 36, 48]
+    },
+    showElevator: {
+      // 显示电梯，可以快速切换到某一页
+      type: Boolean,
+      default: false
     },
     theme: Object //主题
   },

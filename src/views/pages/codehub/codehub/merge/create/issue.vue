@@ -27,7 +27,6 @@
           v-model="selectIssuelist"
           v-bind="tableData"
           :theadList="theadList"
-          :tbodyList="filterValidTbodyList(tableData.tbodyList)"
           :height="tableheight()"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
@@ -118,49 +117,13 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   mixins: [mixins],
-  props: {
-    versionId: [String, Number],
-    versionData: Object,
-    srcBranch: [String, Number],
-    issueNoList: Array
-  },
+  props: {},
   data() {
     return {
       isEdit: false, //是否编辑
       addItem: '', //手动输入的需求号
       addLi: [], //手动添加的不在原来的需求列表里的数据
-      height: '600px',
-      theadList: [{
-        key: 'selection'
-      }, {
-        title: this.$t('term.codehub.issuesnumber'),
-        key: 'no'
-      }, {
-        title: this.$t('page.description'),
-        key: 'name'
-      }, {
-        title: this.$t('page.responsibleperson'),
-        key: 'handleUserId'
-      }, {
-        title: this.$t('page.effectiveness'),
-        key: 'isValid'
-      }, {
-        title: this.$t('page.status'),
-        key: 'status'
-      }, {
-        title: this.$t('page.updatetime'),
-        key: 'issueUpdateTime'
-      }, {
-        title: this.$t('page.source'),
-        key: 'sourceId'
-      }
-      ],
-      tableData: {
-        rowKey: 'no',
-        selectedRemain: true,
-        classKey: 'isValid',
-        cancelAxios: null //取消接口调用用
-      }
+      height: '600px'
     };
   },
   beforeCreate() {},
@@ -276,7 +239,7 @@ export default {
           } else {
             this.$emit('getIssue', false);
           }
-          this.$set(this.tableData, 'tbodyList', tbodylist);
+          this.$set(this.tableData, 'tbodyList', this.filterValidTbodyList(tbodylist));
           this.getVaildlist(tbodylist);
         } else {
           this.$set(this.tableData, 'tbodyList', []);

@@ -42,6 +42,7 @@ border|Boolean|false|否|边框|默认无边框
 btnList|Array|否|否|底部| [{name: '关联服务', value: 'referenceCount', icon: '', type: 'referenceCount', key: 'referenceCount'},{name: '删除', value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: '流程被引用不可删除', key: 'referenceCount'}, {name: '多个', value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: '复制', value: 'copy', type: 'text'}, {name: '导出', value: 'export', type: 'download'}]}];
 btnList|Array|否|否|底部| 用到的页面flow-overview, event-solution-manage , tool-manage ，说明 name，显示名称, value 调用页面判断的字段名称，icon，显示的图标，type 类型， disable 是否可删除，有判断逻辑，type 为 dropdown的时候，是显示下拉菜单 需要多加一个字段，menuArr 传数组
 padding | Boolean | true | 否 | 是否需要外边距，6像素
+showElevator | Boolean | false | 否 | 显示电梯，可以快速跳转到下一页
 
 
 
