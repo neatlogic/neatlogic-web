@@ -17,8 +17,8 @@
     </div>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -34,16 +34,15 @@ export default {
   filters: {},
   props: {
     isShow: Boolean,
-    uuid: String,
+    id: Number,
     accList: Array,
     editConfig: [Object, String]
   },
   data() {
-    let _this = this;
     return {
       split: 0.3,
       setting: {
-        title: _this.editConfig ? '编辑授权' : '添加授权',
+        title: this.editConfig ? this.$t('term.codehub.editauth') : this.$t('term.codehub.addauth'),
         maskClose: false,
         width: 'medium'
       },
@@ -51,47 +50,47 @@ export default {
       formConfig: [
         {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           name: 'authType',
           validateList: ['required'],
           value: 'member',
           dataList: [{
-            text: '用户',
+            text: this.$t('page.user'),
             value: 'member'
           }, {
             text: '组',
             value: 'group'
           }],
-          onChange(val) {
-            _this.changeType(val);
+          onChange: (val) => {
+            this.changeType(val);
           }
         }, {
           type: 'slot',
-          label: '用户名/组名',
+          label: this.$t('term.codehub.usergourpname'),
           name: 'memberType',
           validateList: ['required']         
         }, {
           type: 'select',
-          label: '权限',
+          label: this.$t('page.authority'),
           name: 'auth',
           value: 10,
           validateList: ['required'],
           width: '300px',
           transfer: true,
-          dataList: _this.accList.filter(a => { return a.value != 50; }),
+          dataList: this.accList.filter(a => { return a.value != 50; }),
           clearable: false,
-          onChange(val) {
-            _this.changeAuth(val);
+          onChange: (val) => {
+            this.changeAuth(val);
           }       
         }, {
           type: 'date',
-          label: '截止日期',
+          label: this.$t('term.codehub.expiresat'),
           name: 'endTime',
           width: '300px',
           format: 'yyyy-MM-dd',
           transfer: true,
-          onChange(val) {
-            _this.endTime = val;
+          onChange: (val) => {
+            this.endTime = val;
           } 
         }
       ],
@@ -108,11 +107,11 @@ export default {
         textName: 'name',
         valueName: 'id',
         params: {
-          'repositoryUuid': _this.uuid,
+          'repositoryId': this.id,
           'perPage': 10
         },
         keyword: 'search',
-        rootName: 'tbodyList',
+        rootName: 'list',
         clearable: false,
         multiple: true,
         search: true,
@@ -126,11 +125,11 @@ export default {
         textName: 'name',
         valueName: 'id',
         params: {
-          'repositoryUuid': _this.uuid,
+          'repositoryId': this.id,
           'perPage': 10
         },
         keyword: 'search',
-        rootName: 'tbodyList',
+        rootName: 'list',
         clearable: false,
         multiple: true,
         search: true,
@@ -187,7 +186,7 @@ export default {
   methods: {
     saveEdit() {
       let param = {
-        repositoryUuid: this.uuid
+        repositoryId: this.id
       };
       if (this.authType == 'member') {
         Object.assign(param, {
