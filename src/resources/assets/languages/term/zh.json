@@ -2043,7 +2043,11 @@
     "complexname": "复合属性名称",
     "restraint": "约束",
     "enumitem": "枚举成员",
-    "deletepropertyconfirm": "确定删除属性：{target}？"
+    "deletepropertyconfirm": "确定删除属性：{target}？",
+    "selectdataurl": "查询数据处理状态地址",
+    "errorcode": "错误编码",
+    "facilitycategory": "数据元分类标识符",
+    "facilitydescriptor": "数据元设施标识符"
   },
   "rdm": {
     "project": "项目",
@@ -2105,7 +2109,9 @@
     "testcondition": "前置条件",
     "teststep": "用例步骤",
     "testresult": "预期结果",
-    "pleasesetstatus": "请先定义状态"
+    "pleasesetstatus": "请先定义状态",
+    "listview": "列表视图",
+    "levelview": "层级视图"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

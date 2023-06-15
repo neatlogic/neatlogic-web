@@ -201,7 +201,7 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'actionText', title: this.$t('page.action') },
         { key: 'inputFromText', title: this.$t('page.updatefrom') },
-        { key: 'createTime', title: this.$t('page.creatTime') },
+        { key: 'createTime', title: this.$t('page.createtime') },
         { key: 'commitTime', title: this.$t('page.committime') },
         { key: 'error', title: this.$t('page.exception') },
         { key: 'action' }

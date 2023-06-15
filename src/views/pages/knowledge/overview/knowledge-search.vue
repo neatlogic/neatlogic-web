@@ -44,7 +44,7 @@
                   <UserCard class="user-card" v-bind="knowledge.lcuVo" hideAvatar />
                 </div>
                 <div class="lcd">
-                  <span class="label text-grey">{{ $t('page.creatTime') }}</span>
+                  <span class="label text-grey">{{ $t('page.createtime') }}</span>
                   <span class="lcd-time">{{ knowledge.lcd | formatDate }}</span>
                 </div>
               </div>
