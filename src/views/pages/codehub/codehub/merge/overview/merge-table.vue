@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="padding">
     <TsTable
       v-bind="tableData"
       :theadList="theadList"

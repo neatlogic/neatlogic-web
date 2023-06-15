@@ -33,7 +33,7 @@ export default {
     return {
       setting: {
         //弹窗设置
-        title: this.$t('dialog.title.edittarget', { target: this.$t('page.mapping') }),
+        title: this.projectData && this.projectData.id ? this.$t('dialog.title.edittarget', { target: this.$t('page.mapping') }) : this.$t('dialog.title.addtarget', {'target': this.$t('page.mapping')}),
         maskClose: false,
         isShow: true
       },
@@ -92,7 +92,6 @@ export default {
     close() {
       this.$emit('close');
     },
-
     initData() {
       if (this.projectData && this.projectData.appSystemVo) {
         this.appSystemId = this.projectData.appSystemVo.id;
@@ -109,9 +108,7 @@ export default {
       if (this.projectList && this.projectList.length > 0) {
         this.initProjectconfig(this.projectList);
       }
-
       let val = this.projectData;
-      this.setting.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.mapping')});
       if (val.projectList && val.projectList.length > 0) {
         if (this.projectConfig && this.projectConfig.length > 0) {
           this.projectConfig.forEach((pro) => {
@@ -247,7 +244,6 @@ export default {
     // }
   },
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>

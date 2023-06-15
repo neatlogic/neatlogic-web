@@ -2,7 +2,7 @@
   <div class="comment-text">
     <div>
       <div v-if="li.filePath && tab !='diff' &&!isChildren" class="text-tip">
-        <span>对文件{{ li.filePath }}的变更</span>
+        <span>{{ $t('term.codehub.changestofiletarget', {target: li.filePath}) }}</span>
         <span class="text-href" @click="gotoFile(li)">
           <span>{{ li.leftCommitId |commitId }}</span>
           <span v-if="li.lineType=='left'">({{ li.line }})</span>
@@ -10,21 +10,21 @@
           <span>{{ li.rightCommitId |commitId }}</span>
           <span v-if="li.lineType=='right'">({{ li.line }})</span>
         </span>
-        <span>发表了行评论</span>
+        <span>{{ $t('term.codehub.commentedonaline') }}</span>
       </div>
-      <div v-if="li.filePath && tab !='diff'" class="text-tip ml-20" v-html="li.comment"></div>
-      <div v-else class="text-tip ml-20" v-html="li.comment"></div>
+      <div v-if="li.filePath && tab !='diff'" class="mt-xs ml-nm mr-nm" v-html="li.comment"></div>
+      <div v-else class="mt-xs ml-nm mr-nm" v-html="li.comment"></div>
     </div>
-    <div style="showReply?'margin-top: 10px;':''">
+    <div :class="showReply ? 'mt-sm' : ''">
       <div v-if="!showReply" class="block-reply">
         <div class="action-group">
           <div
             v-if="li.canEdit"
-            class="action-item ts-trash"
-            title="删除"
-            @click="deleteLi(li)"
+            class="action-item tsfont-trash-o"
+            :title="$t('page.delete')"
+            @click="deleteComment(li)"
           ></div>
-          <div class="action-item ts-chat-fill" title="回复" @click="replyLi"></div>
+          <div class="action-item tsfont-reply" :title="$t('page.reply')" @click="replyLi"></div>
         </div>
       </div>
       <div v-else>
@@ -37,22 +37,20 @@
             :disabled="!commitText ||replying"
             type="primary"
             size="small"
-            class="mr-10"
+            class="mr-sm"
             @click="submitReply(li)"
-          >回复</Button>
-          <Button size="small" @click="resetReply">取消</Button>
+          >{{ $t('page.reply') }}</Button>
+          <Button size="small" @click="resetReply">{{ $t('page.cancel') }}</Button>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script>
-import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';
 export default {
   name: '',
   components: {
-    TsCkeditor
+    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve)
   },
   filters: {
     commitId(value) {
@@ -92,35 +90,33 @@ export default {
     replyLi() {
       this.showReply = true;
     },
-    deleteLi(item) {
-      let _this = this;
-      
+    deleteComment(item) {
       let param = {
-        uuid: item.uuid
+        id: item.id
       };
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该评论',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.comment')}),
         btnType: 'error',
-        'on-ok': function(vnode) {
+        'on-ok': (vnode) => {
           if (item.filePath) {
-            _this.$api.codehub.merge.deleteCommentByLine(param).then((res) => {
+            this.$api.codehub.merge.deleteCommentByLine(param).then((res) => {
               if (res && res.Status == 'OK') {
-                _this.$Message.success('删除成功');
                 vnode.isShow = false;
-                _this.$emit('reload');
+                this.$Message.success(this.$t('message.deletesuccess'));
+                this.$emit('reload');
               } else {
-                _this.$Message.error(res.Message);
+                this.$Message.error(res.Message);
               }
             });
           } else {
-            _this.$api.codehub.merge.deleteCommentById(param).then((res) => {
+            this.$api.codehub.merge.deleteCommentById(param).then((res) => {
               if (res && res.Status == 'OK') {
-                _this.$Message.success('删除成功');
+                this.$Message.success(this.$t('message.deletesuccess'));
                 vnode.isShow = false;
-                _this.$emit('reload');
+                this.$emit('reload');
               } else {
-                _this.$Message.error(res.Message);
+                this.$Message.error(res.Message);
               }
             });           
           }
@@ -131,14 +127,14 @@ export default {
       if (item.filePath) {
         //如果是行评论的会有路径
         let param = {
-          mrUuid: item.mrUuid,
+          mrId: item.mrId,
           leftCommitId: item.leftCommitId,
           rightCommitId: item.rightCommitId,
           line: item.line,
           filePath: item.filePath,
           lineType: item.lineType,
           comment: this.commitText,
-          parentUuid: item.uuid
+          parentId: item.id
         };
         this.replying = true;
         this.$api.codehub.merge.saveCommentByLine(param).then((res) => {
@@ -153,19 +149,18 @@ export default {
         });
       } else {
         let param = {
-          mrUuid: item.mrUuid,
-          parentUuid: item.uuid,
+          mrId: item.mrId,
+          parentId: item.id,
           comment: this.commitText
         };
         this.replying = true;
         this.$api.codehub.merge.saveComment(param).then((res) => {
-          this.replying = false;
           if (res.Status == 'OK') {
             this.showReply = false;
             this.commitText = '';
             this.$emit('reload');
           }
-        }).catch((e) => {
+        }).finally(() => {
           this.replying = false;
         });
       }
@@ -180,7 +175,6 @@ export default {
   },
   computed: {},
   watch: {}
-
 };
 
 </script>
@@ -192,8 +186,8 @@ export default {
   position: relative;
   .block-reply{
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 127px;
+    top: -28px;
     opacity: 0;
     .action-group{
       .action-item{
@@ -206,5 +200,4 @@ export default {
     }
   }
 }
-
 </style>

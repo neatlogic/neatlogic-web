@@ -1,18 +1,27 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true">
+    <TsContain
+      :rightWidth="250"
+      :enableCollapse="true"
+      :isSiderHide="isSiderHide"
+      @toggleSiderHide="toggleSiderHide"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
-        <span>
-          <strong>[{{ issueData.id }}]{{ issueData.name }}</strong>
-        </span>
-        <IssueStatus :issueData="issueData"></IssueStatus>
+        <div class="action-group">
+          <div class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></div>
+          <div class="action-item">
+            <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
+          </div>
+          <div class="action-item">
+            <IssueStatus :issueData="issueData"></IssueStatus>
+          </div>
+        </div>
       </template>
       <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
+        <div class="action-group" style="text-align: right">
           <div class="action-item">
             <Dropdown :transfer="true" placement="bottom-end">
               <Button type="primary" ghost>
@@ -24,7 +33,12 @@
           </div>
         </div>
       </template>
-      <template v-slot:sider>侧边栏</template>
+      <template v-slot:sider><MyDoingIssueList
+        v-if="projectId && appId && id"
+        :projectId="projectId"
+        :appId="appId"
+        :issueId="id"
+      ></MyDoingIssueList></template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
@@ -51,6 +65,8 @@
                   :canSearch="false"
                   :canAction="true"
                   :projectId="projectId"
+                  relType="extend"
+                  relAppType="story"
                   :toId="id"
                   :app="getApp('story')"
                   @refresh="init"
@@ -65,11 +81,8 @@
           </Tabs>
           <div class="padding">
             <Divider />
-            <div class="item-grid">
-              <div>
-                <strong class="text-grey">{{ $t('page.accessory') }}</strong>
-              </div>
-              <div><TsUpLoad
+            <TsFormItem v-bind="formItemConf" :label="$t('page.accessory')">
+              <TsUpLoad
                 styleType="text"
                 dataType="issue"
                 className="smallUpload"
@@ -78,35 +91,33 @@
                 :multiple="true"
                 :isDeleteRemote="true"
                 :defaultList="issueData.fileList"
-              ></TsUpLoad></div>
-            </div>
-            <div v-if="issueData.commentCount" class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.comment') }}</strong>
-              </div>
-              <div>
-                <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('term.rdm.nextstatus') }}</strong>
-              </div>
-              <div>
-                <StatusRequiredAttrList
-                  v-if="isReady && !$utils.isEmpty(issueData)"
-                  ref="requiredAttrList"
-                  :appId="appId"
-                  :issueData="issueData"
-                ></StatusRequiredAttrList>
-                <div class="mb-md">
-                  <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-                </div>
-                <div>
-                  <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-                </div>
-              </div>
-            </div>
+              ></TsUpLoad>
+            </TsFormItem>
+
+            <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
+              <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
+            </TsFormItem>
+
+            <TsFormItem v-bind="formItemConf" :label="$t('term.rdm.nextstatus')">
+              <StatusRequiredAttrList
+                v-if="isReady && !$utils.isEmpty(issueData)"
+                ref="requiredAttrList"
+                :appId="appId"
+                :issueData="issueData"
+              ></StatusRequiredAttrList>
+            </TsFormItem>
+
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('page.reply')"
+            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+
+            <TsFormItem
+              v-bind="formItemConf"
+              label=""
+            >
+              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
+            </TsFormItem>
           </div>
         </div>
       </div>
@@ -118,6 +129,7 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
@@ -126,12 +138,15 @@ export default {
     AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
     StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},
   data() {
     return {
+      formItemConf: { labelWidth: 80, labelPosition: 'left', labelStrong: true },
+      isSiderHide: true,
       currentTab: 'main',
       isEditIssueShow: false,
       issueData: {},
@@ -145,7 +160,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$localStore.get('isSiderHide') != null) {
+      this.isSiderHide = this.$localStore.get('isSiderHide');
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -155,6 +174,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isHide) {
+      this.isSiderHide = isHide;
+      this.$localStore.set('isSiderHide', isHide);
+    },
     goToNext() {
       const requiredAttrList = this.$refs['requiredAttrList'];
       if (!requiredAttrList || requiredAttrList.valid()) {
@@ -176,14 +199,7 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    issueData: {
-      handler: function(val) {
-        console.log(JSON.stringify(val, null, 2));
-      },
-      deep: true
-    }
   }
 };
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

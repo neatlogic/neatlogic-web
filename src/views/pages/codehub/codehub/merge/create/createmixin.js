@@ -17,33 +17,36 @@ export default {
       syncSourceList: [],
       isValid: false, //是否过滤有效需求
       maxSearchCount: '300', //检索提交日志条数
-      tabledata: {
-        theadList: [{
-          title: this.$t('term.codehub.issuesnumber'),
-          key: 'no'
-        }, {
-          title: this.$t('page.description'),
-          key: 'name'
-        }, {
-          title: this.$t('page.responsibleperson'),
-          key: 'handleUserId'
-        }, {
-          title: this.$t('page.effectiveness'),
-          key: 'isValid'
-        }, {
-          title: this.$t('page.status'),
-          key: 'status'
-        }, {
-          title: this.$t('page.updatetime'),
-          key: 'issueUpdateTime'
-        }, {
-          title: this.$t('page.source'),
-          key: 'sourceUuid'
-        }
-        ],
+      theadList: [{
+        key: 'selection'
+      }, {
+        title: this.$t('term.codehub.issuesnumber'),
+        key: 'no'
+      }, {
+        title: this.$t('page.description'),
+        key: 'name'
+      }, {
+        title: this.$t('page.responsibleperson'),
+        key: 'handleUserId'
+      }, {
+        title: this.$t('page.effectiveness'),
+        key: 'isValid'
+      }, {
+        title: this.$t('page.status'),
+        key: 'status'
+      }, {
+        title: this.$t('page.updatetime'),
+        key: 'issueUpdateTime'
+      }, {
+        title: this.$t('page.source'),
+        key: 'sourceId'
+      }
+      ],
+      tableData: {
         rowKey: 'no',
         selectedRemain: true,
-        classKey: 'isValid'
+        classKey: 'isValid',
+        tbodyList: []
       },
       showtabledata: {
         theadList: [{
@@ -63,7 +66,7 @@ export default {
           key: 'issueUpdateTime'
         }, {
           title: this.$t('page.source'),
-          key: 'sourceUuid'
+          key: 'source'
         }, {
           key: 'action'
         }],
@@ -86,11 +89,11 @@ export default {
   beforeDestroy() { },
   methods: {
     changeCurrent(page) {
-      this.tabledata.currentPage = page;
+      this.tableData.currentPage = page;
       this.getList();
     },
     changePageSize(size) {
-      this.tabledata.pageSize = size;
+      this.tableData.pageSize = size;
       this.getList();
     },
     getSouce() { //获取需求列表
@@ -100,7 +103,6 @@ export default {
         }
       });
     },
-
     getSelected(li, list) {
       this.selectIssuelist = li;
       if (this.type == 'branch') {
@@ -127,10 +129,10 @@ export default {
   },
   computed: {
     getsource() {
-      return (id) => {
+      return (sourceId) => {
         let txt = '';
         this.syncSourceList.forEach(sync => {
-          if (sync.id == id) {
+          if (sync.id == sourceId) {
             txt = sync.source;
           }
         });

@@ -2107,7 +2107,8 @@
     "templatesetting": "Template Settings",
     "testcondition": "Preconditions",
     "teststep": "Use Case Steps",
-    "testresult": "Expected results"
+    "testresult": "Expected results",
+    "pleasesetstatus": "Please define the status first"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
@@ -2287,6 +2288,12 @@
     "linebylinecomparison": "Line by line comparison",
     "leftandrightcomparison": "Left and right comparison",
     "postcomments": "Post comments",
+    "encounteringconflictingneeds": "Encountering conflicting needs",
+    "mergerequeststatus": "Merge Status",
+    "consolidationresult": "Merge Results",
+    "postmergerequestcomments": "Posted MR comments",
+    "changestofiletarget": "Changes to file {target}",
+    "commentedonaline": "Commented on a line",
     "addconfig": "Edit Configuration",
     "editconfig": "Add Configuration",
     "triggerstatus": "Trigger status",

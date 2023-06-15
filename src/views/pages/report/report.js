@@ -6,6 +6,7 @@ import store from '@/resources/store';
 import VueI18n from 'vue-i18n';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
+import LocalStore from '@/resources/assets/js/localStore.js';
 
 import md5 from 'js-md5';
 
@@ -40,7 +41,7 @@ Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$tsrouter = router;
-// Vue.prototype.i18n = i18n;
+Vue.prototype.$localStore = new LocalStore('report', router);
 
 new Vue({
   router,

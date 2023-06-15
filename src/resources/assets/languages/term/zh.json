@@ -2104,7 +2104,8 @@
     "templatesetting": "模板设置",
     "testcondition": "前置条件",
     "teststep": "用例步骤",
-    "testresult": "预期结果"
+    "testresult": "预期结果",
+    "pleasesetstatus": "请先定义状态"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
@@ -2284,6 +2285,12 @@
     "linebylinecomparison": "逐行对比",
     "leftandrightcomparison": "左右对比",
     "postcomments": "发布评论",
+    "encounteringconflictingneeds": "遇到冲突需求",
+    "mergerequeststatus": "合并状态",
+    "consolidationresult": "合并结果",
+    "postmergerequestcomments": "发表了MR评论",
+    "changestofiletarget": "对文件{target}的变更",
+    "commentedonaline": "发表了行评论",
     "addconfig": "编辑配置",
     "editconfig": "添加配置",
     "triggerstatus": "触发状态",

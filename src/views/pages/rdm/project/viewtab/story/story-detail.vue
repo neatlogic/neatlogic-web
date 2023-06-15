@@ -1,6 +1,11 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true" :isSiderHide="true">
+    <TsContain
+      :rightWidth="250"
+      :enableCollapse="true"
+      :isSiderHide="isSiderHide"
+      @toggleSiderHide="toggleSiderHide"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -14,9 +19,15 @@
           <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
         </div>
       </template>
-      <template v-slot:topRight>
+      <template v-slot:topRight></template>
+      <template v-slot:sider>
+        <MyDoingIssueList
+          v-if="projectId && appId && id"
+          :projectId="projectId"
+          :appId="appId"
+          :issueId="id"
+        ></MyDoingIssueList>
       </template>
-      <template v-slot:sider>侧边栏</template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
@@ -44,7 +55,8 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
-                  :linkAppType="[{ to: 'task', rel: 'extend' }]"
+                  relType="extend"
+                  relAppType="task"
                   :fromId="id"
                   :app="getApp('task')"
                   @refresh="init"
@@ -60,7 +72,8 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
-                  :linkAppType="[{ to: 'bug', rel: 'extend' }]"
+                  relType="extend"
+                  relAppType="bug"
                   :fromId="id"
                   :app="getApp('bug')"
                   @refresh="init"
@@ -82,6 +95,23 @@
                 ></IssueList>
               </div>
             </TabPane>
+            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.testcase'), 'testcase', 'relative', 'from')" name="testcase">
+              <div v-if="currentTab == 'testcase'" class="pl-nm pr-nm">
+                <IssueList
+                  v-if="id && getApp('testcase')"
+                  ref="testcaseList"
+                  :projectId="projectId"
+                  :canAppend="true"
+                  :canSearch="false"
+                  :canAction="true"
+                  relType="relative"
+                  relAppType="testcase"
+                  :fromId="id"
+                  :app="getApp('testcase')"
+                  @refresh="init"
+                ></IssueList>
+              </div>
+            </TabPane>
             <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
               <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
                 <IssueAuditList v-if="currentTab === 'audit' && id && appId" :issueId="id" :appId="appId"></IssueAuditList>
@@ -90,11 +120,8 @@
           </Tabs>
           <div class="padding">
             <Divider />
-            <div class="item-grid">
-              <div>
-                <strong class="text-grey">{{ $t('page.accessory') }}</strong>
-              </div>
-              <div><TsUpLoad
+            <TsFormItem v-bind="formItemConf" :label="$t('page.accessory')">
+              <TsUpLoad
                 styleType="text"
                 dataType="issue"
                 className="smallUpload"
@@ -103,35 +130,32 @@
                 :multiple="true"
                 :isDeleteRemote="true"
                 :defaultList="issueData.fileList"
-              ></TsUpLoad></div>
-            </div>
-            <div v-if="issueData.commentCount" class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.comment') }}</strong>
-              </div>
-              <div>
-                <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('term.rdm.nextstatus') }}</strong>
-              </div>
-              <div>
-                <StatusRequiredAttrList
-                  v-if="isReady && !$utils.isEmpty(issueData)"
-                  ref="requiredAttrList"
-                  :appId="appId"
-                  :issueData="issueData"
-                ></StatusRequiredAttrList>
-                <div class="mb-md">
-                  <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-                </div>
-                <div>
-                  <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-                </div>
-              </div>
-            </div>
+              ></TsUpLoad>
+            </TsFormItem>
+            <TsFormItem
+              v-if="issueData.commentCount"
+              v-bind="formItemConf"
+              :label="$t('page.comment')"
+            ><CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('term.rdm.nextstatus')"
+            ><StatusRequiredAttrList
+              v-if="isReady && !$utils.isEmpty(issueData)"
+              ref="requiredAttrList"
+              :appId="appId"
+              :issueData="issueData"
+            ></StatusRequiredAttrList></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('page.reply')"
+            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+            <TsFormItem
+              v-bind="formItemConf"
+              label=""
+            >
+              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
+            </TsFormItem>
           </div>
         </div>
       </div>
@@ -140,9 +164,11 @@
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
+
 export default {
   name: '',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
@@ -152,12 +178,15 @@ export default {
     AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
     StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},
   data() {
     return {
+      formItemConf: { labelWidth: 80, labelPosition: 'left', labelStrong: true },
+      isSiderHide: true,
       currentTab: 'main',
       issueData: {},
       issueDataSnapshot: {},
@@ -170,7 +199,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$localStore.get('isSiderHide') != null) {
+      this.isSiderHide = this.$localStore.get('isSiderHide');
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -180,6 +213,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isHide) {
+      this.isSiderHide = isHide;
+      this.$localStore.set('isSiderHide', isHide);
+    },
     goToNext() {
       const requiredAttrList = this.$refs['requiredAttrList'];
       if (!requiredAttrList || requiredAttrList.valid()) {
@@ -200,13 +237,6 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    issueData: {
-      handler: function(val) {
-        //console.log(JSON.stringify(val, null, 2));
-      },
-      deep: true
-    }
-  }
+  watch: {}
 };
 </script>

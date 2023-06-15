@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="padding">
     <div>
       <div v-if="!loading && diffList && diffList.length" class="text-tip tips" style="height:30px;">
         <span>共计</span>
@@ -14,8 +14,8 @@
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'" style="height:calc(100vh - 170px)">
       <div class="clearfix" style="margin-bottom: 4px;">
-        <div v-if="commitId" class="d_f ml-sm font-bold" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="d_f_r mr-sm" style="display: flex;justify-content: end;">
+        <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
+        <div class="pt-sm mr-sm" style="display: flex;justify-content: end;">
           <TsFormSelect
             v-if="!loading && commitList && commitList.length"
             v-model="selectedCommit"
@@ -90,12 +90,11 @@ export default {
   },
   filters: {},
   mixins: [mixins],
-  props: {
-  },
+  props: {},
   provide() {
     return {
-      subsystemuuid: this.mrData.subsystemUuid || null,
-      repositoryuuid: this.mrData.subsystemUuid || null,
+      appSystemId: (this.mrData.appSystemVo && this.mrData.appSystemVo.id) || null,
+      repositoryuuid: this.mrData.appModuleId || null,
       branchname: this.mrData.srcBranch || null,
       smruuid: this.id || null
     };

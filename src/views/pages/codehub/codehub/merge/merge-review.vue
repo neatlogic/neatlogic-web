@@ -12,8 +12,7 @@
         <div v-if="mrData" style="display: flex;">
           <div class="title">
             <span 
-              class="overflow" 
-              :style="setTitlewidth(mrData.status)"
+              class="overflow header-descrition-text"
               :title="mrData.description"
             >{{ mrData.description || $t('term.codehub.codereview') }}</span>
             <span 
@@ -57,7 +56,7 @@
                 <div>{{ setTxt(mrData) }}</div>
               </div>
             </Tooltip>
-            <Tag v-if="mrData.versionVo && mrData.versionVo.name" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+            <Tag v-if="mrData.versionVo && mrData.versionVo.version" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.version }}</Tag>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
@@ -75,10 +74,15 @@
           <span class="tsfont-refresh" @click="forceFlush">{{ $t('page.forceflush') }}</span>
         </Button>
       </template>
-      <div slot="content" class="review-container">
+      <template v-slot:content>
         <Loading v-if="isLoading" loadingShow></Loading>
-        <div v-else-if="mrData" class="review-main padding-md">
-          <Tabs v-model="activeTab" :animated="false" @on-click="selectedCommitId=null;selectFilepath=null">
+        <div v-else-if="mrData" class="review-main mr-sm">
+          <Tabs
+            v-model="activeTab"
+            :animated="false"
+            class="block-tabs"
+            @on-click="selectedCommitId=null;selectFilepath=null"
+          >
             <TabPane 
               v-for="(tab,tindex) in tabList" 
               :key="tindex" 
@@ -99,7 +103,7 @@
                   @reload="getDetail"
                   @updateStatus="updateStatus"
                   @revert="revertIssue"
-                  @getCommit="getCommit"
+                  @toDiffDetail="toDiffDetail"
                   @clearCommit="selectedCommitId=null"
                   @clearItem="clearItem"
                   @selectFile="selectFile"
@@ -108,47 +112,46 @@
             </TabPane>
           </Tabs>
         </div>
-      </div>
-      <div slot="right" class="review-right border-color">
-        <div v-if="mrData">
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-info-o text-tilte mr-sm">{{ $t('page.basicinfo') }}</span>
-            </div>
-            <CellGroup>
-              <Cell label="id">
-                <div>{{ mrData.id }}              
-                  <span 
-                    v-clipboard="mrData.id" 
-                    class="ts-link text-href btn-copy" 
-                    :title="$t('term.codehub.copycurrentid')"
-                  ></span>
-                </div>
-              </Cell>
-            </CellGroup>
-          </Card>
-          <Divider />
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-userinfo text-tilte mr-sm">{{ $t('page.personnel') }}</span>
-            </div>
-            <CellGroup>
-              <Cell :label="$t('page.presenter')">
+      </template>
+      <div slot="right">
+        <div v-if="mrData" class="bg-op radius-lg padding-sm">
+          <div>{{ $t('page.basicinfo') }}</div>
+          <ul>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">id</div>
+              <div>
+                <span 
+                  v-clipboard="mrData.id" 
+                  class="ts-link text-href btn-copy" 
+                  :title="$t('term.codehub.copycurrentid')"
+                ></span>
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('page.presenter') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.fcu"
                   :uuid="mrData.fcu"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-              <Cell :label="$t('term.process.dealwithuser')">
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('term.process.dealwithuser') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.handleUser"
                   :uuid="mrData.handleUser"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-            </CellGroup>
-          </Card>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </TsContain>
@@ -306,7 +309,7 @@ export default {
     clipboardSuc() {
       this.$Message.success(this.$t('message.copysuccess'));
     },
-    getCommit(commitId) {
+    toDiffDetail(commitId) {
       //从需求切换到变更并选中指定的commit
       this.selectedCommitId = commitId;
       this.activeTab = 'diff';
@@ -352,16 +355,6 @@ export default {
         }
         return text;
       };
-    },
-    setTitlewidth() {
-      return function(status) {
-        let styles = {
-          'display': 'inline-block',
-          'max-width': status == 'failed' ? 'calc(100vw - 320px)' : 'calc(100vw - 280px)'
-
-        };
-        return styles;
-      };
     }
   },
   watch: {}
@@ -375,6 +368,7 @@ export default {
 .top-title {
   .title {
     line-height: 26px;
+   
   }
   .desc {
     line-height: 20px;
@@ -410,14 +404,20 @@ export default {
     margin-right: 0;
   }
 }
-.review-right{
-  border-left: 1px solid;
-  height: 100%;
-  padding: 10px;
-}
 .review-main{
   /deep/.ivu-tabs{
     overflow: visible;
   }
 }
+.basic-info-box {
+  display: flex;
+  .left-lable-box {
+    width: 90px;
+    margin-right: 10px;
+  }
+}
+ .header-descrition-text {
+    display: inline-block;
+    max-width: 300px;
+  }
 </style>

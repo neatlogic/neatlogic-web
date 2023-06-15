@@ -8,6 +8,8 @@ import api from '@/resources/api/api.js';
 import VueI18n from 'vue-i18n';
 import md5 from 'js-md5';
 import frameworkUtils from '@/views/pages/framework/matrix/utils/utils';
+import LocalStore from '@/resources/assets/js/localStore.js';
+
 //公共的全局组件、样式等
 import '@/resources/base.js';
 import {initRouter, initI18n} from '@/resources/init.js';
@@ -28,8 +30,8 @@ Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$md5 = md5;
-// Vue.prototype.i18n = i18n;
 Vue.prototype.$frameworkUtils = frameworkUtils;
+Vue.prototype.$localStore = new LocalStore('framework', router);
 
 new Vue({
   router,

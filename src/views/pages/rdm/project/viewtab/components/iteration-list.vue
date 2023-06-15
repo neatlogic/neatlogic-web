@@ -1,5 +1,5 @@
 <template>
-  <Scroll :on-reach-bottom="handleReachBottom" :loading-text="$t('page.loadingtip')" :height="height">
+  <Scroll :on-reach-bottom="handleReachBottom" :loading-text="loadingTip" :height="height">
     <ul v-if="iterationList && iterationList.length > 0">
       <li
         v-for="(iteration, index) in iterationList"
@@ -44,6 +44,7 @@ export default {
   },
   data() {
     return {
+      loadingTip: this.$t('page.loadingtip'),
       searchParam: { projectId: this.projectId, pageSize: 20, currentPage: 1 },
       iterationList: [],
       currentIterationId: null,

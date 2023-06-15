@@ -1,22 +1,21 @@
 <template>
   <div>
-    <TsContain :rightWidth="300" :enableCollapse="true" :isSiderHide="true">
+    <TsContain :rightWidth="250">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
-          <span class="action-item">
+          <div class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></div>
+          <div class="action-item">
             <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
-          </span>
-          <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
-          <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
+          </div>
+          <div class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></div>
+          <div class="action-item"><IssueFavorite v-if="id" :issueId="id"></IssueFavorite></div>
         </div>
       </template>
       <template v-slot:topRight>
       </template>
-      <template v-slot:sider>侧边栏</template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
@@ -35,39 +34,7 @@
                 <div v-html="issueData.content"></div>
               </div>
             </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
-              <div v-if="currentTab == 'task'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('task')"
-                  ref="taskList"
-                  :projectId="projectId"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'task', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('task')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.bug'), 'bug', 'extend', 'from')" name="bug">
-              <div v-if="currentTab == 'bug'" class="pl-nm pr-nm">
-                <IssueList
-                  v-if="id && getApp('bug')"
-                  ref="bugList"
-                  :projectId="projectId"
-                  :canAppend="true"
-                  :canSearch="false"
-                  :canAction="true"
-                  :linkAppType="[{ to: 'bug', rel: 'extend' }]"
-                  :fromId="id"
-                  :app="getApp('bug')"
-                  @refresh="init"
-                ></IssueList>
-              </div>
-            </TabPane>
-            <TabPane :label="render => renderTabLabelForChild(render, issueData, $t('term.rdm.childrequest'))" name="childrequest">
+            <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'relative', 'to')" name="childrequest">
               <div v-if="currentTab == 'childrequest'" class="pl-nm pr-nm">
                 <IssueList
                   v-if="id && getApp('story')"
@@ -76,7 +43,9 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
-                  :parentId="id"
+                  :toId="id"
+                  relType="relative"
+                  relAppType="story"
                   :app="getApp('story')"
                   @refresh="init"
                 ></IssueList>
@@ -90,48 +59,30 @@
           </Tabs>
           <div class="padding">
             <Divider />
-            <div class="item-grid">
-              <div>
-                <strong class="text-grey">{{ $t('page.accessory') }}</strong>
-              </div>
-              <div><TsUpLoad
-                styleType="text"
-                dataType="issue"
-                className="smallUpload"
-                type="drag"
-                :params="{ issueId: id }"
-                :multiple="true"
-                :isDeleteRemote="true"
-                :defaultList="issueData.fileList"
-              ></TsUpLoad></div>
-            </div>
-            <div v-if="issueData.commentCount" class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('page.comment') }}</strong>
-              </div>
-              <div>
-                <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
-              </div>
-            </div>
-            <div class="item-grid mt-md">
-              <div>
-                <strong class="text-grey">{{ $t('term.rdm.nextstatus') }}</strong>
-              </div>
-              <div>
-                <StatusRequiredAttrList
-                  v-if="isReady && !$utils.isEmpty(issueData)"
-                  ref="requiredAttrList"
-                  :appId="appId"
-                  :issueData="issueData"
-                ></StatusRequiredAttrList>
-                <div class="mb-md">
-                  <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
-                </div>
-                <div>
-                  <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
-                </div>
-              </div>
-            </div>
+            <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
+              <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
+            </TsFormItem>
+            
+            <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
+              <StatusRequiredAttrList
+                v-if="isReady && !$utils.isEmpty(issueData)"
+                ref="requiredAttrList"
+                :appId="appId"
+                :issueData="issueData"
+              ></StatusRequiredAttrList>
+            </TsFormItem>
+
+            <TsFormItem
+              v-bind="formItemConf"
+              :label="$t('page.reply')"
+            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+            
+            <TsFormItem
+              v-bind="formItemConf"
+              label=""
+            >
+              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('page.confirm') }}</Button>
+            </TsFormItem>
           </div>
         </div>
       </div>
@@ -143,12 +94,12 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
     AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
     StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
@@ -158,6 +109,7 @@ export default {
   props: {},
   data() {
     return {
+      formItemConf: { labelWidth: 80, labelPosition: 'left', labelStrong: true },
       currentTab: 'main',
       issueData: {},
       issueDataSnapshot: {},
@@ -201,12 +153,6 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    issueData: {
-      handler: function(val) {
-        //console.log(JSON.stringify(val, null, 2));
-      },
-      deep: true
-    }
   }
 };
 </script>
