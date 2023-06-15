@@ -29,7 +29,24 @@
           @remove-label="searchIssue(1)"
           @confirm="searchIssue(1)"
         >
-          <template v-for="(attr, index) in attrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
+          <template v-slot:createDate="{ valueConfig, textConfig }">
+            <TsFormDatePicker
+              border="border"
+              :transfer="true"
+              type="daterange"
+              format="yyyy-MM-dd"
+              @change="(val) => {
+                if (val != null) {
+                  $set(valueConfig, 'createDate', val);
+                  $set(textConfig, 'createDate' , val);
+                } else {
+                  $delete(valueConfig, 'createDate' );
+                  $delete(textConfig, 'createDate' );
+                }
+              }"
+            ></TsFormDatePicker>
+          </template>
+          <template v-for="(attr, index) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
             <div :key="index">
               <AttrHandler
                 v-if="isSearchReady"
@@ -73,32 +90,30 @@
       @changePageSize="changePageSize"
       @getSelected="getSelected"
     >
-      <template v-slot:name="{ row }">
-        <div :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
-          <span><AppIcon :appType="row.appType" :appColor="row.appColor"></AppIcon></span>
-          <span
-            v-if="mode === 'level' && row.childrenCount"
-            class="cursor text-href"
-            :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
-            @click="toggleChildIssue(row)"
-          ></span>
-          <span class="overflow">
-            <a href="javascript:void(0)" @click="toIssueDetail(row)">{{ row.name }}</a>
-          </span>
-        </div>
-      </template>
-      <template v-slot:status="{ row }">
-        <IssueStatus :issueData="row"></IssueStatus>
-      </template>
-      <template v-for="(attr, index) in attrList" :slot="attr.id.toString()" slot-scope="{ row }">
+      <template v-for="(attr, index) in attrList" :slot="attr.id ? attr.id.toString() : attr.type" slot-scope="{ row }">
         <div :key="index">
-          <AttrViewer v-if="isSearchReady" :attrConfig="attr" :issueData="row"></AttrViewer>
+          <AttrViewer v-if="attr.id != 0 && isSearchReady" :attrConfig="attr" :issueData="row"></AttrViewer>
+          <div v-else-if="attr.type === '_name'" :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
+            <span><AppIcon :appType="row.appType" :appColor="row.appColor"></AppIcon></span>
+            <span
+              v-if="mode === 'level' && row.childrenCount"
+              class="cursor text-href"
+              :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
+              @click="toggleChildIssue(row)"
+            ></span>
+            <span class="overflow">
+              <a href="javascript:void(0)" @click="toIssueDetail(row)">{{ row.name }}</a>
+            </span>
+          </div>
+          <IssueStatus v-else-if="attr.type === '_status'" :issueData="row"></IssueStatus>
+          <span v-else-if="attr.type === '_createdate'">{{ row.createDate | formatDate('yyyy-mm-dd') }}</span>
         </div>
       </template>
       <template v-if="canAction" slot="action" slot-scope="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li v-if="fromId || toId || parentId" class="tsfont-unbind" @click="unlinkIssue(row)">{{ $t('term.rdm.disconnect') }}</li>
+            <li v-if="fromId || toId || parentId || row.parentId" class="tsfont-unbind" @click="unlinkIssue(row)">{{ $t('term.rdm.disconnect') }}</li>
+            <li class="tsfont-inspection" @click="toIssueDetail(row)">{{ $t('page.detail') }}</li>
             <li class="tsfont-trash-o" @click="deleteIssue(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
@@ -138,7 +153,8 @@ export default {
     AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve)
+    IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
+    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -159,12 +175,18 @@ export default {
     isFavorite: { type: Number }, //是否关注
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
-    relType: {type: String, validator: function(value) {
-      return ['extend', 'relative', 'repeat'].includes(value);
-    }},
-    relAppType: {type: String, validator: function(value) {
-      return ['story', 'testcase', 'bug', 'task'].includes(value);
-    }},
+    relType: {
+      type: String,
+      validator: function(value) {
+        return ['extend', 'relative', 'repeat'].includes(value);
+      }
+    },
+    relAppType: {
+      type: String,
+      validator: function(value) {
+        return ['story', 'testcase', 'bug', 'task'].includes(value);
+      }
+    },
     catalog: { type: Number }
   },
   data() {
@@ -174,8 +196,9 @@ export default {
       isLinkShow: false,
       issueData: {},
       theadList: [
-        { key: 'name', title: this.$t('page.name') },
-        { key: 'status', title: this.$t('page.status') }
+        /* { key: 'name', title: this.$t('page.name') },
+        { key: 'status', title: this.$t('page.status') },
+        { key: 'createDate', title: this.$t('page.createdate') }*/
       ],
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
@@ -203,6 +226,11 @@ export default {
                 text: this.$t('page.nottimedout')
               }
             ]
+          },
+          {
+            type: 'slot',
+            name: 'createDate',
+            label: this.$t('page.createdate')
           }
         ]
       },
@@ -248,7 +276,7 @@ export default {
     },
     initAppList() {
       if (this.projectId && this.relAppType) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId, {appType: this.relAppType}).then(res => {
+        this.$api.rdm.project.getAppByProjectId(this.projectId, { appType: this.relAppType }).then(res => {
           this.appList = res.Return;
         });
       }
@@ -269,12 +297,14 @@ export default {
         if (this.app.attrList && this.app.attrList.length > 0) {
           this.app.attrList.forEach(attr => {
             if (['all', 'list'].includes(attr.showType)) {
-              this.theadList.push({ key: attr.id.toString(), title: attr.label });
-              this.searchConfig.searchList.push({
-                type: 'slot',
-                name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
-                label: attr.label
-              });
+              this.theadList.push({ key: attr.id ? attr.id.toString() : attr.type, title: attr.label });
+              if (attr.id) {
+                this.searchConfig.searchList.push({
+                  type: 'slot',
+                  name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
+                  label: attr.label
+                });
+              }
             }
           });
         }
@@ -286,7 +316,7 @@ export default {
           this.appSetting = res.Return;
           if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
             this.appSetting.config.attrList.forEach(attrconf => {
-              const attr = this.app.attrList.find(d => d.id === attrconf.attrId);
+              const attr = this.app.attrList.find(d => d.id ? d.id === attrconf.attrId : d.type === attrconf.attrType);
               if (attr) {
                 this.$set(attr, 'sort', attrconf.sort);
                 this.$set(attr, 'showType', attrconf.showType || 'all');
@@ -378,7 +408,9 @@ export default {
             param.toId = this.toId;
             param.fromId = issue.id;
           } else if (this.parentId) {
-            param.id = issue.id;
+            param.id = issue.id; 
+          } else if (issue.parentId) {
+            param.id = issue.parentId; 
           }
           if (param.fromId && param.toId) {
             this.$api.rdm.issue.deleteIssueRel(param).then(res => {
@@ -490,6 +522,9 @@ export default {
         list.push({ key: 'action' });
       }
       return list;
+    },
+    searchAttrList() {
+      return this.attrList.filter(d => d.id);
     },
     attrList() {
       if (this.app && this.app.attrList) {
