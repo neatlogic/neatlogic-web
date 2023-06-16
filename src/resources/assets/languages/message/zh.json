@@ -269,5 +269,6 @@
   "passcode": "请输入长度在8~20之间的字符串，至少有字母、数字、特殊字符其中2种组合",
   "editaftersave": "请先保存之后再编辑",
   "commentsucces": "评论成功",
-  "syncsuccess": "同步成功"
+  "syncsuccess": "同步成功",
+  "downloadsuccessful": "下载成功"
 }

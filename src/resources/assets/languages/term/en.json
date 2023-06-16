@@ -2338,6 +2338,15 @@
     "packupcontent": "Collapse the comparison content",
     "continuesearch": "Continue to search",
     "loadmore": "Load more",
-    "issuedetail": "Requirement Details"
+    "issuedetail": "Requirement Details",
+    "copyfileurl": "Copy File Path",
+    "copyfilename": "Copy File Name",
+    "clicktoexpandmore": "Click to expand more",
+    "thisdifferencehasbeenfolded": "This difference has been folded",
+    "clicktoexpandthedetails": "Click to expand the details",
+    "binaryfilecannotviewcontent": "This file is a binary file and currently does not support viewing specific content online,",
+    "clickheretodownloadthefile": "Click here to download the file",
+    "nochangesmade": "No changes made",
+    "thefileisempty": "The file is empty"
   }
 }
