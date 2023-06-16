@@ -85,8 +85,6 @@ export default {
     searchFile() {
       //如果不传开始行就是从0开始
       let config = this.fileConfig;
-      console.log('-----------config');
-      console.log(config);
       //如果不是二进制文件，并且没有结束，则加载
       if (!config.binary && !this.isEnd) {
         let start = this.startLine || 1;
