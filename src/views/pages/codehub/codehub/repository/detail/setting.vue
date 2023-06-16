@@ -1,8 +1,8 @@
 <template>
   <div
     :is="reposData.type||'svn'"
+    :id="reposData.id"
     :type="reposData.type||'svn'"
-    :uuid="reposData.uuid"
     :reposData="reposData"
   ></div>
 </template>
@@ -17,7 +17,7 @@ export default {
   },
   mixins: [editmixin],
   props: {
-    uuid: [String],
+    id: [Number],
     reposData: [Object]
   },
   data() {
