@@ -6,6 +6,8 @@ import store from '@/resources/store';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import VueI18n from 'vue-i18n';
+import LocalStore from '@/resources/assets/js/localStore.js';
+
 import '@/resources/base.js';
 import {initRouter, initI18n} from '@/resources/init.js';
 
@@ -24,6 +26,7 @@ let i18n = initI18n(VueI18n, {});//语言包配置
 Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
+Vue.prototype.$localStore = new LocalStore('codehub', router);
 
 new Vue({
   router,

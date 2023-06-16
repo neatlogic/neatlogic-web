@@ -17,8 +17,8 @@
             @changeCurrent="searchActionLog"
             @changePageSize="pageSize => searchActionLog(1, pageSize)"
           >
-            <template slot="mrUuid" slot-scope="{ row }">
-              <a href="javascript:;" @click="goDetail(row.mrUuid)">{{ row.mrUuid }}</a>
+            <template slot="mrId" slot-scope="{ row }">
+              <a href="javascript:;" @click="goDetail(row.mrId)">{{ row.mrId }}</a>
             </template>
             <template slot="triggerTime" slot-scope="{ row }">
               {{ row.triggerTime |formatDate }}
@@ -53,7 +53,7 @@ export default {
     ArgumentDetail: resolve => require(['./argument-detail.vue'], resolve)
   },
   props: {
-    uuid: {type: Number}
+    id: {type: Number}
   },
   data() {
     return {
@@ -74,7 +74,7 @@ export default {
       theadList: [
         {
           title: this.$t('term.codehub.originalmr'),
-          key: 'mrUuid'
+          key: 'mrId'
         },
         {
           title: this.$t('term.codehub.actiontriggertime'),
@@ -116,7 +116,7 @@ export default {
       this.searchActionLog(1);
     },
     searchActionLog: function(currentPage, pageSize) {
-      let params = {actionId: this.uuid};
+      let params = {actionId: this.id};
       if (currentPage) {
         params['currentPage'] = currentPage;
       }
@@ -129,14 +129,14 @@ export default {
         if (res.Status == 'OK') {
           this.actionLogData = res.Return;
           this.actionLogData.theadList = this.theadList;
-          this.actionLogData.tbodyList = res.Return.list;
+          this.actionLogData.tbodyList = res.Return.tbodyList;
           this.isShow = true;
           this.initHeight();
         }
       });
     },
     goDetail(val) {
-      this.$router.push({ path: 'merge-review', query: {uuid: val} });
+      this.$router.push({ path: 'merge-review', query: {id: val} });
     },
     close: function() {
       this.isShow = false;

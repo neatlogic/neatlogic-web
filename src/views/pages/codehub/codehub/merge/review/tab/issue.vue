@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="padding">
     <template v-if="!isLoading">
-      <div v-if="mrData.status == 'open' && !duringAction" style="height:48px;" class="text-right">
-        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">遇到冲突需求</span>
+      <div v-if="mrData.status == 'open' && !duringAction" class="pb-nm text-right">
+        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">{{ $t('term.codehub.encounteringconflictingneeds') }}</span>
         <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
-          <Radio label="stop">终止</Radio>
-          <Radio label="continus">继续</Radio>
+          <Radio label="stop">{{ $t('page.stop') }}</Radio>
+          <Radio label="continus">{{ $t('page.continue') }}</Radio>
         </RadioGroup>
         <Button
           type="primary"
@@ -13,19 +13,19 @@
           :disabled="duringAction"
           size="small"
           @click="handlerMr()"
-        >合并</Button>
+        >{{ $t('page.merge') }}</Button>
         <Button
           type="error"
           :disabled="duringAction"
           size="small"
           @click="closeMr()"
-        >关闭</Button>
+        >{{ $t('page.close') }}</Button>
       </div>
-      <div v-if="(mrData.status == 'conflict' || mrData.status == 'failed') && !duringAction" style="height:48px;" class="text-right">
-        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">遇到冲突需求</span>
+      <div v-if="(mrData.status == 'conflict' || mrData.status == 'failed') && !duringAction" class="pb-nm text-right">
+        <span v-if="mergetype == 'issue'" class="bottom-text mr-sm">{{ $t('term.codehub.encounteringconflictingneeds') }}</span>
         <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
-          <Radio label="stop">终止</Radio>
-          <Radio label="continus">继续</Radio>
+          <Radio label="stop">{{ $t('page.stop') }}</Radio>
+          <Radio label="continus">{{ $t('page.continue') }}</Radio>
         </RadioGroup>
         <Button
           type="primary"
@@ -33,64 +33,56 @@
           :disabled="duringAction"
           size="small"
           @click="handlerMr()"
-        >重试</Button>
+        >{{ $t('page.retry') }}</Button>
       </div>
-      <div v-if="(mrData && mrData.versionTypeStrategyRelationVo && mrData.versionTypeStrategyRelationVo.versionStrategyType && mrData.versionTypeStrategyRelationVo.versionStrategyType=='branch' && mrData.status=='finish') && !duringAction" style="height:48px;" class="text-right">
+      <div v-if="(mrData && mrData.versionTypeStrategyRelationVo && mrData.versionTypeStrategyRelationVo.versionStrategyType =='branch' && mrData.status=='finish') && !duringAction" class="pb-nm text-right">
         <Button
           type="error"
           class="ml-sm"
           :disabled="duringAction"
           size="small"
           @click="revertMr()"
-        ><i class="ts-rotate-left"></i>撤销</Button>
+        ><i class="ts-rotate-left"></i>{{ $t('page.revocation') }}</Button>
       </div>
     </template>
     <div v-if="!isLoading" ref="maindiv" :class="'merge-' + mrData.status">
       <TsTable
         ref="showtable"
         :height="tableHeight"
-        v-bind="tabledata"
-        :tbodyList="issueList"
-        hasFolder
+        v-bind="tableData"
+        :theadList="theadList"
+        class="inner-table"
+        canExpand
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
-        @toggleFolder="toggleFolder"
       >
-        <template slot="no" slot-scope="{ row }">
-          {{ row.no }}
-        </template>
-        <template slot="issueUpdateTime" slot-scope="{ row }">
-          {{ row.issueUpdateTime | formatDate }}
-        </template>
         <template slot="issueMrStatus" slot-scope="{ row }">
           <span :class="'text-' + setStatus('color', row.issueMrStatus)">{{ setStatus('text', row.issueMrStatus) }}</span>
-        </template>
-        <template slot="sourceUuid" slot-scope="{ row }">
-          {{ getsource(row.sourceUuid) }}
         </template>
         <template slot="handleUserId" slot-scope="{ row }">
           {{ row.handleUserId || row.issueCreator }}
         </template>
         <template slot="action" slot-scope="{ row }">
-          <div v-if="row.issueMrStatus == 'merged' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.status == 'finish'" class="tstable-action">
+          <div v-if="row.issueMrStatus == 'merged' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.status == 'finish'" class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-rotate-left" @click="revertIssue(row)">撤销</li>
+              <li class="ts-rotate-left" @click="revertIssue(row)">{{ $t('page.revocation') }}</li>
             </ul>
           </div>
         </template>
-        <template slot="folder" slot-scope="{ row }">
-          <CommitDetail
-            v-if="row.showFolder != undefined && row.commitList"
-            :mrId="id"
+        <template v-slot:showFolderTable="{ row, index }">
+          <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="cursor" @click.stop="openInnerTable(row, index)"></span>
+        </template>
+        <template v-slot:expand="{ row }">
+          <CommitTable
+            v-if="row.commitList"
             :commitList="row.commitList"
-            :statusList="commitstatusList"
-            @getCommit="getCommit"
-          ></CommitDetail>
-          <div v-else-if="!row.commitList" class="text-tip text-center">暂无数据</div>
+            @toDiffDetail="toDiffDetail"
+          ></CommitTable>
+          <div v-else-if="!row.commitList" class="text-tip text-center">{{ $t('page.nodata') }}</div>
         </template>
       </TsTable>
     </div>
-    <Loading v-else loadingShow style="height:100px"></Loading>
+    <Loading v-else loadingShow></Loading>
   </div>
 </template>
 <script>
@@ -99,7 +91,7 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    CommitDetail: resolve => require(['./issue/commit-table.vue'], resolve)
+    CommitTable: resolve => require(['./issue/commit-table.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
@@ -107,48 +99,52 @@ export default {
   data() {
     return {
       isLoading: false,
-      syncSourceList: [],
-      tabledata: {
-        theadList: [
-          {
-            title: '需求编号',
-            key: 'no'
-          },
-          {
-            title: '描述',
-            key: 'name'
-          },
-          {
-            title: '合并状态',
-            key: 'issueMrStatus'
-          },
-          {
-            title: '负责人',
-            key: 'handleUserId'
-          },
-          {
-            title: '更新时间',
-            key: 'issueUpdateTime'
-          },
-          {
-            title: '来源',
-            key: 'source'
-          },
-          {
-            key: 'action'
-          }
-        ],
+      theadList: [
+        {
+          title: '',
+          key: 'showFolderTable'
+        },
+        {
+          title: this.$t('term.codehub.issuesnumber'),
+          key: 'no'
+        },
+        {
+          title: this.$t('page.description'),
+          key: 'name'
+        },
+        {
+          title: this.$t('term.codehub.mergerequeststatus'),
+          key: 'issueMrStatus'
+        },
+        {
+          title: this.$t('page.responsibleperson'),
+          key: 'handleUserId'
+        },
+        {
+          title: this.$t('page.updatetime'),
+          key: 'issueUpdateTime',
+          type: 'time'
+        },
+        {
+          title: this.$t('page.source'),
+          key: 'source'
+        },
+        {
+          key: 'action'
+        }
+      ],
+      tableData: {
+        keyName: 'id',
         hideAction: false,
-        rowKey: 'no',
         selectedRemain: true,
-        classKey: 'isExtra'
+        classKey: 'isExtra',
+        tbodyList: []
       },
       reslove: 'continus',
       issueList: [],
       mergetype: 'branch',
       duringAction: false,
       showList: false,
-      commitstatusList: [],
       flushTimer: null, //定时刷新的定时器
       cancelAxios: null, //取消接口调用用
       reloadStatus: false,
@@ -160,7 +156,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.mergetype = this.mrData.versionTypeStrategyRelationVo.versionStrategyType;
-    this.getCommitstatus();
   },
   beforeUpdate() {},
   updated() {},
@@ -170,10 +165,10 @@ export default {
     if (this.mrData && this.mrData.status == 'merging') {
       this.reslove = 'continus';
       this.flushIssueStatus();
-    } else if (this.issueList && this.issueList.length && this.reslove && this.reslove == 'continus') {
+    } else if (this.tableData.tbodyList && this.tableData.tbodyList.length && this.reslove && this.reslove == 'continus') {
       let requireFlush = false;
       //新增除了外层合并中需要定时刷新，还有需求下面有合并中、待合并的都需要
-      this.issueList.forEach(i => {
+      this.tableData.tbodyList.forEach(i => {
         if (i.issueMrStatus && i.issueMrStatus == 'merging') {
           requireFlush = true;
         }
@@ -204,7 +199,6 @@ export default {
           forceFlush: true
         });
       }
-      let _this = this;
       if (!this.reloadStatus) {
         this.isLoading = true;
       }
@@ -212,12 +206,12 @@ export default {
       cancel && cancel.cancel();
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      return this.$api.codehub.merge.getIssuelistByMruuid(param, { cancelToken: _this.cancelAxios.token }).then(res => {
+      return this.$api.codehub.merge.getIssuelistByMruuid(param, { cancelToken: this.cancelAxios.token }).then(res => {
         this.isLoading = false;
         if (res.Status == 'OK') {
-          this.issueList = res.Return.list || [];
+          this.tableData.tbodyList = res.Return.list || [];
         } else {
-          this.issueList = [];
+          this.tableData.tbodyList = [];
         }
         this.$nextTick(() => {
           if (this.$refs['maindiv']) {
@@ -230,68 +224,59 @@ export default {
       });
     },
     changeCurrent(page) {
-      this.tabledata.currentPage = page;
+      this.tableData.currentPage = page;
       this.getList();
     },
     changePageSize(size) {
-      this.tabledata.pageSize = size;
+      this.tableData.pageSize = size;
       this.getList();
-    },
-    getSouce() {
-      //获取需求列表
-      this.$api.codehub.issue.getSource({ type: 'issue' }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.syncSourceList = res.Return.syncSourceList;
-        }
-      });
     },
     handlerMr() {
       let type = this.mergetype;
-      let _this = this;
       if (type == 'branch') {
-        _this.duringAction = true;
-        let param = { mrId: _this.id };
+        this.duringAction = true;
+        let param = { mrId: this.id };
         this.$api.codehub.merge.mergebyBranch(param).then(res => {
-          _this.duringAction = false;
-          _this.reloadStatus = true;
+          this.duringAction = false;
+          this.reloadStatus = true;
           if (res && res.Status == 'OK') {
-            _this.flushIssueStatus();
-            _this.$emit('reload');
+            this.flushIssueStatus();
+            this.$emit('reload');
           }
         })
           .catch(error => {
-            _this.duringAction = false;
-            _this.reloadStatus = true;
+            this.duringAction = false;
+            this.reloadStatus = true;
           });
       } else {
         this.mergeIssue();
       }
     },
     revertMr() {
-      let _this = this;
+      // 撤销合并请求
       if (this.mrData.versionTypeStrategyRelationVo && this.mrData.versionTypeStrategyRelationVo.versionStrategyType && this.mrData.versionTypeStrategyRelationVo.versionStrategyType == 'branch' && this.mrData.status == 'finish') {
         //分支类型且状态为已结束的才可以revert
         let param = { mrId: this.id };
-        _this.$createDialog({
-          title: '确认撤销MR',
-          content: '是否确认撤销MR？',
+        this.$createDialog({
+          title: this.$t('dialog.title.revocationconfirm'),
+          content: this.$t('dialog.content.revocationconfirm', {target: 'MR'}),
           btnType: 'error',
-          'on-ok': function(vnode) {
-            _this.duringAction = true;
-            _this.$api.codehub.merge.checkRevert(param).then((res) => {
-              _this.duringAction = false;
+          'on-ok': (vnode) => {
+            this.duringAction = true;
+            this.$api.codehub.merge.checkRevert(param).then((res) => {
+              this.duringAction = false;
               if (res && res.Status == 'OK') {
                 let param = {
                   srcBranch: res.Return.srcBranch,
                   targetBranch: res.Return.targetBranch,
-                  versionid: _this.mrData.versionUuid,
+                  versionid: this.mrData.versionId,
                   mrType: 'revert',
-                  description: 'MR撤销'
+                  description: 'MR' + this.$t('page.revocation')
                 };
-                _this.$router.push({ path: 'merge-create', query: param });
+                this.$router.push({ path: 'merge-create', query: param });
               }
             }).catch(error => {
-              _this.duringAction = false;
+              this.duringAction = false;
             }).finally(e => {
               vnode.isShow = false;
             });
@@ -311,33 +296,30 @@ export default {
       });
     },
     mergeIssue() {
-      let _this = this;
-      _this.duringAction = true;
-      let param = { mrId: _this.id, continueMergeOnException: _this.reslove != 'stop' };
+      this.duringAction = true;
+      let param = { mrId: this.id, continueMergeOnException: this.reslove != 'stop' };
       this.$api.codehub.merge
         .mergebyIssue(param)
         .then(res => {
           if (res && res.Status == 'OK') {
-            _this.flushIssueStatus();
+            this.flushIssueStatus();
           } else {
-            _this.duringAction = false;
+            this.duringAction = false;
           }
         })
         .catch(error => {
-          _this.duringAction = false;
+          this.duringAction = false;
         });
     },
     flushIssueStatus() {
-      let _this = this;
-      let notFinish = false;
-      _this.$api.codehub.merge
-        .getDetail({ id: _this.id })
+      this.$api.codehub.merge
+        .getDetail({ id: this.id })
         .then(res => {
           if (res && res.Status == 'OK') {
             //所有的issue列表
             let mr = res.Return;
             //更新mr状态
-            _this.$emit('updateStatus', mr.status);
+            this.$emit('updateStatus', mr.status);
             //更新mr的每一条issue状态
             mr.issueList.forEach(retIssue => {
               if (retIssue.issueMrStatus == 'merging') {
@@ -345,11 +327,11 @@ export default {
               }
               let isExtra = true; //是否是附加需求
               //单独更新有的每个issue状态，替换全部更新，可以保留每个行的操作状态
-              _this.issueList.forEach(issue => {
+              this.tableData.tbodyList.forEach(issue => {
                 if (retIssue.no == issue.no) {
                   isExtra = false;
-                  _this.$set(issue, 'issueMrStatus', retIssue.issueMrStatus);
-                  _this.$set(issue, 'isExtra', retIssue.isExtra);
+                  this.$set(issue, 'issueMrStatus', retIssue.issueMrStatus);
+                  this.$set(issue, 'isExtra', retIssue.isExtra);
                 }
               });
               if (isExtra && retIssue.isExtra) {
@@ -359,23 +341,23 @@ export default {
                   isExtra: 1
                 };
                 Object.assign(newList, retIssue);
-                _this.issueList.push(retIssue);
+                this.tableData.tbodyList.push(retIssue);
               }
             });
             if (mr.status == 'merging') {
-              _this.flushTimer && clearTimeout(_this.flushTimer);
-              _this.flushTimer = setTimeout(function() {
-                _this.flushIssueStatus();
+              this.flushTimer && clearTimeout(this.flushTimer);
+              this.flushTimer = setTimeout(() => {
+                this.flushIssueStatus();
               }, 5000);
             } else {
-              _this.duringAction = false;
+              this.duringAction = false;
             }
           } else {
-            _this.duringAction = false;
+            this.duringAction = false;
           }
         })
         .catch(error => {
-          _this.duringAction = false;
+          this.duringAction = false;
         });
     },
     revertIssue(item) {
@@ -395,30 +377,21 @@ export default {
         }
       });
     },
-    toggleFolder(item) {},
-    getCommitstatus() {
-      this.$api.codehub.merge.getStatusList({ type: 'commit' }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.commitstatusList = res.Return.list;
-        }
-      });
+    toDiffDetail(commitId) {
+      this.$emit('toDiffDetail', commitId);
     },
-    getCommit(id) {
-      this.$emit('getCommit', uuid);
+    openInnerTable(row, index) {
+      // 展开收起内嵌表格
+      if (row['_expand']) {
+        row._expand = false;
+        this.$set(this.tableData.tbodyList, index, row);
+      } else {
+        row._expand = true;
+        this.$set(this.tableData.tbodyList, index, row);
+      }
     }
   },
   computed: {
-    getsource() {
-      return function(uuid) {
-        let txt = '';
-        this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
-            txt = sync.source;
-          }
-        });
-        return txt;
-      };
-    },
     setStatus() {
       return function(type, val) {
         let text = '';
@@ -460,7 +433,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
 .btn-bottom {
   position: fixed;
   bottom: 0;
@@ -473,21 +445,5 @@ export default {
 .bottom-text {
   margin-right: 8px;
   line-height: 32px;
-}
-/deep/ .tr-1 {
-  .folder-handle {
-    position: relative;
-    .folder-icon {
-      display: none;
-    }
-    &:after {
-      content: '附加需求';
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: scale(0.8);
-      color: @default-error-color;
-    }
-  }
 }
 </style>

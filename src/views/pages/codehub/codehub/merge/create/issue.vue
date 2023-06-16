@@ -1,11 +1,11 @@
 <template>
   <div v-if="srcBranch && targetBranch">
     <div>
-      <div class="input-border mb-sm">
+      <div class="mb-sm">
         <Row :gutter="16">
           <Col span="18">
             <Checkbox v-model="isValid">{{ $t('term.codehub.effectivedemand') }}</Checkbox>
-            <span class="ml-10">{{ $t('term.codehub.retrievesubmissionlogs') }}</span>
+            <span class="ml-xs">{{ $t('term.codehub.retrievesubmissionlogs') }}</span>
             <Input
               v-model="maxSearchCount"
               number
@@ -14,7 +14,7 @@
               style="width:60px;"
               @on-change="getVaildlist()"
             />
-            <span class="ml-10">{{ $t('page.strip') }}</span>
+            <span class="ml-sm">{{ $t('page.strip') }}</span>
           </Col>
           <Col span="6">
           </Col>
@@ -26,20 +26,18 @@
           ref="showtable"
           v-model="selectIssuelist"
           v-bind="tableData"
-          :theadList="theadList"
-          :tbodyList="filterValidTbodyList(tableData.tbodyList)"
+          :theadList="issueTheadList"
+          :tbodyList="filterValidIssuesList(tableData.tbodyList)"
           :height="tableheight()"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @getSelected="getSelected"
         >
           <template slot="sourceId" slot-scope="{row}">
-            {{ getsource(row.sourceId) }}
+            {{ getSourceName(row.sourceId) }}
           </template>
           <template slot="isValid" slot-scope="{row}">
-            <span v-if="row.isValid===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
-            <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
-            <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
+            <span :class="getClassNameByValid(row.isValid)">{{ getTextByValid(row.isValid) }}</span>
           </template>      
           <template slot="issueUpdateTime" slot-scope="{row}">
             {{ row.issueUpdateTime |formatDate }}
@@ -74,15 +72,13 @@
         </Row>
       </div>
     </div>
-    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" class="pt-sm">
-      <TsTable v-bind="showtabledata" :tbodyList="allIssue (selectIssuelist,addLi)||[]">
+    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" class="pt-sm pb-sm">
+      <TsTable v-bind="selectedTableData" :tbodyList="allIssue(selectIssuelist,addLi)||[]">
         <template slot="sourceId" slot-scope="{row}">
-          {{ getsource(row.sourceId) }}
+          {{ getSourceName(row.sourceId) }}
         </template>
         <template slot="isValid" slot-scope="{row}">
-          <span v-if="row.isValid ===1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
-          <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
-          <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
+          <span :class="getClassNameByValid(row.isValid)">{{ getTextByValid(row.isValid) }}</span>
         </template>  
         <template slot="issueUpdateTime" slot-scope="{row}">
           {{ row.issueUpdateTime |formatDate }}
@@ -102,6 +98,7 @@
         :placeholder="$t('term.codehub.mergerequestdesc')"
         type="textarea"
         border="border"
+        maxlength="1024"
       ></TsFormInput>
     </div>
   </div>
@@ -118,20 +115,15 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   mixins: [mixins],
-  props: {
-    versionId: [String, Number],
-    versionData: Object,
-    srcBranch: [String, Number],
-    issueNoList: Array
-  },
+  props: {},
   data() {
     return {
       isEdit: false, //是否编辑
       addItem: '', //手动输入的需求号
       addLi: [], //手动添加的不在原来的需求列表里的数据
-      height: '600px',
-      theadList: [{
-        key: 'selection'
+      issueTheadList: [{
+        key: 'selection',
+        multiple: true // 多选
       }, {
         title: this.$t('term.codehub.issuesnumber'),
         key: 'no'
@@ -154,13 +146,7 @@ export default {
         title: this.$t('page.source'),
         key: 'sourceId'
       }
-      ],
-      tableData: {
-        rowKey: 'no',
-        selectedRemain: true,
-        classKey: 'isValid',
-        cancelAxios: null //取消接口调用用
-      }
+      ]
     };
   },
   beforeCreate() {},
@@ -276,7 +262,7 @@ export default {
           } else {
             this.$emit('getIssue', false);
           }
-          this.$set(this.tableData, 'tbodyList', tbodylist);
+          this.$set(this.tableData, 'tbodyList', this.filterValidIssuesList(tbodylist));
           this.getVaildlist(tbodylist);
         } else {
           this.$set(this.tableData, 'tbodyList', []);
@@ -339,8 +325,8 @@ export default {
   },
   filter: {},
   computed: {
-    filterValidTbodyList() {
-      // 过滤有效需求
+    filterValidIssuesList() {
+      // 过滤有效需求列表
       return function(tbodyList) {
         let list = [];
         if (tbodyList && tbodyList.length > 0) {

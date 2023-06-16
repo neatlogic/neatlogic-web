@@ -1,5 +1,5 @@
 <template>
-  <ButtonGroup>
+  <!--<ButtonGroup>
     <Button :type="currentTab === 'project' ? 'primary' : 'default'" @click="changeTab('project')">{{ $t('term.rdm.projectinfo') }}</Button>
     <Button
       v-for="item in appList"
@@ -7,7 +7,17 @@
       :type="currentTab === 'app_' + item.id ? 'primary' : 'default'"
       @click="changeTab('app_' + item.id)"
     >{{ item.name }}</Button>
-  </ButtonGroup>
+  </ButtonGroup>-->
+  <Tabs :animated="false" :value="currentTab" @on-click="changeTab">
+    <TabPane :label=" $t('term.rdm.projectinfo') " name="project" @click.native="changeTab('project')"></TabPane>
+    <TabPane
+      v-for="item in appList"
+      :key="item.id"
+      :label="item.name"
+      :name="'app_' + item.id"
+      @click.native="changeTab('app_' + item.id)"
+    ></TabPane>
+  </Tabs>
 </template>
 <script>
 export default {

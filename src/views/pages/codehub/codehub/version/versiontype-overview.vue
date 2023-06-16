@@ -99,7 +99,7 @@ export default {
         xxl: 24,
         cardList: [],
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 20,
         pageType: 'number'
       }
     };

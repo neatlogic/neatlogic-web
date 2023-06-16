@@ -1,114 +1,85 @@
 <template>
-  <div style="padding:5px 5px 5px 20px">
-    <table class="table">
-      <thead>
-        <tr>
-          <th v-for="(title,tindex) in titleList" :key="tindex">{{ title.title }}</th>
-        </tr>
-      </thead>
-      <tbody v-if="commitList && commitList.length>0">
-        <tr
-          v-for="(tbody,bindex) in commitList"
-          :key="bindex"
-          class="cursor-pointer"
-          @click.stop="showDetail(tbody)"
-        >
-          <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
-            <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
-            <div v-else-if="title.key=='mergeStatus'" v-html="showText(tbody['mergeStatus']) "></div>
-            <div v-else-if="title.key=='committerDate'">{{ tbody.committerDate | formatDate }}</div>
-            <span v-else-if="title.key=='commitId'" class="tag-item">{{ tbody.commitId }}<i v-if="tbody.isNew" class="tag-new">new</i></span>
-            <div v-else>{{ tbody[title.key] }}</div>
-          </td>
-        </tr>
-      </tbody>
-      <tbody v-else>
-        <tr>
-          <td :colspan="titleList.length || 0" class="text-center">暂无数据</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table class="commit-table-box">
+    <thead>
+      <tr>
+        <th v-for="(title,tindex) in titleList" :key="tindex">{{ title.title }}</th>
+      </tr>
+    </thead>
+    <tbody v-if="commitList && commitList.length>0">
+      <tr
+        v-for="(tbody,bindex) in commitList"
+        :key="bindex"
+        class="cursor-pointer"
+        @click.stop="toDiffDetail(tbody)"
+      >
+        <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
+          <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
+          <div v-else-if="title.key=='committerDate'">{{ tbody.committerDate | formatDate }}</div>
+          <span v-else-if="title.key=='commitId'" class="tag-item">
+            {{ tbody.commitId }}
+            <span v-if="tbody.isNew" class="tag-new">new</span>
+          </span>
+          <div v-else>{{ tbody[title.key] }}</div>
+        </td>
+      </tr>
+    </tbody>
+    <tbody v-else>
+      <tr>
+        <td :colspan="titleList.length || 0" class="text-center">{{ $t('page.nodata') }}</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 <script>
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
-    mrUuid: String,
-    statusList: Array,
     commitList: Array
   },
   data() {
     return {
       titleList: [{
         key: 'commitId',
-        title: '提交id'
+        title: this.$t('term.deploy.commitid')
       },
       {
         key: 'committer',
-        title: '提交人'
+        title: this.$t('page.presenter')
       },
       {
         key: 'committerDate',
-        title: '提交时间'
+        title: this.$t('page.committime')
       },
-      // {
-      //   key: 'mergeStatus',
-      //   title: '合并状态'
-      // },
       {
         key: 'message',
-        title: '提交信息'     
+        title: this.$t('page.submitinformation')    
       }]
-
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-  mounted() {
-  },
-
+  mounted() {},
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
-    getmrCommitlist() {
-    },
-    showDetail(item) {
-      this.$emit('getCommit', item.commitId);
+    toDiffDetail(item) {
+      // 跳转到变更详情
+      this.$emit('toDiffDetail', item.commitId);
     }
   },
-  computed: {
-    showText() {
-      return function(val) {
-        let str = ``;
-        if (val && this.statusList && this.statusList.length > 0) {
-          this.statusList.forEach((s) => {
-            if (s.value == val) {
-              str = `<div class="text-${s.color}">${s.text}</div>`;
-            }
-          });
-        }
-        return str;
-      };
-    }
-  },
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
 </script>
+<style lang="less" scoped>
+.commit-table-box {
+  width: 100%;
+  padding-left: 40px;
+}
+</style>

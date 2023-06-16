@@ -1,6 +1,6 @@
 export default {
   props: {
-    uuid: [String], //仓库uuid
+    id: [Number], //仓库id
     type: [String], //仓库类型
     reposData: [Object]
   },

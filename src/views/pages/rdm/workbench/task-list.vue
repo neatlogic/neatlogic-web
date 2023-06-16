@@ -26,6 +26,7 @@
                   :isMine="isMine"
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
+                  :isFavorite="isFavorite"
                   :projectId="currentProjectId"
                   :mode="displayMode"
                   :displayAttrList="displayAttrList"
@@ -46,6 +47,7 @@
                   :isMine="isMine"
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
+                  :isFavorite="isFavorite"
                   :app="app"
                   :projectId="currentProjectId"
                   :mode="displayMode"
@@ -104,15 +106,22 @@ export default {
       });
     },
     getProjectList() {
-      this.$api.rdm.project.getProjectIssueCount(this.isMine, this.isMyCreated, this.isEnd).then(res => {
-        this.projectList = res.Return;
-        if (this.projectList && this.projectList.length > 0) {
-          this.currentProject = 'p' + this.projectList[0].id;
-          this.projectList.forEach(p => {
-            this.$set(this.currentApp, 'p' + p.id, '#');
-          });
-        }
-      });
+      this.$api.rdm.project
+        .getProjectIssueCount({
+          isMine: this.isMine,
+          isMyCreated: this.isMyCreated,
+          isEnd: this.isEnd,
+          isFavorite: this.isFavorite
+        })
+        .then(res => {
+          this.projectList = res.Return;
+          if (this.projectList && this.projectList.length > 0) {
+            this.currentProject = 'p' + this.projectList[0].id;
+            this.projectList.forEach(p => {
+              this.$set(this.currentApp, 'p' + p.id, '#');
+            });
+          }
+        });
     }
   },
   filter: {},
@@ -125,6 +134,12 @@ export default {
     },
     isMine() {
       if (this.type === 'doing' || this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
+    isFavorite() {
+      if (this.type === 'favorite') {
         return 1;
       }
       return null;
@@ -155,7 +170,13 @@ export default {
       handler: function(val) {
         if (val) {
           this.isReady = false;
-          this.$api.rdm.project.getAppByProjectId(val, 1, this.isMine, this.isMyCreated, this.isEnd).then(res => {
+          this.$api.rdm.project.getAppByProjectId(val, {
+            needIssueCount: 1,
+            isMine: this.isMine,
+            isMyCreated: this.isMyCreated,
+            isEnd: this.isEnd,
+            isFavorite: this.isFavorite
+          }).then(res => {
             this.appList = res.Return;
             this.allIssueCount = 0;
             if (this.appList && this.appList.length > 0) {

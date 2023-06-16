@@ -1,9 +1,11 @@
 <template>
   <div>
     <TsContain 
-      v-if="mrActionType =='standard'" 
-      class="bg-block" 
-      v-bind="layoutConfig"
+      v-if="mrActionType =='standard'"
+      siderPosition="right"
+      :isSiderHide="!isSiderHide"
+      :rightBtn="true"
+      @rightSiderToggle="rightSiderToggle"
     >
       <template v-slot:navigation>
         <span class="ts-angle-left text-action" @click="$back('/merge-overview')">{{ $getFromPage($t('router.codehub.mergerequestlist')) }}</span>
@@ -12,8 +14,7 @@
         <div v-if="mrData" style="display: flex;">
           <div class="title">
             <span 
-              class="overflow" 
-              :style="setTitlewidth(mrData.status)"
+              class="overflow header-descrition-text"
               :title="mrData.description"
             >{{ mrData.description || $t('term.codehub.codereview') }}</span>
             <span 
@@ -57,7 +58,7 @@
                 <div>{{ setTxt(mrData) }}</div>
               </div>
             </Tooltip>
-            <Tag v-if="mrData.versionVo && mrData.versionVo.name" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+            <Tag v-if="mrData.versionVo && mrData.versionVo.version" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.version }}</Tag>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
             <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
@@ -75,10 +76,15 @@
           <span class="tsfont-refresh" @click="forceFlush">{{ $t('page.forceflush') }}</span>
         </Button>
       </template>
-      <div slot="content" class="review-container">
+      <template v-slot:content>
         <Loading v-if="isLoading" loadingShow></Loading>
-        <div v-else-if="mrData" class="review-main padding-md">
-          <Tabs v-model="activeTab" :animated="false" @on-click="selectedCommitId=null;selectFilepath=null">
+        <div v-else-if="mrData" class="review-main mr-sm">
+          <Tabs
+            v-model="activeTab"
+            :animated="false"
+            class="block-tabs"
+            @on-click="selectedCommitId=null;selectFilepath=null"
+          >
             <TabPane 
               v-for="(tab,tindex) in tabList" 
               :key="tindex" 
@@ -88,7 +94,7 @@
               <keep-alive>
                 <div 
                   :is="tab.name"
-                  v-if="activeTab==tab.name"
+                  v-if="activeTab == tab.name"
                   :id="id" 
                   :mrData="mrData" 
                   :mrstatusList="statusList" 
@@ -99,7 +105,7 @@
                   @reload="getDetail"
                   @updateStatus="updateStatus"
                   @revert="revertIssue"
-                  @getCommit="getCommit"
+                  @toDiffDetail="toDiffDetail"
                   @clearCommit="selectedCommitId=null"
                   @clearItem="clearItem"
                   @selectFile="selectFile"
@@ -108,49 +114,48 @@
             </TabPane>
           </Tabs>
         </div>
-      </div>
-      <div slot="right" class="review-right border-color">
-        <div v-if="mrData">
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-info-o text-tilte mr-sm">{{ $t('page.basicinfo') }}</span>
-            </div>
-            <CellGroup>
-              <Cell label="id">
-                <div>{{ mrData.id }}              
-                  <span 
-                    v-clipboard="mrData.id" 
-                    class="ts-link text-href btn-copy" 
-                    :title="$t('term.codehub.copycurrentid')"
-                  ></span>
-                </div>
-              </Cell>
-            </CellGroup>
-          </Card>
-          <Divider />
-          <Card :padding="0" :bordered="false">
-            <div slot="title">
-              <span class="tsfont-userinfo text-tilte mr-sm">{{ $t('page.personnel') }}</span>
-            </div>
-            <CellGroup>
-              <Cell :label="$t('page.presenter')">
+      </template>
+      <template v-slot:right>
+        <div v-if="mrData" class="bg-op radius-lg padding-sm">
+          <div>{{ $t('page.basicinfo') }}</div>
+          <ul>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">id</div>
+              <div>
+                <span 
+                  v-clipboard="mrData.id" 
+                  class="ts-link text-href btn-copy" 
+                  :title="$t('term.codehub.copycurrentid')"
+                ></span>
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('page.presenter') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.fcu"
                   :uuid="mrData.fcu"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-              <Cell :label="$t('term.process.dealwithuser')">
+              </div>
+            </li>
+            <li class="basic-info-box mb-sm">
+              <div class="left-lable-box text-right text-grey">
+                {{ $t('term.process.dealwithuser') }}
+              </div>
+              <div>
                 <UserCard
                   v-if="mrData.handleUser"
                   :uuid="mrData.handleUser"
                   :hideAvatar="true"
                 ></UserCard>
-              </Cell>
-            </CellGroup>
-          </Card>
+              </div>
+            </li>
+          </ul>
         </div>
-      </div>
+      </template>
     </TsContain>
     <MergeRevert 
       v-else-if="mrActionType =='revert'" 
@@ -174,9 +179,10 @@ export default {
   directives: {
     clipboard
   },
-  props: [''],
+  props: {},
   data() {
     return {
+      isSiderHide: true, // 是否展示右侧基本信息
       id: null, //mrid
       mrData: null, //接口返回的mr数据
       statusList: [], //需单独通过接口获取的状态下拉，用于mr状态中文回显
@@ -190,11 +196,6 @@ export default {
         targetBranch: null      
       },
       urlPath: null, //当前页面完整路径
-      layoutConfig: {//当前布局的设置
-        canFolded: true,
-        type: 'layout',
-        right: '200px'
-      },
       activeTab: 'issue',
       tabList: [{
         name: 'issue',
@@ -220,13 +221,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.urlPath = window.location.href;
-    this.getStatuslist();
-    this.getissueStatuslist();
-    if (this.$route.query.id) {
-      this.id = parseInt(this.$route.query.id);
-      this.getDetail();
-    }
+    this.initData();
   },
   beforeMount() {},
   mounted() {},
@@ -237,22 +232,34 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      this.urlPath = window.location.href;
+      this.getStatuslist();
+      this.getissueStatuslist();
+      if (this.$route.query.id) {
+        this.id = parseInt(this.$route.query.id);
+        this.getDetail();
+      }
+      if (this.$localStore.get('isSiderHide') != null) {
+        this.isSiderHide = this.$localStore.get('isSiderHide');
+      } 
+    },
+    rightSiderToggle() {
+      // 展开收起右边基本信息
+      this.isSiderHide = !this.isSiderHide;
+      this.$localStore.set('isSiderHide', this.isSiderHide);
+    },
     getDetail(isRefreshStatus) {
-      let param = { id: this.id };
       if (!isRefreshStatus) {
         this.isLoading = true;
       }
       this.errorMessage = null;
-      this.$api.codehub.merge.getDetail(param).then(res => {
-        this.isLoading = false;
+      this.$api.codehub.merge.getDetail({id: this.id}).then(res => {
         if (res && res.Status == 'OK') {
-          this.mrData = res.Return;
-        } else {
-          this.mrData = null;
+          this.mrData = res.Return || null;
         }
-      }).catch((e) => {
+      }).finally(() => {
         this.isLoading = false;
-        this.mrData = null;
       });
     },
     getStatuslist() {
@@ -306,7 +313,7 @@ export default {
     clipboardSuc() {
       this.$Message.success(this.$t('message.copysuccess'));
     },
-    getCommit(commitId) {
+    toDiffDetail(commitId) {
       //从需求切换到变更并选中指定的commit
       this.selectedCommitId = commitId;
       this.activeTab = 'diff';
@@ -352,16 +359,6 @@ export default {
         }
         return text;
       };
-    },
-    setTitlewidth() {
-      return function(status) {
-        let styles = {
-          'display': 'inline-block',
-          'max-width': status == 'failed' ? 'calc(100vw - 320px)' : 'calc(100vw - 280px)'
-
-        };
-        return styles;
-      };
     }
   },
   watch: {}
@@ -375,6 +372,7 @@ export default {
 .top-title {
   .title {
     line-height: 26px;
+   
   }
   .desc {
     line-height: 20px;
@@ -410,14 +408,20 @@ export default {
     margin-right: 0;
   }
 }
-.review-right{
-  border-left: 1px solid;
-  height: 100%;
-  padding: 10px;
-}
 .review-main{
   /deep/.ivu-tabs{
     overflow: visible;
   }
 }
+.basic-info-box {
+  display: flex;
+  .left-lable-box {
+    width: 90px;
+    margin-right: 10px;
+  }
+}
+ .header-descrition-text {
+    display: inline-block;
+    max-width: 300px;
+  }
 </style>

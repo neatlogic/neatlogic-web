@@ -8,8 +8,8 @@
     </template>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="canSubmit" @click="saveEdit">确定</Button>
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="canSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -26,27 +26,26 @@ export default {
       default: false
     },
     uuid: {type: [String, Boolean]},
-    repositoryUuid: {type: String}
+    repositoryId: {type: Number}
   },
   data() {
-    let _this = this;
     return {
       vaild: ['required'],
       canSubmit: false,
       setting: {
-        title: _this.uuid ? '编辑分支' : '新增分支',
+        title: this.uuid ? this.$t('term.codehub.edittag') : this.$t('term.codehub.addtag'),
         maskClose: false
       },
       formConfig: [
         {
           type: 'text',
-          label: '标签名',
+          label: this.$t('term.codehub.tagname'),
           name: 'tagName',
           value: '',
           validateList: ['required']
         }, {
           type: 'select',
-          label: '分支',
+          label: this.$t('page.branch'),
           transfer: true,
           value: '',
           name: 'branchName',
@@ -55,10 +54,10 @@ export default {
           multiple: false,
           textName: 'name',
           valueName: 'name',
-          rootName: 'tbodyList',
+          rootName: 'list',
           url: '/api/rest/codehub/repository/branch/search',
           params: {
-            repositoryUuid: _this.repositoryUuid,
+            repositoryId: this.repositoryId,
             hasCommit: 1
           }
         
@@ -84,11 +83,9 @@ export default {
     saveEdit() {
       if (this.$refs.editform.valid()) {
         let param = Object.assign(this.$refs.editform.getFormValue(), {
-          repositoryUuid: this.repositoryUuid
+          repositoryId: this.repositoryId
         });
-        this.uuid && Object.assign(param, {
-          uuid: this.uuid
-        });
+        this.uuid && this.$set(param, 'uuid', this.uuid);
         if (!param.description) {
           this.$delete(param, 'description');
         }
@@ -120,21 +117,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    uuid: {
-      handler: function(val) {
-        if (val) {
-          this.getDetail(val);
-        } else {
-          this.formConfig.forEach(form => {
-            this.$set(form, 'value', '');
-          });
-        }
-        this.$set(this.setting, 'title', val ? '编辑标签' : '新增标签');
-      },
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig">
+  <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot>
       <div>
         <div class="grid">
@@ -26,7 +26,7 @@
             <div>
               <TsFormSelect
                 v-model="item.showType"
-                :dataList="showTypeList"
+                :dataList="item.type.startsWith('_') ? systemAttrShowTypeList : attrShowTypeList"
                 :width="100"
                 border="border"
                 :clearable="false"
@@ -54,7 +54,8 @@ export default {
   props: { projectId: { type: Number }, appId: { type: Number } },
   data() {
     return {
-      showTypeList: [],
+      attrShowTypeList: [],
+      systemAttrShowTypeList: [],
       dialogConfig: {
         type: 'modal',
         title: this.$t('term.rdm.attributesetting'),
@@ -75,7 +76,8 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    this.getShowTypeList();
+    this.getAttrShowTypeList();
+    this.getSystemAttrShowTypeList();
     await this.searchAppAttr();
     this.getAppSetting();
   },
@@ -93,7 +95,7 @@ export default {
         this.appSetting = res.Return;
         if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.attrList && this.attrList.length > 0) {
           this.appSetting.config.attrList.forEach(attrconf => {
-            const attr = this.attrList.find(d => d.id === attrconf.attrId);
+            const attr = this.attrList.find(d => (attrconf.attrId ? d.id === attrconf.attrId : d.type === attrconf.attrType));
             if (attr) {
               this.$set(attr, 'sort', attrconf.sort);
               this.$set(attr, 'showType', attrconf.showType || 'all');
@@ -110,13 +112,18 @@ export default {
         });
       });
     },
-    getShowTypeList() {
-      this.$api.common.getSelectList({ enumClass: 'neatlogic.framework.rdm.enums.ShowType' }).then(res => {
-        this.showTypeList = res.Return;
+    getAttrShowTypeList() {
+      this.$api.common.getSelectList({ enumClass: 'neatlogic.framework.rdm.enums.AttrShowType' }).then(res => {
+        this.attrShowTypeList = res.Return;
+      });
+    },
+    getSystemAttrShowTypeList() {
+      this.$api.common.getSelectList({ enumClass: 'neatlogic.framework.rdm.enums.SystemAttrShowType' }).then(res => {
+        this.systemAttrShowTypeList = res.Return;
       });
     },
     async searchAppAttr() {
-      await this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
+      await this.$api.rdm.app.searchAppAttr({ appId: this.appId, needSystemAttr: 1 }).then(res => {
         this.attrList = res.Return;
       });
     },
@@ -132,12 +139,11 @@ export default {
       this.$emit('close', needRefresh);
     },
     save() {
-      console.log(JSON.stringify(this.attrList, null, 2));
       const saveAttrList = [];
       this.attrList.forEach((attr, index) => {
-        saveAttrList.push({attrId: attr.id, sort: index + 1, showType: attr.showType});
+        saveAttrList.push({ attrId: attr.id, attrType: attr.type, sort: index + 1, showType: attr.showType });
       });
-      this.$api.rdm.app.saveAppUserSetting({appId: this.appId, config: {attrList: saveAttrList}}).then(res => {
+      this.$api.rdm.app.saveAppUserSetting({ appId: this.appId, config: { attrList: saveAttrList } }).then(res => {
         if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.close(true);
@@ -146,8 +152,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

@@ -9,7 +9,7 @@ export default {
   },
   data() {
     return {
-      isLoad: false, //接口是否加载完成
+      isLoad: true, //接口是否加载完成
       description: '',
       keyword: '',
       mergeData: null, //外部带过来的合并的信息
@@ -17,35 +17,39 @@ export default {
       syncSourceList: [],
       isValid: false, //是否过滤有效需求
       maxSearchCount: '300', //检索提交日志条数
-      tabledata: {
-        theadList: [{
-          title: this.$t('term.codehub.issuesnumber'),
-          key: 'no'
-        }, {
-          title: this.$t('page.description'),
-          key: 'name'
-        }, {
-          title: this.$t('page.responsibleperson'),
-          key: 'handleUserId'
-        }, {
-          title: this.$t('page.effectiveness'),
-          key: 'isValid'
-        }, {
-          title: this.$t('page.status'),
-          key: 'status'
-        }, {
-          title: this.$t('page.updatetime'),
-          key: 'issueUpdateTime'
-        }, {
-          title: this.$t('page.source'),
-          key: 'sourceUuid'
-        }
-        ],
-        rowKey: 'no',
+      theadList: [{
+        key: 'selection'
+      }, {
+        title: this.$t('term.codehub.issuesnumber'),
+        key: 'no'
+      }, {
+        title: this.$t('page.description'),
+        key: 'name'
+      }, {
+        title: this.$t('page.responsibleperson'),
+        key: 'handleUserId'
+      }, {
+        title: this.$t('page.effectiveness'),
+        key: 'isValid'
+      }, {
+        title: this.$t('page.status'),
+        key: 'status'
+      }, {
+        title: this.$t('page.updatetime'),
+        key: 'issueUpdateTime'
+      }, {
+        title: this.$t('page.source'),
+        key: 'sourceId'
+      }
+      ],
+      tableData: {
+        keyName: 'no',
         selectedRemain: true,
-        classKey: 'isValid'
+        classKey: 'isValid',
+        tbodyList: []
       },
-      showtabledata: {
+      selectedTableData: {
+        // 选择需要待合并的需求列表
         theadList: [{
           title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
@@ -54,7 +58,8 @@ export default {
           key: 'name'
         }, {
           title: this.$t('term.process.dealwithuser'),
-          key: 'lcu'
+          key: 'lcu',
+          type: 'user'
         }, {
           title: this.$t('term.codehub.issuesvalid'),
           key: 'isValid'
@@ -63,12 +68,12 @@ export default {
           key: 'issueUpdateTime'
         }, {
           title: this.$t('page.source'),
-          key: 'sourceUuid'
+          key: 'sourceId'
         }, {
           key: 'action'
         }],
         tbodyList: [],
-        rowKey: 'no',
+        keyName: 'no',
         hideAction: false,
         classKey: 'isValid'
       }
@@ -86,11 +91,11 @@ export default {
   beforeDestroy() { },
   methods: {
     changeCurrent(page) {
-      this.tabledata.currentPage = page;
+      this.tableData.currentPage = page;
       this.getList();
     },
     changePageSize(size) {
-      this.tabledata.pageSize = size;
+      this.tableData.pageSize = size;
       this.getList();
     },
     getSouce() { //获取需求列表
@@ -100,7 +105,6 @@ export default {
         }
       });
     },
-
     getSelected(li, list) {
       this.selectIssuelist = li;
       if (this.type == 'branch') {
@@ -126,20 +130,45 @@ export default {
     }
   },
   computed: {
-    getsource() {
-      return (id) => {
-        let txt = '';
+    getSourceName() {
+      // 获取来源名称
+      return (sourceId) => {
+        let sourceName = '';
         this.syncSourceList.forEach(sync => {
-          if (sync.id == id) {
-            txt = sync.source;
+          if (sync.id == sourceId) {
+            sourceName = sync.source;
           }
         });
-        return txt;
+        return sourceName;
       };
     },
     tableheight() {
       return () => {
         return window.innerHeight / 2;
+      };
+    },
+    getClassNameByValid() {
+      // 获取类名，根据需求有效性
+      return (isValid) => {
+        if (isValid == 1) {
+          return 'text-success';
+        } else if (isValid == 0) {
+          return 'text-warning';
+        } else if (isValid == null) {
+          return 'ts-spinner loading text-primary';
+        }
+      };
+    },
+    getTextByValid() {
+      // 获取名称，根据需求有效性
+      return (isValid) => {
+        if (isValid == 1) {
+          return this.$t('term.codehub.effectivedemand');
+        } else if (isValid == 0) {
+          return this.$t('term.codehub.invaliddemand');
+        } else if (isValid == null) {
+          return '';
+        }
       };
     }
   },

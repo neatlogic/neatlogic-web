@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-md">
+    <div v-if="oldStatusData || statusList.length > 0" class="mb-md">
       <IssueStatus
         v-if="oldStatusData"
         :statusData="oldStatusData"
@@ -17,6 +17,7 @@
         :key="index"
         :statusData="status"
         :actived="targetStatus === status.id"
+        class="mr-xs"
         @click="
           status => {
             changeTargetStatus(status);
@@ -24,6 +25,7 @@
         "
       ></IssueStatus>
     </div>
+    <div v-else class="text-grey">{{ $t('term.rdm.pleasesetstatus') }}</div>
     <div v-if="statusRel" class="mb-md">
       <TsFormItem
         v-for="(attr, index) in requiredAttrList"

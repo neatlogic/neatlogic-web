@@ -227,7 +227,7 @@ export default {
   },
   filters: {},
   directives: {clipboard, download},
-  inject: ['subsystemuuid', 'branchname', 'leftcommitid', 'rightcommitid'],
+  inject: ['appModuleId', 'branchname', 'leftcommitid', 'rightcommitid'],
   props: {
     diffList: [Array, Object],
     type: {
@@ -263,13 +263,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
@@ -304,7 +302,7 @@ export default {
     searchLine(startLine, endLine, hunk, type, toNo) {
     //调用获取行内容的接口
       let param = {
-        subsystemUuid: this.subsystemuuid,
+        appModuleId: this.appModuleId,
         filePath: this.diff && this.diff.modifiedType == 'R' ? this.diff.fromFileName : this.diff.toFileName,
         commitId: this.leftcommitid,
         lineStart: startLine,
@@ -511,9 +509,9 @@ export default {
         if (this.queryType) {
           if (this.queryType == 'branch') {
             return {
-              url: '/module/codehub/api/binary/repository/file/download',
+              url: '/api/binary/codehub/repository/file/download',
               params: {
-                subsystemUuid: this.subsystemuuid,
+                appModuleId: this.appModuleId,
                 branchName: this.queryName,
                 commitId: this.rightcommitid,
                 filePath: diff.toFileName
@@ -522,9 +520,9 @@ export default {
             };
           } else {
             return {
-              url: '/module/codehub/api/binary/repository/file/download',
+              url: '/api/binary/codehub/repository/file/download',
               params: {
-                subsystemUuid: this.subsystemuuid,
+                appModuleId: this.appModuleId,
                 tagName: this.queryName,
                 commitId: this.rightcommitid,
                 filePath: diff.toFileName
@@ -534,9 +532,9 @@ export default {
           }
         } else {
           return {
-            url: '/module/codehub/api/binary/repository/file/download',
+            url: '/api/binary/codehub/repository/file/download',
             params: {
-              subsystemUuid: this.subsystemuuid,
+              appModuleId: this.subsystemuuid,
               branchName: this.branchname,
               commitId: this.rightcommitid,
               filePath: diff.toFileName
@@ -546,7 +544,6 @@ export default {
         }
       };
     }
-
   },
   watch: {
     diffList: {
@@ -572,6 +569,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import '~@/resources/assets/css/codehub/commit.less';
 .file-title {
   position: relative;
   padding-right: 40px;

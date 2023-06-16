@@ -12,15 +12,15 @@
         ></CombineSearcher>
       </template>
       <div slot="content">
-        <div v-if="mergeTypeList.length>0" class="detail-container">
-          <Tabs v-model="activetab">
+        <div v-if="mergeTypeList.length>0">
+          <Loading v-if="isLoad" loadingShow type="fix"></Loading>
+          <Tabs v-model="activetab" class="block-tabs" :animated="false">
             <TabPane
               v-for="(tab,tabindex) in mergeTypeList"
               :key="tabindex"
-              :label="setTab(tab)"
+              :label="renderTabLabel(tab)"
               :name="tab.status"
             >
-              <Loading v-if="isLoad" loadingShow type="fix"></Loading>
               <MergeTable
                 v-if="activetab == tab.status && !isLoad"
                 :mergeData="mergeData"
@@ -180,17 +180,17 @@ export default {
     }
   },
   computed: {
-    setTab(h) {
+    renderTabLabel(h) {
       return function(tab) {
         return (h) => {
           return h('div', [
             h('span', tab.text),
-            h('Badge', {
-              props: {
-                text: tab.count ? (tab.count > 99 ? '99+' : tab.count.toString()) : '0',
-                type: 'normal'
+            h('span', {
+              style: {
+                'font-size': '12px',
+                'padding-left': '4px'
               }
-            })
+            }, tab.count ? (tab.count > 99 ? '99+' : tab.count.toString()) : '0')
           ]);
         };
       };
@@ -211,11 +211,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.detail-container{
-  padding: 8px;
-  /deep/ .ivu-badge{
-    vertical-align: top;
-    transform: scale(0.8);
-  }
-}
 </style>

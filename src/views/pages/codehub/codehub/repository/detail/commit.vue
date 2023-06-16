@@ -6,18 +6,28 @@
       class="input-border"
       style="padding:0 16px;"
     >
-      <Row :gutter="16">
+      <Row :gutter="20">
         <Col span="16">
-          <div>当前已加载 {{ allCount }} 条，找到满足条件的提交 {{ activeConfig.cardList.length || 0 }} 条</div>
+          <div>{{ $t('term.codehub.commitcountinfo',{allcount:allCount,currentcount:activeConfig.cardList.length || 0}) }}</div>
         </Col>
-        <Col span="8">
+        <Col style="float: right;">
           <div style="display: flex;">
-            <TsForm
-              :item-list="selectConfig"
-            ></TsForm>
+            <TsFormSelect
+              v-model="queryName"
+              :dataList="searchGrouplist"
+              childrenName="dataList"
+              transfer
+              mode="group"
+              search
+              width="100%"
+              :placeholder="$t('term.codehub.choosebranchortag')"
+              :validateList="validateList"
+              @on-change="getSearch"
+            ></TsFormSelect>
             <InputSearcher
               v-model="keyword"
-              placeholder="提交人或提交日志关键字"
+              :placeholder="$t('term.codehub.commituserorlogkeyword')"
+              class="ml-md"
               @change="() => searchList()"
             ></InputSearcher>
           </div>
@@ -29,7 +39,7 @@
       <TsCard v-else-if="activeConfig && activeConfig.cardList && activeConfig.cardList.length>0" ref="body" v-bind="activeConfig">
         <template slot-scope="{ row }">
           <div>
-            <table class="table" style="table-layout:fixed;">
+            <table class="table" style="table-layout:fixed;width: 100%;">
               <colgroup>
                 <col />
                 <col width="120" />
@@ -38,10 +48,10 @@
                 <tr>
                   <td>
                     <h6>{{ row.comment }}</h6>
-                    <div><span>{{ row.committer }}</span><span class="text-tip ml-10">{{ row.committerDateStamp | formatDate }}</span></div>
+                    <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
-                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-10" @click="showIssue(row)">需求</span>
+                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-md" @click="showIssue(row)">{{ $t('term.rdm.request') }}</span>
                   </td>
                 </tr>
                 <tr v-show="row.showcommitdiffInfo">
@@ -51,7 +61,7 @@
                       :id="id"
                       :queryName="queryName"
                       :queryType="queryType"
-                      :subsystemUuid="reposData.subsystemUuid"
+                      :appModuleId="reposData.appModuleId"
                       :diffInfo="row.commitdiffInfo"
                       :leftCommitId="row.commitdiffInfo.leftCommitId"
                       :rightCommitId="row.commitdiffInfo.rightCommitId"
@@ -61,7 +71,7 @@
                       class="text-action text-center ts-angle-double-up"
                       style="display: block;"
                       @click="row.showcommitdiffInfo =false"
-                    >收起对比内容</div>
+                    >{{ $t('term.codehub.packupcontent') }}</div>
                     <Loading v-else loadingShow><span></span></Loading>
                   </td>
                 </tr>
@@ -71,7 +81,7 @@
         </template>
       </TsCard>
       <div v-if="!isAllloaded">
-        <div v-if="!isload" class="text-center text-href" @click="getNextpage">{{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? '继续查找' : '加载更多') }}</div>
+        <div v-if="!isload" class="text-center text-href" @click="getNextpage">{{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
       </div>
       <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
     </div>
@@ -86,8 +96,8 @@
       <table v-if="issueData && issueData.id" class="table">
         <tbody>
           <tr v-for="(issue,iindex ) in issueList" :key="iindex+'_'+issueData.issueNo">
-            <td class="text-right text-tip" width="120">{{ issue.title }}</td>
-            <td><template v-if="issue.key =='issueUpdateTime'">{{ issueData[issue.key] |formatDate }}</template><template v-else>{{ setIssue(issue.key,issueData[issue.key]) ||'-' }}</template></td>
+            <td class="text-right text-tip pr-md pb-md" width="120">{{ issue.title }}</td>
+            <td class="pr-md pb-md"><template v-if="issue.key =='issueUpdateTime'">{{ issueData[issue.key] |formatDate }}</template><template v-else>{{ issueData[issue.key] || '-' }}</template></td>
           </tr>
         </tbody>
       </table>
@@ -103,9 +113,9 @@ export default {
   name: 'Commit',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    CommitDiff: resolve => require(['./commit/commit-diff.vue'], resolve)
+    CommitDiff: resolve => require(['./commit/commit-diff.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve)
   },
   mixins: [editmixin],
   props: {},
@@ -120,6 +130,7 @@ export default {
       isResponsed: false,
       pageSize: 50,
       allCount: 0,
+      validateList: ['required'],
       activeConfig: {
         //卡片的数据
         span: 24,
@@ -131,37 +142,27 @@ export default {
         classname: 'repository-list',
         cardList: []
       },
-      selectConfig: {
-        queryName: {
-          type: 'select',
-          label: '标签或分支',
-          transfer: true,
-          childrenName: 'dataList',
-          dataList: this.searchGrouplist,
-          mode: 'group'
-        }
-      },
       issueList: [{
-        title: '需求编号',
+        title: this.$t('term.codehub.issuesnumber'),
         key: 'no'
       }, {
-        title: '名称',
+        title: this.$t('page.name'),
         key: 'name'
       }, {
-        title: '处理人',
+        title: this.$t('term.process.dealwithuser'),
         key: 'lcu'
       }, {
-        title: '状态',
+        title: this.$t('page.status'),
         key: 'status'
       }, {
-        title: '更新时间',
+        title: this.$t('page.updatetime'),
         key: 'issueUpdateTime'
       }, {
-        title: '来源',
-        key: 'sourceUuid'
+        title: this.$t('page.source'),
+        key: 'source'
       }],
       dialogConfig: {
-        title: '需求详情'
+        title: this.$t('term.codehub.issuedetail')
       },
       issueData: null,
       isshowIssue: false,
@@ -176,19 +177,13 @@ export default {
     if (this.id && this.reposData) {
       this.queryName = this.reposData.defaultBranch || this.reposData.mainBranch;
       this.queryType = 'branch';
+      this.queryName = this.queryType + '###' + this.queryName;
     }
     this.getSouce();
   },
   beforeMount() {},
   async mounted() {
     await this.initGroupsearch();
-    if (this.id && this.reposData) {
-      if (this.queryName) {
-        this.$set(this.selectConfig, 'valueList', [{value: this.queryName, group: this.queryType}]);
-      } else if (this.checkHasBranch(this.searchGrouplist)) {
-        this.initDefaultSelected();
-      }
-    }
     if (this.checkHasBranch(this.searchGrouplist)) {
       this.startCommitId = null;
       this.hasBranch = true;
@@ -204,11 +199,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getSearch(val, vallist) {
-      this.queryName = vallist.value ? vallist.value : '';
-      this.queryType = vallist.group ? vallist.group : '';
-      this.startCommitId = null;
-      this.getList();
+    getSearch(val, vallist, selectItem) {
+      if (!this.$utils.isEmpty(selectItem)) {
+        this.queryName = selectItem.value ? selectItem.value : '';
+        this.queryType = selectItem.group ? selectItem.group : '';
+        this.startCommitId = null;
+        this.getList();
+      }
     },
     searchList() {
       this.startCommitId = null;
@@ -228,8 +225,8 @@ export default {
         pageSize: this.pageSize
       };
       // 前端过滤
-      this.activeConfig && this.activeConfig.currentPage && Object.assign(param, {currentPage: this.activeConfig.currentPage});
-      this.startCommitId && Object.assign(param, {startCommitId: this.startCommitId});
+      this.activeConfig && this.activeConfig.currentPage && this.$set(param, {currentPage: this.activeConfig.currentPage});
+      this.startCommitId && this.$set(param, {startCommitId: this.startCommitId});
       this.isload = true;
       this.isResponsed = false;
       this.$api.codehub.repositorydetail.getActive(param).then(res => {
@@ -243,7 +240,7 @@ export default {
       }).catch(error => {
         this.isResponsed = true;
         this.isload = false;
-        Object.assign(this.activeConfig, {
+        this.$set(this.activeConfig, {
           cardList: []
         });
       });
@@ -261,15 +258,14 @@ export default {
     },
     showIssue(row) {
       let id = row.issueNo;
-      let _this = this;
       if (row.issueVo) {
         return;
       }
-      _this.issueData = null;
-      _this.isshowIssue = true;
-      _this.$api.codehub.issue.getList({no: id}).then(res => {
+      this.issueData = null;
+      this.isshowIssue = true;
+      this.$api.codehub.issue.getList({no: id}).then(res => {
         if (res && res.Status == 'OK') {
-          _this.issueData = res.Return.list[0] || {};
+          this.issueData = res.Return.tbodyList[0] || {};
         }
       });
     },
@@ -366,35 +362,13 @@ export default {
   },
   filter: {},
   computed: {
-    setIssue() {
-      return function(key, value) {
-        let text = '';
-        if (key == 'sourceUuid') {
-          let sourceLi = this.sourceList.filter(sync => {
-            return sync.id == value;
-          });
-          text = sourceLi.length > 0 ? sourceLi[0].source : '';
-        } else if (key == 'issueUpdateTime') {
-          //console.log(this.filters);
-        } else {
-          text = value;
-        }
-        return text;
-      };
-    },
     getHeight() {
       let totalHeight = window.innerHeight || document.body.clientHeight || 0;
       let topHeight = this.$refs.top.getBoundingClientRect().bottom || 0;
       return Math.max(200, parseFloat(totalHeight - topHeight - 30));
     }
   },
-
   watch: {
-    isAllloaded: {
-      handler: function(val) {
-        this.$refs.body && this.$refs.body.showEnding(val);
-      }
-    },
     isload: {
       handler: function(val) {
         this.$emit('updateStatus', val);

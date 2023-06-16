@@ -60,6 +60,10 @@ export default {
     labelWidth: {
       default: 120
     },
+    labelStrong: {
+      type: Boolean,
+      default: false
+    },
     error: {
       type: String
     },
@@ -183,6 +187,9 @@ export default {
       const labelWidth = this.labelWidth || 0;
       if (this.labelPosition != 'top') {
         style.width = `${labelWidth}px`;
+      }
+      if (this.labelStrong) {
+        style.fontWeight = 'bold';
       }
       return style;
     },

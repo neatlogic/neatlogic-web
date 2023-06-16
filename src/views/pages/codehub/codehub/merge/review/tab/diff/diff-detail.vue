@@ -3,9 +3,8 @@
     <div 
       v-for="(diff, dindex) in diffList" 
       :id="'file_' + diff.filepathUuid" 
-      :key="diff.filepathUuid" 
-      style="padding-bottom:10px;" 
-      class="file-item"
+      :key="diff.filepathUuid"
+      class="file-item pb-sm"
     >
       <CodeDetail 
         :ref="'file_' + diff.filepathUuid"
@@ -59,8 +58,8 @@ export default {
       type: String,
       default: 'combine'     
     },
-    mrUuid: {
-      type: String
+    mrId: {
+      type: Number
     },
     readOnly: {
       type: Boolean,
@@ -101,7 +100,6 @@ export default {
   methods: {
     selectFile(path) {
       if (path) {
-        let _this = this;
         if (!this.$el) {
           return;
         }
@@ -118,9 +116,9 @@ export default {
         if (this.$refs['file_' + path] && this.$refs['file_' + path][0] && this.$refs['file_' + path][0].showDetail) {
           this.$refs['file_' + path][0].showDetail();
         }
-        _this.scrollFn && clearTimeout(_this.scrollFn);
-        _this.scrollFn = setTimeout(function() {
-          _this.$emit('endScroll');
+        this.scrollFn && clearTimeout(this.scrollFn);
+        this.scrollFn = setTimeout(function() {
+          this.$emit('endScroll');
         }, 200);
       }
     },
@@ -144,7 +142,7 @@ export default {
       if (this.diffList && this.diffList.length > 0) {
         let param = {
           needPage: false,
-          mrUuid: this.mrUuid
+          mrId: this.mrId
         };
         this.$api.codehub.merge.getCommentOfLine(param).then((res) => {
           if (res.Status == 'OK') {

@@ -9,6 +9,8 @@
         :rightCommitId="rightCommitId"
         :queryName="queryName"
         :queryType="queryType"
+        :repositoryId="id"
+        :appModuleId="appModuleId"
         readOnly
         @endScroll="endScoll"
         @hasFixtop="showFixtop"
@@ -30,15 +32,15 @@ export default {
     diffInfo: Object,
     leftCommitId: String,
     rightCommitId: String,
-    uuid: String,
-    subsystemUuid: String,
+    id: String,
+    appModuleId: String,
     queryName: String,
     queryType: String
   },
   provide() {
     return {
-      subsystemuuid: this.subsystemUuid || null,
-      repositoryuuid: this.uuid || null,
+      appModuleId: this.appModuleId || null,
+      repositoryId: this.id || null,
       branchname: null
     };
   },
@@ -103,7 +105,7 @@ export default {
     showFixtop() {},
     getMore(path, index) {
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         filePath: path,
         rightCommitId: this.rightCommitId
       };

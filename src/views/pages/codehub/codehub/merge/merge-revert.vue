@@ -16,11 +16,11 @@
               <span v-else>{{ setTxt(mrData, 'text') }}</span>
               <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
               <span v-if="srcBranch" class="text-tip ml-20">源分支:</span>
-              <span v-if="srcBranch" class="ml-10 srcbranch-container">
+              <span v-if="srcBranch" class="ml-sm srcbranch-container">
                 {{ srcBranch }}
               </span>
               <span v-if="targetBranch" class="text-tip ml-20">目标分支:</span>
-              <span v-if="targetBranch" class="ml-10">
+              <span v-if="targetBranch" class="ml-sm">
                 {{ targetBranch }}
               </span>
             </div>
@@ -29,7 +29,7 @@
             <Button
               v-if="issueNoList.length>0"
               type="primary"
-              class="ml-10"
+              class="ml-sm"
               :disabled="submiting"
               @click="submitMr"
             >提交</Button>
