@@ -48,8 +48,7 @@
                 <tr>
                   <td>
                     <h6>{{ row.comment }}</h6>
-                    <div><span>{{ row.committer }}</span><span class="text-tip ml-sm">{{ row.committerDateStamp | formatDate }}</span></div>
-                    <div><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
+                    <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
                     <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-md" @click="showIssue(row)">{{ $t('term.rdm.request') }}</span>
