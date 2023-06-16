@@ -5,7 +5,7 @@
       v-model.trim="commitText"
       width="100%" 
     ></TsCkeditor>
-    <div class="text-right" style="margin-top:5px;">
+    <div class="text-right mt-xs">
       <Button
         type="primary"
         :disabled="!commitText || submiting"
@@ -28,7 +28,7 @@ export default {
     TsCkeditor,
     CommentList
   },
-  inject: ['smruuid', 'leftcommitid', 'rightcommitid'],
+  inject: ['smrId', 'leftcommitid', 'rightcommitid'],
   filters: {},
   props: {
     line: Number, 
@@ -58,7 +58,7 @@ export default {
     submitCommit() {
       if (this.commitText) {
         let param = {
-          mrUuid: this.smruuid,
+          mrId: this.smrId,
           leftCommitId: this.leftcommitid,
           rightCommitId: this.rightcommitid,
           line: this.line,

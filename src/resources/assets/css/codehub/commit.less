@@ -1,0 +1,154 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.file-li {
+  border: 1px solid;
+  .file-title {
+    border-bottom: 1px solid;
+    padding: 4px 10px 4px 4px;
+    .btn-toggle {
+      width: 24px;
+      text-align: center;
+    }
+    .file-name {
+      &:before {
+        margin-right: 4px;
+      }
+    }
+  }
+  .file-main {
+    pre {
+      margin: 0;
+    }
+    table {
+      width: 100%;
+      background: @default-gray;
+      table-layout: fixed;
+      border-collapse: collapse;
+      td {
+        font-size: 12px;
+        padding: 2px 8px;
+      }
+      td.code-lineno {
+        border-right: 1px solid @default-tip;
+        background: @default-gray;
+        white-space: nowrap;
+        word-break: keep-all;
+        text-align: center;
+        font-size: 12px;
+        width: 34px;
+        user-select: none;
+        padding: 2px 0;
+      }
+      td.code-content{
+        background: @default-gray;
+        .hljs {
+          background: @default-gray;
+          padding: 0 2px;
+        }
+      }
+
+      tr {
+        &:not(.linetype-to) {
+          &:not(.linetype-from) {
+            &:hover {
+              background: @default-primary-grey;
+              td{
+                background: @default-primary-grey;
+              }
+              .hljs {
+                background: @default-primary-grey;
+              }
+            }
+          }
+        }
+        .code-content{
+          padding-left: 14px;
+          white-space: pre-wrap;
+        }
+        &.linetype-from {
+          opacity: .8;
+          td:not(.to) {
+            background: @default-error-bg-color; // 代码删除后高亮颜色
+            .hljs {
+              background: @default-error-bg-color; // 代码删除后高亮颜色
+            }
+          }
+          &:hover{
+            opacity: 1;
+            td.to{
+              background: @default-error-bg-color; // 代码删除后高亮颜色
+              .hljs {
+                background: @default-error-bg-color; // 代码删除后高亮颜色
+              }              
+            }
+          }
+          .code-content:not(.to){
+            position: relative;
+            &:before{
+              content:'-';
+              position: absolute;
+              top: 50%;
+              left: 0;
+              width: 14px;
+              height: 20px;
+              text-align: center;
+              line-height: 20px;
+              margin-top: -10px;
+            }
+          }
+
+        }
+        &.linetype-to {
+          opacity: .8;
+          td:not(.from) {
+            background:@default-success-bg-color;
+            .hljs {
+              background:@default-success-bg-color;
+            }
+          }
+          &:hover{
+            opacity: 1;
+            td.from {
+              background:@default-success-bg-color;
+              .hljs {
+                background:@default-success-bg-color;
+              }
+            }
+          }
+          .code-content:not(.from){
+            position: relative;
+            &:before{
+              content:'+';
+              position: absolute;
+              top: 50%;
+              left: 0;
+              width: 14px;
+              height: 20px;
+              text-align: center;
+              line-height: 20px;
+              margin-top: -10px;
+            }
+          }
+        }
+      }
+
+    }
+  }
+  &.active{
+      table {
+        background: @default-op;
+        td.code-content{
+          background: @default-op;
+          .hljs{
+            background: @default-op;
+          }
+        }
+      }      
+  }
+  &.separate{
+    .to-lineno{
+      border-left: 1px solid @default-border;
+    }
+  }
+
+}

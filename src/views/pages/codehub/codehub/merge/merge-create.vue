@@ -39,7 +39,7 @@
           </div>
         </Col>
         <Col span="4">
-          <div v-if="isOk" class="action-group text-right">
+          <div v-if="!loadingShow" class="action-group text-right">
             <div class="action-item">
               <Button @click="sysnIssue()">{{ $t('term.codehub.syncissues') }}</Button>
             </div>
@@ -53,7 +53,7 @@
           </div>
         </Col>
       </TsRow>
-      <Loading v-if="!isOk" loadingShow></Loading>
+      <Loading v-if="loadingShow" loadingShow></Loading>
       <div v-else>
         <div 
           :is="versionData.versionTypeStrategyRelationVo.versionStrategyType" 
@@ -86,11 +86,11 @@ export default {
   props: {},
   data() {
     return {
-      type: null, //合并类型
-      versionId: null, //版本id
+      type: null, // 合并类型
+      versionId: null, // 版本id
       versionData: null, //版本的所有数据
-      srcBranch: '', //选中的源分支
-      targetBranch: '', //选中的目标分支
+      srcBranch: '', // 选中的源分支
+      targetBranch: '', // 选中的目标分支
       branchConfig: {
         transfer: true,
         validateList: ['required'],
@@ -102,7 +102,7 @@ export default {
       issueNoList: [],
       description: '',
       maxSearchCount: 300, //检索日志条数
-      isOk: false, //该mr创建是否可行，如果versionData获取失败则不可以操作
+      loadingShow: true,
       hasIssue: false, //是否有需求，如果详情里需求长度为0则证明没有可以创建mr的条件
       cancelAxios: null //取消接口调用用
     };
@@ -112,6 +112,8 @@ export default {
     if (this.$route.query.versionid) {
       this.versionId = parseInt(this.$route.query.versionid);
       this.getVersion(this.versionId);
+    } else {
+      this.loadingShow = false;
     }
     if (this.$route.query.type) {
       this.type = this.$route.query.type;
@@ -137,10 +139,9 @@ export default {
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
       let param = { id: versionId, expandBranch: true };
-      this.isOk = false;
+      this.loadingShow = true;
       this.$api.codehub.version.getDetail(param, { cancelToken: this.cancelAxios.token }).then(res => {
         if (res && res.Status == 'OK') {
-          this.isOk = true;
           this.versionData = res.Return;
           if (this.versionData.srcBranchList) {
             this.srcBranchList = this.versionData.srcBranchList || [];
@@ -179,8 +180,8 @@ export default {
         } else {
           this.versionData = null;
         }
-      }).catch(e => {
-        this.isOk = false;
+      }).finally(e => {
+        this.loadingShow = false;
       });
     },
     submitMr() {

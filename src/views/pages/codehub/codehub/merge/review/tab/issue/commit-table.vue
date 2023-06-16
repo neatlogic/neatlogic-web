@@ -19,13 +19,6 @@
             {{ tbody.commitId }}
             <span v-if="tbody.isNew" class="tag-new">new</span>
           </span>
-          <span v-else-if="title.key == 'committer'">
-            <UserCard
-              v-if="tbody.committer"
-              :uuid="tbody.committer"
-              :hideAvatar="true"
-            ></UserCard>
-          </span>
           <div v-else>{{ tbody[title.key] }}</div>
         </td>
       </tr>
@@ -40,9 +33,7 @@
 <script>
 export default {
   name: '',
-  components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
-  },
+  components: {},
   props: {
     commitList: Array
   },

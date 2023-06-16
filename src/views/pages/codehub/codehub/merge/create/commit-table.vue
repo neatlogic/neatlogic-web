@@ -10,13 +10,8 @@
         <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
           <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
           <div v-else-if="title.key=='committerDate'">{{ tbody.committerDate | formatDate }}</div>
-          <span v-else-if="title.key=='commitId'" class="tag-item">{{ tbody.commitId }}<i v-if="tbody.isNew" class="tag-new">new</i></span>
-          <span v-else-if="title.key == 'committer'">
-            <UserCard
-              v-if="tbody.committer"
-              :uuid="tbody.committer"
-              :hideAvatar="true"
-            ></UserCard>
+          <span v-else-if="title.key=='commitId'" class="tag-item">{{ tbody.commitId }}
+            <span v-if="tbody.isNew" class="tag-new">new</span>
           </span>
           <div v-else>{{ tbody[title.key] }}</div>
         </td>
@@ -32,12 +27,14 @@
 <script>
 export default {
   name: '',
-  components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
-  },
+  components: {},
   props: {
-    tbodyList: Array,
-    statusList: Array
+    tbodyList: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    }
   },
   data() {
     return {
@@ -56,10 +53,7 @@ export default {
       {
         key: 'message',
         title: this.$t('page.submitinformation')     
-      }],
-      rowNum: null,
-      currentPage: null,
-      pageSize: null
+      }]
     };
   },
   beforeCreate() {},
@@ -73,21 +67,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {},
-  computed: {
-    showText() {
-      return function(val) {
-        let str = ``;
-        if (val && this.statusList && this.statusList.length > 0) {
-          this.statusList.forEach((s) => {
-            if (s.value == val) {
-              str = `<div class="text-${s.color}">${s.text}</div>`;
-            }
-          });
-        }
-        return str;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
