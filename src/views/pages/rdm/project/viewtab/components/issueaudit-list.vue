@@ -36,6 +36,10 @@
           <span v-if="row.oldValue && row.oldValue.length > 0">{{ row.oldValue[0] }}</span>
           <span v-else class="text-grey">-</span>
         </div>
+        <div v-else-if="row.attrName && row.attrName === 'content'">
+          <div v-if="row.oldValue && row.oldValue.length > 0" v-html="row.oldValue[0]"></div>
+          <span v-else class="text-grey">-</span>
+        </div>
         <div v-else-if="row.attrName && row.attrName === 'status'">
           <IssueStatus v-if="row.oldValue && row.oldValue.length > 0" :status="row.oldValue[0]"></IssueStatus>
           <span v-else class="text-grey">-</span>
@@ -58,6 +62,10 @@
         <AttrViewer v-if="row.appAttr" :attrConfig="row.appAttr" :valueList="row.newValue"></AttrViewer>
         <div v-else-if="row.attrName && row.attrName === 'name'">
           <span v-if="row.newValue && row.newValue.length > 0">{{ row.newValue[0] }}</span>
+          <span v-else class="text-grey">-</span>
+        </div>
+        <div v-else-if="row.attrName && row.attrName === 'content'">
+          <div v-if="row.newValue && row.newValue.length > 0" v-html="row.newValue[0]"></div>
           <span v-else class="text-grey">-</span>
         </div>
         <div v-else-if="row.attrName && row.attrName === 'status'">

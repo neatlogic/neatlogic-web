@@ -122,7 +122,7 @@ export default {
     },
     getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+        this.$api.rdm.project.getAppByProjectId(this.projectId, {needSystemAttr: 1}).then(res => {
           this.appList = res.Return;
         });
       }
@@ -155,11 +155,6 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-gap: 20px;
-}
-.item-grid {
-  display: grid;
-  grid-template-columns: 60px auto;
   grid-gap: 20px;
 }
 .middle {

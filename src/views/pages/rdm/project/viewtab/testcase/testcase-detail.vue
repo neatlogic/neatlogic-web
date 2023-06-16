@@ -21,10 +21,10 @@
       </template>
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
-          <Tabs v-model="currentTab">
+          <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="$t('page.detailinfo')" name="main">
-              <div class="pl-nm pr-nm">
-                <div v-html="issueData.content"></div>
+              <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
+                <IssueContent :issueData="issueData"></IssueContent>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'relative', 'to')" name="childrequest">
@@ -88,6 +88,7 @@ export default {
   name: '',
   components: {
     IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
+    IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),

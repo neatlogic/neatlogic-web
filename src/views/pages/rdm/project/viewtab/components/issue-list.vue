@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
+    <Loading v-if="isLoading" :loadingShow="isLoading"></Loading>
     <div class="mb-md grid">
       <div>
         <span>
