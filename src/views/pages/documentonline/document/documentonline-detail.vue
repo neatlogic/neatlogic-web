@@ -1,6 +1,7 @@
 <template>
   <div>
     <TsContain
+      v-if="!loadingShow"
       :isSiderHide="isSiderHide"
       :siderWidth="300"
       :rightWidth="rightWidth"
@@ -16,7 +17,7 @@
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
-        <DocumentonlineContent :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
+        <DocumentonlineContent :content="content" :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
       </template>
       <template v-slot:right>
         <div class="right-list border-color pl-nm">
@@ -46,9 +47,11 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: true,
       isSiderHide: true,
       rightWidth: 300,
       filePath: '',
+      content: '',
       upwardNameList: [],
       list: [],
       tableData: {},
@@ -57,20 +60,16 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     this.$localStore.remove('searchKeyword', 'common');
     if (this.$route.query) {
       this.filePath = this.$route.query.filePath;
-      let upwardNameList = this.$route.query.upwardNameList;
       this.anchorPoint = this.$route.query.anchorPoint || '';
-      if (upwardNameList) {
-        this.upwardNameList = upwardNameList.split('/');
-        this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
-      }
       if (this.$route.query.isSiderHide && this.$route.query.isSiderHide === 'false') {
         this.isSiderHide = false;
       }
     }
+    await this.getDocumentDetail();
     this.getDocumentonlineList();
   },
   beforeMount() {},
@@ -82,6 +81,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getDocumentDetail() {
+      if (!this.filePath) {
+        return;
+      }
+      let data = {
+        filePath: this.filePath
+      };
+      this.loadingShow = true;
+      return this.$api.documentonline.getDocumentDetail(data).then(res => {
+        if (res.Status === 'OK') {
+          this.content = res.Return.content; 
+          this.upwardNameList = res.Return.upwardNameList || [];
+          this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
     getDocumentonlineList(currentPage) {
       let data = {
         currentPage: currentPage || 1,
@@ -107,8 +124,7 @@ export default {
       this.$router.push({
         path: '/documentonline-detail',
         query: {
-          filePath: item.filePath,
-          upwardNameList: item.upwardNameList.join('/')
+          filePath: item.filePath
         }
       });
     }

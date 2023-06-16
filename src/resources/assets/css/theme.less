@@ -3927,8 +3927,21 @@
     pre, code {
       background-color: @op-color !important;
     }
-    .hljs{
+    .hljs, 
+    blockquote{
       color: @text-color;
+    }
+    table {
+      tr {
+        background-color: @op-color;
+        border-top: 1px solid var(--border-color, @border-color-base) !important;
+        &:nth-child(2n) {
+          background-color: var(--table-stripe-color, @table-stripe-color);
+        }
+      }
+      th, td{
+        border-top: 1px solid var(--border-color, @border-color-base) !important;
+      }
     }
   }
 }

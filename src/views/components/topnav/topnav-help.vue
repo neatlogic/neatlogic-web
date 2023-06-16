@@ -69,7 +69,6 @@ export default {
       tableData: {},
       isShowDetail: false,
       filePath: '',
-      upwardNameList: [],
       anchorPoint: '',
       blacklist: ['welcome'], //不需要搜索的路由名单
       isGlobalSearch: false
@@ -154,13 +153,12 @@ export default {
     },
     getDetail(item) {
       this.filePath = item.filePath;
-      this.upwardNameList = item.upwardNameList;
       this.anchorPoint = item.anchorPoint || '';
       this.isShowDetail = true;
     },
     openHelpManage() {
       if (this.isShowDetail) {
-        let url = HOME + '/documentonline.html#/documentonline-detail?upwardNameList=' + this.upwardNameList.join('/') + '&filePath=' + this.filePath;
+        let url = HOME + '/documentonline.html#/documentonline-detail?filePath=' + this.filePath;
         if (this.anchorPoint) {
           url += '&anchorPoint=' + this.anchorPoint;
         }
@@ -172,7 +170,6 @@ export default {
     goBack() {
       this.isShowDetail = false;
       this.filePath = '';
-      this.upwardNameList = [];
     }
   },
   filter: {},

@@ -78,7 +78,6 @@ export default {
             path: '/documentonline-detail',
             query: {
               filePath: node.filePath,
-              upwardNameList: node.upwardNameList.join('/'),
               isSiderHide: false
             }
           });

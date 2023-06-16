@@ -68,8 +68,7 @@ export default {
       this.$router.push({
         path: '/documentonline-detail',
         query: {
-          filePath: item.filePath,
-          upwardNameList: item.upwardNameList.join('/')
+          filePath: item.filePath
         }
       });
     }
