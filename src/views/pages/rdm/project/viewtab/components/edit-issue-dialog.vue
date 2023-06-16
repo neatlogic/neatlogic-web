@@ -10,6 +10,7 @@
                   ref="issueName"
                   v-model="issueData.name"
                   border="border"
+                  :maxlength="50"
                   :validateList="[{ name: 'required', message: ' ' }]"
                 ></TsFormInput>
               </TsFormItem>

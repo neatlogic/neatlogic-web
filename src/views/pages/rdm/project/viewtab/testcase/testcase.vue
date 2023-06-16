@@ -9,11 +9,6 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item" @click="displayMode = displayMode === 'level' ? 'list' : 'level'">
-            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">列表视图</span>
-            <Divider type="vertical" />
-            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">层级视图</span>
-          </span>
           <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.testcase') }}</span>
         </div>
       </template>

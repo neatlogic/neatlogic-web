@@ -10,14 +10,7 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="action-group">
-          <span class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
-          <span class="action-item">
-            <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
-          </span>
-          <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
-          <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
-        </div>
+        <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
       <template v-slot:topRight></template>
       <template v-slot:sider>
@@ -168,10 +161,8 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
