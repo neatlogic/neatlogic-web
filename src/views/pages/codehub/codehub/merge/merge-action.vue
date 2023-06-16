@@ -47,7 +47,6 @@
                     transfer
                   >
                     <div>{{ row.appModuleInfo }}</div>
-                    npm
                     <div slot="content">
                       <div>{{ row.appModuleInfo }}</div>
                     </div>
@@ -111,8 +110,6 @@ export default {
   props: [''],
   data() {
     return {
-      appSystemId: '',
-      appModuleId: '',
       isLoad: false,
       isActionDialogShow: false,
       id: null,
@@ -206,14 +203,16 @@ export default {
   destroyed() {},
   methods: {
     searchList(currentPage) {
-      let param = {};
       if (this.tableData) {
-        this.tableData.pageSize && (param.pageSize = this.tableData.pageSize);
-        this.tableData.currentPage && (param.currentPage = this.tableData.currentPage);
         if (currentPage) {
           this.tableData.currentPage = currentPage;
         }
       }
+      let param = {
+        currentPage: this.tableData.currentPage,
+        pageSize: this.tableData.pageSize,
+        ...this.searchVal
+      };
       this.keyword && (param.keyword = this.keyword);
       this.appModuleId && (param.appModuleId = this.appModuleId);
       this.appSystemId && (param.appSystemId = this.appSystemId);
@@ -242,6 +241,7 @@ export default {
       this.searchList();
     },
     updateSize(size) {
+      this.tableData.currentPage = 1;
       this.tableData.pageSize = size;
       this.searchList();
     },

@@ -2314,6 +2314,22 @@
     "edittag": "编辑标签",
     "addtag": "新增标签",
     "tagname": "标签名",
-    "nogroupmembers": "暂无分组成员"
+    "nogroupmembers": "暂无分组成员",
+    "exportexcel": "导出Excel",
+    "userauth": "用户授权",
+    "groupauth": "分组授权",
+    "delauth": "是否确认删除该权限",
+    "expiresat": "截止日期",
+    "usergourpname": "用户名/组名",
+    "readwrite": "读写",
+    "notauth": "无权限",
+    "exporting": "导出中",
+    "editauth": "编辑授权",
+    "addauth": "添加授权",
+    "group": "组",
+    "protectbranch": "保护分支",
+    "delprotectbranch": "是否确认删除该保护分支",
+    "addprotectbranch": "添加分支保护",
+    "selectresource": "已选资源"
   }
 }

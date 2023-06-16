@@ -2317,6 +2317,20 @@
     "edittag": "Edit Label",
     "addtag": "Add tags",
     "tagname": "Tag name",
-    "nogroupmembers": "There are currently no group members available"
+    "nogroupmembers": "There are currently no group members available",
+    "userauth": "User Authorization",
+    "groupauth": "Group Authorization",
+    "delauth": "Are you sure to delete this permission",
+    "expiresat": "Deadline",
+    "usergourpname": "User Name/Group Name",
+    "readwrite": "Reading and writing",
+    "notauth": "No permissions",
+    "exporting": "Exporting",
+    "editauth": "Edit Authorization",
+    "group": "group",
+    "protectbranch": "Protect Branch",
+    "delprotectbranch": "Are you sure to delete the protected branch",
+    "addprotectbranch": "Add Branch Protection",
+    "selectresource": "Selected resources"
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div>
     <div style="margin-bottom:10px;">
-      <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>权限</Button> 
-      <Button v-if="!isDowning" v-download="downloadPath" class="ml-10">导出Excel</Button> 
-      <Button v-else loading class="ml-10">导出中</Button> 
+      <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>{{ $t('page.authority') }}</Button> 
+      <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button> 
+      <Button v-else loading class="ml-sm">$t('term.codehub.exporting')</Button> 
     </div>
-    <h4>用户授权</h4>
+    <h4>{{ $t('term.codehub.userauth') }}</h4>
     <div v-if="!isLoading">
       <TsTable
         v-bind="tabledata"
@@ -16,7 +16,7 @@
             :id="row.id"
             :row="row"
             type="member"
-            :repositoryUuid="uuid"
+            :repositoryId="id"
           ></UserCard>
         </template>
         <template slot="state" slot-scope="{row}">
@@ -30,15 +30,15 @@
         </template>
         <template slot="actions" slot-scope="{row}">
           <div v-if="!row.group_name" class="action-group">
-            <div class="action-item text-action ts-edit" @click="editAuth(row)">编辑</div>
-            <div class="action-item text-action ts-trash" @click="delAuth(row)">删除</div>
+            <div class="action-item text-action ts-edit" @click="editAuth(row)">{{ $t('page.edit') }}</div>
+            <div class="action-item text-action ts-trash" @click="delAuth(row)">{{ $t('page.delete') }}</div>
           </div>
         </template>
       </TsTable>
     </div>
     <Loading v-else loadingShow style="min-height:100px"></Loading>
     <Divider />
-    <h4>分组授权</h4>
+    <h4>{{ $t('term.codehub.groupauth') }}</h4>
     <div v-if="!isLoadingGroup">
       <TsTable
         v-bind="grouptabledata"
@@ -49,7 +49,7 @@
             :id="row.id"
             :row="row"
             type="group"
-            :repositoryUuid="uuid"
+            :repositoryId="id"
           ></UserCard>
         </template>
         <template slot="endtime" slot-scope="{row}">
@@ -60,8 +60,8 @@
         </template>
         <template slot="actions" slot-scope="{row}">
           <div class="action-group">
-            <div class="action-item text-action ts-edit" @click="editAuth(row,'group')">编辑</div>
-            <div class="action-item text-action ts-trash" @click="delAuth(row,'group')">删除</div>
+            <div class="action-item text-action ts-edit" @click="editAuth(row,'group')">{{ $t('page.edit') }}</div>
+            <div class="action-item text-action ts-trash" @click="delAuth(row,'group')">{{ $t('page.delete') }}</div>
           </div>
         </template>
       </TsTable>
@@ -69,8 +69,7 @@
     <Loading v-else loadingShow style="min-height:100px"></Loading>
     <AuthAdd
       v-if="isEdit"
-      :isShow="isEdit"
-      :uuid="uuid"
+      :id="id"
       :accList="accList"
       :editConfig="editConfig"
       @close="close"
@@ -89,7 +88,7 @@ export default {
   filters: {},
   directives: { download},
   props: {
-    uuid: String
+    id: Number
   },
   data() {
     return {
@@ -99,39 +98,37 @@ export default {
       },
       tabledata: {
         theadList: [{
-          title: '用户名',
+          title: this.$t('page.username'),
           key: 'name'
         }, {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'state'
         }, {
-          title: '继承自',
+          title: this.$t('term.cmdb.extendto'),
           key: 'group_name'
         }, {
-          title: '权限',
+          title: this.$t('page.authority'),
           key: 'access_level'
         }, {
-          title: '截止日期',
+          title: this.$t('term.codehub.expiresat'),
           key: 'expires_at'
         }, {
-          key: 'actions',
-          width: 80
+          key: 'actions'
         }],
         rowKey: 'id'
       },
       grouptabledata: {
         theadList: [{
-          title: '组名',
+          title: this.$t('page.groupname'),
           key: 'name'
         }, {
-          title: '权限',
+          title: this.$t('page.authority'),
           key: 'group_access_level'
         }, {
-          title: '截止日期',
+          title: this.$t('term.codehub.expiresat'),
           key: 'expires_at'
         }, {
-          key: 'actions',
-          width: 80
+          key: 'actions'
         }],
         rowKey: 'id'
       },
@@ -203,38 +200,37 @@ export default {
     },
     delAuth(row, type) {
       let param = {
-        'repositoryUuid': this.uuid
+        'repositoryId': this.id
       };
-      let _this = this;
-      _this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该权限',
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('term.codehub.delauth'),
         btnType: 'error',
-        'on-ok': function(vnode) {
+        'on-ok': (vnode) => {
           if (type) {
             Object.assign(param, {
               'group_id': row.id
             });
-            _this.$api.codehub.repositorydetail.deleteGitAuth('group', param).then((res) => {
+            this.$api.codehub.repositorydetail.deleteGitAuth('group', param).then((res) => {
               if (res && res.Status == 'OK') {
-                _this.$Message.success('删除成功');
-                _this.getList();
+                this.$Message.success(this.$t('message.deletesuccess'));
+                this.getList();
                 vnode.isShow = false;
               } else {
-                _this.$Message.error(res.Message);
+                this.$Message.error(res.Message);
               }
             });
           } else {
             Object.assign(param, {
               'user_id': row.id
             });
-            _this.$api.codehub.repositorydetail.deleteGitAuth('member', param).then((res) => {
+            this.$api.codehub.repositorydetail.deleteGitAuth('member', param).then((res) => {
               if (res && res.Status == 'OK') {
-                _this.$Message.success('删除成功');
-                _this.getList();
+                this.$Message.success(this.$t('message.deletesuccess'));
+                this.getList();
                 vnode.isShow = false;
               } else {
-                _this.$Message.error(res.Message);
+                this.$Message.error(res.Message);
               }
             });
           }
@@ -244,7 +240,7 @@ export default {
     getList() {
       //获取权限列表
       let param = {
-        repositoryUuid: this.uuid
+        repositoryId: this.id
       };
       this.isLoading = true;
       this.$api.codehub.repositorydetail.getGitAuthList(param).then(res => {
@@ -281,9 +277,9 @@ export default {
   computed: {
     downloadPath() {
       return {
-        url: '/module/codehub/api/binary/repository/permission/export',
+        url: '/api/binary/codehub/repository/permission/export',
         params: {
-          repositoryUuid: this.uuid
+          id: this.id
         },
         changeStatus: this.changeDownStatus
       };

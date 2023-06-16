@@ -5,7 +5,7 @@
         <Row :gutter="16">
           <Col span="18">
             <Checkbox v-model="isValid">有效需求</Checkbox>
-            <span class="ml-10">检索提交日志</span>
+            <span class="ml-sm">检索提交日志</span>
             <Input
               v-model="maxSearchCount"
               number
@@ -14,7 +14,7 @@
               style="width:60px;"
               @on-change="getVaildlist()"
             />
-            <span class="ml-10">条</span>
+            <span class="ml-sm">条</span>
           </Col>
           <Col span="6">
           </Col>
