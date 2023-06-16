@@ -274,5 +274,11 @@
     "apilist": "Api List",
     "projectmapping": "Project Mapping",
     "repositoryvoucher": "Repository Voucher"
+  },
+  "documentonline": {
+    "documentonline": "Help Center",
+    "documentmanage": "Document List",
+    "documentdetail": "Document Details",
+    "documentsearch": "Document Search"
   }
 }
