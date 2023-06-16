@@ -89,7 +89,7 @@ export default {
       if (!config.binary && !this.isEnd) {
         let start = this.startLine || 1;
         let param = {
-          repositoryUuid: config.repositoryUuid,
+          repositoryId: config.repositoryUuid,
           commitId: config.commitId,
           branchName: config.branchName,
           filePath: config.fullPath,
@@ -135,7 +135,7 @@ export default {
         return {
           url: '/module/codehub/api/binary/repository/file/download',
           params: {
-            repositoryUuid: config.repositoryUuid,
+            repositoryId: config.repositoryUuid,
             commitId: config.commitId,
             branchName: config.branchName,
             filePath: config.fullPath
