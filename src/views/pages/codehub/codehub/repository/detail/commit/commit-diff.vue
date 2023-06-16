@@ -9,6 +9,8 @@
         :rightCommitId="rightCommitId"
         :queryName="queryName"
         :queryType="queryType"
+        :repositoryId="id"
+        :appModuleId="appModuleId"
         readOnly
         @endScroll="endScoll"
         @hasFixtop="showFixtop"
@@ -30,7 +32,7 @@ export default {
     diffInfo: Object,
     leftCommitId: String,
     rightCommitId: String,
-    uuid: String,
+    id: Number,
     subsystemUuid: String,
     queryName: String,
     queryType: String
@@ -103,7 +105,7 @@ export default {
     showFixtop() {},
     getMore(path, index) {
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         filePath: path,
         rightCommitId: this.rightCommitId
       };
