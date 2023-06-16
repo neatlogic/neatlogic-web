@@ -1,17 +1,21 @@
 <template>
   <Poptip v-model="visible" width="400" transfer>
     <div class="cursor-pointer">
-      <Avatar v-if="type == 'group'" src="@/resources/assets/images/avatar/team.png" size="small"></Avatar>
+      <Avatar v-if="type == 'group'" src="~@/resources/assets/images/avatar/team.png" size="small"></Avatar>
       <Avatar v-else-if="row['avatar_url']" :src="row['avatar_url']" size="small"></Avatar>
-      <span class="mr-xs">{{ row.name }}{{ row.username ? `[${row.username}]` : '' }}</span>
+      <span class="ml-xs">{{ row.name }}
+        <span v-if="row.username" class="text-grey">{{ `(${row.username})` }}</span>
+      </span>
     </div>
     <div slot="title">
+      <!-- 头部用户名和右边的关闭按钮 -->
       <h4>{{ row.name }}</h4>
-      <span class="ts-remove text-action" style="position:absolute;right:0;top:0;line-height:30px;" @click="visible = false;"></span>
+      <span class="tsfont-close text-action remove-icon-box" @click="visible = false;"></span>
     </div>
     <div slot="content">
       <div>
         <div v-if="type == 'group'">
+          <!-- 分组gitlab用户头像列表 -->
           <ul v-if="userList" class="clearfix group-ul">
             <li v-for="u in userList" :key="u.id" class="group-li">
               <Avatar v-if="u['avatar_url']" :src="u['avatar_url']" size="small"></Avatar>
@@ -23,7 +27,7 @@
         <div v-else>
           <table v-if="userInfo" class="table">
             <colgroup>
-              <col width="40" />
+              <col width="50" />
               <col />
               <col />
             </colgroup>
@@ -69,7 +73,7 @@ export default {
   props: {
     row: Object,
     type: String,
-    repositoryId: String,
+    repositoryId: Number,
     id: [String, Number]
   },
   data() {
@@ -142,6 +146,8 @@ export default {
 </script>
 <style lang='less' scoped>
 .group-ul{
+  max-height: 300px;
+  overflow-y: scroll;
   .group-li{
     float: left;
     min-width:33%;
@@ -150,5 +156,11 @@ export default {
 }
 .userinfo>*{
   line-height: 24px;
+}
+.remove-icon-box {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  line-height: 30px;
 }
 </style>

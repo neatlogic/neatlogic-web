@@ -38,7 +38,6 @@
             <CommitTable
               v-if="row.commitList"
               :tbodyList="row.commitList"
-              :statusList="statusList"
             ></CommitTable>
             <div v-else-if="!row.commitList" class="text-tip text-center">{{ $t('page.nodata') }}</div>
           </template>
@@ -72,7 +71,6 @@ export default {
   data() {
     return {
       tbodyList: [],
-      statusList: [],
       cancelAxios: null, //取消接口调用用
       tableTheadList: [
         {
@@ -121,6 +119,7 @@ export default {
   methods: {
     getList() {
       if (!this.srcBranch || !this.targetBranch) {
+        this.isLoad = false;
         return;
       }
       this.isLoad = true;
