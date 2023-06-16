@@ -12,8 +12,8 @@
       </ul>
     </Sider>
     <Content :style="siderStyle" class="padding-md">
-      <auth v-if="selectedType=='auth'" :uuid="uuid"></auth>
-      <branchprotect v-if="selectedType=='branchprotect'" :uuid="uuid"></branchprotect>
+      <auth v-if="selectedType=='auth'" :id="id"></auth>
+      <branchprotect v-if="selectedType=='branchprotect'" :id="id"></branchprotect>
     </Content>
   </Layout>
 </template>

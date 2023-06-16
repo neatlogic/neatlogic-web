@@ -2046,7 +2046,11 @@
     "complexname": "Compound Attribute Name",
     "restraint": "constraint",
     "enumitem": "Enumerate Members",
-    "deletepropertyconfirm": "Are you sure to delete the attribute: {target}?"
+    "deletepropertyconfirm": "Are you sure to delete the attribute: {target}?",
+    "selectdataurl": "Query data processing status address",
+    "errorcode": "Error code",
+    "facilitycategory": "Data element classification identifier",
+    "facilitydescriptor": "Data element facility identifier"
   },
   "rdm": {
     "project": "project",
@@ -2108,7 +2112,9 @@
     "testcondition": "Preconditions",
     "teststep": "Use Case Steps",
     "testresult": "Expected results",
-    "pleasesetstatus": "Please define the status first"
+    "pleasesetstatus": "Please define the status first",
+    "listview": "List View",
+    "levelview": "hierarchy view "
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
@@ -2310,7 +2316,22 @@
     "nocommitfile": "This warehouse has not yet executed code submission, and there are currently no files available",
     "edittag": "Edit Label",
     "addtag": "Add tags",
-    "tagname": "Tag name"
+    "tagname": "Tag name",
+    "nogroupmembers": "There are currently no group members available",
+    "userauth": "User Authorization",
+    "groupauth": "Group Authorization",
+    "delauth": "Are you sure to delete this permission",
+    "expiresat": "Deadline",
+    "usergourpname": "User Name/Group Name",
+    "readwrite": "Reading and writing",
+    "notauth": "No permissions",
+    "exporting": "Exporting",
+    "editauth": "Edit Authorization",
+    "group": "group",
+    "protectbranch": "Protect Branch",
+    "delprotectbranch": "Are you sure to delete the protected branch",
+    "addprotectbranch": "Add Branch Protection",
+    "selectresource": "Selected resources"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

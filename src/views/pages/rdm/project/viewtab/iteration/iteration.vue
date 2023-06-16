@@ -21,7 +21,7 @@
       </template>
       <template v-slot:content>
         <div class="pl-md pb-md">
-          <div v-if="selectedIteration" class="clearfix mb-md mt-md bg-op padding-md radius-md">
+          <div v-if="selectedIteration" class="clearfix mt-md bg-op padding-md radius-md">
             <div class="float-left mr-md">
               <strong>
                 <span class="cursor text-grey" @click="toInterationDetail(selectedIteration.id)">{{ selectedIteration.name }}</span>
@@ -42,26 +42,32 @@
               <span>{{ selectedIteration.endDate | formatDate('yyyy-mm-dd') }}</span>
             </div>
           </div>
-          <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
-            <TabPane
-              v-for="(app, index) in issueAppList"
-              :key="index"
-              :label="app.name"
-              :name="app.type"
+          <div v-if="issueAppList && issueAppList.length > 0" class="mt-md">
+            <Tabs
+              v-model="currentApp"
+              :animated="false"
+              type="card"
             >
-              <div>
-                <IssueList
-                  v-if="currentApp === app.type"
-                  :app="app"
-                  :projectId="projectId"
-                  :canAppend="true"
-                  :mode="displayMode"
-                  :iteration="selectedIteration && selectedIteration.id"
-                  :isShowEmptyTable="true"
-                ></IssueList>
-              </div>
-            </TabPane>
-          </Tabs>
+              <TabPane
+                v-for="(app, index) in issueAppList"
+                :key="index"
+                :label="app.name"
+                :name="app.type"
+              >
+                <div class="bg-op padding">
+                  <IssueList
+                    v-if="currentApp === app.type"
+                    :app="app"
+                    :projectId="projectId"
+                    :canAppend="true"
+                    :mode="displayMode"
+                    :iteration="selectedIteration && selectedIteration.id"
+                    :isShowEmptyTable="true"
+                  ></IssueList>
+                </div>
+              </TabPane>
+            </Tabs>
+          </div>
           <NoData v-else></NoData>
         </div>
       </template>

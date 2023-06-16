@@ -67,6 +67,12 @@ export default {
         },
         {
           type: 'text',
+          name: 'selectDataUrl',
+          label: this.$t('term.pbc.selectdataurl'),
+          validateList: ['required', 'url']
+        },
+        {
+          type: 'text',
           name: 'validResultUrl',
           label: this.$t('term.pbc.validresulturl'),
           validateList: ['required', 'url']

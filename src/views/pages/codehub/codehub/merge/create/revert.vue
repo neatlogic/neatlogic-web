@@ -5,7 +5,7 @@
         <Row :gutter="16">
           <Col span="18">
             <Checkbox v-model="isValid">有效需求</Checkbox>
-            <span class="ml-10">检索提交日志</span>
+            <span class="ml-sm">检索提交日志</span>
             <Input
               v-model="maxSearchCount"
               number
@@ -14,7 +14,7 @@
               style="width:60px;"
               @on-change="getVaildlist()"
             />
-            <span class="ml-10">条</span>
+            <span class="ml-sm">条</span>
           </Col>
           <Col span="6">
           </Col>
@@ -32,13 +32,11 @@
           @changePageSize="changePageSize"
           @getSelected="getSelected"
         >
-          <template slot="sourceUuid" slot-scope="{row}">
-            {{ getsource(row.sourceUuid) }}
+          <template slot="sourceId" slot-scope="{row}">
+            {{ getSourceName(row.sourceId) }}
           </template>
           <template slot="isValid" slot-scope="{row}">
-            <span v-if="row.isValid===1" class="text-success">有效需求</span>
-            <span v-else-if="row.isValid === 0" class="text-warning">无效需求</span>
-            <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
+            <span :class="getClassNameByValid(row.isValid)">{{ getTextByValid(row.isValid) }}</span>
           </template>      
           <template slot="issueUpdateTime" slot-scope="{row}">
             {{ row.issueUpdateTime |formatDate }}
@@ -74,13 +72,11 @@
     </div>
     <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" style="padding-top:10px;">
       <TsTable v-bind="showtabledata" :tbodyList="allIssue (selectIssuelist,addLi)||[]">
-        <template slot="sourceUuid" slot-scope="{row}">
-          {{ getsource(row.sourceUuid) }}
+        <template slot="sourceId" slot-scope="{row}">
+          {{ getsource(row.sourceId) }}
         </template>
         <template slot="isValid" slot-scope="{row}">
-          <span v-if="row.isValid===1" class="text-success">有效需求</span>
-          <span v-else-if="row.isValid === 0" class="text-warning">无效需求</span>
-          <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
+          <span :class="getClassNameByValid(row.isValid)">{{ getTextByValid(row.isValid) }}</span>
         </template>  
         <template slot="issueUpdateTime" slot-scope="{row}">
           {{ row.issueUpdateTime |formatDate }}
@@ -111,8 +107,7 @@ export default {
     return {
       isEdit: false, //是否编辑
       addItem: '',
-      addLi: [],
-      height: '600px'
+      addLi: []
     };
   },
   beforeCreate() {},

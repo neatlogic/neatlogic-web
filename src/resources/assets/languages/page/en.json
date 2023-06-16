@@ -27,7 +27,7 @@
   "value": "value",
   "positiontransfer": "Position Swap",
   "creator": "Creator",
-  "creatTime": "Creation Time",
+  "createtime": "Create Time",
   "memo": "Memo",
   "auth": "Assigned to",
   "useauth": "Use Authorization",

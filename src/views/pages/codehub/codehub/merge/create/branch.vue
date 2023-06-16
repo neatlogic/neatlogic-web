@@ -18,12 +18,10 @@
             {{ row.no || $t('term.codehub.unknownrequirement') }}
           </template>
           <template slot="sourceId" slot-scope="{ row }">
-            {{ getsource(row.sourceId) }}
+            {{ getSourceName(row.sourceId) }}
           </template>
           <template slot="isValid" slot-scope="{ row }">
-            <span v-if="row.isValid === 1" class="text-success">{{ $t('term.codehub.effectivedemand') }}</span>
-            <span v-else-if="row.isValid === 0" class="text-warning">{{ $t('term.codehub.invaliddemand') }}</span>
-            <span v-else-if="row.isValid === null" class="ts-spinner loading text-primary"></span>
+            <span :class="getClassNameByValid(row.isValid)">{{ getTextByValid(row.isValid) }}</span>
           </template>
           <template slot="issueUpdateTime" slot-scope="{ row }">
             {{ row.issueUpdateTime | formatDate }}
@@ -31,17 +29,12 @@
           <template slot="handleUserId" slot-scope="{ row }">
             {{ row.handleUserId || row.issueCreator }}
           </template>
-          <template slot="action" slot-scope="{ row }">
-            <div class="tstable-action">
-              <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.id)">{{ $t('page.detail') }}</li>
-              </ul>
-            </div>
-          </template>
           <template v-slot:showFolderTable="{ row, index }">
+            <!-- 展开收起内嵌表格 -->
             <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="cursor" @click.stop="openInnerTable(row, index)"></span>
           </template>
           <template v-slot:expand="{ row }">
+            <!-- 内嵌表格 -->
             <CommitTable
               v-if="row.commitList"
               :tbodyList="row.commitList"
@@ -57,6 +50,7 @@
         v-model="description"
         type="textarea"
         border="border"
+        maxlength="1024"
         :placeholder="$t('term.codehub.mergerequestdesc')"
       ></TsFormInput>
     </div>
@@ -77,7 +71,6 @@ export default {
   props: {},
   data() {
     return {
-      showIssue: false, //是否显示issue详情
       tbodyList: [],
       statusList: [],
       cancelAxios: null, //取消接口调用用
@@ -126,24 +119,11 @@ export default {
   },
   destroyed() {},
   methods: {
-    getissueStatuslist() {
-      this.$api.codehub.merge.getStatusList({ type: 'issue' }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.statusList = res.Return.list;
-        }
-      });
-    },
-    searchList(val) {
-      this.tableData.currentPage = 1;
-      this.getList();
-    },
-    viewIssue(id) {
-      this.showIssue = true;
-    },
     getList() {
       if (!this.srcBranch || !this.targetBranch) {
         return;
       }
+      this.isLoad = true;
       let param = {
         appModuleId: this.versionData.appModuleId,
         targetBranch: this.targetBranch,
@@ -186,12 +166,14 @@ export default {
               this.$emit('getIsuuelist', []);
             }
             this.$emit('getIssue', true);
-            this.getMoreinfo();
+            this.getMoreinfo(); // 获取除需求编号和需求状态之外的其他信息
           } else {
             this.tbodyList = [];
             this.$emit('getIssue', false);
           }
         }
+      }).finally(() => {
+        this.isLoad = false;
       });
     },
     getMoreinfo() {
@@ -264,9 +246,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.issue-true {
-  /deep/ .tr-false {
-    display: none;
-  }
-}
 </style>

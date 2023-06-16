@@ -27,7 +27,7 @@
   "value": "值",
   "positiontransfer": "位置对调",
   "creator": "创建者",
-  "creatTime": "创建时间",
+  "createtime": "创建时间",
   "memo": "备注",
   "auth": "授权",
   "useauth": "使用授权",

@@ -45,13 +45,13 @@
                   v-for="(branch,bindex) in showBranch(row.name)"
                   :key="bindex"
                   :color="typeList[branch].color"
-                  class="ml-10"
+                  class="ml-sm"
                 >{{ typeList[branch].name }}</Tag></td>
                 <td rowspan="2">{{ row.commit.shortId }}</td>
               </tr>
               <tr>
                 <td>
-                  <span>{{ row.commit.committer }}</span><span class="text-tip ml-10">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
+                  <span>{{ row.commit.committer }}</span><span class="text-tip ml-sm">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
                 </td>
               </tr>
             </tbody>
