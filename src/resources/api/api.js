@@ -12,6 +12,7 @@ import process from './process';
 import report from './report';
 import rdm from './rdm';
 import codehub from './codehub'; // 代码中心
+import documentonline from './documentonline';
 
 export default {
   autoexec,
@@ -27,5 +28,6 @@ export default {
   process,
   report,
   rdm,
-  codehub
+  codehub,
+  documentonline
 };

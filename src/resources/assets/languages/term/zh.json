@@ -2337,7 +2337,6 @@
     "packupcontent": "收起对比内容",
     "continuesearch": "继续查找",
     "loadmore": "加载更多",
-    "issuedetail": "需求详情",
     "copyfileurl": "复制文件路径",
     "copyfilename": "复制文件名字",
     "clicktoexpandmore": "点击展开更多",
@@ -2346,6 +2345,16 @@
     "binaryfilecannotviewcontent": "此文件为二进制文件，暂不支持在线查看具体内容，",
     "clickheretodownloadthefile": "点此可以下载文件",
     "nochangesmade": "没有变更内容",
-    "thefileisempty": "该文件为空"
+    "thefileisempty": "该文件为空",
+    "issuedetail": "需求详情"
+  },
+  "documentonline": {
+    "currentpagesearch": "当前页面相关帮助",
+    "openhelp": "打开帮助中心",
+    "openhelpdocument": "在新页面打开帮助",
+    "searchhelp": "搜索帮助",
+    "helpcenter": "帮助中心",
+    "whathelp": "请问有什么能帮到您？",
+    "problemdes": "问题描述"
   }
 }

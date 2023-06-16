@@ -2348,5 +2348,14 @@
     "clickheretodownloadthefile": "Click here to download the file",
     "nochangesmade": "No changes made",
     "thefileisempty": "The file is empty"
+  },
+  "documentonline": {
+    "currentpagesearch": "Help related to the current page",
+    "openhelp": "Open Help Center",
+    "openhelpdocument": "Open Help on a New Page",
+    "searchhelp": "Search Help",
+    "helpcenter": "Help Center",
+    "whathelp": "May I help you?",
+    "problemdes": "Problem Description"
   }
 }
