@@ -274,5 +274,11 @@
     "apilist": "接口列表",
     "projectmapping": "项目映射",
     "repositoryvoucher": "仓库凭证"
+  },
+  "documentonline": {
+    "documentonline": "帮助中心",
+    "documentmanage": "文档列表",
+    "documentdetail": "文档详情",
+    "documentsearch": "文档搜索"
   }
 }

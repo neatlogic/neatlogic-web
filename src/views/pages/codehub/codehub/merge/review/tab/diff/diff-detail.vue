@@ -3,9 +3,8 @@
     <div 
       v-for="(diff, dindex) in diffList" 
       :id="'file_' + diff.filepathUuid" 
-      :key="diff.filepathUuid" 
-      style="padding-bottom:10px;" 
-      class="file-item"
+      :key="diff.filepathUuid"
+      class="file-item pb-sm"
     >
       <CodeDetail 
         :ref="'file_' + diff.filepathUuid"

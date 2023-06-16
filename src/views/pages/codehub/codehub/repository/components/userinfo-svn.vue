@@ -7,11 +7,14 @@
   >
     <div class="cursor-pointer">
       <span :class="row.type =='person'?'ts-user':'ts-team'" class="icon-right"></span>
-      <span>{{ row.name }}{{ row.sid && row.sid != '' ? ' [' + row.sid + ']' : '' }}</span>
+      <span>
+        {{ row.name }}
+        <span v-if="row.sid && row.sid != ''" class="text-grey">{{ `(${row.sid})` }}</span>
+      </span>
     </div>
     <div slot="title">
       <h4>{{ row.name }}</h4>
-      <span class="tsfont-close text-action" style="position:absolute;right:0;top:0;line-height:30px;" @click="visible = false;"></span>
+      <span class="tsfont-close text-action remove-icon-box" @click="visible = false;"></span>
     </div>
     <div slot="content">
       <div>
@@ -42,7 +45,7 @@ export default {
   props: {
     row: Object,
     type: String,
-    repositoryId: String,
+    repositoryId: Number,
     id: [String, Number]
   },
   data() {
@@ -113,6 +116,8 @@ export default {
 </script>
 <style lang='less' scoped>
 .group-ul{
+  max-height: 300px;
+  overflow-y: scroll;
   .group-li{
     float: left;
     min-width:33.3%;
@@ -121,5 +126,11 @@ export default {
 }
 .userinfo>*{
   line-height: 24px;
+}
+.remove-icon-box {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  line-height: 30px;
 }
 </style>

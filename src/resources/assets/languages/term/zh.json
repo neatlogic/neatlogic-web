@@ -2330,6 +2330,22 @@
     "protectbranch": "保护分支",
     "delprotectbranch": "是否确认删除该保护分支",
     "addprotectbranch": "添加分支保护",
-    "selectresource": "已选资源"
+    "selectresource": "已选资源",
+    "commitcountinfo": "当前已加载 {allcount} 条，找到满足条件的提交 {currentcount} 条",
+    "choosebranchortag": "请选择分支或标签",
+    "commituserorlogkeyword": "提交人或提交日志关键字",
+    "packupcontent": "收起对比内容",
+    "continuesearch": "继续查找",
+    "loadmore": "加载更多",
+    "issuedetail": "需求详情"
+  },
+  "documentonline": {
+    "currentpagesearch": "当前页面相关帮助",
+    "openhelp": "打开帮助中心",
+    "openhelpdocument": "在新页面打开帮助",
+    "searchhelp": "搜索帮助",
+    "helpcenter": "帮助中心",
+    "whathelp": "请问有什么能帮到您？",
+    "problemdes": "问题描述"
   }
 }

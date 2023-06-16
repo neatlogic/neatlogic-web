@@ -16,7 +16,7 @@ export default {
       let isExist = false;
       if (list && list.length > 0) {
         let branchList = list.filter(l => {
-          return l.value == 'branch' && l.dataList && l.dataList.length > 0;
+          return l.text == 'branch' && l.dataList && l.dataList.length > 0;
         });
         if (branchList.length > 0) {
           isExist = true;

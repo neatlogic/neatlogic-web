@@ -14,7 +14,7 @@
                 @on-change="getSearch"
               ></GroupSelect>
             </div>
-            <div class="d_f_r text-tip text-label">标签或分支</div>
+            <div class="d_f_r text-tip text-label">{{ $t('term.codehub.tagorbranch') }}</div>
           </div>
         </Col>
       </Row>
@@ -38,14 +38,16 @@
               <span>{{ lastConfig.author }}</span><span class="text-tip ml-sm">{{ lastConfig.message }}</span>
             </div>
             <div class="d_f_r">
-              <span class="text-tip">最后提交：</span><span>{{ showCommitId(lastConfig.commitId) }}</span><span class="text-tip ml-sm">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
+              <span class="text-tip">{{ $t('term.codehub.finalcommit') }}</span>
+              <span>{{ showCommitId(lastConfig.commitId) }}</span>
+              <span class="text-tip ml-sm">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
             </div>
           </div>
         </div>
         <div
           v-if="parentPath || currentfilePath"
           class="cursor-pointer text-left h4"
-          title="返回上层"
+          :title="$t('term.codehub.backparent')"
           @click="gotoPrev()"
         ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
         <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
@@ -92,7 +94,6 @@ export default {
   mixins: [editmixin],
   props: {},
   data() {
-    let _this = this;
     return {
       queryName: '', //接口需要的分组选中哪一个下拉的选项
       queryType: 'branch', //类型：brach\tag
@@ -116,7 +117,7 @@ export default {
   beforeCreate() {},
 
   created() {
-    if (this.uuid && this.reposData) {
+    if (this.id && this.reposData) {
       this.queryName = this.reposData.defaultBranch || this.reposData.mainBranch;
       this.queryType = 'branch';
     }
@@ -126,7 +127,7 @@ export default {
 
   async mounted() {
     await this.initGroupsearch();
-    if (this.uuid && this.reposData) {
+    if (this.id && this.reposData) {
       if (this.queryName) {
         this.$set(this.selectConfig, 'valueList', [{value: this.queryName, group: this.queryType}]);
       } else if (this.checkHasBranch(this.searchGrouplist)) {
@@ -170,7 +171,7 @@ export default {
         return;
       }
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         queryName: this.queryName,
         queryType: this.queryType
       };
@@ -251,7 +252,7 @@ export default {
       let params = {};
       this.currentfileConfig = null;
       Object.assign(params, {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         commitId: this.commitIdForReadFile,
         branchName: this.queryName,
         filePath: li.path,

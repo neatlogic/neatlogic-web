@@ -968,5 +968,5 @@ export default {
     str = str.replace(/ /gi, '');
     str = str.replace(/&nbsp;/ig, ' '); //替换HTML空格
     return str;
-  },
+  }
 };
