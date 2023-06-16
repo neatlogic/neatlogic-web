@@ -102,37 +102,60 @@ align-start|flex布局下垂直方向（竖轴）顶对齐（开始方向对齐�
 
 
 ##### 间隙
+> p 前缀的表示 padding，t/r/b/l 分别表示 top/right/bottom/left (上右下左) 四个方向的边距
 
-> (margin_外间隙，padding_内间隙，md_medium_普通尺寸（一般间隙12px）)
+> m 前缀的表示 margin，t/r/b/l 分别表示 top/right/bottom/left (上右下左) 四个方向的边距
 
-class名|用途|说明
+> 其中lg 表示 24像素，nm表示16像素，md表示12像素，sm表示10像素， xs表示6像素
+
+内边距类名|用途|说明
 :---:|:---:|:---|
-margin-md|右外间隙普通尺寸|普通间隙12px,不推荐使用|
-mr-md|右外间隙普通尺寸|-|
-ml-md|左外间隙普通尺寸|-|
-mt-md|右外间隙普通尺寸|-|
-mb-md|下外间隙普通尺寸|-|
-padding-lg|内间隙最大尺寸|最大间隙24px|
-padding|内间距尺寸|16px
-padding-md|内间隙普通尺寸|12px|
-padding-sm|内间隙小尺寸|10px，一般用于文字间隙|
-padding-xs|内间隙较小|比如分页的页数之间的间隙|
-pr-md|右内间隙普通尺寸|-|
-pl-md|左内间隙普通尺寸|-|
-pt-md|右内间隙普通尺寸|-|
-pb-md|左内间隙普通尺寸|-|
-pt-nm|上内间隙16px|
-pb-nm|下内间隙16px|
-pl-nm|左内间隙16px|
-pr-nm|右内间隙16px|
-pt-sm|上内间隙10px|
-pb-sm|下内间隙10px|
-pl-sm|左内间隙10px|
-pr-sm|右内间隙10px|
-pt-xs|上内间隙6px|
-pb-xs|下内间隙6px|
-pl-xs|左内间隙6px|
-pr-xs|右内间隙6px|
+padding-lg|内间隙最大尺寸|padding: 24px|
+padding|内间距尺寸|padding: 16px|
+padding-md|内间隙普通尺寸|padding: 12px|
+padding-sm|内间隙小尺寸|padding: 10px，一般用于文字间隙|
+padding-xs|内间隙较小|padding: 6px; 比如分页的页数之间的间隙|
+pt-nm|上内间隙16px|padding-top: 16px;|
+pb-nm|下内间隙16px|padding-bottom: 16px;|
+pl-nm|左内间隙16px|padding-left: 16px;|
+pr-nm|右内间隙16px|padding-right: 16px;|
+pr-md|右内间隙普通尺寸|padding-right: 12px;|
+pl-md|左内间隙普通尺寸|padding-left: 12px;|
+pt-md|右内间隙普通尺寸|padding-top: 12px;|
+pb-md|左内间隙普通尺寸|padding-bottom: 12px;|
+pt-sm|上内间隙10px|padding-top: 10px;|
+pb-sm|下内间隙10px|padding-bottom: 10px;|
+pl-sm|左内间隙10px|padding-left: 10px;|
+pr-sm|右内间隙10px|padding-right: 10px;|
+pt-xs|上内间隙6px|padding-top: 6px;|
+pb-xs|下内间隙6px|padding-bottom: 6px;|
+pl-xs|左内间隙6px|padding-left: 6px;|
+pr-xs|右内间隙6px|padding-right: 6px;|
+
+
+
+外边距类名|说明
+:---:|:---|
+margin-lg| margin: 24px;|
+margin-md| margin: 12px;|
+margin-sm | margin: 10px|
+mr-nm|margin-right: 16px;|
+ml-nm|margin-left: 16px|
+mt-nm|margin-top: 16px|
+mb-nm|margin-bottom: 16px|
+mr-md|margin-right: 12px;|
+ml-md|margin-left: 12px|
+mt-md|margin-top: 12px|
+mb-md|margin-bottom: 12px|
+mr-sm|margin-right: 10px;|
+ml-sm|margin-left: 10px|
+mt-sm|margin-top: 10px|
+mb-sm|margin-bottom: 10px|
+mr-xs|margin-right: 6px;|
+ml-xs|margin-left: 6px|
+mt-xs|margin-top: 6px|
+mb-xs|margin-bottom: 6px|
+
 
 ##### 图标文字间隙
 
