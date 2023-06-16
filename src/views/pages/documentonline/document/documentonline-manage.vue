@@ -15,7 +15,7 @@
           <div v-for="(item,index) in list" :key="index" class="list bg-block">
             <span class="tsfont-file-single pr-xs text-primary"></span>
             <div class="item border-color">
-              <div class="title pb-xs text-action" @click="gototDetail(item)">{{ item.fileName }}</div>
+              <div class="title overflow pb-xs text-action" @click="gototDetail(item)">{{ item.fileName }}</div>
               <div class="text-tip line-2" v-html="item.content"></div>
             </div>
           </div>

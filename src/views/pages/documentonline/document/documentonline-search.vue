@@ -4,8 +4,8 @@
       <Loading :loadingShow="loadingShow" type="fix"></Loading>
       <div v-for="(item,index) in list" :key="index" class="list">
         <span class="tsfont-file-single pr-xs text-primary"></span>
-        <div class="item overflow border-color pb-nm mb-nm">
-          <div class="title pb-xs text-action" @click="gotoPage(item)">{{ item.fileName }}</div>
+        <div class="item border-color pb-nm mb-nm">
+          <div class="title overflow pb-xs text-action" @click="gotoPage(item)">{{ item.fileName }}</div>
           <div class="text-tip line-2" v-html="item.content"></div>
         </div>
       </div>

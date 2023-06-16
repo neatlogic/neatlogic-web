@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="hasAuthorization" class="home">
+    <div v-if="hasAuthorization" class="home menu-min">
       <TopNav></TopNav>
       <div class="centermain">
         <div>
