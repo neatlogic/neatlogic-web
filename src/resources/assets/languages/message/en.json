@@ -269,5 +269,6 @@
   "passcode": "Please enter a string with a length between 8-20, consisting of at least 2 combinations of letters, numbers, and special characters",
   "editaftersave": "Please save before editing",
   "commentsucces": "Comment successful",
-  "syncsuccess": "Sync successful"
+  "syncsuccess": "Sync successful",
+  "downloadsuccessful": "Download successful"
 }

@@ -1,30 +1,30 @@
 <template>
   <div v-if="diff" class="bg-grey border-color file-li" :class="showType">
     <h4 class="file-title border-color">
-      <i class="btn-toggle text-action" :class="isShow ? 'ts-angle-down' : 'ts-angle-up'" @click="toggleShow()"></i>
-      <i 
+      <span class="btn-toggle text-action" :class="isShow ? 'ts-angle-down' : 'ts-angle-up'" @click="toggleShow()"></span>
+      <span 
         class="ts-file file-name cursor-pointer" 
         :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'"
         :title="diff.modifiedType && diff.modifiedType=='R'?'文件名由 '+diff.fromFileName+' 修改为 '+diff.toFileName:getName(diff)"
         @dblclick.stop="goToTree(diff)"
       >
-        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<i class="ts-long-arrow-right text-primary small"></i>{{ diff.toFileName }}</span>
+        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<span class="ts-long-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
-      </i>
-      <i 
+      </span>
+      <span 
         v-clipboard="getName(diff)" 
         v-clipboard:success="clipboardSuc"
         class="ts-chain btn-copy" 
-        title="复制文件路径"
-      ></i>
-      <i 
+        :title="$t('term.codehub.copyfileurl')"
+      ></span>
+      <span 
         v-clipboard="getName(diff,true)" 
         v-clipboard:success="clipboardSuc" 
         class="btn-copy" 
         :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'" 
-        title="复制文件名字"      
+        :title="$t('term.codehub.copyfilename')"      
         style="right:22px"
-      ></i>
+      ></span>
     </h4>
     <Loading v-if="diff.loadingMore" loadingShow style="height:100px"></Loading>
     <div v-else v-show="isShow">
@@ -44,13 +44,13 @@
                   <tr v-if="!hindex && !i && (hunk.fromFileRange.lineStart>1&&hunk.toFileRange.lineStart>1) && !diff.collapsed" :key="'prev_'+hindex+'_'+i">
                     <td 
                       class="from-lineno code-lineno cursor-pointer pre" 
-                      title="点击展开更多" 
+                      :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
                     ><div class="ts-option-horizontal text-action icon-more"></div></td>
                     <td v-if="showType=='separate'" class="code-content"></td>
                     <td 
                       class="to-lineno code-lineno cursor-pointer" 
-                      title="点击展开更多" 
+                      :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
                     ><div class="ts-option-horizontal text-action icon-more"></div></td>
                     <td class="code-content"></td>
@@ -66,7 +66,7 @@
                             :count="getLineCommit('left',setNumtext('from', hunk, i),commentList).length"
                             style="transform: scale(0.7);"
                           ></Badge>
-                          <i v-else class="comment-icon ts-chat-fill text-action" title="评论"></i>                        
+                          <span v-else class="comment-icon tsfont-message text-action" :title="$t('page.comment')"></span>                        
                         </div>
                         <div v-else-if="showType!='separate'" class="comment-line" @click.stop="toggleShowComment(line)">
                           <Badge 
@@ -74,7 +74,7 @@
                             :count="line.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
                             style="transform: scale(0.7);"
                           ></Badge>
-                          <i v-else class="comment-icon ts-chat-fill text-action" title="评论"></i>
+                          <span v-else class="comment-icon tsfont-message text-action" :title="$t('page.comment')"></span>
                         </div>
                       </template>
                     </td>
@@ -91,7 +91,7 @@
                           :count="getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
                           style="transform: scale(0.7);"
                         ></Badge>
-                        <i v-else class="comment-icon ts-chat-fill text-action" title="评论"></i>
+                        <span v-else class="comment-icon tsfont-message text-action" title="评论"></span>
                       </div>
                     </td>
                     <td class="code-content" :class="showType=='separate'?'to':''">
@@ -145,14 +145,14 @@
                     <td 
                       v-if="!hunk.getMoreLine"
                       class="from-lineno code-lineno cursor-pointer next" 
-                      title="点击展开更多" 
+                      :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('next',setNumtext('from', hunk,hunk.lines.length-1,true),setNumtext('to', hunk,hunk.lines.length-1),hunk,diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)"
                     ><div class="ts-option-horizontal text-action icon-more"></div></td>
                     <td v-if="!hunk.getMoreLine && showType=='separate'" class="code-content"></td>
                     <td 
                       v-if="!hunk.getMoreLine"
                       class="to-lineno code-lineno cursor-pointer" 
-                      title="点击展开更多" 
+                      :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('next',setNumtext('from', hunk,hunk.lines.length-1,true),setNumtext('to', hunk,hunk.lines.length-1),hunk,diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)"
                     ><div class="ts-option-horizontal text-action icon-more"></div></td>
                     <td v-if="!hunk.getMoreLine" class="code-content"></td>
@@ -170,8 +170,8 @@
             <tbody>
               <tr>
                 <td class="code-content text-center" :colspan="showType=='separate'?4:3" style="line-height:2.5;">
-                  <span class="text-tip">此差异已折叠，</span>
-                  <span class="text-href" @click.stop="showMore()">点击展开详情</span>
+                  <span class="text-tip">{{ $t('term.codehub.thisdifferencehasbeenfolded') }} ，</span>
+                  <span class="text-href" @click.stop="showMore()">{{ $t('term.codehub.clicktoexpandthedetails') }}</span>
                 </td>
               </tr>
             </tbody>
@@ -184,16 +184,16 @@
             <tbody>
               <tr>
                 <td class="code-content text-center" :colspan="showType=='separate'?4:3" style="line-height:2.5;">
-                  <span class="text-tip">此文件为二进制文件，暂不支持在线查看具体内容，</span>
+                  <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
                   <span
                     v-if="!isDowning"
                     v-download="downPath(diff)"
                     v-download:success="downloadok"
                     class="text-href"
-                  >点此可以下载文件</span>
+                  >{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
                   <Spin v-else>
                     <Icon type="ios-loading" size="12"></Icon>
-                    <div>下载中</div>
+                    <div>{{ $t('page.downloading') }}</div>
                   </Spin>
                 </td>
               </tr>
@@ -207,7 +207,7 @@
             <tbody>
               <tr>
                 <td class="code-content text-center" :colspan="showType=='separate'?4:3" style="line-height:2.5;">
-                  {{ diff.modifiedType && diff.modifiedType=='R'?'没有变更内容':'该文件为空' }}
+                  {{ diff.modifiedType && diff.modifiedType=='R'?$t('term.codehub.nochangesmade'):$t('term.codehub.thefileisempty') }}
                 </td>
               </tr>
             </tbody>
@@ -280,7 +280,7 @@ export default {
       this.isShow = true;
     },
     clipboardSuc() {
-      this.$Message.success('复制成功');
+      this.$Message.success(this.$t('message.copysuccess'));
     },
     goToTree(diff) {
       this.$emit('affix', diff);
@@ -392,7 +392,7 @@ export default {
       return firstList;
     },
     downloadok() {
-      this.$Message.success('下载成功');
+      this.$Message.success(this.$t('message.downloadsuccessful'));
     },
     changeDownStatus(type, event) { //下载进度和状态的监听
       if (type == 'start') {
@@ -534,7 +534,7 @@ export default {
           return {
             url: '/api/binary/codehub/repository/file/download',
             params: {
-              appModuleId: this.subsystemuuid,
+              appModuleId: this.appModuleId,
               branchName: this.branchname,
               commitId: this.rightcommitid,
               filePath: diff.toFileName
