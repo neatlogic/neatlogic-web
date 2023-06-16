@@ -1,8 +1,6 @@
 <template>
   <TsDialog
-    v-if="isShow"
     v-bind="setting"
-    :isShow="isShow"
     @on-close="close"
   >
     <div>
@@ -44,7 +42,8 @@ export default {
       setting: {
         title: this.editConfig ? this.$t('term.codehub.editauth') : this.$t('term.codehub.addauth'),
         maskClose: false,
-        width: 'medium'
+        width: 'medium',
+        isShow: true
       },
       isSubmit: false, //是否提交中，需要禁用调提交按钮
       formConfig: [

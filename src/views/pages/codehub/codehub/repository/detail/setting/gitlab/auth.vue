@@ -70,7 +70,6 @@
     <AuthAdd
       v-if="isEdit"
       :id="id"
-      :isShow="isEdit"
       :accList="accList"
       :editConfig="editConfig"
       @close="close"
