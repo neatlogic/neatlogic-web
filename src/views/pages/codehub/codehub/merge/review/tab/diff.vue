@@ -93,10 +93,10 @@ export default {
   props: {},
   provide() {
     return {
-      appSystemId: (this.mrData.appSystemVo && this.mrData.appSystemVo.id) || null,
-      repositoryuuid: this.mrData.appModuleId || null,
+      appModuleId: (this.mrData.appModuleVo && this.mrData.appModuleVo.id) || null,
+      repositoryId: this.mrData.appModuleId || null,
       branchname: this.mrData.srcBranch || null,
-      smruuid: this.id || null
+      smrId: this.id || null
     };
   },
   data() {
@@ -209,7 +209,6 @@ export default {
       let param = {
         mrId: this.id
       };
-      let _this = this;
       if (!this.id) {
         return;
       }
@@ -229,7 +228,7 @@ export default {
       cancel && cancel.cancel();
       const CancelToken = axios.CancelToken;
       this.cancelAxios = CancelToken.source();
-      axios.post('/api/rest/codehub/mergerequest/diff', param, { cancelToken: _this.cancelAxios.token }).then(res => {
+      axios.post('/api/rest/codehub/mergerequest/diff', param, { cancelToken: this.cancelAxios.token }).then(res => {
         if (res.Status == 'OK') {
           this.leftCommitId = res.Return.leftCommitId;
           this.rightCommitId = res.Return.rightCommitId;
@@ -279,9 +278,9 @@ export default {
           }
           
           //如果有从评论跳过来的在这里做定位
-          if (_this.selectFilepath) {
-            _this.$nextTick(() => {
-              _this.selectFile(_this.selectFilepath);
+          if (this.selectFilepath) {
+            this.$nextTick(() => {
+              this.selectFile(_this.selectFilepath);
             }, 200);
           }
         } else {
