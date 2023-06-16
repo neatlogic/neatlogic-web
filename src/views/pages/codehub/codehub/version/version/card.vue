@@ -118,8 +118,8 @@ export default {
     updateSize(size) {
       this.$emit('updateSize', size);
     },
-    addMr(id) {
-      this.$emit('addMr', id);
+    addMr(id, type) {
+      this.$emit('addMr', id, type);
     },
     deleteVersion(id) {
       this.$emit('deleteVersion', id);

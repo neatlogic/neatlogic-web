@@ -2337,6 +2337,15 @@
     "packupcontent": "收起对比内容",
     "continuesearch": "继续查找",
     "loadmore": "加载更多",
+    "copyfileurl": "复制文件路径",
+    "copyfilename": "复制文件名字",
+    "clicktoexpandmore": "点击展开更多",
+    "thisdifferencehasbeenfolded": "此差异已折叠",
+    "clicktoexpandthedetails": "点击展开详情",
+    "binaryfilecannotviewcontent": "此文件为二进制文件，暂不支持在线查看具体内容，",
+    "clickheretodownloadthefile": "点此可以下载文件",
+    "nochangesmade": "没有变更内容",
+    "thefileisempty": "该文件为空",
     "issuedetail": "需求详情"
   },
   "documentonline": {
