@@ -9,6 +9,8 @@
         :rightCommitId="rightCommitId"
         :queryName="queryName"
         :queryType="queryType"
+        :repositoryId="id"
+        :appModuleId="appModuleId"
         readOnly
         @endScroll="endScoll"
         @hasFixtop="showFixtop"
