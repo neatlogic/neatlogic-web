@@ -77,7 +77,7 @@
         </div>
       </div>
     </div>
-    <NoData v-else text="{{ $t('term.codehub.nocommitfile') }}"></NoData>
+    <NoData v-else text="此仓库尚未执行过代码提交,暂无文件"></NoData>
   </div>
   <Loading v-else loadingShow></Loading>
 </template>
