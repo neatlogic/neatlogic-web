@@ -12,12 +12,12 @@
         :tbodyList="authList"
       >
         <template slot="name" slot-scope="{row}">
-          <UserCard
+          <UserinfoGitlab
             :id="row.id"
             :row="row"
             type="member"
             :repositoryId="id"
-          ></UserCard>
+          ></UserinfoGitlab>
         </template>
         <template slot="state" slot-scope="{row}">
           <span :style="'color:' + colorConfig[row.state]">{{ row.state }}</span>
@@ -45,12 +45,12 @@
         :tbodyList="authGroupList"
       >
         <template slot="name" slot-scope="{row}">
-          <UserCard
+          <UserinfoGitlab
             :id="row.id"
             :row="row"
             type="group"
             :repositoryId="id"
-          ></UserCard>
+          ></UserinfoGitlab>
         </template>
         <template slot="endtime" slot-scope="{row}">
           {{ row.endtime | formatDate }}
@@ -83,7 +83,7 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     AuthAdd: resolve => require(['./auth-add.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserinfoGitlab: resolve => require(['@/views/pages/codehub/codehub/repository/components/userinfo-gitlab.vue'], resolve)
   },
   filters: {},
   directives: { download},
