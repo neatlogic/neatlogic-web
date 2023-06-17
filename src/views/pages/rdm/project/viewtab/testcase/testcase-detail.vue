@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <Loading
+    v-if="!isReady"
+    :loadingShow="true"
+    type="fix"
+  ></Loading>
+  <div v-else>
     <TsContain :rightWidth="250">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
@@ -12,7 +17,7 @@
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if="isReady && appId"
+            v-if=" appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -24,7 +29,7 @@
           <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="$t('page.detailinfo')" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
-                <IssueContent :issueData="issueData"></IssueContent>
+                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'relative', 'to')" name="childrequest">
@@ -53,12 +58,12 @@
           <div class="padding">
             <Divider />
             <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-              <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
+              <CommentList :issueData="issueData" :issueId="id"></CommentList>
             </TsFormItem>
             
             <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
               <StatusRequiredAttrList
-                v-if="isReady && !$utils.isEmpty(issueData)"
+                v-if=" !$utils.isEmpty(issueData)"
                 ref="requiredAttrList"
                 :appId="appId"
                 :issueData="issueData"
@@ -88,7 +93,8 @@ export default {
   name: '',
   components: {
     IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
-    IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
+    //IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
@@ -108,7 +114,6 @@ export default {
       catalogData: {},
       statusList: [],
       isReady: true,
-      isLoading: true,
       isTransferReady: true,
       appList: []
     };

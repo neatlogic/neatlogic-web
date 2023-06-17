@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <Loading
+    v-if="!isReady"
+    :loadingShow="true"
+    type="fix"
+  ></Loading>
+  <div v-else>
     <TsContain
       :rightWidth="250"
       :enableCollapse="true"
@@ -34,7 +39,7 @@
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if="isReady && appId"
+            v-if=" appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -87,12 +92,12 @@
             </TsFormItem>
 
             <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-              <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
+              <CommentList :issueData="issueData" :issueId="id"></CommentList>
             </TsFormItem>
 
             <TsFormItem v-bind="formItemConf" :label="$t('term.rdm.nextstatus')">
               <StatusRequiredAttrList
-                v-if="isReady && !$utils.isEmpty(issueData)"
+                v-if=" !$utils.isEmpty(issueData)"
                 ref="requiredAttrList"
                 :appId="appId"
                 :issueData="issueData"
@@ -145,7 +150,6 @@ export default {
       catalogData: {},
       statusList: [],
       isReady: true,
-      isLoading: true,
       isTransferReady: true,
       appList: []
     };

@@ -51,7 +51,6 @@
           </div>
         </div>
         <Divider />
-        <TsCkeditor v-model="issueData.content"></TsCkeditor>
         <ContentHandler
           :issueData="issueData"
           mode="edit"
@@ -69,7 +68,6 @@ export default {
     ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     //UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
     //TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
@@ -103,6 +101,7 @@ export default {
       },
       issueData: {
         appId: this.app.id,
+        appType: this.app.type,
         catalog: this.catalog,
         iteration: this.iteration,
         attrList: []

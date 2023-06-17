@@ -20,6 +20,7 @@ label|String|-|否|标题名称|表单控件对应的标题
 tooltip|String|-|否|标题说明|标题说明
 labelWidth|String,Number|120|否|标题的宽度|-
 labelPosition|String|right|否|标题显示地方| right  left   top
+labelStrong|Boolean|false|否|标题是否加粗| 
 contentAlign|String|left|否|内容水平对齐| left  center  right
 required|Boolean|false|否|是否必填|主要用于样式显示 *
 itemWidth|String,Number|100%|否|布局控件暂用的宽度|-

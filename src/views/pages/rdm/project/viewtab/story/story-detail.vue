@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <Loading
+    v-if="!isReady"
+    :loadingShow="true"
+    type="fix"
+  ></Loading>
+  <div v-else>
     <TsContain
       :rightWidth="250"
       :enableCollapse="true"
@@ -24,7 +29,7 @@
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if="isReady && appId"
+            v-if="appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -36,8 +41,7 @@
           <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="$t('page.detailinfo')" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
-                <!--<div v-html="issueData.content"></div>-->
-                <IssueContent :issueData="issueData"></IssueContent>
+                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
@@ -130,12 +134,12 @@
               v-if="issueData.commentCount"
               v-bind="formItemConf"
               :label="$t('page.comment')"
-            ><CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            ><CommentList :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
             <TsFormItem
               v-bind="formItemConf"
               :label="$t('term.rdm.nextstatus')"
             ><StatusRequiredAttrList
-              v-if="isReady && !$utils.isEmpty(issueData)"
+              v-if=" !$utils.isEmpty(issueData)"
               ref="requiredAttrList"
               :appId="appId"
               :issueData="issueData"
@@ -161,7 +165,7 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
-    IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
@@ -184,8 +188,7 @@ export default {
       issueDataSnapshot: {},
       catalogData: {},
       statusList: [],
-      isReady: true,
-      isLoading: true,
+      isReady: false,
       isTransferReady: true,
       appList: []
     };

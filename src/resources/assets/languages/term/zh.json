@@ -2111,7 +2111,13 @@
     "testresult": "预期结果",
     "pleasesetstatus": "请先定义状态",
     "listview": "列表视图",
-    "levelview": "层级视图"
+    "levelview": "层级视图",
+    "changetime": "变更时间",
+    "editor": "变更人",
+    "changetype": "变更方式",
+    "changeattr": "变更属性",
+    "beforechange": "变更前",
+    "afterchange": "变更后"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

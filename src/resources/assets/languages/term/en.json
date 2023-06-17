@@ -2114,7 +2114,13 @@
     "testresult": "Expected results",
     "pleasesetstatus": "Please define the status first",
     "listview": "List View",
-    "levelview": "hierarchy view "
+    "levelview": "hierarchy view ",
+    "changetime": "Change time",
+    "editor": "Changed by",
+    "changetype": "Change method",
+    "changeattr": "Change attributes",
+    "beforechange": "Before change",
+    "afterchange": "After the change"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
