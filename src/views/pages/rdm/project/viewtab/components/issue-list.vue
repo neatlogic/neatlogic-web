@@ -35,15 +35,17 @@
               :transfer="true"
               type="daterange"
               format="yyyy-MM-dd"
-              @change="(val) => {
-                if (val != null) {
-                  $set(valueConfig, 'createDate', val);
-                  $set(textConfig, 'createDate' , val);
-                } else {
-                  $delete(valueConfig, 'createDate' );
-                  $delete(textConfig, 'createDate' );
+              @change="
+                val => {
+                  if (val != null) {
+                    $set(valueConfig, 'createDate', val);
+                    $set(textConfig, 'createDate', val);
+                  } else {
+                    $delete(valueConfig, 'createDate');
+                    $delete(textConfig, 'createDate');
+                  }
                 }
-              }"
+              "
             ></TsFormDatePicker>
           </template>
           <template v-for="(attr, index) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
@@ -90,6 +92,20 @@
       @changePageSize="changePageSize"
       @getSelected="getSelected"
     >
+      <template v-slot:checked="{ row }">
+        <span v-if="checkedIdList && checkedIdList.includes(row.id)" class="text-success">已选</span>
+        <Checkbox
+          v-else
+          :value="!!row._selected"
+          :true-value="true"
+          :false-value="false"
+          @on-change="
+            val => {
+              changeChecked(val, row);
+            }
+          "
+        ></Checkbox>
+      </template>
       <template v-for="(attr, index) in attrList" :slot="attr.id ? attr.id.toString() : attr.type" slot-scope="{ row }">
         <div :key="index">
           <AttrViewer v-if="attr.id != 0 && isSearchReady" :attrConfig="attr" :issueData="row"></AttrViewer>
@@ -162,6 +178,7 @@ export default {
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
     canSelect: { type: Boolean, default: false },
+    checkedIdList: { type: Array },
     iteration: { type: Number }, //迭代id
     projectId: { type: Number }, //项目id
     parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
@@ -262,10 +279,25 @@ export default {
     refresh(currentPage) {
       this.searchIssue(currentPage);
     },
+    getSelectedIssueList() {
+      const itemList = [];
+      if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
+        this.issueData.tbodyList.forEach(item => {
+          if (item._selected) {
+            itemList.push(item);
+          }
+        });
+      }
+      return itemList;
+    },
+    changeChecked(isSelected, issue) {
+      this.$set(issue, '_selected', isSelected);
+      this.$emit('selected', this.getSelectedIssueList());
+    },
     initTheadList() {
       if (this.displayAttrList && this.displayAttrList.length > 0) {
         this.displayAttrList.forEach(attr => {
-          this.theadList.push({ key: attr.id.toString(), title: attr.label });
+          this.theadList.push({ key: attr.id ? attr.id.toString() : attr.type, title: attr.label });
           this.searchConfig.searchList.push({
             type: 'slot',
             name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
@@ -276,9 +308,14 @@ export default {
     },
     initAppList() {
       if (this.projectId && this.relAppType) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId, { appType: this.relAppType }).then(res => {
-          this.appList = res.Return;
-        });
+        this.$api.rdm.project
+          .getAppByProjectId(this.projectId, {
+            needSystemAttr: 1,
+            appType: this.relAppType
+          })
+          .then(res => {
+            this.appList = res.Return;
+          });
       }
     },
     initSearchConfig() {
@@ -316,7 +353,7 @@ export default {
           this.appSetting = res.Return;
           if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.app.attrList && this.app.attrList.length > 0) {
             this.appSetting.config.attrList.forEach(attrconf => {
-              const attr = this.app.attrList.find(d => d.id ? d.id === attrconf.attrId : d.type === attrconf.attrType);
+              const attr = this.app.attrList.find(d => (d.id ? d.id === attrconf.attrId : d.type === attrconf.attrType));
               if (attr) {
                 this.$set(attr, 'sort', attrconf.sort);
                 this.$set(attr, 'showType', attrconf.showType || 'all');
@@ -408,9 +445,9 @@ export default {
             param.toId = this.toId;
             param.fromId = issue.id;
           } else if (this.parentId) {
-            param.id = issue.id; 
+            param.id = issue.id;
           } else if (issue.parentId) {
-            param.id = issue.parentId; 
+            param.id = issue.parentId;
           }
           if (param.fromId && param.toId) {
             this.$api.rdm.issue.deleteIssueRel(param).then(res => {
@@ -515,7 +552,7 @@ export default {
     finalTheadList() {
       const list = [];
       if (this.canSelect) {
-        list.push({ key: 'selection' });
+        list.push({ key: 'checked' });
       }
       list.push(...this.theadList);
       if (this.canAction) {

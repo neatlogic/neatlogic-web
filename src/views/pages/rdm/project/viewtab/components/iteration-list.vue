@@ -9,7 +9,7 @@
         :class="{
           'bg-op': currentIterationId !== iteration.id,
           'bg-selected': currentIterationId === iteration.id,
-          'processing': isProcessing(iteration)
+          processing: isProcessing(iteration)
         }"
         @click="selectIteration(iteration)"
       >
@@ -17,10 +17,11 @@
         <div>
           <strong>{{ iteration.name }}</strong>
         </div>
-        <div class="text-grey fz10">
+        <div class="text-grey fz10" style="position: relative">
           <span>{{ iteration.startDate | formatDate('yyyy-mm-dd') }}</span>
           <span class="ml-xs mr-xs">~</span>
           <span>{{ iteration.endDate | formatDate('yyyy-mm-dd') }}</span>
+          <span style="position: absolute; right: 0px" @click="toInterationDetail(iteration.id)">{{ $t('page.detail') }}</span>
         </div>
         <Divider v-if="iteration.issueCount" style="margin: 10px 0px"></Divider>
         <div v-if="iteration.issueCount">
@@ -45,7 +46,12 @@ export default {
   data() {
     return {
       loadingTip: this.$t('page.loadingtip'),
-      searchParam: { projectId: this.projectId, pageSize: 20, currentPage: 1 },
+      searchParam: {
+        projectId: this.projectId,
+        pageSize: 20,
+        currentPage: 1,
+        isOpen: 1
+      },
       iterationList: [],
       currentIterationId: null,
       height: 0
@@ -69,6 +75,9 @@ export default {
   },
   destroyed() {},
   methods: {
+    toInterationDetail(id) {
+      this.$router.push({ path: '/iteration-detail/' + this.projectId + '/' + this.appId + '/' + id });
+    },
     initHeight() {
       if (this.$el) {
         this.height = window.innerHeight - this.$el.getBoundingClientRect().top - 16;
@@ -86,6 +95,9 @@ export default {
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {
         const iterationList = res.Return.tbodyList;
+        if (!this.currentIterationId && iterationList.length > 0) {
+          this.selectIteration(iterationList[0]);
+        }
         const pageSize = res.Return.pageSize;
         if (iterationList && iterationList.length) {
           if (iterationList.length > pageSize) {

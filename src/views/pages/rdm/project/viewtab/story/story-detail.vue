@@ -1,9 +1,5 @@
 <template>
-  <Loading
-    v-if="!isReady"
-    :loadingShow="true"
-    type="fix"
-  ></Loading>
+  <Loading v-if="!isReady" :loadingShow="true" type="fix"></Loading>
   <div v-else>
     <TsContain
       :rightWidth="250"
@@ -39,9 +35,14 @@
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
           <Tabs v-model="currentTab" :animated="false">
-            <TabPane :label="$t('page.detailinfo')" name="main">
+            <TabPane :label="render => renderEditContentTab(render, $t('page.detailinfo'))" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
-                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
+                <ContentHandler
+                  :mode="contentMode"
+                  :issueData="issueData"
+                  :autoSave="false"
+                  @cancel="contentMode = 'read'"
+                ></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
@@ -130,28 +131,16 @@
                 :defaultList="issueData.fileList"
               ></TsUpLoad>
             </TsFormItem>
-            <TsFormItem
-              v-if="issueData.commentCount"
-              v-bind="formItemConf"
-              :label="$t('page.comment')"
-            ><CommentList :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
-            <TsFormItem
-              v-bind="formItemConf"
-              :label="$t('term.rdm.nextstatus')"
-            ><StatusRequiredAttrList
-              v-if=" !$utils.isEmpty(issueData)"
+            <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')"><CommentList :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            <TsFormItem v-bind="formItemConf" :label="$t('term.rdm.nextstatus')"><StatusRequiredAttrList
+              v-if="!$utils.isEmpty(issueData)"
               ref="requiredAttrList"
               :appId="appId"
               :issueData="issueData"
             ></StatusRequiredAttrList></TsFormItem>
-            <TsFormItem
-              v-bind="formItemConf"
-              :label="$t('page.reply')"
-            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
-            <TsFormItem
-              v-bind="formItemConf"
-              label=""
-            ><Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
+            <TsFormItem v-bind="formItemConf" :label="$t('page.reply')"><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+            <TsFormItem v-bind="formItemConf" label="">
+              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
             </TsFormItem>
           </div>
         </div>

@@ -9,6 +9,7 @@
             :canAppend="false"
             :canSearch="true"
             :needSearch="true"
+            :checkedIdList="relIssueIdList"
             :projectId="projectId"
             :app="app"
             @selected="selectIssue"
@@ -54,11 +55,14 @@ export default {
         maskClose: false,
         isShow: true
       },
-      targetIssueList: []
+      targetIssueList: [],
+      relIssueIdList: []
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getRelIssueIdList();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -68,6 +72,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getRelIssueIdList() {
+      this.$api.rdm.issue.getRelIssueList(this.id, this.reltype, this.direction).then(res => {
+        this.relIssueIdList = res.Return;
+      });
+    },
     selectIssue(issueList) {
       this.targetIssueList = issueList;
     },
@@ -83,7 +92,6 @@ export default {
           id: this.id,
           idList: this.targetIssueList.map(d => d.id)
         };
-        console.log(JSON.stringify(param, null, 2));
         this.$api.rdm.issue.saveIssueRel(param).then(res => {
           if (res.Status == 'OK') {
             this.close(true);

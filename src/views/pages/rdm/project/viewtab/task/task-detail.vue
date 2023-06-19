@@ -49,9 +49,14 @@
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
           <Tabs v-model="currentTab">
-            <TabPane :label="$t('page.detailinfo')" name="main">
-              <div class="pl-nm pr-nm">
-                <div v-html="issueData.content"></div>
+            <TabPane :label="render => renderEditContentTab(render, $t('page.detailinfo'))" name="main">
+              <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
+                <ContentHandler
+                  :mode="contentMode"
+                  :issueData="issueData"
+                  :autoSave="false"
+                  @cancel="contentMode = 'read'"
+                ></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'extend', 'to')" name="story">
@@ -127,6 +132,7 @@ export default {
   name: '',
   components: {
     IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
@@ -169,6 +175,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isHide) {
+      this.isSiderHide = isHide;
+      this.$localStore.set('isSiderHide', isHide);
+    },
     goToNext() {
       const requiredAttrList = this.$refs['requiredAttrList'];
       if (!requiredAttrList || requiredAttrList.valid()) {
