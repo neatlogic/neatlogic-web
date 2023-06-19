@@ -968,5 +968,19 @@ export default {
     str = str.replace(/ /gi, '');
     str = str.replace(/&nbsp;/ig, ' '); //替换HTML空格
     return str;
+  },
+  getAbbrNameAndName(systemConfig) {
+    // 获取简称(名称)
+    let text = '';
+    if (systemConfig && systemConfig.abbrName) {
+      if (systemConfig.name) {
+        text = `${systemConfig.abbrName}(${systemConfig.name})`
+      } else {
+        text = systemConfig.abbrName;
+      }
+    } else if(systemConfig && systemConfig.name) {
+      text = systemConfig.name;
+    }
+    return text;
   }
 };
