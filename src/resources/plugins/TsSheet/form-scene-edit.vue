@@ -102,6 +102,7 @@
             :formItemList="cellFormItemList"
             :error="currentFormItemError"
             :disabled="disabled"
+            :initFormItemList="initFormItemList"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
             @inheritFormItem="inheritFormItem"

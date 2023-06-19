@@ -27,6 +27,7 @@
             :formItem="formItem"
             :formItemList="formItemList"
             :disabled="!!formItem.inherit || disabled"
+            :initFormItemList="initFormItemList"
             class="mb-sm"
           ></component>
           <FormCustomItemConfig
@@ -97,7 +98,11 @@ export default {
     formItem: { type: Object }, //当前表单组件
     formItemList: { type: Array }, //所有表单组件
     customFormItem: { type: Object }, //测试时直接从外部传入的组件数据
-    disabled: {type: Boolean, default: false}
+    disabled: {type: Boolean, default: false},
+    initFormItemList: { //默认表单组件列表
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     const _this = this;
