@@ -5,17 +5,17 @@
         <span class="tsfont-plus text-action" @click="addAction()">{{ $t('page.actions') }}</span>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchList(1)"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="() => changeCurrent(1)"></CombineSearcher>
       </template>
       <div slot="content">
         <div>
           <div>
-            <Loading v-if="isLoad" loadingShow style="min-height: 100px"></Loading>
+            <Loading v-if="loadingShow" loadingShow type="fix"></Loading>
             <TsTable
               v-else
               v-bind="tableData"
-              @changeCurrent="updatePage"
-              @changePageSize="updateSize"
+              @changeCurrent="changeCurrent"
+              @changePageSize="changePageSize"
             >
               <template slot="status" slot-scope="{ row }">
                 <span v-for="(status, sindex) in row.statusList" :key="sindex">
@@ -61,25 +61,22 @@
                 {{ row.versionName || '-' }}
               </template>
               <template slot="isActive" slot-scope="{ row }">
-                <i-switch
+                <TsFormSwitch
                   v-model="row.isActive"
                   :true-value="1"
                   :false-value="0"
-                  @on-change="
-                    val => {
-                      btnSetActive(row, val);
-                    }
-                  "
-                ></i-switch>
-                <span v-if="row.isActive == 1" class="text-tip">{{ $t('page.enabled') }}</span>
-                <span v-else class="text-tip">{{ $t('page.disable') }}</span>
+                  showStatus
+                  @on-change=" val => {
+                    changeIsActive(row, val);
+                  }"
+                ></TsFormSwitch>
               </template>
               <template slot="action" slot-scope="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li class="action-item text-action ts-edit" @click="editAction(row.id)">{{ $t('page.edit') }}</li>
-                    <li class="action-item text-action ts-trash" @click="deleteAction(row.id)">{{ $t('page.delete') }}</li>
-                    <li class="action-item text-action ts-catalogue" @click="actionId = row.id">{{ $t('term.codehub.triggerlog') }}</li>
+                    <li class="action-item text-action tsfont-edit" @click="editAction(row.id)">{{ $t('page.edit') }}</li>
+                    <li class="action-item text-action tsfont-trash-o" @click="deleteAction(row.id)">{{ $t('page.delete') }}</li>
+                    <li class="action-item text-action tsfont-file-single" @click="actionId = row.id">{{ $t('term.codehub.triggerlog') }}</li>
                   </ul>
                 </div>
               </template>
@@ -91,7 +88,6 @@
     <ActionEdit
       v-if="isActionDialogShow"
       :id="id"
-      ref="ActionEdit"
       @close="closeActionDialog"
     ></ActionEdit>
     <ActionLog v-if="actionId" :id="actionId" @close="actionId = null"></ActionLog>
@@ -102,6 +98,7 @@
 export default {
   name: '',
   components: {
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     ActionEdit: resolve => require(['./action/action-edit.vue'], resolve),
@@ -110,11 +107,10 @@ export default {
   props: [''],
   data() {
     return {
-      isLoad: false,
+      loadingShow: false,
       isActionDialogShow: false,
       id: null,
       actionId: null,
-      keyword: '',
       tableData: {
         theadList: [
           {
@@ -164,11 +160,9 @@ export default {
             dynamicUrl: '/api/rest/codehub/appsystem/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
-            value: this.appSystemId,
             onChange: val => {
               this.appSystemId = val;
               this.updateModule(val);
-              this.getSearch();
             }
           },
           {
@@ -177,13 +171,7 @@ export default {
             label: this.$t('page.module'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id',
-            value: this.appModuleId,
-            onChange: val => {
-              this.appModuleId = val;
-              this.getSearch();
-            }
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -202,21 +190,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchList(currentPage) {
-      if (this.tableData) {
-        if (currentPage) {
-          this.tableData.currentPage = currentPage;
-        }
-      }
+    searchList() {
       let param = {
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize,
         ...this.searchVal
       };
-      this.keyword && (param.keyword = this.keyword);
-      this.appModuleId && (param.appModuleId = this.appModuleId);
-      this.appSystemId && (param.appSystemId = this.appSystemId);
-      this.isLoad = true;
+      this.loadingShow = true;
       this.$api.codehub.merge
         .getActionList(param)
         .then(res => {
@@ -233,23 +213,19 @@ export default {
           }
         })
         .finally(() => {
-          this.isLoad = false;
+          this.loadingShow = false;
         });
     },
-    updatePage(page) {
-      this.tableData.currentPage = page;
+    changeCurrent(currentPage) {
+      this.tableData.currentPage = currentPage;
       this.searchList();
     },
-    updateSize(size) {
+    changePageSize(pageSize) {
       this.tableData.currentPage = 1;
-      this.tableData.pageSize = size;
+      this.tableData.pageSize = pageSize;
       this.searchList();
     },
-    getSearch() {
-      this.tableData.currentPage = 1;
-      this.searchList();
-    },
-    btnSetActive(row, isActive) {
+    changeIsActive(row, isActive) {
       let id = row.id;
       if (isActive) {
         isActive = 1;
@@ -257,7 +233,6 @@ export default {
         isActive = 0;
       }
       row.isActive = isActive;
-
       this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -270,10 +245,9 @@ export default {
       this.id = id;
       this.isActionLogDialogShow = true;
     },
-    addAction: function() {
+    addAction() {
       this.id = null;
       this.isActionDialogShow = true;
-      this.$forceUpdate();
     },
     editAction(id) {
       if (id) {
@@ -290,7 +264,7 @@ export default {
           this.$api.codehub.merge.deleteAction({ id: id }).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.getSearch();
+              this.changeCurrent(1);
               vnode.isShow = false;
             } else {
               this.$Message.error(res.Message);
@@ -306,11 +280,10 @@ export default {
       this.isActionDialogShow = false;
       this.id = null;
       if (needRefresh) {
-        this.getSearch();
+        this.changeCurrent(1);
       }
     },
     updateModule(val) {
-      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach(item => {
           if (item && item.name == 'appModuleId') {
@@ -334,66 +307,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.text-label {
-  line-height: 54px;
-}
-.top-title {
-  .title {
-    line-height: 30px;
-  }
-  .desc {
-    line-height: 20px;
-  }
-  padding-left: 20px;
-  margin-left: 20px;
-  border-left: 1px solid @default-border;
-}
-.btnJobActive {
-  width: 60px;
-  height: 24px;
-  background: #ddd;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  position: relative;
-  padding: 0 10px;
-  font-size: 10px;
-  line-height: 24px;
-  color: #fff;
-  text-align: left;
-  transition: all 0.3s;
-}
-.btnJobActive:before {
-  content: '激活';
-}
-
-.btnJobActive:after {
-  content: '';
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  display: block;
-  border-radius: 50%;
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  transition: all 0.3s;
-}
-
-.btnJobActive.on {
-  background: #0d6cff;
-  text-align: right;
-}
-
-.btnJobActive.on:before {
-  content: '禁用';
-}
-
-.btnJobActive.on:after {
-  left: 3px;
-  right: auto;
-}
 </style>

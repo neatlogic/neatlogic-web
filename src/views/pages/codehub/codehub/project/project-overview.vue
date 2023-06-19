@@ -1,5 +1,9 @@
 <template>
   <div>
+    <Loading
+      :loadingShow="loadingShow"
+      type="fix"
+    ></Loading>
     <TsContain class="bg-block">
       <template slot="topLeft">
         <div class="action-group">
@@ -22,32 +26,10 @@
           @getSelected="getSelected"
         >
           <template slot="appSystemVo" slot-scope="{row}">
-            <Tooltip
-              v-if="row.appSystemVo.abbrName"
-              theme="light"
-              max-width="300"
-              transfer
-            >
-              <div>{{ row.appSystemVo.abbrName }}</div>
-              <div slot="content">
-                <div>{{ row.appSystemVo.name }}</div>
-              </div>
-            </Tooltip>
-            <div v-else>{{ row.appSystemVo.abbrName }}</div>
+            <div>{{ $utils.getAbbrNameAndName(row.appSystemVo) }}</div>
           </template>
           <template slot="name" slot-scope="{row}">
-            <Tooltip
-              v-if="row.name"
-              theme="light"
-              max-width="300"
-              transfer
-            >
-              <div>{{ row.abbrName }}</div>
-              <div slot="content">
-                <div>{{ row.name }}</div>
-              </div>
-            </Tooltip>
-            <div v-else>{{ row.abbrName }}</div>
+            <div>{{ $utils.getAbbrNameAndName(row) }}</div>
           </template>
           <template slot="projectList" slot-scope="{row}">
             <template v-if="row.projectList.length>0">
@@ -59,8 +41,8 @@
           <template slot="action" slot-scope="{ row }">
             <div v-if="row.canEdit" class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-edit" @click="editProject(row)">{{ $t('page.edit') }}</li>
-                <li class="ts-trash" @click="deleteProject(row)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-edit" @click="editProject(row)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o" @click="deleteProject(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -88,6 +70,7 @@ export default {
   props: [''],
   data() {
     return {
+      loadingShow: true,
       appSystemId: null,
       appModuleId: null,
       tableData: {
@@ -201,7 +184,7 @@ export default {
         currentPage: this.tableData.currentPage,
         ...this.searchVal
       };
-      
+      this.loadingShow = true;
       this.$api.codehub.project.getList(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$set(this.tableData, 'pageCount', res.Return.pageCount);
@@ -212,6 +195,8 @@ export default {
         } else {
           this.$set(this.tableData, 'tbodyList', []);
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     deleteProject(row) {

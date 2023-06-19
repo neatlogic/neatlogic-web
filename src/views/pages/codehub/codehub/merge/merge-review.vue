@@ -53,9 +53,9 @@
           </div>
           <div class="desc">
             <Tooltip theme="light" max-width="300">
-              <div>{{ setTxt(mrData) }}</div>
+              <div>{{ $utils.getAbbrNameAndName(mrData.appSystemVo) ? `${$utils.getAbbrNameAndName(mrData.appSystemVo)}/${$utils.getAbbrNameAndName(mrData.appModuleVo)}` : $utils.getAbbrNameAndName(mrData.appModuleVo) }}</div>
               <div slot="content">
-                <div>{{ setTxt(mrData) }}</div>
+                <div>{{ $utils.getAbbrNameAndName(mrData.appSystemVo) ? `${$utils.getAbbrNameAndName(mrData.appSystemVo)}/${$utils.getAbbrNameAndName(mrData.appModuleVo)}` : $utils.getAbbrNameAndName(mrData.appModuleVo) }}</div>
               </div>
             </Tooltip>
             <Tag v-if="mrData.versionVo && mrData.versionVo.version" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.version }}</Tag>
@@ -334,16 +334,6 @@ export default {
   },
   filter: {},
   computed: {
-    setTxt() {
-      //回显对应的系统、子系统的描述
-      return function(config, type) {
-        let text = '';
-        let prev = config.appSystemVo || '';
-        let next = config.appModuleVo || '';
-        text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : prev.name) : '') + (next ? '/' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : next.name) : '');
-        return text;
-      };
-    },
     setStatus() {
       //状态的颜色
       return function(type, val) {
@@ -368,18 +358,6 @@ export default {
 @import (reference) '~@/resources/assets/css/variable.less';
 .action-item {
   width: 24px;
-}
-.top-title {
-  .title {
-    line-height: 26px;
-   
-  }
-  .desc {
-    line-height: 20px;
-  }
-  padding-left: 20px;
-  margin-left: 20px;
-  border-left: 1px solid @default-border;
 }
 /deep/ .TsFormSelect .select-top {
   line-height: 24px;
