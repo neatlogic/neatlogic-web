@@ -23,7 +23,7 @@
 import CommentList from '../comment/comment-list.vue';
 import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';
 export default {
-  name: '',
+  name: '', // 评论行的组件
   components: {
     TsCkeditor,
     CommentList

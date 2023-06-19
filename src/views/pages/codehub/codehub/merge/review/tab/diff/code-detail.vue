@@ -506,6 +506,7 @@ export default {
     },
     downPath() {
       return function(diff) {
+        let toFileName = diff.toFileName == '/dev/null' ? diff.fromFileName : diff.toFileName;
         if (this.queryType) {
           if (this.queryType == 'branch') {
             return {
@@ -514,7 +515,7 @@ export default {
                 appModuleId: this.appModuleId,
                 branchName: this.queryName,
                 commitId: this.rightcommitid,
-                filePath: diff.toFileName
+                filePath: toFileName
               },
               changeStatus: this.changeDownStatus
             };
@@ -525,7 +526,7 @@ export default {
                 appModuleId: this.appModuleId,
                 tagName: this.queryName,
                 commitId: this.rightcommitid,
-                filePath: diff.toFileName
+                filePath: toFileName
               },
               changeStatus: this.changeDownStatus
             };            
@@ -537,7 +538,7 @@ export default {
               appModuleId: this.appModuleId,
               branchName: this.branchname,
               commitId: this.rightcommitid,
-              filePath: diff.toFileName
+              filePath: toFileName
             },
             changeStatus: this.changeDownStatus
           }; 
