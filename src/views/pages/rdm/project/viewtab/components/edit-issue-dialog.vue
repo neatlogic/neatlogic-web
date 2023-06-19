@@ -10,6 +10,7 @@
                   ref="issueName"
                   v-model="issueData.name"
                   border="border"
+                  :maxlength="50"
                   :validateList="[{ name: 'required', message: ' ' }]"
                 ></TsFormInput>
               </TsFormItem>
@@ -50,7 +51,10 @@
           </div>
         </div>
         <Divider />
-        <TsCkeditor v-model="issueData.content"></TsCkeditor>
+        <ContentHandler
+          :issueData="issueData"
+          mode="edit"
+        ></ContentHandler>
       </div>
     </template>
   </TsDialog>
@@ -61,9 +65,9 @@ export default {
   components: {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     //UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
     //TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
@@ -97,6 +101,7 @@ export default {
       },
       issueData: {
         appId: this.app.id,
+        appType: this.app.type,
         catalog: this.catalog,
         iteration: this.iteration,
         attrList: []

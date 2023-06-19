@@ -1,25 +1,23 @@
 <template>
-  <div>
+  <Loading
+    v-if="!isReady"
+    :loadingShow="true"
+    type="fix"
+  ></Loading>
+  <div v-else>
     <TsContain :rightWidth="250">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="action-group">
-          <div class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></div>
-          <div class="action-item">
-            <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
-          </div>
-          <div class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></div>
-          <div class="action-item"><IssueFavorite v-if="id" :issueId="id"></IssueFavorite></div>
-        </div>
+        <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
       <template v-slot:topRight>
       </template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if="isReady && appId"
+            v-if=" appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -28,10 +26,10 @@
       </template>
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
-          <Tabs v-model="currentTab">
+          <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="$t('page.detailinfo')" name="main">
-              <div class="pl-nm pr-nm">
-                <div v-html="issueData.content"></div>
+              <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
+                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'relative', 'to')" name="childrequest">
@@ -60,12 +58,12 @@
           <div class="padding">
             <Divider />
             <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-              <CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList>
+              <CommentList :issueData="issueData" :issueId="id"></CommentList>
             </TsFormItem>
             
             <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
               <StatusRequiredAttrList
-                v-if="isReady && !$utils.isEmpty(issueData)"
+                v-if=" !$utils.isEmpty(issueData)"
                 ref="requiredAttrList"
                 :appId="appId"
                 :issueData="issueData"
@@ -94,10 +92,10 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
+    //IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
     AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
@@ -116,7 +114,6 @@ export default {
       catalogData: {},
       statusList: [],
       isReady: true,
-      isLoading: true,
       isTransferReady: true,
       appList: []
     };

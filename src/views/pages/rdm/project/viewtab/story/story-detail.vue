@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <Loading
+    v-if="!isReady"
+    :loadingShow="true"
+    type="fix"
+  ></Loading>
+  <div v-else>
     <TsContain
       :rightWidth="250"
       :enableCollapse="true"
@@ -10,14 +15,7 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="action-group">
-          <span class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
-          <span class="action-item">
-            <strong class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
-          </span>
-          <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
-          <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
-        </div>
+        <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
       <template v-slot:topRight></template>
       <template v-slot:sider>
@@ -31,7 +29,7 @@
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if="isReady && appId"
+            v-if="appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -40,10 +38,10 @@
       </template>
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
-          <Tabs v-model="currentTab">
+          <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="$t('page.detailinfo')" name="main">
-              <div class="pl-nm pr-nm">
-                <div v-html="issueData.content"></div>
+              <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
+                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('page.task'), 'task', 'extend', 'from')" name="task">
@@ -136,12 +134,12 @@
               v-if="issueData.commentCount"
               v-bind="formItemConf"
               :label="$t('page.comment')"
-            ><CommentList v-if="isReady" :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            ><CommentList :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
             <TsFormItem
               v-bind="formItemConf"
               :label="$t('term.rdm.nextstatus')"
             ><StatusRequiredAttrList
-              v-if="isReady && !$utils.isEmpty(issueData)"
+              v-if=" !$utils.isEmpty(issueData)"
               ref="requiredAttrList"
               :appId="appId"
               :issueData="issueData"
@@ -153,8 +151,7 @@
             <TsFormItem
               v-bind="formItemConf"
               label=""
-            >
-              <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
+            ><Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
             </TsFormItem>
           </div>
         </div>
@@ -168,10 +165,9 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
+    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
+    IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
     CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
@@ -192,8 +188,7 @@ export default {
       issueDataSnapshot: {},
       catalogData: {},
       statusList: [],
-      isReady: true,
-      isLoading: true,
+      isReady: false,
       isTransferReady: true,
       appList: []
     };

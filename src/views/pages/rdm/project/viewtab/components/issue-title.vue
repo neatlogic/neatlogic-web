@@ -1,0 +1,79 @@
+<template>
+  <div class="action-group">
+    <span class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
+    <span class="action-item" @click="editTitle()">
+      <strong v-if="!isEditing" class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
+      <TsFormInput
+        v-else
+        ref="input"
+        v-model="issueName"
+        :validateList="[{ name: 'required', message: ' ' }]"
+        border="border"
+        :maxlength="50"
+        :width="350"
+        @on-keydown="saveIssue"
+        @on-blur="isEditing = false"
+      ></TsFormInput>
+    </span>
+    <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
+    <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
+    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
+    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+  },
+  props: {
+    issueData: { type: Object },
+    readonly: { type: Boolean, default: false }
+  },
+  data() {
+    return {
+      isEditing: false,
+      issueName: null
+    };
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    editTitle() {
+      if (!this.readonly) {
+        this.isEditing = true;
+        this.issueName = this.issueData.name;
+        setTimeout(() => {
+          this.$refs['input'].focus();
+        }, 300);
+      }
+    },
+    saveIssue(event) {
+      if (event.keyCode === 13 && this.$refs['input'].valid()) {
+        this.issueData.name = this.issueName;
+        this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
+          if (res.Status === 'OK') {
+            this.isEditing = false;
+          }
+        });
+      } else if (event.keyCode === 27) {
+        this.isEditing = false;
+      }
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {}
+};
+</script>
+<style lang="less"></style>

@@ -2112,7 +2112,13 @@
     "testresult": "预期结果",
     "pleasesetstatus": "请先定义状态",
     "listview": "列表视图",
-    "levelview": "层级视图"
+    "levelview": "层级视图",
+    "changetime": "变更时间",
+    "editor": "变更人",
+    "changetype": "变更方式",
+    "changeattr": "变更属性",
+    "beforechange": "变更前",
+    "afterchange": "变更后"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
@@ -2332,13 +2338,30 @@
     "delprotectbranch": "是否确认删除该保护分支",
     "addprotectbranch": "添加分支保护",
     "selectresource": "已选资源",
-    "nogroupmembers": "暂无分组成员",
     "commitcountinfo": "当前已加载 {allcount} 条，找到满足条件的提交 {currentcount} 条",
     "choosebranchortag": "请选择分支或标签",
     "commituserorlogkeyword": "提交人或提交日志关键字",
     "packupcontent": "收起对比内容",
     "continuesearch": "继续查找",
     "loadmore": "加载更多",
+    "copyfileurl": "复制文件路径",
+    "copyfilename": "复制文件名字",
+    "clicktoexpandmore": "点击展开更多",
+    "thisdifferencehasbeenfolded": "此差异已折叠",
+    "clicktoexpandthedetails": "点击展开详情",
+    "binaryfilecannotviewcontent": "此文件为二进制文件，暂不支持在线查看具体内容，",
+    "clickheretodownloadthefile": "点此可以下载文件",
+    "nochangesmade": "没有变更内容",
+    "thefileisempty": "该文件为空",
     "issuedetail": "需求详情"
+  },
+  "documentonline": {
+    "currentpagesearch": "当前页面相关帮助",
+    "openhelp": "打开帮助中心",
+    "openhelpdocument": "在新页面打开帮助",
+    "searchhelp": "搜索帮助",
+    "helpcenter": "帮助中心",
+    "whathelp": "请问有什么能帮到您？",
+    "problemdes": "问题描述"
   }
 }

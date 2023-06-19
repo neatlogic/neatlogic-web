@@ -12,7 +12,7 @@
         <span v-if="getFileCount(diffList,'deleteCount')">行删除</span>
       </div>
     </div>
-    <div class="diff-container" :class="showTree ?'':'hideLeft'" style="height:calc(100vh - 170px)">
+    <div class="diff-container" :class="showTree ?'':'hideLeft'">
       <div class="clearfix" style="margin-bottom: 4px;">
         <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
         <div class="pt-sm mr-sm" style="display: flex;justify-content: end;">
@@ -280,7 +280,7 @@ export default {
           //如果有从评论跳过来的在这里做定位
           if (this.selectFilepath) {
             this.$nextTick(() => {
-              this.selectFile(_this.selectFilepath);
+              this.selectFile(this.selectFilepath);
             }, 200);
           }
         } else {
@@ -478,6 +478,8 @@ export default {
 .diff-container{
   position: relative;
   padding-left: 200px;
+  height:calc(100vh - 210px); // 头部+导航栏+tab+文件描述信息+16间隙
+  overflow-y: hidden; // 解决内外双层滚动条的问题
   .diff-left{
     position: absolute;
     top: 0;
@@ -488,7 +490,7 @@ export default {
     overflow: auto;
   }
   .diff-main{
-    padding: 10px;
+    padding: 10px 10px 50px 10px;
     overflow: auto;
     max-height: calc(100vh - 210px);
   }

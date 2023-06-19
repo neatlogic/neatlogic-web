@@ -7,10 +7,9 @@
       <div>{{ result.code }}</div>
       <div class="title">{{ $t('term.pbc.message') }}：</div>
       <div>{{ result.msg }}</div>
-      <div class="title">{{ $t('page.exception') }}：</div>
-      <div>
+      <div v-if="result.data && result.data.length > 0" class="title">{{ $t('page.exception') }}：</div>
+      <div v-if="result.data && result.data.length>0">
         <TsTable
-          v-if="result.data && result.data.length>0"
           :theadList="theadList"
           :tbodyList="result.data"
         >
