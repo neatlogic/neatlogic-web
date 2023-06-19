@@ -117,7 +117,7 @@ export default {
           this.$refs['file_' + path][0].showDetail();
         }
         this.scrollFn && clearTimeout(this.scrollFn);
-        this.scrollFn = setTimeout(function() {
+        this.scrollFn = setTimeout(() => {
           this.$emit('endScroll');
         }, 200);
       }

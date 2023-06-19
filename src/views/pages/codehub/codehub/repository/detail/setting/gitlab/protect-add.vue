@@ -46,7 +46,7 @@ export default {
           validateList: ['required'],
           dynamicUrl: '/api/rest/codehub/repository/gitlab/searchBranches',
           params: {
-            repositoryUuid: _this.uuid
+            repositoryId: _this.uuid
           },
           rootName: 'tbodyList',
           textName: 'name',
@@ -98,7 +98,7 @@ export default {
       if (this.$refs.editform.valid()) { 
         let param = this.$refs.editform.getFormValue(); 
         Object.assign(param, {
-          repositoryUuid: this.uuid,
+          repositoryId: this.uuid,
           method: 'protectBranch'
         });   
         this.isSubmit = true;
