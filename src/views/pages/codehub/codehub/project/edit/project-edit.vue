@@ -37,12 +37,8 @@ export default {
         maskClose: false,
         isShow: true
       },
-      selectSub: null,
-      vaildConfig: ['required'],
       appModuleId: null,
       appSystemId: null,
-      statusVal: [],
-      formValue: {},
       formConfig: [
         {
           type: 'select',
@@ -53,8 +49,8 @@ export default {
           rootName: 'tbodyList',
           dealDataByUrl: this.$utils.getAppForselect,
           validateList: ['required'],
-          value: this.appSystemId,
           onChange: (val) => {
+            this.appModuleId = null; // 切换不同应用时，需要清空模块ID
             this.changeAppModule(val);
           }
         },
@@ -64,9 +60,8 @@ export default {
           name: 'appModuleId',
           isHidden: false,
           transfer: true,
-          value: this.appModuleId,
-          dealDataByUrl: this.$utils.getAppForselect,
           dynamicUrl: '/api/rest/deploy/app/config/module/list',
+          dealDataByUrl: this.$utils.getAppForselect,
           onChange: (val) => {
             this.setModule(val);
           }
@@ -104,7 +99,6 @@ export default {
           this.setVal('appModuleId', this.appModuleId);
         }
       }
-      
       if (this.projectList && this.projectList.length > 0) {
         this.initProjectconfig(this.projectList);
       }

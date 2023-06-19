@@ -95,8 +95,8 @@ export default {
     },
     delProtect(row) {
       let param = {
-        'repositoryUuid': this.uuid,
-        'name': row.name
+        repositoryId: this.uuid,
+        name: row.name
       };
       let _this = this;
       _this.$createDialog({
@@ -118,7 +118,7 @@ export default {
     },
     getList() {
       let param = {
-        repositoryUuid: this.uuid
+        repositoryId: this.uuid
       };
       this.isLoading = true;
       this.$api.codehub.repositorydetail.getProtectBranchList(param).then(res => {

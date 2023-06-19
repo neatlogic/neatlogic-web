@@ -7,13 +7,12 @@
         <span>个文件变更,</span>
         <span v-if="getFileCount(diffList,'addCount')" class="font-bold text-primary count-text">{{ getFileCount(diffList,'addCount') }}</span>
         <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">行添加</span>
-        <span v-if="getFileCount(diffList,'addCount') && getFileCount(diffList,'deleteCount')"></span>
         <span v-if="getFileCount(diffList,'deleteCount')" class="font-bold text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
         <span v-if="getFileCount(diffList,'deleteCount')">行删除</span>
       </div>
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'">
-      <div class="clearfix" style="margin-bottom: 4px;">
+      <div class="clearfix mb-xs">
         <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
         <div class="pt-sm mr-sm" style="display: flex;justify-content: end;">
           <TsFormSelect

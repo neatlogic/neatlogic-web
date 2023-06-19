@@ -1,5 +1,5 @@
 <template>
-  <div class="padding-xs">
+  <div>
     <div v-if="!isChildren" class="tree-top">
       <div style="display: flex;align-items: center;">
         <RadioGroup
@@ -7,11 +7,14 @@
           type="button"
           size="small"
         >
-          <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name"><i :class="type.icon"></i></Radio>
+          <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">
+            <span :class="type.icon"></span>
+          </Radio>
         </RadioGroup>
         <TsFormSelect
           v-model="fileName"
-          v-bind="nameConfig"
+          class="ml-xs"
+          v-bind="fileNameSelectConfig"
           :dataList="diffList"
           @on-change="selectFilename"
         ></TsFormSelect>
@@ -127,15 +130,15 @@ export default {
         icon: 'ts-bars'        
       }],
       fileName: '',
-      nameConfig: {
-        placeholder: '请输入文件名',
+      fileNameSelectConfig: {
+        placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.filename')}),
         border: 'border',
         width: 124,
         search: true,
         clearable: true,
         valueName: 'filepathUuid',
         textName: 'name',
-        showTitle: true
+        transfer: true
       },
       scrollLeft: 0//x轴滚动偏移
     };
@@ -144,7 +147,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.list = JSON.parse(JSON.stringify(this.treeList));
+    this.list = this.$utils.deepClone(this.treeList);
     if (!this.isChildren) {
       this.$nextTick(() => {
         if (this.$el.querySelectorAll('.diff-treefile') && this.$el.querySelectorAll('.diff-treefile').length) {

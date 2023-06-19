@@ -43,7 +43,7 @@ export default {
         textName: 'name',
         valueName: 'name',
         multiple: true,
-        params: {'repositoryUuid': this.id},
+        params: {'repositoryId': this.id},
         onChange: (val) => {
           this.checkoutBranchesVal = val;
         }

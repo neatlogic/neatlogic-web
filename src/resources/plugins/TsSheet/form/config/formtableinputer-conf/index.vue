@@ -24,11 +24,21 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem
-      :label="$t('term.framework.thsetting')"
-      labelPosition="top"
-      required
-    >
+    <div class="th-setting pb-sm">
+      <div class="title pb-sm">
+        <div class="require-label pr-xs text-title">{{ $t('term.framework.thsetting') }}</div>
+        <div v-if="formItem.hasOwnProperty('inherit') && !formItem.inherit" class="text-href">
+          <span @click="updateTh()">{{ $t('term.framework.syncsceneattr') }}</span>
+          <Tooltip
+            theme="light"
+            max-width="300"
+            transfer
+          >
+            <i class="tsfont-info-o"></i>
+            <div slot="content">{{ $t('message.framework.syncsceneattrtip') }}</div>
+          </Tooltip>
+        </div>
+      </div>
       <div class="padding-md radius-md" :class="validClass('dataConfig')">
         <div class="tstable-container tstable-normal radius-sm bg-block">
           <table class="tstable-body" width="100%">
@@ -81,7 +91,7 @@
           </div>
         </div>
       </div>
-    </TsFormItem>
+    </div>
     <TsFormItem :label="$t('term.framework.defalinenum')" labelPosition="top">
       <TsFormInput
         :value="config.lineNumber"
@@ -174,6 +184,17 @@ export default {
           isRequired: true
         }
       });
+    },
+    updateTh() {
+      let itemConfig = this.initFormItemList.find(item => item.uuid === this.formItem.uuid);
+      if (itemConfig && itemConfig.config) {
+        itemConfig.config.dataConfig.forEach(th => {
+          let findItem = this.config.dataConfig.find(d => d.uuid === th.uuid);
+          if (!findItem) {
+            this.config.dataConfig.push(th);
+          }
+        });
+      }
     }
   },
   filter: {},
@@ -196,4 +217,10 @@ export default {
 /deep/ .ivu-checkbox-wrapper {
   margin-right: 0;
 }
+.th-setting {
+  .title {
+    display: flex;
+  }
+}
+
 </style>

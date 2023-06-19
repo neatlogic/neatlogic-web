@@ -1093,7 +1093,8 @@
     "saverolechange": "是否保存对当前角色的更改？",
     "backtorolelist": "返回角色列表",
     "defaultpolicy": "默认策略",
-    "defultpolicysetting": "默认策略设置"
+    "defultpolicysetting": "默认策略设置",
+    "syncsceneattr": "同步默认场景属性"
   },
   "knowledge": {
     "document": "文档",

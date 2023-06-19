@@ -241,6 +241,7 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.getSearch();
+              this.selectList = []; // 删除成功，隐藏批量删除图标
               vnode.isShow = false;
             } else {
               this.$Message.error(res.Message);

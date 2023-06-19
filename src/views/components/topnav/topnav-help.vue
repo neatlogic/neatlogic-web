@@ -10,8 +10,8 @@
       className="help-drawer"
     >
       <template v-slot:header>
-        <div v-if="isShowDetail" class="text-action" @click="goBack()">
-          {{ $t('page.back') }} >
+        <div v-if="isShowDetail" class="text-action tsfont-left" @click="goBack()">
+          {{ $t('page.back') }}
         </div>
         <div v-else>{{ $t('page.help') }}</div>
       </template>
@@ -48,7 +48,7 @@
       <div v-else>
         <DocumentonlineContent :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
       </div>
-      <div class="text-href help-center bg-op" @click="openHelpManage()">{{ isShowDetail? $t('term.documentonline.openhelpdocument') : $t('term.documentonline.openhelp') }} > </div>
+      <div class="text-href help-center bg-op" @click="openHelpManage()">{{ isShowDetail? $t('term.documentonline.openhelpdocument') : $t('term.documentonline.openhelp') }} <span class="tsfont-right"></span> </div>
     </Drawer>
   </div>
 </template>
