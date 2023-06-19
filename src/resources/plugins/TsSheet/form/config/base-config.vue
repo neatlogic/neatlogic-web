@@ -4,7 +4,11 @@ export default {
     error: {type: Array}, //异常列表
     formItem: { type: Object }, //当前表单组件
     formItemList: { type: Array }, //所有表单组件
-    disabled: {type: Boolean, default: false}
+    disabled: {type: Boolean, default: false},
+    initFormItemList: {
+      type: Array,
+      default: () => []
+    }
   },
   methods: {
     //设置属性值

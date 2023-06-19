@@ -124,12 +124,7 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   extends: base,
-  props: {
-    initFormItemList: {
-      type: Array,
-      default: () => []
-    }
-  },
+  props: {},
   data() {
     return {
       isAttrConfigDialogShow: false,
@@ -144,7 +139,6 @@ export default {
     if (!this.config.hasOwnProperty('isCanAdd')) {
       this.$set(this.config, 'isCanAdd', true);
     }
-    console.log(this.initFormItemList);
   },
   beforeUpdate() {},
   updated() {},
