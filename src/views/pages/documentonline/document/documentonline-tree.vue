@@ -1,11 +1,13 @@
 <template>
   <div class="pr-nm">
     <Tree
+      v-if="!loadingShow"
       :data="tbodyList"
       :render="renderContent"
       class="ts-tree"
       @on-select-change="selectTreeNode"
     ></Tree>
+    <NoData v-if="!loadingShow && !tbodyList.length" />
   </div>
 </template>
 <script>
@@ -18,6 +20,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       tbodyList: []
     };
   },
@@ -41,6 +44,8 @@ export default {
           this.setTreeDataSelect(this.upwardNameList, tbodyList, 0);
           this.tbodyList = tbodyList;
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     setTreeDataSelect(upwardNameList, data, index) {
@@ -48,16 +53,14 @@ export default {
         data.forEach(d => {
           if (this.$utils.isSame(d.upwardNameList, upwardNameList)) {
             d.selected = true;
-            d.disabled = true;
           } else {
             d.selected = false;
-            d.disabled = false;
-            if (d.children) {
-              if (d.upwardNameList[index] === upwardNameList[index]) {
-                d.expand = true;
-              }
-              this.setTreeDataSelect(upwardNameList, d.children, index + 1);
+            if (d.children && d.upwardNameList[index] === upwardNameList[index]) {
+              d.expand = true;
             }
+          }
+          if (d.children) {
+            this.setTreeDataSelect(upwardNameList, d.children, index + 1);
           }
         });
       }
@@ -73,28 +76,26 @@ export default {
     },
     selectTreeNode(list, node) {
       if (node) {
-        if (node.isFile) {
-          this.$router.push({
-            path: '/documentonline-detail',
-            query: {
-              filePath: node.filePath,
-              isSiderHide: false
-            }
-          });
-        } else {
-          this.$router.push({
-            path: '/documentonline-manage',
-            query: {
-              upwardNameList: node.upwardNameList.join('/')
-            }
-          });
+        node.selected = true;
+        if (!this.$utils.isSame(node.upwardNameList, this.upwardNameList)) {
+          this.$emit('selectTreeNode', node);
         }
       }
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    upwardNameList: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val) && !this.$utils.isEmpty(this.tbodyList)) {
+          this.setTreeDataSelect(val, this.tbodyList, 0);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less">
