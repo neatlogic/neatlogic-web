@@ -7,6 +7,7 @@
       class="ts-tree"
       @on-select-change="selectTreeNode"
     ></Tree>
+    <NoData v-if="!loadingShow && !tbodyList.length" />
   </div>
 </template>
 <script>
@@ -54,12 +55,12 @@ export default {
             d.selected = true;
           } else {
             d.selected = false;
-            if (d.children) {
-              if (d.upwardNameList[index] === upwardNameList[index]) {
-                d.expand = true;
-              }
-              this.setTreeDataSelect(upwardNameList, d.children, index + 1);
+            if (d.children && d.upwardNameList[index] === upwardNameList[index]) {
+              d.expand = true;
             }
+          }
+          if (d.children) {
+            this.setTreeDataSelect(upwardNameList, d.children, index + 1);
           }
         });
       }
@@ -75,9 +76,8 @@ export default {
     },
     selectTreeNode(list, node) {
       if (node) {
-        if (this.$utils.isSame(node.upwardNameList, this.upwardNameList)) {
-          node.selected = true;
-        } else {
+        node.selected = true;
+        if (!this.$utils.isSame(node.upwardNameList, this.upwardNameList)) {
           this.$emit('selectTreeNode', node);
         }
       }
