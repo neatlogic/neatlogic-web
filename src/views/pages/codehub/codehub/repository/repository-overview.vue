@@ -252,7 +252,7 @@ export default {
           this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
           this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
           this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
-          this.searchTime && clearTimeout(this.searchTime);
+          // this.searchTime && clearTimeout(this.searchTime);
           // this.searchTime = setTimeout(() => {
           //   this.searchList(param);
           // }, 10 * 1000);
