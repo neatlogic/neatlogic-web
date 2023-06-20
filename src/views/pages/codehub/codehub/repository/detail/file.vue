@@ -82,7 +82,7 @@
         </div>
       </div>
     </div>
-    <NoData v-else text="$t('term.codehub.nocommitfile')"></NoData>
+    <NoData v-else :text="$t('term.codehub.nocommitfile')"></NoData>
   </div>
   <Loading v-else loadingShow></Loading>
 </template>
