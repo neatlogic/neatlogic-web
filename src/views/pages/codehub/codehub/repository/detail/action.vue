@@ -136,7 +136,6 @@ export default {
         placeholder: this.$t('page.actiontype')
       },
       timeConfig: {
-        width: 180,
         transfer: true
       },
       theadList: [{
