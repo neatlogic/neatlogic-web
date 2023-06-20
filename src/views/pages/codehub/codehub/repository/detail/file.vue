@@ -6,15 +6,20 @@
         </Col>
         <Col span="10">
           <div class="clearfix">
-            <div class="d_f_r" style="width:70%">
-              <GroupSelect
-                v-model.trim="queryName"
-                v-bind="selectConfig"
+            <div class="d_f_r">
+              <TsFormSelect
+                v-model="queryName"
                 :dataList="searchGrouplist"
+                childrenName="dataList"
+                transfer
+                mode="group"
+                search
+                width="100%"
+                :placeholder="$t('term.codehub.choosebranchortag')"
+                :validateList="validateList"
                 @on-change="getSearch"
-              ></GroupSelect>
+              ></TsFormSelect>
             </div>
-            <div class="d_f_r text-tip text-label">{{ $t('term.codehub.tagorbranch') }}</div>
           </div>
         </Col>
       </Row>
@@ -68,7 +73,7 @@
                 <td><i :class="li.type=='D'?'ts-folder text-warning':'ts-file'" style="margin-right:5px;"></i>{{ li.path }}</td>
                 <td>{{ li.lastAuthor }}</td>
                 <td>{{ li.lastCommitMessage }}</td>
-                <td class="text-right"><div v-if="li.lastChangeDate">{{ li.lastChangeDate.time | formatDate }}</div></td>
+                <td class="text-right"><div v-if="li.lastChangeDate">{{ li.lastChangeDate | formatDate }}</div></td>
               </tr>
             </tbody>
           </table>
@@ -77,19 +82,18 @@
         </div>
       </div>
     </div>
-    <NoData v-else text="此仓库尚未执行过代码提交,暂无文件"></NoData>
+    <NoData v-else :text="$t('term.codehub.nocommitfile')"></NoData>
   </div>
   <Loading v-else loadingShow></Loading>
 </template>
 <script>
-import GroupSelect from '@/resources/components/GroupList/GroupList.vue';
 import editmixin from './edittabmixin.js';
 import FileDetail from './file/file-detail.vue';
 export default {
   name: 'File',
   components: {
-    GroupSelect,
-    FileDetail
+    FileDetail,
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve)
   },
   mixins: [editmixin],
   props: {},
@@ -102,6 +106,7 @@ export default {
         clearable: false,
         multiple: false
       },
+      validateList: ['required'],
       list: [], //文件列表
       lastConfig: null, //最后一条提交记录
       subFilePath: null, //当前路径，=上一层路径-当前路径
@@ -120,6 +125,7 @@ export default {
     if (this.id && this.reposData) {
       this.queryName = this.reposData.defaultBranch || this.reposData.mainBranch;
       this.queryType = 'branch';
+      this.queryName = this.queryType + '###' + this.queryName;
     }
   },
 
@@ -127,13 +133,6 @@ export default {
 
   async mounted() {
     await this.initGroupsearch();
-    if (this.id && this.reposData) {
-      if (this.queryName) {
-        this.$set(this.selectConfig, 'valueList', [{value: this.queryName, group: this.queryType}]);
-      } else if (this.checkHasBranch(this.searchGrouplist)) {
-        this.initDefaultSelected();
-      }
-    }
     if (this.checkHasBranch(this.searchGrouplist)) {
       this.hasBranch = true;
       this.getList();
@@ -157,12 +156,14 @@ export default {
   destroyed() {},
 
   methods: {
-    getSearch(val, vallist) {
-      this.queryName = vallist.value ? vallist.value : '';
-      this.queryType = vallist.group ? vallist.group : '';
-      this.parentPath = null;
-      this.commitIdForReadFile = null;
-      this.getList();
+    getSearch(val, vallist, selectItem) {
+      if (!this.$utils.isEmpty(selectItem)) {
+        this.queryName = selectItem.value ? selectItem.value : '';
+        this.queryType = selectItem.group ? selectItem.group : '';
+        this.parentPath = null;
+        this.commitIdForReadFile = null;
+        this.getList();
+      }
     },
     getList() {
       this.currentfilePath = null;
@@ -172,14 +173,10 @@ export default {
       }
       let param = {
         repositoryId: this.id,
-        queryName: this.queryName,
+        queryName: this.queryName.indexOf(this.queryType + '###') > -1 ? this.queryName.split(this.queryType + '###')[1] : this.queryName,
         queryType: this.queryType
       };
-      if (this.parentPath) {
-        Object.assign(param, {
-          subFilePath: this.parentPath
-        });
-      }
+      this.parentPath && this.$set(param, 'subFilePath', this.parentPath);
       this.isload = true;
       this.$api.codehub.repositorydetail
         .getFile(param)
@@ -204,14 +201,13 @@ export default {
         })
         .catch(error => {
           this.isload = false;
-          console.log(error);
           this.list = [];
         });
     },
     toNext(li) { // 进入子目录或打开文
       if (!this.commitIdForReadFile || 
-              (li.lastChangeDate.time > this.lastConfig.committerDateTimestamp)) {
-        this.commitIdForReadFile = li.lastChangeDate.time;
+              (li.lastChangeDate > this.lastConfig.committerDateTimestamp)) {
+        this.commitIdForReadFile = li.lastChangeDate;
       }
 
       if (li.type == 'D') {
@@ -334,5 +330,14 @@ export default {
       white-space: nowrap;
     }
   }
+  width: 100%;
+}
+
+.d_f {
+  float: left;
+}
+
+.d_f_r {
+  float: right;
 }
 </style>
