@@ -274,20 +274,6 @@ export default {
   watch: {
     list: {
       handler: function(val) {
-        // this.lastConfig = null;
-        // if (val && val.length > 0) {
-        //   let last = Math.max.apply(
-        //     Math,
-        //     val.map(function(o) {
-        //       return o.lastChangeDate ? o.lastChangeDate.time : 0;
-        //     })
-        //   );
-        //   val.forEach(v => {
-        //     if (v.lastChangeDate && v.lastChangeDate.time == last) {
-        //       this.lastConfig = v;
-        //     }
-        //   });
-        // }
       },
       immediate: true,
       deep: true
