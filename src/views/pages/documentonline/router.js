@@ -1,5 +1,4 @@
 const documentonline = () => import('./document/documentonline-help-center.vue');
-const documentonlineManage = () => import('./document/documentonline-manage.vue');
 const documentonlineDetail = () => import('./document/documentonline-detail.vue');
 const documentonlineSearch = () => import('./document/documentonline-search.vue');
 
@@ -15,14 +14,6 @@ export default [
     component: documentonline,
     meta: {
       title: $t('router.documentonline.documentonline')
-    }
-  },
-  {
-    path: '/documentonline-manage',
-    name: 'documentonline-manage',
-    component: documentonlineManage,
-    meta: {
-      title: $t('router.documentonline.documentmanage')
     }
   },
   {
