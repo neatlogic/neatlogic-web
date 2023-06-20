@@ -184,17 +184,19 @@
             <tbody>
               <tr>
                 <td class="code-content text-center" :colspan="showType=='separate'?4:3" style="line-height:2.5;">
-                  <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
-                  <span
-                    v-if="!isDowning"
-                    v-download="downPath(diff)"
-                    v-download:success="downloadok"
-                    class="text-href"
-                  >{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
-                  <Spin v-else>
-                    <Icon type="ios-loading" size="12"></Icon>
-                    <div>{{ $t('page.downloading') }}</div>
-                  </Spin>
+                  <div v-if="diff.modifiedType == 'D'" class="text-grey">
+                    {{ $t('term.codehub.filedeleted') }}
+                  </div>
+                  <template v-else>
+                    <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
+                    <span
+                      v-if="!isDowning"
+                      v-download="downPath(diff)"
+                      v-download:success="downloadok"
+                      class="text-href"
+                    >{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
+                    <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon>{{ $t('page.downloading') }}</span>
+                  </template>
                 </td>
               </tr>
             </tbody>

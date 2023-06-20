@@ -2356,7 +2356,10 @@
     "binaryfilecannotviewcontent": "This file is a binary file and currently does not support viewing specific content online,",
     "clickheretodownloadthefile": "Click here to download the file",
     "nochangesmade": "No changes made",
-    "thefileisempty": "The file is empty"
+    "thefileisempty": "The file is empty",
+    "filedeleted": "file has been deleted",
+    "defaultbranch": "Default Branch",
+    "mainbranch": "main branch "
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

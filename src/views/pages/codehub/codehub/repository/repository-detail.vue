@@ -12,32 +12,31 @@
           theme="light"
           max-width="300"
         >
-          <div>{{ setTxt(reposData,'text') }}</div>
+          <div>{{ getAbbrNameAndName(reposData) }}</div>
           <div slot="content">
-            <div>{{ setTxt(reposData,'tips') }}</div>
+            <div>{{ getAbbrNameAndName(reposData) }}</div>
           </div>
         </Tooltip>
-        <div v-else>{{ setTxt(reposData,'text') }}</div>
+        <div v-else>{{ getAbbrNameAndName(reposData) }}</div>
       </template>
       <template v-slot:topRight>
         <div v-if="!isLoad" class="action-group">
           <div v-if="reposData.agentName" class="action-item"><span class="text-tip">{{ $t('page.node') }}</span><span>{{ reposData.agentName||'-' }}</span>
             <span
-              class="text-action ts-refresh"
-              style="margin-left:5px;"
+              class="text-action ts-refresh ml-xs"
               :title="$t('page.switchnode')"
               @click.stop="updateNode(reposData)"
             ></span>
           </div>
           <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
-          <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copyok" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
+          <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copySuccess" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
           <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.id)">{{ $t('page.synchronous') }}</div>
         </div>
       </template>
       <div slot="content">
         <Loading v-if="isLoad || isLoadBranch" loadingShow style="height:120px"></Loading>
         <div v-else>
-          <Tabs v-model="activetab" :animated="animated">
+          <Tabs v-model="activetab" :animated="false">
             <TabPane
               v-for="(tab,tabindex) in tabList"
               :key="tabindex"
@@ -57,18 +56,10 @@
       </div>
     </TsContain>
     <Loading v-else type="fix" loadingShow></Loading>
-    <RepositoryEditDialog
-      v-if="isEdit && editType=='repository'"
-      :id="editUuid"
-      :isShow="isEdit"
-      :serveList="serveList"
-      @close="close"
-    ></RepositoryEditDialog>
     <RepositorySyncDialog
-      v-if="isEdit && editType=='sync'"
-      :id="editUuid"
-      :isShow="isEdit"
-      @close="close"
+      v-if="isShowSyncDialog"
+      :id="repositoryId"
+      @close="closeSyncDialog"
     ></RepositorySyncDialog>
   </div>
 </template>
@@ -76,15 +67,12 @@
 <script>
 import tabs from './detail';
 import clipboard from '@/resources/directives/clipboard.js';
-import NoData from '@/resources/components/nodata/NoData.vue';
 import repositorymixin from './repositorymixin.js';
 export default {
   name: '',
   components: {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    RepositoryEditDialog: resolve => require(['./edit/repository-edit-dialog.vue'], resolve),
     RepositorySyncDialog: resolve => require(['./edit/repository-sync-dialog.vue'], resolve),
-    NoData,
     ...tabs
   },
   directives: {clipboard},
@@ -94,7 +82,7 @@ export default {
     return {
       isLoad: false, //仓库数据是否加载中
       isLoadBranch: false, //分支标签数据是否加载中
-      isEdit: false, //是否编辑
+      isShowSyncDialog: false,
       tabList: [{
         name: 'action',
         text: this.$t('page.activity')
@@ -113,15 +101,8 @@ export default {
       }],
       activetab: 'action',
       id: null,
-      editUuid: null,
+      repositoryId: null,
       reposData: null,
-      statusList: {
-        'success': '#2ed373',
-        'failed': '#e42332',
-        'none': '#336eff'
-      },
-      serveList: [],
-      animated: false,
       tabLoaded: false, //当前tab加载完成
       showSync: true//是否显示同步按钮
     };
@@ -149,43 +130,15 @@ export default {
         this.reposData = null;
       }
     },
-    editRepository() {
-      this.isEdit = true;
-      this.editUuid = this.$utils.deepClone(this.id);
-    },
-    deleteRepository() {
-      //详情页删除当前仓库的功能已经去掉
-      let param = { id: this.id };
-      this.$createDialog({
-        title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.warehouse')}),
-        btnType: 'error',
-        'on-ok': function(vnode) {
-          this.$api.codehub.repository.delete(param).then(res => {
-            if (res && res.Status == 'OK') {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              this.gotoList();
-              vnode.isShow = false;
-            }
-          });
-        }
-      });
-    },
     syncRepository(id) {
-      this.editType = 'sync';
-      this.isEdit = true;
+      this.isShowSyncDialog = true;
       if (id) {
-        this.editUuid = id;
+        this.repositoryId = id;
       }
     },
-    close() {
-      this.isEdit = false;
-      this.editUuid = null;
-    },
-    gotoList() {
-      this.$router.push({
-        path: '/repository-overview'
-      });
+    closeSyncDialog() {
+      this.isShowSyncDialog = false;
+      this.repositoryId = null;
     },
     getDetail(id) {
       let param = {};
@@ -194,7 +147,6 @@ export default {
       }
       this.isLoad = true;
       this.$api.codehub.repository.getDetail(param).then((res) => {
-        this.isLoad = false;
         if (res && res.Status == 'OK') {
           this.reposData = res.Return;
           if (this.reposData.type != 'svn' || this.reposData.delegation) {
@@ -206,11 +158,11 @@ export default {
         } else {
           this.reposData = null;
         }
-      }).catch((error) => {
+      }).finally(() => {
         this.isLoad = false;
       });
     },
-    copyok() {
+    copySuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
       this.isLoad = false;
     },
@@ -220,16 +172,18 @@ export default {
   },
   filter: {},
   computed: {
-    setTxt() {
+    getAbbrNameAndName() {
+      // 获取系统和模块的简称(名称)
       return function(config) {
         let text = '';
-        let prev = config.appSystemVo || '';
-        let next = config.appModuleVo || '';
-        if (prev) {
-          text = prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : '';
-          if (next) {
-            text += ' / ' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : (next.name || ''));
+        if (this.$utils.getAbbrNameAndName(config.appSystemVo)) {
+          if (this.$utils.getAbbrNameAndName(config.appModuleVo)) {
+            text = this.$utils.getAbbrNameAndName(config.appSystemVo) + '/' + this.$utils.getAbbrNameAndName(config.appModuleVo);
+          } else {
+            text = this.$utils.getAbbrNameAndName(config.appSystemVo);
           }
+        } else if (this.$utils.getAbbrNameAndName(config.appModuleVo)) {
+          text = this.$utils.getAbbrNameAndName(config.appModuleVo);
         }
         return text;
       };
@@ -248,16 +202,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.top-title {
-  .title {
-    line-height: 30px;
-  }
-  .desc {
-    line-height: 20px;
-  }
-  padding-left: 20px;
-  margin-left: 20px;
-  border-left: 1px solid @default-border;
-}
 </style>

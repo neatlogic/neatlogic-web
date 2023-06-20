@@ -38,7 +38,7 @@
           <BreadcrumbItem v-if="currentfilePath">{{ currentfilePath }}</BreadcrumbItem>
         </Breadcrumb>
         <div v-if="list && list.length">
-          <div class="clearfix lastcommit-container">
+          <div class="clearfix lastcommit-container border-color">
             <div v-if="lastConfig" class="d_f">
               <span>{{ lastConfig.author }}</span><span class="text-tip ml-sm">{{ lastConfig.message }}</span>
             </div>
@@ -55,31 +55,40 @@
           :title="$t('term.codehub.backparent')"
           @click="gotoPrev()"
         ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
-        <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
-          <table v-if="!currentfilePath && list && list.length" class="table file-table">
-            <colgroup>
-              <col />
-              <col />
-              <col />
-              <col width="180" />
-            </colgroup>
-            <tbody>
-              <tr
-                v-for="(li,lindex) in list"
-                :key="lindex"
-                class="cursor-pointer"
-                @click="toNext(li)"
-              >
-                <td><i :class="li.type=='D'?'ts-folder text-warning':'ts-file'" style="margin-right:5px;"></i>{{ li.path }}</td>
-                <td>{{ li.lastAuthor }}</td>
-                <td>{{ li.lastCommitMessage }}</td>
-                <td class="text-right"><div v-if="li.lastChangeDate">{{ li.lastChangeDate | formatDate }}</div></td>
-              </tr>
-            </tbody>
-          </table>
-          <FileDetail v-else-if="currentfilePath" :fileConfig="currentfileConfig"></FileDetail>
-          <NoData v-else></NoData>
+        <div class="tstable-container border bg-grey radius-lg">
+          <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
+            <table v-if="!currentfilePath && list && list.length" class="tstable-body">
+              <colgroup>
+                <col />
+                <col />
+                <col />
+                <col width="180" />
+              </colgroup>
+              <tbody class="tbody-main">
+                <tr
+                  v-for="(li,lindex) in list"
+                  :key="lindex"
+                  class="cursor-pointer"
+                  @click="toNext(li)"
+                >
+                  <td>
+                    <span :class="li.type == 'D' ? 'ts-folder text-warning':'ts-file'" class="mr-xs"></span>{{ li.path }}
+                  </td>
+                  <td>{{ li.lastAuthor }}</td>
+                  <td>{{ li.lastCommitMessage }}</td>
+                  <td class="text-right">
+                    <div v-if="li.lastChangeDate">
+                      {{ li.lastChangeDate | formatDate }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <FileDetail v-else-if="currentfilePath" :fileConfig="currentfileConfig"></FileDetail>
+            <NoData v-else></NoData>
+          </div>
         </div>
+     
       </div>
     </div>
     <NoData v-else :text="$t('term.codehub.nocommitfile')"></NoData>
@@ -118,9 +127,7 @@ export default {
       commitIdForReadFile: null
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.id && this.reposData) {
       this.queryName = this.reposData.defaultBranch || this.reposData.mainBranch;
@@ -128,9 +135,7 @@ export default {
       this.queryName = this.queryType + '###' + this.queryName;
     }
   },
-
   beforeMount() {},
-
   async mounted() {
     await this.initGroupsearch();
     if (this.checkHasBranch(this.searchGrouplist)) {
@@ -140,21 +145,12 @@ export default {
       this.hasBranch = false;
     }  
   },
-
   beforeUpdate() {},
-
   updated() {},
-
-  activated() {
-
-  },
-
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getSearch(val, vallist, selectItem) {
       if (!this.$utils.isEmpty(selectItem)) {
@@ -183,14 +179,11 @@ export default {
         .then(res => {
           this.isload = false;
           this.list = res.Return.list;
-
           if (!this.commitIdForReadFile || 
               (this.lastConfig && res.Return.lastCommit.committerDateTimestamp > this.lastConfig.committerDateTimestamp)) {
             this.commitIdForReadFile = res.Return.lastCommit.commitId;
           }
-
           this.lastConfig = res.Return.lastCommit;
-
           this.parentPath = res.Return.parentPath;
           this.subFilePath = this.parentPath ? this.parentPath.substring(0, this.parentPath.lastIndexOf('/')) : '';
           this.$nextTick(() => {
@@ -312,7 +305,7 @@ export default {
 @default-dividing: #eaebed;
 .lastcommit-container {
   line-height: 3;
-  border-bottom: 1px solid @default-border;
+  border-bottom: 1px solid;
   padding-left: 10px;
   margin-top: 10px;
 }
