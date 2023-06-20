@@ -2122,7 +2122,8 @@
     "changeattr": "Change attributes",
     "beforechange": "Before change",
     "afterchange": "After the change",
-    "noiteration": "There are currently no iterations"
+    "noiteration": "There are currently no iterations",
+    "selectedphase": "Selected stage"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

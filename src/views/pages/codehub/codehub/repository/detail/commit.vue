@@ -220,7 +220,7 @@ export default {
       this.isAllloaded = false;
       let param = {
         repositoryId: this.id,
-        queryName: this.queryName,
+        queryName: this.queryName.indexOf(this.queryType + '###') > -1 ? this.queryName.split(this.queryType + '###')[1] : this.queryName,
         queryType: this.queryType,
         pageSize: this.pageSize
       };

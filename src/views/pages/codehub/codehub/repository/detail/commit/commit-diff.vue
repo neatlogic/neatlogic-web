@@ -32,8 +32,8 @@ export default {
     diffInfo: Object,
     leftCommitId: String,
     rightCommitId: String,
-    id: String,
-    appModuleId: String,
+    id: Number,
+    appModuleId: Number,
     queryName: String,
     queryType: String
   },
