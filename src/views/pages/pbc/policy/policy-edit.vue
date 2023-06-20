@@ -4,22 +4,38 @@
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
           <template v-slot:phase>
-            <div v-if="phaseList && phaseList.length > 0" class="divPhase">
-              <div
-                v-for="(phase) in phaseList"
-                :key="phase.sort"
-                :class="getActiveClass(phase)"
-                class="pl-md pr-md radius-mi"
-                style="position:relative;cursor:pointer;"
-                @click="togglePhase(phase)"
-              >
-                <span>{{ phase.name }}</span>
-                <i
-                  v-if="phase.configTemplate"
-                  class="btnConfig"
-                  :class="hasConfig(phase.phase)"
-                  @click.stop="openConfig(phase)"
-                ></i>
+            <div v-if="phaseList && phaseList.length > 0">
+              <div>
+                <div
+                  v-for="phase in phaseList.filter(d => !activedPhaseList.find(dd => dd.phase == d.phase))"
+                  :key="phase.phase"
+                  class="pl-md pr-md mr-md cursor"
+                  style="display: inline-block"
+                >
+                  <span class="tsfont-plus" @click="addPhase(phase)">{{ phase.name }}</span>
+                </div>
+              </div>
+              <Divider v-if="activedPhaseList.length > 0" orientation="start" class="mt-md mb-md">{{ $t('term.rdm.selectedphase') }}（{{ $t('page.dragsort') }}）</Divider>
+              <div v-if="activedPhaseList.length > 0">
+                <draggable
+                  v-model="activedPhaseList"
+                  filter=".forbid"
+                  group="phaseGroup"
+                  animation="300"
+                >
+                  <transition-group>
+                    <div
+                      v-for="(phase, index) in activedPhaseList"
+                      :key="phase.phase"
+                      style="display: inline-block;"
+                    >
+                      <div class="pl-md pr-md mr-md mb-md radius-mi phase-item bg-selected border-primary text-primary"><span class="cursor tsfont-trash-o" @click="removePhase(phase)">{{ phase.name }}</span>
+                        <i v-if="phase.configTemplate" :class="hasConfig(phase.phase)" @click.stop="openConfig(phase)"></i>
+                      </div>
+                      <div v-if="index<activedPhaseList.length - 1" class="forbid mr-md mb-md text-grey" style="display: inline-block;"><span class="tsfont-arrow-right"></span></div>
+                    </div>
+                  </transition-group>
+                </draggable>
               </div>
             </div>
           </template>
@@ -28,7 +44,7 @@
           </template>
           <template v-slot:interfaceList>
             <div>
-              <div class="mb-md" style="text-align:rigth;width:50%"><TsFormInput
+              <div class="mb-md" style="text-align: rigth; width: 50%"><TsFormInput
                 v-model="searchParam.keyword"
                 :placeholder="$t('form.placeholder.keyword')"
                 suffix="tsfont-search"
@@ -71,9 +87,12 @@
   </div>
 </template>
 <script>
+import draggable from 'vuedraggable';
+
 export default {
   name: '',
   components: {
+    draggable,
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
@@ -87,7 +106,7 @@ export default {
     return {
       isConfigDialogShow: false,
       currentPhase: {},
-      policyData: {phase: ''},
+      policyData: { phase: '' },
       interfaceData: {},
       searchParam: { pageSize: 10, hasCi: 1, hasCustomView: 1 },
       selectedInterfaceList: [],
@@ -99,6 +118,7 @@ export default {
         { key: 'category', title: this.$t('term.pbc.classidentifier') },
         { key: 'error', title: this.$t('page.exception') }
       ],
+      activedPhaseList: [],
       dialogConfig: {
         type: 'modal',
         maskClose: false,
@@ -191,7 +211,12 @@ export default {
     async init() {
       this.searchInterface();
       await this.getPhaseList();
-      this.getPolicyById();
+      await this.getPolicyById();
+      if (this.policyData && this.policyData.phase && this.phaseList && this.phaseList.length > 0) {
+        const phases = this.policyData.phase.split(',');
+        const list = this.phaseList.filter(d => phases.includes(d.phase));
+        this.activedPhaseList.push(...list);
+      }
     },
     async getPhaseList() {
       await this.$api.pbc.policy.getPhaseList().then(res => {
@@ -211,11 +236,16 @@ export default {
             }
           }
         });
-      } /*else {
-        if (this.phaseList && this.phaseList.length > 0) {
-          this.$set(this.policyData, 'phase', this.phaseList[0].sort + '-' + this.phaseList[this.phaseList.length - 1].sort);
-        }
-      }*/
+      } 
+    },
+    removePhase(phase) {
+      const index = this.activedPhaseList.findIndex(d => d === phase);
+      if (index > -1) {
+        this.activedPhaseList.splice(index, 1);
+      }
+    },
+    addPhase(phase) {
+      this.activedPhaseList.push(phase);
     },
     openConfig(phase) {
       this.currentPhase = phase;
@@ -226,13 +256,12 @@ export default {
       this.isConfigDialogShow = false;
     },
     setPhaseConfig(phase, phaseConfig) {
-      const config = {phaseConfig: {}};
+      const config = { phaseConfig: {} };
       config.phaseConfig[phase] = phaseConfig;
       if (!this.policyData.config) {
         this.policyData.config = {};
       }
       Object.assign(this.policyData.config, config);
-      //console.log(JSON.stringify(this.policyData, null, 2));
     },
     delInterface(interfaceId) {
       if (this.policyData && this.policyData.interfaceList) {
@@ -247,77 +276,6 @@ export default {
         return this.phaseList.findIndex(d => d.phase === phase);
       }
     },
-    togglePhase(phaseObj) {
-      if (!this.policyData.phase) {
-        this.policyData.phase = phaseObj.phase + ',';
-      } else {
-        let selectedPhases = this.policyData.phase.split(',');
-        const index = selectedPhases.findIndex(d => d === phaseObj.phase);
-        if (index >= 0) {
-          const min = 0;
-          const max = selectedPhases.length - 1;
-          if (index - min >= max - index) {
-            //前面已选的比后面已选的多，则反选后面已选的
-            selectedPhases.splice(index);
-            this.policyData.phase = selectedPhases.toString();
-          } else {
-            //后面已选的比前面已选的多，则反选前面已选的
-            selectedPhases = selectedPhases.slice(index + 1);
-            this.policyData.phase = selectedPhases.toString();
-          }
-        } else {
-          const firstPhaseIndex = this.phaseList.findIndex(d => d.phase === selectedPhases[0]);
-          const lastPhaseIndex = this.phaseList.findIndex(d => d.phase === selectedPhases[selectedPhases.length - 1]);
-          const phaseIndex = this.getPhaseIndex(phaseObj.phase);
-          if (firstPhaseIndex >= 0 && phaseIndex < firstPhaseIndex) {
-            let newPhase = '';
-            for (let i = phaseIndex; i < firstPhaseIndex; i++) {
-              newPhase += this.phaseList[i].phase + ',';
-            }
-            this.policyData.phase = newPhase + this.policyData.phase;
-          } else if (lastPhaseIndex >= 0 && phaseIndex > lastPhaseIndex) {
-            let newPhase = '';
-            for (let i = lastPhaseIndex + 1; i <= phaseIndex; i++) {
-              newPhase += this.phaseList[i].phase + ',';
-            }
-            this.policyData.phase = this.policyData.phase + ',' + newPhase;
-          }
-        }
-      }
-      if (this.policyData.phase.endsWith(',')) {
-        this.policyData.phase = this.policyData.phase.substr(0, this.policyData.phase.length - 1);
-      }
-    },
-    /*togglePhase_bak(phaseObj) {
-      if (!this.policyData.phase) {
-        const phaseIndex = this.getPhaseIndex(phaseObj.phase);
-        if (phaseIndex >= 0) {
-          for (let i = 0; i <= phaseIndex; i++) {
-            this.policyData.phase += this.phaseList[i].phase + ',';
-          }
-        }
-      } else {
-        let selectedPhases = this.policyData.phase.split(',');
-        const index = selectedPhases.findIndex(d => d === phaseObj.phase);
-        if (index >= 0) {
-          //如果截断已存在，则反选此阶段以及后续的所有阶段
-          selectedPhases = selectedPhases.slice(0, index + 1);
-          this.policyData.phase = selectedPhases.toString();
-        } else {
-          //如果不存在，则选择此截断以及之前的所有阶段
-          const phaseIndex = this.getPhaseIndex(phaseObj.phase);
-          if (phaseIndex >= 0) {
-            this.policyData.phase = '';
-            for (let i = 0; i <= phaseIndex; i++) {
-              this.policyData.phase += this.phaseList[i].phase + ',';
-            }
-          }
-        }
-      }
-      if (this.policyData.phase.endsWith(',')) {
-        this.policyData.phase = this.policyData.phase.substr(0, this.policyData.phase.length - 1);
-      }
-    },*/
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },
@@ -334,6 +292,7 @@ export default {
     },
     save() {
       const form = this.$refs['form'];
+      this.policyData.phase = this.activedPhaseList.map(d => d.phase).join(',');
       if (form.valid()) {
         if (this.policyData.interfaceList.length == 0) {
           this.$Message.info(this.$t('term.pbc.chooserelevanceinterface'));
@@ -364,25 +323,26 @@ export default {
     },
     hasConfig(phase) {
       if (this.policyData?.config?.phaseConfig[phase]) {
-        return 'tsfont-os'; 
+        return 'tsfont-os';
       } else {
-        return 'tsfont-setting'; 
+        return 'tsfont-setting';
       }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    activedPhase() {
+      if (this.policyData && this.policyData.phase && this.phaseList && this.phaseList.length > 0) {
+        const phases = this.policyData.phase.split(',');
+        return this.phaseList.filter(d => phases.includes(d.phase));
+      }
+      return [];
+    }
+  },
   watch: {}
 };
 </script>
 <style lang="less" scoped>
-.btnConfig {
-  position: absolute;
-  right: 10px;
-  top: 0px;
-  cursor: pointer;
-}
-
 .divInterface {
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
@@ -397,5 +357,11 @@ export default {
     border-width: 1px;
     border-style: solid;
   }
+}
+
+.phase-item {
+  border-width: 1px;
+  border-style: solid;
+  display: inline-block;
 }
 </style>
