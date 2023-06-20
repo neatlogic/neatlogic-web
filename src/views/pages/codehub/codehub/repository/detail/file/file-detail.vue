@@ -11,7 +11,7 @@
       </tbody>
       <tbody v-else-if="fileList && !fileList.length && !loading">
         <tr class="line-tr">
-          <td colspan="2" style="line-height:4;" class="text-center">$t('term.codehub.thefileisempty')</td>
+          <td style="line-height:4;" class="text-center">{{ $t('term.codehub.thefileisempty') }}</td>
         </tr>
       </tbody>
       <tbody v-else-if="fileList && fileList.length">
@@ -28,7 +28,7 @@
             <div class="ts-option-horizontal text-action"></div>
           </td>
           <td class="code-content">
-            <div class="text-center h4 text-href">$t('page.loadmore')</div>
+            <div class="text-center h4 text-href">{{ $t('page.loadmore') }}</div>
           </td>          
         </tr>
         <tr v-else-if="!isEnd && loading" class="line-tr">
