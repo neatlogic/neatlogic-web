@@ -1,15 +1,9 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close" @on-ok="saveEdit">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="canSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -21,20 +15,19 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
   },
   props: {
-    isShow: {
+    repositoryId: {type: Number},
+    isEdit: { // 是否是编辑标签
       type: Boolean,
       default: false
-    },
-    uuid: {type: [String, Boolean]},
-    repositoryId: {type: Number}
+    }
   },
   data() {
     return {
       vaild: ['required'],
-      canSubmit: false,
       setting: {
-        title: this.uuid ? this.$t('term.codehub.edittag') : this.$t('term.codehub.addtag'),
-        maskClose: false
+        title: this.isEdit ? this.$t('term.codehub.edittag') : this.$t('term.codehub.addtag'),
+        maskClose: false,
+        isShow: true
       },
       formConfig: [
         {
@@ -42,7 +35,15 @@ export default {
           label: this.$t('term.codehub.tagname'),
           name: 'tagName',
           value: '',
-          validateList: ['required']
+          validateList: [
+            'required',
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/repository/tag/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('term.codehub.tagname')}),
+              params: { repositoryId: this.repositoryId}
+            }],
+          maxlength: 50
         }, {
           type: 'select',
           label: this.$t('page.branch'),
@@ -60,7 +61,6 @@ export default {
             repositoryId: this.repositoryId,
             hasCommit: 1
           }
-        
         }
       ]
     };
@@ -68,8 +68,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -85,34 +84,15 @@ export default {
         let param = Object.assign(this.$refs.editform.getFormValue(), {
           repositoryId: this.repositoryId
         });
-        this.uuid && this.$set(param, 'uuid', this.uuid);
         if (!param.description) {
           this.$delete(param, 'description');
         }
-        this.canSubmit = true;
         this.$api.codehub.repositorydetail.saveTag(param).then(res => {
-          this.canSubmit = false;
           if (res && res.Status == 'OK') {
             this.$emit('close', true);
           }
-        }).catch(error => {
-          this.canSubmit = false;
         });
       }
-    },
-    getDetail(uuid) {
-      this.$api.codehub.service.getDetail({uuid: uuid}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.updataVal(res.Return);
-        }
-      });      
-    },
-    updataVal(data) {
-      this.formConfig.forEach(form => {
-        if (form.name && data[form.name]) {
-          this.$set(form, 'value', data[form.name]);
-        }
-      });
     }
   },
   filter: {},

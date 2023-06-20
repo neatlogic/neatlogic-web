@@ -1,19 +1,16 @@
 <template>
   <div>
-    <div class="input-border" style="padding:0 16px;">
+    <div class="pl-nm pr-nm">
       <Row :gutter="16">
-        <Col span="18">
-          <Button type="primary" @click="editLi()">
-            <i class="ts-plus"></i>{{ $t('page.branch') }}
-          </Button>        
+        <Col span="16">
+          <span class="tsfont-plus text-action" @click="editBranch()">{{ $t('page.branch') }}</span>     
         </Col>
-        <Col span="6">
-          <FormInput
-            v-model.trim="keyword"
-            suffix="i-icon ts-search"
+        <Col span="8">
+          <InputSearcher
+            v-model="keyword"
             :placeholder="$t('page.keyword')"
-            @keyup.enter.native="getList()"
-          ></FormInput>
+            @change="searchKeyword"
+          ></InputSearcher>
         </Col>
       </Row>
     </div>
@@ -28,7 +25,7 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
+            <div class="action-item text-action tsfont-trash-o" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
@@ -61,30 +58,25 @@
     </div>
     <BranchEdit
       v-if="isEdit"
-      :uuid="editUuid"
       :repositoryId="id"
-      :isShow="isEdit"
-      :branchList="activeConfig.cardList||[]"
       @close="close"
     ></BranchEdit>
     <BranchDelete
-      v-if="isDelete"
+      v-if="isShowBranchDelete"
       :branchName="branchName"
       :repositoryId="id"
-      :isShow="isDelete"
       @close="close"
     ></BranchDelete>
   </div>
 </template>
 
 <script>
-import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import editmixin from './edittabmixin.js';
 export default {
   name: 'Branch',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    FormInput,
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     BranchEdit: resolve => require(['./edit/branch-edit.vue'], resolve),
     BranchDelete: resolve => require(['./edit/branch-delete.vue'], resolve)
   },
@@ -95,7 +87,7 @@ export default {
       keyword: '',
       isload: false,
       isEdit: false,
-      isDelete: false,
+      isShowBranchDelete: false,
       editUuid: null,
       branchName: null,
       activeConfig: {
@@ -112,47 +104,44 @@ export default {
         cardList: []
       },
       typeList: {
-        'defaultBranch': {name: '默认分支', color: 'success'},
-        'mainBranch': {name: '主干分支', color: 'primary'}
+        defaultBranch: {
+          name: this.$t('term.codehub.defaultbranch'), 
+          color: 'success'
+        },
+        mainBranch: {
+          name: this.$t('term.codehub.mainbranch'), 
+          color: 'primary'
+        }
       }
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getList();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
-  activated() {
-  },
-
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
+    searchKeyword() {
+      this.activeConfig.currentPage = 1;
+      this.getList();
+    },
     getList() {
       let param = {
+        keyword: this.keyword,
         repositoryId: this.id,
-        hasCommit: 1
+        hasCommit: 1,
+        currentPage: this.activeConfig.currentPage,
+        pageSize: this.activeConfig.pageSize
       };
-      this.keyword && this.$set(param, 'keyword', this.keyword);
-      this.activeConfig.pageSize && this.$set(param, 'pageSize', this.activeConfig.pageSize);
-      this.activeConfig.currentPage && this.$set(param, 'currentPage', this.activeConfig.currentPage);
       this.isload = true;
       this.$api.codehub.repositorydetail.getBranch(param).then(res => {
-        this.isload = false;
         if (res && res.Status == 'OK') {
           Object.assign(this.activeConfig, {
             pageCount: res.Return.pageCount,
@@ -164,7 +153,7 @@ export default {
         } else {
           this.activeConfig = null;
         }
-      }).catch(error => {
+      }).finally(() => {
         this.isload = false;
       });
     },
@@ -180,10 +169,10 @@ export default {
     deleteLi(name) {
       if (name) {
         this.branchName = name;
-        this.isDelete = true;
+        this.isShowBranchDelete = true;
       }
     },
-    editLi(val) {
+    editBranch(val) {
       if (val) {
         this.editUuid = val;
       }
@@ -191,17 +180,14 @@ export default {
     },
     close(isReload) {
       this.isEdit = false;
-      this.isDelete = false;
-      this.editUuid = null;
+      this.isShowBranchDelete = false;
       this.branchName = null;
       if (isReload) {
         this.getList();
       }
     }
   },
-
   filter: {},
-
   computed: {
     showBranch() {
       return function(name) {
@@ -216,7 +202,6 @@ export default {
       };
     }
   },
-
   watch: {
     isload: {
       handler: function(val) {
@@ -224,7 +209,6 @@ export default {
       }      
     }
   }
-
 };
 </script>
 <style lang="less"></style>

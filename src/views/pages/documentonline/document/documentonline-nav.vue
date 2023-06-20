@@ -36,8 +36,9 @@ export default {
   methods: {
     goto(index) {
       let upwardNameList = this.upwardNameList.slice(0, index + 1);
-      return '/documentonline-manage?upwardNameList=' + upwardNameList.join('/');
+      return '/documentonline-detail?upwardNameList=' + upwardNameList.join('/') + '&isSiderHide=false';
     }
+    
   },
   filter: {},
   computed: {},

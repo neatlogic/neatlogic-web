@@ -349,3 +349,32 @@ TsForm|表单组件|见TsForm组件api|需要注册组件|
 CombineSearcher|组合下拉搜索|见CombineSearcher组件api|需要注册组件|
 PoptipSelect|下拉选择器|见PoptipSelect组件api|一般用于固定选项下拉展开后有描述等内容，需要注册组件|
 TimeSelect|时间下拉选择器|见TimeSelect组件api|一般用于选择固定时间范围和具体时间范围，需要注册组件|
+
+
+#### 表格的类
+
+`tstable-container border bg-grey radius-lg` 然后 `table标签上` 添加类名`tstable-body`，最后记得在`tbody`标签上添加`tbody-main`类名 
+
+```vue
+ <div class="tstable-container border bg-grey radius-lg">
+        <div>
+          <table class="tstable-body">
+            <thead>
+              <tr>
+                <th>
+                </th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody class="tbody-main">
+              <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+```

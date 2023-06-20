@@ -1,21 +1,17 @@
 <template>
   <div :style="'max-height:' + height + 'px;'" class="filedetail-main border-color">
     <table class="table table-hover">
-      <colgroup>
-        <col width="34" />
-        <col />
-      </colgroup>
       <tbody v-if="fileConfig && fileConfig.binary && !loading">
         <tr class="line-tr">
-          <td colspan="2" style="line-height:3;" class="text-center">
-            <span class="text-tip">此文件为二进制文件，暂不支持在线查看具体内容，</span>
-            <span v-download="downPath(fileConfig)" v-download:success="downloadok" class="text-href">点此可以下载文件</span>
+          <td style="line-height:3;" class="text-center">
+            <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
+            <span v-download="downPath(fileConfig)" v-download:success="downloadok" class="text-href">{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
           </td>           
         </tr>
       </tbody>
       <tbody v-else-if="fileList && !fileList.length && !loading">
         <tr class="line-tr">
-          <td colspan="2" style="line-height:4;" class="text-center">该文件为空</td>
+          <td style="line-height:4;" class="text-center">{{ $t('term.codehub.thefileisempty') }}</td>
         </tr>
       </tbody>
       <tbody v-else-if="fileList && fileList.length">
@@ -32,7 +28,7 @@
             <div class="ts-option-horizontal text-action"></div>
           </td>
           <td class="code-content">
-            <div class="text-center h4 text-href">点击加载更多</div>
+            <div class="text-center h4 text-href">{{ $t('page.loadmore') }}</div>
           </td>          
         </tr>
         <tr v-else-if="!isEnd && loading" class="line-tr">
@@ -89,7 +85,7 @@ export default {
       if (!config.binary && !this.isEnd) {
         let start = this.startLine || 1;
         let param = {
-          repositoryId: config.repositoryUuid,
+          repositoryId: config.repositoryId,
           commitId: config.commitId,
           branchName: config.branchName,
           filePath: config.fullPath,
@@ -133,11 +129,11 @@ export default {
     downPath() {
       return function(config) {
         return {
-          url: '/module/codehub/api/binary/repository/file/download',
+          url: '/api/binary/codehub/repository/file/download',
           params: {
-            repositoryId: config.repositoryUuid,
+            repositoryId: config.repositoryId,
             commitId: config.commitId,
-            branchName: config.branchName,
+            branchName: config.branchName.indexOf('branch###') > -1 ? config.branchName.split('branch###')[1] : config.branchName,
             filePath: config.fullPath
           }
         };     
@@ -164,6 +160,7 @@ export default {
   > .table {
     background: @default-gray;
     table-layout: fixed;
+    width: 100%;
   }
   .line-tr {
     td{

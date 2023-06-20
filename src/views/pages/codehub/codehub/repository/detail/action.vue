@@ -18,7 +18,7 @@
               v-model="time"
               v-bind="timeConfig"
               class="mr-sm"
-              style="width: 140px;"
+              style="width: 180px;"
               @on-change="() => changeCurrent(1)"
             ></TimeSelect>
             <TsFormSelect
@@ -118,26 +118,24 @@ export default {
       userConfig: {
         placeholder: this.$t('term.autoexec.operator'),
         transfer: true,
-        width: 150,
+        width: 180,
         search: true,
         textName: 'userName',
         valueName: 'uuid',
         dynamicUrl: '/api/rest/user/search',
-        rootName: 'tbodyList',
-        hasReturn: true
+        rootName: 'tbodyList'
       },
       objectConfig: {
-        width: 140,
+        width: 180,
         transfer: true,
         placeholder: this.$t('term.codehub.actionsubject')
       },
       typeConfig: {
-        width: 140,
+        width: 180,
         transfer: true,
         placeholder: this.$t('page.actiontype')
       },
       timeConfig: {
-        width: '180px',
         transfer: true
       },
       theadList: [{

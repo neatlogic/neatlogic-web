@@ -1,7 +1,7 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain
-      v-if="!loadingShow"
       :isSiderHide="isSiderHide"
       :siderWidth="300"
       :rightWidth="rightWidth"
@@ -14,19 +14,30 @@
       <template v-slot:sider>
         <DocumentonlineTree
           :upwardNameList="upwardNameList"
+          @selectTreeNode="selectTreeNode"
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
-        <DocumentonlineContent :content="content" :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>
+        <div v-if="!loadingShow">
+          <!-- 文档详情 -->
+          <DocumentonlineContent
+            v-if="filePath"
+            :content="content"
+            :filePath="filePath"
+            :anchorPoint="anchorPoint"
+          ></DocumentonlineContent>
+          <!-- 文档列表 -->
+          <DocumentonlineList v-else :upwardNameList="upwardNameList" @getDetail="getDetail"></DocumentonlineList>
+        </div>
       </template>
-      <template v-slot:right>
+      <template v-if="filePath" v-slot:right>
         <div class="right-list border-color pl-nm">
           <div class="tsfont-file-single pb-nm">{{ $t('term.process.relateknowledge') }}</div>
           <div
             v-for="(item,index) in list"
             :key="index"
             class="tsfont-dot text-tip-active overflow pb-nm"
-            @click="gotoPage(item)"
+            @click="getDetail(item)"
           >
             {{ item.fileName }}
           </div>
@@ -42,7 +53,8 @@ export default {
   components: {
     DocumentonlineTree: resolve => require(['./documentonline-tree.vue'], resolve),
     DocumentonlineNav: resolve => require(['./documentonline-nav.vue'], resolve),
-    DocumentonlineContent: resolve => require(['./documentonline-content.vue'], resolve)
+    DocumentonlineContent: resolve => require(['./documentonline-content.vue'], resolve),
+    DocumentonlineList: resolve => require(['./documentonline-list.vue'], resolve)
   },
   props: {},
   data() {
@@ -60,7 +72,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {
+  created() {
     this.$localStore.remove('searchKeyword', 'common');
     if (this.$route.query) {
       this.filePath = this.$route.query.filePath;
@@ -68,9 +80,12 @@ export default {
       if (this.$route.query.isSiderHide && this.$route.query.isSiderHide === 'false') {
         this.isSiderHide = false;
       }
+      let upwardNameList = this.$route.query.upwardNameList;
+      if (upwardNameList) {
+        this.upwardNameList = upwardNameList.split('/');
+      }
     }
-    await this.getDocumentDetail();
-    this.getDocumentonlineList();
+    this.init();
   },
   beforeMount() {},
   mounted() {},
@@ -81,6 +96,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async init() {
+      this.loadingShow = true;
+      if (this.filePath) {
+        await this.getDocumentDetail();
+        this.getDocumentonlineList();
+      } else {
+        this.loadingShow = false;
+      }
+    },
     getDocumentDetail() {
       if (!this.filePath) {
         return;
@@ -88,7 +112,6 @@ export default {
       let data = {
         filePath: this.filePath
       };
-      this.loadingShow = true;
       return this.$api.documentonline.getDocumentDetail(data).then(res => {
         if (res.Status === 'OK') {
           this.content = res.Return.content; 
@@ -99,7 +122,7 @@ export default {
         this.loadingShow = false;
       });
     },
-    getDocumentonlineList(currentPage) {
+    getDocumentonlineList(currentPage) { //文档的相关的知识
       let data = {
         currentPage: currentPage || 1,
         upwardNameList: this.preUpwardNameList
@@ -120,13 +143,28 @@ export default {
     toggleSiderHide(siderHide) {
       this.isSiderHide = siderHide;
     },
-    gotoPage(item) {
-      this.$router.push({
-        path: '/documentonline-detail',
-        query: {
-          filePath: item.filePath
-        }
-      });
+    getDetail(item) {
+      this.clearData();
+      this.filePath = item.filePath;
+      this.init();
+    },
+    selectTreeNode(node) {
+      this.clearData();
+      this.filePath = node.filePath || '';
+      this.isSiderHide = false;
+      if (node.isFile) {
+        this.init();
+      } else {
+        this.upwardNameList = node.upwardNameList;
+      }
+    },
+    clearData() {
+      this.filePath = '';
+      this.content = '';
+      this.anchorPoint = '';
+      this.list = [];
+      this.upwardNameList = [];
+      this.preUpwardNameList = [];
     }
   },
   filter: {},

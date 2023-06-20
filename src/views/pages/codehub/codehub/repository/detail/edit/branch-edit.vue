@@ -1,15 +1,9 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close" @on-ok="saveEdit">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="canSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -21,29 +15,31 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
   },
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
-    uuid: {type: [String, Boolean]},
-    repositoryId: {type: Number},
-    branchList: {type: Array}
+    repositoryId: {type: Number}
   },
   data() {
     return {
-      vaild: ['required'],
       setting: {
-        title: this.uuid ? this.$t('term.codehub.editbranch') : this.$t('term.codehub.addbranch'),
-        maskClose: false
+        title: this.$t('term.codehub.addbranch'),
+        maskClose: false,
+        isShow: true
       },
-      canSubmit: false,
       formConfig: [
         {
           type: 'text',
           label: this.$t('term.codehub.branchname'),
           name: 'branchName',
           value: '',
-          validateList: ['required']
+          validateList: [
+            'required',
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/repository/branch/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('term.codehub.branchname')}),
+              params: { repositoryId: this.repositoryId}
+            }
+          ],
+          maxlength: 50
         }, 
         {
           type: 'select',
@@ -68,8 +64,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -82,39 +77,16 @@ export default {
     },
     saveEdit() {
       if (this.$refs.editform.valid()) {
-        let param = Object.assign(this.$refs.editform.getFormValue(), {
+        let param = {
+          ...this.$refs.editform.getFormValue(),
           repositoryId: this.repositoryId
-        });
-        this.uuid && Object.assign(param, {
-          uuid: this.uuid
-        });
-        if (!param.description) {
-          this.$delete(param, 'description');
-        }
-        this.canSubmit = true;
+        };
         this.$api.codehub.repositorydetail.saveBranch(param).then(res => {
-          this.canSubmit = false;
           if (res && res.Status == 'OK') {
             this.$emit('close', true);
           }
-        }).catch(error => {
-          this.canSubmit = false;
         });
       }
-    },
-    getDetail(uuid) {
-      this.$api.codehub.service.getDetail({uuid: uuid}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.updataVal(res.Return);
-        }
-      });      
-    },
-    updataVal(data) {
-      this.formConfig.forEach(form => {
-        if (form.name && data[form.name]) {
-          this.$set(form, 'value', data[form.name]);
-        }
-      });
     }
   },
   filter: {},
