@@ -49,9 +49,9 @@
                 <Col span="8">
                   <div>
                     <Tooltip placement="top">
-                      <div>{{ setAbbraNameAndName(row) }}</div>
+                      <div>{{ $utils.getAbbrNameAndName(row.appSystemVo) }}</div>
                       <div slot="content">
-                        {{ setAbbraNameAndName(row) }}
+                        {{ $utils.getAbbrNameAndName(row.appModuleVo) }}
                       </div>
                     </Tooltip>
                   </div>
@@ -337,20 +337,6 @@ export default {
           }
         });
         return txt;
-      };
-    },
-    setAbbraNameAndName() {
-      return function(config) {
-        let text = '';
-        let prev = config.appSystemVo || '';
-        let next = config.appModuleVo || '';
-        if (prev) {
-          text = prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : prev.abbrName) : '';
-          if (next) {
-            text += ' / ' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : next.abbrName) : (next.name || ''));
-          }
-        }
-        return text;
       };
     }
   },

@@ -2355,7 +2355,10 @@
     "clickheretodownloadthefile": "点此可以下载文件",
     "nochangesmade": "没有变更内容",
     "thefileisempty": "该文件为空",
-    "issuedetail": "需求详情"
+    "issuedetail": "需求详情",
+    "filedeleted": "文件已被删除",
+    "defaultbranch": "默认分支",
+    "mainbranch": "主干分支"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",

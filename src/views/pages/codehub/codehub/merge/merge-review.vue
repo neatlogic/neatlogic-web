@@ -5,6 +5,7 @@
       siderPosition="right"
       :isSiderHide="!isSiderHide"
       :rightBtn="true"
+      :rightWidth="220"
       @rightSiderToggle="rightSiderToggle"
     >
       <template v-slot:navigation>
@@ -117,11 +118,12 @@
       </template>
       <template v-slot:right>
         <div v-if="mrData" class="bg-op radius-lg padding-sm">
-          <div>{{ $t('page.basicinfo') }}</div>
+          <div class="mb-xs">{{ $t('page.basicinfo') }}</div>
           <ul>
             <li class="basic-info-box mb-sm">
               <div class="left-lable-box text-right text-grey">id</div>
               <div>
+                {{ mrData.id }}
                 <span 
                   v-clipboard="mrData.id" 
                   class="ts-link text-href btn-copy" 
@@ -394,7 +396,7 @@ export default {
 .basic-info-box {
   display: flex;
   .left-lable-box {
-    width: 90px;
+    width: 62px;
     margin-right: 10px;
   }
 }

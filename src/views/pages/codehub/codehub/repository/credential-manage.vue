@@ -68,13 +68,28 @@ export default {
         .getList()
         .then(res => {
           if (res && res.Status == 'OK') {
-            this.credentialList = res.Return || [];
-            if (this.$utils.isEmpty(this.credentialList)) {
-              this.credentialList = [
-                {repoType: 'gitlab'},
-                {repoType: 'svn'}
-              ];
+            let repoTypeList = 
+            [
+              {repoType: 'gitlab'},
+              {repoType: 'svn'}
+            ];
+            let credentialList = res.Return || [];
+            this.credentialList = [];
+            if (!this.$utils.isEmpty(credentialList)) {
+              credentialList.forEach((item) => {
+                if (item.repoType && repoTypeList.find((v) => v.repoType == item.repoType)) {
+                  this.credentialList.push(item);
+                }
+              });
             }
+            // 补充类型没有的数据
+            repoTypeList.forEach((item) => {
+              if (!this.credentialList.find((v) => v.repoType == item.repoType)) {
+                this.credentialList.push({
+                  repoType: item.repoType
+                });
+              }
+            });
           }
         })
         .finally(() => {

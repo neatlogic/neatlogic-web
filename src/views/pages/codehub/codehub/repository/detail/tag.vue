@@ -3,17 +3,14 @@
     <div class="input-border" style="padding:0 16px;">
       <Row :gutter="16">
         <Col span="18">
-          <Button type="primary" @click="editLi()">
-            <i class="ts-plus"></i>{{ $t('page.tag') }}
-          </Button>         
+          <span class="tsfont-plus text-action" @click="editTag()">{{ $t('page.tag') }}</span>
         </Col>
         <Col span="6">
-          <FormInput
-            v-model.trim="keyword"
-            suffix="i-icon ts-search"
+          <InputSearcher
+            v-model="keyword"
             :placeholder="$t('page.keyword')"
-            @keyup.enter.native="getList()"
-          ></FormInput>
+            @change="() => getList()"
+          ></InputSearcher>
         </Col>
       </Row>
     </div>
@@ -28,7 +25,7 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action ts-trash" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
+            <div class="action-item text-action tsfont-trash-o" @click="deleteTag(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
@@ -40,7 +37,12 @@
             </colgroup>
             <tbody>
               <tr>
-                <td><h4><i class="ts-tag text-primary" style="margin-right:4px;"></i>{{ row.name }}</h4></td>
+                <td>
+                  <h4>
+                    <span class="ts-tag text-primary icon-right">
+                      {{ row.name }}</span>
+                  </h4>
+                </td>
                 <td rowspan="2" colspan="2" class="text-right text-tip">{{ row.commit.shortId }}</td>
                 <td></td>
               </tr>
@@ -55,23 +57,20 @@
       </TsCard>
     </div>
     <TagEdit
-      v-if="isEdit"
-      :uuid="editUuid"
+      v-if="isShowTagEdit"
       :repositoryId="id"
-      :isShow="isEdit"
       @close="close"
     ></TagEdit>
   </div>
 </template>
 
 <script>
-import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import editmixin from './edittabmixin.js';
 export default {
   name: 'Tag',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    FormInput,
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TagEdit: resolve => require(['./edit/tag-edit.vue'], resolve)
   },
   mixins: [editmixin],
@@ -80,8 +79,7 @@ export default {
     return {
       keyword: '',
       isload: false,
-      isEdit: false,
-      editUuid: null,
+      isShowTagEdit: false,
       tagConfig: {
         //卡片的数据
         span: 24,
@@ -89,7 +87,6 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        //pageType: 'numbet',
         keyName: 'name',
         currentPage: 1,
         pageSize: 10,
@@ -97,52 +94,38 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getList();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
-  activated() {
-
-  },
-
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
-    updateSize(size) {
-      this.tagConfig.pageSize = size || 1;
+    updateSize(pageSize) {
       this.tagConfig.currentPage = 1;
+      this.tagConfig.pageSize = pageSize || 10;
       this.getList();
     },
-    updatePage(page) {
-      this.tagConfig.currentPage = page || 1;
+    updatePage(currentPage) {
+      this.tagConfig.currentPage = currentPage || 1;
       this.getList();
     },
     getList() {
       let param = {
+        keyword: this.keyword,
+        currentPage: this.tagConfig.currentPage,
+        pageSize: this.tagConfig.pageSize,
         repositoryId: this.id,
         hasCommit: 1
       };
-      this.keyword && Object.assign(param, {keyword: this.keyword});
-      this.tagConfig.pageSize && Object.assign(param, {pageSize: this.tagConfig.pageSize});
-      this.tagConfig.currentPage && Object.assign(param, {currentPage: this.tagConfig.currentPage});
       this.isload = true;
       this.$api.codehub.repositorydetail.getTag(param).then(res => {
-        this.isload = false;
         if (res && res.Status == 'OK') {
           Object.assign(this.tagConfig, {
             pageCount: res.Return.pageCount,
@@ -154,22 +137,20 @@ export default {
         } else {
           this.tagConfig = null;
         }
-      }).catch(error => {
+      }).finally(error => {
         this.isload = false;
       });
     },
-    editLi(val) {
-      if (val) {
-        this.editUuid = val;
+    editTag() {
+      this.isShowTagEdit = true;
+    },
+    close(needRefresh) {
+      this.isShowTagEdit = false;
+      if (needRefresh) {
+        this.getList();
       }
-      this.isEdit = true;
     },
-    close() {
-      this.isEdit = false;
-      this.editUuid = null;
-      this.getList();
-    },
-    deleteLi(name) {
+    deleteTag(name) {
       if (name) {
         let param = {
           repositoryId: this.id,
@@ -185,8 +166,6 @@ export default {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 this.getList();
                 vnode.isShow = false;
-              } else {
-                this.$Message.error(res.Message);
               }
             }); 
           }
@@ -194,11 +173,8 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     isload: {
       handler: function(val) {
@@ -206,10 +182,7 @@ export default {
       }      
     }
   }
-
 };
-
 </script>
 <style lang='less'>
-
 </style>
