@@ -67,9 +67,10 @@ export default {
     gotoPage(item) {
       if (item.firstLevelDirectory) {
         this.$router.push({
-          path: '/documentonline-manage',
+          path: '/documentonline-detail',
           query: {
-            upwardNameList: item.firstLevelDirectory
+            upwardNameList: item.firstLevelDirectory,
+            isSiderHide: false
           }
         });
       } else {
