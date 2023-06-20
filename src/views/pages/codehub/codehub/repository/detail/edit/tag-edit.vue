@@ -36,15 +36,12 @@ export default {
           name: 'tagName',
           value: '',
           validateList: [
-            'required', 
-            'name-special', {
-            // 校验名称重复
-              name: 'searchUrl', 
-              url: '/api/rest/codehub/repository/tag/save',
-              params: {
-                id: ''
-              },
-              key: 'name'
+            'required',
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/repository/tag/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('term.codehub.tagname')}),
+              params: { repositoryId: this.repositoryId}
             }],
           maxlength: 50
         }, {
