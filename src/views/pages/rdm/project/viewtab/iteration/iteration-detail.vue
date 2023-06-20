@@ -136,7 +136,7 @@ export default {
       }
     },
     getAppByProjectId() {
-      this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+      this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1}).then(res => {
         this.appList = res.Return;
         const list = this.appList.filter(d => d.hasIssue);
         if (list.length > 0) {

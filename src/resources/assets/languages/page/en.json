@@ -914,5 +914,7 @@
   "personnel": "personnel",
   "isexpired": "Timed out or not",
   "nottimedout": "Not timed out",
-  "namepre": "name prefix "
+  "namepre": "name prefix ",
+  "activesucess": "Activation successful",
+  "unactivesuccess": "Disabled successfully"
 }

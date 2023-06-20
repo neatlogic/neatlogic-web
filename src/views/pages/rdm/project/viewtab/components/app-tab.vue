@@ -9,7 +9,7 @@
     >{{ item.name }}</Button>
   </ButtonGroup>-->
   <Tabs :animated="false" :value="currentTab" @on-click="changeTab">
-    <TabPane :label=" $t('term.rdm.projectinfo') " name="project" @click.native="changeTab('project')"></TabPane>
+    <TabPane :label="$t('term.rdm.projectinfo')" name="project" @click.native="changeTab('project')"></TabPane>
     <TabPane
       v-for="item in appList"
       :key="item.id"
@@ -60,7 +60,7 @@ export default {
     },
     getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+        this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1 }).then(res => {
           this.appList = res.Return;
         });
       }
