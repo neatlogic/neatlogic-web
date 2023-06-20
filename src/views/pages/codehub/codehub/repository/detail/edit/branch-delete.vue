@@ -1,7 +1,7 @@
 <template>
   <TsDialog v-bind="setting" :isShow="isShow" @on-close="close">
     <template v-slot:header>
-      <div>{{ $t('term.codehub.confirmdelebranch') }}</div>
+      <div>{{ $t('term.codehub.confirmdeletebranch') }}</div>
     </template>
     <template v-slot>
       <div>
