@@ -1,8 +1,8 @@
 <template>
   <div v-if="isReady">
-    <div v-if="editMode == 'read' && !readonly" style="text-align: right">
+    <!--<div v-if="editMode == 'read' && !readonly" style="text-align: right">
       <span class="cursor text-grey tsfont-edit" @click="editContent">{{ $t('dialog.title.edittarget', { target: $t('page.content') }) }}</span>
-    </div>
+    </div>-->
     <component
       :is="issueData.appType + 'handler'"
       v-if="handlers[issueData.appType + 'handler']"
@@ -67,6 +67,7 @@ export default {
       this.$nextTick(() => {
         this.isReady = true;
       });
+      this.$emit('cancel');
     },
     saveIssue() {
       const component = this.$refs['component'];
@@ -85,6 +86,11 @@ export default {
   filter: {},
   computed: {},
   watch: {
+    mode: {
+      handler: function(val) {
+        this.editMode = val;
+      }
+    },
     isReady: {
       handler: function(val) {
         if (val) {

@@ -42,12 +42,8 @@
               <span>{{ selectedIteration.endDate | formatDate('yyyy-mm-dd') }}</span>
             </div>
           </div>
-          <div v-if="issueAppList && issueAppList.length > 0" class="mt-md">
-            <Tabs
-              v-model="currentApp"
-              :animated="false"
-              type="card"
-            >
+          <div v-if="selectedIteration && issueAppList && issueAppList.length > 0" class="mt-md">
+            <Tabs v-model="currentApp" :animated="false" type="card">
               <TabPane
                 v-for="(app, index) in issueAppList"
                 :key="index"
@@ -61,14 +57,15 @@
                     :projectId="projectId"
                     :canAppend="true"
                     :mode="displayMode"
-                    :iteration="selectedIteration && selectedIteration.id"
+                    :canAction="true"
+                    :iteration="selectedIteration.id"
                     :isShowEmptyTable="true"
                   ></IssueList>
                 </div>
               </TabPane>
             </Tabs>
           </div>
-          <NoData v-else></NoData>
+          <NoData v-else>{{ $t('term.rdm.noiteration') }}</NoData>
         </div>
       </template>
     </TsContain>
@@ -123,17 +120,22 @@ export default {
   destroyed() {},
   methods: {
     toggleIterationOpen(val) {
-      this.$api.rdm.iteration.toggleIterationIsOpen({ id: this.selectedIteration.id, isOpen: val }).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.updatesuccess'));
-        }
-      });
+      this.$api.rdm.iteration
+        .toggleIterationIsOpen({
+          id: this.selectedIteration.id,
+          isOpen: val
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.updatesuccess'));
+          }
+        });
     },
     toInterationDetail(id) {
       this.$router.push({ path: '/iteration-detail/' + this.projectId + '/' + this.appId + '/' + id });
     },
     getAppByProjectId() {
-      this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
+      this.$api.rdm.project.getAppByProjectId(this.projectId, { needSystemAttr: 1 }).then(res => {
         this.appList = res.Return;
         const list = this.appList.filter(d => d.hasIssue);
         if (list.length > 0) {

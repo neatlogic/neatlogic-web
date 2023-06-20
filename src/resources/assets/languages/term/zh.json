@@ -2118,7 +2118,8 @@
     "changetype": "变更方式",
     "changeattr": "变更属性",
     "beforechange": "变更前",
-    "afterchange": "变更后"
+    "afterchange": "变更后",
+    "noiteration": "暂无迭代"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

@@ -76,7 +76,7 @@ export default {
     return {
       isReady: false,
       displayMode: 'level',
-      needAttr: ['status', 'priority', 'startdate', 'enddate'],
+      needAttr: ['_name', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
       attrList: [],
       appList: [],
       projectList: [],
@@ -100,7 +100,7 @@ export default {
   destroyed() {},
   methods: {
     getPrivateAttrList() {
-      this.$api.rdm.attr.getPrivateAttrList().then(res => {
+      this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
         this.attrList = res.Return;
         this.isReady = true;
       });
@@ -171,6 +171,7 @@ export default {
         if (val) {
           this.isReady = false;
           this.$api.rdm.project.getAppByProjectId(val, {
+            needSystemAttr: 1,
             needIssueCount: 1,
             isMine: this.isMine,
             isMyCreated: this.isMyCreated,

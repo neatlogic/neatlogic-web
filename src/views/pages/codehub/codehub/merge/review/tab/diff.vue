@@ -64,7 +64,7 @@
       <Loading v-else loadingShow style="height:100px"></Loading>
       <div 
         v-if="isFixtop && scrollTop && scrollTop>100" 
-        class="ts-long-arrow-up btn-gotop bg-grey border-color cursor-pointer" 
+        class="tsfont-arrow-up btn-gotop bg-grey border-color cursor-pointer" 
         @click="scrolltoTop"
       ></div>
       <div 
@@ -506,15 +506,15 @@ export default {
   }
 }
 .btn-gotop{
-  position: absolute;
-  bottom: -14px;
-  right: -14px;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  border: 1px solid;
-  font-size: 16px;
-  font-weight: bold;
+    position: absolute;
+    bottom: 0px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border: 1px solid;
+    font-size: 16px;
+    text-align: center;
 }
 .btn-toggle-left{
   position: absolute;

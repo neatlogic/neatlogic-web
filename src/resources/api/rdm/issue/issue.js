@@ -1,6 +1,9 @@
 import axios from '../../http';
 
 const issue = {
+  getRelIssueList(issueId, relType, direction) {
+    return axios.post('/api/rest/rdm/issue/rel/list', { issueId: issueId, relType: relType, direction: direction });
+  },
   checkIssueIsFavorite(id) {
     return axios.post('/api/rest/rdm/issue/favorite/check', { id: id });
   },

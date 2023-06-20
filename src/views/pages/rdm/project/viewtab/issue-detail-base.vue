@@ -7,7 +7,8 @@ export default {
     return {
       id: null,
       appId: null,
-      projectId: null
+      projectId: null,
+      contentMode: 'read'
     };
   },
   beforeCreate() {},
@@ -27,6 +28,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editContent() {
+      this.contentMode = 'edit';
+    },
     async init() {
       await this.getIssueById();
       this.isReady = false;
@@ -52,6 +56,24 @@ export default {
             this.isLoading = false;
           });
       }
+    },
+    renderEditContentTab(h, label) {
+      const controllList = [];
+      controllList.push(h('span', label));
+      if (!this.issueData.isEnd) {
+        controllList.push(
+          h(
+            'span',
+            {
+              class: 'ml-xs tsfont-edit-s',
+              on: {
+                click: this.editContent
+              }
+            }
+          )
+        ); 
+      }
+      return h('div', controllList);
     },
     renderTabLabelForChild(h, issueData, label) {
       const controllList = [];

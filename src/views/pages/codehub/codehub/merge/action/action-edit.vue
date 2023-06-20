@@ -181,7 +181,6 @@ export default {
       statusConfig: {
         validateList: ['required'],
         search: true,
-        width: '55%',
         multiple: true
       },
       appModuleConfig: {

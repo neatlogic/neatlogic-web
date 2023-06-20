@@ -2121,7 +2121,8 @@
     "changetype": "Change method",
     "changeattr": "Change attributes",
     "beforechange": "Before change",
-    "afterchange": "After the change"
+    "afterchange": "After the change",
+    "noiteration": "There are currently no iterations"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

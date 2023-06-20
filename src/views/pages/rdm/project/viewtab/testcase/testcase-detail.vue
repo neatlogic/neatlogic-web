@@ -27,9 +27,14 @@
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
           <Tabs v-model="currentTab" :animated="false">
-            <TabPane :label="$t('page.detailinfo')" name="main">
+            <TabPane :label="render => renderEditContentTab(render, $t('page.detailinfo'))" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
-                <ContentHandler :issueData="issueData" :autoSave="false"></ContentHandler>
+                <ContentHandler
+                  :mode="contentMode"
+                  :issueData="issueData"
+                  :autoSave="false"
+                  @cancel="contentMode = 'read'"
+                ></ContentHandler>
               </div>
             </TabPane>
             <TabPane :label="render => renderTabLabel(render, id, $t('term.rdm.relativerequest'), 'story', 'relative', 'to')" name="childrequest">
