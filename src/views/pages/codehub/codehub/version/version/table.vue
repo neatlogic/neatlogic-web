@@ -7,12 +7,12 @@
   >
     <template slot="appSystemVo" slot-scope="{ row }">
       <div v-if="row.appSystemVo">
-        <div>{{ getAppSystemVoName(row.appSystemVo) }}</div>
+        <div>{{ $utils.getAbbrNameAndName(row.appSystemVo) }}</div>
       </div>
     </template>
     <template slot="appModuleVo" slot-scope="{ row }">
       <div v-if="row.appModuleVo">
-        <div>{{ getAppSystemVoName(row.appModuleVo) }}</div>
+        <div>{{ $utils.getAbbrNameAndName(row.appModuleVo) }}</div>
       </div>
     </template>
     <template slot="sourceBranch" slot-scope="{ row }">
@@ -24,7 +24,7 @@
     <template slot="action" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="tstable-action">
         <ul class="tstable-action-ul">
-          <li v-if="row.canEdit" class="tsfont-plus-o" @click="addMr(row.id, row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</li>
+          <li v-if="row.canEdit" class="tsfont-plus" @click="addMr(row.id, row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</li>
           <li v-if="canDelete" class="tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</li>
         </ul>
       </div>
@@ -40,9 +40,6 @@ export default {
   },
   props: {
     versionData: {
-      type: Object
-    },
-    statusList: {
       type: Object
     },
     canDelete: {
@@ -126,14 +123,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    getAppSystemVoName() {
-      // 获取应用简称(名称)
-      return (appSystemVo) => {
-        return appSystemVo.abbrName ? (appSystemVo.name ? `${appSystemVo.abbrName}(${appSystemVo.name})` : appSystemVo.abbrName) : (appSystemVo.name);
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

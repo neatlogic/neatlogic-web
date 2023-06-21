@@ -8,7 +8,6 @@
         <Col span="8">
           <InputSearcher
             v-model="keyword"
-            :placeholder="$t('page.keyword')"
             @change="searchKeyword"
           ></InputSearcher>
         </Col>

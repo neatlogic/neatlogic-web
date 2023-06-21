@@ -2358,7 +2358,12 @@
     "issuedetail": "需求详情",
     "filedeleted": "文件已被删除",
     "defaultbranch": "默认分支",
-    "mainbranch": "主干分支"
+    "mainbranch": "主干分支",
+    "rowadd": "行添加",
+    "rowdelete": "行删除",
+    "filechangenumber": "个文件变更",
+    "handlemergerequest": "处理MR",
+    "revokerequirement": "撤销需求"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",

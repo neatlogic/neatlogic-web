@@ -915,6 +915,7 @@
   "isexpired": "Timed out or not",
   "nottimedout": "Not timed out",
   "namepre": "name prefix ",
+  "total": "Total",
   "activesucess": "Activation successful",
   "unactivesuccess": "Disabled successfully"
 }

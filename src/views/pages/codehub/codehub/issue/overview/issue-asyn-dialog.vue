@@ -1,17 +1,11 @@
 <template>
-  <TsDialog v-bind="asynTsDialog" @on-close="close">
+  <TsDialog v-bind="asynTsDialog" @on-close="close" @on-ok="submitEdit">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-        <TsForm ref="sourceform" :itemList="sourceConfig||[]">
+        <TsForm ref="sourceform" :itemList="sourceConfig">
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="saving" @click="submitEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -86,8 +80,7 @@ export default {
           this.editData.subsystemUuid = val;
         }
       },
-      sourceConfig: [],
-      saving: false
+      sourceConfig: []
     };
   },
   beforeCreate() {},
@@ -172,15 +165,11 @@ export default {
         if (param.startTime > param.endTime) {
           this.$Message.error(this.$t('term.framework.startlargethanend'));
         } else {
-          this.saving = true;
           this.$api.codehub.issue.aysn(param).then(res => {
-            this.saving = false;
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.syncsuccess'));
               this.$emit('close', true);
             }
-          }).catch(e => {
-            this.saving = false;
           }); 
         }
       }

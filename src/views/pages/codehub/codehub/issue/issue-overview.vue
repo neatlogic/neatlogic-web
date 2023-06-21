@@ -13,12 +13,10 @@
             <TsFormSelect v-model="subsystemUuid" v-bind="subsystemConf"></TsFormSelect>
           </Col>
           <Col span="6">
-            <Input
-              v-model.trim="keyword"
-              prefix="i-icon ts-search"
-              :placeholder="$t('page.keyword')"
-              @keyup.enter.native="getSearch"
-            />
+            <InputSearcher
+              v-model="keyword"
+              @change="() => getSearch()"
+            ></InputSearcher>
           </Col>
         </Row>
       </template>
@@ -74,6 +72,7 @@ export default {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     IssueAsynDialog: resolve => require(['./overview/issue-asyn-dialog'], resolve)
   },
   props: [''],

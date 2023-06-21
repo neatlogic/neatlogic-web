@@ -5,7 +5,7 @@
         <div class="clearfix">
           <div class="ts-angle-left d_f cursor-pointer" @click="gotoPrev()">返回MR</div>
           <div class="d_f top-title">
-            <h3 class="title">撤销需求</h3>
+            <h3 class="title">{{ $t('term.codehub.revokerequirement') }}</h3>
             <div v-if="mrData" class="desc">
               <Tooltip v-if="showtips(mrData)" theme="light" max-width="300">
                 <div>{{ setTxt(mrData, 'text') }}</div>
@@ -15,11 +15,11 @@
               </Tooltip>
               <span v-else>{{ setTxt(mrData, 'text') }}</span>
               <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
-              <span v-if="srcBranch" class="text-tip ml-20">源分支:</span>
+              <span v-if="srcBranch" class="text-tip ml-20">{{ $t('page.sourcebranch') }}:</span>
               <span v-if="srcBranch" class="ml-sm srcbranch-container">
                 {{ srcBranch }}
               </span>
-              <span v-if="targetBranch" class="text-tip ml-20">目标分支:</span>
+              <span v-if="targetBranch" class="text-tip ml-20">{{ $t('page.targetbranch') }}:</span>
               <span v-if="targetBranch" class="ml-sm">
                 {{ targetBranch }}
               </span>
@@ -32,7 +32,7 @@
               class="ml-sm"
               :disabled="submiting"
               @click="submitMr"
-            >提交</Button>
+            >{{ $t('page.submit') }}</Button>
           </div>
         </div>
       </template>
@@ -52,13 +52,13 @@
               <template slot="action" slot-scope="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li class="ts-list" @click="viewIssue(row.uuid)">详情</li>
+                    <li class="ts-list" @click="viewIssue(row.uuid)">{{ $t('page.detail') }}</li>
                   </ul>
                 </div>
               </template>
             </TsTable>
           </div>
-          <div class="input-border padding-md"><Input v-model="description" type="textarea" placeholder="MR描述" /></div>
+          <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
         </div>
       </div>
     </TsContain>
@@ -99,19 +99,19 @@ export default {
       description: '',
       tabledata: {
         theadList: [{
-          title: '需求编号',
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         }, {
-          title: '描述',
+          title: this.$t('page.description'),
           key: 'name'
         }, {
-          title: '负责人',
+          title: this.$t('page.responsibleperson'),
           key: 'handleUserId'
         }, {
-          title: '更新时间',
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime'
         }, {
-          title: '来源',
+          title: this.$t('page.source'),
           key: 'sourceUuid'
         }],
         rowKey: 'no'

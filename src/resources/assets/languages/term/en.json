@@ -2359,7 +2359,12 @@
     "thefileisempty": "The file is empty",
     "filedeleted": "file has been deleted",
     "defaultbranch": "Default Branch",
-    "mainbranch": "main branch "
+    "mainbranch": "main branch ",
+    "rowadd": "Add Rows",
+    "rowdelete": "Line deletion",
+    "filechangenumber": "File changes",
+    "handlemergerequest": "Process MR",
+    "revokerequirement": "Revoke requirement"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

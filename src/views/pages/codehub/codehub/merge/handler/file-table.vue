@@ -17,7 +17,7 @@
         </tbody>
         <tbody v-else>
           <tr>
-            <td :colspan="titleList.length || 0" class="text-center">暂无数据</td>
+            <td :colspan="titleList.length || 0" class="text-center">{{ $t('page.nodata') }}</td>
           </tr>
         </tbody>
       </table>

@@ -10,19 +10,14 @@
       :hasFooter="false"
       @on-close="close"
     >
-      <TsRow class="input-border">
+      <TsRow>
         <Col span="16">
         </Col>
         <Col span="8">
-          <Input
+          <InputSearcher
             v-model="keyword"
-            prefix="i-icon ts-search"
-            border="border"
-            :placeholder="$t('page.keyword')"
-            clearable
-            @on-enter="getTemplateList(1)"
-            @on-clear="getTemplateList(1)"
-          ></Input>
+            @change="() => getTemplateList(1)"
+          ></InputSearcher>
         </Col>
       </TsRow>
       <div>
@@ -145,15 +140,10 @@
                   </Alert>
                 </div>
                 <div class="param-search">
-                  <Input
+                  <InputSearcher
                     v-model="paramkeyword"
-                    class="input-border"
-                    prefix="i-icon ts-search"
-                    :placeholder="$t('page.keyword')"
-                    clearable
-                    @on-enter="getParamList(1)"
-                    @on-clear="getParamList(1)"
-                  ></Input>
+                    @change="() => getParamList(1)"
+                  ></InputSearcher>
                 </div>
                 <div class="add-box">
                   <div class="add text-action border-color" @click="addParam">
@@ -239,6 +229,7 @@ export default {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
     TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     freemarkerHelp: resolve => require(['./freemarker-help.vue'], resolve),
     EditParam: resolve => require(['./edit-param.vue'], resolve),
     DelItme: resolve => require(['./del-item.vue'], resolve),

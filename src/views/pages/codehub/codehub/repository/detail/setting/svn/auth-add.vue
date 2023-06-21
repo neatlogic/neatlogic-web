@@ -4,6 +4,7 @@
     v-bind="setting"
     :isShow="isShow"
     @on-close="close"
+    @on-ok="saveEdit"
   >
     <div style="height: calc(100vh - 134px);">
       <Split v-if="!isloading && pathList.length && !editConfig" v-model="split">
@@ -109,12 +110,6 @@
       <div v-else-if="!isloading" class="text-tip">暂无可添加权限的资源</div>
       <Loading v-else loadingShow></Loading>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">确定</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>
@@ -149,7 +144,6 @@ export default {
         width: 'medium',
         type: 'slider'
       },
-      isSubmit: false, //是否提交中，需要禁用调提交按钮
       pathList: [],
       currentPath: [], //当前选中哪个路径
       isLoading: true,
@@ -350,13 +344,10 @@ export default {
       Object.assign(param, {
         'authList': authList
       });
-      this.isSubmit = true;
       this.$api.codehub.repositorydetail.saveSvnAuth(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$emit('close', true);
         }
-      }).finally(res => {
-        this.isSubmit = false;
       });
     },
     close() {

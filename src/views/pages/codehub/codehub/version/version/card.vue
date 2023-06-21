@@ -7,8 +7,8 @@
   >
     <template slot="header" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="action-group">
-        <div v-if="row.canEdit" class="action-item text-action ts-plus-o" @click="addMr(row.id,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
-        <div v-if="canDelete" class="action-item text-action ts-trash" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
+        <div v-if="row.canEdit" class="action-item text-action tsfont-plus" @click="addMr(row.id,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
+        <div v-if="canDelete" class="action-item text-action tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
       </div>
     </template>
     <template slot-scope="{ row }">
@@ -58,9 +58,6 @@ export default {
   },
   props: {
     versionData: {
-      type: Object
-    },
-    statusList: {
       type: Object
     },
     canDelete: {

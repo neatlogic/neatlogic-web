@@ -4,8 +4,8 @@
       <div class="input-border" style="padding:0 16px;margin-bottom:10px;">
         <Row :gutter="16">
           <Col span="18">
-            <Checkbox v-model="isValid">有效需求</Checkbox>
-            <span class="ml-sm">检索提交日志</span>
+            <Checkbox v-model="isValid">{{ $t('term.codehub.effectivedemand') }}</Checkbox>
+            <span class="ml-sm">{{ $t('term.codehub.retrievesubmissionlogs') }}</span>
             <Input
               v-model="maxSearchCount"
               number
@@ -14,7 +14,7 @@
               style="width:60px;"
               @on-change="getVaildlist()"
             />
-            <span class="ml-sm">条</span>
+            <span class="ml-sm">{{ $t('page.strip') }}</span>
           </Col>
           <Col span="6">
           </Col>
@@ -47,7 +47,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.uuid)">详情</li>
+                <li class="ts-list" @click="viewIssue(row.uuid)">{{ $t('page.detail') }}</li>
               </ul>
             </div>
           </template>
@@ -60,12 +60,12 @@
               v-model.trim="addItem"
               type="textarea"
               autosize
-              placeholder="手工输入需求号，逗号分隔"
+              :placeholder="$t('term.codehub.inputissuesnumberdesc')"
               @on-enter="addIssue()"
             />
           </Col>
           <Col span="4">
-            <Button type="primary" @click="addIssue()">加入待合并需求</Button>
+            <Button type="primary" @click="addIssue()">{{ $t('term.codehub.addmergeissues') }}</Button>
           </Col>
         </Row>
       </div>
@@ -84,13 +84,13 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-trash" @click="deleteIssue(row.no)">删除</li>
+              <li class="ts-trash" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>        
       </TsTable>
     </div>
-    <div class="input-border padding-md"><Input v-model="description" type="textarea" placeholder="MR描述" /></div>
+    <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
   </div>
 </template>
 

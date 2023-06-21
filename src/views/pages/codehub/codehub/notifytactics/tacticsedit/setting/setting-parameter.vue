@@ -14,15 +14,10 @@
           <Col span="16">
           </Col>
           <Col span="8">
-            <Input
+            <InputSearcher
               v-model="keyword"
-              class="input-border"
-              prefix="i-icon ts-search"
-              :placeholder="$t('page.keyword')"
-              clearable
-              @on-enter="getParamList(1)"
-              @on-clear="getParamList(1)"
-            ></Input>
+              @change="() => getParamList(1)"
+            ></InputSearcher>
           </Col>
         </TsRow>
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
@@ -98,6 +93,7 @@ export default {
   name: 'SettingParameter',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     EditParam: resolve => require(['./edit-param.vue'], resolve),
     DelItme: resolve => require(['./del-item.vue'], resolve)
   },

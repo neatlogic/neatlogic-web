@@ -27,7 +27,7 @@
               <div v-if="row.canEdit" class="action-group" @click.stop>
                 <div class="action-item tsfont-plus" @click="addVersion(row)">{{ $t('page.versions') }}</div>
                 <div class="action-item tsfont-edit" @click="editStrategy(row.id)">{{ $t('page.edit') }}</div>
-                <div class="action-item tsfont-trash-o" @click="deleteLi(row.id)">{{ $t('page.delete') }}</div>
+                <div class="action-item tsfont-trash-o" @click="deleteStrategy(row.id)">{{ $t('page.delete') }}</div>
               </div>
             </template>
             <template slot-scope="{ row }">
@@ -215,7 +215,7 @@ export default {
         this.strategyId = id;
       }
     },
-    deleteLi(id) {
+    deleteStrategy(id) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.process.policy')}),
@@ -249,19 +249,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.text-label {
-  line-height: 54px;
-}
-.top-title {
-  .title {
-    line-height: 30px;
-  }
-  .desc {
-    line-height: 20px;
-  }
-  padding-left: 20px;
-  margin-left: 20px;
-  border-left: 1px solid @default-border;
-}
 </style>

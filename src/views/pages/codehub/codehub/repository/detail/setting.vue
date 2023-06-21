@@ -24,41 +24,20 @@ export default {
     return {
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
-  activated() {
-  },
-
+  activated() {},
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
-  methods: {
-
-  },
-
+  methods: {},
   filter: {},
-
-  computed: {
-  },
-
-  watch: {
-
-  }
-
+  computed: {},
+  watch: {}
 };
 </script>
 <style lang="less"></style>
