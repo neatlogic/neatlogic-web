@@ -4,7 +4,7 @@
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-        <TsForm ref="sourceform" :itemList="sourceConfig||[]">
+        <TsForm ref="sourceform" :itemList="sourceConfig">
         </TsForm>
       </div>
     </template>
