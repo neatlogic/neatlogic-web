@@ -30,6 +30,13 @@
           <template v-slot:cronExpression="{ row }">
             <TsQuartz :value="row.cronExpression" showType="read"></TsQuartz>
           </template>
+          <template v-slot:phaseText="{ row }">
+            <div>
+              <div v-for="(phase,index) in row.phaseTextList" :key="index">
+                <span class="mr-xs">{{ index+1 }}.</span><span>{{ phase }}</span>
+              </div>
+            </div>
+          </template>
           <template v-slot:execCount="{ row }">
             <a v-if="row.execCount>0" href="javascript:void(0)" @click="showPolicyAudit(row.id)">
               <span v-if="row.execCount > 99">99+</span>
