@@ -32,7 +32,7 @@
               });
             "
           >
-            <span class="tsfont-center overflow" style="margin-right:50px">{{ item.name }}</span>
+            <span class="tsfont-block overflow" style="margin-right:50px">{{ item.name }}</span>
             <span style="position:absolute;right:0px"><Button size="small" @click.stop="unactiveApp(item.type)">{{ $t('page.disable') }}</Button></span>
           </li>
           <li

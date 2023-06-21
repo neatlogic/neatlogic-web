@@ -15,8 +15,8 @@ export default {
     ...editor
   },
   props: {
-    projectId: {type: Number},
-    appId: {type: Number}
+    projectId: { type: Number },
+    appId: { type: Number }
   },
   data() {
     return {
@@ -39,6 +39,7 @@ export default {
     getAppById() {
       this.$api.rdm.app.getAppById(this.appId).then(res => {
         this.appData = res.Return;
+        console.log(JSON.stringify(this.appData, null, 2));
       });
     }
   },
@@ -47,5 +48,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

@@ -2123,7 +2123,9 @@
     "beforechange": "Before change",
     "afterchange": "After the change",
     "noiteration": "There are currently no iterations",
-    "selectedphase": "Selected stage"
+    "selectedphase": "Selected stage",
+    "stopsecret": "Deactivate Secret",
+    "enablesecret": "Enable Secret"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

@@ -2120,7 +2120,9 @@
     "beforechange": "变更前",
     "afterchange": "变更后",
     "noiteration": "暂无迭代",
-    "selectedphase": "已选阶段"
+    "selectedphase": "已选阶段",
+    "stopsecret": "停用Secret",
+    "enablesecret": "启用Secret"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

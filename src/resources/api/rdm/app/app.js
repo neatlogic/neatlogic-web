@@ -21,6 +21,9 @@ const app = {
   },
   unactiveApp(projectId, appType) {
     return axios.post('/api/rest/rdm/app/unactive', { projectId: projectId, appType: appType });
+  },
+  saveAppConfig(params) {
+    return axios.post('/api/rest/rdm/app/config/save', params);
   }
 };
 export default app;
