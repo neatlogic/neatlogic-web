@@ -2366,7 +2366,8 @@
     "rowdelete": "Line deletion",
     "filechangenumber": "File changes",
     "handlemergerequest": "Process MR",
-    "revokerequirement": "Revoke requirement"
+    "revokerequirement": "Revoke requirement",
+    "backmergerequest": "Return to MR"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

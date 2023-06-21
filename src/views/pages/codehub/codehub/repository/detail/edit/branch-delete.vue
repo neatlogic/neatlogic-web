@@ -58,9 +58,10 @@ export default {
     },
     saveDelete() {
       if (this.$refs.editform.valid()) {
-        let param = Object.assign(this.$refs.editform.getFormValue(), {
+        let param = {
+          ...this.$refs.editform.getFormValue(),
           repositoryId: this.repositoryId
-        });
+        };
         if (param.branchName != this.branchName) {
           this.$Message.error(this.$t('term.codehub.branchnotsame'));
           return;

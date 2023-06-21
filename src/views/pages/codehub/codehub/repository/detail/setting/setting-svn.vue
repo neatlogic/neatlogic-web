@@ -15,8 +15,8 @@
       <div v-if="selectedType=='auth'">
         <div style="margin-bottom:10px;">
           <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>权限</Button> 
-          <Button v-if="!isDowning" v-download="downloadPath" class="ml-10">导出Excel</Button> 
-          <Button v-else loading class="ml-10">导出中</Button> 
+          <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">导出Excel</Button> 
+          <Button v-else loading class="ml-sm">导出中</Button> 
         </div>
         <div>
           <TsTable
@@ -149,19 +149,18 @@ export default {
         'repositoryUuid': this.uuid,
         'authList': [authItem]
       };
-      let _this = this;
-      _this.$createDialog({
+      this.$createDialog({
         title: '删除确认',
         content: '是否确认删除该权限',
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.repositorydetail.deleteSvnAuth(param).then((res) => {
+        'on-ok': (vnode) => {
+          this.$api.codehub.repositorydetail.deleteSvnAuth(param).then((res) => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.getList();
+              this.$Message.success('删除成功');
+              this.getList();
               vnode.isShow = false;
             } else {
-              _this.$Message.error(res.Message);
+              this.$Message.error(res.Message);
             }
           });
         }

@@ -236,7 +236,7 @@ export default {
           }
         });
       } else {
-        this.$set(this.strategyData, 'tbodyList', null);
+        this.$set(this.strategyData, 'tbodyList', []);
       }
     },
     autofillName(config) {

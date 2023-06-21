@@ -63,7 +63,7 @@
       </div>
     </TsContain>
     <VersiontypeEditDialog
-      v-if="isEdit"
+      v-if="isShowVersionTypeEditDialog"
       :id="versionTypeId"
       @close="close"
     ></VersiontypeEditDialog>
@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       keyword: '',
-      isEdit: false, //是否编辑
+      isShowVersionTypeEditDialog: false,
       loadingShow: true,
       versionTypeId: null,
       versionData: {
@@ -116,7 +116,7 @@ export default {
   destroyed() {},
   methods: {
     editVersion(id) {
-      this.isEdit = true;
+      this.isShowVersionTypeEditDialog = true;
       if (id) {
         this.versionTypeId = id;
       }
@@ -166,7 +166,7 @@ export default {
       });
     },
     close(needRefresh) {
-      this.isEdit = false;
+      this.isShowVersionTypeEditDialog = false;
       this.versionTypeId = null;
       if (needRefresh) {
         this.searchList();

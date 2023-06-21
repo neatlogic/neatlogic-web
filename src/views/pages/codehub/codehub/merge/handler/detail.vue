@@ -35,7 +35,7 @@
         <template slot="folder" slot-scope="{ row }">
           <CommitDetail
             v-if="row.showFolder != undefined"
-            :mrUuid="uuid"
+            :mrId="id"
             :issueNo="row.no"
             :statusList="commitstatusList"
             :mrData="mrData"
@@ -52,7 +52,7 @@
           </RadioGroup>
           <Button
             type="error"
-            class="mr-20 ml-20"
+            class="mr-sm ml-sm"
             :disabled="duringAction"
             @click="closeMr()"
           >{{ $t('page.close') }}</Button>
@@ -68,12 +68,6 @@
         </div>
       </template>
     </div>
-    <IssueList
-      v-if="showList"
-      :config="issueConfig"
-      :isShow="showList"
-      @close="clearList"
-    ></IssueList>
   </div>
 </template>
 
@@ -82,11 +76,10 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    IssueList: resolve => require(['@/views/pages/codehub/codehub/issue/overview/issue-list.vue'], resolve),
     CommitDetail: resolve => require(['./commit-table.vue'], resolve)
   },
   props: {
-    uuid: String, //父组件传过来的mrid
+    id: String, //父组件传过来的mrid
     mrData: Object, //父组件传过来的mr数据
     statusList: Array, //父组件传过来的需求状态映射列表
     mrstatusList: Array //父组件传过来的mr状态映射列表
@@ -192,27 +185,24 @@ export default {
     },
     handlerMr() {
       let type = this.mergetype;
-      let _this = this;
       if (type == 'branch') {
-        _this.duringAction = true;
-        let param = { mrUuid: _this.uuid };
+        this.duringAction = true;
+        let param = { mrId: this.id };
         this.$api.codehub.merge
           .mergebyBranch(param)
           .then((res) => {
             // TODO 这个页面可能后续废弃 
             debugger;
-            _this.duringAction = false;
+            this.duringAction = false;
             let status = res.Return && res.Return.status || '';
-            // _this.mrData.status = status;
-            // _this.$emit('reload');
             if (res && res.Status == 'OK') {
-              _this.flushIssueStatus();
-              _this.$emit('reload');
+              this.flushIssueStatus();
+              this.$emit('reload');
             }
           })
           .catch(error => {
-            _this.duringAction = false;
-            _this.$emit('reload');
+            this.duringAction = false;
+            this.$emit('reload');
           });
       } else {
         this.mergeIssue();
@@ -220,7 +210,7 @@ export default {
     },
     closeMr() {
       let params = {
-        uuid: this.uuid,
+        id: this.id,
         status: 'closed'
       };
       this.$api.merge.updateStatus(params).then(res => {
@@ -230,34 +220,32 @@ export default {
       });
     },
     mergeIssue() {
-      let _this = this;
-      _this.duringAction = true;
-      let param = { mrUuid: _this.uuid, continueMergeOnException: _this.reslove != 'stop' };
+      this.duringAction = true;
+      let param = { mrId: this.id, continueMergeOnException: this.reslove != 'stop' };
       this.$api.codehub.merge
         .mergebyIssue(param)
         .then(res => {
           if (res && res.Status == 'OK') {
-            _this.flushIssueStatus();
-            _this.$emit('reload', _this.reslove);
+            this.flushIssueStatus();
+            this.$emit('reload', this.reslove);
           } else {
-            _this.duringAction = false;
+            this.duringAction = false;
           }
         })
         .catch(error => {
-          _this.duringAction = false;
+          this.duringAction = false;
         });
     },
     flushIssueStatus() {
-      let _this = this;
       let notFinish = false;
-      _this.$api.codehub.merge
-        .getDetail({ uuid: _this.uuid })
+      this.$api.codehub.merge
+        .getDetail({ id: this.id })
         .then((res) => {
           if (res && res.Status == 'OK') {
             //所有的issue列表
             let mr = res.Return;
             //更新mr状态
-            _this.$emit('updateStatus', mr.status);
+            this.$emit('updateStatus', mr.status);
             //更新mr的每一条issue状态
             mr.issueList.forEach((retIssue) => {
               if (retIssue.issueMrStatus == 'open' || retIssue.issueMrStatus == 'merging') {
@@ -265,11 +253,11 @@ export default {
               }
               let isExtra = true; //是否是附加需求
               //单独更新有的每个issue状态，替换全部更新，可以保留每个行的操作状态
-              _this.issueList.forEach((issue) => {
+              this.issueList.forEach((issue) => {
                 if (retIssue.no == issue.no) {
                   isExtra = false;
-                  _this.$set(issue, 'issueMrStatus', retIssue.issueMrStatus);
-                  _this.$set(issue, 'isExtra', retIssue.isExtra);
+                  this.$set(issue, 'issueMrStatus', retIssue.issueMrStatus);
+                  this.$set(issue, 'isExtra', retIssue.isExtra);
                 }
               });
               if (isExtra && retIssue.isExtra) { //原来没有并且字段isExtra为1
@@ -278,26 +266,23 @@ export default {
                   isExtra: 1
                 };
                 Object.assign(newList, retIssue);
-                _this.issueList.push(retIssue);
+                this.issueList.push(retIssue);
               }
             });
-
-            //if (notFinish && _this.reslove != 'stop' && mr.status != 'failed') {
-            //if (_this.reslove != 'stop' && (mr.status != 'failed' || notFinish)) {
             if (mr.status == 'merging') {
-              _this.flushTimer && clearTimeout(_this.flushTimer);
-              _this.flushTimer = setTimeout(function() {
-                _this.flushIssueStatus(); 
+              this.flushTimer && clearTimeout(this.flushTimer);
+              this.flushTimer = setTimeout(() => {
+                this.flushIssueStatus(); 
               }, 5000);
             } else {
-              _this.duringAction = false;
+              this.duringAction = false;
             }
           } else {
-            _this.duringAction = false;
+            this.duringAction = false;
           }
         })
         .catch(error => {
-          _this.duringAction = false;
+          this.duringAction = false;
         });
     },
     clearList() {
@@ -310,7 +295,7 @@ export default {
       //20201118_zqp_需求改成新建一个只有当前需求的mr，创建新的
       //20201120_zqp_在撤销跳转前调接口校验撤销有效性
       let mrParam = {
-        mrUuid: this.uuid,
+        mrId: this.id,
         issueNo: item.no
       };
       this.$api.codehub.merge.checkRevert(mrParam).then((res) => {
@@ -338,10 +323,10 @@ export default {
 
   computed: {
     getsource() {
-      return function(uuid) {
+      return function(id) {
         let txt = '';
         this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
+          if (sync.id == id) {
             txt = sync.source;
           }
         });

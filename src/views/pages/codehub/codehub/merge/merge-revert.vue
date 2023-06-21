@@ -1,47 +1,38 @@
 <template>
   <div>
-    <TsContain class="bg-block">
-      <template slot="top">
-        <div class="clearfix">
-          <div class="ts-angle-left d_f cursor-pointer" @click="gotoPrev()">返回MR</div>
-          <div class="d_f top-title">
-            <h3 class="title">{{ $t('term.codehub.revokerequirement') }}</h3>
-            <div v-if="mrData" class="desc">
-              <Tooltip v-if="showtips(mrData)" theme="light" max-width="300">
-                <div>{{ setTxt(mrData, 'text') }}</div>
-                <div slot="content">
-                  <div>{{ setTxt(mrData, 'tips') }}</div>
-                </div>
-              </Tooltip>
-              <span v-else>{{ setTxt(mrData, 'text') }}</span>
-              <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
-              <span v-if="srcBranch" class="text-tip ml-20">{{ $t('page.sourcebranch') }}:</span>
-              <span v-if="srcBranch" class="ml-sm srcbranch-container">
-                {{ srcBranch }}
-              </span>
-              <span v-if="targetBranch" class="text-tip ml-20">{{ $t('page.targetbranch') }}:</span>
-              <span v-if="targetBranch" class="ml-sm">
-                {{ targetBranch }}
-              </span>
-            </div>
-          </div>
-          <div class="d_f_r">
-            <Button
-              v-if="issueNoList.length>0"
-              type="primary"
-              class="ml-sm"
-              :disabled="submiting"
-              @click="submitMr"
-            >{{ $t('page.submit') }}</Button>
-          </div>
+    <TsContain>
+      <template v-slot:navigation>
+        <span class="ts-angle-left text-action" @click="gotoPrev()">{{ $getFromPage($t('term.codehub.backmergerequest')) }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <span>{{ $t('term.codehub.revokerequirement') }}</span>
+        <div v-if="mrData" style="display: flex;">
+          <span>{{ setAbbrNameAndName(mrData) }}</span>
+          <Tag class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+          <span v-if="srcBranch" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
+          <span v-if="srcBranch" class="ml-sm srcbranch-container">
+            {{ srcBranch }}
+          </span>
+          <span v-if="targetBranch" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
+          <span v-if="targetBranch" class="ml-sm">
+            {{ targetBranch }}
+          </span>
         </div>
+      </template>
+      <template v-slot:topRight>
+        <Button
+          v-if="issueNoList.length>0"
+          type="primary"
+          class="ml-sm"
+          @click="submitMr"
+        >{{ $t('page.submit') }}</Button>
       </template>
       <div slot="content">
         <div class="padding-md">
           <div>
             <TsTable ref="showtable" v-bind="tabledata" :tbodyList="issueList">
-              <template slot="sourceUuid" slot-scope="{row}">
-                {{ getsource(row.sourceUuid) }}
+              <template slot="sourceId" slot-scope="{row}">
+                {{ getSourceName(row.sourceId) }}
               </template>     
               <template slot="issueUpdateTime" slot-scope="{row}">
                 {{ row.issueUpdateTime |formatDate }}
@@ -58,7 +49,15 @@
               </template>
             </TsTable>
           </div>
-          <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
+          <div class="mt-sm">
+            <TsFormInput
+              v-model="description"
+              type="textarea"
+              border="border"
+              maxlength="1024"
+              :placeholder="$t('term.codehub.mergerequestdesc')"
+            ></TsFormInput>
+          </div>
         </div>
       </div>
     </TsContain>
@@ -70,8 +69,8 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   props: {
     mrData: {//从mr处理带过来的原mr信息
@@ -91,10 +90,6 @@ export default {
   data() {
     return {
       versionid: null, //版本id
-      prevPath: {
-        path: '/merge-overview',
-        name: 'MR列表'
-      },
       issueNoList: [],
       description: '',
       tabledata: {
@@ -112,12 +107,11 @@ export default {
           key: 'issueUpdateTime'
         }, {
           title: this.$t('page.source'),
-          key: 'sourceUuid'
+          key: 'sourceId'
         }],
         rowKey: 'no'
       },
-      syncSourceList: [], //需求来源
-      submiting: false
+      syncSourceList: [] //需求来源
     };
   },
   beforeCreate() {},
@@ -145,57 +139,50 @@ export default {
     },
     submitMr() {
       let param = {
-        versionUuid: this.mrData.versionUuid,
+        versionId: this.mrData.versionId,
         description: this.description,
         srcBranch: this.srcBranch,
         targetBranch: this.targetBranch,
         issueNoList: this.issueNoList,
         type: 'revert'
       };
-      this.submiting = true;
       this.$api.codehub.merge.save(param).then(res => {
-        this.submiting = false;
         if (res && res.Status == 'OK') {
-          this.$router.push({ path: 'merge-review', query: { uuid: res.Return } });
+          this.$router.push({ path: 'merge-review', query: { id: res.Return } });
         }
-      }).catch(e => {
-        this.submiting = false;
       });
     }
   },
   filter: {},
   computed: {
-    showtips() {
-      return function(config) {
-        let isshow = false;
-        if ((config.systemVo && config.systemVo.description) || (config.subSystemVo && config.subSystemVo.description)) {
-          isshow = true;
-        }
-        return isshow;
-      };
-    },
-    setTxt() {
-      return function(config, type) {
-        let text = '';
-        let prev = config.systemVo || '';
-        let next = config.subSystemVo || '';
-        if (type == 'text') {
-          text = (prev ? prev.name : '') + (next ? '/' + next.name : '');
-        } else if (type == 'tips') {
-          text = (prev && prev.description ? prev.description : '') + (next && next.description ? '/' + next.description : '');
-        }
-        return text;
-      };
-    },
-    getsource() {
-      return function(uuid) {
-        let txt = '';
-        this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
-            txt = sync.source;
+    getSourceName() {
+      // 根据来源id获取来源名称
+      return function(sourceId) {
+        let sourceName = '';
+        this.syncSourceList.forEach(item => {
+          if (item.id == sourceId) {
+            sourceName = item.source;
           }
         });
-        return txt;
+        return sourceName;
+      };
+    },
+    setAbbrNameAndName() {
+      // 获取应用模块【简称和名称】
+      return function(config) {
+        let text = '';
+        let appSystemVo = config ? config.appSystemVo : '';
+        let appModuleVo = config ? config.appModuleVo : '';
+        if (appSystemVo) {
+          if (appModuleVo) {
+            text = `${this.$utils.getAbbrNameAndName(appSystemVo)}/${this.$utils.getAbbrNameAndName(appModuleVo)}`;
+          } else {
+            text = this.$utils.getAbbrNameAndName(appSystemVo);
+          }
+        } else if (appModuleVo) {
+          text = this.$utils.getAbbrNameAndName(appModuleVo);
+        }
+        return text;
       };
     }
   },
@@ -215,24 +202,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.action-item {
-  width: 24px;
-}
 .status-tag {
   transform: scale(0.9);
 }
-.top-title {
-  min-height:54px;
-  .title {
-    line-height: 26px;
-  }
-  .desc {
-    line-height: 20px;
-  }
-  padding-left: 20px;
-  margin-left: 20px;
-  border-left: 1px solid @default-border;
-}
-
 </style>

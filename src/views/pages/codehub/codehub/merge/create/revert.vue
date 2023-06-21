@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <div class="input-border" style="padding:0 16px;margin-bottom:10px;">
+      <div class="input-border pl-nm pr-nm mb-sm">
         <Row :gutter="16">
           <Col span="18">
             <Checkbox v-model="isValid">{{ $t('term.codehub.effectivedemand') }}</Checkbox>
@@ -90,7 +90,15 @@
         </template>        
       </TsTable>
     </div>
-    <div class="input-border padding-md"><Input v-model="description" type="textarea" :placeholder="$t('term.codehub.mergerequestdesc')" /></div>
+    <div class="mt-sm">
+      <TsFormInput
+        v-model="description"
+        type="textarea"
+        border="border"
+        maxlength="1024"
+        :placeholder="$t('term.codehub.mergerequestdesc')"
+      ></TsFormInput>
+    </div>
   </div>
 </template>
 

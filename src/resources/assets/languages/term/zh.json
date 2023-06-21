@@ -2365,7 +2365,8 @@
     "rowdelete": "行删除",
     "filechangenumber": "个文件变更",
     "handlemergerequest": "处理MR",
-    "revokerequirement": "撤销需求"
+    "revokerequirement": "撤销需求",
+    "backmergerequest": "返回MR"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",
