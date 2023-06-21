@@ -34,14 +34,11 @@
               ></TsFormSelect>
             </Col>
             <Col span="8">
-              <Input
+              <InputSearcher
                 v-model="keyword"
-                prefix="i-icon ts-search"
                 :placeholder="$t('term.codehub.pleaseenterthetriggerpointname')"
-                clearable
-                @on-enter="searchTacticsList"
-                @on-clear="searchTacticsList"
-              ></Input>
+                @change="() => searchTacticsList()"
+              ></InputSearcher>
             </Col>
           </TsRow>
         </div>
@@ -195,6 +192,7 @@
 export default {
   name: '',
   components: {
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
     NavGuide: resolve => require(['@/resources/components/NavGuide/NavGuide.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),

@@ -1,15 +1,9 @@
 <template>
-  <TsDialog v-bind="setting" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close" @on-ok="confirmSync">
     <div>
       <TsForm ref="editform" :itemList="formConfig">
       </TsForm>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="saving" @click="confirmSync">{{ $t('page.confirm') }}</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>
@@ -53,8 +47,7 @@ export default {
         name: '',
         type: '',
         id: ''
-      },
-      saving: false
+      }
     };
   },
   beforeCreate() {},
@@ -77,17 +70,13 @@ export default {
           'id': this.id,
           'checkoutBranches': this.checkoutBranchesVal
         };
-        this.saving = true;
         this.$api.codehub.repository.sync(param).then(res => {
           if (res && res.Status == 'OK') {
             this.$Message.success(this.$t('term.codehub.syncexecuteandback'));
-            this.saving = false;
             this.$emit('close', true);
           } else {
             this.$Message.error(res.Message);
           }
-        }).catch(e => {
-          this.saving = false;
         });
       }
     }

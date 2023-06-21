@@ -24,17 +24,12 @@
             <div class="add-tactics">
               <span class="ts-plus text-action" @click="addTactics">{{ $t('term.process.policy') }}</span>
             </div>
-            <div class="search-right input-border">
-              <Input
+            <div class="search-right">
+              <InputSearcher
                 v-model="keyword"
-                class="search"
-                :placeholder="$t('page.keyword')"
-                prefix="i-icon ts-search"
-                clearable
                 style="width: 300px"
-                @on-enter="search(1)"
-                @on-clear="search"
-              ></Input>
+                @change="() => search(1)"
+              ></InputSearcher>
             </div>
           </div>
           <div class="notifytactics-card">
@@ -86,19 +81,12 @@
       </div>
     </TsContain>
     <TsDialog
-      type="modal"
+      v-bind="tacticsSetting"
       :isShow.sync="tacticsDialog"
-      :maskClose="false"
-      :hasFooter="true"
+      @on-close="closeTacticsDialog"
+      @on-ok="okAddTactics"
     >
-      <template v-slot:header>
-        <div>{{ isCopy ? $t('dialog.title.copytarget',{'target':$t('term.process.policy')}) : $t('dialog.title.addtarget',{'target':$t('term.process.policy')}) }}</div>
-      </template>
       <TsForm ref="addTacticsForm" :itemList="tacticsForm" type="type"></TsForm>
-      <template v-slot:footer>
-        <Button type="text" @click="tacticsDialog = false">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="okAddTactics">{{ $t('page.confirm') }}</Button>
-      </template>
     </TsDialog>
   </div>
 </template>
@@ -109,7 +97,8 @@ export default {
   components: {
     TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
   },
   props: {},
   data() {
@@ -126,6 +115,11 @@ export default {
       tacticsData: {},
       tacticsDialog: false,
       isCopy: false,
+      tacticsSetting: {
+        type: 'modal',
+        maskClose: false,
+        title: this.isCopy ? this.$t('dialog.title.copytarget', {'target': this.$t('term.process.policy')}) : this.$t('dialog.title.addtarget', {'target': this.$t('term.process.policy')})
+      },
       tacticsForm: [
         //表单数据
         {
@@ -156,11 +150,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeTacticsDialog() {
+      this.tacticsDialog = false;
+    },
     async getData() {
-      let _this = this;
-      let handlerList = await _this.getHandler();
+      let handlerList = await this.getHandler();
       if (handlerList && handlerList.length > 0) {
-        _this.search(1);
+        this.search(1);
       }
     },
     getHandler() {

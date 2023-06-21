@@ -10,7 +10,7 @@
                 class="overflow" 
                 :style="setTitlewidth(mrData.status)"
                 :title="mrData.description"
-              >{{ mrData.description ||'处理MR' }}</span>
+              >{{ mrData.description || $t('term.codehub.handlemergerequest') }}</span>
               <Tag 
                 :color="setStatus('color',mrData.status)" 
                 class="ml-sm status-tag"
@@ -39,9 +39,9 @@
               </Tooltip>
               <span v-else>{{ setTxt(mrData, 'text') }}</span>
               <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">源分支:</span>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">{{ $t('page.sourcebranch') }}:</span>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">目标分支:</span>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">{{ $t('page.targetbranch') }}:</span>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default {
           .then(res => {
             this.duringAction = false;
             if (res.Status == 'OK') {
-              this.$Message.success('撤销合并成功');
+              this.$Message.success(this.$t('message.executesuccess'));
               this.getDetail();
             }
           })
@@ -183,9 +183,9 @@ export default {
       };
       this.$api.codehub.merge.getError(param).then((res) => {
         if (res.Status == 'OK' && res.Return) {
-          this.errorMessage = res.Return.errorMessage || '暂无错误信息';
+          this.errorMessage = res.Return.errorMessage || this.$t('term.codehub.thereiscurrentlynoerrormessage');
         } else {
-          this.$Message.info('暂无错误信息');
+          this.$Message.info(this.$t('term.codehub.thereiscurrentlynoerrormessage'));
         }
       });
     },

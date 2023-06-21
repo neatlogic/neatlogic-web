@@ -4,6 +4,7 @@
       v-if="actionData"
       v-bind="actionDialogConfig"
       @on-close="close"
+      @on-ok="saveAction"
     >
       <template v-slot>
         <TsForm ref="actionForm" :item-list="actionFormConfig">
@@ -30,10 +31,6 @@
           </template>
         </TsForm>
       </template>
-      <template v-slot:footer>
-        <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :loading="isSaving" @click="saveAction()">{{ $t('page.confirm') }}</Button>
-      </template>
     </TsDialog>
   </div>
 </template>
@@ -50,7 +47,6 @@ export default {
   },
   data() {
     return {
-      isSaving: false,
       activedTab: 'arguments',
       allowEditParam: 0,
       actionData: { arguments: {} },
@@ -274,7 +270,6 @@ export default {
       let form = this.$refs['actionForm'];
       let form2 = this.$refs.argument.$refs['argumentSettingForm'];
       if (form.valid() && form2.valid()) {
-        this.isSaving = true;
         this.$api.codehub.merge
           .saveAction(this.actionData)
           .then(res => {
@@ -282,9 +277,6 @@ export default {
               this.$Message.success(this.$t('message.savesuccess'));
               this.close(true);
             }
-          })
-          .finally(() => {
-            this.isSaving = false;
           });
       }
     },

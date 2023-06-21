@@ -229,13 +229,6 @@ export default {
         });
       }
     }
-    // setProjectval(uuid, value) {
-    //   this.projectConfig.forEach(pro => {
-    //     if (pro.name == uuid) {
-    //       this.$set(pro, 'value', value);
-    //     }
-    //   });
-    // }
   },
   computed: {},
   watch: {}

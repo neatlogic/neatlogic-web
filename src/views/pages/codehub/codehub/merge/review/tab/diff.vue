@@ -2,13 +2,13 @@
   <div class="padding">
     <div>
       <div v-if="!loading && diffList && diffList.length" class="text-tip tips" style="height:30px;">
-        <span>共计</span>
+        <span>{{ $t('page.total') }}</span>
         <span class="font-bold text-title count-text">{{ getFileCount(diffList) }}</span>
-        <span>个文件变更,</span>
+        <span>{{ $t('term.codehub.filechangenumber') }},</span>
         <span v-if="getFileCount(diffList,'addCount')" class="font-bold text-primary count-text">{{ getFileCount(diffList,'addCount') }}</span>
-        <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">行添加</span>
+        <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">{{ $t('term.codehub.rowadd') }}</span>
         <span v-if="getFileCount(diffList,'deleteCount')" class="font-bold text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
-        <span v-if="getFileCount(diffList,'deleteCount')">行删除</span>
+        <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
       </div>
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'">

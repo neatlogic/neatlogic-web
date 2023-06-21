@@ -25,7 +25,7 @@
       </tbody>
       <tbody v-else>
         <tr>
-          <td :colspan="titleList.length || 0" class="text-center">暂无数据</td>
+          <td :colspan="titleList.length || 0" class="text-center">{{ $t('page.nodata') }}</td>
         </tr>
       </tbody>
     </table>
@@ -69,23 +69,23 @@ export default {
     return {
       titleList: [{
         key: 'commitId',
-        title: '提交id'
+        title: this.$t('term.deploy.commitid')
       },
       {
         key: 'committer',
-        title: '提交人'
+        title: this.$t('page.presenter')
       },
       {
         key: 'committerDate',
-        title: '提交时间'
+        title: this.$t('page.committime')
       },
       {
         key: 'mergeStatus',
-        title: '合并状态'
+        title: this.$t('term.codehub.mergerequeststatus')
       },
       {
         key: 'message',
-        title: '提交信息'     
+        title: this.$t('page.submitinformation')     
       }],
       tbodyList: [],
       rowNum: null,
@@ -103,30 +103,20 @@ export default {
 
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
   mounted() {
     if (this.mrUuid && this.issueNo) {
       this.getmrCommitlist();
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getmrCommitlist() {
       let param = {
@@ -134,16 +124,10 @@ export default {
         issueNo: this.issueNo
       };
       this.isLoading = true;
-      //this.rowNum && Object.assign(param, {rowNum: this.rowNum});
-      //this.currentPage && Object.assign(param, {currentPage: this.currentPage});
-      //this.pageSize && Object.assign(param, {pageSize: this.pageSize});
       this.$api.codehub.merge.getCommit(param).then((res) => {
         this.isLoading = false;
         if (res && res.Status == 'OK') {
           this.tbodyList = res.Return.list || [];
-          // this.rowNum = res.Return.rowNum || 1;
-          // this.currentPage = res.Return.currentPage || 1;
-          // this.pageSize = res.Return.pageSize || 1;
         } else {
           this.tbodyList = [];
         }
@@ -203,5 +187,4 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-
 </style>

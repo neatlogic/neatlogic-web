@@ -2,6 +2,7 @@
   <TsDialog
     v-bind="setting"
     @on-close="close"
+    @on-ok="saveEdit"
   >
     <div>
       <TsForm ref="editform" :itemList="formConfig">
@@ -13,12 +14,6 @@
         <!-- membertype -->
       </TsForm>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>

@@ -26,15 +26,13 @@
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
               <div v-if="!row.isReserve" class="action-item text-action">
-                <div style="display: flex;">
-                  <span class="mr-sm">{{ $t('page.enabled') }}</span>
-                  <TsFormSwitch
-                    v-model="row.isActive"
-                    :true-value="1"
-                    :false-value="0"
-                    @on-change="val => {changeStatus(val, row);}"
-                  ></TsFormSwitch>
-                </div>
+                <TsFormSwitch
+                  v-model="row.isActive"
+                  :true-value="1"
+                  :false-value="0"
+                  :showStatus="true"
+                  @on-change="val => {changeStatus(val, row);}"
+                ></TsFormSwitch>
               </div>
               <div class="action-item tsfont-edit" @click="editVersion(row.id)">{{ $t('page.edit') }}</div>
               <div v-if="!row.isReserve" class="action-item tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
@@ -52,7 +50,7 @@
                   word-wrap
                 >
                   <div class="tsfont-question-o ml-xs text-action"></div>
-                  <div slot="content">
+                  <div slot="content" style="height: 500px;overflow-y: auto;">
                     <div v-html="row.help"></div>
                   </div>
                 </Poptip>
@@ -117,12 +115,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    sysnIssue() {
-      this.showEdit = true;
-    },
-    saveAsyn() {
-      this.showEdit = false;
-    },
     editVersion(id) {
       this.isEdit = true;
       if (id) {
@@ -173,27 +165,26 @@ export default {
         this.loadingShow = false;
       });
     },
-    close(isreload) {
+    close(needRefresh) {
       this.isEdit = false;
       this.versionTypeId = null;
-      if (isreload) {
+      if (needRefresh) {
         this.searchList();
       }
     },
-    changeStatus(val, config) {
-      let listdata = {};
-      Object.assign(listdata, {
-        id: config.id,
+    changeStatus(val, row) {
+      let params = {
+        id: row.id,
         isActive: val
-      });
-      this.$api.codehub.versiontype.updateStatus(listdata).then(res => {
+      };
+      this.$api.codehub.versiontype.updateStatus(params).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
         } else {
-          this.$set(list, 'isActive', val ? 0 : 1);
+          this.$set(row, 'isActive', val ? 0 : 1);
         }
-      }).catch(error => {
-        this.$set(list, 'isActive', val ? 0 : 1);
+      }).catch(() => {
+        this.$set(row, 'isActive', val ? 0 : 1);
       });      
     }
   },
