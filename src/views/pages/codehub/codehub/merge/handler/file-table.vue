@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig" :isShow="isShow" @on-close="close">
+  <TsDialog v-bind="dialogConfig" @on-close="close">
     <div>
       <table class="table border">
         <thead>
@@ -31,27 +31,27 @@ export default {
   },
   filters: {},
   props: {
-    mrUuid: String,
+    mrId: String,
     commitId: String,
-    targetBranch: String,
-    isShow: Boolean
+    targetBranch: String
   },
   data() {
     return {
       dialogConfig: {
+        isShow: true,
         maskClose: true,
         type: 'silder',
         hasFooter: false,
-        title: '文件列表',
-        width: '800px'
+        title: `${this.$t('term.inspect.filelist')}[${this.commitId}]`,
+        width: 'large'
       },
       titleList: [{
         key: 'filePath',
-        title: '文件名'
+        title: this.$t('page.filename')
       },
       {
         key: 'mergeStatus',
-        title: '合并结果'
+        title: this.$t('term.codehub.consolidationresult')
       }],
       tbodyList: []
     };
@@ -70,24 +70,15 @@ export default {
   destroyed() {},
   methods: {
     getList() {
-      this.$set(this.dialogConfig, 'title', '文件列表[' + this.commitId + ']');
-      if (this.mrUuid && this.commitId) {
+      if (this.mrId && this.commitId) {
         let param = {
-          mrUuid: this.mrUuid,
+          mrId: this.mrId,
           commitId: this.commitId
         };
-        // let param = {
-        //   'mrUuid': '0000973f62802000',
-        //   'commitId': '0ee2233b911b061c44154a91d0c0038dc73107d7'
-        // };
         this.$api.codehub.merge.getFile(param).then((res) => {
           if (res.Status == 'OK') {
             this.tbodyList = res.Return || [];
-          } else {
-            this.tbodyList = [];
           }
-        }).catch((error) => {
-          this.tbodyList = [];
         });
       }
     },
@@ -97,10 +88,8 @@ export default {
   },
   computed: {},
   watch: {}
-
 };
 
 </script>
 <style lang='less'>
-
 </style>

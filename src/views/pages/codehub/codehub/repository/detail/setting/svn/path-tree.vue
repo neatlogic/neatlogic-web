@@ -64,12 +64,11 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    let _this = this;
     this.myList = this.list;
     //点开授权滑窗后，前端触发子目录加载，加载两层目录如下（加上根目录，总的显示3层目录）
     if (parseInt(this.floor) < 3 && this.myList.length) {
       this.myList.forEach(li => {
-        _this.getNext(li, true);
+        this.getNext(li, true);
       });
     }
   },
@@ -136,23 +135,12 @@ export default {
       this.$emit('selectedPath', path, isIn);
     }
   },
-  computed: {
-  },
-  watch: {
-    // list: {
-    //   handler: function(val) {
-    //     this.myList = val;
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // }
-  }
-
+  computed: {},
+  watch: {}
 };
 
 </script>
 <style lang='less' scoped>
-
 /deep/ .tree-name{
   position: relative;
   line-height: 26px;

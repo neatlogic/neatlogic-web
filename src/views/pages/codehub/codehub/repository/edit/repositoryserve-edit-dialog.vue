@@ -90,7 +90,8 @@ export default {
           type: 'password',
           label: this.$t('page.password'),
           name: 'password',
-          validateList: ['required']
+          validateList: ['required'],
+          maxlength: 300
         },
         {
           type: 'text',
@@ -98,21 +99,24 @@ export default {
           name: 'agentUrl',
           aliasName: 'agentUrl',
           placeholder: this.$t('term.codehub.proxyaddressdesc'),
-          isHidden: true
+          isHidden: true,
+          maxlength: 255
         },
         {
           type: 'text',
           label: this.$t('term.codehub.agentusername'),
           name: 'agentUsername',
           aliasName: 'username',
-          isHidden: true
+          isHidden: true,
+          maxlength: 50
         },
         {
           type: 'password',
           label: this.$t('term.codehub.agentpassword'),
           name: 'agentPassword',
           aliasName: 'password',
-          isHidden: true
+          isHidden: true,
+          maxlength: 300
         }
       ]
     };

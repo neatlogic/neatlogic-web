@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-left:20px;">
+  <div class="pl-nm">
     <div v-if="diffList && diffList.length">
       <DiffDetail
         :showType="showType"
@@ -21,11 +21,10 @@
   </div>
 </template>
 <script>
-import DiffDetail from '@/views/pages/codehub/codehub/merge/review/tab/diff/diff-detail.vue';
 export default {
   name: '',
   components: {
-    DiffDetail
+    DiffDetail: resolve => require(['@/views/pages/codehub/codehub/merge/review/tab/diff/diff-detail.vue'], resolve)
   },
   filters: {},
   props: {

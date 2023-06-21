@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:5px 5px 5px 20px">
+  <div class="pt-xs pr-xs pb-xs pl-nm">
     <Loading v-if="isLoading" loadingShow></Loading>
     <table v-else class="table">
       <thead>
@@ -15,10 +15,13 @@
           @click.stop="showDetail(tbody)"
         >
           <td v-for="(title,tindex) in titleList" :key="bindex+tindex">
-            <div v-if="title.key=='message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
-            <div v-else-if="title.key=='mergeStatus'" v-html="showText(tbody['mergeStatus']) "></div>
-            <div v-else-if="title.key=='committerDate'">{{ tbody.committerDate | formatDate }}</div>
-            <span v-else-if="title.key=='commitId'" class="tag-item">{{ tbody.commitId }}<i v-if="tbody.isNew" class="tag-new">new</i></span>
+            <div v-if="title.key == 'message'" style="word-break:break-all;white-space: initial;">{{ tbody.message }}</div>
+            <div v-else-if="title.key == 'mergeStatus'" v-html="showText(tbody['mergeStatus']) "></div>
+            <div v-else-if="title.key == 'committerDate'">{{ tbody.committerDate | formatDate }}</div>
+            <span v-else-if="title.key == 'commitId'" class="tag-item">
+              {{ tbody.commitId }}
+              <span v-if="tbody.isNew" class="tag-new">new</span>
+            </span>
             <div v-else>{{ tbody[title.key] }}</div>
           </td>
         </tr>
@@ -29,7 +32,7 @@
         </tr>
       </tbody>
     </table>
-    <div v-if="!isLoading && tbodyList && tbodyList.length>0 && rowNum > 1 && pageSize > 0" class="text-right" style="margin-top:10px;">
+    <div v-if="!isLoading && tbodyList && tbodyList.length>0 && rowNum > 1 && pageSize > 0" class="text-right mt-sm">
       <Page
         size="small"
         show-sizer
@@ -39,14 +42,13 @@
         :page-size-opts="pageSizeOpts"
         :page-size="pageSize"
         :transfer="true"
-        @on-change="getPage"
-        @on-page-size-change="getPageSize"
+        @on-change="changeCurrentPage"
+        @on-page-size-change="changePageSize"
       />
     </div> 
     <FileDetail
       v-if="isshowDetail"
       v-bind="fileConfig"
-      :isShow="isshowDetail"
       @close="close"
     ></FileDetail>  
   </div>
@@ -59,7 +61,7 @@ export default {
     FileDetail
   },
   props: {
-    mrUuid: String,
+    mrId: String,
     issueNo: String,
     statusList: Array,
     mrData: Object,
@@ -95,7 +97,7 @@ export default {
       isshowDetail: false,
       fileConfig: {
         //查看文件需要的设置参数
-        mrUuid: null,
+        mrId: null,
         commitId: null,
         targetBranch: null
       },
@@ -107,7 +109,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.mrUuid && this.issueNo) {
+    if (this.mrId && this.issueNo) {
       this.getmrCommitlist();
     }
   },
@@ -120,7 +122,7 @@ export default {
   methods: {
     getmrCommitlist() {
       let param = {
-        mrUuid: this.mrUuid,
+        mrId: this.mrId,
         issueNo: this.issueNo
       };
       this.isLoading = true;
@@ -136,18 +138,18 @@ export default {
         this.tbodyList = [];
       });
     },
-    getPage(page) {
-      this.currentPage = page;
+    changeCurrentPage(currentPage) {
+      this.currentPage = currentPage;
       this.getmrCommitlist();
     },
-    getPageSize(size) {
-      this.pageSize = size;
+    changePageSize(pageSize) {
       this.currentPage = 1;
+      this.pageSize = pageSize;
       this.getmrCommitlist();      
     },
     showDetail(item) {
       this.fileConfig = {
-        mrUuid: this.mrUuid,
+        mrId: this.mrId,
         commitId: item.commitId,
         targetBranch: this.mrData.targetBranch || '-'
       };
@@ -156,7 +158,7 @@ export default {
     close() {
       this.isshowDetail = false;
       this.fileConfig = {
-        mrUuid: null,
+        mrId: null,
         commitId: null,
         targetBranch: this.mrData.targetBranch || '-'
       };

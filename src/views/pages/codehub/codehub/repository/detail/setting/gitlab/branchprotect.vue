@@ -98,19 +98,18 @@ export default {
         repositoryId: this.uuid,
         name: row.name
       };
-      let _this = this;
-      _this.$createDialog({
+      this.$createDialog({
         title: '删除确认',
         content: '是否确认删除该保护分支',
         btnType: 'error',
-        'on-ok': function(vnode) {
-          _this.$api.codehub.repositorydetail.deleteProtectBranch(param).then((res) => {
+        'on-ok': (vnode) => {
+          this.$api.codehub.repositorydetail.deleteProtectBranch(param).then((res) => {
             if (res && res.Status == 'OK') {
-              _this.$Message.success('删除成功');
-              _this.getList();
+              this.$Message.success('删除成功');
+              this.getList();
               vnode.isShow = false;
             } else {
-              _this.$Message.error(res.Message);
+              this.$Message.error(res.Message);
             }
           });
         }

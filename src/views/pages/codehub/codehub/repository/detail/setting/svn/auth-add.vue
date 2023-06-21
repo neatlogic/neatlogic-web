@@ -135,11 +135,10 @@ export default {
     editConfig: [Object, String]
   },
   data() {
-    let _this = this;
     return {
       split: 0.3,
       setting: {
-        title: _this.editConfig ? '编辑授权' : '添加授权',
+        title: this.editConfig ? '编辑授权' : '添加授权',
         maskClose: false,
         width: 'medium',
         type: 'slider'
@@ -161,8 +160,8 @@ export default {
             text: '组',
             value: 'group'
           }],
-          onChange(val) {
-            _this.changeType(val);
+          onChange: (val) => {
+            this.changeType(val);
           }
         }, {
           type: 'slot',
@@ -182,10 +181,10 @@ export default {
           value: false,
           validateList: ['required'],
           width: '300px',
-          dataList: _this.accList,
+          dataList: this.accList,
           clearable: false,
-          onChange(val) {
-            _this.changeAuth(val);
+          onChange: (val) => {
+            this.changeAuth(val);
           }       
         }, {
           type: 'slot',
@@ -204,9 +203,8 @@ export default {
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getgroup',
         params: {
-          'repositoryUuid': _this.uuid
+          'repositoryUuid': this.uuid
         },
-        //keyword: 'search',
         clearable: false,
         multiple: true,
         search: true     
@@ -217,10 +215,9 @@ export default {
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getmemberbygroup',
         params: {
-          'repositoryUuid': _this.uuid,
+          'repositoryUuid': this.uuid,
           'groupName': ''
         },
-        //keyword: 'search',
         clearable: false,
         multiple: true,
         search: true     

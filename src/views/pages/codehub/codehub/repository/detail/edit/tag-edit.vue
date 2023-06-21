@@ -81,9 +81,10 @@ export default {
     },
     saveEdit() {
       if (this.$refs.editform.valid()) {
-        let param = Object.assign(this.$refs.editform.getFormValue(), {
+        let param = {
+          ...this.$refs.editform.getFormValue(),
           repositoryId: this.repositoryId
-        });
+        };
         if (!param.description) {
           this.$delete(param, 'description');
         }

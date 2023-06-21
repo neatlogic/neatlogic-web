@@ -41,7 +41,7 @@
               :uuid="row.fcu"
               :hideAvatar="true"
             ></UserCard>
-            <span class="text-tip pl-sm">{{ row.fcd | formatDate }}</span>
+            <span class="text-grey pl-sm">{{ row.fcd | formatDate }}</span>
           </Col>
         </TsRow>
       </div>
@@ -128,13 +128,16 @@ export default {
       // 获取应用模块【简称和名称】
       return function(config) {
         let text = '';
-        let prev = config.appSystemVo || '';
-        let next = config.appModuleVo || '';
-        if (prev) {
-          text = prev.abbrName + (prev.name ? `(${prev.name})` : '');
-          if (next) {
-            text += ' / ' + (next.abbrName ? next.abbrName : '') + (next.name ? ('(' + next.name + ')') : '');
+        let appSystemVo = config ? config.appSystemVo : '';
+        let appModuleVo = config ? config.appModuleVo : '';
+        if (appSystemVo) {
+          if (appModuleVo) {
+            text = `${this.$utils.getAbbrNameAndName(appSystemVo)}/${this.$utils.getAbbrNameAndName(appModuleVo)}`;
+          } else {
+            text = this.$utils.getAbbrNameAndName(appSystemVo);
           }
+        } else if (appModuleVo) {
+          text = this.$utils.getAbbrNameAndName(appModuleVo);
         }
         return text;
       };
