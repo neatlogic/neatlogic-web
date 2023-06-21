@@ -24,7 +24,6 @@ export default {
     uuid: String
   },
   data() {
-    let _this = this;
     return {
       split: 0.3,
       setting: {
@@ -41,7 +40,7 @@ export default {
           validateList: ['required'],
           dynamicUrl: '/api/rest/codehub/repository/gitlab/searchBranches',
           params: {
-            repositoryId: _this.uuid
+            repositoryId: this.uuid
           },
           rootName: 'tbodyList',
           textName: 'name',
@@ -119,13 +118,9 @@ export default {
       });
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {}
-
 };
-
 </script>
 <style lang='less'>
-
 </style>

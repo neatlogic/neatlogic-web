@@ -26,7 +26,6 @@
             ></InputSearcher>
           </Col>
         </TsRow>
-
       </template>
       <div slot="content">
         <Loading
@@ -42,7 +41,7 @@
           @updateSize="changePageSize"
         >
           <template slot="header" slot-scope="{ row }">
-            <div class="action-group">
+            <div class="action-group" @click.stop>
               <div class="action-item">
                 <div class="text-action tsfont-edit" @click.stop="editServe(row.id)">{{ $t('page.edit') }}</div>
               </div>

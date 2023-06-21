@@ -38,10 +38,10 @@
                 </div>
               </Tooltip>
               <span v-else>{{ setTxt(mrData, 'text') }}</span>
-              <Tag class="mr-10 ml-20 status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">{{ $t('page.sourcebranch') }}:</span>
+              <Tag class="mr-sm ml-nm status-tag" color="success">{{ mrData.versionVo.name }}</Tag>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
-              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-20">{{ $t('page.targetbranch') }}:</span>
+              <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
               <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
             </div>
           </div>

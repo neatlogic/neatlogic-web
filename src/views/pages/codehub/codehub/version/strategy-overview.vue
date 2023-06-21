@@ -45,10 +45,10 @@
                     </span>
                   </Col>
                   <Col span="8">
-                    <span class="ts-branch text-grey fz16" :class="row.srcBranch ? 'mr-sm' : ''"></span>
+                    <span class="ts-branch text-grey" :class="row.srcBranch ? 'mr-sm' : ''"></span>
                     {{ row.srcBranch }}
-                    <span class="tsfont-arrow-right text-grey ml-sm mr-sm fz16"></span>
-                    <span class="ts-branch text-grey mr-sm fz16"></span>
+                    <span class="tsfont-arrow-right text-grey ml-sm mr-sm"></span>
+                    <span class="ts-branch text-grey mr-sm"></span>
                     {{ row.targetBranch }}
                   </Col>
                   <Col span="8">
