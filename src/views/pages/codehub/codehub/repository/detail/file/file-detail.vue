@@ -133,7 +133,7 @@ export default {
           params: {
             repositoryId: config.repositoryId,
             commitId: config.commitId,
-            branchName: config.branchName,
+            branchName: config.branchName.indexOf('branch###') > -1 ? config.branchName.split('branch###')[1] : config.branchName,
             filePath: config.fullPath
           }
         };     

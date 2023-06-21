@@ -917,5 +917,7 @@
   "isexpired": "是否超时",
   "nottimedout": "未超时",
   "namepre": "名称前缀",
-  "total": "共计"
+  "total": "共计",
+  "activesucess": "激活成功",
+  "unactivesuccess": "禁用成功"
 }

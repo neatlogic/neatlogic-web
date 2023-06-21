@@ -310,6 +310,7 @@ export default {
       if (this.projectId && this.relAppType) {
         this.$api.rdm.project
           .getAppByProjectId(this.projectId, {
+            isActive: 1,
             needSystemAttr: 1,
             appType: this.relAppType
           })

@@ -18,9 +18,10 @@
         <div class="text-title padding-xs">{{ $t('term.rdm.appsets') }}</div>
         <ul>
           <li
-            v-for="item in allList"
+            v-for="item in selectedAppList"
             :key="item.id"
             class="text-default overflow radius-sm padding-xs cursor"
+            style="position:relative"
             :title="item.name"
             :class="{ 'bg-selected': currentTab === 'app_' + item.name }"
             @click="
@@ -31,7 +32,17 @@
               });
             "
           >
-            <span class="tsfont-block">{{ item.name }}</span>
+            <span class="tsfont-center overflow" style="margin-right:50px">{{ item.name }}</span>
+            <span style="position:absolute;right:0px"><Button size="small" @click.stop="unactiveApp(item.type)">{{ $t('page.disable') }}</Button></span>
+          </li>
+          <li
+            v-for="(item,index) in unSelectedAppList"
+            :key="index"
+            style="position:relative"
+            class="text-default overflow radius-sm padding-xs"
+          >
+            <span class="tsfont-fullscreen text-grey overflow" style="margin-right:50px">{{ item.label }}</span>
+            <span style="position:absolute;right:0px"><Button type="success" size="small" @click.stop="activeApp(item.name)">{{ $t('page.enable') }}</Button></span>
           </li>
         </ul>
         <div class="text-title padding-xs">{{ $t('page.others') }}</div>
@@ -74,7 +85,8 @@ export default {
         width: 'huge',
         hasFooter: false
       },
-      allList: [],
+      selectedAppList: [],
+      appTypeList: [],
       appId: null,
       currentTab: 'projectinfo'
     };
@@ -83,6 +95,7 @@ export default {
   created() {
     this.projectId = Math.floor(this.$route.params['projectId']);
     this.getAppByProjectId();
+    this.getAllAppTypeList();
   },
   beforeMount() {},
   mounted() {},
@@ -93,19 +106,44 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    unactiveApp(appType) {
+      this.$api.rdm.app.unactiveApp(this.projectId, appType).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('page.unactivesuccess'));
+          this.getAppByProjectId();
+        }
+      });
+    },
+    activeApp(appType) {
+      this.$api.rdm.app.activeApp(this.projectId, appType).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('page.activesucess'));
+          this.getAppByProjectId();
+        }
+      });
+    },
     getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId).then(res => {
-          this.allList = res.Return;
+        this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1}).then(res => {
+          this.selectedAppList = res.Return;
         });
       }
+    },
+    getAllAppTypeList() {
+      this.$api.rdm.app.getAllAppTypeList().then(res => {
+        this.appTypeList = res.Return;
+      });
     },
     close() {
       this.$emit('close');
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    unSelectedAppList() {
+      return this.appTypeList.filter(d => { return !this.selectedAppList.find(dd => d.name == dd.type); });
+    }
+  },
   watch: {}
 };
 </script>

@@ -30,7 +30,15 @@ export default {
           label: this.$t('term.codehub.branchname'),
           name: 'branchName',
           value: '',
-          validateList: ['required'],
+          validateList: [
+            'required',
+            { name: 'searchUrl',
+              url: '/api/rest/codehub/repository/branch/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('term.codehub.branchname')}),
+              params: { repositoryId: this.repositoryId}
+            }
+          ],
           maxlength: 50
         }, 
         {

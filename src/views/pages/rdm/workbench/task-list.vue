@@ -171,6 +171,7 @@ export default {
         if (val) {
           this.isReady = false;
           this.$api.rdm.project.getAppByProjectId(val, {
+            isActive: 1,
             needSystemAttr: 1,
             needIssueCount: 1,
             isMine: this.isMine,
