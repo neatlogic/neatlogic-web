@@ -1,15 +1,9 @@
 <template>
-  <TsDialog v-bind="setting" @on-close="close">
+  <TsDialog v-bind="setting" @on-close="close" @on-ok="saveEdit">
     <template v-slot>
       <div>
         <TsForm ref="editform" :itemList="formConfig">
         </TsForm>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>

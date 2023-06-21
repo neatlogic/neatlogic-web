@@ -39,7 +39,6 @@
         <Col span="6">
           <InputSearcher
             v-model="keyword"
-            :placeholder="$t('page.keyword')"
             @change="() => changeCurrent(1)"
           ></InputSearcher>
         </Col>

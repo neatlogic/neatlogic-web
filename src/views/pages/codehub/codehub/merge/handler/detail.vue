@@ -28,8 +28,7 @@
         <template slot="action" slot-scope="{ row }">
           <div v-if="row.issueMrStatus == 'merged' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.status=='finish'" class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-rotate-left" @click="revertIssue(row)">撤销</li>
-              <!-- <li class="ts-list" @click="viewIssue(row)">详情</li> -->
+              <li class="ts-rotate-left" @click="revertIssue(row)">{{ $t('page.revocation') }}</li>
             </ul>
           </div>
         </template>
@@ -46,26 +45,26 @@
       </TsTable>
       <template v-if="mrData.canEdit">
         <div v-if="mrData.status == 'open' && !duringAction" class="btn-bottom bg-grey">
-          <span v-if="mergetype== 'issue'" class="bottom-text">遇到冲突需求</span>
+          <span v-if="mergetype== 'issue'" class="bottom-text">{{ $t('term.codehub.encounteringconflictingneeds') }}</span>
           <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
-            <Radio label="stop">终止</Radio>
-            <Radio label="continus">继续</Radio>
+            <Radio label="stop">{{ $t('page.stop') }}</Radio>
+            <Radio label="continus">{{ $t('page.continue') }}</Radio>
           </RadioGroup>
           <Button
             type="error"
             class="mr-20 ml-20"
             :disabled="duringAction"
             @click="closeMr()"
-          >关闭</Button>
-          <Button type="primary" :disabled="duringAction" @click="handlerMr()">合并</Button>
+          >{{ $t('page.close') }}</Button>
+          <Button type="primary" :disabled="duringAction" @click="handlerMr()">{{ $t('page.merge') }}</Button>
         </div>
         <div v-if="(mrData.status == 'conflict' || mrData.status == 'failed') && !duringAction" class="btn-bottom bg-grey">
-          <span v-if="mergetype == 'issue'" class="bottom-text">遇到冲突需求</span>
+          <span v-if="mergetype == 'issue'" class="bottom-text">{{ $t('term.codehub.encounteringconflictingneeds') }}</span>
           <RadioGroup v-if="mergetype == 'issue'" v-model="reslove">
-            <Radio label="stop">终止</Radio>
-            <Radio label="continus">继续</Radio>
+            <Radio label="stop">{{ $t('page.stop') }}</Radio>
+            <Radio label="continus">{{ $t('page.continue') }}</Radio>
           </RadioGroup>
-          <Button type="primary" :disabled="duringAction" @click="handlerMr()">重试</Button>
+          <Button type="primary" :disabled="duringAction" @click="handlerMr()">{{ $t('page.retry') }}</Button>
         </div>
       </template>
     </div>
@@ -79,15 +78,12 @@
 </template>
 
 <script>
-//import FormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     IssueList: resolve => require(['@/views/pages/codehub/codehub/issue/overview/issue-list.vue'], resolve),
     CommitDetail: resolve => require(['./commit-table.vue'], resolve)
-
-    //,FormInput
   },
   props: {
     uuid: String, //父组件传过来的mrid
@@ -107,27 +103,27 @@ export default {
       tabledata: {
         theadList: [
           {
-            title: '需求编号',
+            title: this.$t('term.codehub.issuesnumber'),
             key: 'no'
           },
           {
-            title: '描述',
+            title: this.$t('page.description'),
             key: 'name'
           },
           {
-            title: '合并状态',
+            title: this.$t('term.codehub.mergerequeststatus'),
             key: 'issueMrStatus'
           },
           {
-            title: '负责人',
+            title: this.$t('page.responsibleperson'),
             key: 'handleUserId'
           },
           {
-            title: '更新时间',
+            title: this.$t('page.updatetime'),
             key: 'issueUpdateTime'
           },
           {
-            title: '来源',
+            title: this.$t('page.source'),
             key: 'source'
           },
           {
@@ -149,11 +145,8 @@ export default {
       flushTimer: null//定时刷新的定时器
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
   mounted() {
     this.getList();
@@ -166,19 +159,12 @@ export default {
       this.flushIssueStatus();
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     searchList(val) {
       this.tabledata.currentPage = 1;
@@ -313,13 +299,6 @@ export default {
         .catch(error => {
           _this.duringAction = false;
         });
-    },
-    viewIssue(config) {
-      this.showList = true;
-      this.issueConfig = {
-        issueNo: config.no,
-        versionUuid: this.mrData.versionUuid
-      };
     },
     clearList() {
       //清空

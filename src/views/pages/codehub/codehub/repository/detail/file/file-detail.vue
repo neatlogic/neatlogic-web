@@ -122,7 +122,7 @@ export default {
       }
     },
     downloadok() {
-      this.$Message.success('下载成功');
+      this.$Message.success(this.$t('message.downloadsuccessful'));
     }
   },
   computed: {

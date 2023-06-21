@@ -166,23 +166,22 @@ export default {
   destroyed() {},
   methods: {
     initData() {
-      let _this = this;
-      let config = _this.config;
+      let config = this.config;
       if (config) {
-        _this.id = config.id;
+        this.id = config.id;
         if (config.actionList) {
-          _this.defaultActionList = config.actionList;
+          this.defaultActionList = config.actionList;
         }
         if (config.conditionConfig) {
           if (config.conditionConfig.conditionGroupList) {
-            _this.$set(_this.conditionConfig, 'conditionGroupList', config.conditionConfig.conditionGroupList);
+            this.$set(this.conditionConfig, 'conditionGroupList', config.conditionConfig.conditionGroupList);
           } else {
-            _this.$set(_this.conditionConfig, 'conditionGroupList', []);
+            this.$set(this.conditionConfig, 'conditionGroupList', []);
           }
           if (config.conditionConfig.conditionGroupRelList) {
-            _this.$set(_this.conditionConfig, 'conditionGroupRelList', config.conditionConfig.conditionGroupRelList);
+            this.$set(this.conditionConfig, 'conditionGroupRelList', config.conditionConfig.conditionGroupRelList);
           } else {
-            _this.$set(_this.conditionConfig, 'conditionGroupRelList', []);
+            this.$set(this.conditionConfig, 'conditionGroupRelList', []);
           }
         }
       }
@@ -405,10 +404,9 @@ export default {
       return obj;
     },
     addGroup() {
-      let _this = this;
-      let GroupList = _this.conditionConfig.conditionGroupList;
-      let uuid = _this.$utils.setUuid(); //获取条件uuid
-      let groupUuid = _this.$utils.setUuid(); //获取组的uuid
+      let GroupList = this.conditionConfig.conditionGroupList;
+      let uuid = this.$utils.setUuid(); //获取条件uuid
+      let groupUuid = this.$utils.setUuid(); //获取组的uuid
       let group = {
         uuid: groupUuid,
         conditionList: [
@@ -474,8 +472,6 @@ export default {
       this.$delete(item.conditionRelList, index - 1);
       if (!item.conditionList.length) {
         this.delGroup(index1);
-      } else {
-        // this.formCusChange();
       }
     },
     toEditTemplate(templateId) {

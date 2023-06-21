@@ -4,17 +4,12 @@
     v-bind="setting"
     :isShow="isShow"
     @on-close="close"
+    @on-ok="saveEdit"
   >
     <div>
       <TsForm ref="editform" :itemList="formConfig" :labelWidth="180">
       </TsForm>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">取消</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">确定</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>

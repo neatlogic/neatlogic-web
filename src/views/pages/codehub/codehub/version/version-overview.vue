@@ -16,7 +16,12 @@
             ></CombineSearcher>
           </Col>
           <Col span="4">
-            <RadioGroup v-model="showType" type="button" class="toggle-btn">
+            <RadioGroup
+              v-model="showType"
+              type="button"
+              class="toggle-btn"
+              @on-change="changeRadioGroup"
+            >
               <Radio label="tabletab"><span class="tsfont-list"></span></Radio>
               <Radio label="cardtab"><span class="tsfont-blocklist"></span></Radio>
             </RadioGroup>
@@ -26,9 +31,8 @@
       <div slot="content">
         <div 
           :is="showType" 
-          v-if="versionData &&!loadingShow" 
-          :versionData="versionData" 
-          :statusList="statusList" 
+          v-if="versionData && !loadingShow" 
+          :versionData="versionData"
           :canDelete="versionData.hasVersionManageRole"
           @updatePage="updatePage" 
           @updateSize="updateSize" 
@@ -59,7 +63,6 @@ export default {
   data() {
     return {
       showType: 'cardtab',
-      keyword: '',
       loadingShow: true,
       isEdit: false, //是否编辑
       versionId: null, // 版本id
@@ -68,10 +71,6 @@ export default {
         pageSize: 20
       },
       searchVal: {},
-      statusList: {
-        succeed: 'success',
-        failed: 'error'
-      },
       searchConfig: {
         search: true,
         searchList: [
@@ -84,7 +83,7 @@ export default {
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
             onChange: (val) => {
-              this.updateSubSystem(val);
+              this.updateAppModule(val);
             }
           },
           {
@@ -93,8 +92,7 @@ export default {
             label: this.$t('page.subsystem'),
             transfer: true,
             rootName: 'tbodyList',
-            textName: 'name',
-            valueName: 'id'
+            dealDataByUrl: this.$utils.getAppForselect
           }
         ]
       }
@@ -138,16 +136,13 @@ export default {
         }
       });
     },
-    updatePage(page) {
-      this.versionData.currentPage = page;
+    updatePage(currentPage) {
+      this.versionData.currentPage = currentPage;
       this.searchList();
     },
-    updateSize(size) {
-      this.versionData.pageSize = size;
-      this.searchList();
-    },
-    getSearch() {
+    updateSize(pageSize) {
       this.versionData.currentPage = 1;
+      this.versionData.pageSize = pageSize;
       this.searchList();
     },
     searchList() {
@@ -181,14 +176,14 @@ export default {
         this.versionData.pageSize = historyData['pageSize'];
       }
     },
-    close(isreload) {
+    close(needRefresh) {
       this.isEdit = false;
       this.versionId = null;
-      if (isreload) {
-        this.getSearch();
+      if (needRefresh) {
+        this.updatePage(1);
       }
     },
-    updateSubSystem(val) {
+    updateAppModule(val) {
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'appModuleId')) {
@@ -204,18 +199,16 @@ export default {
           } 
         });
       }
+    },
+    changeRadioGroup() {
+      this.versionData.currentPage = 1;
+      this.versionData.pageSize = 20;
+      this.searchList(); 
     }
   },
   filter: {},
   computed: {},
-  watch: {
-    showType(val) {
-      this.loadingShow = true;
-      this.versionData.currentPage = 1;
-      this.versionData.pageSize = val == 'tabletab' ? 20 : 10;
-      this.searchList();      
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
