@@ -10,6 +10,7 @@ import priority from './issue/priority.js';
 import catalog from './issue/catalog.js';
 import tag from './tag/tag.js';
 import iteration from './iteration/iteration.js';
+import webhook from './app/webhook.js';
 
 export default {
   project,
@@ -22,5 +23,6 @@ export default {
   priority,
   catalog,
   tag,
-  iteration
+  iteration,
+  webhook
 };

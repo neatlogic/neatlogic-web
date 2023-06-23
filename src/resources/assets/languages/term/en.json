@@ -2125,7 +2125,8 @@
     "noiteration": "There are currently no iterations",
     "selectedphase": "Selected stage",
     "stopsecret": "Deactivate Secret",
-    "enablesecret": "Enable Secret"
+    "enablesecret": "Enable Secret",
+    "pleasecreatewebhookurl": "Please generate WebhookUrl"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

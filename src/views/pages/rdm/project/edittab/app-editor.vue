@@ -39,7 +39,6 @@ export default {
     getAppById() {
       this.$api.rdm.app.getAppById(this.appId).then(res => {
         this.appData = res.Return;
-        console.log(JSON.stringify(this.appData, null, 2));
       });
     }
   },

@@ -2122,7 +2122,8 @@
     "noiteration": "暂无迭代",
     "selectedphase": "已选阶段",
     "stopsecret": "停用Secret",
-    "enablesecret": "启用Secret"
+    "enablesecret": "启用Secret",
+    "pleasecreatewebhookurl": "请生成WebhookUrl"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
