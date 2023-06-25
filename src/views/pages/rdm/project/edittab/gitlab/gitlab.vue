@@ -3,7 +3,7 @@
     <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
       <div v-if="webhookData.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
         <Code class="bg-block">
-          <span id="webhookUrl">/t/{{ tenant }}/rdm/webhook/gitlab?token={{ webhookData.webhookUrl }}</span>
+          <span id="webhookUrl">/t/{{ tenant }}/rdm/webhook/push?_t={{ webhookData.webhookUrl }}</span>
           <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
         </Code>
       </div>
