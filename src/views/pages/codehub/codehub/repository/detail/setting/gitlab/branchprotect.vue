@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div style="margin-bottom:10px;">
+    <div class="mb-sm">
       <Button type="primary" @click="addProtect()">
         <i class="ts-plus"></i>
-        保护分支
+        {{ $t('term.codehub.protectbranch') }}
       </Button>
     </div>
     <div v-if="!isLoading">
@@ -17,15 +17,14 @@
           <i v-else class="ts-forbid h3 text-danger"></i>
         </template>
         <template slot="actions" slot-scope="{ row }">
-          <div class="text-action ts-trash" @click="delProtect(row)">删除</div>
+          <div class="text-action ts-trash" @click="delProtect(row)">{{ $t('page.delete') }}</div>
         </template>
       </TsTable>
     </div>
     <Loading v-else loadingShow style="min-height:100px"></Loading>
     <ProtectAdd
       v-if="isEdit"
-      :isShow="isEdit"
-      :uuid="uuid"
+      :id="id"
       @close="close"
     ></ProtectAdd>
   </div>
@@ -39,14 +38,14 @@ export default {
   },
   filters: {},
   props: {
-    uuid: String
+    id: Number
   },
   data() {
     return {
       tabledata: {
         theadList: [
           {
-            title: '分支',
+            title: this.$t('page.branch'),
             key: 'name'
           },
           {
@@ -95,21 +94,19 @@ export default {
     },
     delProtect(row) {
       let param = {
-        repositoryId: this.uuid,
-        name: row.name
+        'repositoryId': this.id,
+        'name': row.name
       };
       this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该保护分支',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('term.codehub.protectbranch')}),
         btnType: 'error',
         'on-ok': (vnode) => {
           this.$api.codehub.repositorydetail.deleteProtectBranch(param).then((res) => {
             if (res && res.Status == 'OK') {
-              this.$Message.success('删除成功');
+              this.$Message.success(this.$t('message.deletesuccess'));
               this.getList();
               vnode.isShow = false;
-            } else {
-              this.$Message.error(res.Message);
             }
           });
         }
@@ -117,7 +114,7 @@ export default {
     },
     getList() {
       let param = {
-        repositoryId: this.uuid
+        repositoryId: this.id
       };
       this.isLoading = true;
       this.$api.codehub.repositorydetail.getProtectBranchList(param).then(res => {

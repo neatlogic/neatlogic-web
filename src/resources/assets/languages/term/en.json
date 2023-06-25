@@ -2377,6 +2377,8 @@
     "searchhelp": "Search Help",
     "helpcenter": "Help Center",
     "whathelp": "May I help you?",
-    "problemdes": "Problem Description"
+    "problemdes": "Problem Description",
+    "selectoneresource": "Please select at least one resource",
+    "noaddauthresource": "There are currently no resources to add permissions to"
   }
 }

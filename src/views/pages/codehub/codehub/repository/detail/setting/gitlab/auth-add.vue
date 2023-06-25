@@ -26,7 +26,6 @@ export default {
   },
   filters: {},
   props: {
-    isShow: Boolean,
     id: Number,
     accList: Array,
     editConfig: [Object, String]
