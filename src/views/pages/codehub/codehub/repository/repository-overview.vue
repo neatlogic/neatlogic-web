@@ -14,7 +14,7 @@
         ></CombineSearcher>
       </template>
       <div slot="content">
-        <Loading v-if="isLoad" loadingShow></Loading>
+        <Loading v-if="isLoad" loadingShow type="fix"></Loading>
         <TsCard
           v-else
           v-bind="repositoryData"

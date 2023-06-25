@@ -3,8 +3,7 @@
     <div
       v-if="hasBranch"
       ref="top"
-      class="input-border"
-      style="padding:0 16px;"
+      class="pl-nm pr-nm"
     >
       <Row :gutter="20">
         <Col span="16">
@@ -47,7 +46,7 @@
               <tbody>
                 <tr>
                   <td>
-                    <h6>{{ row.comment }}</h6>
+                    <div>{{ row.comment }}</div>
                     <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
@@ -69,8 +68,7 @@
                     <div
                       v-if="row.commitdiffInfo"
                       class="text-action text-center ts-angle-double-up"
-                      style="display: block;"
-                      @click="row.showcommitdiffInfo =false"
+                      @click="row.showcommitdiffInfo = false"
                     >{{ $t('term.codehub.packupcontent') }}</div>
                     <Loading v-else loadingShow><span></span></Loading>
                   </td>
