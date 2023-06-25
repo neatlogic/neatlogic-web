@@ -9,7 +9,6 @@ import strategy from '@/resources/api/codehub/codehub/version/strategy';
 import merge from '@/resources/api/codehub/codehub/merge/merge';
 import project from '@/resources/api/codehub/codehub/project/project';
 import credential from '@/resources/api/codehub/codehub/repository/repositorycredential';
-import tactics from '@/resources/api/codehub/codehub/notifytactics/tactics';
 export default {
   repository,
   service,
@@ -20,6 +19,5 @@ export default {
   strategy,
   merge,
   project,
-  credential,
-  tactics
+  credential
 };
