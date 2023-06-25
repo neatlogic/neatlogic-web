@@ -70,7 +70,7 @@ export default {
         tbodyList: []
       },
       formValue: {
-        isNewversion: '1',
+        isNewVersion: '1',
         id: '',
         version: '',
         versionTypeId: '',
@@ -82,7 +82,7 @@ export default {
         label: this.$t('page.newversion'),
         width: '100%',
         itemWidth: '100%',
-        name: 'isNewversion',
+        name: 'isNewVersion',
         validateList: ['required'],
         dataList: [{
           text: this.$t('page.yes'),
