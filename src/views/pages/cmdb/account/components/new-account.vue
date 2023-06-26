@@ -154,7 +154,6 @@ export default {
             });
             this.$set(this.formConfig.tagIdList, 'value', idList);   
           }
-          this.accountValidate(this.tableData.protocolId);
         });
       } 
     }
