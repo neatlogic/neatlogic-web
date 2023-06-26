@@ -18,8 +18,7 @@
           @changePageSize="changePageSize"
         >
           <template v-slot:key="{ row }">
-            <span v-if="$AuthUtils.hasRole('TENANT_CONFIG_MODIFY')" class="text-href" @click.stop="showTenantConfigForm(row.key)">{{ row.key }}</span>
-            <span v-else>{{ row.key }}</span>
+            <span class="text-href" @click.stop="showTenantConfigForm(row.key)">{{ row.key }}</span>
           </template>
         </TsTable>
       </template>

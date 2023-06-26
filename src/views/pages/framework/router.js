@@ -613,7 +613,7 @@ export default [
       title: $t('router.framework.tenantconfigmanage'),
       ismenu: true,
       icon: 'tsfont-config',
-      authority: 'TENANT_CONFIG_BASE',
+      authority: 'ADMIN',
       type: 'others'
     }
   },
