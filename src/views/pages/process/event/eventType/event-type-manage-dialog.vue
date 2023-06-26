@@ -150,7 +150,7 @@ export default {
           border: 'border',
           value: [],
           validateList: ['required'],
-          groupList: ['common', 'user', 'role', 'team'],
+          groupList: ['user', 'role', 'team'],
           onChange: (list) => {
             this.authorityList = list;
           }
