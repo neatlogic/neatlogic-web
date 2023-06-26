@@ -151,7 +151,7 @@ export default {
         }, 
         authList: {
           type: 'userselect',
-          label: this.$t('page.auth'),
+          label: this.$t('page.useauth'),
           width: 400,
           groupList: ['user', 'team', 'role', 'common'],
           onChange: function(name) {

@@ -107,9 +107,9 @@ export default {
         {
           type: 'userselect',
           name: 'authList',
-          label: this.$t('page.auth'),
+          label: this.$t('page.useauth'),
           width: 400,
-          groupList: ['user', 'team', 'role'],
+          groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
             _this.reportData.authList = name;
           }
