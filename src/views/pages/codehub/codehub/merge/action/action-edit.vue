@@ -257,7 +257,7 @@ export default {
       params.arguments = argumentEditForm ? argumentEditForm.getFormValue() : {};
       if ((form && form.valid()) && (argumentEditForm && argumentEditForm.valid())) {
         this.$api.codehub.merge
-          .saveAction(this.actionData)
+          .saveAction(params)
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.savesuccess'));
