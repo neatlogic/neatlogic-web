@@ -8,7 +8,8 @@ export default {
       id: null,
       appId: null,
       projectId: null,
-      contentMode: 'read'
+      contentMode: 'read',
+      appList: []
     };
   },
   beforeCreate() {},
@@ -91,6 +92,22 @@ export default {
       }
       return h('div', controllList);
     },
+    renderWebhookLabel(h, appId, label) {
+      const controllList = [];
+      controllList.push(h('span', label));
+      if (this.getWebhookCount(appId)) {
+        controllList.push(
+          h(
+            'span',
+            {
+              class: 'ml-xs text-grey'
+            },
+            this.getWebhookCount(appId)
+          )
+        );
+      }
+      return h('div', controllList);
+    },
     renderTabLabel(h, id, label, appType, relType, direction) {
       if (!direction) {
         direction = 'from';
@@ -155,6 +172,14 @@ export default {
     getApp() {
       return type => {
         return this.appList.find(d => d.type === type);
+      };
+    },
+    getWebhookCount() {
+      return (appId) => {
+        if (this.issueData && this.issueData.webhookList && this.issueData.webhookList.length > 0) {
+          return this.issueData.webhookList.filter(d => d.appId === appId).length;
+        }
+        return 0;
       };
     },
     getRelIssueCount() {

@@ -2126,7 +2126,9 @@
     "selectedphase": "Selected stage",
     "stopsecret": "Deactivate Secret",
     "enablesecret": "Enable Secret",
-    "pleasecreatewebhookurl": "Please generate WebhookUrl"
+    "pleasecreatewebhookurl": "Please generate WebhookUrl",
+    "copycommitword": "Copy Source Keyword",
+    "gitlabcommit": "Gitlab submission"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

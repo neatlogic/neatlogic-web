@@ -17,6 +17,17 @@
     </span>
     <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
     <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
+    <span class="action-item">
+      <Dropdown>
+        <span class="tsfont-attachment cursor text-grey">
+        </span>
+        <DropdownMenu slot="list">
+          <DropdownItem @click.native="copy('#spnCommitWord')">{{ $t('term.rdm.copycommitword') }}
+            <span id="spnCommitWord" style="display:none">#[{{ issueData.id }}]{{ issueData.name }} {{ url }}</span>
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    </span>
   </div>
 </template>
 <script>
@@ -49,6 +60,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    copy(id) {
+      this.$utils.copyText(id);
+    },
     editTitle() {
       if (!this.readonly) {
         this.isEditing = true;
@@ -72,7 +86,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    url() {
+      return window.location.href;
+    }
+  },
   watch: {}
 };
 </script>

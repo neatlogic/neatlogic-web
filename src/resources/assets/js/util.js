@@ -820,10 +820,10 @@ export default {
   },
   copyText(id) {
     // 复制内容
-    let dom = document.querySelector(id);
+    const dom = document.querySelector(id);
     if (dom && dom.innerText) {
-      let value = dom.innerText;
-      let textarea = document.createElement('textarea');
+      const value = dom.innerText.trim();
+      const textarea = document.createElement('textarea');
       textarea.value = value;
       document.body.appendChild(textarea);
       textarea.select();
