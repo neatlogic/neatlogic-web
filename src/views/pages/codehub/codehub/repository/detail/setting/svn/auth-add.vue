@@ -1,8 +1,7 @@
 <template>
   <TsDialog
-    v-if="isShow"
+    
     v-bind="setting"
-    :isShow="isShow"
     @on-close="close"
     @on-ok="saveEdit"
   >
@@ -11,7 +10,7 @@
         <div slot="left" style="overflow:auto;max-height:calc(100vh - 134px);">
           <PathTree
             :list="pathList"
-            :repositoryUuid="uuid"
+            :repositoryId="id"
             :selectPath="currentPath"
             @selectedPath="selectedPath"
           ></PathTree>
@@ -54,7 +53,7 @@
                     >{{ pa }}</Tag>
                   </div>
                   <div v-else-if="valid.path" class="text-tips">-</div>
-                  <div v-else-if="!valid.path" class="text-danger">请至少选择一个资源</div>
+                  <div v-else-if="!valid.path" class="text-danger">{{ $t('term.codehub.selectoneresource') }}</div>
                 </div>
               </template>
               <!-- membertype -->
@@ -100,16 +99,22 @@
                   >{{ pa }}</Tag>
                 </div>
                 <div v-else-if="valid.path" class="text-tips">-</div>
-                <div v-else-if="!valid.path" class="text-danger">请至少选择一个资源</div>
+                <div v-else-if="!valid.path" class="text-danger">{{ $t('term.codehub.selectoneresource') }}</div>
               </div>
             </template>
             <!-- membertype -->
           </TsForm>
         </div>        
       </div>
-      <div v-else-if="!isloading" class="text-tip">暂无可添加权限的资源</div>
+      <div v-else-if="!isloading" class="text-tip">{{ $t('term.codehub.noaddauthresource') }}</div>
       <Loading v-else loadingShow></Loading>
     </div>
+    <template v-slot:footer>
+      <div class="footer-btn-contain">
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
+      </div>
+    </template>
   </TsDialog>
 </template>
 <script>
@@ -124,13 +129,12 @@ export default {
   },
   provide() {
     return {
-      repositoryUuid: this.uuid
+      repositoryId: this.id
     };
   },
   filters: {},
   props: {
-    isShow: Boolean,
-    uuid: String,
+    id: Number,
     accList: Array,
     editConfig: [Object, String]
   },
@@ -138,26 +142,28 @@ export default {
     return {
       split: 0.3,
       setting: {
-        title: this.editConfig ? '编辑授权' : '添加授权',
+        title: this.editConfig ? this.$t('term.codehub.editauth') : this.$t('term.codehub.addauth'),
         maskClose: false,
         width: 'medium',
-        type: 'slider'
+        type: 'slider',
+        isShow: true
       },
+      isSubmit: false, //是否提交中，需要禁用调提交按钮
       pathList: [],
       currentPath: [], //当前选中哪个路径
       isLoading: true,
       formConfig: [
         {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           name: 'authType',
           validateList: ['required'],
           value: 'member',
           dataList: [{
-            text: '用户',
+            text: this.$t('page.user'),
             value: 'member'
           }, {
-            text: '组',
+            text: this.$t('term.codehub.group'),
             value: 'group'
           }],
           onChange: (val) => {
@@ -165,22 +171,21 @@ export default {
           }
         }, {
           type: 'slot',
-          label: '用户名/组名',
+          label: this.$t('term.codehub.usergourpname'),
           name: 'memberType',
           validateList: ['required']         
         }, {
           type: 'slot',
-          label: '用户名/组名',
+          label: this.$t('term.codehub.usergourpname'),
           name: 'groupType',
           validateList: ['required'],
           isHidden: true       
         }, {
           type: 'select',
-          label: '权限',
+          label: this.$t('page.authority'),
           name: 'auth',
           value: false,
           validateList: ['required'],
-          width: '300px',
           dataList: this.accList,
           clearable: false,
           onChange: (val) => {
@@ -188,7 +193,7 @@ export default {
           }       
         }, {
           type: 'slot',
-          label: '已选资源',
+          label: this.$t('term.codehub.selectresource'),
           name: 'pathList',
           validateList: ['required']         
         }
@@ -203,7 +208,7 @@ export default {
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getgroup',
         params: {
-          'repositoryUuid': this.uuid
+          'repositoryId': this.id
         },
         clearable: false,
         multiple: true,
@@ -215,7 +220,7 @@ export default {
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getmemberbygroup',
         params: {
-          'repositoryUuid': this.uuid,
+          'repositoryId': this.id,
           'groupName': ''
         },
         clearable: false,
@@ -300,7 +305,7 @@ export default {
         return;
       }
       let param = {
-        repositoryUuid: this.uuid,
+        repositoryId: this.id,
         authList: []
       };
       let authList = [];
@@ -341,10 +346,13 @@ export default {
       Object.assign(param, {
         'authList': authList
       });
+      this.isSubmit = true;
       this.$api.codehub.repositorydetail.saveSvnAuth(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$emit('close', true);
         }
+      }).finally(res => {
+        this.isSubmit = false;
       });
     },
     close() {
@@ -353,7 +361,7 @@ export default {
     getTree() {
       //获取路径树的第一层
       let param = {
-        repositoryUuid: this.uuid
+        repositoryId: this.id
       };
       this.isloading = true;
       this.$api.codehub.repositorydetail.getSvnAuthTree(param).then(res => {
@@ -394,7 +402,7 @@ export default {
       //获取权限列表
       this.pathVal = path.join(',');
       // let param = {
-      //   repositoryUuid: this.uuid,
+      //   repositoryId: this.id,
       //   path: path
       // };
       // this.isLoading = true;

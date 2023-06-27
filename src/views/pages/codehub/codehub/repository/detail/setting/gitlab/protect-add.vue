@@ -1,8 +1,6 @@
 <template>
   <TsDialog
-    v-if="isShow"
     v-bind="setting"
-    :isShow="isShow"
     @on-close="close"
     @on-ok="saveEdit"
   >
@@ -10,6 +8,12 @@
       <TsForm ref="editform" :itemList="formConfig" :labelWidth="180">
       </TsForm>
     </div>
+    <template v-slot:footer>
+      <div class="footer-btn-contain">
+        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
+      </div>
+    </template>
   </TsDialog>
 </template>
 <script>
@@ -20,29 +24,29 @@ export default {
   },
   filters: {},
   props: {
-    isShow: Boolean,
-    uuid: String
+    id: Number
   },
   data() {
     return {
       split: 0.3,
       setting: {
-        title: '添加分支保护',
+        title: this.$t('term.codehub.addprotectbranch'),
         maskClose: false,
-        width: 'small'
+        width: 'small',
+        isShow: true
       },
       isSubmit: false, //是否提交中，需要禁用调提交按钮
       formConfig: [
         {
           type: 'select',
-          label: '分支名称',
+          label: this.$t('page.branch'),
           name: 'name',
           validateList: ['required'],
           dynamicUrl: '/api/rest/codehub/repository/gitlab/searchBranches',
           params: {
-            repositoryId: this.uuid
+            repositoryId: this.id
           },
-          rootName: 'tbodyList',
+          rootName: 'list',
           textName: 'name',
           valueName: 'name',
           allowCreate: true,
@@ -54,10 +58,10 @@ export default {
           validateList: ['required'],
           dataList: [{
             value: true,
-            text: '是'
+            text: this.$t('page.yes')
           }, {
             value: false,
-            text: '否'           
+            text: this.$t('page.no')       
           }],
           transfer: true       
         }, {
@@ -67,10 +71,10 @@ export default {
           validateList: ['required'],
           dataList: [{
             value: true,
-            text: '是'
+            text: this.$t('page.yes')
           }, {
             value: false,
-            text: '否'           
+            text: this.$t('page.no')          
           }],
           transfer: true               
         }
@@ -92,7 +96,7 @@ export default {
       if (this.$refs.editform.valid()) { 
         let param = this.$refs.editform.getFormValue(); 
         Object.assign(param, {
-          repositoryId: this.uuid,
+          repositoryId: this.id,
           method: 'protectBranch'
         });   
         this.isSubmit = true;

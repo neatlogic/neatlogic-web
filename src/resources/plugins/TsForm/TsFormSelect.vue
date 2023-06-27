@@ -1379,14 +1379,14 @@ export default {
         let style = {};
         if (!_this.multiple) {
           if (keyword || _this.getPlaceholder || (_this.isSingel && _this.selectedList.length > 0) || (!_this.multiple && _this.currentSearch && !_this.isSquare)) {
-            Object.assign(style, { maxWidth: '100%', minWidth: '30px', width: _this.calculateInputWidth(keyword) * 14 + 30 + 'px' });
+            Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: _this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
           }
         } else if (keyword || this.getPlaceholder) {
-          Object.assign(style, { maxWidth: '100%', minWidth: '30px', width: _this.calculateInputWidth(keyword) * 14 + 30 + 'px' });
+          Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: _this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
         } else if (this.currentValue && this.currentValue.length > 0) {
-          style.width = '30px';
+          style.width = '14px'; // 将原有的30像素改成14像素，解决输入框宽度过长，导致换行问题
         }
         return style;
       };

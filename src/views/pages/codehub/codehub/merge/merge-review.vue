@@ -79,7 +79,7 @@
       </template>
       <template v-slot:content>
         <Loading v-if="isLoading" loadingShow></Loading>
-        <div v-else-if="mrData" class="review-main mr-sm">
+        <div v-else-if="mrData" class="review-main" :class="isSiderHide ? 'mr-sm' : ''">
           <Tabs
             v-model="activeTab"
             :animated="false"

@@ -18,7 +18,7 @@
         </div>
         <!-- 不创建新版本——end    -->
         <!-- 创建新版本——start    -->
-        <div v-if="isNewVersion && !$utils.isEmpty(strategyData.tbodyList) && formValue.appModuleId">
+        <div v-if="isNewVersion && !$utils.isEmpty(strategyData.tbodyList) && formValue.appModuleId" class="mt-nm">
           <TsTable :theadList="strategyTheadList" v-bind="strategyData" @getSelected="getstrategySelected">
             <template slot="type" slot-scope="{row}">
               {{ typeTxt[row.type] }}
@@ -70,7 +70,7 @@ export default {
         tbodyList: []
       },
       formValue: {
-        isNewversion: '1',
+        isNewVersion: '1',
         id: '',
         version: '',
         versionTypeId: '',
@@ -82,7 +82,7 @@ export default {
         label: this.$t('page.newversion'),
         width: '100%',
         itemWidth: '100%',
-        name: 'isNewversion',
+        name: 'isNewVersion',
         validateList: ['required'],
         dataList: [{
           text: this.$t('page.yes'),
@@ -199,7 +199,7 @@ export default {
           let param = {};
           if (this.isNewVersion) {
             //如果是新建的要校验必填信息
-            if (this.$refs.versionform && this.$refs.versionform.valid()) {
+            if (this.$refs.form && this.$refs.form.valid()) {
               Object.assign(param, {
                 version: this.versionPrefix + this.formValue.version,
                 versionTypeId: this.formValue.versionTypeId,

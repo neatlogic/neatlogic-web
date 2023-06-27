@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div style="margin-bottom:10px;">
-      <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>{{ $t('page.authority') }}</Button> 
-      <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button> 
-      <Button v-else loading class="ml-sm">$t('term.codehub.exporting')</Button> 
+    <div class="mb-sm">
+      <Button type="primary" @click="addAuth()">
+        <i class="ts-plus"></i>
+        {{ $t('page.authority') }}
+      </Button>
+      <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button>
+      <Button v-else loading class="ml-sm">$t('term.codehub.exporting')</Button>
     </div>
     <h4>{{ $t('term.codehub.userauth') }}</h4>
     <div v-if="!isLoading">
-      <TsTable
-        v-bind="tabledata"
-        :tbodyList="authList"
-      >
-        <template slot="name" slot-scope="{row}">
+      <TsTable v-bind="tableData" :tbodyList="authList">
+        <template slot="name" slot-scope="{ row }">
           <UserinfoGitlab
             :id="row.id"
             :row="row"
@@ -19,32 +19,31 @@
             :repositoryId="id"
           ></UserinfoGitlab>
         </template>
-        <template slot="state" slot-scope="{row}">
+        <template slot="state" slot-scope="{ row }">
           <span :style="'color:' + colorConfig[row.state]">{{ row.state }}</span>
         </template>
-        <template slot="endtime" slot-scope="{row}">
+        <template slot="endtime" slot-scope="{ row }">
           {{ row.endtime | formatDate }}
         </template>
-        <template slot="access_level" slot-scope="{row}">
+        <template slot="access_level" slot-scope="{ row }">
           {{ getText(row.access_level) }}
         </template>
-        <template slot="actions" slot-scope="{row}">
-          <div v-if="!row.group_name" class="action-group">
-            <div class="action-item text-action ts-edit" @click="editAuth(row)">{{ $t('page.edit') }}</div>
-            <div class="action-item text-action ts-trash" @click="delAuth(row)">{{ $t('page.delete') }}</div>
+        <template slot="action" slot-scope="{ row }">
+          <div v-if="!row.group_name" class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-edit" @click="editAuth(row)">{{ $t('page.edit') }}</li>
+              <li class="tsfont-trash-o" @click="delAuth(row)">{{ $t('page.delete') }}</li>
+            </ul>
           </div>
         </template>
       </TsTable>
     </div>
-    <Loading v-else loadingShow style="min-height:100px"></Loading>
+    <Loading v-else loadingShow style="min-height: 100px"></Loading>
     <Divider />
     <h4>{{ $t('term.codehub.groupauth') }}</h4>
     <div v-if="!isLoadingGroup">
-      <TsTable
-        v-bind="grouptabledata"
-        :tbodyList="authGroupList"
-      >
-        <template slot="name" slot-scope="{row}">
+      <TsTable v-bind="groupTableData" :tbodyList="authGroupList">
+        <template slot="name" slot-scope="{ row }">
           <UserinfoGitlab
             :id="row.id"
             :row="row"
@@ -52,21 +51,23 @@
             :repositoryId="id"
           ></UserinfoGitlab>
         </template>
-        <template slot="endtime" slot-scope="{row}">
+        <template slot="endtime" slot-scope="{ row }">
           {{ row.endtime | formatDate }}
         </template>
-        <template slot="group_access_level" slot-scope="{row}">
+        <template slot="group_access_level" slot-scope="{ row }">
           {{ getText(row.group_access_level) }}
         </template>
-        <template slot="actions" slot-scope="{row}">
-          <div class="action-group">
-            <div class="action-item text-action ts-edit" @click="editAuth(row,'group')">{{ $t('page.edit') }}</div>
-            <div class="action-item text-action ts-trash" @click="delAuth(row,'group')">{{ $t('page.delete') }}</div>
+        <template slot="action" slot-scope="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-edit" @click="editAuth(row, 'group')">{{ $t('page.edit') }}</li>
+              <li class="tsfont-trash-o" @click="delAuth(row, 'group')">{{ $t('page.delete') }}</li>
+            </ul>
           </div>
         </template>
       </TsTable>
     </div>
-    <Loading v-else loadingShow style="min-height:100px"></Loading>
+    <Loading v-else loadingShow style="min-height: 100px"></Loading>
     <AuthAdd
       v-if="isEdit"
       :id="id"
@@ -86,7 +87,7 @@ export default {
     UserinfoGitlab: resolve => require(['@/views/pages/codehub/codehub/repository/components/userinfo-gitlab.vue'], resolve)
   },
   filters: {},
-  directives: { download},
+  directives: { download },
   props: {
     id: Number
   },
@@ -96,40 +97,52 @@ export default {
         blocked: '#e42332',
         active: '#2ed373'
       },
-      tabledata: {
-        theadList: [{
-          title: this.$t('page.username'),
-          key: 'name'
-        }, {
-          title: this.$t('page.status'),
-          key: 'state'
-        }, {
-          title: this.$t('term.cmdb.extendto'),
-          key: 'group_name'
-        }, {
-          title: this.$t('page.authority'),
-          key: 'access_level'
-        }, {
-          title: this.$t('term.codehub.expiresat'),
-          key: 'expires_at'
-        }, {
-          key: 'actions'
-        }],
+      tableData: {
+        theadList: [
+          {
+            title: this.$t('page.username'),
+            key: 'name'
+          },
+          {
+            title: this.$t('page.status'),
+            key: 'state'
+          },
+          {
+            title: this.$t('term.cmdb.extendto'),
+            key: 'group_name'
+          },
+          {
+            title: this.$t('page.authority'),
+            key: 'access_level'
+          },
+          {
+            title: this.$t('term.codehub.expiresat'),
+            key: 'expires_at'
+          },
+          {
+            key: 'action'
+          }
+        ],
         rowKey: 'id'
       },
-      grouptabledata: {
-        theadList: [{
-          title: this.$t('page.groupname'),
-          key: 'name'
-        }, {
-          title: this.$t('page.authority'),
-          key: 'group_access_level'
-        }, {
-          title: this.$t('term.codehub.expiresat'),
-          key: 'expires_at'
-        }, {
-          key: 'actions'
-        }],
+      groupTableData: {
+        theadList: [
+          {
+            title: this.$t('page.groupname'),
+            key: 'name'
+          },
+          {
+            title: this.$t('page.authority'),
+            key: 'group_access_level'
+          },
+          {
+            title: this.$t('term.codehub.expiresat'),
+            key: 'expires_at'
+          },
+          {
+            key: 'action'
+          }
+        ],
         rowKey: 'id'
       },
       isEdit: false,
@@ -137,24 +150,30 @@ export default {
       authGroupList: [],
       isLoading: false,
       isLoadingGroup: false,
-      accList: [{
-        value: 10,
-        text: 'Guest'
-      }, {
-        value: 20,
-        text: 'Reporter'            
-      }, {
-        value: 30,
-        text: 'Developer'            
-      }, {
-        value: 40,
-        text: 'Maintainer'            
-      }, {
-        value: 50,
-        text: 'Owner'            
-      }],
+      accList: [
+        {
+          value: 10,
+          text: 'Guest'
+        },
+        {
+          value: 20,
+          text: 'Reporter'
+        },
+        {
+          value: 30,
+          text: 'Developer'
+        },
+        {
+          value: 40,
+          text: 'Maintainer'
+        },
+        {
+          value: 50,
+          text: 'Owner'
+        }
+      ],
       isDowning: false, //是否在下载中
-      editConfig: null//编辑内容
+      editConfig: null //编辑内容
     };
   },
   beforeCreate() {},
@@ -165,9 +184,7 @@ export default {
   },
   beforeUpdate() {},
   updated() {},
-  activated() {
-    
-  },
+  activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
@@ -176,12 +193,8 @@ export default {
       this.editConfig = null;
       this.isEdit = true;
     },
-    changeCurrent() {
-
-    },
-    changePageSize() {
-      
-    },
+    changeCurrent() {},
+    changePageSize() {},
     close(isReload) {
       this.editConfig = null;
       this.isEdit = false;
@@ -200,42 +213,34 @@ export default {
     },
     delAuth(row, type) {
       let param = {
-        'repositoryId': this.id
+        repositoryId: this.id
       };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('term.codehub.delauth'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.authority')}),
         btnType: 'error',
-        'on-ok': (vnode) => {
+        'on-ok': vnode => {
           if (type) {
-            Object.assign(param, {
-              'group_id': row.id
-            });
-            this.$api.codehub.repositorydetail.deleteGitAuth('group', param).then((res) => {
+            param.group_id = row.id;
+            this.$api.codehub.repositorydetail.deleteGitAuth('group', param).then(res => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 this.getList();
                 vnode.isShow = false;
-              } else {
-                this.$Message.error(res.Message);
               }
             });
           } else {
-            Object.assign(param, {
-              'user_id': row.id
-            });
-            this.$api.codehub.repositorydetail.deleteGitAuth('member', param).then((res) => {
+            param.user_id = row.id;
+            this.$api.codehub.repositorydetail.deleteGitAuth('member', param).then(res => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 this.getList();
                 vnode.isShow = false;
-              } else {
-                this.$Message.error(res.Message);
               }
             });
           }
         }
-      });     
+      });
     },
     getList() {
       //获取权限列表
@@ -243,30 +248,37 @@ export default {
         repositoryId: this.id
       };
       this.isLoading = true;
-      this.$api.codehub.repositorydetail.getGitAuthList(param).then(res => {
-        if (res.Status == 'OK') {
-          this.authList = res.Return || [];
-        } else {
-          this.authList = [];
-        }
-      }).finally(res => {
-        this.isLoading = false;
-      });  
+      this.$api.codehub.repositorydetail
+        .getGitAuthList(param)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.authList = res.Return || [];
+          } else {
+            this.authList = [];
+          }
+        })
+        .finally(res => {
+          this.isLoading = false;
+        });
       this.isLoadingGroup = true;
-      this.$api.codehub.repositorydetail.searchGitGroup(param).then(res => {
-        if (res.Status == 'OK') {
-          this.authGroupList = res.Return || [];
-        } else {
-          this.authGroupList = [];
-        }        
-      }).finally(res => {
-        this.isLoadingGroup = false;
-      });
+      this.$api.codehub.repositorydetail
+        .searchGitGroup(param)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.authGroupList = res.Return || [];
+          } else {
+            this.authGroupList = [];
+          }
+        })
+        .finally(res => {
+          this.isLoadingGroup = false;
+        });
     },
     showUser(item) {
       console.log(item);
     },
-    changeDownStatus(type, event) { //下载进度和状态的监听
+    changeDownStatus(type, event) {
+      //下载进度和状态的监听
       if (type == 'start') {
         this.isDowning = true;
       } else if (type != 'progress') {
@@ -294,10 +306,7 @@ export default {
     }
   },
   watch: {}
-
 };
-
 </script>
 <style lang='less'>
-
 </style>

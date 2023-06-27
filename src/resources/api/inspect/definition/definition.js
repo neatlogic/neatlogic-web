@@ -17,12 +17,9 @@ const definition = {
     // 保存集合
     return axios.post('/api/rest/inspect/collection/def/save', params);
   },
-  getCombopList() {
+  getCombopList(params) {
     // 获取组合工具列表
-    return axios.post('/api/rest/autoexec/combop/list', {
-      typeId: 1,
-      needPage: false
-    });
+    return axios.post('/api/rest/autoexec/combop/list', params);
   },
   getCombinationToolList(keyword) {
     // 获取巡检工具设置列表

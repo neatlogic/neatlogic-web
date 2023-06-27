@@ -61,7 +61,7 @@ export default {
   },
   data() {
     return {
-      confData: (this.conf && this.$utils.deepClone(this.conf)) || {timingTmpl: 1, workerCount: 1},
+      confData: (this.conf && this.$utils.deepClone(this.conf)) || {timingtmpl: 1, workercount: 1},
       formConfig: {
         name: {
           label: this.$t('page.name'),

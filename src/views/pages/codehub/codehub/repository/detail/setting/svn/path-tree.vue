@@ -42,7 +42,7 @@ export default {
   components: {
   },
   filters: {},
-  inject: ['repositoryUuid'],
+  inject: ['repositoryId'],
   props: {
     list: [Array, String],
     isChildren: {
@@ -87,7 +87,7 @@ export default {
         });
       } else {
         let param = {
-          repositoryUuid: this.repositoryUuid,
+          repositoryId: this.repositoryId,
           parentPath: (li.parentPath ? li.parentPath + '/' : li.parentPath) + li.path
         };
         Object.assign(li, {

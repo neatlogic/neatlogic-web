@@ -6,55 +6,58 @@
           v-for="t in typeList"
           :key="t.value"
           class="type-li"
-          :class="selectedType==t.value?'active text-href':'text-action'"
-          @click="selectedType=t.value"
+          :class="selectedType == t.value ? 'active text-href' : 'text-action'"
+          @click="selectedType = t.value"
         >{{ t.name }}</li>
       </ul>
     </Sider>
     <Content :style="siderStyle" class="padding-md">
-      <div v-if="selectedType=='auth'">
-        <div style="margin-bottom:10px;">
-          <Button type="primary" @click="addAuth()"><i class="ts-plus"></i>权限</Button> 
-          <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">导出Excel</Button> 
-          <Button v-else loading class="ml-sm">导出中</Button> 
+      <div v-if="selectedType == 'auth'">
+        <div style="margin-bottom: 10px">
+          <Button type="primary" @click="addAuth()">
+            <i class="ts-plus"></i>
+            {{ $t('page.authority') }}
+          </Button>
+          <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button>
+          <Button v-else loading class="ml-sm">{{ $t('term.codehub.exporting') }}</Button>
         </div>
         <div>
           <TsTable
             v-if="!isLoading"
-            v-bind="tabledata"
+            v-bind="tableData"
             :tbodyList="authList"
             @changeCurrent="changeCurrent"
             @changePageSize="changePageSize"
           >
-            <template slot="name" slot-scope="{row}">
-              <UserCard
+            <template slot="name" slot-scope="{ row }">
+              <UserinfoSVN
                 :id="row.sid"
                 :row="row"
-                :repositoryUuid="uuid"
+                :repositoryId="id"
                 :type="row.type"
-              ></UserCard>
+              ></UserinfoSVN>
             </template>
-            <template slot="acc" slot-scope="{row}">
-              {{ getText(row.acc,'acc') }}
+            <template slot="acc" slot-scope="{ row }">
+              {{ getText(row.acc, 'acc') }}
             </template>
-            <template slot="actions" slot-scope="{row}">
-              <div class="action-group">
-                <div class="action-item text-action ts-edit" @click="editAuth(row)">编辑</div>
-                <div class="action-item text-action ts-trash" @click="delAuth(row)">删除</div>
+            <template slot="action" slot-scope="{ row }">
+              <div class="tstable-action">
+                <ul class="tstable-action-ul">
+                  <li class="tsfont-edit" @click="editAuth(row)">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-trash-o" @click="delAuth(row)">{{ $t('page.delete') }}</li>
+                </ul>
               </div>
             </template>
           </TsTable>
-          <Loading v-else-if="isLoading" loadingShow style="min-height:100px;"></Loading>
+          <Loading v-else-if="isLoading" loadingShow style="min-height: 100px"></Loading>
         </div>
         <AuthAdd
           v-if="isEdit"
-          :isShow="isEdit"
-          :uuid="uuid"
+          :id="id"
           :accList="accList"
           :editConfig="editConfig"
           @close="close"
         ></AuthAdd>
-
       </div>
     </Content>
   </Layout>
@@ -67,34 +70,39 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     AuthAdd: resolve => require(['./svn/auth-add.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve)
-
+    UserinfoSVN: resolve => require(['@/views/pages/codehub/codehub/repository/components/userinfo-svn.vue'], resolve)
   },
   filters: {},
-  directives: { download},
+  directives: { download },
   mixins: [settingmixin],
   props: [''],
   data() {
     return {
       selectedType: 'auth',
-      typeList: [{
-        name: '权限设置',
-        value: 'auth'
-      }],
-      tabledata: {
-        theadList: [{
-          title: '资源',
-          key: 'path'
-        }, {
-          title: '用户名/组名',
-          key: 'name'
-        }, {
-          title: '权限',
-          key: 'acc'
-        }, {
-          key: 'actions',
-          width: 80
-        }],
+      typeList: [
+        {
+          name: this.$t('page.authsetting'),
+          value: 'auth'
+        }
+      ],
+      tableData: {
+        theadList: [
+          {
+            title: this.$t('page.resources'),
+            key: 'path'
+          },
+          {
+            title: this.$t('term.codehub.usergourpname'),
+            key: 'name'
+          },
+          {
+            title: this.$t('page.authority'),
+            key: 'acc'
+          },
+          {
+            key: 'action'
+          }
+        ],
         rowKey: 'keyid'
       },
       isEdit: false,
@@ -102,18 +110,20 @@ export default {
       isLoading: false,
       accList: [
         {
-          text: '只读',
+          text: this.$t('page.readonly'),
           value: 'r'
-        }, {
-          text: '读写',
-          value: 'rw'          
-        }, {
-          text: '无权限',
-          value: false          
+        },
+        {
+          text: this.$t('term.codehub.readwrite'),
+          value: 'rw'
+        },
+        {
+          text: this.$t('term.codehub.notauth'),
+          value: '-'
         }
       ],
       isDowning: false, //是否在下载中
-      editConfig: null//编辑内容
+      editConfig: null //编辑内容
     };
   },
   beforeCreate() {},
@@ -124,8 +134,7 @@ export default {
   },
   beforeUpdate() {},
   updated() {},
-  activated() {
-  },
+  activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
@@ -142,36 +151,30 @@ export default {
     },
     delAuth(row) {
       let authItem = {
-        'path': row.path, 
-        'acclist': [{ 'userid': row.sid, 'type': row.type }]
+        path: row.path,
+        acclist: [{ userid: row.sid, type: row.type }]
       };
       let param = {
-        'repositoryUuid': this.uuid,
-        'authList': [authItem]
+        repositoryId: this.id,
+        authList: [authItem]
       };
       this.$createDialog({
-        title: '删除确认',
-        content: '是否确认删除该权限',
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.authority')}),
         btnType: 'error',
-        'on-ok': (vnode) => {
-          this.$api.codehub.repositorydetail.deleteSvnAuth(param).then((res) => {
+        'on-ok': vnode => {
+          this.$api.codehub.repositorydetail.deleteSvnAuth(param).then(res => {
             if (res && res.Status == 'OK') {
-              this.$Message.success('删除成功');
+              this.$Message.success(this.$t('message.deletesuccess'));
               this.getList();
               vnode.isShow = false;
-            } else {
-              this.$Message.error(res.Message);
-            }
+            } 
           });
         }
       });
     },
-    changeCurrent() {
-
-    },
-    changePageSize() {
-      
-    },
+    changeCurrent() {},
+    changePageSize() {},
     close(isReload) {
       this.editConfig = null;
       this.isEdit = false;
@@ -182,31 +185,34 @@ export default {
     getList() {
       //获取权限列表
       let param = {
-        repositoryUuid: this.uuid
+        repositoryId: this.id
       };
       this.isLoading = true;
-      this.$api.codehub.repositorydetail.getSvnAuthList(param).then(res => {
-        if (res.Status == 'OK' && typeof res.Return == 'object' && Object.keys(res.Return).length) {
-          this.authList = [];
-          Object.keys(res.Return).forEach(auth => {
-            let pathList = res.Return[auth].map(r => {
-              return {
-                path: auth,
-                keyid: auth + '_' + r.sid,
-                ...r
-                
-              };
+      this.$api.codehub.repositorydetail
+        .getSvnAuthList(param)
+        .then(res => {
+          if (res.Status == 'OK' && typeof res.Return == 'object' && Object.keys(res.Return).length) {
+            this.authList = [];
+            Object.keys(res.Return).forEach(auth => {
+              let pathList = res.Return[auth].map(r => {
+                return {
+                  path: auth,
+                  keyid: auth + '_' + r.sid,
+                  ...r
+                };
+              });
+              this.authList.push(...pathList);
             });
-            this.authList.push(...pathList);
-          });
-        } else {
-          this.authList = [];
-        }
-      }).finally(res => {
-        this.isLoading = false;
-      });
+          } else {
+            this.authList = [];
+          }
+        })
+        .finally(res => {
+          this.isLoading = false;
+        });
     },
-    changeDownStatus(type, event) { //下载进度和状态的监听
+    changeDownStatus(type, event) {
+      //下载进度和状态的监听
       if (type == 'start') {
         this.isDowning = true;
       } else if (type != 'progress') {
@@ -217,9 +223,9 @@ export default {
   computed: {
     downloadPath() {
       return {
-        url: '/module/codehub/api/binary/repository/svn/repoauthdownload',
+        url: '/api/binary/codehub/repository/svn/repoauthdownload',
         params: {
-          repositoryUuid: this.uuid
+          repositoryId: this.id
         },
         changeStatus: this.changeDownStatus
       };
@@ -229,7 +235,7 @@ export default {
         let item = this.accList.find(a => {
           return a.value == val;
         });
-        return item && item.text ? item.text : '无权限';
+        return item && item.text ? item.text : this.$t('term.codehub.notauth');
       };
     },
     siderStyle() {
@@ -240,25 +246,23 @@ export default {
     }
   },
   watch: {}
-
 };
-
 </script>
 <style lang='less' scoped>
-.type-ul{
+.type-ul {
   padding-left: 10px;
-  .type-li{
+  .type-li {
     line-height: 40px;
     position: relative;
     padding-left: 10px;
-    transition: all .3s;
+    transition: all 0.3s;
     margin-bottom: 5px;
-    &.active{
+    &.active {
       padding-left: 14px;
-      font-size:110%;
+      font-size: 110%;
       font-weight: bold;
-      &:before{
-        content:'';
+      &:before {
+        content: '';
         position: absolute;
         left: 0;
         top: 50%;
