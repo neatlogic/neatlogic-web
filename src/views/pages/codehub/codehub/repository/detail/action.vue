@@ -1,58 +1,54 @@
 <template>
   <div>
-    <div
-      ref="top"
-      class="input-border"
-    >
-      <TsRow>
-        <Col span="18">
-          <div style="display: flex;">
-            <TsFormSelect
-              v-model="user"
-              v-bind="userConfig"
-              class="mr-sm"
-              :dataList="userList"
-              @on-change="() => changeCurrent(1)"
-            ></TsFormSelect>
-            <TimeSelect
-              v-model="time"
-              v-bind="timeConfig"
-              class="mr-sm"
-              style="width: 180px;"
-              @on-change="() => changeCurrent(1)"
-            ></TimeSelect>
-            <TsFormSelect
-              v-model="objectVal"
-              v-bind="objectConfig"
-              class="mr-sm"
-              :dataList="subjectList"
-              @on-change="() => changeCurrent(1)"
-            ></TsFormSelect>
-            <TsFormSelect
-              v-model="typeVal"
-              v-bind="typeConfig"
-              :dataList="actionTypeList"
-              @on-change="() => changeCurrent(1)"
-            ></TsFormSelect>
-          </div>
-        </Col>
-        <Col span="6">
-          <InputSearcher
-            v-model="keyword"
-            @change="() => changeCurrent(1)"
-          ></InputSearcher>
-        </Col>
-      </TsRow>
-    </div>
-    <div ref="table" class="mt-sm">
-      <Loading
-        :loadingShow="loadingShow"
-        type="fix"
-      ></Loading>
+    <TsRow>
+      <Col span="18">
+        <div style="display: flex;">
+          <TsFormSelect
+            v-model="user"
+            v-bind="userConfig"
+            class="mr-sm"
+            :dataList="userList"
+            @on-change="() => changeCurrent(1)"
+          ></TsFormSelect>
+          <TimeSelect
+            v-model="time"
+            v-bind="timeConfig"
+            class="mr-sm"
+            style="width: 180px;"
+            @on-change="() => changeCurrent(1)"
+          ></TimeSelect>
+          <TsFormSelect
+            v-model="objectVal"
+            v-bind="objectConfig"
+            class="mr-sm"
+            :dataList="subjectList"
+            @on-change="() => changeCurrent(1)"
+          ></TsFormSelect>
+          <TsFormSelect
+            v-model="typeVal"
+            v-bind="typeConfig"
+            :dataList="actionTypeList"
+            @on-change="() => changeCurrent(1)"
+          ></TsFormSelect>
+        </div>
+      </Col>
+      <Col span="6">
+        <InputSearcher
+          v-model="keyword"
+          @change="() => changeCurrent(1)"
+        ></InputSearcher>
+      </Col>
+    </TsRow>
+    <Loading
+      v-if="loadingShow"
+      class="mt-sm"
+      :loadingShow="loadingShow"
+    ></Loading>
+    <div v-else ref="table" class="mt-sm">
       <TsTable
         v-bind="tableConfig"
         :theadList="theadList"
-        :height="height"
+        :height="tableHeight"
         @changeCurrent="changeCurrent"
         @changePageSize="changePageSize"
       >
@@ -69,8 +65,12 @@
         <template slot="endTime" slot-scope="{row}">
           {{ row.endTime | formatDate }}
         </template>
-        <template slot="actions" slot-scope="{row}">
-          <div class="text-action ts-pages" @click="showDetail(row)">{{ $t('page.detail') }}</div>
+        <template slot="action" slot-scope="{row}">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="ts-pages" @click="showDetail(row.uuid)">{{ $t('page.detail') }}</li>
+            </ul>
+          </div>
         </template>
       </TsTable>
     </div>
@@ -153,8 +153,7 @@ export default {
         title: this.$t('page.endtime'),
         key: 'endTime'
       }, {
-        width: '80',
-        key: 'actions'
+        key: 'action'
       }],
       tableConfig: {
         rowKey: 'id',
@@ -179,7 +178,7 @@ export default {
         hasFooter: false,
         isShow: true
       },
-      height: null
+      tableHeight: null
     };
   },
   beforeCreate() {},
@@ -189,8 +188,8 @@ export default {
     this.getActiveObject();
     this.searchList();
     if (this.$refs.table) {
-      let totlheight = window.innerHeight || document.body.clientHeight;
-      this.height = (totlheight - this.$refs.table.getBoundingClientRect().top - 32 - 34) + 'px';
+      let totalHeight = window.innerHeight || document.body.clientHeight;
+      this.tableHeight = (totalHeight - this.$refs.table.getBoundingClientRect().top - 32 - 34) + 'px';
     }
   },
   beforeUpdate() {},
@@ -271,9 +270,4 @@ export default {
 
 </script>
 <style lang="less" scoped>
-.top-search{
-  /deep/ .form-li{
-    display: inline-block;
-  }
-}
 </style>

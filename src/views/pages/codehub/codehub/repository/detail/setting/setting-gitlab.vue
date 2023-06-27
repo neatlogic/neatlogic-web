@@ -11,9 +11,9 @@
         >{{ t.name }}</li>
       </ul>
     </Sider>
-    <Content :style="siderStyle" class="padding-md">
-      <auth v-if="selectedType=='auth'" :id="id"></auth>
-      <branchprotect v-if="selectedType=='branchprotect'" :id="id"></branchprotect>
+    <Content :style="siderStyle" class="pr-md pb-nm pl-md">
+      <auth v-if="selectedType == 'auth'" :id="id"></auth>
+      <branchprotect v-if="selectedType == 'branchprotect'" :id="id"></branchprotect>
     </Content>
   </Layout>
 </template>

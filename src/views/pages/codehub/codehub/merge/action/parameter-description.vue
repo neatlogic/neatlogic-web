@@ -5,12 +5,11 @@
         <div>{{ $t('term.codehub.helpdesc') }}</div>
       </template>
     </Alert>
-    <TsTable v-if="innerVariableList && innerVariableList.length > 0" :theadList="inputtheadList" :tbodyList="innerVariableList">
+    <TsTable :theadList="theadList" :tbodyList="tbodyList">
       <template slot="name" slot-scope="{row}">
         <div v-clipboard="getClipboard(row.name)" v-clipboard:success="copyok">{{ '${' }}{{ row.name }}{{ '}' }}</div>
       </template>
     </TsTable>
-    <div v-else>{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
   </div>
 </template>
 <script>
@@ -23,8 +22,8 @@ export default {
   props: {},
   data() {
     return {
-      innerVariableList: [],
-      inputtheadList: [{
+      tbodyList: [],
+      theadList: [{
         title: this.$t('page.variablename'),
         key: 'name'
       }, {
@@ -50,7 +49,7 @@ export default {
     getInnerVariableList: function() {
       this.$api.codehub.merge.getInnerVariableList().then(res => {
         if (res.Status == 'OK') {
-          this.innerVariableList = res.Return.innerVariableList;
+          this.tbodyList = res.Return.innerVariableList || [];
         }
       });
     },

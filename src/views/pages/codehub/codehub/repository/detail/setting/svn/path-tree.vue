@@ -1,34 +1,34 @@
 <template>
   <div v-if="myList">
-    <ul v-if="myList && myList.length" :class="isChildren?'path-child':'path-first'">
+    <ul v-if="myList && myList.length" :class="isChildren ? 'path-child' : 'path-first'">
       <li
         v-for="li in myList"
         :key="li.path"
         class="path-li"
         :class="{hasnext:li.type && li.type=='D'}"
       >
-        <div class="tree-name" :class="selectPath.indexOf(li.fullpath)>-1?'text-href':'text-action'" @click="selectedThis(li)">
-          <i
-            v-if="li.type && li.type=='D'"
+        <div class="tree-name" :class="selectPath.indexOf(li.fullpath)>-1 ? 'text-href' : 'text-action'" @click="selectedThis(li)">
+          <span
+            v-if="li.type && li.type == 'D'"
             class="btn-shownext"
             :class="li.showchild?'ts-angle-down':'ts-angle-up'"
             @click.stop="getNext(li)"
-          ></i>
-          <i class="btn-check" :class="selectPath.indexOf(li.fullpath)>-1?'text-href bg-primary active':'text-action'">
-            <i v-if="selectPath.indexOf(li.fullpath)>-1" class="ts-check text-op" style="line-height: 12px;display: block;font-weight: bolder;width: 12px;ext-align: left;"></i>
-          </i>
+          ></span>
+          <span class="btn-check" :class="selectPath.indexOf(li.fullpath)>-1?'text-href bg-primary active':'text-action'">
+            <span v-if="selectPath.indexOf(li.fullpath)>-1" class="ts-check text-op selected-check-icon"></span>
+          </span>
           {{ li.path }}
         </div>
         <div v-show="li.showchild" v-if="li.type && li.type=='D'">
           <PathTree
             v-if="li.children"
-            :list="JSON.parse(JSON.stringify(li.children))"
+            :list="$utils.deepClone(li.children)"
             isChildren
             :selectPath="selectPath"
             :floor="parseInt(floor)+1"
             @selectedPath="selectedPath"
           ></PathTree>
-          <Loading v-else loadingShow><i></i></Loading>
+          <Loading v-else loadingShow></Loading>
         </div>
       </li>
     </ul>
@@ -40,6 +40,7 @@
 export default {
   name: 'PathTree',
   components: {
+    PathTree: resolve => require(['./path-tree'], resolve)
   },
   filters: {},
   inject: ['repositoryId'],
@@ -174,5 +175,13 @@ export default {
       margin-top: -8px;
     }
   }
+}
+.selected-check-icon {
+  display: block;
+  width: 12px;
+  margin-left: -2px;
+  line-height: 12px;
+  font-weight: bolder;
+  text-align: left;
 }
 </style>

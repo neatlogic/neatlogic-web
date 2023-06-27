@@ -1,8 +1,8 @@
 <template>
   <div
-    :is="reposData.type||'svn'"
+    :is="reposData.type || 'svn'"
     :id="reposData.id"
-    :type="reposData.type||'svn'"
+    :type="reposData.type || 'svn'"
     :reposData="reposData"
   ></div>
 </template>

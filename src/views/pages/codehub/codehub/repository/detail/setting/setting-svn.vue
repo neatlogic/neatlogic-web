@@ -11,15 +11,17 @@
         >{{ t.name }}</li>
       </ul>
     </Sider>
-    <Content :style="siderStyle" class="padding-md">
+    <Content :style="siderStyle" class="pr-md pb-nm pl-md">
       <div v-if="selectedType == 'auth'">
-        <div style="margin-bottom: 10px">
-          <Button type="primary" @click="addAuth()">
-            <i class="ts-plus"></i>
+        <div class="action-group mb-sm">
+          <span class="action-item tsfont-plus" @click="addAuth()">
             {{ $t('page.authority') }}
-          </Button>
-          <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button>
-          <Button v-else loading class="ml-sm">{{ $t('term.codehub.exporting') }}</Button>
+          </span>
+          <span v-if="!isDowning" v-download="downloadPath" class="action-item tsfont-export">{{ $t('term.codehub.exportexcel') }}</span>
+          <span v-else class="action-item disable" :title="$t('page.downloadloadingtip')">
+            <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
+            {{ $t('term.codehub.exporting') }}
+          </span>
         </div>
         <div>
           <TsTable
@@ -240,7 +242,7 @@ export default {
     },
     siderStyle() {
       return {
-        height: 'calc(100vh - 130px)',
+        height: 'calc(100vh - 170px)',
         overflow: 'auto'
       };
     }

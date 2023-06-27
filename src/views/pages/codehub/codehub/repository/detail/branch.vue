@@ -13,7 +13,11 @@
         </Col>
       </Row>
     </div>
-    <div>
+    <div
+      ref="mainBody"
+      style="overflow-y: auto;"
+      :style="'max-height:'+ remainHeight +'px;'"
+    >
       <Loading v-if="isload" loadingShow style="min-height:100px"></Loading>
       <TsCard
         v-else
@@ -95,6 +99,7 @@ export default {
       isEdit: false,
       isShowBranchDelete: false,
       branchName: null,
+      remainHeight: null,
       activeConfig: {
         //卡片的数据
         span: 24,
@@ -152,6 +157,11 @@ export default {
             pageSize: res.Return.pageSize,
             currentPage: res.Return.currentPage,
             cardList: res.Return.list
+          });
+          this.$nextTick(() => {
+            if (this.$refs.mainBody) {
+              this.remainHeight = window.innerHeight - this.$refs.mainBody.getBoundingClientRect().top - 30; // 设置TsCard的高度
+            }
           });
         } else {
           this.activeConfig = null;
