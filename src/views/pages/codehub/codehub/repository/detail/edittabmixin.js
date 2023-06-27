@@ -1,6 +1,6 @@
 export default {
   props: {
-    id: Number, //仓库uuid
+    id: Number, //仓库Id
     reposData: [Object] //通过外层调用接口获取的仓库数据
   },
   data() {

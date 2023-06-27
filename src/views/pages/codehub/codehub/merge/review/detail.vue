@@ -19,8 +19,8 @@
         <template slot="issueMrStatus" slot-scope="{ row }">
           <span :class="'text-' + setStatus('color', row.issueMrStatus)">{{ setStatus('text', row.issueMrStatus) }}</span>
         </template>
-        <template slot="sourceUuid" slot-scope="{ row }">
-          {{ getsource(row.sourceUuid) }}
+        <template slot="sourceId" slot-scope="{ row }">
+          {{ getSourceName(row.sourceId) }}
         </template>
         <template slot="handleUserId" slot-scope="{ row }">
           {{ row.handleUserId || row.issueCreator }}
@@ -35,7 +35,7 @@
         <template slot="folder" slot-scope="{ row }">
           <CommitDetail
             v-if="row.showFolder != undefined"
-            :mrUuid="uuid"
+            :mrId="mrId"
             :issueNo="row.no"
             :statusList="commitstatusList"
             :mrData="mrData"
@@ -79,7 +79,7 @@ export default {
     CommitDetail: resolve => require(['./commit-table.vue'], resolve)
   },
   props: {
-    uuid: String, //父组件传过来的mrid
+    mrId: String, //父组件传过来的mrid
     mrData: Object, //父组件传过来的mr数据
     statusList: Array, //父组件传过来的需求状态映射列表
     mrstatusList: Array //父组件传过来的mr状态映射列表
@@ -185,7 +185,7 @@ export default {
       let type = this.mergetype;
       if (type == 'branch') {
         this.duringAction = true;
-        let param = { mrUuid: this.uuid };
+        let param = { mrId: this.mrId };
         this.$api.codehub.merge
           .mergebyBranch(param)
           .then((res) => {
@@ -206,7 +206,7 @@ export default {
     },
     closeMr() {
       let params = {
-        uuid: this.uuid,
+        id: this.mrId,
         status: 'closed'
       };
       this.$api.codehub.merge.updateStatus(params).then(res => {
@@ -217,7 +217,7 @@ export default {
     },
     mergeIssue() {
       this.duringAction = true;
-      let param = { mrUuid: this.uuid, continueMergeOnException: this.reslove != 'stop' };
+      let param = { mrId: this.mrId, continueMergeOnException: this.reslove != 'stop' };
       this.$api.codehub.merge
         .mergebyIssue(param)
         .then(res => {
@@ -235,7 +235,7 @@ export default {
     flushIssueStatus() {
       let notFinish = false;
       this.$api.codehub.merge
-        .getDetail({ uuid: this.uuid })
+        .getDetail({ id: this.mrId })
         .then((res) => {
           if (res && res.Status == 'OK') {
             //所有的issue列表
@@ -286,7 +286,7 @@ export default {
       //20201118_zqp_需求改成新建一个只有当前需求的mr，创建新的
       //20201120_zqp_在撤销跳转前调接口校验撤销有效性
       let mrParam = {
-        mrUuid: this.uuid,
+        mrId: this.mrId,
         issueNo: item.no
       };
       this.$api.codehub.merge.checkRevert(mrParam).then((res) => {
@@ -311,15 +311,15 @@ export default {
   },
   filter: {},
   computed: {
-    getsource() {
-      return function(uuid) {
-        let txt = '';
+    getSourceName() {
+      return function(sourceId) {
+        let sourceName = '';
         this.syncSourceList.forEach(sync => {
-          if (sync.uuid == uuid) {
-            txt = sync.source;
+          if (sync.id == sourceId) {
+            sourceName = sync.source;
           }
         });
-        return txt;
+        return sourceName;
       };
     },
     setStatus() {

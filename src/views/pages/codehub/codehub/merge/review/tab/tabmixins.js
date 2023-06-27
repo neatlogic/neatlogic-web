@@ -1,10 +1,10 @@
 export default {
   props: {
     mrData: Object,
-    id: Number, //mruuid
+    id: Number, //mrId
     mrstatusList: Array,
     statusList: Array,
-    commitId: {//从需求选中的commituuid
+    commitId: {//从需求选中的commitId
       type: [String, Number, Boolean]
     },
     refreshItem: Array, //需要强制刷新的tab

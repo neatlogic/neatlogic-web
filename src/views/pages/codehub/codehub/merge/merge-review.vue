@@ -285,7 +285,7 @@ export default {
     showError() {
       //查看失败的mr的错误消息
       let param = {
-        mrUuid: this.id 
+        mrId: this.id 
       };
       this.$api.codehub.merge.getError(param).then((res) => {
         if (res.Status == 'OK' && res.Return) {
