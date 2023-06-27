@@ -2,9 +2,7 @@
   <div v-if="!groupSeaching">
     <div
       v-if="hasBranch"
-      ref="top"
-      class="input-border"
-      style="padding:0 16px;"
+      class="pl-nm pr-nm"
     >
       <Row :gutter="20">
         <Col span="16">
@@ -19,7 +17,7 @@
               transfer
               mode="group"
               search
-              width="100%"
+              width="200px"
               :placeholder="$t('term.codehub.choosebranchortag')"
               :validateList="validateList"
               @on-change="getSearch"
@@ -34,9 +32,17 @@
         </Col>
       </Row>
     </div>
-    <div v-if="hasBranch">
+    <div
+      v-if="hasBranch"
+      ref="mainBody"
+      style="overflow-y: auto;"
+      :style="'max-height:'+remainHeight+'px;'"
+    >
       <Loading v-if="isload" loadingShow style="height:100px"></Loading>
-      <TsCard v-else-if="activeConfig && activeConfig.cardList && activeConfig.cardList.length>0" ref="body" v-bind="activeConfig">
+      <TsCard
+        v-else-if="activeConfig && activeConfig.cardList && activeConfig.cardList.length > 0"
+        v-bind="activeConfig"
+      >
         <template slot-scope="{ row }">
           <div>
             <table class="table" style="table-layout:fixed;width: 100%;">
@@ -47,7 +53,7 @@
               <tbody>
                 <tr>
                   <td>
-                    <h6>{{ row.comment }}</h6>
+                    <div>{{ row.comment }}</div>
                     <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
@@ -69,8 +75,7 @@
                     <div
                       v-if="row.commitdiffInfo"
                       class="text-action text-center ts-angle-double-up"
-                      style="display: block;"
-                      @click="row.showcommitdiffInfo =false"
+                      @click="row.showcommitdiffInfo = false"
                     >{{ $t('term.codehub.packupcontent') }}</div>
                     <Loading v-else loadingShow><span></span></Loading>
                   </td>
@@ -121,6 +126,7 @@ export default {
   props: {},
   data() {
     return {
+      remainHeight: 200,
       activeList: null,
       activeValue: '',
       queryName: '',
@@ -211,6 +217,16 @@ export default {
       this.startCommitId = null;
       this.getList();
     },
+    handleQueryName() {
+      // 处理queryName
+      let queryName = '';
+      if (this.queryName && this.queryName.indexOf(this.queryType + '###') > -1) {
+        queryName = this.queryName.split(this.queryType + '###')[1];
+      } else {
+        queryName = this.queryName;
+      }
+      return queryName;
+    },
     // 首次进入页面和执行搜索操作，都会触发此方法
     getList() {
       if (!this.hasBranch) {
@@ -220,13 +236,11 @@ export default {
       this.isAllloaded = false;
       let param = {
         repositoryId: this.id,
-        queryName: this.queryName.indexOf(this.queryType + '###') > -1 ? this.queryName.split(this.queryType + '###')[1] : this.queryName,
+        queryName: this.handleQueryName(),
         queryType: this.queryType,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        startCommitId: this.startCommitId
       };
-      // 前端过滤
-      this.activeConfig && this.activeConfig.currentPage && this.$set(param, {currentPage: this.activeConfig.currentPage});
-      this.startCommitId && this.$set(param, {startCommitId: this.startCommitId});
       this.isload = true;
       this.isResponsed = false;
       this.$api.codehub.repositorydetail.getActive(param).then(res => {
@@ -237,6 +251,11 @@ export default {
         if (res && res.Status == 'OK') {
           this.filterResponseList(res.Return.list);
         }
+        this.$nextTick(() => {
+          if (this.$refs.mainBody) {
+            this.remainHeight = window.innerHeight - this.$refs.mainBody.getBoundingClientRect().top - 30; // 设置TsCard的高度
+          }
+        });
       }).catch(error => {
         this.isResponsed = true;
         this.isload = false;
@@ -244,17 +263,6 @@ export default {
           cardList: []
         });
       });
-    },
-    updatePage(page) {
-      if (this.activeConfig) {
-        this.activeConfig.currentPage = page || 1;
-      }
-      this.getList();
-    },
-    updateSize(size) {
-      this.activeConfig.pageSize = size || 1;
-      this.activeConfig.currentPage = 1;
-      this.getList();
     },
     showIssue(row) {
       let id = row.issueNo;
@@ -290,7 +298,7 @@ export default {
         this.isload = !this.activeConfig.cardList || !this.activeConfig.cardList.length;
         let param = {
           repositoryId: this.id,
-          queryName: this.queryName,
+          queryName: this.handleQueryName(),
           queryType: this.queryType,
           startCommitId: this.startCommitId,
           pageSize: this.pageSize
@@ -361,13 +369,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    getHeight() {
-      let totalHeight = window.innerHeight || document.body.clientHeight || 0;
-      let topHeight = this.$refs.top.getBoundingClientRect().bottom || 0;
-      return Math.max(200, parseFloat(totalHeight - topHeight - 30));
-    }
-  },
+  computed: {},
   watch: {
     isload: {
       handler: function(val) {

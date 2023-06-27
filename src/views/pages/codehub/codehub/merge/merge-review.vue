@@ -79,7 +79,7 @@
       </template>
       <template v-slot:content>
         <Loading v-if="isLoading" loadingShow></Loading>
-        <div v-else-if="mrData" class="review-main mr-sm">
+        <div v-else-if="mrData" class="review-main" :class="isSiderHide ? 'mr-sm' : ''">
           <Tabs
             v-model="activeTab"
             :animated="false"
@@ -285,7 +285,7 @@ export default {
     showError() {
       //查看失败的mr的错误消息
       let param = {
-        mrUuid: this.id 
+        mrId: this.id 
       };
       this.$api.codehub.merge.getError(param).then((res) => {
         if (res.Status == 'OK' && res.Return) {

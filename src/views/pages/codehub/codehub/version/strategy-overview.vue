@@ -15,7 +15,7 @@
       </template>
       <div slot="content">
         <div>
-          <Loading v-if="loadingShow" loadingShow></Loading>
+          <Loading v-if="loadingShow" loadingShow type="fix"></Loading>
           <TsCard
             v-else
             v-bind="strategyData"

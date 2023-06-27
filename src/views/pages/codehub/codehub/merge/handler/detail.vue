@@ -19,8 +19,8 @@
         <template slot="issueMrStatus" slot-scope="{ row }">
           <span :class="'text-' + setStatus('color', row.issueMrStatus)">{{ setStatus('text', row.issueMrStatus) }}</span>
         </template>
-        <template slot="sourceUuid" slot-scope="{ row }">
-          {{ getsource(row.sourceUuid) }}
+        <template slot="sourceId" slot-scope="{ row }">
+          {{ getSourceName(row.sourceId) }}
         </template>
         <template slot="handleUserId" slot-scope="{ row }">
           {{ row.handleUserId || row.issueCreator }}
@@ -322,15 +322,15 @@ export default {
   filter: {},
 
   computed: {
-    getsource() {
-      return function(id) {
-        let txt = '';
-        this.syncSourceList.forEach(sync => {
-          if (sync.id == id) {
-            txt = sync.source;
+    getSourceName() {
+      return function(sourceId) {
+        let sourceName = '';
+        this.syncSourceList.forEach(item => {
+          if (item.id == sourceId) {
+            sourceName = sync.source;
           }
         });
-        return txt;
+        return sourceName;
       };
     },
     setStatus() {

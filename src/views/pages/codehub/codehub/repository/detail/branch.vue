@@ -13,7 +13,11 @@
         </Col>
       </Row>
     </div>
-    <div>
+    <div
+      ref="mainBody"
+      style="overflow-y: auto;"
+      :style="'max-height:'+ remainHeight +'px;'"
+    >
       <Loading v-if="isload" loadingShow style="min-height:100px"></Loading>
       <TsCard
         v-else
@@ -24,7 +28,7 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action tsfont-trash-o" @click="deleteLi(row.name)">{{ $t('page.delete') }}</div>
+            <div class="action-item text-action tsfont-trash-o" @click="deleteBranch(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
@@ -36,18 +40,25 @@
             </colgroup>
             <tbody>
               <tr>
-                <td><h4>{{ row.name }}</h4></td>
-                <td rowspan="2"><template v-if="showBranch(row.name).length>0"></template><Tag
-                  v-for="(branch,bindex) in showBranch(row.name)"
-                  :key="bindex"
-                  :color="typeList[branch].color"
-                  class="ml-sm"
-                >{{ typeList[branch].name }}</Tag></td>
+                <td>
+                  <div>{{ row.name }}</div>
+                </td>
+                <td rowspan="2">
+                  <template v-if="showBranch(row.name).length>0">
+                    <Tag
+                      v-for="(branch,bindex) in showBranch(row.name)"
+                      :key="bindex"
+                      :color="typeList[branch].color"
+                      class="ml-sm"
+                    >{{ typeList[branch].name }}</Tag>
+                  </template>
+                </td>
                 <td rowspan="2">{{ row.commit.shortId }}</td>
               </tr>
               <tr>
                 <td>
-                  <span>{{ row.commit.committer }}</span><span class="text-tip ml-sm">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
+                  <span>{{ row.commit.committer }}</span>
+                  <span class="text-tip ml-sm">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
                 </td>
               </tr>
             </tbody>
@@ -87,8 +98,8 @@ export default {
       isload: false,
       isEdit: false,
       isShowBranchDelete: false,
-      editUuid: null,
       branchName: null,
+      remainHeight: null,
       activeConfig: {
         //卡片的数据
         span: 24,
@@ -96,8 +107,6 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        keyName: 'uuid',
-        classname: 'repository-list',
         currentPage: 1,
         pageSize: 10,
         cardList: []
@@ -149,6 +158,11 @@ export default {
             currentPage: res.Return.currentPage,
             cardList: res.Return.list
           });
+          this.$nextTick(() => {
+            if (this.$refs.mainBody) {
+              this.remainHeight = window.innerHeight - this.$refs.mainBody.getBoundingClientRect().top - 30; // 设置TsCard的高度
+            }
+          });
         } else {
           this.activeConfig = null;
         }
@@ -165,16 +179,13 @@ export default {
       this.activeConfig.currentPage = page || 1;
       this.getList();
     },
-    deleteLi(name) {
+    deleteBranch(name) {
       if (name) {
         this.branchName = name;
         this.isShowBranchDelete = true;
       }
     },
-    editBranch(val) {
-      if (val) {
-        this.editUuid = val;
-      }
+    editBranch() {
       this.isEdit = true;
     },
     close(isReload) {

@@ -50,8 +50,8 @@
       <div slot="content">
         <div class="padding-md">
           <MergeDetail 
+            :id="id" 
             :mrData="mrData" 
-            :uuid="uuid" 
             :mrstatusList="statusList" 
             :statusList="issuestatusList" 
             @reload="getDetail" 
@@ -80,7 +80,7 @@ export default {
   props: [''],
   data() {
     return {
-      uuid: null, //mrid
+      id: null, //mrid
       mrData: null, //接口返回的mr数据
       prevPath: {
         //上一步
@@ -109,8 +109,8 @@ export default {
         this.prevPath = prevsetting;
       }
     }
-    if (this.$route.query.uuid) {
-      this.uuid = this.$route.query.uuid;
+    if (this.$route.query.id) {
+      this.id = this.$route.query.id;
       this.getDetail();
     }
   },
@@ -129,7 +129,7 @@ export default {
       });
     },
     getDetail(status) {
-      let param = { uuid: this.uuid };
+      let param = { id: this.id };
       this.$api.codehub.merge.getDetail(param).then(res => {
         if (res && res.Status == 'OK') {
           this.mrData = res.Return;
@@ -160,7 +160,7 @@ export default {
     revertMr() {
       if (this.mrData.versionTypeStrategyRelationVo && this.mrData.versionTypeStrategyRelationVo.versionStrategyType && this.mrData.versionTypeStrategyRelationVo.versionStrategyType == 'branch' && this.mrData.status == 'finish') {
         //分支类型且状态为已结束的才可以revert
-        let param = { mrUuid: this.uuid };
+        let param = { mrId: this.id };
         this.duringAction = true;
         this.$api.codehub.merge
           .revertMerge(param)
@@ -179,7 +179,7 @@ export default {
     showError() {
       //查看失败的mr的错误消息
       let param = {
-        mrUuid: this.uuid 
+        mrId: this.id 
       };
       this.$api.codehub.merge.getError(param).then((res) => {
         if (res.Status == 'OK' && res.Return) {

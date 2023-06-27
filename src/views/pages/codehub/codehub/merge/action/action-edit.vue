@@ -1,31 +1,29 @@
 <template>
   <div>
     <TsDialog
-      v-if="actionData"
       v-bind="actionDialogConfig"
       @on-close="close"
       @on-ok="saveAction"
     >
       <template v-slot>
-        <TsForm ref="actionForm" :item-list="actionFormConfig">
-          <template v-slot:triggerStatus>
-            <TsFormSelect
-              ref="triggerStatus"
-              v-model="actionData.triggerStatus"
-              v-bind="statusConfig"
-              :dataList="triggerStatusList"
-            />
-          </template>
-          <template slot="appModuleId">
-            <TsFormSelect v-model="actionData.appModuleId" v-bind="appModuleConfig" :dataList="appModuleList" />
-          </template>
+        <Loading
+          v-if="loadingShow"
+          :loadingShow="loadingShow"
+          type="fix"
+        ></Loading>
+        <TsForm
+          v-else
+          ref="actionForm"
+          v-model="actionData"
+          :item-list="actionFormConfig"
+        >
           <template v-slot:arguments>
-            <Tabs v-model="activedTab" name="actionEditTabs">
-              <TabPane :label="$t('term.pbc.paramconfig')" name="arguments" tab="actionEditTabs">
-                <Argument ref="argument" :action="actionData" @setArguments="setArguments"></Argument>
+            <Tabs v-model="activedTab">
+              <TabPane :label="$t('term.pbc.paramconfig')" name="arguments">
+                <ArgumentEdit ref="argumentEdit" :argumentData="actionData.arguments"></ArgumentEdit>
               </TabPane>
-              <TabPane :label="$t('page.paramdesc')" name="param" tab="actionEditTabs">
-                <Helpparam></Helpparam>
+              <TabPane :label="$t('page.paramdesc')" name="param">
+                <ParameterDescription></ParameterDescription>
               </TabPane>
             </Tabs>
           </template>
@@ -38,25 +36,27 @@
 export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    Argument: resolve => require(['./argument-edit.vue'], resolve),
-    Helpparam: resolve => require(['./helpparam.vue'], resolve)
+    ArgumentEdit: resolve => require(['./argument-edit.vue'], resolve), // 参数设置
+    ParameterDescription: resolve => require(['./parameter-description.vue'], resolve) // 参数说明
   },
   props: {
     id: { type: Number }
   },
   data() {
     return {
-      activedTab: 'arguments',
-      allowEditParam: 0,
-      actionData: { arguments: {} },
-      triggerStatusList: [
-        { value: 'conflict', text: this.$t('page.conflict') },
-        { value: 'failed', text: this.$t('page.fail') },
-        { value: 'finish', text: this.$t('page.finish') },
-        { value: 'closed', text: this.$t('term.rdm.isclosed') }
-      ],
-      appModuleList: [],
+      loadingShow: true,
+      activedTab: 'arguments', // 默认参数设置
+      actionData: { 
+        id: null,
+        name: '',
+        triggerStatus: [],
+        appSystemId: null,
+        appModuleId: null,
+        versionId: null,
+        targetBranch: null,
+        isActive: 1,
+        arguments: {}
+      },
       actionDialogConfig: {
         type: 'modal',
         maskClose: false,
@@ -83,16 +83,33 @@ export default {
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
               params: { id: this.id}
-            }],
-          onChange: name => {
-            this.actionData.name = name;
-          }
+            }]
         },
         {
-          type: 'slot',
+          type: 'select',
           name: 'triggerStatus',
           label: this.$t('term.deploy.triggerstate'),
-          validateList: ['required']
+          validateList: ['required'],
+          search: true,
+          multiple: true,
+          dataList: [
+            { 
+              value: 'conflict', 
+              text: this.$t('page.conflict') 
+            },
+            { 
+              value: 'failed', 
+              text: this.$t('page.fail') 
+            },
+            { 
+              value: 'finish', 
+              text: this.$t('page.finish') 
+            },
+            { 
+              value: 'closed', 
+              text: this.$t('term.rdm.isclosed') 
+            }
+          ]
         },
         {
           type: 'select',
@@ -100,17 +117,16 @@ export default {
           label: this.$t('term.codehub.triggersystem'),
           url: '/api/rest/codehub/appsystem/search',
           rootName: 'tbodyList',
-          valueName: 'id',
-          textName: 'name',
+          dealDataByUrl: this.$utils.getAppForselect,
           search: true,
           onChange: val => {
             this.actionData.appSystemId = val;
             this.actionData.appModuleId = null;
             this.actionData.versionId = null;
-            this.actionFormConfig.forEach(element => {
-              if (element.name == 'versionId') {
-                element.params = {
-                  appSystemId: val || -1,
+            this.actionFormConfig.forEach(item => {
+              if (item.name == 'versionId') {
+                item.params = {
+                  appSystemId: val || null,
                   appModuleId: null
                 };
               }
@@ -122,13 +138,15 @@ export default {
           type: 'select',
           label: this.$t('term.codehub.triggerappmodule'),
           name: 'appModuleId',
-          isHidden: false,
           transfer: true,
-          value: this.appModuleId,
           dealDataByUrl: this.$utils.getAppForselect,
-          dynamicUrl: '/api/rest/deploy/app/config/module/list',
-          onChange: val => {
-            this.actionData.appModuleId = val;
+          dynamicUrl: '',
+          onChange: appModuleId => {
+            this.actionFormConfig.forEach(item => {
+              if (item.name == 'versionId') {
+                item.params.appModuleId = appModuleId;
+              }
+            });
           }
         },
         {
@@ -144,9 +162,6 @@ export default {
           params: {
             appSystemId: null,
             appModuleId: null
-          },
-          onChange: val => {
-            this.actionData.versionId = val;
           }
         },
         {
@@ -154,10 +169,7 @@ export default {
           name: 'targetBranch',
           label: this.$t('page.targetbranch'),
           desc: this.$t('term.codehub.targetbranchdesc'),
-          clearable: true,
-          onChange: val => {
-            this.actionData.targetBranch = val;
-          }
+          clearable: true
         },
         {
           type: 'radio',
@@ -167,39 +179,20 @@ export default {
           dataList: [
             { text: this.$t('page.yes'), value: 1 },
             { text: this.$t('page.no'), value: 0 }
-          ],
-          onChange: isActive => {
-            this.actionData.isActive = isActive;
-          }
+          ]
         },
-        { type: 'slot', name: 'arguments', label: this.$t('term.inspect.sendanemail') }
-      ],
-      statusConfig: {
-        validateList: ['required'],
-        search: true,
-        multiple: true
-      },
-      appModuleConfig: {
-        search: true,
-        rootName: 'tbodyList',
-        valueName: 'id',
-        textName: 'name',
-        onChange: val => {
-          this.actionData.versionId = null;
-          this.actionFormConfig.forEach(element => {
-            if (element.name == 'versionId') {
-              element.params = {
-                appSystemId: this.actionData.appSystemId || -1,
-                appModuleId: val || 0
-              };
-            }
-          });
+        { 
+          type: 'slot', 
+          name: 'arguments',
+          label: this.$t('term.inspect.sendanemail') 
         }
-      }
+      ]
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getAction(this.id);
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -209,69 +202,62 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getAction: function(id) {
+    getAction(id) {
       if (id) {
+        this.loadingShow = true;
         this.$api.codehub.merge.getActionById({ id: id }).then(res => {
           if (res.Status == 'OK') {
-            this.actionData = res.Return;
+            let dataInfo = res.Return;
+            for (const key in dataInfo) {
+              if (key == 'argumentJSON') {
+                this.actionData['arguments'] = dataInfo[key] || {};
+              } else if (key == 'statusList') { // 处理触发状态值
+                if (!this.$utils.isEmpty(dataInfo[key])) {
+                  dataInfo[key].forEach((item) => {
+                    this.actionData.triggerStatus.push(item.value);
+                  });
+                }
+              } else if (key != 'arguments' && key != 'triggerStatus' && this.actionData.hasOwnProperty(key)) {
+                this.actionData[key] = dataInfo[key];
+              }
+            }
             this.changeAppModule();
-            this.actionData.triggerStatus = JSON.parse(this.actionData.triggerStatus);
-            this.actionFormConfig.forEach(element => {
-              element.value = this.actionData[element.name];
-            });
           }
+        }).finally(() => {
+          this.loadingShow = false;
         });
       } else {
-        this.appModuleList = [];
-        this.actionData = {
-          id: null,
-          name: '',
-          triggerStatus: null,
-          appSystemId: null,
-          appModuleId: null,
-          versionId: null,
-          targetBranch: null,
-          isActive: 1,
-          arguments: {}
-        };
-        this.actionFormConfig.forEach(element => {
-          element.value = this.actionData[element.name];
-        });
+        this.loadingShow = false;
       }
     },
     changeAppModule() {
       if (this.actionData.appSystemId) {
-        this.actionFormConfig.forEach(fo => {
-          if (fo.name == 'appModuleId') {
-            this.$set(fo, 'params', { appSystemId: this.actionData.appSystemId });
-            this.$set(fo, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
-          }
-        });
-        this.actionFormConfig.forEach(element => {
-          if (element.name == 'versionId') {
-            this.$set(element, 'params', { appSystemId: this.actionData.appSystemId, appModuleId: this.actionData.appModuleId });
-            this.$set(element, 'dynamicUrl', '/api/rest/codehub/version/search');
+        this.actionFormConfig.forEach(item => {
+          if (item.name == 'appModuleId') {
+            this.$set(item, 'params', { appSystemId: this.actionData.appSystemId });
+            this.$set(item, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
+          } else if (item.name == 'versionId') {
+            this.$set(item, 'params', { appSystemId: this.actionData.appSystemId, appModuleId: this.actionData.appModuleId });
+            this.$set(item, 'dynamicUrl', '/api/rest/codehub/version/search');
           }
         });
       } else {
-        this.actionFormConfig.forEach(fo => {
-          if (fo.name == 'appModuleId') {
-            this.$set(fo, 'params', {});
-            this.$set(fo, 'dynamicUrl', '');
-            // this.showSub(true);
+        this.actionFormConfig.forEach(item => {
+          if (item.name == 'appModuleId') {
+            this.$set(item, 'params', {});
+            this.$set(item, 'dynamicUrl', '');
           }
         });
       }
     },
-    setArguments: function(argumentSettingForm) {
-      this.actionData.arguments = JSON.stringify(argumentSettingForm);
-    },
-    saveAction: function() {
+    saveAction() {
       let form = this.$refs['actionForm'];
-      let form2 = this.$refs.argument.$refs['argumentSettingForm'];
-      if (form.valid() && form2.valid()) {
+      let argumentEditForm = this.$refs.argumentEdit;
+      let params = this.$utils.deepClone(this.actionData);
+      params.arguments = argumentEditForm ? argumentEditForm.getFormValue() : {};
+      if ((form && form.valid()) && (argumentEditForm && argumentEditForm.valid())) {
         this.$api.codehub.merge
-          .saveAction(this.actionData)
+          .saveAction(params)
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.savesuccess'));
@@ -280,26 +266,13 @@ export default {
           });
       }
     },
-    isReset() {
-      this.actionData = { arguments: {} };
-    },
-    close: function(needRefresh) {
+    close(needRefresh) {
       this.$emit('close', needRefresh);
-      this.$refs.actionForm && this.$refs.actionForm.resetForm();
-      this.actionData = { arguments: {} };
-      this.actionData.isActive = 1;
     }
   },
   filter: {},
   computed: {},
-  watch: {
-    id: {
-      handler: function(val) {
-        this.getAction(val);
-      },
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

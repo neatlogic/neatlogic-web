@@ -43,13 +43,25 @@
               <span class="overflow">{{ row.label }} <span class="overflow text-grey">({{ row.name }})</span></span>
             </template>
             <template slot="combopId" slot-scope="{row}">
-              <TsFormSelect
-                v-model="row.combopId"
-                v-bind="formSelectSetting"
-                :dataList="comboList"
-                @on-change="() => selectChange(row)"
-              >
-              </TsFormSelect>
+              <div class="flex-start">
+                <TsFormSelect
+                  v-model="row.combopId"
+                  v-bind="formSelectSetting"
+                  :dataList="comboList"
+                  class="mr-nm"
+                  @on-change="() => selectChange(row)"
+                >
+                </TsFormSelect>
+                <div class="action-group">
+                  <span
+                    v-if="row.combopId"
+                    :title="$t('dialog.title.edittarget',{'target':$t('term.autoexec.combinationtool')})"
+                    class="action-item tsfont-edit"
+                    @click.stop="toEdit(row)"
+                  ></span>
+                  <span class="action-item tsfont-refresh" :title="$t('page.refreshtarget',{'target':$t('term.autoexec.combinationtool')})" @click.stop="getComboList(true)"></span>
+                </div>
+              </div>
             </template>
           </TsTable>
         </div>
@@ -65,8 +77,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
   },
-  filters: {
-  },
+  filters: {},
   props: {
     keyword: {
       type: String,
@@ -84,7 +95,7 @@ export default {
         isShow: true,
         okText: this.$t('page.save'),
         height: '500px',
-        width: '45%'
+        width: 'medium'
       },
       formSelectSetting: {
         search: true,
@@ -135,10 +146,16 @@ export default {
       this.deepCloneTbodyList.push({...row});
       this.deepCloneTbodyList = this.$utils.uniqueByField(this.deepCloneTbodyList, 'id');
     },
-    getComboList() {
-      // 获取组合工具列表
-      this.$api.inspect.definition.getCombopList().then((res) => {
+    getComboList(needRefreshTip = false) {
+      // 获取所有【已激活】的组合工具列表
+      this.$api.inspect.definition.getCombopList({
+        typeId: 1,
+        needPage: false
+      }).then((res) => {
         if (res.Status == 'OK') {
+          if (needRefreshTip) {
+            this.$Message.success(this.$t('message.refreshsuccess')); // 点击刷新按钮，获取新的组件工具列表，需要提示用户刷新成功
+          }
           this.comboList = res.Return.tbodyList;
         }
       });
@@ -200,6 +217,10 @@ export default {
       }).finally(() => {
         this.tableSetting.loading = false;
       });
+    },
+    toEdit(row) {
+      // 跳转到组合工具，详情页面，versionStatus 版本状态是已激活的
+      window.open(HOME + '/autoexec.html#/action-detail?id=' + row.combopId + '&versionStatus=passed', '_blank');
     }
   },
   computed: {},

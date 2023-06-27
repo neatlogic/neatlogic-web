@@ -1,28 +1,18 @@
 <template>
   <div v-if="!groupSeaching">
-    <div v-if="hasBranch" class="input-border" style="padding:0 16px;">
-      <Row :gutter="16">
-        <Col span="14">
-        </Col>
-        <Col span="10">
-          <div class="clearfix">
-            <div class="d_f_r">
-              <TsFormSelect
-                v-model="queryName"
-                :dataList="searchGrouplist"
-                childrenName="dataList"
-                transfer
-                mode="group"
-                search
-                width="100%"
-                :placeholder="$t('term.codehub.choosebranchortag')"
-                :validateList="validateList"
-                @on-change="getSearch"
-              ></TsFormSelect>
-            </div>
-          </div>
-        </Col>
-      </Row>
+    <div v-if="hasBranch" class="pl-nm text-right">
+      <TsFormSelect
+        v-model="queryName"
+        :dataList="searchGrouplist"
+        childrenName="dataList"
+        transfer
+        mode="group"
+        search
+        width="250px"
+        :placeholder="$t('term.codehub.choosebranchortag')"
+        :validateList="validateList"
+        @on-change="getSearch"
+      ></TsFormSelect>
     </div>
     <div v-if="hasBranch">
       <Loading v-if="isload" loadingShow style="height:100px"></Loading>

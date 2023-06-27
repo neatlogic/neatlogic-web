@@ -2369,6 +2369,8 @@
     "filechangenumber": "个文件变更",
     "handlemergerequest": "处理MR",
     "revokerequirement": "撤销需求",
+    "selectoneresource": "请至少选择一个资源",
+    "noaddauthresource": "暂无可添加权限的资源",
     "backmergerequest": "返回MR"
   },
   "documentonline": {

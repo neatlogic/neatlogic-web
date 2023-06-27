@@ -147,6 +147,7 @@
     "fullTextIndexmanage": "重建索引",
     "databaseView": "重建数据库视图",
     "modulemanage": "模块管理",
+    "tenantconfigmanage": "配置信息管理",
     "threaddump": "线程快照",
     "sqldump": "SQL监控",
     "databasefragment": "数据库碎片整理",

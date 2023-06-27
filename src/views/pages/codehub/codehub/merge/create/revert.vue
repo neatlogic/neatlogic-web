@@ -47,7 +47,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.uuid)">{{ $t('page.detail') }}</li>
+                <li class="ts-list" @click="viewIssue(row.id)">{{ $t('page.detail') }}</li>
               </ul>
             </div>
           </template>
@@ -173,10 +173,10 @@ export default {
     totalIssue(li1, li2) {
       return Array.from(new Set(li1.concat(li2)));
     },
-    deleteIssue(uuid) {
-      if (this.addLi.length > 0 && this.addLi.indexOf(uuid) > -1) {
+    deleteIssue(id) {
+      if (this.addLi.length > 0 && this.addLi.indexOf(id) > -1) {
         let li = this.addLi.filter((ad) => {
-          return ad != uuid;
+          return ad != id;
         });
         this.addLi = li;
         let totalIssue = this.totalIssue(this.selectIssuelist, li);
@@ -184,7 +184,7 @@ export default {
         this.$emit('getIsuuelist', totalIssue);
       } else {
         if (this.$refs.showtable) {
-          this.$refs.showtable.removeSelectlist(uuid);
+          this.$refs.showtable.removeSelectlist(id);
         }
       }
     }

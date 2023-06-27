@@ -1,6 +1,15 @@
 <template>
   <div>
-    <div v-if="!error" id="div"></div>
+    <div v-if="!error" id="div">
+      <CustomtemplateViewer
+        v-if="isReady"
+        :id="id"
+        :fileList="fileList"
+        :config="config"
+        :template="template"
+        :data="data"
+      ></CustomtemplateViewer>
+    </div>
     <div v-else>{{ error }}</div>
   </div>
 </template>
@@ -26,6 +35,7 @@ export default {
   },
   data() {
     return {
+      isReady: false,
       error: null,
       templateData: {}
     };
@@ -115,8 +125,11 @@ export default {
         //替换资源文件路径
         await this.convertFilePath();
         try {
-          const component = new Vue(this.templateData);
-          component.$mount('#div');
+          //new Vue()没有定义$t,导致翻译报错
+          // const component = new Vue(this.templateData);
+          // component.$mount('#div');
+          Vue.component('CustomtemplateViewer', this.templateData);
+          this.isReady = true;
         } catch (e) {
           console.error(e);
           this.error = this.$t('message.report.widgetcreatefail');

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsForm ref="argumentSettingForm" :item-list.sync="argumentSettingFormConfig"></TsForm>
+    <TsForm ref="form" v-model="argumentFormValue" :item-list="argumentSettingFormConfig"></TsForm>
   </div>
 </template>
 <script>
@@ -8,29 +8,31 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
-  props: { action: { type: Object } },
+  props: { 
+    argumentData: { 
+      type: Object
+    } 
+  },
   data() {
     return {
+      argumentFormValue: {
+        toUsers: [],
+        subject: '',
+        content: ''
+      }, // 参数设置form表单值
       argumentSettingFormConfig: {
         toUsers: {
-          type: 'select',
+          type: 'userselect',
           label: this.$t('page.recipient'),
-          dynamicUrl: '/api/rest/user/search',
-          idListName: 'idList',
-          rootName: 'tbodyList',
-          value: '',
+          groupList: ['user'],
           validateList: ['required'],
-          valueName: 'userId',
-          textName: 'userName',
           search: true,
-          hasReturn: true,
           multiple: true
         },
         subject: {
           label: this.$t('page.theme'),
           type: 'text',
-          validateList: ['required'],
-          value: ''
+          validateList: ['required']
         },
         content: {
           label: this.$t('page.content'),
@@ -49,34 +51,29 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
-  filter: {},
-  computed: {
-    returnJson: function() {
-      let json = {};
-      for (let key in this.argumentSettingFormConfig) {
-        json[key] = this.argumentSettingFormConfig[key].value;
-      }
-      return json;
+  methods: {
+    valid() {
+      return this.$refs.form.valid();
+    },
+    getFormValue() {
+      // 提供给外部获取form表单值使用
+      let deepClone = this.$utils.deepClone(this.argumentFormValue);
+      return JSON.stringify(deepClone);
     }
   },
+  filter: {},
+  computed: {},
   watch: {
-    action: {
-      handler: function(val) {
-        if (val.arguments) {
-          let dataList = JSON.parse(val.arguments);
-          for (let key in dataList) {
-            this.argumentSettingFormConfig[key].value = dataList[key];
+    argumentData: {
+      handler: function(argumentsData) {
+        if (argumentsData) {
+          for (let key in argumentsData) {
+            this.argumentFormValue[key] = argumentsData[key];
           }
         }
       },
-      deep: true
-    },
-    returnJson: {
-      handler: function(val) {
-        this.$emit('setArguments', val);
-      },
-      deep: true
+      deep: true,
+      immediate: true
     }
   }
 };

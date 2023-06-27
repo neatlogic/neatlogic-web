@@ -478,7 +478,6 @@ export default {
   position: relative;
   padding-left: 200px;
   height:calc(100vh - 210px); // 头部+导航栏+tab+文件描述信息+16间隙
-  overflow-y: hidden; // 解决内外双层滚动条的问题
   .diff-left{
     position: absolute;
     top: 0;
@@ -491,7 +490,7 @@ export default {
   .diff-main{
     padding: 10px 10px 50px 10px;
     overflow: auto;
-    max-height: calc(100vh - 210px);
+    max-height: calc(100vh - 260px);
   }
   &.hideLeft{
     padding-left: 0px;
