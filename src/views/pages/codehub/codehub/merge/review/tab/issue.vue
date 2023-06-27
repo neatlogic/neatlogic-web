@@ -206,7 +206,7 @@ export default {
       cancel && cancel.cancel();
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      return this.$api.codehub.merge.getIssuelistByMruuid(param, { cancelToken: this.cancelAxios.token }).then(res => {
+      return this.$api.codehub.merge.getIssuelistByMrId(param, { cancelToken: this.cancelAxios.token }).then(res => {
         this.isLoading = false;
         if (res.Status == 'OK') {
           this.tableData.tbodyList = res.Return.list || [];

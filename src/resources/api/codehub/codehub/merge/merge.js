@@ -75,7 +75,7 @@ const merge = {
     //获取mr撤销是否有效
     return axios.post('/api/rest/codehub/mergerequest/revert/check', data);
   },
-  getIssuelistByMruuid(data, config) {
+  getIssuelistByMrId(data, config) {
     //新的根据mruuid更新需求列表（含对应的commit列表）
     return axios.post('/api/rest/codehub/mergerequest/issue/commit/search', data, config);
   },
