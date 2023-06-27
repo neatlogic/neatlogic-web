@@ -1,6 +1,5 @@
 <template>
   <TsDialog
-    
     v-bind="setting"
     @on-close="close"
     @on-ok="saveEdit"
@@ -26,7 +25,6 @@
                     ref="memberItem"
                     v-model="memberVal"
                     v-bind="memberConfig"
-                    requireFirstLoad
                   ></TsFormSelect>
                 </div>
               </template>
@@ -38,7 +36,6 @@
                     ref="groupItem"
                     v-model="groupVal"
                     v-bind="groupConfig"
-                    requireFirstLoad
                   ></TsFormSelect>
                 </div>
               </template>
@@ -72,7 +69,6 @@
                   ref="memberItem"
                   v-model="memberVal"
                   v-bind="memberConfig"
-                  requireFirstLoad
                 ></TsFormSelect>
               </div>
             </template>
@@ -84,7 +80,6 @@
                   ref="groupItem"
                   v-model="groupVal"
                   v-bind="groupConfig"
-                  requireFirstLoad
                 ></TsFormSelect>
               </div>
             </template>
@@ -102,30 +97,21 @@
                 <div v-else-if="!valid.path" class="text-danger">{{ $t('term.codehub.selectoneresource') }}</div>
               </div>
             </template>
-            <!-- membertype -->
           </TsForm>
         </div>        
       </div>
       <div v-else-if="!isloading" class="text-tip">{{ $t('term.codehub.noaddauthresource') }}</div>
       <Loading v-else loadingShow></Loading>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>
-import PathTree from './path-tree.vue';
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: '',
   components: {
-    PathTree,
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormSelect
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    PathTree: resolve => require(['./path-tree.vue'], resolve)
   },
   provide() {
     return {
@@ -148,7 +134,6 @@ export default {
         type: 'slider',
         isShow: true
       },
-      isSubmit: false, //是否提交中，需要禁用调提交按钮
       pathList: [],
       currentPath: [], //当前选中哪个路径
       isLoading: true,
@@ -159,39 +144,45 @@ export default {
           name: 'authType',
           validateList: ['required'],
           value: 'member',
-          dataList: [{
-            text: this.$t('page.user'),
-            value: 'member'
-          }, {
-            text: this.$t('term.codehub.group'),
-            value: 'group'
-          }],
+          dataList: [
+            {
+              text: this.$t('page.user'),
+              value: 'member'
+            }, 
+            {
+              text: this.$t('term.codehub.group'),
+              value: 'group'
+            }],
           onChange: (val) => {
             this.changeType(val);
           }
-        }, {
+        }, 
+        {
           type: 'slot',
           label: this.$t('term.codehub.usergourpname'),
           name: 'memberType',
           validateList: ['required']         
-        }, {
+        }, 
+        {
           type: 'slot',
           label: this.$t('term.codehub.usergourpname'),
           name: 'groupType',
           validateList: ['required'],
           isHidden: true       
-        }, {
+        }, 
+        {
           type: 'select',
           label: this.$t('page.authority'),
           name: 'auth',
-          value: false,
+          value: '',
           validateList: ['required'],
           dataList: this.accList,
           clearable: false,
           onChange: (val) => {
             this.changeAuth(val);
           }       
-        }, {
+        }, 
+        {
           type: 'slot',
           label: this.$t('term.codehub.selectresource'),
           name: 'pathList',
@@ -203,34 +194,29 @@ export default {
       groupVal: null,
       memberVal: null,
       groupConfig: {
-        width: '300px',
+        width: '418px',
         transfer: true,
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getgroup',
         params: {
-          'repositoryId': this.id
+          repositoryId: this.id
         },
         clearable: false,
         multiple: true,
         search: true     
       },
       memberConfig: {
-        width: '300px',
+        width: '418px',
         transfer: true,
         validateList: ['required'],
         dynamicUrl: '/api/rest/codehub/repository/svn/getmemberbygroup',
         params: {
-          'repositoryId': this.id,
-          'groupName': ''
+          repositoryId: this.id,
+          groupName: ''
         },
         clearable: false,
         multiple: true,
         search: true     
-      },
-      pathConfig: {
-        width: '300px',
-        validateList: ['required'],
-        type: 'textarea'
       },
       pathVal: '', //输入的资源路径
       valid: {
@@ -251,7 +237,7 @@ export default {
             this.$set(f, 'value', this.editConfig.type);
             this.$set(f, 'readonly', true);
           } else if (f.name == 'auth') {
-            this.$set(f, 'value', this.editConfig['acc'] || false);
+            this.$set(f, 'value', this.editConfig['acc'] || '');
           }
         });
         this.authType = this.editConfig.type == 'group' ? 'group' : 'member';
@@ -264,7 +250,7 @@ export default {
             this.$set(f, 'value', 'member');
             this.$set(f, 'readonly', true);
           } else if (f.name == 'auth') {
-            this.$set(f, 'value', this.editConfig['acc'] || false);
+            this.$set(f, 'value', this.editConfig['acc'] || '');
           }
         });
         this.authType = this.editConfig.type == 'group' ? 'group' : 'member';
@@ -309,21 +295,19 @@ export default {
         authList: []
       };
       let authList = [];
-
       if (this.currentPath && this.currentPath.length) {
         this.currentPath.forEach(c => {
           let item = {
             path: c,
             acclist: []
           };
-
           if (this.authType == 'member') {
             if (this.memberVal && this.memberVal.length) {
               this.memberVal.forEach(m => {
                 item.acclist.push({
-                  'userid': m,
-                  'acc': this.authValue || '', 
-                  'type': 'person'
+                  userid: m,
+                  acc: this.authValue || '', 
+                  type: 'person'
                 });
               });
             }
@@ -331,28 +315,23 @@ export default {
             if (this.groupVal && this.groupVal.length) {
               this.groupVal.forEach(g => {
                 item.acclist.push({
-                  'userid': g,
-                  'acc': this.authValue || '', 
-                  'type': 'group'
+                  userid: g,
+                  acc: this.authValue || '', 
+                  type: 'group'
                 });
               });
             }
           }
-
           authList.push(item);
         });
       }
-
       Object.assign(param, {
         'authList': authList
       });
-      this.isSubmit = true;
       this.$api.codehub.repositorydetail.saveSvnAuth(param).then(res => {
         if (res && res.Status == 'OK') {
           this.$emit('close', true);
         }
-      }).finally(res => {
-        this.isSubmit = false;
       });
     },
     close() {
@@ -424,7 +403,7 @@ export default {
         this.setFormVisable('groupType', false);
       }
       this.authValue = false;
-      this.setFormVal('auth', false);
+      this.setFormVal('auth', '');
     },
     changeAuth(val) {
       this.authValue = val;
@@ -451,8 +430,7 @@ export default {
       this.selectedPath(path, true);
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     currentPath: {
       handler: function(val) {
@@ -462,10 +440,7 @@ export default {
       }  
     }
   }
-
 };
-
 </script>
 <style lang='less'>
-
 </style>

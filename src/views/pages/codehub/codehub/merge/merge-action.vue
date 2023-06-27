@@ -9,79 +9,71 @@
       </template>
       <div slot="content">
         <div>
-          <div>
-            <Loading v-if="loadingShow" loadingShow type="fix"></Loading>
-            <TsTable
-              v-else
-              v-bind="tableData"
-              @changeCurrent="changeCurrent"
-              @changePageSize="changePageSize"
-            >
-              <template slot="status" slot-scope="{ row }">
-                <span v-for="(status, sindex) in row.statusList" :key="sindex">
-                  {{ status.text }}
-                </span>
-              </template>
-              <template slot="appSystemInfo" slot-scope="{ row }">
-                <div v-if="row.appSystemInfo">
-                  <Tooltip
-                    v-if="row.appSystemInfo"
-                    theme="light"
-                    max-width="300"
-                    transfer
-                  >
+          <Loading v-if="loadingShow" loadingShow type="fix"></Loading>
+          <TsTable
+            v-else
+            v-bind="tableData"
+            @changeCurrent="changeCurrent"
+            @changePageSize="changePageSize"
+          >
+            <template slot="status" slot-scope="{ row }">
+              <span v-for="(status, sindex) in row.statusList" :key="sindex">
+                {{ status.text }}
+              </span>
+            </template>
+            <template slot="appSystemInfo" slot-scope="{ row }">
+              <div v-if="row.appSystemInfo">
+                <Tooltip
+                  v-if="row.appSystemInfo"
+                  theme="light"
+                  max-width="300"
+                  transfer
+                >
+                  <div>{{ row.appSystemInfo }}</div>
+                  <div slot="content">
                     <div>{{ row.appSystemInfo }}</div>
-                    <div slot="content">
-                      <div>{{ row.appSystemInfo }}</div>
-                    </div>
-                  </Tooltip>
-                </div>
-                <div v-else>-</div>
-              </template>
-              <template slot="appModuleInfo" slot-scope="{ row }">
-                <div v-if="row.appModuleInfo">
-                  <Tooltip
-                    v-if="row.appModuleInfo"
-                    theme="light"
-                    max-width="300"
-                    transfer
-                  >
+                  </div>
+                </Tooltip>
+              </div>
+              <div v-else>-</div>
+            </template>
+            <template slot="appModuleInfo" slot-scope="{ row }">
+              <div v-if="row.appModuleInfo">
+                <Tooltip
+                  v-if="row.appModuleInfo"
+                  theme="light"
+                  max-width="300"
+                  transfer
+                >
+                  <div>{{ row.appModuleInfo }}</div>
+                  <div slot="content">
                     <div>{{ row.appModuleInfo }}</div>
-                    <div slot="content">
-                      <div>{{ row.appModuleInfo }}</div>
-                    </div>
-                  </Tooltip>
-                </div>
-                <div v-else>-</div>
-              </template>
-              <template slot="targetBranch" slot-scope="{ row }">
-                {{ row.targetBranch || '-' }}
-              </template>
-              <template slot="versionName" slot-scope="{ row }">
-                {{ row.versionName || '-' }}
-              </template>
-              <template slot="isActive" slot-scope="{ row }">
-                <TsFormSwitch
-                  v-model="row.isActive"
-                  :true-value="1"
-                  :false-value="0"
-                  showStatus
-                  @on-change=" val => {
-                    changeIsActive(row, val);
-                  }"
-                ></TsFormSwitch>
-              </template>
-              <template slot="action" slot-scope="{ row }">
-                <div class="tstable-action">
-                  <ul class="tstable-action-ul">
-                    <li class="action-item text-action tsfont-edit" @click="editAction(row.id)">{{ $t('page.edit') }}</li>
-                    <li class="action-item text-action tsfont-trash-o" @click="deleteAction(row.id)">{{ $t('page.delete') }}</li>
-                    <li class="action-item text-action tsfont-file-single" @click="actionId = row.id">{{ $t('term.codehub.triggerlog') }}</li>
-                  </ul>
-                </div>
-              </template>
-            </TsTable>
-          </div>
+                  </div>
+                </Tooltip>
+              </div>
+              <div v-else>-</div>
+            </template>
+            <template slot="isActive" slot-scope="{ row }">
+              <TsFormSwitch
+                v-model="row.isActive"
+                :true-value="1"
+                :false-value="0"
+                showStatus
+                @on-change=" val => {
+                  changeIsActive(row, val);
+                }"
+              ></TsFormSwitch>
+            </template>
+            <template slot="action" slot-scope="{ row }">
+              <div class="tstable-action">
+                <ul class="tstable-action-ul">
+                  <li class="tsfont-edit" @click="editAction(row.id)">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-trash-o" @click="deleteAction(row.id)">{{ $t('page.delete') }}</li>
+                  <li class="tsfont-file-single" @click="actionId = row.id">{{ $t('term.codehub.triggerlog') }}</li>
+                </ul>
+              </div>
+            </template>
+          </TsTable>
         </div>
       </div>
     </TsContain>
@@ -161,7 +153,6 @@ export default {
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getAppForselect,
             onChange: val => {
-              this.appSystemId = val;
               this.updateModule(val);
             }
           },
@@ -276,7 +267,7 @@ export default {
     closeActionLog(isreload) {
       this.actionId = null;
     },
-    closeActionDialog: function(needRefresh) {
+    closeActionDialog(needRefresh) {
       this.isActionDialogShow = false;
       this.id = null;
       if (needRefresh) {

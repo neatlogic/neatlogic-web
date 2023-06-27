@@ -1,14 +1,18 @@
 <template>
   <div>
     <div class="mb-sm">
-      <Button type="primary" @click="addAuth()">
-        <i class="ts-plus"></i>
-        {{ $t('page.authority') }}
-      </Button>
-      <Button v-if="!isDowning" v-download="downloadPath" class="ml-sm">{{ $t('term.codehub.exportexcel') }}</Button>
-      <Button v-else loading class="ml-sm">$t('term.codehub.exporting')</Button>
+      <div class="action-group">
+        <span class="action-item tsfont-plus" @click="addAuth()">
+          {{ $t('page.authority') }}
+        </span>
+        <span v-if="!isDowning" v-download="downloadPath" class="action-item tsfont-export">{{ $t('term.codehub.exportexcel') }}</span>
+        <span v-else class="action-item disable" :title="$t('page.downloadloadingtip')">
+          <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
+          {{ $t('term.codehub.exporting') }}
+        </span>
+      </div>
     </div>
-    <h4>{{ $t('term.codehub.userauth') }}</h4>
+    <div>{{ $t('term.codehub.userauth') }}</div>
     <div v-if="!isLoading">
       <TsTable v-bind="tableData" :tbodyList="authList">
         <template slot="name" slot-scope="{ row }">
