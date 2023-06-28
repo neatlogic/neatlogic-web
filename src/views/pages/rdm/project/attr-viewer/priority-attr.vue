@@ -28,6 +28,7 @@ export default {
       this.$api.rdm.priority.getPriorityById(this.priority).then(res => {
         if (res.Return) {
           this.priorityName = res.Return.name;
+          this.priorityColor = res.Return.color;
         }
       });
     }

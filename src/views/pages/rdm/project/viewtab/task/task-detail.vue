@@ -4,7 +4,7 @@
     :loadingShow="true"
     type="fix"
   ></Loading>
-  <div v-else>
+  <div v-else-if="isReady && issueData">
     <TsContain
       :rightWidth="250"
       :enableCollapse="true"
@@ -77,7 +77,12 @@
             </TabPane>
             <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
               <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
-                <IssueAuditList v-if="currentTab === 'audit' && id && appId" :issueId="id" :appId="appId"></IssueAuditList>
+                <IssueAuditList
+                  v-if="currentTab === 'audit' && id && appId"
+                  :issueId="id"
+                  :appId="appId"
+                  :projectId="projectId"
+                ></IssueAuditList>
               </div>
             </TabPane>
           </Tabs>
@@ -125,6 +130,7 @@
       </div>
     </TsContain>
   </div>
+  <div v-else><NoData></NoData></div>
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
@@ -155,7 +161,6 @@ export default {
       issueDataSnapshot: {},
       catalogData: {},
       statusList: [],
-      isReady: true,
       isTransferReady: true,
       appList: []
     };

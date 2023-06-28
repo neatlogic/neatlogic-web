@@ -2125,7 +2125,8 @@
     "enablesecret": "启用Secret",
     "pleasecreatewebhookurl": "请生成WebhookUrl",
     "copycommitword": "复制源码关键字",
-    "gitlabcommit": "Gitlab提交"
+    "gitlabcommit": "Gitlab提交",
+    "copyissueid": "复制id"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
