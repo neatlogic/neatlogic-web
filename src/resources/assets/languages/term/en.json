@@ -2371,7 +2371,8 @@
     "filechangenumber": "File changes",
     "handlemergerequest": "Process MR",
     "revokerequirement": "Revoke requirement",
-    "backmergerequest": "Return to MR"
+    "backmergerequest": "Return to MR",
+    "branchproject": "Branch protection"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

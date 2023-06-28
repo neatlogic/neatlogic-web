@@ -1,14 +1,7 @@
 <template>
   <div>
     <div v-if="!error" id="div">
-      <CustomtemplateViewer
-        v-if="isReady"
-        :id="id"
-        :fileList="fileList"
-        :config="config"
-        :template="template"
-        :data="data"
-      ></CustomtemplateViewer>
+      <CustomtemplateViewer v-if="isReady"></CustomtemplateViewer>
     </div>
     <div v-else>{{ error }}</div>
   </div>
@@ -64,9 +57,12 @@ export default {
         TsFormDatePicker,
         TsTable
       };
+      let data = {};
       if (this.data) {
         if (!(this.data instanceof Array)) {
-          this.templateData.data = this.data;
+          Object.keys(this.data).forEach(key => {
+            data[key] = this.data[key];
+          });
         } else {
           console.log(JSON.stringify(this.data, null, 2));
         }
@@ -128,7 +124,13 @@ export default {
           //new Vue()没有定义$t,导致翻译报错
           // const component = new Vue(this.templateData);
           // component.$mount('#div');
-          Vue.component('CustomtemplateViewer', this.templateData);
+
+          Vue.component('CustomtemplateViewer', {
+            data() {
+              return data;
+            },
+            ...this.templateData
+          });
           this.isReady = true;
         } catch (e) {
           console.error(e);

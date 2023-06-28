@@ -32,10 +32,10 @@ export default {
     return {
       selectedType: 'auth',
       typeList: [{
-        name: '权限设置',
+        name: this.$t('page.authsetting'),
         value: 'auth'
       }, {
-        name: '分支保护',
+        name: this.$t('term.codehub.branchproject'),
         value: 'branchprotect'        
       }]
     };
@@ -54,13 +54,12 @@ export default {
   computed: {
     siderStyle() {
       return {
-        height: 'calc(100vh - 130px)',
+        height: 'calc(100vh - 170px)',
         overflow: 'auto'
       };
     }
   },
   watch: {}
-
 };
 
 </script>
