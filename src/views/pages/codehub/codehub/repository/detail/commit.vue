@@ -86,7 +86,7 @@
         </template>
       </TsCard>
       <div v-if="!isAllloaded">
-        <div v-if="!isload" class="text-center text-href" @click="getNextpage">{{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
+        <div v-if="!isload" class="text-center text-href" @click="getNextpage">{{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : (activeConfig.cardList && activeConfig.cardList.length < pageSize) ? '' : $t('term.codehub.loadmore')) }}</div>
       </div>
       <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
     </div>
