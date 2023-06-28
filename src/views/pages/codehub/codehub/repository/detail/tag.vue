@@ -37,17 +37,17 @@
             <tbody>
               <tr>
                 <td>
-                  <h4>
-                    <span class="ts-tag text-primary icon-right">
-                      {{ row.name }}</span>
-                  </h4>
+                  <span class="ts-tag text-primary icon-right">
+                    {{ row.name }}
+                  </span>
                 </td>
                 <td rowspan="2" colspan="2" class="text-right text-tip">{{ row.commit.shortId }}</td>
                 <td></td>
               </tr>
               <tr>
                 <td>
-                  <span>{{ row.commit.committer }}</span><span class="text-tip ml-sm">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
+                  <span>{{ row.commit.committer }}</span>
+                  <span class="text-tip ml-sm">{{ row.commit.committerDate ? row.commit.committerDate.time:'' | formatDate }}</span>
                 </td>
               </tr>
             </tbody>

@@ -12,7 +12,7 @@
         </span>
       </div>
     </div>
-    <div>{{ $t('term.codehub.userauth') }}</div>
+    <div class="mb-xs">{{ $t('term.codehub.userauth') }}</div>
     <div v-if="!isLoading">
       <TsTable v-bind="tableData" :tbodyList="authList">
         <template slot="name" slot-scope="{ row }">
@@ -44,7 +44,7 @@
     </div>
     <Loading v-else loadingShow style="min-height: 100px"></Loading>
     <Divider />
-    <h4>{{ $t('term.codehub.groupauth') }}</h4>
+    <div class="mb-xs">{{ $t('term.codehub.groupauth') }}</div>
     <div v-if="!isLoadingGroup">
       <TsTable v-bind="groupTableData" :tbodyList="authGroupList">
         <template slot="name" slot-scope="{ row }">

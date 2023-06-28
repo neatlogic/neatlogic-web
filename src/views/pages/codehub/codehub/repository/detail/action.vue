@@ -122,17 +122,20 @@ export default {
         textName: 'userName',
         valueName: 'uuid',
         dynamicUrl: '/api/rest/user/search',
-        rootName: 'tbodyList'
+        rootName: 'tbodyList',
+        border: 'border'
       },
       objectConfig: {
         width: 180,
         transfer: true,
-        placeholder: this.$t('term.codehub.actionsubject')
+        placeholder: this.$t('term.codehub.actionsubject'),
+        border: 'border'
       },
       typeConfig: {
         width: 180,
         transfer: true,
-        placeholder: this.$t('page.actiontype')
+        placeholder: this.$t('page.actiontype'),
+        border: 'border'
       },
       timeConfig: {
         transfer: true
