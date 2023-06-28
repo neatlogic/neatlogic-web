@@ -17,6 +17,7 @@
               transfer
               mode="group"
               search
+              border="border"
               width="200px"
               :placeholder="$t('term.codehub.choosebranchortag')"
               :validateList="validateList"

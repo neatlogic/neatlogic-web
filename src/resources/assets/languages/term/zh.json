@@ -2371,7 +2371,8 @@
     "revokerequirement": "撤销需求",
     "selectoneresource": "请至少选择一个资源",
     "noaddauthresource": "暂无可添加权限的资源",
-    "backmergerequest": "返回MR"
+    "backmergerequest": "返回MR",
+    "branchproject": "分支保护"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",
