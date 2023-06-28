@@ -34,10 +34,10 @@
                 <template v-if="item.value == 'majorUser'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">
-                    <UserCard v-bind="item.textConfig.userVo" :iconSize="16"></UserCard>
+                    <UserCard v-bind="item.textConfig.userVo" :iconSize="20"></UserCard>
                     <span v-if="object.originalUserVo">
                       <span style="vertical-align: bottom;">（{{ $t('term.process.act') }}</span>
-                      <UserCard v-bind="object.originalUserVo" :iconSize="16"></UserCard>
+                      <UserCard v-bind="object.originalUserVo" :iconSize="20"></UserCard>
                       <span style="vertical-align: bottom;">）</span>
                     </span>
                   </div>
@@ -50,7 +50,7 @@
                         v-for="(user, uindex) in item.textConfig"
                         :key="uindex"
                         v-bind="user.worker"
-                        :iconSize="16"
+                        :iconSize="20"
                         class="minoruser-item"
                       ></UserCard></span>
                     </span>
