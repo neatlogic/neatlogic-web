@@ -2,12 +2,12 @@
 
 @font-face {
   font-family: 'tsfont';
-  src: url('../font/tsfont-d5176bdee7.eot');
-  src: url('../font/tsfont-d5176bdee7.eot?#iefix') format('embedded-opentype'),
-       url('../font/tsfont-d5176bdee7.woff2') format('woff2'),
-       url('../font/tsfont-d5176bdee7.woff') format('woff'),
-       url('../font/tsfont-d5176bdee7.ttf') format('truetype'),
-       url('../font/tsfont-d5176bdee7.svg?#tsfont') format('svg');
+  src: url('../font/tsfont.eot');
+  src: url('../font/tsfont.eot?#iefix') format('embedded-opentype'),
+       url('../font/tsfont.woff2') format('woff2'),
+       url('../font/tsfont.woff') format('woff'),
+       url('../font/tsfont.ttf') format('truetype'),
+       url('../font/tsfont.svg?#tsfont') format('svg');
   font-weight: normal;
   font-style: normal;
 }
