@@ -161,7 +161,7 @@ export default {
     toEditPage(operation, data) {
       this.$router.push({
         name: 'template-edit',
-        query: { operation, ...data }
+        query: { operation, id: data.id, name: data.name }
       });
     }
   }
