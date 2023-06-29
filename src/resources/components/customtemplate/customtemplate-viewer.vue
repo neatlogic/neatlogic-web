@@ -78,6 +78,14 @@ export default {
             try {
               // eslint-disable-next-line no-eval
               const config = eval('(' + customTemplateData.config + ')');
+              if (config.data && typeof config.data == 'function') {
+                let configData = config.data();
+                Object.keys(configData).forEach(key => {
+                  if (!data.hasOwnProperty(key)) {
+                    data[key] = configData[key];
+                  }
+                });
+              }
               if (config.methods) {
                 this.templateData.methods = {};
                 for (let name in config.methods) {
@@ -100,8 +108,16 @@ export default {
         if (this.config) {
           let config = this.config;
           if (typeof config == 'string') {
-            // eslint-disable-next-line no-eval
+          // eslint-disable-next-line no-eval
             config = eval('(' + config + ')');
+          }
+          if (config.data && typeof config.data == 'function') {
+            let configData = config.data();
+            Object.keys(configData).forEach(key => {
+              if (!data.hasOwnProperty(key)) {
+                data[key] = configData[key];
+              }
+            });
           }
           if (config.methods) {
             this.templateData.methods = {};
