@@ -16,6 +16,12 @@ const documentonline = {
   },
   searchDocument(data) { //全局搜索文档
     return axios.post('/api/rest/documentonline/search', data);
+  },
+  getUnclassifiedList(data) { //未分类文档列表
+    return axios.post('/api/rest/documentonline/unclassified/list', data);
+  },
+  saveDocumentonlineConfig(data) { //保存在线帮助文档与模块菜单的映射关系
+    return axios.post('/api/rest/documentonline/config/save', data);
   }
 };
 
