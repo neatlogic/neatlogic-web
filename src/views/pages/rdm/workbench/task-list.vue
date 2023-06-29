@@ -75,7 +75,7 @@ export default {
   data() {
     return {
       isReady: false,
-      displayMode: 'level',
+      displayMode: 'list',
       needAttr: ['_name', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
       attrList: [],
       appList: [],
