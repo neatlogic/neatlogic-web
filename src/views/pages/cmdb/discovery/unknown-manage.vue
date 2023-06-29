@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="ts-angle-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <div><TsFormInput
@@ -29,9 +29,8 @@
             v-for="(value, key) in collectionData.subTheadData"
             :slot="key"
             slot-scope="{ row }"
-            style="vertical-align:top"
-          >
-            <table v-if="row[key] && row[key].length > 0" :key="key" class="table table-color">
+          ><div :key="key" style="vertical-align:top">
+            <table v-if="row[key] && row[key].length > 0" class="table table-color">
               <thead v-if="collectionData.subTheadData[key].length > 1">
                 <!--表头超过一个值代表是对象类型-->
                 <tr>
@@ -54,6 +53,7 @@
               </tbody>
             </table>
             <div v-if="!row[key] || row[key].length == 0" :key="key"></div>
+          </div>
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
