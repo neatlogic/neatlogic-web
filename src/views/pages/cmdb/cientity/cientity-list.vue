@@ -39,9 +39,9 @@
           v-if="(attrList && attrList.length > 0) || (relList && relList.length > 0)"
           dis-hover
           class="radius-md"
-          style="margin-bottom:10px;"
+          style="margin-bottom: 10px"
         >
-          <TsRow style="max-height:250px;overflow-y:auto;overflow-x:hidden">
+          <TsRow style="max-height: 250px; overflow-y: auto; overflow-x: hidden">
             <Col span="12">
               <TsRow class="search-item">
                 <Col span="6" class="search-label text-grey">{{ $t('term.cmdb.group') }}</Col>
@@ -155,7 +155,7 @@
               </TsRow>
             </Col>
           </TsRow>
-          <div style="text-align:right" class="mt-md">
+          <div style="text-align: right" class="mt-md">
             <Button
               type="primary"
               :ghost="true"
@@ -259,11 +259,7 @@
           <div class="tstable-action">
             <ul class="tstable-action-ul">
               <li v-if="mode == 'page'" class="tsfont-formtextarea" @click="toCiEntity(row.id, row.ciId)">{{ $t('page.detail') }}</li>
-              <li
-                v-if="row.authData && row.authData.accountmanagement"
-                class="tsfont-userinfo"
-                @click="openAccountEditDialog(row)"
-              >{{ $t('page.accountsmanage') }}</li>
+              <li v-if="row.authData && row.authData.accountmanagement" class="tsfont-userinfo" @click="openAccountEditDialog(row)">{{ $t('page.accountsmanage') }}</li>
               <li
                 v-if="needAction"
                 class="tsfont-edit"
@@ -281,10 +277,7 @@
         </template>
 
         <template v-if="row.account" slot="const_account" slot-scope="{ row }">
-          <Tag
-            v-for="(account, index) in row.account.split(',')"
-            :key="index"
-          >{{ account }}</Tag>
+          <Tag v-for="(account, index) in row.account.split(',')" :key="index">{{ account }}</Tag>
         </template>
       </TsTable>
     </div>
@@ -317,7 +310,7 @@
     <TsDialog
       v-if="isExportDialogShow"
       type="modal"
-      width="small"
+      width="medium"
       :isShow="isExportDialogShow"
       :title="$t('term.cmdb.needexportcientity')"
       @on-close="isExportDialogShow = false"
@@ -337,6 +330,7 @@
         </div>
       </template>
       <template v-slot:footer>
+        <Checkbox v-if="selectedCiEntityList && selectedCiEntityList.length > 0" v-model="isOnlyExportSelected"><span class="fz10 text-grey">{{ $t('term.cmdb.onlyexportselected') }}</span></Checkbox>
         <Button @click="isExportDialogShow = false">{{ $t('page.cancel') }}</Button>
         <Button type="primary" ghost @click="selectAllExportItem()">{{ $t('page.selectall') }}</Button>
         <Button
@@ -393,7 +387,7 @@ export default {
     fixedHeader: { type: Boolean, default: true }, //如果为true则固定头部，表格自动算高度
     condition: { type: Object }, //预设条件
     selectedRemain: { type: Boolean, default: false }, //是否保留选中
-    readonlyTextIsHighlight: {type: Boolean, default: false} // 只读模式下，表头背景是否高亮
+    readonlyTextIsHighlight: { type: Boolean, default: false } // 只读模式下，表头背景是否高亮
   },
   data() {
     return {
@@ -415,6 +409,7 @@ export default {
           title: this.$t('page.afteredit')
         }
       ],
+      isOnlyExportSelected: false, //只导出选中数据开关
       // 点击展开
       isExporting: false, //是否导出中
       isRelCientityDialogShow: false,
@@ -585,6 +580,13 @@ export default {
     exportUrl() {
       //复制一个条件对象不要影响页面搜索
       const searchParam = this.$utils.deepClone(this.searchParam);
+      if (this.isOnlyExportSelected && this.selectedCiEntityList && this.selectedCiEntityList.length > 0) {
+        const idList = [];
+        this.selectedCiEntityList.forEach(cientity => {
+          idList.push(cientity.id);
+        });
+        searchParam.idList = idList;
+      }
       const showAttrRelList = [];
       this.attrRelList.forEach(element => {
         if (element.selected) {

@@ -137,7 +137,8 @@
     "exportallfiterconditionassets": "Export all assets that meet the current filtering criteria",
     "publicprivateaccountchooseoneaccountdesc": "The set of public and private accounts cannot be empty. Please fill in at least one account",
     "successfullyboundaccountforassetstarget": "Successfully bound account for {target} assets",
-    "failedtobindaccountforassetstarget": "{target}Asset binding account failed"
+    "failedtobindaccountforassetstarget": "{target}Asset binding account failed",
+    "onlyexportselected": "Export only selected data"
   },
   "process": {
     "workordercenter": "Work Center",

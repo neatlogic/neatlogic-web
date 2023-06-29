@@ -11,6 +11,7 @@
         >
           <template v-slot:createTime="{ valueConfig, textConfig }">
             <TsFormDatePicker
+              v-model="valueConfig.createTime"
               border="border"
               :transfer="true"
               type="daterange"

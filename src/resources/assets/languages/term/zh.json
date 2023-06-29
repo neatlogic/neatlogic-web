@@ -137,7 +137,8 @@
     "exportallfiterconditionassets": "导出满足当前过滤条件的所有资产",
     "publicprivateaccountchooseoneaccountdesc": "公共帐号和私有帐号的集合不能为空，请至少填写一个帐号",
     "successfullyboundaccountforassetstarget": "{target}条资产绑定帐号成功",
-    "failedtobindaccountforassetstarget": "{target}条资产绑定帐号失败"
+    "failedtobindaccountforassetstarget": "{target}条资产绑定帐号失败",
+    "onlyexportselected": "仅导出选中数据"
   },
   "process": {
     "workordercenter": "工单中心",
