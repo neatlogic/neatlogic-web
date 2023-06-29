@@ -12,6 +12,7 @@
         <TsTable
           :theadList="theadList"
           :tbodyList="result.data"
+          :fixedHeader="false"
         >
         </TsTable>
       </div>
