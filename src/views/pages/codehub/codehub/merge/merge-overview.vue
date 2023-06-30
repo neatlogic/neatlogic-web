@@ -8,6 +8,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
+          class="mr-xs"
           @change="() => changeCurrent(1)"
         ></CombineSearcher>
       </template>
@@ -51,7 +52,10 @@ export default {
   props: [''],
   data() {
     return {
-      mergeData: {currentPage: 1, pageSize: 20},
+      mergeData: {
+        currentPage: 1,
+        pageSize: 20
+      },
       mergeTypeList: [],
       activetab: 'open',
       isLoad: true,
@@ -107,7 +111,6 @@ export default {
       this.getMergeList();
     },
     changeAppModule(appSystemId) {
-      this.appModuleId = '';
       if (appSystemId) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'appModuleId')) {

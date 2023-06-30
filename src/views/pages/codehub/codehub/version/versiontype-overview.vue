@@ -25,7 +25,7 @@
         >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group">
-              <div v-if="!row.isReserve" class="action-item text-action">
+              <div v-if="!row.isReserve" class="action-item">
                 <TsFormSwitch
                   v-model="row.isActive"
                   :true-value="1"
@@ -98,7 +98,8 @@ export default {
         cardList: [],
         currentPage: 1,
         pageSize: 20,
-        pageType: 'number'
+        pageType: 'number',
+        boxShadow: false
       }
     };
   },

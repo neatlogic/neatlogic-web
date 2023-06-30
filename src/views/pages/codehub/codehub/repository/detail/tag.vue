@@ -24,7 +24,7 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action tsfont-trash-o" @click="deleteTag(row.name)">{{ $t('page.delete') }}</div>
+            <div class="action-item tsfont-trash-o" @click="deleteTag(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
@@ -89,7 +89,8 @@ export default {
         keyName: 'name',
         currentPage: 1,
         pageSize: 10,
-        cardList: []
+        cardList: [],
+        boxShadow: false
       }
     };
   },

@@ -7,17 +7,19 @@
   >
     <template slot="header" slot-scope="{ row }">
       <div v-if="row.canEdit || canDelete" class="action-group">
-        <div v-if="row.canEdit" class="action-item text-action tsfont-plus" @click="addMr(row.id,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">{{ $t('term.codehub.createmergerequest') }}</div>
-        <div v-if="canDelete" class="action-item text-action tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
+        <div v-if="row.canEdit" class="action-item tsfont-plus" @click="addMr(row.id,row.versionTypeStrategyRelationVo?row.versionTypeStrategyRelationVo.versionStrategyType:null)">
+          {{ $t('term.codehub.createmergerequest') }}
+        </div>
+        <div v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
       </div>
     </template>
     <template slot-scope="{ row }">
       <div class="padding-sm">
         <TsRow class="mb-sm">
           <Col span="24">
-            <span class="text-success h3">{{ row.version }}</span>
-            <Tag v-if="row.versionTypeVo" color="default" class="tag-label">{{ row.versionTypeVo.description }}</Tag>
-            <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]" class="ml-sm">
+            <span class="text-success h3 mr-xs">{{ row.version }}</span>
+            <Tag v-if="row.versionTypeVo" color="default">{{ row.versionTypeVo.description }}</Tag>
+            <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]">
               {{ typeTxt[row.versionTypeStrategyRelationVo.versionStrategyType] }}
             </Tag>
           </Col>
@@ -28,10 +30,10 @@
           </Col>
           <Col span="8">
             <div v-if="row.versionTypeStrategyRelationVo">
-              <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+              <span class="ts-branch text-tip h3 icon-right mr-sm"></span>
               {{ row.versionTypeStrategyRelationVo.srcBranch }}
-              <span class="ts-long-arrow-right text-tip h2 branch-sep mr-sm"></span>
-              <span class="ts-branch text-tip h3 text-icon mr-sm"></span>
+              <span class="ts-long-arrow-right text-tip h2 ml-sm mr-sm"></span>
+              <span class="ts-branch text-tip h3 icon-right mr-sm"></span>
               {{ row.versionTypeStrategyRelationVo.targetBranch }}
             </div>
           </Col>
@@ -68,13 +70,14 @@ export default {
     return {
       cardData: {
         classname: 'version-card',
-        classKey: 'isOpen',
+        classKey: 'isFreeze',
         span: 24,
         sm: 24,
         lg: 24,
         xl: 24,
         xxl: 24,
         padding: false,
+        boxShadow: false,
         pageType: 'number',
         cardList: []
       },
@@ -147,8 +150,15 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.tag-label{
-  margin-left: 10px;
-  transform: scale(0.9);
+@import (reference) '~@/resources/assets/css/variable.less';
+/deep/ .tscard-li {
+  .version-card {
+    border-left: 3px solid @default-border;
+  }
+  &.li-0 { // 未封板时，添加主题色
+    .version-card {
+      border-color: @default-primary-color;
+    }
+  }
 }
 </style>
