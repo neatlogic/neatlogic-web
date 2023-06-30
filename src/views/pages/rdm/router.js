@@ -15,7 +15,8 @@ const appModules = {
   bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
   task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
   iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue'),
-  testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue')
+  testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue'),
+  gitlab: () => import('@/views/pages/rdm/project/viewtab/gitlab/gitlab.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -146,27 +147,31 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration', 'testcase'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab'];
 appList.forEach(app => {
-  routerArr.push({
-    path: '/' + app + '/:projectId/:appId',
-    name: app,
-    component: appModules[app],
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  });
-  routerArr.push({
-    path: '/' + app + '-detail/:projectId/:appId/:id',
-    name: app + '-detail',
-    component: appModules[app + 'Detail'],
-    meta: {
-      ismenu: false,
-      authority: 'RDM_BASE',
-      type: 'project'
-    }
-  });
+  if (appModules[app]) {
+    routerArr.push({
+      path: '/' + app + '/:projectId/:appId',
+      name: app,
+      component: appModules[app],
+      meta: {
+        ismenu: false,
+        authority: 'RDM_BASE',
+        type: 'project'
+      }
+    });
+  }
+  if (appModules[app + 'Detail']) {
+    routerArr.push({
+      path: '/' + app + '-detail/:projectId/:appId/:id',
+      name: app + '-detail',
+      component: appModules[app + 'Detail'],
+      meta: {
+        ismenu: false,
+        authority: 'RDM_BASE',
+        type: 'project'
+      }
+    });
+  }
 });
 export default routerArr;

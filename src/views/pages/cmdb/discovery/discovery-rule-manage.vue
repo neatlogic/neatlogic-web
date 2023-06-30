@@ -2,8 +2,8 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="text-action tsfont-left" @click="$back('/discovery-manage')">
-          {{ $t('page.back') }}
+        <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">
+          {{ $getFromPage() }}
         </span>
       </template>
       <template v-slot:topLeft>
