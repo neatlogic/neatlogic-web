@@ -2127,7 +2127,8 @@
     "pleasecreatewebhookurl": "请生成WebhookUrl",
     "copycommitword": "复制源码关键字",
     "gitlabcommit": "Gitlab提交",
-    "copyissueid": "复制id"
+    "copyissueid": "复制id",
+    "projectmanager": "项目负责人"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

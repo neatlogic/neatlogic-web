@@ -12,8 +12,6 @@
       <template v-slot:topLeft>
         <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
-      <template v-slot:topRight>
-      </template>
       <template v-slot:right>
         <div class="pl-md">
           <AttrList

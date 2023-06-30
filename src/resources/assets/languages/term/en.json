@@ -2130,7 +2130,8 @@
     "pleasecreatewebhookurl": "Please generate WebhookUrl",
     "copycommitword": "Copy Source Keyword",
     "gitlabcommit": "Gitlab submission",
-    "copyissueid": "Copy ID"
+    "copyissueid": "Copy ID",
+    "projectmanager": "Project leader"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

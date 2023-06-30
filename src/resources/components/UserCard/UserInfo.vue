@@ -6,9 +6,9 @@
     </div>
     <div v-else class="usercard-body">
       <header class="header-wrap">
-        <div class="center-circle">
+        <!--<div class="center-circle">
           <div class="circle bg-primary"></div>
-        </div>
+        </div>-->
         <div class="userinfo-avatar">
           <!-- 头像 -->
           <TsAvatar v-bind="userInfo" :size="66" />
@@ -45,14 +45,20 @@
         <li>
           <span class="content-label text-grey">{{ $t('page.role') }}</span>
           <span v-if="userInfo.roleList && userInfo.roleList.length > 0" class="content-text">
-            {{ getName(userInfo.roleList) }}
+            <Tag v-for="(role,index) in userInfo.roleList" :key="index">
+              {{ role.description }}
+            </Tag>
+            <!-- {{ getName(userInfo.roleList) }}-->
           </span>
           <span v-else class="content-text">-</span>
         </li>
         <li>
           <span class="content-label text-grey">{{ $t('page.group') }}</span>
           <span v-if="userInfo.teamNameList && userInfo.teamNameList.length > 0" class="content-text">
-            {{ getName(userInfo.teamNameList, false) }}
+            <!--{{ getName(userInfo.teamNameList, false) }}-->
+            <Tag v-for="(team,index) in userInfo.teamNameList" :key="index">
+              {{ team }}
+            </Tag>
           </span>
           <span v-else class="content-text">-</span>
         </li>
@@ -60,7 +66,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import TsAvatar from 'components/TsAvatar/TsAvatar';
 export default {
@@ -136,8 +141,10 @@ export default {
     // 头像样式
     .userinfo-avatar {
       position: absolute;
-      right: 49px;
-      top: -10px;
+      //right: 49px;
+      // top: -10px;
+      right: 20px;
+      top:30px;
       z-index: 1;
       /deep/ .ts-avatar .vip-icon {
         width: 16px !important;
