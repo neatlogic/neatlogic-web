@@ -43,12 +43,8 @@ export default {
     },
     changeValue(val) {
       if (val) {
-        if (val instanceof Array) {
-          this.$emit('setValue', val, val);
-        } else {
-          const timestr = this.formatDate(val);
-          this.$emit('setValue', [timestr], [timestr]);
-        }
+        const timestr = val;
+        this.$emit('setValue', [timestr], [timestr]);
       } else {
         this.$emit('setValue', null, null);
       }

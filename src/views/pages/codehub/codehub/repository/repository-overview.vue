@@ -10,6 +10,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
+          class="mr-xs"
           @change="() => changeCurrentPage(1)"
         ></CombineSearcher>
       </template>
@@ -24,11 +25,11 @@
         >
           <template slot="header" slot-scope="{ row }">
             <div class="action-group" @click.stop>
-              <div class="action-item text-action ts-link" @click="copyWorkingPath(row)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
-              <div v-clipboard="(row.repositoryServiceVo && row.repositoryServiceVo.address) + row.address" v-clipboard:success="copyok" class="action-item text-action ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
-              <div class="action-item text-action ts-refresh" @click="syncRepository(row.id)">{{ $t('page.synchronous') }}</div>
-              <div v-if="row.canEdit" class="action-item text-action ts-edit" @click="editRepository(row.id)">{{ $t('page.edit') }}</div>
-              <div v-if="row.canEdit" class="action-item text-action ts-trash" @click="deleteRepository(row.id)">{{ $t('page.delete') }}</div>
+              <div class="action-item ts-link" @click="copyWorkingPath(row)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
+              <div v-clipboard="(row.repositoryServiceVo && row.repositoryServiceVo.address) + row.address" v-clipboard:success="copyok" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
+              <div class="action-item tsfont-refresh" @click="syncRepository(row.id)">{{ $t('page.synchronous') }}</div>
+              <div v-if="row.canEdit" class="action-item tsfont-edit" @click="editRepository(row.id)">{{ $t('page.edit') }}</div>
+              <div v-if="row.canEdit" class="action-item tsfont-trash-o" @click="deleteRepository(row.id)">{{ $t('page.delete') }}</div>
             </div>
           </template>
           <template slot-scope="{ row }">
@@ -133,6 +134,7 @@ export default {
         classKey: 'syncStatus',
         classname: 'repository-list',
         padding: false,
+        boxShadow: false,
         cardList: [],
         pageType: 'number',
         currentPage: 1,

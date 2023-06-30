@@ -5,15 +5,14 @@
     @on-ok="saveEdit"
   >
     <div>
-      <TsForm ref="editform" :itemList="formConfig" :labelWidth="180">
+      <TsForm
+        ref="form"
+        v-model="formValue"
+        :itemList="formConfig"
+        :labelWidth="180"
+      >
       </TsForm>
     </div>
-    <template v-slot:footer>
-      <div class="footer-btn-contain">
-        <Button type="text" @click="close">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :disabled="isSubmit" @click="saveEdit">{{ $t('page.confirm') }}</Button>
-      </div>
-    </template>
   </TsDialog>
 </template>
 <script>
@@ -28,14 +27,13 @@ export default {
   },
   data() {
     return {
-      split: 0.3,
+      formValue: {},
       setting: {
         title: this.$t('term.codehub.addprotectbranch'),
         maskClose: false,
         width: 'small',
         isShow: true
       },
-      isSubmit: false, //是否提交中，需要禁用调提交按钮
       formConfig: [
         {
           type: 'select',
@@ -93,33 +91,21 @@ export default {
   destroyed() {},
   methods: {
     saveEdit() {
-      if (this.$refs.editform.valid()) { 
-        let param = this.$refs.editform.getFormValue(); 
-        Object.assign(param, {
+      if (this.$refs.form.valid()) { 
+        let param = {
+          ...this.formValue,
           repositoryId: this.id,
           method: 'protectBranch'
-        });   
-        this.isSubmit = true;
+        };
         this.$api.codehub.repositorydetail.saveGitProtect(param).then(res => {
           if (res && res.Status == 'OK') {
             this.$emit('close', true);
           }
-        }).finally(res => {
-          this.isSubmit = false;
         });
       }
     },
     close() {
       this.$emit('close');
-    },
-    setFormVal(key, val) {
-      this.formConfig.forEach(f => {
-        if (f.name == key) {
-          Object.assign(f, {
-            value: val
-          });
-        }
-      });
     }
   },
   computed: {},

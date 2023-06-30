@@ -17,6 +17,7 @@
               transfer
               mode="group"
               search
+              border="border"
               width="200px"
               :placeholder="$t('term.codehub.choosebranchortag')"
               :validateList="validateList"
@@ -86,7 +87,8 @@
         </template>
       </TsCard>
       <div v-if="!isAllloaded">
-        <div v-if="!isload" class="text-center text-href" @click="getNextpage">{{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
+        <div v-if="!isload" class="text-center text-href" @click="getNextpage">
+          {{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : (activeConfig.cardList && activeConfig.cardList.length < pageSize) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
       </div>
       <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
     </div>
@@ -146,7 +148,8 @@ export default {
         xxl: 24,
         keyName: 'id',
         classname: 'repository-list',
-        cardList: []
+        cardList: [],
+        boxShadow: false
       },
       issueList: [{
         title: this.$t('term.codehub.issuesnumber'),

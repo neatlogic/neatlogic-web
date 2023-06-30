@@ -22,6 +22,9 @@
         <span class="tsfont-attachment cursor text-grey">
         </span>
         <DropdownMenu slot="list">
+          <DropdownItem @click.native="copy('#spnId')">{{ $t('term.rdm.copyissueid') }}
+            <span id="spnId" style="display:none">{{ issueData.id }}</span>
+          </DropdownItem>
           <DropdownItem @click.native="copy('#spnCommitWord')">{{ $t('term.rdm.copycommitword') }}
             <span id="spnCommitWord" style="display:none">#[{{ issueData.id }}]{{ issueData.name }} {{ url }}</span>
           </DropdownItem>

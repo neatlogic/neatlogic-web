@@ -8,14 +8,14 @@
       @changeCurrent="searchAudit"
       @changePageSize="changePageSize"
     >
-      <template v-slot:index="{ row, index }">
-        <span :class="row.id">{{ index + 1 }}</span>
-      </template>
       <template v-slot:inputTime="{ row }">
-        {{ row.inputTime | formatDate }}
+        <span class="fz10">{{ row.inputTime | formatDate }}</span>
       </template>
       <template v-slot:inputUser="{ row }">
         <UserCard :uuid="row.inputUser"></UserCard>
+      </template>
+      <template v-slot:inputFromName="{ row }">
+        <span>{{ row.inputFromName }}</span>
       </template>
       <template v-slot:attr="{ row }">
         <span v-if="row.attrId && getAttrById(row.attrId)">
@@ -24,11 +24,17 @@
         <span v-if="row.attrName && row.attrName === 'name'">
           {{ $t('page.name') }}
         </span>
+        <span v-if="row.attrName && row.attrName === 'content'">
+          {{ $t('page.content') }}
+        </span>
         <span v-if="row.attrName && row.attrName === 'status'">
           {{ $t('page.status') }}
         </span>
         <span v-if="row.attrName && row.attrName === 'file'">
           {{ $t('page.accessory') }}
+        </span>
+        <span v-if="row.attrName && row.attrName.startsWith('rel_')">
+          {{ $t('dialog.title.linktarget', { target: getAppTypeName(row.attrName.replace('rel_', '')) }) }}
         </span>
       </template>
       <div slot="oldValue" slot-scope="{ row }" style="white-space: normal">
@@ -57,6 +63,16 @@
             >
               {{ file.name }}
             </Tag>
+          </div>
+          <span v-else class="text-grey">-</span>
+        </div>
+        <div v-else-if="row.attrName && row.attrName.startsWith('rel_')">
+          <div v-if="row.oldValue && row.oldValue.length > 0">
+            <div v-for="(rel, index) in row.oldValue" :key="index">
+              <a class="tsfont-bind fz10 text-grey" @click="toIssueDetail(rel)">
+                {{ rel.name }}
+              </a>
+            </div>
           </div>
           <span v-else class="text-grey">-</span>
         </div>
@@ -90,6 +106,16 @@
           </div>
           <span v-else class="text-grey">-</span>
         </div>
+        <div v-else-if="row.attrName && row.attrName.startsWith('rel_')">
+          <div v-if="row.newValue && row.newValue.length > 0">
+            <div v-for="(rel, index) in row.newValue" :key="index">
+              <a class="tsfont-bind fz10 text-grey" @click="toIssueDetail(rel)">
+                {{ rel.name }}
+              </a>
+            </div>
+          </div>
+          <span v-else class="text-grey">-</span>
+        </div>
       </div>
     </TsTable>
   </div>
@@ -108,6 +134,7 @@ export default {
   },
   directives: { download },
   props: {
+    projectId: { type: Number },
     issueId: { type: Number },
     appId: { type: Number }
   },
@@ -116,9 +143,9 @@ export default {
       searchParam: { issueId: this.issueId, pageSize: 10 },
       issueAuditData: {},
       attrList: [],
+      appTypeList: [],
       appData: {},
       theadList: [
-        { key: 'index', title: this.$t('page.ordernumber') },
         { key: 'inputTime', title: this.$t('term.rdm.changetime') },
         { key: 'inputUser', title: this.$t('term.rdm.editor') },
         { key: 'inputFromName', title: this.$t('term.rdm.changetype') },
@@ -132,6 +159,7 @@ export default {
   created() {
     this.getAppById();
     this.searchAudit(1);
+    this.getAllAppTypeList();
   },
   beforeMount() {},
   mounted() {},
@@ -142,6 +170,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAllAppTypeList() {
+      this.$api.rdm.app.getAllAppTypeList().then(res => {
+        this.appTypeList = res.Return;
+      });
+    },
     download(id) {
       return {
         url: 'api/binary/file/download',
@@ -164,13 +197,9 @@ export default {
         });
       }
     },
-    /*searchAppAttr() {
-      if (this.appId) {
-        this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
-          this.attrList = res.Return;
-        });
-      }
-    },*/
+    toIssueDetail(row) {
+      this.$router.push({ path: '/' + row.appType + '-detail/' + this.projectId + '/' + row.appId + '/' + row.id });
+    },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
       this.searchAudit(1);
@@ -185,7 +214,19 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getAppTypeName() {
+      return appType => {
+        if (this.appTypeList && this.appTypeList.length > 0) {
+          const at = this.appTypeList.find(d => d.name === appType);
+          if (at) {
+            return at.label;
+          }
+        }
+        return null;
+      };
+    }
+  },
   watch: {}
 };
 </script>

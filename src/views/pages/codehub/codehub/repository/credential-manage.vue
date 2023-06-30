@@ -45,7 +45,8 @@ export default {
         xl: 24,
         xxl: 24,
         nodataText: this.$t('page.nodata'),
-        classname: 'credentialList'
+        classname: 'credentialList',
+        boxShadow: false
       }
     };
   },

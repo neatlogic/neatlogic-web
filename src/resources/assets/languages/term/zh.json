@@ -137,7 +137,8 @@
     "exportallfiterconditionassets": "导出满足当前过滤条件的所有资产",
     "publicprivateaccountchooseoneaccountdesc": "公共帐号和私有帐号的集合不能为空，请至少填写一个帐号",
     "successfullyboundaccountforassetstarget": "{target}条资产绑定帐号成功",
-    "failedtobindaccountforassetstarget": "{target}条资产绑定帐号失败"
+    "failedtobindaccountforassetstarget": "{target}条资产绑定帐号失败",
+    "onlyexportselected": "仅导出选中数据"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -2125,7 +2126,8 @@
     "enablesecret": "启用Secret",
     "pleasecreatewebhookurl": "请生成WebhookUrl",
     "copycommitword": "复制源码关键字",
-    "gitlabcommit": "Gitlab提交"
+    "gitlabcommit": "Gitlab提交",
+    "copyissueid": "复制id"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
@@ -2371,7 +2373,8 @@
     "revokerequirement": "撤销需求",
     "selectoneresource": "请至少选择一个资源",
     "noaddauthresource": "暂无可添加权限的资源",
-    "backmergerequest": "返回MR"
+    "backmergerequest": "返回MR",
+    "branchproject": "分支保护"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",

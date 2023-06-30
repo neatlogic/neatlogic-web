@@ -13,13 +13,16 @@
       @change="changeValue"
     ></UserSelect>
     <div v-else>
-      <UserCard
-        v-for="(user, index) in valueListLocal"
-        :key="index"
-        trigger="none"
-        :uuid="user"
-        class="pr-sm"
-      ></UserCard>
+      <div v-if="valueListLocal.length > 0">
+        <UserCard
+          v-for="(user, index) in valueListLocal"
+          :key="index"
+          trigger="none"
+          :uuid="user"
+          class="pr-sm"
+        ></UserCard>
+      </div>
+      <div v-else>-</div>
     </div>
   </div>
 </template>
@@ -59,8 +62,12 @@ export default {
         const textList = opt.map(item => item.text);
         this.$emit('setValue', valueList, textList);
       } else {
-        val = val.replace('user#', '');
-        this.$emit('setValue', [val], [opt.text]);
+        if (opt) {
+          val = val.replace('user#', '');
+          this.$emit('setValue', [val], [opt.text]);
+        } else {
+          this.$emit('setValue', null, null);
+        }
       }
     }
   },

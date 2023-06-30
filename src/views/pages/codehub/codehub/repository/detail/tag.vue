@@ -24,7 +24,7 @@
       >
         <template slot="header" slot-scope="{ row }">
           <div class="action-group">
-            <div class="action-item text-action tsfont-trash-o" @click="deleteTag(row.name)">{{ $t('page.delete') }}</div>
+            <div class="action-item tsfont-trash-o" @click="deleteTag(row.name)">{{ $t('page.delete') }}</div>
           </div>
         </template>
         <template slot-scope="{ row }">
@@ -37,17 +37,17 @@
             <tbody>
               <tr>
                 <td>
-                  <h4>
-                    <span class="ts-tag text-primary icon-right">
-                      {{ row.name }}</span>
-                  </h4>
+                  <span class="ts-tag text-primary icon-right">
+                    {{ row.name }}
+                  </span>
                 </td>
                 <td rowspan="2" colspan="2" class="text-right text-tip">{{ row.commit.shortId }}</td>
                 <td></td>
               </tr>
               <tr>
                 <td>
-                  <span>{{ row.commit.committer }}</span><span class="text-tip ml-sm">{{ row.commit.committerDate ?row.commit.committerDate.time:'' | formatDate }}</span>
+                  <span>{{ row.commit.committer }}</span>
+                  <span class="text-tip ml-sm">{{ row.commit.committerDate ? row.commit.committerDate.time:'' | formatDate }}</span>
                 </td>
               </tr>
             </tbody>
@@ -89,7 +89,8 @@ export default {
         keyName: 'name',
         currentPage: 1,
         pageSize: 10,
-        cardList: []
+        cardList: [],
+        boxShadow: false
       }
     };
   },

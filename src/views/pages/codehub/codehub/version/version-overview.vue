@@ -7,7 +7,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <TsRow>
+        <TsRow class="pr-nm">
           <Col span="20">
             <CombineSearcher
               v-model="searchVal"
@@ -19,17 +19,20 @@
             <RadioGroup
               v-model="showType"
               type="button"
-              class="toggle-btn"
               @on-change="changeRadioGroup"
             >
-              <Radio label="tabletab"><span class="tsfont-list"></span></Radio>
-              <Radio label="cardtab"><span class="tsfont-blocklist"></span></Radio>
+              <Radio label="tabletab">
+                <span class="tsfont-list"></span>
+              </Radio>
+              <Radio label="cardtab">
+                <span class="tsfont-blocklist"></span>
+              </Radio>
             </RadioGroup>
           </Col>
         </TsRow>
       </template>
       <div slot="content">
-        <div 
+        <component  
           :is="showType" 
           v-if="versionData && !loadingShow" 
           :versionData="versionData"
@@ -38,7 +41,7 @@
           @updateSize="updateSize" 
           @addMr="addMr" 
           @deleteVersion="deleteVersion"
-        ></div>
+        ></component>
         <Loading v-else loadingShow type="fix"></Loading>
       </div>
     </TsContain>
@@ -212,25 +215,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.text-label {
-  line-height: 54px;
-}
-.text-icon{
-  margin-right: 4px;
-}
-.branch-sep{
-  margin-left: 20px;
-  margin-right: 20px;
-}
-/deep/ .tscard-li {
-  .version-card {
-    border-left: 3px solid @default-border;
-  }
-  &.li-1 {
-    .version-card {
-      border-color: @default-primary-color;
-    }
-  }
-}
 </style>

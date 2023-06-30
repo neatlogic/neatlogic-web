@@ -1,23 +1,24 @@
 <template>
   <div>
     <div class="mb-sm">
-      <Button type="primary" @click="addProtect()">
-        <i class="ts-plus"></i>
-        {{ $t('term.codehub.protectbranch') }}
-      </Button>
+      <span class="text-action tsfont-plus" @click="addProtect()"> {{ $t('term.codehub.protectbranch') }}</span>
     </div>
     <div v-if="!isLoading">
-      <TsTable v-bind="tabledata" @changeCurrent="changeCurrent" @changePageSize="changePageSize">
+      <TsTable v-bind="tableData" @changeCurrent="changeCurrent" @changePageSize="changePageSize">
         <template slot="developers_can_merge" slot-scope="{ row }">
-          <i v-if="row.developers_can_merge" class="ts-complete h3 text-success"></i>
-          <i v-else class="ts-forbid h3 text-danger"></i>
+          <span v-if="row.developers_can_merge" class="tsfont-check-o h3 text-success"></span>
+          <span v-else class="tsfont-forbid h3 text-danger"></span>
         </template>
         <template slot="developers_can_push" slot-scope="{ row }">
-          <i v-if="row.developers_can_push" class="ts-complete h3 text-success"></i>
-          <i v-else class="ts-forbid h3 text-danger"></i>
+          <span v-if="row.developers_can_push" class="tsfont-check-o h3 text-success"></span>
+          <span v-else class="tsfont-forbid h3 text-danger"></span>
         </template>
-        <template slot="actions" slot-scope="{ row }">
-          <div class="text-action ts-trash" @click="delProtect(row)">{{ $t('page.delete') }}</div>
+        <template slot="action" slot-scope="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-trash-o" @click="delProtect(row)">{{ $t('page.delete') }}</li>
+            </ul>
+          </div>
         </template>
       </TsTable>
     </div>
@@ -42,7 +43,7 @@ export default {
   },
   data() {
     return {
-      tabledata: {
+      tableData: {
         theadList: [
           {
             title: this.$t('page.branch'),
@@ -57,12 +58,11 @@ export default {
             key: 'developers_can_push'
           },
           {
-            key: 'actions',
+            key: 'action',
             width: 80
           }
         ],
-        tbodyList: [],
-        rowKey: 'name'
+        tbodyList: []
       },
       isEdit: false,
       isLoading: true
@@ -94,8 +94,8 @@ export default {
     },
     delProtect(row) {
       let param = {
-        'repositoryId': this.id,
-        'name': row.name
+        repositoryId: this.id,
+        name: row.name
       };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
@@ -119,9 +119,9 @@ export default {
       this.isLoading = true;
       this.$api.codehub.repositorydetail.getProtectBranchList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.tabledata.tbodyList = res.Return || [];
+          this.tableData.tbodyList = res.Return || [];
         } else {
-          this.tabledata.tbodyList = [];
+          this.tableData.tbodyList = [];
         }
       }).finally(res => {
         this.isLoading = false;

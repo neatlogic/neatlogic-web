@@ -9,16 +9,18 @@ export default {
       appId: null,
       projectId: null,
       contentMode: 'read',
-      appList: []
+      appList: [],
+      isReady: false
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     this.projectId = Math.floor(this.$route.params['projectId']);
     this.appId = Math.floor(this.$route.params['appId']);
     this.id = Math.floor(this.$route.params['id']);
-    this.init();
-    this.getAppByProjectId();
+    await this.init();
+    await this.getAppByProjectId();
+    this.isReady = true;
   },
   beforeMount() {},
   mounted() {},
@@ -34,11 +36,7 @@ export default {
     },
     async init() {
       await this.getIssueById();
-      this.isReady = false;
       this.statusRelData = null;
-      this.$nextTick(() => {
-        this.isReady = true;
-      });
     },
     async getIssueById() {
       if (this.id) {
@@ -159,9 +157,9 @@ export default {
       }
       return h('div', controllList);
     },
-    getAppByProjectId() {
+    async getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1, needSystemAttr: 1}).then(res => {
+        await this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1, needSystemAttr: 1}).then(res => {
           this.appList = res.Return;
         });
       }

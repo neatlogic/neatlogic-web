@@ -2,7 +2,7 @@
   <div class="template-edit">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="tsfont-left text-action" @click="$back('/template-manage')">{{ $getFromPage($t('term.report.templatemanage')) }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
@@ -14,23 +14,20 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <div class="action-item last text-action" :class="{disable:disabledBtn.saveTemplate}" @click="saveTemplate">
-            <span class="tsfont-save"></span>
-            <span :style="{'padding-left': '2px'}">{{ $t('page.save') }}</span>
+          <div class="action-item" :class="{disable:disabledBtn.saveTemplate}">
+            <span class="tsfont-save" @click="saveTemplate">{{ $t('page.save') }}</span>
           </div>
-          <div class="action-item last text-action" :class="{'text-grey text-disabled': $route.query.operation!=='edit'}" @click="deleteTemplate">
-            <span class="tsfont-trash-s"></span>
-            <span :style="{'padding-left': '2px'}">{{ $t('page.delete') }}</span>
+          <div class="action-item last" :class="{'text-grey text-disabled': $route.query.operation!=='edit'}">
+            <span class="tsfont-trash-s" @click="deleteTemplate">{{ $t('page.delete') }}</span>
           </div>
         </div>
       </template>
       <template v-slot:content>
         <div class="content">
           <p class="nav-menu">
-            <span class="text-title" :style="{'margin-right': '10px'}">{{ $t('term.knowledge.navigationdirectory') }}</span>
-            <span class="text-action" @click="addNode(rootNode, rootNode.children.length, 1)">
-              <span class="tsfont-plus"></span>
-              <span>{{ $t('term.knowledge.primaryclassification') }}</span>
+            <span class="text-title mr-sm">{{ $t('term.knowledge.navigationdirectory') }}</span>
+            <span class="text-action tsfont-plus" @click="addNode(rootNode, rootNode.children.length, 1)">
+              {{ $t('term.knowledge.primaryclassification') }}
             </span>
           </p>
           <TsTree
@@ -50,13 +47,17 @@
               ></TsFormInput>
             </template>
             <template v-slot:right="{node, index, parentNode, level}">
-              <div class="btn-list">
-                <ul class="action-group">
-                  <li class="action-item text-action" @click="addNode(parentNode, index + 1, level)"><span class="tsfont-plus">{{ $t('term.knowledge.samedirectory') }}</span></li>
-                  <li class="action-item text-action" :class="{'disabled text-grey' : level >= treeDepth}" @click="addNode(node, node.children.length, level + 1)"><span class="tsfont-plus">{{ $t('page.lowerdirectory') }}</span></li>
-                  <li class="action-item text-action" @click="removeNode(parentNode, index)"><span class="tsfont-trash-s">{{ $t('page.delete') }}</span></li>
-                </ul>
-              </div>
+              <ul class="action-group">
+                <li class="action-item" @click="addNode(parentNode, index + 1, level)">
+                  <span class="tsfont-plus">{{ $t('term.knowledge.samedirectory') }}</span>
+                </li>
+                <li class="action-item" :class="{'disabled text-grey' : level >= treeDepth}" @click="addNode(node, node.children.length, level + 1)">
+                  <span class="tsfont-plus">{{ $t('page.lowerdirectory') }}</span>
+                </li>
+                <li class="action-item" @click="removeNode(parentNode, index)">
+                  <span class="tsfont-trash-s">{{ $t('page.delete') }}</span>
+                </li>
+              </ul>
             </template>
           </TsTree>
         </div>

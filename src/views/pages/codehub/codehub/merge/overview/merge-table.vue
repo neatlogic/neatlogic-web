@@ -82,8 +82,7 @@ export default {
         type: 'time'
       }],
       tableData: {
-        tbodyList: [],
-        rowKey: 'id'
+        tbodyList: []
       }
     };
   },

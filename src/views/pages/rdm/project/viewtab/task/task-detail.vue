@@ -4,7 +4,7 @@
     :loadingShow="true"
     type="fix"
   ></Loading>
-  <div v-else>
+  <div v-else-if="isReady && issueData">
     <TsContain
       :rightWidth="250"
       :enableCollapse="true"
@@ -75,9 +75,19 @@
                 ></IssueList>
               </div>
             </TabPane>
+            <TabPane v-if="getApp('gitlab')" :label="render => renderWebhookLabel(render, getApp('gitlab').id, $t('term.rdm.gitlabcommit'))" name="gitlab">
+              <div v-if="currentTab == 'gitlab'" class="pl-nm pr-nm">
+                <GitlabList :issueId="issueData.id" :appId="getApp('gitlab').id"></GitlabList>
+              </div>
+            </TabPane>
             <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
               <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
-                <IssueAuditList v-if="currentTab === 'audit' && id && appId" :issueId="id" :appId="appId"></IssueAuditList>
+                <IssueAuditList
+                  v-if="currentTab === 'audit' && id && appId"
+                  :issueId="id"
+                  :appId="appId"
+                  :projectId="projectId"
+                ></IssueAuditList>
               </div>
             </TabPane>
           </Tabs>
@@ -125,6 +135,7 @@
       </div>
     </TsContain>
   </div>
+  <div v-else><NoData></NoData></div>
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
@@ -141,7 +152,8 @@ export default {
     StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve)
+    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve),
+    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},
@@ -155,7 +167,6 @@ export default {
       issueDataSnapshot: {},
       catalogData: {},
       statusList: [],
-      isReady: true,
       isTransferReady: true,
       appList: []
     };

@@ -122,6 +122,7 @@ export default {
         keyName: 'id',
         classname: 'repository-list',
         padding: false,
+        boxShadow: false,
         cardList: [],
         pageType: 'number',
         currentPage: 1,
