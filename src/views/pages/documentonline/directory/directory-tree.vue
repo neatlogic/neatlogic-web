@@ -7,6 +7,7 @@
         :load-data="getSubTree"
         class="ts-tree"
         @on-select-change="selectTreeNode"
+        @on-toggle-expand="toggleExpand"
       ></Tree>
     </div>
   </div>
@@ -17,11 +18,18 @@ export default {
   name: '',
   components: {
   },
-  props: {},
+  props: {
+    selectNodeConfig: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
       moduleMenuList: [],
-      routerConfig: {}
+      routerConfig: {},
+      classifiedList: [],
+      currentValue: {}
     };
   },
   beforeCreate() {},
@@ -37,17 +45,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    init() {
-      let moduleMenuList = [];
-      let moduleList = this.$store.state.topMenu.moduleList;
+    async init() {
+      let moduleMenuList = [];  
+      let moduleList = [];
       let routerConfig = this.getRouterConfig();
       this.routerConfig = routerConfig;
+      const res = await this.$store.state.topMenu.gettingModuleList;
+      if (res.Return) {
+        moduleList = res.Return;
+      }
       moduleList.forEach(m => {
-        if (routerConfig[m.moduleId]) {
+        if (routerConfig[m.group]) {
           let module = {
-            name: m.moduleName,
-            moduleGroup: m.moduleId,
-            upwardNameList: [m.moduleId],
+            name: m.groupName,
+            moduleGroup: m.group,
+            configFathList: [m.group],
             loading: false,
             children: []
           };
@@ -57,14 +69,16 @@ export default {
       //未分类
       moduleMenuList.push({
         name: '未分类文档',
-        unclassified: true,
+        moduleGroup: 'unClassified',
         loading: false,
-        upwardNameList: ['unclassified'],
+        configFathList: ['unClassified'],
         children: []
       });
       this.$set(moduleMenuList[0], 'selected', true);
       this.moduleMenuList = moduleMenuList;
+      this.currentValue = this.moduleMenuList[0];
       this.$emit('selectTreeNode', this.moduleMenuList[0]);
+      this.getClassifiedList(moduleList);
     },
     getRouterConfig() {
       const requireRouter = require.context('@/views/pages', true, /router.js$/);
@@ -79,7 +93,7 @@ export default {
                 name: item.meta.title,
                 moduleGroup: moduleId,
                 menu: item.name,
-                upwardNameList: [moduleId, item.name],
+                configFathList: [moduleId, item.name],
                 children: [],
                 loading: false
               });
@@ -89,6 +103,28 @@ export default {
         routerConfig[moduleId] = menuList;
         return routerConfig;
       }, {});
+    },
+    getClassifiedList(moduleList) {
+      this.classifiedList = [];
+      moduleList.forEach(m => {
+        if (this.routerConfig[m.group]) {
+          let module = {
+            name: m.groupName,
+            moduleGroup: m.group,
+            configFath: m.group,
+            children: []
+          };
+          if (m.group && this.routerConfig[m.group]) {
+            module.children = this.routerConfig[m.group].map(item => {
+              const { name, moduleGroup, menu, configFathList } = item;
+              const config = { name, moduleGroup, menu, configFath: configFathList.join('/') };
+              return config;
+            });
+          }
+          this.classifiedList.push(module);
+        }
+      });
+      this.$emit('getClassifiedList', this.classifiedList);
     },
     renderContent(h, { root, node, data }) {
       //渲染树的lable名称
@@ -102,22 +138,9 @@ export default {
     async getSubTree(parentTree, resolve) {
       let data = [];
       let fileList = [];
-      let res = null;
-      if (parentTree.unclassified) {
-        //未分类文档
-        res = await this.$api.documentonline.getUnclassifiedList({pageSize: 100});
-      } else {
-        res = await this.$api.documentonline.getDocumentList({pageSize: 100, moduleGroup: parentTree.moduleGroup, menu: parentTree.menu});
-      }
-      if (res.Return.tbodyList) {
-        fileList = res.Return.tbodyList.map(item => {
-          const { fileName, upwardNameList } = item;
-          const file = { name: fileName, upwardNameList, isFile: true };
-          return file;
-        });
-      }
+      fileList = await this.getFileList(parentTree.moduleGroup, parentTree.menu);
       if (!parentTree.menu && parentTree.moduleGroup && this.routerConfig[parentTree.moduleGroup]) {
-        data = this.routerConfig[parentTree.moduleGroup];
+        data = this.$utils.deepClone(this.routerConfig[parentTree.moduleGroup]);
       }
       if (fileList && fileList.length > 0) {
         data.push(...fileList);
@@ -126,24 +149,78 @@ export default {
       }
       resolve(data);
     },
+    async getFileList(moduleGroup, menu) { //获取模块目录下的文件 
+      let res = null;
+      let fileList = [];
+      if (moduleGroup === 'unClassified') {
+        //未分类文档
+        res = await this.$api.documentonline.getUnclassifiedList({pageSize: 100});
+      } else {
+        res = await this.$api.documentonline.getDocumentList({pageSize: 100, moduleGroup: moduleGroup, menu: menu});
+      }
+      if (res && res.Return && res.Return.tbodyList) {
+        fileList = res.Return.tbodyList.map(item => {
+          const { fileName, configList, filePath } = item;
+          let config = configList.find(c => c.moduleGroup == moduleGroup && c.menu == menu);
+          let configFathList = [];
+          if (config) {
+            config.moduleGroup && configFathList.push(config.moduleGroup);
+            config.menu && configFathList.push(config.menu);
+            config.menu && configFathList.push(fileName);
+          }
+          const file = { name: fileName, configFathList: configFathList, filePath, isFile: true };
+          return file;
+        });
+      }
+      return fileList;
+    },
     selectTreeNode(list, node) {
       if (node) {
         this.$set(node, 'selected', true);
         this.$emit('selectTreeNode', node);
-        this.setTreeDataSelect(node.upwardNameList, this.moduleMenuList);
+        this.setTreeDataSelect(node.configFathList, this.moduleMenuList);
       }
     },
-    setTreeDataSelect(upwardNameList, data) {
+    setTreeDataSelect(configFathList, data) {
       if (data && data.length > 0) {
         data.forEach(d => {
-          if (!this.$utils.isSame(d.upwardNameList, upwardNameList)) {
+          if (!this.$utils.isSame(d.configFathList, configFathList)) {
             this.$set(d, 'selected', false);
           }
           if (d.children && d.children.length) {
-            this.setTreeDataSelect(upwardNameList, d.children);
+            this.setTreeDataSelect(configFathList, d.children);
           }
         });
       }
+    },
+    toggleExpand(node) {
+      if (!node.expand) {
+        this.$set(node, 'children', []);
+      }
+    },
+    async updateModuleMenuList(configFathList) { //更新目录
+      await this.updateFileList(configFathList, this.moduleMenuList);
+    },
+    async updateFileList(configFathList, data) {
+      data.forEach(async item => {
+        if (item.children && this.$utils.isSame(item.configFathList, configFathList)) {
+          let children = [];
+          let fileList = await this.getFileList(item.moduleGroup, item.menu);
+          if (this.routerConfig[item.moduleGroup]) {
+            children = this.$utils.deepClone(this.routerConfig[item.moduleGroup]);
+          }
+          if (fileList && fileList.length > 0) {
+            children.push(...fileList);
+          } else {
+            children.push({name: this.$t('page.nodata'), disabled: true, nodata: true});
+          }
+          this.$set(item, 'children', children);
+        } else {
+          if (item.children && item.children.length) {
+            this.updateFileList(configFathList, item.children);
+          }
+        }
+      });
     }
   },
   filter: {},

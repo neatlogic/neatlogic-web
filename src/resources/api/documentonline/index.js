@@ -20,8 +20,14 @@ const documentonline = {
   getUnclassifiedList(data) { //未分类文档列表
     return axios.post('/api/rest/documentonline/unclassified/list', data);
   },
+  addDocumentonlineConfig(data) { //添加在线帮助文档与当前模块菜单的映射关系
+    return axios.post('/api/rest/documentonline/config/add', data);
+  },
   saveDocumentonlineConfig(data) { //保存在线帮助文档与模块菜单的映射关系
     return axios.post('/api/rest/documentonline/config/save', data);
+  },
+  deleteFileConfig(data) { //删除在线帮助文档与模块菜单的映射关系
+    return axios.post('/api/rest/documentonline/config/delete', data);
   }
 };
 

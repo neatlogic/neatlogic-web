@@ -8,8 +8,7 @@
         />
       </a>
       <span class="text-href h3 pl-lg" @click="toDocumentonlinePage()">{{ $t('term.documentonline.helpcenter') }}</span>
-      <!-- v-if="$AuthUtils.hasRole('DOCUMENTONLINE_CONFIG_MODIFY')" -->
-      <span class="pl-nm" @click="toManagePage()">文档关系维护</span>
+      <span v-if="$AuthUtils.hasRole('DOCUMENTONLINE_CONFIG_MODIFY')" class="pl-nm tsfont-setting cursor-pointer" @click="toManagePage()">关系维护</span>
     </div>
     <div class="topnav-right-container">
       <div v-if="!isDocumentonline" class="pr-lg">
