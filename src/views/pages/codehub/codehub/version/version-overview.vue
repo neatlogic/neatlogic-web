@@ -7,18 +7,12 @@
         </div>
       </template>
       <template slot="topRight">
-        <TsRow class="pr-nm">
-          <Col span="20">
-            <CombineSearcher
-              v-model="searchVal"
-              v-bind="searchConfig"
-              @change="() => searchList(1)"
-            ></CombineSearcher>
-          </Col>
+        <TsRow :gutter="0">
           <Col span="4">
             <RadioGroup
               v-model="showType"
               type="button"
+              class="mr-xs"
               @on-change="changeRadioGroup"
             >
               <Radio label="tabletab">
@@ -29,6 +23,14 @@
               </Radio>
             </RadioGroup>
           </Col>
+          <Col span="20">
+            <CombineSearcher
+              v-model="searchVal"
+              v-bind="searchConfig"
+              @change="() => searchList(1)"
+            ></CombineSearcher>
+          </Col>
+       
         </TsRow>
       </template>
       <div slot="content">

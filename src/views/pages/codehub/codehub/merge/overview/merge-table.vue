@@ -1,5 +1,5 @@
 <template>
-  <div class="padding">
+  <div class="pt-nm pr-nm pl-nm">
     <TsTable
       v-bind="tableData"
       :theadList="theadList"
@@ -8,9 +8,6 @@
       @changePageSize="changePageSize"
       @clickTr="goDetail"
     >
-      <template slot="versionId" slot-scope="{row}">
-        {{ row.versionId }}
-      </template>
       <template slot="status" slot-scope="{row}">
         {{ getStatus(row.status) }}
       </template>

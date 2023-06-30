@@ -33,7 +33,7 @@
             </div>
           </template>
           <template slot-scope="{ row }">
-            <div class="padding-sm" @click="gotoDetail(row.id)">
+            <div class="padding-sm cursor-pointer" @click="gotoDetail(row.id)">
               <TsRow>
                 <Col span="8">
                   {{ row.name }}

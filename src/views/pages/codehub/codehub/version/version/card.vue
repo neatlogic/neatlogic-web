@@ -17,9 +17,9 @@
       <div class="padding-sm">
         <TsRow class="mb-sm">
           <Col span="24">
-            <span class="text-success h3">{{ row.version }}</span>
-            <Tag v-if="row.versionTypeVo" color="default" class="ml-sm">{{ row.versionTypeVo.description }}</Tag>
-            <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]" class="ml-sm">
+            <span class="text-success h3 mr-xs">{{ row.version }}</span>
+            <Tag v-if="row.versionTypeVo" color="default">{{ row.versionTypeVo.description }}</Tag>
+            <Tag :color="typeColor[row.versionTypeStrategyRelationVo.versionStrategyType]">
               {{ typeTxt[row.versionTypeStrategyRelationVo.versionStrategyType] }}
             </Tag>
           </Col>
