@@ -1,27 +1,25 @@
 <template>
-  <div>
-    <TsContain>
-      <div slot="content">
-        <Loading v-if="loading" loadingShow type="fix"></Loading>
-        <TsCard
-          v-else
-          v-bind="cardConfig"
-          :cardList="credentialList"
-          class="credential-container"
-        >
-          <template slot-scope="{ row }">
-            <div>
-              <div class="credential-img">
-                <span :class="getClassName(row.repoType)"></span>
-              </div>
-              <CredentialEdit :credentialData="row">
-              </CredentialEdit>
+  <TsContain>
+    <div slot="content">
+      <Loading v-if="loading" loadingShow type="fix"></Loading>
+      <TsCard
+        v-else
+        v-bind="cardConfig"
+        :cardList="credentialList"
+        class="credential-container"
+      >
+        <template slot-scope="{ row }">
+          <div>
+            <div class="credential-img">
+              <span :class="getClassName(row.repoType)"></span>
             </div>
-          </template>
-        </TsCard>
-      </div>
-    </TsContain>
-  </div>
+            <CredentialEdit :credentialData="row">
+            </CredentialEdit>
+          </div>
+        </template>
+      </TsCard>
+    </div>
+  </TsContain>
 </template>
 <script>
 export default {
@@ -118,19 +116,6 @@ export default {
   .tscard-body {
     position: relative;
     padding-left: 80px !important;
-    div.line2 {
-      line-height: 2.2;
-    }
-    div.line3 {
-      line-height: 1.8;
-    }
-    .text-tip {
-      width: 60px;
-      display: inline-block;
-      text-align-last: justify;
-      text-align: justify;
-      text-justify: distribute-all-lines;
-    }
     .credential-img {
       position: absolute;
       top: 50%;

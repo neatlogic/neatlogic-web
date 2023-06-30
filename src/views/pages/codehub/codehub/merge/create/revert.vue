@@ -70,7 +70,7 @@
         </Row>
       </div>
     </div>
-    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" style="padding-top:10px;">
+    <div v-if="allIssue(selectIssuelist,addLi) && allIssue(selectIssuelist,addLi).length>0" class="pt-sm">
       <TsTable v-bind="showtabledata" :tbodyList="allIssue (selectIssuelist,addLi)||[]">
         <template slot="sourceId" slot-scope="{row}">
           {{ getsource(row.sourceId) }}

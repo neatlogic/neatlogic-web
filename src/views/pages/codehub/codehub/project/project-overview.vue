@@ -33,8 +33,11 @@
           </template>
           <template slot="projectList" slot-scope="{row}">
             <template v-if="row.projectList.length>0">
-              <template v-for="(por,pindex) in row.projectList">
-                <div :key="pindex" class="projectList"><Tag>{{ por.source }}</Tag><Tag :key="pindex">{{ por.projectName }}</Tag></div>
+              <template v-for="(item, pIndex) in row.projectList">
+                <Tag :key="pIndex">
+                  <span class="text-primary pr-xs">{{ item.source }}</span>
+                  {{ item.projectName }}
+                </Tag>
               </template>
             </template>
           </template>
@@ -49,12 +52,11 @@
         </TsTable>
       </div>
     </TsContain>
-    <ProjectEdit
-      v-if="isEdit"
-      :projectList="projectList"
+    <ProjectEditDialog
+      v-if="isShowProjectEdit"
       :projectData="projectData"
       @close="close"
-    ></ProjectEdit>
+    ></ProjectEditDialog>
   </div>
 </template>
 
@@ -64,18 +66,15 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    ProjectEdit: resolve => require(['./edit/project-edit'], resolve)
+    ProjectEditDialog: resolve => require(['./project-edit-dialog'], resolve)
   },
   filters: {},
   props: [''],
   data() {
     return {
       loadingShow: true,
-      appSystemId: null,
-      appModuleId: null,
       tableData: {
         multiple: true,
-        hideAction: false,
         theadList: [{
           key: 'selection'
         }, {
@@ -94,10 +93,9 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      isEdit: false,
+      isShowProjectEdit: false,
       projectData: {},
       selectList: [],
-      projectList: [],
       searchVal: {},
       searchConfig: {
         search: true,
@@ -128,8 +126,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getList();
-    this.getProjectdetail();
+    this.getProjectList();
   },
   beforeMount() {},
   mounted() {},
@@ -140,28 +137,23 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    close(isReload) {
-      this.isEdit = false;
+    close(needRefresh) {
+      this.isShowProjectEdit = false;
       this.projectData = {};
-      if (isReload) {
-        this.getSearch();
+      if (needRefresh) {
+        this.changeCurrent(1);
       }
     },
     changePageSize(pageSize) {
       this.tableData.currentPage = 1;
       this.tableData.pageSize = pageSize;
-      this.getList();
+      this.getProjectList();
     },
     changeCurrent(currentPage) {
       this.tableData.currentPage = currentPage;
-      this.getList();
-    },
-    getSearch() {
-      this.tableData.currentPage = 1;
-      this.getList();
+      this.getProjectList();
     },
     updateAppModule(val) {
-      this.appModuleId = '';
       if (val) {
         this.searchConfig.searchList.forEach((item) => {
           if (item && (item.name == 'appModuleId')) {
@@ -178,7 +170,7 @@ export default {
         });
       }
     },
-    getList() {
+    getProjectList() {
       let param = {
         pageSize: this.tableData.pageSize,
         currentPage: this.tableData.currentPage,
@@ -225,18 +217,16 @@ export default {
           this.$api.codehub.project.delete(param).then((res) => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.getSearch();
+              this.changeCurrent(1);
               this.selectList = []; // 删除成功，隐藏批量删除图标
               vnode.isShow = false;
-            } else {
-              this.$Message.error(res.Message);
             }
           });
         }
       });
     },
     editProject(row) {
-      this.isEdit = true;
+      this.isShowProjectEdit = true;
       if (row) {
         this.projectData = row;
       } else {
@@ -245,11 +235,6 @@ export default {
     },
     getSelected(li, list) {
       this.selectList = list;
-    },
-    getProjectdetail() {
-      this.$api.codehub.project.getProject().then(res => {
-        this.projectList = res.Return;
-      });
     }
   },
   computed: {},
@@ -257,28 +242,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.text-label {
-  line-height: 54px;
-}
-.projectList{
-  display: inline-block;
-  &:not(:last-child){
-    margin-right: 4px;
-  }
-  .ivu-tag:first-child{
-    margin-right: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    background: @default-op;
-    /deep/ .ivu-tag-text{
-      color: @default-primary-color;
-    }
-  }
-  .ivu-tag:last-child{
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-left: -1px;
-  }
-}
 </style>
