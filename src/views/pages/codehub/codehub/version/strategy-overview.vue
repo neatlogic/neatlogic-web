@@ -10,6 +10,7 @@
         <CombineSearcher
           v-model="searchVal"
           v-bind="searchConfig"
+          class="mr-xs"
           @change="() => changeCurrentPage(1)"
         ></CombineSearcher>
       </template>
@@ -107,11 +108,12 @@ export default {
         xl: 24,
         xxl: 24,
         padding: false,
+        boxShadow: false,
         cardList: [],
         pageType: 'number',
         currentPage: 1,
         pageSize: 20,
-        rowNum: 0     
+        rowNum: 0
       },
       typeList: {
         branch: {name: this.$t('term.codehub.branchmerge'), color: 'primary'},

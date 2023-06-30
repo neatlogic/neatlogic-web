@@ -148,7 +148,8 @@ export default {
         xxl: 24,
         keyName: 'id',
         classname: 'repository-list',
-        cardList: []
+        cardList: [],
+        boxShadow: false
       },
       issueList: [{
         title: this.$t('term.codehub.issuesnumber'),
