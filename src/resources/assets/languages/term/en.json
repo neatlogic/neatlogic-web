@@ -2131,7 +2131,9 @@
     "copycommitword": "Copy Source Keyword",
     "gitlabcommit": "Gitlab submission",
     "copyissueid": "Copy ID",
-    "projectmanager": "Project leader"
+    "projectmanager": "Project leader",
+    "new": "new",
+    "pleaseselectrole": "Please check the user roles that need to be deleted"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

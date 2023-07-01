@@ -8,11 +8,10 @@
         <AppTab v-if="projectId" :projectId="projectId"></AppTab>
       </template>
       <template v-slot:content>
-        <h2 class="text-grey">{{ projectData.name }}</h2>
-        <div class="mt-md mb-md">{{ projectData.description }}</div>
-        <div class="grid">
+        <h2>{{ projectData.name }}</h2>
+        <div class="mt-md mb-md text-grey">{{ projectData.description }}</div>
+        <div>
           <div><h3 class="text-grey">{{ $t('term.rdm.projectmember') }}</h3></div>
-          <div style="text-align: right"><a class="tsfont-plus" @click="addUser()">成员</a></div>
         </div>
         <div class="mt-md mb-md bg-op radius-md padding">
           <div
@@ -71,7 +70,6 @@
         </div>
       </template>
     </TsContain>
-    <UserAdd v-if="isUserAddShow" :projectId="projectId" @close="closeAddUser"></UserAdd>
   </div>
 </template>
 <script>
@@ -79,8 +77,7 @@ export default {
   name: '',
   components: {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    UserAdd: resolve => require(['@/views/pages/rdm/project/viewtab/project/user-add.vue'], resolve)
+    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve)
   },
   props: {},
   data() {
@@ -107,15 +104,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    addUser() {
-      this.isUserAddShow = true;
-    },
-    closeAddUser(needRefresh) {
-      if (needRefresh) {
-        this.getProjectById();
-      }
-      this.isUserAddShow = false;
-    },
     getProjectById() {
       this.$api.rdm.project.getProjectById(this.projectId).then(res => {
         this.projectData = res.Return;

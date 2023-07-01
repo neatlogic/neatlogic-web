@@ -1,13 +1,9 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @close="close">
+  <TsDialog v-bind="dialogConfig" @on-close="close()" @on-ok="save()">
     <template v-slot>
       <div>
-        <TsForm ref="form" v-model="projectUserData" :item-list="formConfig"></TsForm>
+        <TsForm ref="form" :item-list="formConfig"></TsForm>
       </div>
-    </template>
-    <template v-slot:footer>
-      <Button @click="close()">{{ $t('page.cancel') }}</Button>
-      <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -18,7 +14,8 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
-    projectId: {type: Number}
+    mode: { type: String, default: 'save' }, //保存模式，save马上保存，emit把数据通过@save往外送
+    projectId: { type: Number }
   },
   data() {
     return {
@@ -39,6 +36,10 @@ export default {
           url: '/api/rest/universal/enum/get',
           params: {
             enumClass: 'ProjectUserType'
+          },
+          onChange: (val, opt) => {
+            this.projectUserData.userType = opt.value;
+            this.projectUserData.userTypeName = opt.text;
           }
         },
         {
@@ -48,7 +49,10 @@ export default {
           groupList: ['user'],
           multiple: true,
           transfer: true,
-          label: this.$t('page.user')
+          label: this.$t('page.user'),
+          onChange: val => {
+            this.projectUserData.userIdList = val;
+          }
         }
       ]
     };
@@ -71,12 +75,17 @@ export default {
       const form = this.$refs['form'];
       if (form && form.valid()) {
         this.projectUserData.projectId = this.projectId;
-        this.$api.rdm.project.saveProjectUser(this.projectUserData).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.close(true);
-          }
-        });
+        if (this.mode === 'save') {
+          this.$api.rdm.project.saveProjectUser(this.projectUserData).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.savesuccess'));
+              this.close(true);
+            }
+          });
+        } else {
+          this.$emit('save', this.projectUserData.userType, this.projectUserData.userTypeName, this.projectUserData.userIdList);
+          this.$emit('close');
+        }
       }
     }
   },

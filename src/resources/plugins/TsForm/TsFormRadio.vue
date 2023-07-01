@@ -188,7 +188,7 @@ export default {
         _this.$emit('on-change', _this.currentValue, selectedItem || null);
       }
       if (!isSame) {
-        typeof _this.onChange == 'function' && _this.onChange(_this.currentValue);
+        typeof _this.onChange == 'function' && _this.onChange(_this.currentValue, selectedItem || null);
         if (_this.currentValidList.length > 0) {
           _this.valid(_this.currentValue);
         }
