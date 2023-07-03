@@ -136,7 +136,7 @@ export default {
       }
     },
     getAppByProjectId() {
-      this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1}).then(res => {
+      this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1, needSystemAttr: 1}).then(res => {
         this.appList = res.Return;
         const list = this.appList.filter(d => d.hasIssue);
         if (list.length > 0) {
@@ -149,7 +149,7 @@ export default {
   computed: {
     issueAppList() {
       if (this.appList && this.appList.length > 0) {
-        return this.appList.filter(d => d.hasIssue);
+        return this.appList.filter(d => d.hasIteration);
       }
       return [];
     }
