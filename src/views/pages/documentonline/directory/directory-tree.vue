@@ -19,9 +19,9 @@ export default {
   components: {
   },
   props: {
-    selectNodeConfig: {
-      type: Object,
-      default: () => {}
+    isFile: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -29,7 +29,8 @@ export default {
       moduleMenuList: [],
       routerConfig: {},
       classifiedList: [],
-      currentValue: {}
+      currentValue: {},
+      fileIndex: null
     };
   },
   beforeCreate() {},
@@ -159,12 +160,12 @@ export default {
         res = await this.$api.documentonline.getDocumentList({pageSize: 100, moduleGroup: moduleGroup, menu: menu});
       }
       if (res && res.Return && res.Return.tbodyList) {
-        fileList = res.Return.tbodyList.map(item => {
+        fileList = res.Return.tbodyList.map((item, index) => {
           const { fileName, configList, filePath } = item;
           let configFathList = [moduleGroup];
-          menu && configFathList.push(config.menu);
+          menu && configFathList.push(menu);
           configFathList.push(fileName);
-          const file = { name: fileName, moduleGroup: moduleGroup, menu: menu || '', configFathList: configFathList, configList, filePath, isFile: true };
+          const file = { name: fileName, moduleGroup: moduleGroup, menu: menu || '', configFathList: configFathList, configList, filePath, fileIndex: index, isFile: true };
           return file;
         });
       }
@@ -172,6 +173,7 @@ export default {
     },
     selectTreeNode(list, node) {
       if (node) {
+        this.fileIndex = node.fileIndex;
         this.$set(node, 'selected', true);
         this.$emit('selectTreeNode', node);
         this.setTreeDataSelect(node.configFathList, this.moduleMenuList);
@@ -194,18 +196,22 @@ export default {
         this.$set(node, 'children', []);
       }
     },
-    async updateModuleMenuList(configFathList) { //更新目录
-      await this.updateFileList(configFathList, this.moduleMenuList);
+    async updateModuleMenuList(configFathList, type) { //更新目录
+      await this.updateFileList(configFathList, this.moduleMenuList, type);
     },
-    async updateFileList(configFathList, data) {
+    async updateFileList(configFathList, data, type) {
       data.forEach(async item => {
         if (item.children && this.$utils.isSame(item.configFathList, configFathList)) {
           let children = [];
           let fileList = await this.getFileList(item.moduleGroup, item.menu);
-          if (this.routerConfig[item.moduleGroup]) {
+          if (!item.menu && this.routerConfig[item.moduleGroup]) {
             children = this.$utils.deepClone(this.routerConfig[item.moduleGroup]);
           }
           if (fileList && fileList.length > 0) {
+            if (this.isFile && type) { //type(add/delete)：添加或者移除关联关系时，需要更新选中的文档
+              fileList[this.fileIndex] && this.$set(fileList[this.fileIndex], 'selected', true);
+              this.$emit('selectTreeNode', fileList[this.fileIndex]);
+            }
             children.push(...fileList);
           } else {
             children.push({name: this.$t('page.nodata'), disabled: true, nodata: true});

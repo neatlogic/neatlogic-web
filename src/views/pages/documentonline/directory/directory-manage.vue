@@ -10,14 +10,19 @@
             @change="searchDocument(1)"
           ></InputSearcher>
         </div>
-        <div v-else class="action-group text-right">
+        <div v-else-if="filePath" class="action-group text-right">
           <span v-if="moduleGroup !== 'unClassified' && !isRelated(fileConfig)" class="tsfont-bind action-item" @click="addClassification(fileConfig)">{{ $t('term.documentonline.relcurrclass') }}</span>
           <span class="action-item tsfont-plus" @click="openClassifyDialog(fileConfig)">{{ $t('page.add') }}</span>
           <span v-if="moduleGroup !== 'unClassified' && isRelated(fileConfig)" class="action-item pl-sm tsfont-unbind" @click="delClassification(fileConfig)">{{ $t('term.process.move') }}</span>
         </div>
       </template>
       <template v-slot:sider>
-        <DirectoryTree ref="directoryTree" @selectTreeNode="selectTreeNode" @getClassifiedList="getClassifiedList"></DirectoryTree>
+        <DirectoryTree
+          ref="directoryTree"
+          :isFile="isFile"
+          @selectTreeNode="selectTreeNode"
+          @getClassifiedList="getClassifiedList"
+        ></DirectoryTree>
       </template>
       <template v-slot:content>
         <div class="document-main">
@@ -49,6 +54,9 @@
               v-if="filePath"
               :filePath="filePath"
             ></DocumentonlineContent>
+            <div v-else>
+              <NoData></NoData>
+            </div>
           </div>
         </div>
       </template>
@@ -169,26 +177,30 @@ export default {
       this.isShowDialog = true;
     },
     selectTreeNode(node) {
-      console.log(node);
       this.filePath = '';
-      this.moduleGroup = node.moduleGroup;
-      this.menu = node.menu || '';
-      this.isFile = !!node.isFile;
-      this.$nextTick(() => {
-        if (this.isFile) {
-          this.fileConfig = node;
-          this.filePath = node.filePath;
-        } else {
-          this.getDocumentList();
-        }
-      });
+      this.isFile = false;
+      this.moduleGroup = '';
+      this.menu = '';
+      this.fileConfig = {};
+      if (node) {
+        this.moduleGroup = node.moduleGroup;
+        this.menu = node.menu || '';
+        this.isFile = !!node.isFile;
+        this.$nextTick(() => {
+          if (this.isFile) {
+            this.fileConfig = node;
+            this.filePath = node.filePath;
+          } else {
+            this.getDocumentList(1);
+          }
+        });
+      }
     },
     addClassification(item) {
-      this.filePath = item.filePath;
       this.$api.documentonline.addDocumentonlineConfig({
         moduleGroup: this.moduleGroup,
         menu: this.menu,
-        filePath: this.filePath
+        filePath: item.filePath
       }).then(res => {
         if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -210,24 +222,27 @@ export default {
           }).then(res => {
             if (res.Status === 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
-              this.updateFileList();
+              this.filePath = '';
+              this.updateFileList('delete');
               vnode.isShow = false;
             }
           });
         }
       });
     },
-    updateFileList() {
+    updateFileList(type) {
       let configFathList = [this.moduleGroup];
       if (this.menu) {
         configFathList.push(this.menu);
       }
-      if (this.keyword) {
-        this.searchDocument(1);
-      } else {
-        this.getDocumentList(1);
+      if (!this.isFile) {
+        if (this.keyword) {
+          this.searchDocument(1);
+        } else {
+          this.getDocumentList(1);
+        }
       }
-      this.$refs.directoryTree.updateModuleMenuList(configFathList);
+      this.$refs.directoryTree.updateModuleMenuList(configFathList, type);
     },
     closeFileDetailDialog(type) { //关闭文档详情弹框
       if (type === 'add') {
