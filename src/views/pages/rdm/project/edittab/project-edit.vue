@@ -12,7 +12,7 @@
             v-for="(row, index) in appType.cardList"
             :key="index"
             class="project-item padding radius-md mb-md cursor"
-            :class="projectData.templateId === row.id?'bg-selected border-primary':'border-primary-grey bg-op'"
+            :class="projectData.templateId === row.id ? 'bg-selected border-primary' : 'border-primary-grey bg-op'"
             @click="selectTemplate(row.id)"
           >
             <div>
@@ -38,6 +38,26 @@
           </div>
         </div>
       </template>
+      <template v-slot:userList>
+        <div class="bg-op radius-md padding">
+          <div v-for="(user, index) in projectData.userList" :key="index" class="mr-md user-item">
+            <div class="user-item-edit tsfont-close text-info cursor" @click.stop="removeUser(user)"></div>
+            <div><UserCard
+              alignMode="vertical"
+              :uuid="user.userId"
+              :hideAvatar="false"
+              :iconSize="32"
+            ></UserCard></div>
+            <div v-if="user.userTypeList && user.userTypeList.length > 0" class="text-grey">
+              <span>{{ user.userTypeList[0].userTypeName }}</span>
+              <span v-if="user.isNew" class="text-success">·{{ $t('term.rdm.new') }}</span>
+            </div>
+          </div>
+          <div style="display: inline-block; text-align: center; font-size: 25px" class="padding-sm" @click="addUser">
+            <span class="tsfont-plus text-info cursor"></span>
+          </div>
+        </div>
+      </template>
       <template v-slot:color>
         <ColorPicker
           v-model="projectData.color"
@@ -51,14 +71,29 @@
     <div style="text-align: right" class="mt-md">
       <Button v-if="mode === 'window'" type="primary" @click="save">{{ $t('page.save') }}</Button>
     </div>
+    <UserAdd
+      v-if="isUserAddShow"
+      mode="emit"
+      :projectId="id"
+      @save="setProjectUser"
+      @close="closeAddUser"
+    ></UserAdd>
+    <UserDelete
+      v-if="isUserDeleteShow"
+      :projectUser="currentProjectUser"
+      @close="closeDelUser"
+    >
+    </UserDelete>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
-    //TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    UserAdd: resolve => require(['@/views/pages/rdm/project/edittab/project/user-add.vue'], resolve),
+    UserDelete: resolve => require(['@/views/pages/rdm/project/edittab/project/user-delete.vue'], resolve)
   },
   props: {
     id: { type: Number },
@@ -66,6 +101,9 @@ export default {
   },
   data() {
     return {
+      isUserAddShow: false,
+      isUserDeleteShow: false,
+      currentProjectUser: null,
       formConfig: [
         {
           type: 'text',
@@ -86,18 +124,8 @@ export default {
           label: this.$t('term.rdm.projecttype')
         },
         {
-          type: 'userselect',
-          name: 'leaderIdList',
-          transfer: true,
-          groupList: ['user'],
-          label: this.$t('page.responsibleperson'),
-          desc: this.$t('term.rdm.managerdesc')
-        },
-        {
-          type: 'userselect',
-          name: 'userIdList',
-          transfer: true,
-          groupList: ['user'],
+          type: 'slot',
+          name: 'userList',
           label: this.$t('term.rdm.projectmember')
         },
         {
@@ -139,6 +167,88 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    removeUser(user) {
+      if (user.isNew) {
+        const index = this.projectData.userList.findIndex(d => d === user);
+        if (index > -1) {
+          console.log(index);
+          this.projectData.userList.splice(index, 1);
+        }
+      } else {
+        this.currentProjectUser = user;
+        this.isUserDeleteShow = true;
+      }
+    },
+    setProjectUser(userType, userTypeName, userIdList) {
+      if (this.projectData) {
+        if (this.projectData.userList) {
+          userIdList.forEach(uid => {
+            uid = uid.replace('user#', '');
+            let isExists = false;
+            this.projectData.userList.forEach(user => {
+              if (user.userId === uid && user.userTypeList.find(ut => ut.userType === userType)) {
+                isExists = true;
+              }
+              if (isExists) {
+                return false;
+              }
+            });
+            if (!isExists) {
+              this.projectData.userList.push({
+                isNew: true,
+                userId: uid,
+                userTypeList: [
+                  {
+                    userType: userType,
+                    userTypeName: userTypeName
+                  }
+                ]
+              });
+            }
+          });
+        } else {
+          this.$set(this.projectData, 'userList', []);
+          userIdList.forEach(uid => {
+            this.projectData.userList.push({
+              isNew: true,
+              userId: uid,
+              userTypeList: [
+                {
+                  userType: userType,
+                  userTypeName: userTypeName
+                }
+              ]
+            });
+          });
+        }
+      }
+    },
+    addUser() {
+      this.isUserAddShow = true;
+    },
+    closeAddUser(needRefresh) {
+      if (needRefresh) {
+        this.getProjectById();
+      }
+      this.isUserAddShow = false;
+    },
+    closeDelUser(userTypeList) {
+      this.isUserDeleteShow = false;
+      if (userTypeList && userTypeList.length > 0) {
+        for (let i = this.currentProjectUser.userTypeList.length - 1; i >= 0; i--) {
+          const userType = this.currentProjectUser.userTypeList[i];
+          if (userTypeList.includes(userType.userType)) {
+            this.currentProjectUser.userTypeList.splice(i, 1);
+          }
+        }
+        if (this.currentProjectUser.userTypeList.length == 0) {
+          const index = this.projectData.userList.findIndex(d => d === this.currentProjectUser);
+          if (index > -1) {
+            this.projectData.userList.splice(index, 1);
+          }
+        }
+      }
+    },
     getProjectById() {
       if (this.id) {
         this.$api.rdm.project.getProjectById(this.id).then(res => {
@@ -156,6 +266,7 @@ export default {
             if (callback && typeof callback === 'function') {
               callback();
             }
+            this.getProjectById();
           }
         });
       }
@@ -179,5 +290,21 @@ export default {
   border-width: 1px;
   border-style: solid;
 }
-
+.user-item {
+  display: inline-block;
+  text-align: center;
+  position: relative;
+}
+.user-item:hover {
+  .user-item-edit {
+    display: inline-block;
+  }
+}
+.user-item-edit {
+  display: none;
+  position: absolute;
+  right: 0px;
+  top: -10px;
+  z-index: 99;
+}
 </style>

@@ -1,37 +1,40 @@
 <template>
   <div>
-    <TsFormItem
-      v-for="(attr, index) in attrList"
-      :key="index"
-      class="relative"
-      :label="attr.label"
-      labelPosition="top"
-      :labelWidth="120"
-    >
-      <div v-if="!issueData.isEnd">
-        <AttrHandler
-          v-if="attr._isReady"
-          ref="attrHandler"
-          border="none"
-          :projectId="projectId"
-          :readonly="editingField != 'attr_' + attr.id"
-          :attrConfig="attr"
-          :issueData="issueDataLocal"
-          @click.native="activeController('attr_' + attr.id)"
-        ></AttrHandler>
-        <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
-          <span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
-          <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
-          <Icon
-            v-if="isEditing"
-            type="ios-loading"
-            size="16"
-            class="loading"
-          ></Icon>
+    <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
+    <div v-else>
+      <TsFormItem
+        v-for="(attr, index) in attrList"
+        :key="index"
+        class="relative"
+        :label="attr.label"
+        labelPosition="top"
+        :labelWidth="120"
+      >
+        <div v-if="!issueData.isEnd && (projectData.isOwner || projectData.isMember || projectData.isLeader)">
+          <AttrHandler
+            v-if="attr._isReady"
+            ref="attrHandler"
+            border="none"
+            :projectId="projectId"
+            :readonly="editingField != 'attr_' + attr.id"
+            :attrConfig="attr"
+            :issueData="issueDataLocal"
+            @click.native="activeController('attr_' + attr.id)"
+          ></AttrHandler>
+          <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
+            <span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
+            <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
+            <Icon
+              v-if="isEditing"
+              type="ios-loading"
+              size="16"
+              class="loading"
+            ></Icon>
+          </div>
         </div>
-      </div>
-      <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
-    </TsFormItem>
+        <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
+      </TsFormItem>
+    </div>
   </div>
 </template>
 <script>
@@ -49,6 +52,8 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
+      projectData: {},
       issueDataLocal: null,
       attrList: [],
       editingField: null,
@@ -64,6 +69,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.getProjectById();
     this.searchAppAttr();
   },
   beforeMount() {},
@@ -75,6 +81,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getProjectById() {
+      this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+        this.projectData = res.Return;
+        this.isLoading = false;
+      });
+    },
     searchAppAttr() {
       if (this.appId) {
         this.$api.rdm.app.searchAppAttr({ appId: this.appId, isActive: 1 }).then(res => {

@@ -4,6 +4,9 @@ const project = {
   saveAppAttr(params) {
     return axios.post('/api/rest/rdm/project/app/attr/save', params);
   },
+  saveProjectUser(params) {
+    return axios.post('/api/rest/rdm/project/user/save', params);
+  },
   updateAttrSort(params) {
     return axios.post('/api/rest/rdm/project/app/attr/updatesort', params);
   },

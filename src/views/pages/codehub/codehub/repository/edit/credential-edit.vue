@@ -13,7 +13,7 @@
         <TsFormInput
           v-model.trim="editConfig.repoCredential"
           width="75%"
-          :validateList="validateList"
+          :validateList="['required']"
           :type="editConfig.credType =='password'?'password':'text'"
         ></TsFormInput>
       </template>
@@ -22,7 +22,7 @@
       </template>
     </TsForm>
     <div class="edit-btn">
-      <Button type="primary" :disabled="saving" @click="saveEdit">{{ $t('page.save') }}</Button>
+      <Button type="primary" @click="saveEdit">{{ $t('page.save') }}</Button>
     </div>
   </div>
 </template>
@@ -109,9 +109,7 @@ export default {
         isHidden: true,
         name: 'repoCredential',
         validateList: ['required']
-      }],
-      validateList: ['required'],
-      saving: false//保存中时不可以再调保存的接口
+      }]
     };
   },
   beforeCreate() {},
@@ -138,27 +136,23 @@ export default {
       }
     },
     saveEdit() {
-      if (this.$refs.editform.valid()) {
-        let param = {
-          repoType: this.editConfig.repoType,
-          credType: this.editConfig.credType,
-          repoUsername: null,
-          repoCredential: this.editConfig.repoCredential        
-        };
-        if (this.editConfig.credType == 'password') {
-          Object.assign(param, {
-            repoUsername: this.editConfig.repoUsername
-          });
-        }
-        this.saving = true;
-        this.$api.codehub.credential.save(param).then((res) => {
-          if (res && res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        }).finally(() => {
-          this.saving = false;
-        });
+      if (!this.$refs.editform.valid()) {
+        return false;
       }
+      let param = {
+        repoType: this.editConfig.repoType,
+        credType: this.editConfig.credType,
+        repoUsername: null,
+        repoCredential: this.editConfig.repoCredential        
+      };
+      if (this.editConfig.credType == 'password') {
+        param.repoUsername = this.editConfig.repoUsername;
+      }
+      this.$api.codehub.credential.save(param).then((res) => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+        }
+      });
     },
     updateConfig(type) {
       //根据仓库类型更新下面的选项值（svn的通过用户名密码认证，gitlab的可以通过用户名密码认证，也可以通过token）

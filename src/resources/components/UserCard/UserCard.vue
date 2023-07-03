@@ -47,7 +47,7 @@
         >
           <Loading v-if="isLoading" loadingShow></Loading>
           <template v-else>
-            <div class="userinfo-box radius-sm" :class="!multiple ? 'border-color-primary userinfo-box-border-top ' : ''">
+            <div class="userinfo-box radius-sm">
               <UserInfo v-if="!multiple" :userInfo="userInfo"></UserInfo>
               <div v-else-if="initType == 'team' || initType == 'role'" class="padding">
                 <TsRow v-if="userList.length > 0" :gutter="0">

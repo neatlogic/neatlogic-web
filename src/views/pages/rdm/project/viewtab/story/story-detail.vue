@@ -13,7 +13,6 @@
       <template v-slot:topLeft>
         <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
-      <template v-slot:topRight></template>
       <template v-slot:sider>
         <MyDoingIssueList
           v-if="projectId && appId && id"

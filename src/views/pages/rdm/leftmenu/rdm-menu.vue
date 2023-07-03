@@ -13,9 +13,14 @@
           class="link"
           :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
-          <a class="cursor tsfont-blocks" style="position:relative" @click="goTo('/project/' + project.id)">
+          <a class="cursor tsfont-blocks" style="position: relative" @click="goTo('/project/' + project.id)">
             <span>{{ project.name }}</span>
-            <div style="position:absolute;right:0px;top:0px" class="text-grey cursor tsfont-setting" @click.stop="toProjectManage(project.id)"></div>
+            <div
+              v-if="project.isOwner || project.isLeader"
+              style="position: absolute; right: 0px; top: 0px"
+              class="text-grey cursor tsfont-setting"
+              @click.stop="toProjectManage(project.id)"
+            ></div>
           </a>
         </li>
       </ul>
@@ -24,7 +29,6 @@
   </div>
 </template>
 <script>
-
 export default {
   name: 'RdmMenu',
   components: {
@@ -34,7 +38,7 @@ export default {
     return {
       isProjectDialogShow: false,
       projectList: [],
-      searchParam: {}
+      searchParam: { isMine: 1 }
     };
   },
   created() {
@@ -65,8 +69,7 @@ export default {
       });
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     '$store.state.leftMenu.rdmProjectCount'(newvalue) {
       this.searchProject();
@@ -74,5 +77,4 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

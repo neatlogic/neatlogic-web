@@ -17,19 +17,6 @@
       <template v-slot:topLeft>
         <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
-      <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
-          <div class="action-item">
-            <Dropdown :transfer="true" placement="bottom-end">
-              <Button type="primary" ghost>
-                <span>{{ $t('page.more') }}</span>
-                <span class="tsfont-drop-down"></span>
-              </Button>
-              <DropdownMenu slot="list"></DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
-      </template>
       <template v-slot:sider><MyDoingIssueList
         v-if="projectId && appId && id"
         :projectId="projectId"
@@ -48,7 +35,7 @@
       </template>
       <div slot="content" class="ci-content border-color">
         <div class="middle bg-block radius-lg">
-          <Tabs v-model="currentTab">
+          <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="render => renderEditContentTab(render, $t('page.detailinfo'))" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
                 <ContentHandler

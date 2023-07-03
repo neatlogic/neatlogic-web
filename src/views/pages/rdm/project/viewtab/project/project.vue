@@ -8,9 +8,30 @@
         <AppTab v-if="projectId" :projectId="projectId"></AppTab>
       </template>
       <template v-slot:content>
-        <h3>{{ projectData.name }}</h3>
-        <div class="mt-md mb-md">{{ projectData.description }}</div>
-        <h4>{{ $t('page.activity') }}</h4>
+        <h2>{{ projectData.name }}</h2>
+        <div class="mt-md mb-md text-grey">{{ projectData.description }}</div>
+        <div>
+          <div><h3 class="text-grey">{{ $t('term.rdm.projectmember') }}</h3></div>
+        </div>
+        <div class="mt-md mb-md bg-op radius-md padding">
+          <div
+            v-for="(user, index) in projectData.userList"
+            :key="index"
+            class="mr-md"
+            style="display: inline-block; text-align: center"
+          >
+            <div><UserCard
+              alignMode="vertical"
+              :uuid="user.userId"
+              :hideAvatar="false"
+              :iconSize="32"
+            ></UserCard></div>
+            <div v-if="user.userTypeList && user.userTypeList.length > 0" class="text-grey">
+              {{ user.userTypeList[0].userTypeName }}
+            </div>
+          </div>
+        </div>
+        <h3 class="text-grey">{{ $t('page.activity') }}</h3>
         <div class="mt-md mb-md bg-op radius-md padding">
           <div class="mb-md">
             <ButtonGroup v-model="groupBy" size="small">
@@ -20,7 +41,7 @@
           </div>
           <div v-if="groupBy === 'day'">
             <div v-for="(day, index) in dayList" :key="index" class="dateblock">
-              <div class="squareblock" style="height: 50px;">
+              <div class="squareblock" style="height: 50px">
                 <div
                   v-for="hour in day.hourList"
                   :key="hour"
@@ -29,7 +50,7 @@
                   :style="getIssueStyle(day.day, hour)"
                 ></div>
               </div>
-              <div style="text-align:center" class="text-grey fz10">{{ day.day }}</div>
+              <div style="text-align: center" class="text-grey fz10">{{ day.day }}</div>
             </div>
           </div>
           <div v-else-if="groupBy === 'month'">
@@ -43,7 +64,7 @@
                   :style="getIssueStyle(month.month, day)"
                 ></div>
               </div>
-              <div style="text-align:center" class="text-grey fz10">{{ month.month }}</div>
+              <div style="text-align: center" class="text-grey fz10">{{ month.month }}</div>
             </div>
           </div>
         </div>
@@ -55,16 +76,17 @@
 export default {
   name: '',
   components: {
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve)
   },
-  props: {
-  },
+  props: {},
   data() {
     return {
       projectId: null,
       groupBy: 'day',
       projectData: {},
-      issueCountList: []
+      issueCountList: [],
+      isUserAddShow: false
     };
   },
   beforeCreate() {},
@@ -159,10 +181,7 @@ export default {
         let date = new Date(timestamp);
 
         let month = (date.getMonth() + 1).toString().padStart(2, '0');
-        let day = date
-          .getDate()
-          .toString()
-          .padStart(2, '0');
+        let day = date.getDate().toString().padStart(2, '0');
         let hourList = [];
 
         // 如果是当天，则只取当前时间之前的小时数
@@ -188,6 +207,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.grid {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
 .dateblock {
   display: inline-block;
   vertical-align: top;
