@@ -151,7 +151,7 @@
     "threaddump": "线程快照",
     "sqldump": "SQL监控",
     "databasefragment": "数据库碎片整理",
-    "licensemanage": "更新许可",
+    "licensemanage": "查看许可",
     "batchoperation": "批量操作",
     "user": "用户和权限",
     "message": "消息和公告",

@@ -2,29 +2,26 @@
   <div>
     <TsContain>
       <template v-slot:content>
-        <div v-if="licenseData" class="content-grid">
-          <div class="text-grey">{{ $t('term.framework.authorizedto') }}</div>
-          <div>{{ licenseData.purchaser }}</div>
-          <div class="text-grey">{{ $t('term.framework.issuedate') }}</div>
-          <div>{{ licenseData.issueTime }}</div>
-          <div class="text-grey">{{ $t('term.framework.expiredate') }}</div>
-          <div>{{ licenseData.expiredTime }}</div>
-          <div class="text-grey">{{ $t('term.framework.serveceenddate') }}</div>
-          <div>{{ licenseData.stopServiceTime }}</div>
-          <div class="text-grey">{{ $t('page.cipher') }}</div>
-          <div>
-            <TsFormInput
-              ref="inputLicense"
-              v-model="licenseData.license"
-              width="500"
-              height="320"
-              type="textarea"
-              :readonly="true"
-              style="font-family:monospace"
-            ></TsFormInput>
-          </div>
+        <div v-if="licenseData" class="padding">
+          <TsFormItem :label="$t('term.framework.authorizedto')">
+            {{ licenseData.purchaser }}
+          </TsFormItem>
+          <TsFormItem :label="$t('term.framework.issuedate')">
+            {{ licenseData.createDate | formatDate('yyyy-mm-dd') }}
+          </TsFormItem>
+          <TsFormItem :label="$t('term.framework.expiredate')">
+            {{ licenseData.expirationDate | formatDate('yyyy-mm-dd') }}
+          </TsFormItem>
+          <TsFormItem :label="$t('term.framework.serveceenddate')">
+            {{ licenseData.endDate | formatDate('yyyy-mm-dd') }}
+          </TsFormItem>
+          <TsFormItem :label="$t('term.rdm.modulelist')">
+            <div>
+              <Tag v-for="(m,index) in licenseData.moduleList" :key="index">{{ m.name }}·{{ m.id }}</Tag>
+            </div>
+          </TsFormItem>
         </div>
-        <NoData v-else :text="$t('page.notarget',{'target':'license'})"></NoData>
+        <NoData v-else :text="$t('page.notarget', { target: 'license' })"></NoData>
       </template>
     </TsContain>
   </div>
@@ -33,7 +30,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve)
   },
   props: {},
   data() {

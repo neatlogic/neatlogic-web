@@ -2133,7 +2133,8 @@
     "copyissueid": "Copy ID",
     "projectmanager": "Project leader",
     "new": "new",
-    "pleaseselectrole": "Please check the user roles that need to be deleted"
+    "pleaseselectrole": "Please check the user roles that need to be deleted",
+    "modulelist": "Module List"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
