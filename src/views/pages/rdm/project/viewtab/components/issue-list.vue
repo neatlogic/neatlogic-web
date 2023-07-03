@@ -93,7 +93,7 @@
       @getSelected="getSelected"
     >
       <template v-slot:checked="{ row }">
-        <span v-if="checkedIdList && checkedIdList.includes(row.id)" class="text-success">已选</span>
+        <span v-if="checkedIdList && checkedIdList.includes(row.id)" class="text-success">{{ $t('page.iselected') }}</span>
         <Checkbox
           v-else
           :value="!!row._selected"
