@@ -68,7 +68,7 @@ export default {
       });
       //未分类
       moduleMenuList.push({
-        name: '未分类文档',
+        name: this.$t('term.documentonline.unlassifieddoc'),
         moduleGroup: 'unClassified',
         loading: false,
         configFathList: ['unClassified'],
@@ -161,14 +161,10 @@ export default {
       if (res && res.Return && res.Return.tbodyList) {
         fileList = res.Return.tbodyList.map(item => {
           const { fileName, configList, filePath } = item;
-          let config = configList.find(c => c.moduleGroup == moduleGroup && c.menu == menu);
-          let configFathList = [];
-          if (config) {
-            config.moduleGroup && configFathList.push(config.moduleGroup);
-            config.menu && configFathList.push(config.menu);
-            config.menu && configFathList.push(fileName);
-          }
-          const file = { name: fileName, configFathList: configFathList, filePath, isFile: true };
+          let configFathList = [moduleGroup];
+          menu && configFathList.push(config.menu);
+          configFathList.push(fileName);
+          const file = { name: fileName, moduleGroup: moduleGroup, menu: menu || '', configFathList: configFathList, configList, filePath, isFile: true };
           return file;
         });
       }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="title"
+      :title="$t('page.detail')"
       type="slider"
       width="large"
       :isShow.sync="detailDialog"
@@ -21,9 +21,9 @@
           ghost
           type="primary"
           @click="addClassification"
-        >关联当前分类</Button>
-        <Button type="primary" @click="openClassifyDialog">添加</Button>
-        <Button v-if="moduleGroup !== 'unClassified' && isRelated" type="error" @click="delClassification">移除</Button>
+        >{{ $t('term.documentonline.relcurrclass') }}</Button>
+        <Button type="primary" @click="openClassifyDialog">{{ $t('page.add') }}</Button>
+        <Button v-if="moduleGroup !== 'unClassified' && isRelated" type="error" @click="delClassification">{{ $t('term.process.move') }}</Button>
       </template>
     </TsDialog>
   </div>

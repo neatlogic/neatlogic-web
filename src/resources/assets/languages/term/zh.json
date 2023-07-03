@@ -2383,6 +2383,8 @@
     "searchhelp": "搜索帮助",
     "helpcenter": "帮助中心",
     "whathelp": "请问有什么能帮到您？",
-    "problemdes": "问题描述"
+    "problemdes": "问题描述",
+    "relcurrclass": "关联当前分类",
+    "unlassifieddoc": "未分类文档"
   }
 }

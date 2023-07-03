@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="添加分类"
+      :title="$t('page.classifytarget',{'target':$t('page.add')})"
       type="modal"
       :isShow.sync="showDialog"
       @on-ok="okDialog"
@@ -9,7 +9,6 @@
     >
       <template v-slot>
         <div>
-          {{ fileData }}
           <TsForm
             ref="formConfig"
             v-model="fileData"
@@ -44,7 +43,7 @@ export default {
         configList: {
           type: 'tree',
           name: 'configList',
-          label: '目标分类',
+          label: this.$t('page.classifytarget', {'target': this.$t('page.target')}),
           dataList: this.classifiedList,
           textName: 'name',
           valueName: 'configFath',

@@ -11,9 +11,9 @@
           ></InputSearcher>
         </div>
         <div v-else class="action-group text-right">
-          <span v-if="moduleGroup !== 'unClassified'" class="tsfont-bind action-item" @click="addClassification(fileConfig)">关联当前分类</span>
-          <span class="action-item tsfont-plus" @click="openClassifyDialog(fileConfig)">添加</span>
-          <span v-if="moduleGroup !== 'unClassified'" class="action-item pl-sm tsfont-unbind" @click="delClassification(fileConfig)">移除</span>
+          <span v-if="moduleGroup !== 'unClassified' && !isRelated(fileConfig)" class="tsfont-bind action-item" @click="addClassification(fileConfig)">{{ $t('term.documentonline.relcurrclass') }}</span>
+          <span class="action-item tsfont-plus" @click="openClassifyDialog(fileConfig)">{{ $t('page.add') }}</span>
+          <span v-if="moduleGroup !== 'unClassified' && isRelated(fileConfig)" class="action-item pl-sm tsfont-unbind" @click="delClassification(fileConfig)">{{ $t('term.process.move') }}</span>
         </div>
       </template>
       <template v-slot:sider>
@@ -32,9 +32,9 @@
                   <div class="title overflow pb-xs">
                     <div class="text-action overflow name" @click="openDetail(item)">{{ item.fileName }}</div>
                     <div class="action-group">
-                      <span v-if="moduleGroup !== 'unClassified' && !isRelated(item)" class="tsfont-bind action-item" @click="addClassification(item)">关联当前分类</span>
-                      <span class="action-item tsfont-plus" @click="openClassifyDialog(item)">添加</span>
-                      <span v-if="moduleGroup !== 'unClassified' && isRelated(item)" class="action-item pl-sm tsfont-unbind" @click="delClassification(item)">移除</span>
+                      <span v-if="moduleGroup !== 'unClassified' && !isRelated(item)" class="tsfont-bind action-item" @click="addClassification(item)">{{ $t('term.documentonline.relcurrclass') }}</span>
+                      <span class="action-item tsfont-plus" @click="openClassifyDialog(item)">{{ $t('page.add') }}</span>
+                      <span v-if="moduleGroup !== 'unClassified' && isRelated(item)" class="action-item pl-sm tsfont-unbind" @click="delClassification(item)">{{ $t('term.process.move') }}</span>
                     </div>
                   </div>
                   <div class="text-tip line-2" v-html="item.content"></div>
@@ -169,12 +169,14 @@ export default {
       this.isShowDialog = true;
     },
     selectTreeNode(node) {
+      console.log(node);
       this.filePath = '';
       this.moduleGroup = node.moduleGroup;
       this.menu = node.menu || '';
       this.isFile = !!node.isFile;
       this.$nextTick(() => {
         if (this.isFile) {
+          this.fileConfig = node;
           this.filePath = node.filePath;
         } else {
           this.getDocumentList();

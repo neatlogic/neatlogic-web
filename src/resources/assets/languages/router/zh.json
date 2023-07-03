@@ -279,6 +279,7 @@
   "documentonline": {
     "documentonline": "帮助中心",
     "documentdetail": "文档详情",
-    "documentsearch": "文档搜索"
+    "documentsearch": "文档搜索",
+    "directorymanage": "文档目录管理"
   }
 }

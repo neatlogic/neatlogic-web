@@ -38,7 +38,7 @@ export default [
     name: 'directory-manage',
     component: directoryManage,
     meta: {
-      title: '文档目录管理'
+      title: $t('router.documentonline.directorymanage')
     }
   }
 ];
