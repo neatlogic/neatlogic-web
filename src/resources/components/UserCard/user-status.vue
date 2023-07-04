@@ -1,33 +1,36 @@
 <template>
-  <!-- <img
-    v-if="isDelete == 1"
-    :style="vipIconStyle"
-    src="~@/resources/assets/images/avatar/delete.svg"
-    class="vip-icon"
-    :title="$t('page.userdelete')"
-  />
-  <img
-    v-else-if="isActive == 0"
-    src="~@/resources/assets/images/avatar/forbid.svg"
-    :style="vipIconStyle"
-    class="vip-icon"
-    :title="$t('page.userdisabled')"
-  /> -->
-  <img
-    v-if="vipIcon"
-    :src="vipIcon"
-    :style="vipIconStyle"
-    class="vip-icon"
-  />
+  <div>
+    <img
+      v-if="isDelete === 1"
+      :style="vipIconStyle"
+      src="~@/resources/assets/images/avatar/delete.svg"
+      class="vip-icon"
+      :title="$t('page.userdelete')"
+    />
+    <img
+      v-else-if="isActive === 0"
+      src="~@/resources/assets/images/avatar/forbid.svg"
+      :style="vipIconStyle"
+      class="vip-icon"
+      :title="$t('page.userdisabled')"
+    />
+    <img
+      v-else-if="vipIcon"
+      :src="vipIcon"
+      :style="vipIconStyle"
+      class="vip-icon"
+    />
+  </div>
+ 
 </template>
 <script>
 export default {
   props: {
-    isActive: {
-      type: Number // 用户是激活还是禁用，1表示激活，0表示禁用
-    },
     isDelete: {
       type: Number // 是否被删除，1表示被删除，0表示没有被删除
+    },
+    isActive: {
+      type: Number // 用户是激活还是禁用，1表示激活，0表示禁用
     },
     vipLevel: {
       //VIP等级
@@ -64,9 +67,9 @@ export default {
     },
     vipIconStyle() {
       return {
-        width: `${this.avatarSize * 0.44}px`,
-        top: `-${this.hideAvatar ? 4.5 : this.avatarSize / 18}px`,
-        right: `-${this.hideAvatar ? 6 : this.avatarSize / 20}px`
+        width: `${this.avatarSize * 0.4}px`,
+        top: `-${this.hideAvatar ? 4.5 : (this.avatarSize / 22).toFixed(2)}px`,
+        right: `-${this.hideAvatar ? 6 : (this.avatarSize / 20).toFixed(2)}px`
       };
     }
   }
