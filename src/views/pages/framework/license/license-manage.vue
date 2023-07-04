@@ -15,6 +15,9 @@
           <TsFormItem :label="$t('term.framework.serveceenddate')">
             {{ licenseData.endDate | formatDate('yyyy-mm-dd') }}
           </TsFormItem>
+          <TsFormItem :label="数据库链接">
+            {{ licenseData.dbUrl }}
+          </TsFormItem>
           <TsFormItem :label="$t('term.rdm.modulelist')">
             <div>
               <Tag v-for="(m,index) in licenseData.moduleList" :key="index">{{ m.name }}·{{ m.id }}</Tag>

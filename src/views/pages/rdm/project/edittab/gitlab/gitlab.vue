@@ -24,7 +24,7 @@
       </div>
     </TsFormItem>
     <div style="text-align: right" class="mt-md">
-      <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('page.save') }}</Button>
     </div>
   </div>
 </template>
@@ -82,7 +82,9 @@ export default {
     getWebhookConfig() {
       if (this.appData.id) {
         this.$api.rdm.webhook.getWebhookConfigByAppId(this.appData.id).then(res => {
-          this.webhookData = res.Return;
+          if (res.Return) {
+            this.webhookData = res.Return;
+          }
         });
       }
     },

@@ -24,6 +24,9 @@ const app = {
   },
   saveAppConfig(params) {
     return axios.post('/api/rest/rdm/app/config/save', params);
+  },
+  updateAppSort(params) {
+    return axios.post('/api/rest/rdm/app/updatesort', params);
   }
 };
 export default app;
