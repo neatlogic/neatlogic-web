@@ -238,8 +238,8 @@ export default {
                 this.config.vipLevel = res.Return.vipLevel || 0;
                 this.config.avatar = res.Return.avatar;
                 this.config.pinyin = res.Return.pinyin;
-                this.config.isActive = res.Return.isActive;
                 this.config.isDelete = res.Return.isDelete;
+                this.config.isActive = res.Return.isActive;
               }
             })
             .finally(() => {
@@ -250,6 +250,8 @@ export default {
           this.config.vipLevel = this.vipLevel || 0;
           this.config.avatar = this.avatar;
           this.config.pinyin = this.pinyin;
+          this.config.isDelete = this.isDelete;
+          this.config.isActive = this.isActive;
         }
       }
     },
