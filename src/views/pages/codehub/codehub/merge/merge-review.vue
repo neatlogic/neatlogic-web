@@ -117,7 +117,7 @@
         </div>
       </template>
       <template v-slot:right>
-        <div v-if="mrData" class="bg-op radius-lg padding-sm">
+        <div v-if="mrData" class="bg-op radius-lg padding-sm" style="margin-top: 31px;">
           <div class="mb-xs">{{ $t('page.basicinfo') }}</div>
           <ul>
             <li class="basic-info-box mb-sm">

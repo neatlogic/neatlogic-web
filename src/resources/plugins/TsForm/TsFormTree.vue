@@ -272,6 +272,7 @@ export default {
           }
         });
       } else {
+        this.selectedList = [];
         _this.nodeList = _this.dataList || [];
         (_this.currentValue || _this.showPath) && _this.nodeList.forEach(item => _this.flattenChildren(item, null, ''));
         if (!this.multiple) {

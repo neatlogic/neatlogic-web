@@ -22,7 +22,7 @@
         @on-popper-show="getInfo"
         @on-popper-hide="hidePopper"
       >
-        <div class="overflow" :class="[name || config.name ? 'usercard' : '', !name || !config.name ? 'noCursor' : '', alignMode == 'vertical' ? 'avatar-name-vertical' : '']">
+        <div :class="[name || config.name ? 'usercard' : '', !name || !config.name ? 'noCursor' : '', alignMode == 'vertical' ? 'avatar-name-vertical' : '', hideAvatar ? '' : 'overflow']">
           <slot>
             <TsAvatar
               v-if="!hideAvatar"
@@ -33,9 +33,21 @@
               :size="iconSize"
               :name="name || config.name"
               :class="getgapClassName"
+              :isActive="isActive || config.isActive"
+              :isDelete="isDelete || config.isDelete"
             />
             <template v-if="!hideName">
-              {{ showName() }}
+              <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" style="position: relative;">  
+                {{ showName() }}
+                <UserStatus
+                  v-if="hideAvatar"
+                  :vipLevel="vipLevel || config.vipLevel"
+                  :isActive="isActive || config.isActive"
+                  :isDelete="isDelete || config.isDelete"
+                  :size="iconSize"
+                  :hideAvatar="hideAvatar"
+                ></UserStatus>
+              </span>
             </template>
           </slot>
         </div>
@@ -54,7 +66,13 @@
                   <div class="padding-b">{{ $t('page.name') }}：{{ name || config.name || $t('page.nodata') }}</div>
                   <Col v-for="user in userList" :key="user.uuid" span="8">
                     <div class="usercard-li overflow" @click.stop="showUser(user)">
-                      <TsAvatar v-bind="user" :size="iconSize" class="avatar" />
+                      <TsAvatar
+                        v-bind="user"
+                        :size="iconSize"
+                        :isActive="isActive || config.isActive"
+                        :isDelete="isDelete || config.isDelete"
+                        class="avatar"
+                      />
                       <span>{{ user.userName }}</span>
                     </div>
                   </Col>
@@ -78,9 +96,20 @@
           :size="iconSize"
           :name="name || config.name"
           :class="getgapClassName"
+          :isActive="isActive || config.isActive"
+          :isDelete="isDelete || config.isDelete"
         />
         <template v-if="!hideName">
-          <span style="font-size: 13px">{{ showName() }}</span>
+          <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" style="position: relative;">  {{ showName() }}
+            <UserStatus
+              v-if="hideAvatar"
+              :vipLevel="vipLevel || config.vipLevel"
+              :isActive="isActive || config.isActive"
+              :isDelete="isDelete || config.isDelete"
+              :size="iconSize"
+              :hideAvatar="hideAvatar"
+            ></UserStatus>
+          </span>
         </template>
       </div>
     </div>
@@ -94,8 +123,21 @@
         :size="iconSize"
         :name="name || config.name"
         :class="getgapClassName"
+        :isActive="isActive || config.isActive"
+        :isDelete="isDelete || config.isDelete"
       />
-      <template>{{ name || config.name }}</template>
+      <template>
+        <span style="position: relative;" :class="hideAvatar && getUserStatus ? 'text-grey' : ''">  {{ name || config.name }}
+          <UserStatus
+            v-if="hideAvatar"
+            :vipLevel="vipLevel || config.vipLevel"
+            :isActive="isActive || config.isActive"
+            :isDelete="isDelete || config.isDelete"
+            :size="iconSize"
+            :hideAvatar="hideAvatar"
+          ></UserStatus>
+        </span>
+      </template>
     </div>
   </span>
 </template>
@@ -109,7 +151,8 @@ export default {
   directives: { ClickOutside },
   components: {
     UserInfo,
-    TsAvatar
+    TsAvatar,
+    UserStatus: resolve => require(['./user-status'], resolve)
   },
   inheritAttrs: false, //去掉多余的属性
   props: {
@@ -130,6 +173,12 @@ export default {
     alignMode: {
       type: String, // 头像和名称的对齐方式，可选（水平对齐 horizontal）|| (垂直对齐 vertical)
       default: 'horizontal'
+    },
+    isActive: {
+      type: Number // 用户是激活还是禁用，1表示激活，0表示禁用
+    },
+    isDelete: {
+      type: Number // 是否被删除，1表示被删除，0表示没有被删除
     }
   },
   data() {
@@ -144,7 +193,9 @@ export default {
         name: '',
         vipLevel: 0,
         avatar: '',
-        isLoading: false
+        isLoading: false,
+        isActive: null,
+        isDelete: null
       },
       common: {
         alluser: this.$t('page.allofthem')
@@ -187,6 +238,8 @@ export default {
                 this.config.vipLevel = res.Return.vipLevel || 0;
                 this.config.avatar = res.Return.avatar;
                 this.config.pinyin = res.Return.pinyin;
+                this.config.isDelete = res.Return.isDelete;
+                this.config.isActive = res.Return.isActive;
               }
             })
             .finally(() => {
@@ -197,6 +250,8 @@ export default {
           this.config.vipLevel = this.vipLevel || 0;
           this.config.avatar = this.avatar;
           this.config.pinyin = this.pinyin;
+          this.config.isDelete = this.isDelete;
+          this.config.isActive = this.isActive;
         }
       }
     },
@@ -400,6 +455,16 @@ export default {
         className = 'mb-xs';
       }
       return className;
+    },
+    getUserStatus() {
+      // 用户被禁用或者被删除，返回true
+      if (this.isActive == 0 || this.config.isActive == 0) {
+        return true;
+      } else if (this.isDelete || this.config.isDelete) {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   watch: {

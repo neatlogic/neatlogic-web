@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 const dashboardDetail = () => import('./dashboard-detail.vue');
 const dashboardEdit = () => import('./dashboard-edit.vue');
 const dashboardManage = () => import('./dashboard-manage.vue');
+import { $t } from '@/resources/init.js';
 export default [
   {
     path: '/',
@@ -36,7 +37,7 @@ export default [
     name: '404',
     component: page404,
     meta: {
-      title: 'page.pagenotvalid'
+      title: $t('page.pagenotvalid')
     }
   },
   {
@@ -49,7 +50,7 @@ export default [
     name: 'dashboard-detail',
     component: dashboardDetail,
     meta: {
-      title: 'router.dashboard.dashboarddetail',
+      title: $t('router.dashboard.dashboarddetail'),
       ismenu: false,
       icon: 'tsfont-chart-pie',
       authority: 'DASHBOARD_BASE'
@@ -60,7 +61,7 @@ export default [
     name: 'dashboard-edit',
     component: dashboardEdit,
     meta: {
-      title: 'term.dashboard.editdashboard',
+      title: $t('term.dashboard.editdashboard'),
       ismenu: false,
       icon: 'tsfont-chart-pie'
     }
@@ -70,7 +71,7 @@ export default [
     name: 'dashboard-manage',
     component: dashboardManage,
     meta: {
-      title: 'router.dashboard.dashboardmanage',
+      title: $t('term.dashboard.dashboardmanage'),
       ismenu: true,
       icon: 'tsfont-blocklist',
       type: 'overview',

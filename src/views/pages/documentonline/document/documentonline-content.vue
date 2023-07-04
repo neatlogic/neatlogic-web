@@ -3,7 +3,6 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="markdown-body pr-nm" v-html="markdownContent"></div>
   </div>
-
 </template>
 <script>
 import 'github-markdown-css';
@@ -23,7 +22,11 @@ export default {
   data() {
     return {
       loadingShow: true,
-      markdownContent: ''
+      markdownContent: '',
+      merkedSetting: {
+        mangle: false,
+        headerIds: false
+      }
     };
   },
   beforeCreate() {},
@@ -45,7 +48,7 @@ export default {
   methods: {
     getDocumentDetail() {
       if (this.content) {
-        this.markdownContent = marked(this.content); 
+        this.markdownContent = marked(this.content, this.merkedSetting); 
         this.$nextTick(() => {
           if (this.anchorPoint) {
             this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
@@ -62,12 +65,14 @@ export default {
         this.loadingShow = true;
         this.$api.documentonline.getDocumentDetail(data).then(res => {
           if (res.Status === 'OK') {
-            this.markdownContent = marked(res.Return.content); 
-            this.$nextTick(() => {
-              if (this.anchorPoint) {
-                this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
-              }
-            });
+            if (res.Return.content) {
+              this.markdownContent = marked(res.Return.content, this.merkedSetting); 
+              this.$nextTick(() => {
+                if (this.anchorPoint) {
+                  this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
+                }
+              });
+            }
           }
         }).finally(() => {
           this.loadingShow = false;
