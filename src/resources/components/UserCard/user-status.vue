@@ -1,5 +1,5 @@
 <template>
-  <img
+  <!-- <img
     v-if="isDelete == 1"
     :style="vipIconStyle"
     src="~@/resources/assets/images/avatar/delete.svg"
@@ -12,9 +12,9 @@
     :style="vipIconStyle"
     class="vip-icon"
     :title="$t('page.userdisabled')"
-  />
+  /> -->
   <img
-    v-else-if="vipIcon"
+    v-if="vipIcon"
     :src="vipIcon"
     :style="vipIconStyle"
     class="vip-icon"

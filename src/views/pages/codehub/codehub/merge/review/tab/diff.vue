@@ -1,31 +1,34 @@
 <template>
   <div class="padding">
     <div>
-      <div v-if="!loading && diffList && diffList.length" class="text-tip tips" style="height:30px;">
-        <span>{{ $t('page.total') }}</span>
-        <span class="font-bold text-title count-text">{{ getFileCount(diffList) }}</span>
-        <span>{{ $t('term.codehub.filechangenumber') }},</span>
-        <span v-if="getFileCount(diffList,'addCount')" class="font-bold text-primary count-text">{{ getFileCount(diffList,'addCount') }}</span>
-        <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">{{ $t('term.codehub.rowadd') }}</span>
-        <span v-if="getFileCount(diffList,'deleteCount')" class="font-bold text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
-        <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
-      </div>
+    
     </div>
     <div class="diff-container" :class="showTree ?'':'hideLeft'">
       <div class="clearfix mb-xs">
         <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="pt-sm mr-sm" style="display: flex;justify-content: end;">
-          <TsFormSelect
-            v-if="!loading && commitList && commitList.length"
-            v-model="selectedCommit"
-            :dataList="commitList"
-            v-bind="selectConfig"
-            class="mr-sm"
-            @on-change="getDiff()"
-          ></TsFormSelect>
-          <RadioGroup v-if="!loading" v-model="showType" type="button">
-            <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
-          </RadioGroup>
+        <div class="flex-between ml-md" :class="commitId ? 'pt-sm' : ''">
+          <div v-if="!loading && diffList && diffList.length" class="text-tip tips">
+            <span>{{ $t('page.total') }}</span>
+            <span class="font-bold text-title count-text">{{ getFileCount(diffList) }}</span>
+            <span>{{ $t('term.codehub.filechangenumber') }},</span>
+            <span v-if="getFileCount(diffList,'addCount')" class="font-bold text-primary count-text">{{ getFileCount(diffList,'addCount') }}</span>
+            <span v-if="getFileCount(diffList,'addCount')" class="mr-sm">{{ $t('term.codehub.rowadd') }}</span>
+            <span v-if="getFileCount(diffList,'deleteCount')" class="font-bold text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
+            <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
+          </div>
+          <div class="flex-start">
+            <TsFormSelect
+              v-if="!loading && commitList && commitList.length"
+              v-model="selectedCommit"
+              :dataList="commitList"
+              v-bind="selectConfig"
+              class="mr-sm"
+              @on-change="getDiff()"
+            ></TsFormSelect>
+            <RadioGroup v-if="!loading" v-model="showType" type="button">
+              <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
+            </RadioGroup>
+          </div>
         </div>
       </div>
       <div v-if="!loading" ref="diffTree" class="diff-left bg-op border-color">
@@ -488,7 +491,7 @@ export default {
     overflow: auto;
   }
   .diff-main{
-    padding: 10px 10px 50px 10px;
+    padding: 10px 0 50px 10px;
     overflow: auto;
     max-height: calc(100vh - 260px);
   }

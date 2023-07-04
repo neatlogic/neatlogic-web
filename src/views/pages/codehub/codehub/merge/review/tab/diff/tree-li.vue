@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!isChildren" class="tree-top">
-      <div style="display: flex;align-items: center;">
+      <div style="display: flex;align-items: center;" class="mb-md">
         <RadioGroup
           v-model="showType"
           type="button"
