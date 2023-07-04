@@ -16,6 +16,7 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker';
+import NoData from '@/resources/components/nodata/NoData.js';
 export default {
   name: '',
   components: {},
@@ -55,7 +56,8 @@ export default {
         TsFormSelect,
         TsFormSwitch,
         TsFormDatePicker,
-        TsTable
+        TsTable,
+        NoData
       };
       let data = {};
       if (this.data) {

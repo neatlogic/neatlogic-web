@@ -50,6 +50,7 @@
                       <Tag>TsFormSwitch</Tag>
                       <Tag>TsFormDatePicker</Tag>
                       <Tag>TsTable</Tag>
+                      <Tag>NoData</Tag>
                     </div>
                   </div>
                 </Poptip>
