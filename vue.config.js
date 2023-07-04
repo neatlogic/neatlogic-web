@@ -106,7 +106,7 @@ module.exports = {
       }
     }
   },
-  publicPath: '/' + tenantName + '/',
+  publicPath: process.env.NODE_ENV === 'development' ? '/' + tenantName + '/' : '/', // 修复打包不需要带租户的问题
   assetsDir: 'resource',
   productionSourceMap: false,
   runtimeCompiler: true,
