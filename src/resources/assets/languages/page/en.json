@@ -918,5 +918,7 @@
   "total": "Total",
   "activesucess": "Activation successful",
   "unactivesuccess": "Disabled successfully",
+  "userdisabled": "User disabled",
+  "userdelete": "User deleted",
   "iselected": "Selected"
 }

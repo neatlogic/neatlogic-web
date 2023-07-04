@@ -71,8 +71,8 @@
                           <div class="title text-action overflow pb-sm">
                             {{ row.name }}
                           </div>
-                          <div class="text-grey overflow des-content">
-                            <UserCard v-bind="row.lcuVo" hideAvatar></UserCard>
+                          <div class="text-grey des-content">
+                            <UserCard v-bind="row.lcuVo" hideAvatar class="mr-xs"></UserCard>
                             <span class="m-userCard"> {{ row.lcd | formatDate }} {{ row.actionType }}</span>
                           </div>
                         </div>
