@@ -279,6 +279,7 @@
   "documentonline": {
     "documentonline": "Help Center",
     "documentdetail": "Document Details",
-    "documentsearch": "Document Search"
+    "documentsearch": "Document Search",
+    "directorymanage": "Document directory management"
   }
 }
