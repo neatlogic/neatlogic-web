@@ -204,7 +204,6 @@ export default {
       versionParams: {}, // 版本
       buildNoParams: {},
       envParams: {},
-      projectDirectoryParams: {},
       statusName: '',
       statusValue: '',
       buildNoTitle: '',
@@ -452,9 +451,6 @@ export default {
             appSystemId: appSystemId,
             appModuleId: appModuleId
           };
-          /*this.projectDirectoryParams = {
-            moduleName: title
-          };*/
         } else if (appSystemId) {
           //选中了应用系统
           this.searchParam.appSystemIdList = [appSystemId];
