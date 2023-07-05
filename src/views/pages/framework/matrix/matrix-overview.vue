@@ -2,7 +2,18 @@
   <div class="matrix-overview">
     <Loading :loading-show="loadingShow" type="fix"></Loading>
     <TsContain>
-      <template v-slot:topLeft><span class="tsfont-plus text-action" @click="addMatrix">{{ $t('dialog.title.addtarget',{'target':$t('page.matrix')}) }}</span></template>
+      <template v-slot:topLeft>
+        <span class="tsfont-plus text-action" @click="addMatrix">
+          {{ $t('dialog.title.addtarget',{'target':$t('page.matrix')}) }}
+        </span>
+        <span class="tsfont-upload action-item" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</span>
+        <UploadDialog
+          ref="uploadDialog"
+          :actionUrl="importMatrixDefinitionUrl"
+          :formatList="['pak']"
+          @on-all-upload="searchMatrix()"
+        />
+      </template>
       <template v-slot:topRight>
         <TsRow>
           <Col :span="6">
@@ -117,7 +128,7 @@
                       <span class="padding-text tsfont-option-horizontal hover-color"></span>
                       <DropdownMenu slot="list" class="dropdown">
                         <DropdownItem>
-                          <div @click="exportMatrix(row.uuid, row.name)">{{ $t('page.export') }}</div>
+                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('term.pbc.exportdata') }}</div>
                         </DropdownItem>
                         <DropdownItem>
                           <div @click="exportAttributeMatrix(row.uuid)">{{ $t('term.pbc.exporttemplate') }}</div>
@@ -130,8 +141,24 @@
                             :on-error="uploadError"
                             :action="`${actionUrl}` + `?matrixUuid=` + `${row.uuid}`"
                           >
-                            <span>{{ $t('page.import') }}</span>
+                            <span>{{ $t('page.importdata') }}</span>
                           </Upload>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <div @click="exportMatrix(row.uuid)">{{ $t('page.export') }}</div>
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </li>
+                  <li v-else-if="row.type === 'view' || row.type === 'cmdbci' || row.type === 'external'">
+                    <Dropdown trigger="click" transfer>
+                      <span class="padding-text tsfont-option-horizontal hover-color"></span>
+                      <DropdownMenu slot="list" class="dropdown">
+                        <DropdownItem>
+                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('term.pbc.exportdata') }}</div>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <div @click="exportMatrix(row.uuid)">{{ $t('page.export') }}</div>
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
@@ -250,13 +277,15 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
+    UploadDialog: resolve => require(['./components/UploadDialog.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
   },
   props: [''],
   data() {
     let _this = this;
     return {
-      actionUrl: BASEURLPREFIX + '/api/binary/matrix/import',
+      actionUrl: BASEURLPREFIX + '/api/binary/matrix/data/import',
+      importMatrixDefinitionUrl: BASEURLPREFIX + '/api/binary/matrix/definition/import', // 矩阵定义导入
       loadingShow: true,
       keyword: '',
       showFileError: false, //视图数据校验信息是否展示
@@ -642,9 +671,22 @@ export default {
             if (v.type == 'custom') {
               v.btnList.push(
                 {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: 
-                  [{name: this.$t('page.copy'), value: 'copy', type: 'text'}, {name: this.$t('page.export'), value: 'export', type: 'download'}, 
-                    {name: this.$t('term.pbc.exporttemplate'), value: 'exportAttr', type: 'text'}],
+                  [
+                    {name: this.$t('page.copy'), value: 'copy', type: 'text'}, 
+                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'}, 
+                    {name: this.$t('term.pbc.exporttemplate'), value: 'exportAttr', type: 'text'}, 
+                    {name: this.$t('page.export'), value: 'export', type: 'download'}
+                  ],
                 upload: true, actionUrl: this.actionUrl
+                }
+              );
+            } else if (v.type == 'view' || v.type == 'external' || v.type == 'cmdbci') {
+              v.btnList.push(
+                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: 
+                  [
+                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'}, 
+                    {name: this.$t('page.export'), value: 'exportDefinition', type: 'download'}
+                  ]
                 }
               );
             }
@@ -663,10 +705,12 @@ export default {
         this.delMatrix(row);
       } else if (value == 'copy') {
         this.copyMatrix(row);
-      } else if (value == 'export') {
-        this.exportMatrix(row.uuid, row.name);
+      } else if (value == 'exportData') {
+        this.exportMatrixData(row.uuid, row.name);
       } else if (value == 'exportAttr') {
         this.exportAttributeMatrix(row.uuid);
+      } else if (value == 'export') {
+        this.exportMatrix(row.uuid);
       }
     },
     //表格形式展示数据
@@ -826,13 +870,13 @@ export default {
       }
     },
     //导出矩阵
-    exportMatrix: function(uuid) {
+    exportMatrixData: function(uuid) {
       let data = {
         matrixUuid: uuid,
         fileType: 'excel'
       };
       this.$api.framework.matrix
-        .exportMatrix(data)
+        .exportMatrixData(data)
         .then(res => {
           if (res.status == '200') {
             const aLink = document.createElement('a');
@@ -879,6 +923,29 @@ export default {
             title: this.$t('page.exporterror')
           });
         });
+    },
+    exportMatrix(uuid) {
+      let data = {
+        uuid: uuid
+      };
+      this.$api.framework.matrix.exportMatrix(data).then(res => {
+        if (res.status == '200') {
+          const aLink = document.createElement('a');
+          let blob = new Blob([res.data], {
+            type: 'application/x-msdownload'
+          });
+          aLink.href = URL.createObjectURL(blob);
+          let contentDisposition = decodeURI(res.headers['content-disposition']);
+          let fileName = contentDisposition.substring(22, contentDisposition.length - 1);
+          aLink.download = fileName;
+          aLink.click();
+          document.body.appendChild(aLink);
+        }
+      }).catch(error => {
+        this.$Notice.error({
+          title: this.$t('page.exporterror')
+        });
+      });
     },
     //导入矩阵成功
     uploadSuccess: function(res, file) {

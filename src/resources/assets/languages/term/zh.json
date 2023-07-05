@@ -1095,7 +1095,10 @@
     "backtorolelist": "返回角色列表",
     "defaultpolicy": "默认策略",
     "defultpolicysetting": "默认策略设置",
-    "syncsceneattr": "同步默认场景属性"
+    "syncsceneattr": "同步默认场景属性",
+    "matrix": {
+      "isoverride": "当前环境已存在同一矩阵，是否覆盖？"
+    }
   },
   "knowledge": {
     "document": "文档",

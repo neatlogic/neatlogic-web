@@ -917,5 +917,6 @@
   "namepre": "name prefix ",
   "total": "Total",
   "activesucess": "Activation successful",
-  "unactivesuccess": "Disabled successfully"
+  "unactivesuccess": "Disabled successfully",
+  "importconfirm": "Import Confirmation"
 }

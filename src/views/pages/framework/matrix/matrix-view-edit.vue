@@ -11,8 +11,9 @@
       </div>
       <div slot="topRight" class="bar-top">
         <div class="bar-top-right action-group text-right">
-          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-export">{{ $t('page.export') }}</span>
-          <span v-else class="action-item disable tsfont-export">{{ $t('page.export') }}</span>
+          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-export">{{ $t('term.pbc.exportdata') }}</span>
+          <span v-else class="action-item disable tsfont-export">{{ $t('term.pbc.exportdata') }}</span>
+          <span class="action-item tsfont-export" @click="exportMatrix">{{ $t('page.export') }}</span>
           <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
             <ReferenceSelect
@@ -147,6 +148,29 @@ export default {
         path: '/matrix-overview'
       });
     },
+    exportMatrix() {
+      let data = {
+        uuid: this.matrixUuid
+      };
+      this.$api.framework.matrix.exportMatrix(data).then(res => {
+        if (res.status == '200') {
+          const aLink = document.createElement('a');
+          let blob = new Blob([res.data], {
+            type: 'application/x-msdownload'
+          });
+          aLink.href = URL.createObjectURL(blob);
+          let contentDisposition = decodeURI(res.headers['content-disposition']);
+          let fileName = contentDisposition.substring(22, contentDisposition.length - 1);
+          aLink.download = fileName;
+          aLink.click();
+          document.body.appendChild(aLink);
+        }
+      }).catch(error => {
+        this.$Notice.error({
+          title: this.$t('page.exporterror')
+        });
+      });
+    },
     editMatrix() {
       this.viewEditDialogTitle = this.matrixName;
       this.$api.framework.matrix
@@ -236,7 +260,7 @@ export default {
   computed: {
     downurl() {
       return {
-        url: '/api/binary/matrix/export',
+        url: '/api/binary/matrix/data/export',
         params: { matrixUuid: this.matrixUuid, fileType: 'csv'}
       };
     }
