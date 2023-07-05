@@ -27,14 +27,6 @@
         </div>
       </template>
       <template v-slot:sider>
-        <!--<AppConfigTree
-          style="width: 230px;"
-          :isShowEnv="false"
-          :readonly="true"
-          :hasAll="true"
-          @selectedTreeNode="selectedTreeNode"
-          @searchTree="versionParams = {}"
-        ></AppConfigTree>-->
         <AppModuleList
           v-model="appModuleData"
           :filter="{ authorityActionList: ['versionAndProductManager'] }"
@@ -46,7 +38,7 @@
         <TsTable
           :theadList="theadList"
           v-bind="versionData"
-          @changeCurrent="searchVersion"
+          @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
         >
           <template slot="version" slot-scope="{ row }">
@@ -100,8 +92,7 @@
                 :key="index"
                 :statusValue="getStatusValue(item.status)"
                 :statusName="item.envName"
-                class="pr-xs"
-                style="cursor:pointer;"
+                class="pr-xs cursor-pointer"
                 type="block"
                 @click="() => openEnvDialog(row, item)"
               ></CommonStatus>
@@ -186,19 +177,20 @@
   </div>
 </template>
 <script>
+import versionCenterMixin from './versionCenterMixin.js';
 export default {
   name: '', // 版本中心
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    //   AppConfigTree: resolve => require(['../application-config/config/app/app-config-tree'], resolve),
     AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
     VersionAddDialog: resolve => require(['./components/version-add-dialog'], resolve), // 新增版本
     BuildNoDialog: resolve => require(['./components/build-no-dialog'], resolve), // build-no
     EnvDialog: resolve => require(['./components/env-dialog'], resolve), // env
     ProjectDirectoryDialog: resolve => require(['./components/project-directory-dialog'], resolve) // 工程目录
   },
+  mixins: [versionCenterMixin],
   props: {},
   data() {
     return {
@@ -206,7 +198,6 @@ export default {
       isShowVersionAddDialog: false,
       isShowBuildNoDialog: false,
       isShowEnvDialog: false,
-      isShowProjectDirectoryDialog: false,
       isShowAuthDialog: false,
       searchParam: { authorityActionList: ['versionAndProductManager'] }, // 操作权限，制品管理&版本
       versionData: {},
@@ -276,7 +267,7 @@ export default {
     if (query && !query.appSystemId && !query.isBack) {
       this.$addHistoryData('appModuleEnvData', {}); // 清空上一次内容
     }
-    this.searchVersion(1);
+    this.changeCurrent();
   },
   beforeMount() {},
   mounted() {},
@@ -297,51 +288,27 @@ export default {
     addVersion() {
       this.isShowVersionAddDialog = true;
     },
-    deleteVersion(id, name, index) {
-      if (id && name) {
-        this.$createDialog({
-          title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: name}),
-          btnType: 'error',
-          'on-ok': vnode => {
-            vnode.isShow = false;
-            this.$nextTick(() => {
-              this.versionData.tbodyList.splice(index, 1);
-              this.delVersion(id);
-            });
-          }
-        });
-      }
-    },
     closeVersionAddDialog(needRefresh) {
       this.isShowVersionAddDialog = false;
       if (needRefresh) {
-        this.searchVersion(1);
+        this.changeCurrent();
       }
     },
-    searchVersion(currentPage) {
-      if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      }
+    searchVersion() {
       this.$api.deploy.version.searchVersion(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.versionData = res.Return;
         }
       });
     },
-    delVersion(id) {
-      if (id) {
-        this.$api.deploy.version.deleteVersion({ id }).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.deletesuccess'));
-            this.searchVersion(1);
-          }
-        });
-      }
+    changeCurrent(currentPage = 1) {
+      this.searchParam.currentPage = currentPage;
+      this.searchVersion();
     },
     changePageSize(pageSize) {
+      this.searchParam.currentPage = 1;
       this.searchParam.pageSize = pageSize;
-      this.searchVersion(1);
+      this.searchVersion();
     },
     selectedTreeNode(node) {
       this.versionParams = {};
@@ -350,7 +317,7 @@ export default {
         let { appSystemId, appModuleId, configType, title } = node;
         if (configType == 'app') {
           this.searchParam.appSystemIdList = [appSystemId];
-          this.searchVersion(1);
+          this.changeCurrent();
           this.versionParams = {
             appSystemId: appSystemId
           };
@@ -359,7 +326,7 @@ export default {
             appSystemIdList: [appSystemId],
             appModuleIdList: [appModuleId]
           };
-          this.searchVersion(1);
+          this.changeCurrent();
           this.versionParams = {
             appSystemId: appSystemId,
             appModuleId: appModuleId
@@ -371,24 +338,21 @@ export default {
           // 所有
           this.searchParam = {};
           this.versionParams = {};
-          this.searchVersion(1);
+          this.changeCurrent();
         }
       }
     },
     gotoDeployStatus(row) {
       if (row) {
-        let { appSystemAbbrName, appModuleAbbrName, version, id } = row;
+        let { appSystemAbbrName, appModuleAbbrName, version, id, isFreeze } = row;
         this.$router.push({
           path: './version-detail',
-          query: { versionId: id, title: appSystemAbbrName ? (appModuleAbbrName ? `${appSystemAbbrName}/${appModuleAbbrName}/V${version}` : `${appSystemAbbrName}/V${version}`) : `V${version}` }
-        });
-      }
-    },
-    switchLockVersion(id, isFreeze) {
-      if (id) {
-        this.$api.deploy.version.unLockVersion({ id, isFreeze }).then(res => {
-          if (res && res.Status == 'OK') {
-            this.$Message.success(this.$t('message.updatesuccess'));
+          query: { 
+            versionId: id, 
+            title: appSystemAbbrName ? (appModuleAbbrName ? `${appSystemAbbrName}/${appModuleAbbrName}/V${version}` : `${appSystemAbbrName}/V${version}`) : `V${version}`,
+            versionName: version,
+            isFreeze: isFreeze,
+            hasAuth: this.hasAuth // 是否有制品管理员权限
           }
         });
       }
@@ -442,12 +406,6 @@ export default {
       }
       this.isShowEnvDialog = true;
     },
-    openProjectDirectoryDialog(id) {
-      if (id) {
-        this.$set(this.projectDirectoryParams, 'id', id);
-        this.isShowProjectDirectoryDialog = true;
-      }
-    },
     restoreHistory(historyData) {
       this.appModuleData = historyData['appModuleEnvData'] || {};
     }
@@ -489,7 +447,7 @@ export default {
             appSystemIdList: [appSystemId],
             appModuleIdList: [appModuleId]
           };
-          this.searchVersion(1);
+          this.changeCurrent();
           this.versionParams = {
             appSystemId: appSystemId,
             appModuleId: appModuleId
@@ -500,14 +458,14 @@ export default {
         } else if (appSystemId) {
           //选中了应用系统
           this.searchParam.appSystemIdList = [appSystemId];
-          this.searchVersion(1);
+          this.changeCurrent();
           this.versionParams = {
             appSystemId: appSystemId
           };
         } else {
           // 所有
           this.searchParam = {};
-          this.searchVersion(1);
+          this.changeCurrent();
         }
         this.$addHistoryData('appModuleEnvData', val);
       },
