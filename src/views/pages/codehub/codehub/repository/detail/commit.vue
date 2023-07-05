@@ -58,7 +58,8 @@
                     <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
                   </td>
                   <td class="text-right">
-                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span><span v-if="row.issueNo" class="text-action ml-md" @click="showIssue(row)">{{ $t('term.rdm.request') }}</span>
+                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span>
+                    <span v-if="row.issueNo" class="text-action ml-md" @click="showIssue(row)">{{ $t('term.rdm.request') }}</span>
                   </td>
                 </tr>
                 <tr v-show="row.showcommitdiffInfo">
@@ -96,11 +97,14 @@
     <TsDialog
       v-bind="dialogConfig"
       :isShow.sync="isshowIssue"
-      :hasFooter="false"
-      :maskClose="true"
       @on-close="closeIssue"
     >
-      <table v-if="issueData && issueData.id" class="table">
+      <Loading
+        v-if="loadingShow"
+        :loadingShow="loadingShow"
+        type="fix"
+      ></Loading>
+      <table v-else-if="issueData && issueData.id" class="table">
         <tbody>
           <tr v-for="(issue,iindex ) in issueList" :key="iindex+'_'+issueData.issueNo">
             <td class="text-right text-tip pr-md pb-md" width="120">{{ issue.title }}</td>
@@ -128,6 +132,7 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: true,
       remainHeight: 200,
       activeList: null,
       activeValue: '',
@@ -171,7 +176,9 @@ export default {
         key: 'source'
       }],
       dialogConfig: {
-        title: this.$t('term.codehub.issuedetail')
+        title: this.$t('term.codehub.issuedetail'),
+        hasFooter: false,
+        maskClose: true
       },
       issueData: null,
       isshowIssue: false,
@@ -272,12 +279,15 @@ export default {
       if (row.issueVo) {
         return;
       }
+      this.loadingShow = true;
       this.issueData = null;
       this.isshowIssue = true;
       this.$api.codehub.issue.getList({no: id}).then(res => {
         if (res && res.Status == 'OK') {
           this.issueData = res.Return.tbodyList[0] || {};
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     closeIssue() {
