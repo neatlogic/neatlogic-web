@@ -5,6 +5,44 @@
         <span class="tsfont-left text-action" @click="$back('/version-center-manage')">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>{{ title }}</template>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <div class="action-item">
+            <Poptip
+              v-if="!hasAuth"
+              width="400"
+              trigger="hover"
+              placement="top"
+              :content="$t('term.deploy.notversionproductauth')"
+            >
+              <TsFormSwitch
+                v-model="isFreeze"
+                :trueValue="1"
+                :falseValue="0"
+                :disabled="!hasAuth"
+              ></TsFormSwitch>
+            </Poptip>
+            <TsFormSwitch
+              v-else
+              v-model="isFreeze"
+              :showStatus="true"
+              :trueValue="1"
+              :falseValue="0"
+              :trueText="$t('term.deploy.sealplate')"
+              :falseText="$t('term.deploy.sealplate')"
+              @on-change="isFreeze => switchLockVersion(versionId, isFreeze)"
+            ></TsFormSwitch>
+          </div>
+          <div class="action-item">
+            <span class="tsfont-file-single" @click="openProjectDirectoryDialog(versionId)">
+              {{ $t('term.deploy.projectdirectory') }}
+            </span>
+          </div>
+          <div class="action-item">
+            <span class="tsfont-trash-o" @click="deleteVersion(versionId, versionName, true)">{{ $t('page.delete') }}</span>
+          </div>
+        </div>
+      </template>
       <template v-slot:content>
         <Tabs v-model="tabValue" :animated="false">
           <TabPane :label="$t('term.deploy.publishstatus')" name="deployStatus">
@@ -19,23 +57,36 @@
         </Tabs>
       </template>
     </TsContain>
+    <ProjectDirectoryDialog
+      v-if="isShowProjectDirectoryDialog"
+      :params="projectDirectoryParams"
+      :hasAllAuth="hasAuth"
+      @close="isShowProjectDirectoryDialog = false"
+    ></ProjectDirectoryDialog>
   </div>
 </template>
 <script>
+import versionCenterMixin from '../versionCenterMixin.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     DeployStatusOverview: resolve => require(['./deploy-status-overview'], resolve),
     UnitTestOverview: resolve => require(['./unit-test-overview'], resolve), // 单元测试
-    CodeScanOverview: resolve => require(['./code-scan-overview'], resolve) // 代码扫描
+    CodeScanOverview: resolve => require(['./code-scan-overview'], resolve), // 代码扫描
+    ProjectDirectoryDialog: resolve => require(['../components/project-directory-dialog'], resolve) // 工程目录
   },
+  mixins: [versionCenterMixin],
   props: {},
   data() {
     return {
       tabValue: 'deployStatus',
       title: '',
       envId: null,
-      versionId: null
+      versionId: null,
+      isFreeze: 0, // 封版
+      versionName: '', // 版本名称
+      hasAuth: false
     };
   },
   beforeCreate() {},
@@ -45,6 +96,9 @@ export default {
       this.title = query.title;
       query.envId && (this.envId = parseInt(query.envId));
       this.versionId = parseInt(query.versionId);
+      this.versionName = query.versionName;
+      this.isFreeze = parseInt(query.isFreeze);
+      this.hasAuth = Boolean(query.hasAuth);
     }
   },
   beforeMount() {},
