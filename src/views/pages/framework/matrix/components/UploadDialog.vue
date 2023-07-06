@@ -162,7 +162,7 @@
         <div>{{ $t('page.importconfirm') }}</div>
       </template>
       <div v-if="uuidDuplication == 1" class="text-center pb-nm">
-        $t('term.framework.matrix.isoverride')
+        {{ $t('term.framework.matrix.isoverride') }}
       </div>
       <TsForm
         ref="uploadConfirmForm"
