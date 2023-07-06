@@ -121,6 +121,7 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: true,
       remainHeight: 200,
       activeList: null,
       activeValue: '',

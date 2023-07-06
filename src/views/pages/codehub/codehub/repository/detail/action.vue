@@ -68,7 +68,7 @@
         <template slot="action" slot-scope="{row}">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-pages" @click="showDetail(row.uuid)">{{ $t('page.detail') }}</li>
+              <li class="ts-pages" @click="showDetail(row)">{{ $t('page.detail') }}</li>
             </ul>
           </div>
         </template>
@@ -80,15 +80,15 @@
       @on-close="close"
     >
       <div>
-        <table class="table">
+        <table style="word-break: break-all;">
           <colgroup>
             <col width="100" />
             <col />
           </colgroup>
           <tbody>
-            <tr v-for="(d,dindex) in showInfo" :key="dindex" style="vertical-align: top;">
-              <td class="text-tip text-right" nowrap>{{ d.label }}:</td>
-              <td>{{ d.text }}</td>
+            <tr v-for="(item, dindex) in detailList" :key="dindex" class="mb-nm">
+              <td class="text-grey text-right" nowrap>{{ item.label }}：</td>
+              <td>{{ item.text }}</td>
             </tr>
           </tbody>
         </table>
@@ -171,7 +171,7 @@ export default {
       typeVal: '',
       loadingShow: true,
       userList: [],
-      showInfo: null,
+      detailList: [],
       isShow: false,
       setting: {
         title: this.$t('page.viewdetails'),
@@ -258,11 +258,16 @@ export default {
       });
     },
     showDetail(row) {
-      this.showInfo = JSON.parse(row.detail);
-      this.isShow = true;
+      try {
+        this.detailList = JSON.parse(row.detail);
+        this.isShow = true;
+      } catch (error) {
+        this.detailList = [];
+        this.isShow = true;
+      }
     },
     close() {
-      this.showInfo = null;
+      this.detailList = [];
       this.isShow = false;
     }
   },
