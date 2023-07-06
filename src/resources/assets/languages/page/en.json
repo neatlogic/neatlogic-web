@@ -920,5 +920,6 @@
   "unactivesuccess": "Disabled successfully",
   "userdisabled": "User disabled",
   "userdelete": "User deleted",
-  "iselected": "Selected"
+  "iselected": "Selected",
+  "importconfirm": "Import Confirmation"
 }

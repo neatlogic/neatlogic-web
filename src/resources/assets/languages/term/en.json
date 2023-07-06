@@ -1096,7 +1096,10 @@
     "backtorolelist": "Return to Role List",
     "defaultpolicy": "Default Policy",
     "defultpolicysetting": "Default Policy Settings",
-    "syncsceneattr": "Synchronize default scene attributes"
+    "syncsceneattr": "Synchronize default scene attributes",
+    "matrix": {
+      "isoverride": "The same Matrix of ones already exists in the current environment. Do you want to overwrite it?"
+    }
   },
   "knowledge": {
     "document": "Document",
