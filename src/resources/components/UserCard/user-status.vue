@@ -68,8 +68,8 @@ export default {
     vipIconStyle() {
       return {
         width: `${this.avatarSize * 0.4}px`,
-        top: `-${this.hideAvatar ? 4.5 : (this.avatarSize / 22).toFixed(2)}px`,
-        right: `-${this.hideAvatar ? 6 : (this.avatarSize / 20).toFixed(2)}px`
+        top: `-${this.hideAvatar ? 4.5 : Math.trunc((this.avatarSize / 22))}px`, // Math.trunc 向下取整
+        right: `-${this.hideAvatar ? 6 : Math.trunc((this.avatarSize / 20))}px`
       };
     }
   }

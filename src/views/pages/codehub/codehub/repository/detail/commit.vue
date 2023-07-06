@@ -4,32 +4,34 @@
       v-if="hasBranch"
       class="pl-nm pr-nm"
     >
-      <Row :gutter="20">
-        <Col span="16">
+      <Row>
+        <Col span="12">
           <div>{{ $t('term.codehub.commitcountinfo',{allcount:allCount,currentcount:activeConfig.cardList.length || 0}) }}</div>
         </Col>
-        <Col style="float: right;">
-          <div style="display: flex;">
-            <TsFormSelect
-              v-model="queryName"
-              :dataList="searchGrouplist"
-              childrenName="dataList"
-              transfer
-              mode="group"
-              search
-              border="border"
-              width="200px"
-              :placeholder="$t('term.codehub.choosebranchortag')"
-              :validateList="validateList"
-              @on-change="getSearch"
-            ></TsFormSelect>
-            <InputSearcher
-              v-model="keyword"
-              :placeholder="$t('term.codehub.commituserorlogkeyword')"
-              class="ml-md"
-              @change="() => searchList()"
-            ></InputSearcher>
-          </div>
+        <Col span="12">
+          <Row :gutter="8">
+            <Col span="12">
+              <TsFormSelect
+                v-model="queryName"
+                :dataList="searchGrouplist"
+                childrenName="dataList"
+                transfer
+                mode="group"
+                search
+                border="border"
+                :placeholder="$t('term.codehub.choosebranchortag')"
+                :validateList="validateList"
+                @on-change="getSearch"
+              ></TsFormSelect>
+            </Col>
+            <Col span="12">
+              <InputSearcher
+                v-model="keyword"
+                :placeholder="$t('term.codehub.commituserorlogkeyword')"
+                @change="() => searchList()"
+              ></InputSearcher>
+            </Col>
+          </Row>
         </Col>
       </Row>
     </div>
@@ -37,7 +39,7 @@
       v-if="hasBranch"
       ref="mainBody"
       style="overflow-y: auto;"
-      :style="'max-height:'+remainHeight+'px;'"
+      :style="'max-height:'+ remainHeight +'px;'"
     >
       <Loading v-if="isload" loadingShow style="height:100px"></Loading>
       <TsCard
@@ -55,11 +57,16 @@
                 <tr>
                   <td>
                     <div>{{ row.comment }}</div>
-                    <div class="mt-md"><span class="ml">{{ row.committer }}</span><span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span></div>
+                    <div class="mt-md">
+                      <span class="ml">{{ row.committer }}</span>
+                      <span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span>
+                    </div>
                   </td>
                   <td class="text-right">
                     <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span>
-                    <span v-if="row.issueNo" class="text-action ml-md" @click="showIssue(row)">{{ $t('term.rdm.request') }}</span>
+                    <span v-if="row.issueNo" class="text-action ml-md" @click="openIssuesDialog(row)">
+                      {{ $t('term.rdm.request') }}
+                    </span>
                   </td>
                 </tr>
                 <tr v-show="row.showcommitdiffInfo">
@@ -79,7 +86,7 @@
                       class="text-action text-center ts-angle-double-up"
                       @click="row.showcommitdiffInfo = false"
                     >{{ $t('term.codehub.packupcontent') }}</div>
-                    <Loading v-else loadingShow><span></span></Loading>
+                    <Loading v-else loadingShow></Loading>
                   </td>
                 </tr>
               </tbody>
@@ -94,26 +101,7 @@
       <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
     </div>
     <NoData v-else></NoData>
-    <TsDialog
-      v-bind="dialogConfig"
-      :isShow.sync="isshowIssue"
-      @on-close="closeIssue"
-    >
-      <Loading
-        v-if="loadingShow"
-        :loadingShow="loadingShow"
-        type="fix"
-      ></Loading>
-      <table v-else-if="issueData && issueData.id" class="table">
-        <tbody>
-          <tr v-for="(issue,iindex ) in issueList" :key="iindex+'_'+issueData.issueNo">
-            <td class="text-right text-tip pr-md pb-md" width="120">{{ issue.title }}</td>
-            <td class="pr-md pb-md"><template v-if="issue.key =='issueUpdateTime'">{{ issueData[issue.key] |formatDate }}</template><template v-else>{{ issueData[issue.key] || '-' }}</template></td>
-          </tr>
-        </tbody>
-      </table>
-      <NoData v-else></NoData>
-    </TsDialog>
+    <IssuesDetailDialog v-if="isshowIssue" :issueNo="issueNo" @close="closeIssue"></IssuesDetailDialog>
   </div>
   <Loading v-else loadingShow></Loading>
 </template>
@@ -125,8 +113,9 @@ export default {
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
     CommitDiff: resolve => require(['./commit/commit-diff.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve)
+    IssuesDetailDialog: resolve => require(['./commit/issues-detail-dialog'], resolve) // 需求详情
   },
   mixins: [editmixin],
   props: {},
@@ -156,33 +145,8 @@ export default {
         cardList: [],
         boxShadow: false
       },
-      issueList: [{
-        title: this.$t('term.codehub.issuesnumber'),
-        key: 'no'
-      }, {
-        title: this.$t('page.name'),
-        key: 'name'
-      }, {
-        title: this.$t('term.process.dealwithuser'),
-        key: 'lcu'
-      }, {
-        title: this.$t('page.status'),
-        key: 'status'
-      }, {
-        title: this.$t('page.updatetime'),
-        key: 'issueUpdateTime'
-      }, {
-        title: this.$t('page.source'),
-        key: 'source'
-      }],
-      dialogConfig: {
-        title: this.$t('term.codehub.issuedetail'),
-        hasFooter: false,
-        maskClose: true
-      },
-      issueData: null,
+      issueNo: '',
       isshowIssue: false,
-      sourceList: [],
       startCommitId: null, //分页的时候需要记录上一次加载到哪一个提交的id
       isAllloaded: false,
       hasBranch: false //是否可以调用搜索的接口（根据是否有分支）
@@ -195,7 +159,6 @@ export default {
       this.queryType = 'branch';
       this.queryName = this.queryType + '###' + this.queryName;
     }
-    this.getSouce();
   },
   beforeMount() {},
   async mounted() {
@@ -237,7 +200,6 @@ export default {
       }
       return queryName;
     },
-    // 首次进入页面和执行搜索操作，都会触发此方法
     getList() {
       if (!this.hasBranch) {
         return;
@@ -274,32 +236,13 @@ export default {
         });
       });
     },
-    showIssue(row) {
-      let id = row.issueNo;
-      if (row.issueVo) {
-        return;
-      }
-      this.loadingShow = true;
-      this.issueData = null;
+    openIssuesDialog(row) {
+      this.issueNo = row.issueNo || '';
       this.isshowIssue = true;
-      this.$api.codehub.issue.getList({no: id}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.issueData = res.Return.tbodyList[0] || {};
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
     },
     closeIssue() {
       this.isshowIssue = false;
-      this.issueData = null;
-    },
-    getSouce() {
-      this.$api.codehub.issue.getSource({type: 'issue'}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.sourceList = res.Return.syncSourceList;
-        }
-      });
+      this.issueVo = '';
     },
     // 加载更多时进入此逻辑
     getNextpage(page) {
