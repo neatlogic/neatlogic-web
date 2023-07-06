@@ -475,7 +475,7 @@ export default {
         this.$set(this.uploadParams, 'isOverride', 1);
       }
       this.upload(
-        '/api/binary/matrix/definition/import',
+        '/api/binary/matrix/import',
         this.uploadParams,
         {},
         response => {

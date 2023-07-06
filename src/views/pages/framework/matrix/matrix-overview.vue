@@ -285,7 +285,7 @@ export default {
     let _this = this;
     return {
       actionUrl: BASEURLPREFIX + '/api/binary/matrix/data/import',
-      importMatrixDefinitionUrl: BASEURLPREFIX + '/api/binary/matrix/definition/import', // 矩阵定义导入
+      importMatrixDefinitionUrl: BASEURLPREFIX + '/api/binary/matrix/import', // 矩阵定义导入
       loadingShow: true,
       keyword: '',
       showFileError: false, //视图数据校验信息是否展示
