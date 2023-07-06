@@ -2136,7 +2136,8 @@
     "copyissueid": "Copy ID",
     "projectmanager": "Project leader",
     "new": "new",
-    "pleaseselectrole": "Please check the user roles that need to be deleted"
+    "pleaseselectrole": "Please check the user roles that need to be deleted",
+    "modulelist": "Module List"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
@@ -2390,6 +2391,8 @@
     "whathelp": "May I help you?",
     "problemdes": "Problem Description",
     "selectoneresource": "Please select at least one resource",
-    "noaddauthresource": "There are currently no resources to add permissions to"
+    "noaddauthresource": "There are currently no resources to add permissions to",
+    "relcurrclass": "Associate with current classification",
+    "unlassifieddoc": "Unclassified documents"
   }
 }

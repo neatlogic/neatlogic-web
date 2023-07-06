@@ -920,5 +920,9 @@
   "total": "共计",
   "activesucess": "激活成功",
   "unactivesuccess": "禁用成功",
+  "userdisabled": "用户已禁用",
+  "userdelete": "用户已删除",
+  "iselected": "已选"
+  "unactivesuccess": "禁用成功",
   "importconfirm": "导入确认"
 }

@@ -2133,7 +2133,8 @@
     "copyissueid": "复制id",
     "projectmanager": "项目负责人",
     "new": "新",
-    "pleaseselectrole": "请勾选需要删除的用户角色"
+    "pleaseselectrole": "请勾选需要删除的用户角色",
+    "modulelist": "模块列表"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
@@ -2389,6 +2390,8 @@
     "searchhelp": "搜索帮助",
     "helpcenter": "帮助中心",
     "whathelp": "请问有什么能帮到您？",
-    "problemdes": "问题描述"
+    "problemdes": "问题描述",
+    "relcurrclass": "关联当前分类",
+    "unlassifieddoc": "未分类文档"
   }
 }

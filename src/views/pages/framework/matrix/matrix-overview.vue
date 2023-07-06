@@ -76,7 +76,7 @@
                   </Tooltip>
                 </div>
               </div>
-              <div v-if="row.type !='private'" class="text-title overflow">
+              <div v-if="row.type !='private'" class="text-title">
                 <UserCard v-bind="row.fcuVo" hideAvatar></UserCard>
                 <span> {{ row.lcd | formatDate }} {{ row.actionType }}</span>
               </div>

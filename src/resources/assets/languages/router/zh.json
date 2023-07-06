@@ -151,7 +151,7 @@
     "threaddump": "线程快照",
     "sqldump": "SQL监控",
     "databasefragment": "数据库碎片整理",
-    "licensemanage": "更新许可",
+    "licensemanage": "查看许可",
     "batchoperation": "批量操作",
     "user": "用户和权限",
     "message": "消息和公告",
@@ -279,6 +279,7 @@
   "documentonline": {
     "documentonline": "帮助中心",
     "documentdetail": "文档详情",
-    "documentsearch": "文档搜索"
+    "documentsearch": "文档搜索",
+    "directorymanage": "文档目录管理"
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', {target: $t('term.rdm.project')}) }}</Button>
-    <div class="text-grey">{{ $t('term.rdm.deleteprojectdesc') }}</div>
+    <div class="text-grey mt-md">{{ $t('term.rdm.deleteprojectdesc') }}</div>
   </div>
 </template>
 <script>

@@ -2,7 +2,10 @@
   <div v-if="handlerStepInfo">
     <Alert v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
       <template slot="desc">
-        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex">{{ $t('term.autoexec.targetjoberror',{target: e.jobName}) }}：{{ e.error }}</div>
+        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex">
+          {{ $t('term.autoexec.targetjoberror',{target: e.jobName}) }}：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
+          <span v-if="e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
+        </div>
       </template>
     </Alert>
     <TsTable v-if="handlerStepInfo.jobList && handlerStepInfo.jobList.length > 0" :theadList="theadList" :tbodyList="handlerStepInfo.jobList">
@@ -81,6 +84,9 @@ export default {
   methods: {
     gotoJopDetail(job) { //查看作业
       window.open(HOME + '/autoexec.html#/job-detail?id=' + job.id, '_blank');
+    },
+    viewDetail(e) {
+      this.$set(e, 'isMore', !e.isMore);
     }
   },
   filter: {},

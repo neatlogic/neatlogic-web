@@ -15,13 +15,23 @@
             <span>{{ $t('term.rdm.statussets') }}</span>
           </li>
         </ul>
-        <div class="text-title padding-xs">{{ $t('term.rdm.appsets') }}</div>
-        <ul>
+        <div class="text-title padding-xs">
+          <div>{{ $t('term.rdm.appsets') }}</div>
+          <div class="fz10">拖动已激活应用进行排序</div>
+        </div>
+        <draggable
+          v-if="selectedAppList && selectedAppList.length > 0"
+          tag="ul"
+          :list="selectedAppList"
+          handle=".tsfont-drag"
+          ghost-class="li-active"
+          @end="dragEnd"
+        >
           <li
             v-for="item in selectedAppList"
             :key="item.id"
-            class="text-default overflow radius-sm padding-xs cursor"
-            style="position:relative"
+            class="text-default overflow radius-sm padding-xs"
+            style="position: relative"
             :title="item.name"
             :class="{ 'bg-selected': currentTab === 'app_' + item.name }"
             @click="
@@ -32,17 +42,24 @@
               });
             "
           >
-            <span class="tsfont-block overflow" style="margin-right:50px">{{ item.name }}</span>
-            <span style="position:absolute;right:0px"><Button size="small" @click.stop="unactiveApp(item.type)">{{ $t('page.disable') }}</Button></span>
+            <span class="tsfont-drag" style="cursor: move"></span>
+            <span class="cursor overflow" style="margin-right: 50px">{{ item.name }}</span>
+            <span style="position: absolute; right: 0px">
+              <Button size="small" @click.stop="unactiveApp(item.type)">{{ $t('page.disable') }}</Button>
+            </span>
           </li>
+        </draggable>
+        <ul>
           <li
-            v-for="(item,index) in unSelectedAppList"
+            v-for="(item, index) in unSelectedAppList"
             :key="index"
-            style="position:relative"
+            style="position: relative"
             class="text-default overflow radius-sm padding-xs"
           >
-            <span class="tsfont-fullscreen text-grey overflow" style="margin-right:50px">{{ item.label }}</span>
-            <span style="position:absolute;right:0px"><Button type="success" size="small" @click.stop="activeApp(item.name)">{{ $t('page.enable') }}</Button></span>
+            <span class="tsfont-fullscreen text-grey overflow" style="margin-right: 50px">{{ item.label }}</span>
+            <span style="position: absolute; right: 0px">
+              <Button type="success" size="small" @click.stop="activeApp(item.name)">{{ $t('page.enable') }}</Button>
+            </span>
           </li>
         </ul>
         <div class="text-title padding-xs">{{ $t('page.others') }}</div>
@@ -67,9 +84,11 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable';
 export default {
   name: '',
   components: {
+    draggable,
     ProjectEdit: resolve => require(['./edittab/project-edit.vue'], resolve),
     AppEditor: resolve => require(['./edittab/app-editor.vue'], resolve),
     MoreEdit: resolve => require(['./edittab/more-edit.vue'], resolve),
@@ -106,6 +125,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    dragEnd() {
+      this.$api.rdm.app
+        .updateAppSort({
+          projectId: this.projectId,
+          appList: this.selectedAppList
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.updatesuccess'));
+          }
+        });
+    },
     unactiveApp(appType) {
       this.$api.rdm.app.unactiveApp(this.projectId, appType).then(res => {
         if (res.Status === 'OK') {
@@ -124,7 +155,7 @@ export default {
     },
     getAppByProjectId() {
       if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1}).then(res => {
+        this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1 }).then(res => {
           this.selectedAppList = res.Return;
         });
       }
@@ -141,7 +172,9 @@ export default {
   filter: {},
   computed: {
     unSelectedAppList() {
-      return this.appTypeList.filter(d => { return !this.selectedAppList.find(dd => d.name == dd.type); });
+      return this.appTypeList.filter(d => {
+        return !this.selectedAppList.find(dd => d.name == dd.type);
+      });
     }
   },
   watch: {}

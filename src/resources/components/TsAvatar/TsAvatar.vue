@@ -11,18 +11,22 @@
     <span v-else class="ivu-avatar" :style="sizeClass">
       <span class="text-info" style="text-transform: lowercase">{{ namePinyin }}</span>
     </span>
-    <img
-      v-if="vipIcon"
-      :src="vipIcon"
-      :style="vipIconStyle"
-      class="vip-icon"
-    />
+    <UserStatus
+      :vipLevel="vipLevel"
+      :isActive="isActive"
+      :isDelete="isDelete"
+      :size="size"
+      :hideAvatar="false"
+    ></UserStatus>
   </span>
 </template>
 
 <script>
 export default {
   name: 'TsAvatar',
+  components: {
+    UserStatus: resolve => require(['@/resources/components/UserCard/user-status'], resolve)
+  },
   props: {
     initType: { type: String, default: 'user' }, //头像的类型,user, role, team
     vipLevel: { type: Number, default: 0 },
@@ -30,7 +34,13 @@ export default {
     shape: { type: String, default: 'circle' }, //头像形状，circle、square
     size: { type: [String, Number], default: 32 }, //头像大小
     pinyin: { type: String },
-    name: { type: String }
+    name: { type: String },
+    isActive: {
+      type: Number // 用户是激活还是禁用，1表示激活，0表示禁用
+    },
+    isDelete: {
+      type: Number // 是否被删除，1表示被删除，0表示没有被删除
+    }
   },
   data() {
     return {
@@ -61,18 +71,8 @@ export default {
       if (this.initType === 'user' && !this.namePinyin) return require('@/resources/assets/images/avatar/user.png');
       else return null;
     },
-    vipIcon() {
-      return this.$store && this.$store.getters.getVipIconByLevel(this.vipLevel, true);
-    },
-    vipIconStyle() {
-      return {
-        width: `${this.avatarSize * 0.44}px`,
-        bottom: `-${this.avatarSize / 18}px`,
-        right: `-${this.avatarSize / 20}px`
-      };
-    },
+
     namePinyin() {
-      // console.log(this.pinyin, '-----', this.name);
       let newName = '';
       let re = /^[\u4E00-\u9FA5]+$/;
       let name = this.name;
@@ -83,7 +83,6 @@ export default {
         } 
       }
       return newName;
-      // return this.pinyin && this.pinyin.slice(0, 2);
     },
     sizeClass: function() {
       let _this = this;
