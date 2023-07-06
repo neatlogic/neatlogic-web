@@ -2136,7 +2136,8 @@
     "errortip": "异常提示",
     "noauthforissue": "您不是当前项目成员，没有访问当前项目的权限。",
     "apply": "申请",
-    "joinproject": "加入此项目。"
+    "joinproject": "加入此项目。",
+    "dburl": "数据库链接"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

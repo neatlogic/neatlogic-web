@@ -2139,7 +2139,8 @@
     "errortip": "Abnormal prompt",
     "noauthforissue": "You are not a member of the current project and do not have permission to access the current project.",
     "apply": "application",
-    "joinproject": "Join this project."
+    "joinproject": "Join this project.",
+    "dburl": "Database Link"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
