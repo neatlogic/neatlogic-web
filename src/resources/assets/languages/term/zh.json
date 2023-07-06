@@ -2131,7 +2131,12 @@
     "projectmanager": "项目负责人",
     "new": "新",
     "pleaseselectrole": "请勾选需要删除的用户角色",
-    "modulelist": "模块列表"
+    "modulelist": "模块列表",
+    "projectisdeleted": "当前项目已删除",
+    "errortip": "异常提示",
+    "noauthforissue": "您不是当前项目成员，没有访问当前项目的权限。",
+    "apply": "申请",
+    "joinproject": "加入此项目。"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

@@ -6,6 +6,7 @@
   ></Loading>
   <div v-else-if="isReady && issueData">
     <TsContain
+      v-if="issueData.isProjectOwner || issueData.isProjectMember || issueData.isProjectLeader"
       :rightWidth="250"
       :enableCollapse="true"
       :isSiderHide="isSiderHide"
@@ -121,6 +122,19 @@
         </div>
       </div>
     </TsContain>
+    <div v-else class="auth-container">
+      <Alert type="error" style="width: 450px;">
+        {{ $t('term.rdm.errortip') }}
+        <span slot="desc">
+          <div>{{ $t('term.rdm.noauthforissue') }}</div>
+          <div class="mt-sm">
+            <span>{{ $t('term.report.chartsetting.click') }}</span>
+            <span class="ml-sm mr-sm"><Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button></span>
+            <span>{{ $t('term.rdm.joinproject') }}</span>
+          </div>
+        </span>
+      </Alert>
+    </div>
   </div>
   <div v-else><NoData></NoData></div>
 </template>
@@ -202,4 +216,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.auth-container {
+  height: calc(100vh - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

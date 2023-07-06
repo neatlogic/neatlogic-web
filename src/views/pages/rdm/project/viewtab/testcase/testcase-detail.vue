@@ -5,7 +5,7 @@
     type="fix"
   ></Loading>
   <div v-else-if="isReady && issueData">
-    <TsContain :rightWidth="250">
+    <TsContain v-if="issueData.isProjectOwner || issueData.isProjectMember || issueData.isProjectLeader" :rightWidth="250">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -93,6 +93,19 @@
         </div>
       </div>
     </TsContain>
+    <div v-else class="auth-container">
+      <Alert type="error" style="width: 450px;">
+        {{ $t('term.rdm.errortip') }}
+        <span slot="desc">
+          <div>{{ $t('term.rdm.noauthforissue') }}</div>
+          <div class="mt-sm">
+            <span>{{ $t('term.report.chartsetting.click') }}</span>
+            <span class="ml-sm mr-sm"><Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button></span>
+            <span>{{ $t('term.rdm.joinproject') }}</span>
+          </div>
+        </span>
+      </Alert>
+    </div>
   </div>
   <div v-else><NoData></NoData></div>
 </template>

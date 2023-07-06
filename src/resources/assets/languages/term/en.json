@@ -2134,7 +2134,12 @@
     "projectmanager": "Project leader",
     "new": "new",
     "pleaseselectrole": "Please check the user roles that need to be deleted",
-    "modulelist": "Module List"
+    "modulelist": "Module List",
+    "projectisdeleted": "The current project has been deleted",
+    "errortip": "Abnormal prompt",
+    "noauthforissue": "You are not a member of the current project and do not have permission to access the current project.",
+    "apply": "application",
+    "joinproject": "Join this project."
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
