@@ -81,7 +81,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getIssuesListByIssueId();
+    this.searchIssuesList();
   },
   beforeMount() {},
   mounted() {},
@@ -95,13 +95,18 @@ export default {
     closeDialog() {
       this.$emit('close');
     },
-    getIssuesListByIssueId() {
+    searchIssuesList() {
       this.loadingShow = true;
       if (this.$utils.isEmpty(this.issueNo)) {
         this.loadingShow = false;
         return false;
       }
-      this.$api.codehub.issue.getList({no: this.issueNo}).then(res => {
+      let params = {
+        no: this.issueNo,
+        currentPage: this.tableConfig.currentPage,
+        pageSize: this.tableConfig.pageSize
+      };
+      this.$api.codehub.issue.getList(params).then(res => {
         if (res && res.Status == 'OK') {
           this.tableConfig = res.Return;
         }
@@ -111,12 +116,12 @@ export default {
     },
     changeCurrent(currentPage) {
       this.tableConfig.currentPage = currentPage;
-      this.getIssuesListByIssueId();
+      this.searchIssuesList();
     },
     changePageSize(pageSize) {
       this.tableConfig.currentPage = 1;
       this.tableConfig.pageSize = pageSize;
-      this.getIssuesListByIssueId();
+      this.searchIssuesList();
     }
   },
   filter: {},
