@@ -18,7 +18,7 @@
                 class="template-li text-action overflow"
                 :class="(templateConfig && templateConfig.trigger == item.trigger)? 'li-active li-text' :''"
                 @click="selectTemplate(item)"
-              >{{ item.trigger }}</div>
+              >{{ item.triggerName }}</div>
             </div>
           </Col>
           <Col span="16">
@@ -41,7 +41,7 @@
         </TsRow>
       </template>
       <template v-slot:footer>
-        <Button @click="isDialog = false">{{ $t('page.cancel') }}</Button>
+        <Button @click="close">{{ $t('page.cancel') }}</Button>
         <Button type="primary" @click="addTemplate">{{ $t('dialog.title.addtarget',{'target':$t('page.template')}) }}</Button>
       </template>
     </TsDialog>
@@ -60,6 +60,10 @@ export default {
     policyId: {
       type: [String, Number],
       default: null
+    },
+    triggerList: {
+      type: Array,
+      default: []
     }
   },
   data() {
@@ -72,8 +76,19 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.policyId) {
-      this.getHelpList();
+    if (this.triggerList) {
+      this.triggerList.forEach((item, index, array) => {
+        this.helpList.push(
+          {
+            trigger: item.trigger,
+            triggerName: item.triggerName,
+            description: item.description,
+            title: '',
+            content: ''
+          }
+        );
+      });
+      this.selectTemplate(this.helpList[0]);
     }
   },
   beforeMount() {},
@@ -85,20 +100,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getHelpList() {
-      let data = {
-        policyId: this.policyId
-      };
-      this.$api.framework.tactics.getHelpList(data).then(res => {
-        if (res.Status == 'OK') {
-          let helpList = res.Return.helpList;
-          if (helpList.length > 0) {
-            this.helpList = helpList;
-            this.templateConfig = helpList[0];
-          }
-        }
-      });
-    },
+    // getHelpList() {
+    //   let data = {
+    //     policyId: this.policyId
+    //   };
+    //   this.$api.framework.tactics.getHelpList(data).then(res => {
+    //     if (res.Status == 'OK') {
+    //       let helpList = res.Return.helpList;
+    //       if (helpList.length > 0) {
+    //         this.helpList = helpList;
+    //         this.templateConfig = helpList[0];
+    //       }
+    //     }
+    //   });
+    // },
     close() {
       this.$emit('update:isDialog', false);
     },
@@ -107,6 +122,20 @@ export default {
       this.$emit('add', this.templateConfig);
     },
     selectTemplate(item) {
+      if (item.content == '') {
+        if (this.policyId) {
+          let data = {
+            policyId: this.policyId,
+            trigger: item.trigger
+          };
+          this.$api.framework.tactics.getDefaultTemplate(data).then(res => {
+            if (res.Status == 'OK') {
+              item.title = res.Return?.title;
+              item.content = res.Return?.content;
+            }
+          });
+        }
+      }
       this.templateConfig = item;
     }
   },

@@ -182,6 +182,7 @@
     <SettingTemplate
       v-if="templateDialog"
       :id="id"
+      :triggerList="triggerList"
       :handler="handler"
       :isEditDialog.sync="isEditDialog"
       :defaultTemplateId="templateId"
