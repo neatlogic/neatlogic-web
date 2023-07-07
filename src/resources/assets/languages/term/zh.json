@@ -1861,7 +1861,8 @@
     "applynotconfigmodule": "当前应用未配置模块",
     "applynotconfigenv": "当前应用未配置环境",
     "modulenotconfigenv": "当前模块未配置环境",
-    "codechange": "代码变更"
+    "codechange": "代码变更",
+    "cveloophole": "cve漏洞"
   },
   "inspect": {
     "alarmprompt": "告警提示",

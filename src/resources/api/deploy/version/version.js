@@ -66,6 +66,10 @@ const version = {
   getCodeScanRecord(params) {
     // 获取发布版本最后一次构建质量记录
     return axios.post('/api/rest/deploy/versoin/lastbuildquality/get', params);
+  },
+  getCveloopholeList(params) {
+    // 获取cve漏洞列表
+    return axios.post('/api/rest/deploy/version/search', params);
   }
 };
 export default version;

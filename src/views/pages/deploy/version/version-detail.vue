@@ -57,6 +57,9 @@
           <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.codechange')" name="codeChange">
             <CodeChangeOverview v-if="tabValue == 'codeChange'" :id="mrId"></CodeChangeOverview>
           </TabPane>
+          <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
+            <CveLoopholeManage v-if="tabValue == 'cveLoophole'"></CveLoopholeManage>
+          </TabPane>
         </Tabs>
       </template>
     </TsContain>
@@ -69,16 +72,17 @@
   </div>
 </template>
 <script>
-import versionCenterMixin from '../versionCenterMixin.js';
+import versionCenterMixin from './versionCenterMixin.js';
 export default {
   name: '',
   components: {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    DeployStatusOverview: resolve => require(['./deploy-status-overview'], resolve),
-    UnitTestOverview: resolve => require(['./unit-test-overview'], resolve), // 单元测试
-    CodeScanOverview: resolve => require(['./code-scan-overview'], resolve), // 代码扫描
-    CodeChangeOverview: resolve => require(['./code-change-overview'], resolve), // 代码变更
-    ProjectDirectoryDialog: resolve => require(['../components/project-directory-dialog'], resolve) // 工程目录
+    ProjectDirectoryDialog: resolve => require(['./project-directory-dialog'], resolve), // 工程目录
+    DeployStatusOverview: resolve => require(['./detail/deploy-status-overview'], resolve),
+    UnitTestOverview: resolve => require(['./detail/unit-test-overview'], resolve), // 单元测试
+    CodeScanOverview: resolve => require(['./detail/code-scan-overview'], resolve), // 代码扫描
+    CodeChangeOverview: resolve => require(['./detail/code-change-overview'], resolve), // 代码变更
+    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve) // cve漏洞
   },
   mixins: [versionCenterMixin],
   props: {},

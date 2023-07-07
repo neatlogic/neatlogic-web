@@ -3,34 +3,41 @@ const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const download = () => import('@/views/pages/common/download.vue');
 const preview = () => import('@/views/pages/common/preview.vue');
+
+// 应用配置
 const applicationConfigManage = () => import('./application-config/application-config-manage.vue'); // 应用配置
+const configAdd = () => import('./application-config/config/integrated/config-add.vue'); // 持续集成
+
+// 版本中心
 const versionCenterManage = () => import('./version/version-center-manage.vue'); // 版本中心
-const versionDetail = () => import('./version/components/version-detail.vue'); // 版本详情
+const versionDetail = () => import('./version/version-detail.vue'); // 版本详情
 const applicationConfigPipeline = () => import('./application-config/application-config-pipeline.vue'); // 应用配置流水线
+
 // 自动化
 const actionDetail = () => import('@/views/pages/autoexec/detail/action-detail.vue'); // 组合工具详情
 const scriptDetail = () => import('@/views/pages/autoexec/detail/script-detail.vue'); //自动化：自定义工具
 const toolDetail = () => import('@/views/pages/autoexec/detail/tool-detail.vue');//自动化：工具
 const testDetail = () => import('@/views/pages/autoexec/detail/test-detail.vue');//自动化：工具测试
 const jobDetail = () => import('@/views/pages/autoexec/detail/job-detail.vue'); // 自动发现作业详情
+
 // 自动化end
 const publishingJobManage = () => import('./job/job-manage'); //一键发布
 const publishingJobAdd = () => import('./job/job-add'); //新建发布作业
 const batchPublishingJobEdit = () => import('./job/batch-job-edit.vue');//修改批量作业
 const batchPublishingJobExecute = () => import('./job/batch-job-detail.vue');//执行批量作业
 const pipelineDetail = () => import('./application-config/pipeline-detail.vue'); // 流水线详情
+
 //超级流水线
 const pipelineManage = () => import('./pipeline/pipeline-manage.vue');
 const pipelineEdit = () => import('./pipeline/pipeline-edit.vue');
+
 // 活动版本
 const activeversionManage = () => import('./activeversion/activeversion-manage.vue');
+
 //定时作业
 const scheduleJobManage = () => import('./schedule/schedule-job-manage.vue');
 const scheduleJobAdd = () => import('./schedule/schedule-job-add.vue');
 const scheduleJobEdit = () => import('./schedule/schedule-job-edit.vue');
-
-// 持续集成
-const configAdd = () => import('./application-config/config/integrated/config-add.vue');
 
 // 作业触发器
 const jobWebhookManage = () => import('./webhook/job-webhook-manage.vue');

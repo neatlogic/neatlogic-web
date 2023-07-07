@@ -1,5 +1,5 @@
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@bg-grey, @bg-grey-hover, @success-bg-color, @error-bg-color, @bg-op, @primary-grey) {
+.theme(@bg-grey, @bg-grey-hover, @success-bg-color, @error-bg-color, @bg-op, @primary-grey, @border) {
   .file-li {
     border: 1px solid;
     .file-title {
@@ -28,7 +28,7 @@
           padding: 2px 8px;
         }
         td.code-lineno {
-          border-right: 1px solid @default-tip;
+          border-right: 1px solid var(--border, @border);
           background: var(--bg-op, @bg-op);
           white-space: nowrap;
           word-break: keep-all;
@@ -143,14 +143,14 @@
     }
     &.separate {
       .to-lineno {
-        border-left: 1px solid @default-border;
+        border-left: 1px solid var(--border, @border);
       }
     }
   }
 }
 html {
-  .theme(@default-bg-grey, @default-bg-grey-hover, @default-success-bg-color, @default-error-bg-color, @default-op, @default-primary-grey);
+  .theme(@default-bg-grey, @default-bg-grey-hover, @default-success-bg-color, @default-error-bg-color, @default-op, @default-primary-grey, @default-border);
   &.theme-dark {
-    .theme(@dark-bg-grey, @dark-bg-grey-hover, @dark-success-bg-color, @dark-error-bg-color, @dark-op,  @dark-primary-grey);
+    .theme(@dark-bg-grey, @dark-bg-grey-hover, @dark-success-bg-color, @dark-error-bg-color, @dark-op, @dark-primary-grey, @dark-border);
   }
 }
