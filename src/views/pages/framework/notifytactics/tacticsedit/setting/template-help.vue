@@ -83,6 +83,7 @@ export default {
             trigger: item.trigger,
             triggerName: item.triggerName,
             description: item.description,
+            isUpdate: false,
             title: '',
             content: ''
           }
@@ -122,7 +123,7 @@ export default {
       this.$emit('add', this.templateConfig);
     },
     selectTemplate(item) {
-      if (item.content == '') {
+      if (!item.isUpdate) {
         if (this.policyId) {
           let data = {
             policyId: this.policyId,
@@ -130,6 +131,7 @@ export default {
           };
           this.$api.framework.tactics.getDefaultTemplate(data).then(res => {
             if (res.Status == 'OK') {
+              item.isUpdate = true;
               item.title = res.Return?.title;
               item.content = res.Return?.content;
             }
