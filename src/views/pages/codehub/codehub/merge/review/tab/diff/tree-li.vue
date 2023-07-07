@@ -286,6 +286,7 @@ export default {
     position: relative;
     display: block;
     text-align: left;
+    margin-bottom: 6px;
     .btn-toggle{
       position: absolute;
       width: 16px;
@@ -308,6 +309,7 @@ export default {
   }
   .diff-treeli{
     position: relative;
+    margin-bottom: 6px;
     &.hideChild{
       >.diff-treeul{
         display: none;

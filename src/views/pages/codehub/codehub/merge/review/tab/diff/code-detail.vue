@@ -1,29 +1,30 @@
 <template>
-  <div v-if="diff" class="bg-grey border-color file-li" :class="showType">
-    <h4 class="file-title border-color">
+  <div v-if="diff" class="border-color file-li" :class="showType">
+    <h4 class="bg-grey file-title border-color">
       <span class="btn-toggle text-action" :class="isShow ? 'ts-angle-down' : 'ts-angle-up'" @click="toggleShow()"></span>
       <span 
-        class="ts-file file-name cursor-pointer" 
+        class="ts-file cursor-pointer" 
         :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'"
-        :title="diff.modifiedType && diff.modifiedType=='R'?'文件名由 '+diff.fromFileName+' 修改为 '+diff.toFileName:getName(diff)"
+        :title="diff.modifiedType && diff.modifiedType =='R' ? $t('term.codehub.filenameadjustto', {fromfileName: diff.fromFileName}, {tofileName: diff.toFileName}) : getName(diff)"
         @dblclick.stop="goToTree(diff)"
       >
-        <span v-if="diff.modifiedType && diff.modifiedType=='R'">{{ diff.fromFileName }}&nbsp;<span class="ts-long-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
+        <span v-if="diff.modifiedType && diff.modifiedType=='R'">
+          {{ diff.fromFileName }}&nbsp;
+          <span class="ts-long-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
       </span>
       <span 
         v-clipboard="getName(diff)" 
         v-clipboard:success="clipboardSuc"
-        class="ts-chain btn-copy" 
+        class="tsfont-copy text-action ml-xs mr-xs" 
         :title="$t('term.codehub.copyfileurl')"
       ></span>
       <span 
         v-clipboard="getName(diff,true)" 
-        v-clipboard:success="clipboardSuc" 
-        class="btn-copy" 
+        v-clipboard:success="clipboardSuc"
+        class="text-action"
         :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'" 
-        :title="$t('term.codehub.copyfilename')"      
-        style="right:22px"
+        :title="$t('term.codehub.copyfilename')"
       ></span>
     </h4>
     <Loading v-if="diff.loadingMore" loadingShow style="height:100px"></Loading>
@@ -46,13 +47,17 @@
                       class="from-lineno code-lineno cursor-pointer pre" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
-                    ><div class="ts-option-horizontal text-action icon-more"></div></td>
+                    >
+                      <div class="ts-option-horizontal text-action icon-more"></div>
+                    </td>
                     <td v-if="showType=='separate'" class="code-content"></td>
                     <td 
                       class="to-lineno code-lineno cursor-pointer" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
-                    ><div class="ts-option-horizontal text-action icon-more"></div></td>
+                    >
+                      <div class="ts-option-horizontal text-action icon-more"></div>
+                    </td>
                     <td class="code-content"></td>
                   </tr>
                   <!-- 第一行_end -->
@@ -66,7 +71,7 @@
                             :count="getLineCommit('left',setNumtext('from', hunk, i),commentList).length"
                             style="transform: scale(0.7);"
                           ></Badge>
-                          <span v-else class="comment-icon tsfont-message text-action" :title="$t('page.comment')"></span>                        
+                          <span v-else class="comment-icon tsfont-message text-action text-primary" :title="$t('page.comment')"></span>                        
                         </div>
                         <div v-else-if="showType!='separate'" class="comment-line" @click.stop="toggleShowComment(line)">
                           <Badge 
@@ -74,7 +79,7 @@
                             :count="line.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
                             style="transform: scale(0.7);"
                           ></Badge>
-                          <span v-else class="comment-icon tsfont-message text-action" :title="$t('page.comment')"></span>
+                          <span v-else class="comment-icon tsfont-message text-action text-primary" :title="$t('page.comment')"></span>
                         </div>
                       </template>
                     </td>
@@ -91,7 +96,7 @@
                           :count="getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
                           style="transform: scale(0.7);"
                         ></Badge>
-                        <span v-else class="comment-icon tsfont-message text-action" title="评论"></span>
+                        <span v-else class="comment-icon tsfont-message text-action text-primary" title="评论"></span>
                       </div>
                     </td>
                     <td class="code-content" :class="showType=='separate'?'to':''">
@@ -170,7 +175,7 @@
             <tbody>
               <tr>
                 <td class="code-content text-center" :colspan="showType=='separate'?4:3" style="line-height:2.5;">
-                  <span class="text-tip">{{ $t('term.codehub.thisdifferencehasbeenfolded') }} ，</span>
+                  <span>{{ $t('term.codehub.thisdifferencehasbeenfolded') }} ，</span>
                   <span class="text-href" @click.stop="showMore()">{{ $t('term.codehub.clicktoexpandthedetails') }}</span>
                 </td>
               </tr>
@@ -188,7 +193,7 @@
                     {{ $t('term.codehub.filedeleted') }}
                   </div>
                   <template v-else>
-                    <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
+                    <span>{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
                     <span
                       v-if="!isDowning"
                       v-download="downPath(diff)"
@@ -580,27 +585,6 @@ export default {
   word-break: keep-all;
   text-overflow: ellipsis;
   overflow: hidden;
-}
-.btn-copy {
-  opacity: 0;
-  position: absolute;
-  right: 2px;
-  width: 18px;
-  height: 24px;
-  line-height: 24px;
-  top: 50%;
-  margin-top: -12px;
-  cursor: pointer;
-}
-.file-li {
-  &:hover {
-    .btn-copy {
-      opacity: 1;
-    }
-  }
-}
-.file-name{
-  display: inline;
 }
 .comment-line{
   opacity: 0;

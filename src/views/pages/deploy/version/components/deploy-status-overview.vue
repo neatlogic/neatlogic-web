@@ -1,7 +1,7 @@
 <template>
-  <div class="version-detail-wrap">
+  <div class="version-detail-wrap padding">
     <div v-if="selectedEnvId">
-      <div v-if="envList && envList.length > 0" class="pt-sm pb-sm li-box">
+      <div v-if="envList && envList.length > 0" class="mb-sm">
         <Row :gutter="16">
           <Col
             v-for="(item,index) in envList"
@@ -165,15 +165,11 @@ export default {
 </script>
 <style lang="less" scoped>
 .version-detail-wrap {
-  .li-box {
-    margin-bottom: -10px;
   .li-item {
     padding: 6px 16px;
     border-radius: 4px;
     text-align: center;
     margin-bottom: 10px;
   }
- }
 }
-
 </style>

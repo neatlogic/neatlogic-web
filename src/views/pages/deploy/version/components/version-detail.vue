@@ -44,7 +44,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <Tabs v-model="tabValue" :animated="false">
+        <Tabs v-model="tabValue" :animated="false" class="block-tabs">
           <TabPane :label="$t('term.deploy.publishstatus')" name="deployStatus">
             <DeployStatusOverview v-if="tabValue == 'deployStatus'" :envId="envId" :versionId="versionId"></DeployStatusOverview>
           </TabPane>
@@ -53,6 +53,9 @@
           </TabPane>
           <TabPane :label="$t('page.codescan')" name="codeScan">
             <CodeScanOverview v-if="tabValue == 'codeScan'" :versionId="versionId"></CodeScanOverview>
+          </TabPane>
+          <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.codechange')" name="codeChange">
+            <CodeChangeOverview v-if="tabValue == 'codeChange'" :id="mrId"></CodeChangeOverview>
           </TabPane>
         </Tabs>
       </template>
@@ -74,6 +77,7 @@ export default {
     DeployStatusOverview: resolve => require(['./deploy-status-overview'], resolve),
     UnitTestOverview: resolve => require(['./unit-test-overview'], resolve), // 单元测试
     CodeScanOverview: resolve => require(['./code-scan-overview'], resolve), // 代码扫描
+    CodeChangeOverview: resolve => require(['./code-change-overview'], resolve), // 代码变更
     ProjectDirectoryDialog: resolve => require(['../components/project-directory-dialog'], resolve) // 工程目录
   },
   mixins: [versionCenterMixin],
@@ -86,7 +90,9 @@ export default {
       versionId: null,
       isFreeze: 0, // 封版
       versionName: '', // 版本名称
-      hasAuth: false
+      hasAuth: false,
+      mrId: null, // 915224111939584 测试id
+      isShowCodeChange: false // 是否显示代码变更的tab，无数据时，不显示这个tab
     };
   },
   beforeCreate() {},
