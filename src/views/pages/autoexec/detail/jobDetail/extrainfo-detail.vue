@@ -77,8 +77,8 @@ export default {
   name: '',
   components: {
     Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    BuildNoDialog: resolve => require(['@/views/pages/deploy/version/components/build-no-dialog'], resolve), // build-no
-    VersionDialog: resolve => require(['@/views/pages/deploy/version/components/env-dialog'], resolve) // 版本
+    BuildNoDialog: resolve => require(['@/views/pages/deploy/version/build-no/build-no-dialog'], resolve), // build-no
+    VersionDialog: resolve => require(['@/views/pages/deploy/version/env-dialog'], resolve) // 版本
   },
   props: {
     config: Object

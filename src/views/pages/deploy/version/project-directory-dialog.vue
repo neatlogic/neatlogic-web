@@ -24,7 +24,7 @@
 export default {
   name: '', // 工程目录
   components: {
-    VersionProduct: resolve => require(['../build-no/version-product'], resolve)
+    VersionProduct: resolve => require(['./build-no/version-product'], resolve)
   },
   props: {
     params: {

@@ -1,53 +1,61 @@
 <template>
   <div class="version-detail-wrap padding">
-    <div v-if="selectedEnvId">
-      <div v-if="envList && envList.length > 0" class="mb-sm">
+    <Loading
+      v-if="loadingShow"
+      :loadingShow="loadingShow"
+      type="fix"
+    ></Loading>
+    <template v-else>
+      <div v-if="selectedEnvId">
+        <div v-if="envList && envList.length > 0" class="mb-sm">
+          <Row :gutter="16">
+            <Col
+              v-for="(item,index) in envList"
+              :key="index"
+              :xs="12"
+              :sm="8"
+              :md="6"
+              :lg="4"
+              :xl="3"
+              :xxl="2"
+            >
+              <div
+                v-if="item.envName"
+                class="li-item text-action"
+                :class="selectedEnvId == item.envId ? 'li-active li-text border-primary' : 'border-base bg-op'"
+                @click="selectedItem(item.envId)"
+              >{{ item.envName }}</div>
+            </Col>
+          </Row>
+        </div>
         <Row :gutter="16">
-          <Col
-            v-for="(item,index) in envList"
-            :key="index"
-            :xs="12"
-            :sm="8"
-            :md="6"
-            :lg="4"
-            :xl="3"
-            :xxl="2"
-          >
-            <div
-              v-if="item.envName"
-              class="li-item text-action"
-              :class="selectedEnvId == item.envId ? 'li-active li-text border-primary' : 'border-base bg-op'"
-              @click="selectedItem(item.envId)"
-            >{{ item.envName }}</div>
+          <Col :span="14">
+          </Col>
+          <Col :span="10">
+            <InputSearcher
+              v-model="keyword"
+              :placeholder="$t('term.deploy.ipname')"
+              class="mb-nm"
+              @change="() => changeCurrent"
+            ></InputSearcher>
           </Col>
         </Row>
+        <TsTable
+          :theadList="theadList"
+          v-bind="tableData"
+          @changeCurrent="changeCurrent"
+          @changePageSize="changePageSize"
+        >
+          <template slot="status" slot-scope="{row}">
+            <span>{{ (row && row.status) ? $t('page.publish') : $t('page.notpublish') }}</span>
+          </template>
+        </TsTable>
       </div>
-      <Row :gutter="16">
-        <Col :span="14">
-        </Col>
-        <Col :span="10">
-          <InputSearcher
-            v-model="keyword"
-            :placeholder="$t('term.deploy.ipname')"
-            class="mb-nm"
-            @change="searchData(1)"
-          ></InputSearcher>
-        </Col>
-      </Row>
-      <TsTable
-        :theadList="theadList"
-        v-bind="tableData"
-        @changeCurrent="changeCurrent"
-        @changePageSize="changePageSize"
-      >
-        <template slot="status" slot-scope="{row}">
-          <span>{{ (row && row.status) ? $t('page.publish') : $t('page.notpublish') }}</span>
-        </template>
-      </TsTable>
-    </div>
-    <div v-else>
-      <NoData :text="$t('term.deploy.appnotsettingenv')"></NoData>
-    </div>
+      <div v-else>
+        <NoData :text="$t('term.deploy.appnotsettingenv')"></NoData>
+      </div>
+    </template>
+    
   </div>
 </template>
 <script>
@@ -71,6 +79,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       keyword: '',
       envList: [],
       selectedEnvId: null, // 选中环境id
@@ -109,7 +118,9 @@ export default {
     await this.getVersionEnvList();
     if (this.envId) {
       this.selectedEnvId = this.envId;
-      this.searchData(1);
+      this.changeCurrent();
+    } else {
+      this.loadingShow = false;
     }
   },
   beforeUpdate() {},
@@ -129,33 +140,36 @@ export default {
         }
       });
     },
-    searchData(currentPage) {
-      if (currentPage) {
-        this.searchParams.currentPage = currentPage;
-      }
+    searchData() {
+      this.loadingShow = true;
       let params = {
         versionId: this.versionId,
         envId: this.selectedEnvId,
-        keyword: this.keyword
+        keyword: this.keyword,
+        ...this.searchParams
       };
-      this.$api.deploy.version.versionInstanceSearch({...this.searchParams, ...params}).then((res) => {
+      this.$api.deploy.version.versionInstanceSearch(params).then((res) => {
         if (res.Status == 'OK') {
           this.$set(this.tableData, 'tbodyList', res.Return);
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     selectedItem(envId) {
       if (envId) {
         this.selectedEnvId = envId;
-        this.searchData(1);
+        this.changeCurrent();
       }
     },
-    changeCurrent(currentPage) {
-      this.searchData(currentPage);
+    changeCurrent(currentPage = 1) {
+      this.searchParams.currentPage = currentPage;
+      this.searchData();
     },
     changePageSize(pageSize) {
+      this.searchParams.currentPage = 1;
       this.searchParams.pageSize = pageSize;
-      this.searchData(1);
+      this.searchData();
     }
   },
   filter: {},

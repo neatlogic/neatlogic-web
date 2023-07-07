@@ -185,10 +185,10 @@ export default {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
     AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    VersionAddDialog: resolve => require(['./components/version-add-dialog'], resolve), // 新增版本
-    BuildNoDialog: resolve => require(['./components/build-no-dialog'], resolve), // build-no
-    EnvDialog: resolve => require(['./components/env-dialog'], resolve), // env
-    ProjectDirectoryDialog: resolve => require(['./components/project-directory-dialog'], resolve) // 工程目录
+    VersionAddDialog: resolve => require(['./version-add-dialog'], resolve), // 新增版本
+    BuildNoDialog: resolve => require(['./build-no/build-no-dialog'], resolve), // build-no
+    EnvDialog: resolve => require(['./env-dialog'], resolve), // env
+    ProjectDirectoryDialog: resolve => require(['./project-directory-dialog'], resolve) // 工程目录
   },
   mixins: [versionCenterMixin],
   props: {},
