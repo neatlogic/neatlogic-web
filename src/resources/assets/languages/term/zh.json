@@ -1860,7 +1860,8 @@
     "applynotconfigpipeline": "当前应用未配置流水线",
     "applynotconfigmodule": "当前应用未配置模块",
     "applynotconfigenv": "当前应用未配置环境",
-    "modulenotconfigenv": "当前模块未配置环境"
+    "modulenotconfigenv": "当前模块未配置环境",
+    "codechange": "代码变更"
   },
   "inspect": {
     "alarmprompt": "告警提示",
@@ -2387,7 +2388,8 @@
     "selectoneresource": "请至少选择一个资源",
     "noaddauthresource": "暂无可添加权限的资源",
     "backmergerequest": "返回MR",
-    "branchproject": "分支保护"
+    "branchproject": "分支保护",
+    "filenameadjusttotarget": "文件名由{fromfileName}修改为{tofileName}"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",

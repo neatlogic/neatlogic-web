@@ -7,13 +7,14 @@
           <div v-if="!loading && diffList && diffList.length">
             <span>{{ $t('page.total') }}</span>
             <span class="text-primary count-text">{{ getFileCount(diffList) }}</span>
-            <span>{{ $t('term.codehub.filechangenumber') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">，{{ getFileCount(diffList,'addCount') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}</span>
-            <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">，{{ getFileCount(diffList,'deleteCount') }}</span>
+            <span>{{ $t('term.codehub.filechangenumber') }}，</span>
+            <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">{{ getFileCount(diffList,'addCount') }}</span>
+            <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}，</span>
+            <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">{{ getFileCount(diffList,'deleteCount') }}</span>
             <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
           </div>
           <div class="flex-start">
+            <!-- 暂时注释，勿删
             <TsFormSelect
               v-if="!loading && commitList && commitList.length"
               v-model="selectedCommit"
@@ -21,7 +22,7 @@
               v-bind="selectConfig"
               class="mr-sm"
               @on-change="getDiff()"
-            ></TsFormSelect>
+            ></TsFormSelect> -->
             <RadioGroup v-if="!loading" v-model="showType" type="button">
               <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
             </RadioGroup>
@@ -78,23 +79,23 @@
   </div>
 </template>
 <script>
-import mixins from './tabmixins.js';
+import mixins from '@/views/pages/codehub/codehub/merge/review/tab/tabmixins.js';
 import axios from '@/resources/api/http.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DiffDetail: resolve => require(['./diff/diff-detail.vue'], resolve),
-    TreeLi: resolve => require(['./diff/tree-li.vue'], resolve)
+    // TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    DiffDetail: resolve => require(['@/views/pages/codehub/codehub/merge/review/tab/diff/diff-detail.vue'], resolve),
+    TreeLi: resolve => require(['@/views/pages/codehub/codehub/merge/review/tab/diff/tree-li.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
   props: {},
   provide() {
     return {
-      appModuleId: (this.mrData.appModuleVo && this.mrData.appModuleVo.id) || null,
-      repositoryId: this.mrData.appModuleId || null,
-      branchname: this.mrData.srcBranch || null,
+      appModuleId: (this.mrData && this.mrData.appModuleVo && this.mrData.appModuleVo.id) || null,
+      repositoryId: this.mrData && this.mrData.appModuleId || null,
+      branchname: this.mrData && this.mrData.srcBranch || null,
       smrId: this.id || null
     };
   },
@@ -179,10 +180,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.loading = true;
-  },
-  beforeUpdate() {},
-  updated() {},
-  activated() {
     if (this.commitId) {
       this.selectedCommit = this.commitId;
     } else {
@@ -190,6 +187,8 @@ export default {
     }
     this.getDiff();
   },
+  beforeUpdate() {},
+  updated() {},
   deactivated() {
     //取消正在搜索的请求
     this.loading = true;  
