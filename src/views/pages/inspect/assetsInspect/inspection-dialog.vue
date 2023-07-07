@@ -8,9 +8,9 @@
               <div class="mb-nm">      
                 <span v-html="$t('term.inspect.assetinspectconfirm', {target: ciEntityData.name})"></span>
               </div>
-              <div>
+              <div v-if="getInsoectionToolName(comboData)">
                 {{ $t('term.inspect.inspecttoolis') }}
-                <a href="javascript:void(0)" @click="toDetail">{{ comboData.combop.name }}</a>
+                <a href="javascript:void(0)" @click="toDetail">{{ getInsoectionToolName(comboData) }}</a>
               </div>
             </div>
             <div v-else-if="ciData">
@@ -22,9 +22,9 @@
                   {{ item }}
                 </Tag>
               </div>
-              <div>
+              <div v-if="getInsoectionToolName(comboData)">
                 {{ $t('term.inspect.inspecttoolis') }}
-                <a href="javascript:void(0)" @click="toDetail">{{ comboData.combop.name }}</a>
+                <a href="javascript:void(0)" @click="toDetail">{{ getInsoectionToolName(comboData) }}</a>
               </div>
             </div>
           </div>
@@ -43,7 +43,7 @@
                   </Tag>
                 </div>
                 <div>
-                  <span class="text-warning">{{ $t('term.inspect.resourcetypenotsetinspecttooltiptarget', {target: `${comboData.combop.name || ''}(${comboData.combop.name || ''})`}) }}</span>
+                  <span class="text-warning">{{ $t('term.inspect.resourcetypenotsetinspecttooltiptarget', {target: getInsoectionToolName(comboData) ? `${getInsoectionToolName(comboData)}(${getInsoectionToolName(comboData)})` : ''}) }}</span>
                   <a href="javascript:void(0)" @click="openInspectionToolSettingDialog">{{ $t('term.inspect.clicktoconfig') }}</a>
                 </div>
               </div>
@@ -198,7 +198,17 @@ export default {
       // });
     }
   },
-  computed: {},
+  computed: {
+    getInsoectionToolName() {
+      return (comboData) => {
+        if (comboData.combop && comboData.combop.name) {
+          return comboData.combop.name;
+        } else {
+          return '';
+        }
+      };
+    }
+  },
   watch: {}
 };
 </script>
