@@ -1096,7 +1096,10 @@
     "backtorolelist": "Return to Role List",
     "defaultpolicy": "Default Policy",
     "defultpolicysetting": "Default Policy Settings",
-    "syncsceneattr": "Synchronize default scene attributes"
+    "syncsceneattr": "Synchronize default scene attributes",
+    "matrix": {
+      "isoverride": "The same Matrix of ones already exists in the current environment. Do you want to overwrite it?"
+    }
   },
   "knowledge": {
     "document": "Document",
@@ -2140,7 +2143,8 @@
     "errortip": "Abnormal prompt",
     "noauthforissue": "You are not a member of the current project and do not have permission to access the current project.",
     "apply": "application",
-    "joinproject": "Join this project."
+    "joinproject": "Join this project.",
+    "dburl": "Database Link"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

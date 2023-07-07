@@ -1095,7 +1095,10 @@
     "backtorolelist": "返回角色列表",
     "defaultpolicy": "默认策略",
     "defultpolicysetting": "默认策略设置",
-    "syncsceneattr": "同步默认场景属性"
+    "syncsceneattr": "同步默认场景属性",
+    "matrix": {
+      "isoverride": "当前环境已存在同一矩阵，是否覆盖？"
+    }
   },
   "knowledge": {
     "document": "文档",
@@ -2137,7 +2140,8 @@
     "errortip": "异常提示",
     "noauthforissue": "您不是当前项目成员，没有访问当前项目的权限。",
     "apply": "申请",
-    "joinproject": "加入此项目。"
+    "joinproject": "加入此项目。",
+    "dburl": "数据库链接"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

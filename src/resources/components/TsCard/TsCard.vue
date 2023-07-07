@@ -127,7 +127,7 @@
                             :on-error="uploadError"
                             :action="n.actionUrl + `?matrixUuid=` + `${card.uuid}`"
                           >
-                            <span>{{ $t('page.import') }}</span>
+                            <span>{{ $t('page.importdata') }}</span>
                           </Upload>
                         </DropdownItem>
                       </DropdownMenu>

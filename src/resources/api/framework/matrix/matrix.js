@@ -30,9 +30,9 @@ const matrix = {
   deleteMatrix(params) {
     return axios.post('/api/rest/matrix/delete', params);
   },
-  //矩阵导出接口
-  exportMatrix(data) {
-    return axios.get('/api/binary/matrix/export', {
+  //矩阵数据导出接口
+  exportMatrixData(data) {
+    return axios.get('/api/binary/matrix/data/export', {
       params: data,
       responseType: 'blob'
     });
@@ -40,6 +40,13 @@ const matrix = {
   //矩阵模板导出接口
   exportAttributeMatrix(data) {
     return axios.get('/api/binary/matrix/attribute/export', {
+      params: data,
+      responseType: 'blob'
+    });
+  },
+  // 矩阵导出接口
+  exportMatrix(data) {
+    return axios.get('/api/binary/matrix/export', {
       params: data,
       responseType: 'blob'
     });
