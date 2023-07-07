@@ -180,7 +180,7 @@ export default {
     isDelete: {
       type: Number // 是否被删除，1表示被删除，0表示没有被删除
     },
-    hideStatusIcon: { // 是否显示用户右上角状态图标【禁用/删除/钻石(VIP等级)】
+    hideStatusIcon: { // 是否隐藏用户右上角状态图标【禁用/删除/钻石(VIP等级)】
       type: Boolean,
       default: false
     }
