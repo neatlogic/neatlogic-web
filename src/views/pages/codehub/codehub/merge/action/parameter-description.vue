@@ -7,7 +7,7 @@
     </Alert>
     <TsTable :theadList="theadList" :tbodyList="tbodyList">
       <template slot="name" slot-scope="{row}">
-        <div v-clipboard="getClipboard(row.name)" v-clipboard:success="copyok">{{ '${' }}{{ row.name }}{{ '}' }}</div>
+        <div v-clipboard="getClipboard(row.name)" v-clipboard:success="copyok">{{ '${DATA.' }}{{ row.name }}{{ '}' }}</div>
       </template>
     </TsTable>
   </div>

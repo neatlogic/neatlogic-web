@@ -61,16 +61,13 @@ export default {
       controllList.push(h('span', label));
       if (!this.issueData.isEnd) {
         controllList.push(
-          h(
-            'span',
-            {
-              class: 'ml-xs tsfont-edit-s',
-              on: {
-                click: this.editContent
-              }
+          h('span', {
+            class: 'ml-xs tsfont-edit-s',
+            on: {
+              click: this.editContent
             }
-          )
-        ); 
+          })
+        );
       }
       return h('div', controllList);
     },
@@ -159,7 +156,7 @@ export default {
     },
     async getAppByProjectId() {
       if (this.projectId) {
-        await this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1, needSystemAttr: 1}).then(res => {
+        await this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1, needSystemAttr: 1 }).then(res => {
           this.appList = res.Return;
         });
       }
@@ -173,7 +170,7 @@ export default {
       };
     },
     getWebhookCount() {
-      return (appId) => {
+      return appId => {
         if (this.issueData && this.issueData.webhookList && this.issueData.webhookList.length > 0) {
           return this.issueData.webhookList.filter(d => d.appId === appId).length;
         }
@@ -207,5 +204,11 @@ export default {
   height: calc(100vh - 116px);
   overflow: auto;
   transition: all 200ms;
+}
+.auth-container {
+  height: calc(100vh - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -1,5 +1,5 @@
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@bg-grey, @bg-grey-hover, @success-bg-color, @error-bg-color) {
+.theme(@bg-grey, @bg-grey-hover, @success-bg-color, @error-bg-color, @bg-op, @primary-grey) {
   .file-li {
     border: 1px solid;
     .file-title {
@@ -21,7 +21,6 @@
       }
       table {
         width: 100%;
-        background: var(--bg-grey, @bg-grey);
         table-layout: fixed;
         border-collapse: collapse;
         td {
@@ -30,7 +29,7 @@
         }
         td.code-lineno {
           border-right: 1px solid @default-tip;
-          background: var(--bg-grey, @bg-grey);
+          background: var(--bg-op, @bg-op);
           white-space: nowrap;
           word-break: keep-all;
           text-align: center;
@@ -40,9 +39,9 @@
           padding: 2px 0;
         }
         td.code-content {
-          background: var(--bg-grey, @bg-grey);
+          background: var(--bg-op, @bg-op);
           .hljs {
-            background: var(--bg-grey, @bg-grey);
+            background: var(--bg-op, @bg-op);
             padding: 0 2px;
           }
         }
@@ -134,11 +133,10 @@
     }
     &.active {
       table {
-        background: var(--bg-grey-hover, @bg-grey-hover);
         td.code-content {
-          background: var(--bg-grey-hover, @bg-grey-hover);
+          background: var(--primary-grey, @primary-grey);
           .hljs {
-            background: var(--bg-grey-hover, @bg-grey-hover);
+            background: var(--primary-grey, @primary-grey);
           }
         }
       }
@@ -151,8 +149,8 @@
   }
 }
 html {
-  .theme(@default-bg-grey, @default-bg-grey-hover, @default-success-bg-color, @default-error-bg-color);
+  .theme(@default-bg-grey, @default-bg-grey-hover, @default-success-bg-color, @default-error-bg-color, @default-op, @default-primary-grey);
   &.theme-dark {
-    .theme(@dark-bg-grey, @dark-bg-grey-hover, @dark-success-bg-color, @dark-error-bg-color);
+    .theme(@dark-bg-grey, @dark-bg-grey-hover, @dark-success-bg-color, @dark-error-bg-color, @dark-op,  @dark-primary-grey);
   }
 }

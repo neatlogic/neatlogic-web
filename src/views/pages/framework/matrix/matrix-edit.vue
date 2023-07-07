@@ -18,16 +18,16 @@
               <span class="tsfont-cloud">{{ $t('page.import') }}/{{ $t('page.export') }}</span>
               <DropdownMenu slot="list" class="dropdown">
                 <DropdownItem v-if="tabledata && tabledata.tbodyList && tabledata.tbodyList.length>0" v-download="downurl">
-                  <div>{{ $t('page.export') }}</div>
+                  <div>{{ $t('term.pbc.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem v-else>
-                  <div class="btn-disable">{{ $t('page.export') }}</div>
+                  <div class="btn-disable">{{ $t('term.pbc.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="exportAttributeMatrix">
                   <div>{{ $t('term.pbc.exporttemplate') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                  <span>{{ $t('page.import') }}</span>
+                  <span>{{ $t('page.importdata') }}</span>
                   <UploadDialog
                     ref="uploadDialog"
                     :actionUrl="`${actionUrl}?matrixUuid=${matrixUuid}`"
@@ -35,6 +35,9 @@
                     :multiple="false"
                     @on-all-upload="getMatrixData"
                   />
+                </DropdownItem>
+                <DropdownItem @click.native="exportMatrix">
+                  <div>{{ $t('page.export') }}</div>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -124,7 +127,7 @@ export default {
     let _this = this;
     return {
       currentData: null, //当前编辑行
-      actionUrl: BASEURLPREFIX + '/api/binary/matrix/import',
+      actionUrl: BASEURLPREFIX + '/api/binary/matrix/data/import',
       formatList: ['xls', 'xlsx'], //导入文件格式
       loadingShow: true,
       selectData: [], //选中数据
@@ -245,13 +248,13 @@ export default {
       this.matrixDataSelectList = list;
     },
     //导出矩阵
-    exportMatrix: function() {
+    exportMatrixData: function() {
       let data = {
         matrixUuid: this.matrixUuid,
         fileType: 'excel'
       };
       this.$api.framework.matrix
-        .exportMatrix(data)
+        .exportMatrixData(data)
         .then(res => {
           if (res.status == '200') {
             const aLink = document.createElement('a');
@@ -301,7 +304,29 @@ export default {
           });
         });
     },
-   
+    exportMatrix() {
+      let data = {
+        uuid: this.matrixUuid
+      };
+      this.$api.framework.matrix.exportMatrix(data).then(res => {
+        if (res.status == '200') {
+          const aLink = document.createElement('a');
+          let blob = new Blob([res.data], {
+            type: 'application/x-msdownload'
+          });
+          aLink.href = URL.createObjectURL(blob);
+          let contentDisposition = decodeURI(res.headers['content-disposition']);
+          let fileName = contentDisposition.substring(22, contentDisposition.length - 1);
+          aLink.download = fileName;
+          aLink.click();
+          document.body.appendChild(aLink);
+        }
+      }).catch(error => {
+        this.$Notice.error({
+          title: this.$t('page.exporterror')
+        });
+      });
+    },
     //添加属性
     addMatrixAttribute: function() {
       this.attributeDialog = true;
@@ -444,7 +469,7 @@ export default {
     },
     downurl() {
       return {
-        url: '/api/binary/matrix/export',
+        url: '/api/binary/matrix/data/export',
         params: { matrixUuid: this.matrixUuid, fileType: 'excel'}
       };
     }

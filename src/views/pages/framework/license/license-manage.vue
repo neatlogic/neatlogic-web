@@ -6,21 +6,23 @@
           <TsFormItem :label="$t('term.framework.authorizedto')">
             {{ licenseData.purchaser }}
           </TsFormItem>
-          <TsFormItem :label="$t('term.framework.issuedate')">
-            {{ licenseData.createDate | formatDate('yyyy-mm-dd') }}
-          </TsFormItem>
           <TsFormItem :label="$t('term.framework.expiredate')">
             {{ licenseData.expirationDate | formatDate('yyyy-mm-dd') }}
           </TsFormItem>
           <TsFormItem :label="$t('term.framework.serveceenddate')">
             {{ licenseData.endDate | formatDate('yyyy-mm-dd') }}
           </TsFormItem>
-          <TsFormItem :label="数据库链接">
+          <TsFormItem :label="$t('term.rdm.dburl')">
             {{ licenseData.dbUrl }}
           </TsFormItem>
           <TsFormItem :label="$t('term.rdm.modulelist')">
             <div>
-              <Tag v-for="(m,index) in licenseData.moduleList" :key="index">{{ m.name }}·{{ m.id }}</Tag>
+              <Tag
+                v-for="(m,index) in licenseData.moduleList"
+                :key="index"
+                size="large"
+                color="success"
+              >{{ m.name }}·{{ m.id }}</Tag>
             </div>
           </TsFormItem>
         </div>

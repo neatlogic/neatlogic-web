@@ -10,6 +10,7 @@
         ></navTopLeft>
       </div><div slot="topRight">
         <div class="bar-top-right action-group text-right">
+          <span class="action-item tsfont-export" @click="exportMatrix">{{ $t('page.export') }}</span>
           <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
             <ReferenceSelect
@@ -89,6 +90,29 @@ export default {
     toMatrixList: function() {
       this.$router.push({
         path: '/matrix-overview'
+      });
+    },
+    exportMatrix() {
+      let data = {
+        uuid: this.matrixUuid
+      };
+      this.$api.framework.matrix.exportMatrix(data).then(res => {
+        if (res.status == '200') {
+          const aLink = document.createElement('a');
+          let blob = new Blob([res.data], {
+            type: 'application/x-msdownload'
+          });
+          aLink.href = URL.createObjectURL(blob);
+          let contentDisposition = decodeURI(res.headers['content-disposition']);
+          let fileName = contentDisposition.substring(22, contentDisposition.length - 1);
+          aLink.download = fileName;
+          aLink.click();
+          document.body.appendChild(aLink);
+        }
+      }).catch(error => {
+        this.$Notice.error({
+          title: this.$t('page.exporterror')
+        });
       });
     },
     editMatrix() {
