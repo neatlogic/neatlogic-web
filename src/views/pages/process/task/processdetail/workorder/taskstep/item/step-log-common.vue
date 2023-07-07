@@ -11,6 +11,7 @@
                   class="parent"
                   :iconSize="24"
                   :hideAvatar="true"
+                  :hideStatusIcon="true"
                   nameLength
                 ></UserCard>
                 <span v-if="stepItem.operatorRole">({{ stepItem.operatorRole }})</span>
@@ -193,8 +194,8 @@ export default {
 }
 .child-avatar{
   position: absolute;
-  top:0;
-  left:-5px;
+  top: -2px;
+  left: -5px;
 }
 .step-log-common-box {
   position: relative;
