@@ -182,6 +182,7 @@ export default {
       this.moduleGroup = '';
       this.menu = '';
       this.fileConfig = {};
+      this.keyword = '';
       if (node) {
         this.moduleGroup = node.moduleGroup;
         this.menu = node.menu || '';
