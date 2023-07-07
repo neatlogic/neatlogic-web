@@ -41,7 +41,12 @@
               <div class="infor-left"> <UserCard :uuid="processTaskConfig.ownerVo.uuid" :iconSize="32" hideName></UserCard></div>
               <div class="infor-right">
                 <div>
-                  <UserCard v-bind="processTaskConfig.ownerVo" :nameLength="11" hideAvatar></UserCard>
+                  <UserCard
+                    v-bind="processTaskConfig.ownerVo"
+                    :nameLength="11"
+                    hideAvatar
+                    :hideStatusIcon="true"
+                  ></UserCard>
                 </div>
                 <div class="text-grey">{{ processTaskConfig.ownerVo.userId }}</div>
               </div>
