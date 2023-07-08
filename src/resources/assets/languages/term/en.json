@@ -2143,7 +2143,10 @@
     "noauthforissue": "You are not a member of the current project and do not have permission to access the current project.",
     "apply": "application",
     "joinproject": "Join this project.",
-    "dburl": "Database Link"
+    "dburl": "Database Link",
+    "dragapp": "Drag activated apps to sort",
+    "saveastemplate": "Save as Template",
+    "saveprojectastemplate": "Save the current project configuration as a project template."
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

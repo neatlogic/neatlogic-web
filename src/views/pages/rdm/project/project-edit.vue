@@ -17,7 +17,7 @@
         </ul>
         <div class="text-title padding-xs">
           <div>{{ $t('term.rdm.appsets') }}</div>
-          <div class="fz10">拖动已激活应用进行排序</div>
+          <div class="fz10">{{ $t('term.rdm.dragapp') }}</div>
         </div>
         <draggable
           v-if="selectedAppList && selectedAppList.length > 0"
@@ -65,7 +65,7 @@
         <div class="text-title padding-xs">{{ $t('page.others') }}</div>
         <ul>
           <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'others' }" @click="currentTab = 'others'">
-            <span>{{ $t('page.delete') }}</span>
+            <span>{{ $t('page.othersetting') }}</span>
           </li>
         </ul>
       </div>

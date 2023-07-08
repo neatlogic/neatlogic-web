@@ -2140,7 +2140,10 @@
     "noauthforissue": "您不是当前项目成员，没有访问当前项目的权限。",
     "apply": "申请",
     "joinproject": "加入此项目。",
-    "dburl": "数据库链接"
+    "dburl": "数据库链接",
+    "dragapp": "拖动已激活应用进行排序",
+    "saveastemplate": "存为模板",
+    "saveprojectastemplate": "把当前的项目配置保存为项目模板。"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

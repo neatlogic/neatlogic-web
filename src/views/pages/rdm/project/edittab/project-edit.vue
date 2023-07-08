@@ -20,7 +20,7 @@
             </div>
             <div>
               <Tag v-for="(at, aindex) in row.appTypeList" :key="aindex">
-                {{ at.label }}
+                {{ at.appTypeName }}
               </Tag>
             </div>
           </div>
