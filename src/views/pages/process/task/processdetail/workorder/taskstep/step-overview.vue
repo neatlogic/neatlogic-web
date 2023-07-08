@@ -129,35 +129,35 @@
                     <div class="step-infor">
                       <TsRow>
                         <Col span="8">
-                          <span class="text-grey" style="padding-right:10px">{{ $t('term.process.dealwithuser') }}</span>
+                          <span class="text-grey pr-sm">{{ $t('term.process.dealwithuser') }}</span>
                           <span>
                             <UserCard v-bind="change.workerVo" style="display: inline-block;" hideAvatar></UserCard>
                           </span>
                         </Col>
                         <Col span="8">
-                          <span class="text-grey" style="padding-right:10px">{{ $t('term.process.planstartdate') }}</span>
+                          <span class="text-grey pr-sm">{{ $t('term.process.planstartdate') }}</span>
                           <span>{{ change.planStartDate || '-' }}</span>
                         </Col>
                         <Col span="8">
-                          <span class="text-grey" style="padding-right:10px">{{ $t('term.process.startTimeWindow') }}</span>
+                          <span class="text-grey pr-sm">{{ $t('term.process.startTimeWindow') }}</span>
                           <span v-if="change.startTimeWindow || change.endTimeWindow">{{ change.startTimeWindow || '~' }} - {{ change.endTimeWindow || '~' }}</span>
                           <span v-else>-</span>
                         </Col>
                       </TsRow>
                       <TsRow>
                         <Col span="8">
-                          <span class="text-grey" style="padding-right:10px">{{ $t('term.process.actualstarttime') }}</span>
+                          <span class="text-grey pr-sm">{{ $t('term.process.actualstarttime') }}</span>
                           <span v-if="change.startTime">{{ change.startTime | formatDate }}</span>
                           <span v-else>-</span>
                         </Col>
                         <Col span="8">
-                          <span class="text-grey" style="padding-right:10px">{{ $t('term.process.actualendtime') }}</span>
+                          <span class="text-grey pr-sm">{{ $t('term.process.actualendtime') }}</span>
                           <span v-if="change.endTime">{{ change.endTime | formatDate }}</span>
                           <span v-else>-</span>
                         </Col>
                       </TsRow>
                       <div class="change-commet">
-                        <span class="change-commet-label text-grey" style="padding-right:10px">{{ $t('page.accessory') }}</span>
+                        <span class="change-commet-label text-grey pr-sm">{{ $t('page.accessory') }}</span>
                         <div v-if="change.fileList && change.fileList.length>0">
                           <div
                             v-for="changeFile in change.fileList"
@@ -172,7 +172,7 @@
                         <div v-else>-</div>
                       </div>
                       <div class="change-commet">
-                        <span class="change-commet-label text-grey" style="padding-right:10px">{{ $t('page.description') }}</span>
+                        <span class="change-commet-label text-grey pr-sm">{{ $t('page.description') }}</span>
                         <div v-if="change.content">
                           <div v-html="change.content"></div>
                         </div>

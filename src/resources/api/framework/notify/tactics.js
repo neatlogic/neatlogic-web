@@ -97,8 +97,11 @@ const tactics = {
   getTriggerList(data) {
     return axios.post('/api/rest/notify/policy/trigger/list', data);
   },
-  getHelpList(data) {
-    return axios.post('/api/rest/notify/policy/trigger/help/list', data);
+  // getHelpList(data) {
+  //   return axios.post('/api/rest/notify/policy/trigger/help/list', data);
+  // },
+  getDefaultTemplate(data) {
+    return axios.post('/api/rest/notify/policy/default/template/get', data);
   },
   //删除通知定时任务
   deleteJob(data) {

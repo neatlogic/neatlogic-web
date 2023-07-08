@@ -234,6 +234,7 @@
       v-if="helpDialog"
       :isDialog.sync="helpDialog"
       :policyId="id"
+      :triggerList="triggerList"
       @add="editSetting"
     ></TemplateHelp>
   </div>
@@ -279,6 +280,10 @@ export default {
     showTemplate: {
       type: String,
       default: 'overview'
+    },
+    triggerList: {
+      type: Array,
+      default: []
     }
   },
   data() {

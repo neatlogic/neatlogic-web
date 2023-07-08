@@ -1,5 +1,9 @@
 <template>
   <div>
+    <Loading
+      :loadingShow="loadingShow"
+      type="fix"
+    ></Loading>
     <header class="bg-op radius-lg pt-nm pl-nm pr-nm">
       <TsRow :gutter="16">
         <Col
@@ -122,6 +126,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       lastCodeTestResult: '', // 最新一次代码测试结果
       textList: [
         {
@@ -274,7 +279,11 @@ export default {
               }
             });
           }
+        }).finally(() => {
+          this.loadingShow = false;
         });
+      } else {
+        this.loadingShow = false;
       }
     }
   },

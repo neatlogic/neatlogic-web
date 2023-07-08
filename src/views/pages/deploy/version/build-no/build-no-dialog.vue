@@ -9,8 +9,7 @@
     >
       <template v-slot:header>
         <div class="action-group">
-          <span>{{ title }}</span>
-          <span v-show="envParams && envParams.buildNo">-build{{ envParams.buildNo }}</span>
+          <span class="action-item">{{ title }}</span>
           <CommonStatus
             class="action-item"
             :statusValue="statusValue == 'pending' ? 'waitCompile' : statusValue"
@@ -32,7 +31,7 @@
               :label="item.text"
               :name="item.value"
             >
-              <VersionProduct v-if="tabValue == item.value" :params="handleParams(envParams)" :hasAllAuth="hasAllAuth"></VersionProduct>
+              <VersionProduct v-if="tabValue == item.value" :params="handleBuildNoParams()" :hasAllAuth="hasAllAuth"></VersionProduct>
             </TabPane>
           </Tabs>
         </div>
@@ -45,12 +44,14 @@ export default {
   name: '',
   components: {
     CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    VersionProduct: resolve => require(['../build-no/version-product'], resolve)
+    VersionProduct: resolve => require(['./version-product'], resolve)
   },
   props: {
-    envParams: {
+    buildNoParams: {
       type: Object,
-      default: () => {}
+      default: function() {
+        return {};
+      }
     },
     statusName: {
       type: String,
@@ -65,7 +66,7 @@ export default {
       default: ''
     },
     hasAllAuth: {
-      // 是否拥有版本&制品管理&环境权限
+      // 是否拥有版本&制品管理权限
       type: Boolean,
       default: false
     }
@@ -93,11 +94,10 @@ export default {
       this.$emit('close');
     },
     searchData() {
-      let {type, isMirror} = this.envParams;
+      let {type} = this.buildNoParams;
       if (type) {
         let params = {
-          type: type,
-          isMirror // 环境才可能有环境制品
+          type: type
         };
         this.$api.deploy.version.getTypeList(params).then((res) => {
           if (res && res.Status == 'OK') {
@@ -107,17 +107,13 @@ export default {
         });
       }
     },
-    handleParams(params) {
-      let envParams = this.$utils.deepClone(params);
-      if (envParams) {
-        delete envParams.type; // 删除多余的参数
-        envParams.resourceType = this.tabValue;
-        if (this.tabValue && this.tabValue.includes('mirror')) {
-          // 镜像制品不需要buildNo
-          delete envParams.buildNo;
-        }
+    handleBuildNoParams() {
+      let params = this.$utils.deepClone(this.buildNoParams);
+      if (params) {
+        delete params.type;
+        params.resourceType = this.tabValue;
       }
-      return envParams;
+      return params;
     }
   },
   filter: {},

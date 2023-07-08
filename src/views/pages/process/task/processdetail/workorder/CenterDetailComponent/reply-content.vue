@@ -126,7 +126,7 @@
           <TsCkeditor
             ref="taskStepContent"
             v-model="commentContent.content"
-            :showIconToggle="true"
+            :showIconToggle="!isShowProcessTaskStepCommentEditorToolbar"
             width="100%"
             :validateList="isRequiredContent? validateList : []"
             @change="changeCommentContent"
@@ -170,6 +170,10 @@ export default {
       default: function() {
         return {};
       }
+    },
+    isShowProcessTaskStepCommentEditorToolbar: { //是否展示富文本框工具栏
+      type: Boolean,
+      default: false
     }
   },
   data() {

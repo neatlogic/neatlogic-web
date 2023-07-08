@@ -4,7 +4,7 @@
       <tbody v-if="fileConfig && fileConfig.binary && !loading">
         <tr class="line-tr">
           <td style="line-height:3;" class="text-center">
-            <span class="text-tip">{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
+            <span>{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
             <span v-download="downPath(fileConfig)" v-download:success="downloadok" class="text-href">{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
           </td>           
         </tr>

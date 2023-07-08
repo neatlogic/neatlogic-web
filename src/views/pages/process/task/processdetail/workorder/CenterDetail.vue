@@ -354,6 +354,7 @@
         :commentObj="commentObj"
         :processTaskStepConfig="processTaskStepConfig"
         :isDisableCommet.sync="isDisableCommet"
+        :isShowProcessTaskStepCommentEditorToolbar="!!processTaskConfig.isShowProcessTaskStepCommentEditorToolbar"
       ></ReplyContent>
       <slot name="replyBtn"></slot>
       <!-- 回复end -->

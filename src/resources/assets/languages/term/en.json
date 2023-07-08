@@ -1863,7 +1863,9 @@
     "applynotconfigpipeline": "The current application does not configure a pipeline",
     "applynotconfigmodule": "No module is currently applied",
     "applynotconfigenv": "The current application does not configure the environment",
-    "modulenotconfigenv": "The current module does not have an environment configured"
+    "modulenotconfigenv": "The current module does not have an environment configured",
+    "codechange": "Code change",
+    "cveloophole": "CVE vulnerability"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2389,7 +2391,8 @@
     "handlemergerequest": "Process MR",
     "revokerequirement": "Revoke requirement",
     "backmergerequest": "Return to MR",
-    "branchproject": "Branch protection"
+    "branchproject": "Branch protection",
+    "filenameadjusttotarget": "Change the file name from {fromfileName} to {tofileName}"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",
