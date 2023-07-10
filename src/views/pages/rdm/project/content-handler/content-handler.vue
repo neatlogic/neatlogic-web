@@ -16,7 +16,12 @@
         <TsCkeditor v-if="autoSave" v-model="issueData.content"></TsCkeditor>
         <TsCkeditor v-else v-model="content"></TsCkeditor>
       </div>
-      <div v-else v-html="issueData.content"></div>
+      <div
+        v-else
+        class="content"
+        @click="showImage"
+        v-html="issueData.content"
+      ></div>
     </div>
     <div v-if="editMode === 'edit' && !autoSave" class="mt-md" style="text-align: right">
       <Button class="mr-md" type="primary" @click="saveIssue()">{{ $t('page.confirm') }}</Button>
@@ -58,6 +63,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    showImage(event) {
+      if (event.target.tagName.toLowerCase() === 'img') {
+        console.log(event.target.getAttribute('src'));
+        this.$createDialog({
+          content: '<img src="' + event.target.getAttribute('src') + '">',
+          width: 'large',
+          'on-ok': vnode => {
+            vnode.isShow = false;
+          }
+        });
+      }
+    },
     editContent() {
       this.editMode = 'edit';
     },
@@ -106,13 +123,19 @@ export default {
 /deep/ ol li {
   list-style-type: decimal !important;
 }
-/deep/ ol{
+/deep/ ol {
   padding-left: revert;
 }
 /deep/ ul li {
   list-style-type: disc !important;
 }
-/deep/ ul{
+/deep/ ul {
   padding-left: revert;
+}
+</style>
+<style lang="less">
+.content img {
+  width: 100%;
+  cursor: pointer;
 }
 </style>
