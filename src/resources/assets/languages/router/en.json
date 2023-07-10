@@ -251,6 +251,7 @@
   "rdm": {
     "projectdetail": "Project Detail",
     "projectmanage": "Project Management",
+    "templatemanage": "Template Management",
     "workbench": "Workbench",
     "mydoing": "To-Do List",
     "mycompleted": "Completed List",

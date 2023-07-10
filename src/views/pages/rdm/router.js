@@ -5,6 +5,8 @@ const projectEdit = () => import('./project/project-edit.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
 const taskList = () => import('@/views/pages/rdm/workbench/task-list.vue');
 const priorityManage = () => import('@/views/pages/rdm/priority/priority-manage.vue');
+const templateManage = () => import('@/views/pages/rdm/template/template-manage.vue');
+const templateEdit = () => import('@/views/pages/rdm/template/template-edit.vue');
 const appModules = {
   bugDetail: () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue'),
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
@@ -132,6 +134,28 @@ let routerArr = [
       type: 'workbrench',
       authority: 'RDM_BASE',
       icon: 'tsfont-star'
+    }
+  },
+  {
+    path: '/template-manage',
+    name: 'templateManage',
+    component: templateManage,
+    meta: {
+      title: $t('router.rdm.templatemanage'),
+      ismenu: true,
+      type: 'system',
+      authority: 'PROJECT_TEMPLATE_MANAGE',
+      icon: 'tsfont-formtextarea'
+    }
+  },
+  {
+    path: '/template-edit/:templateId?',
+    name: 'templateEdit',
+    component: templateEdit,
+    meta: {
+      ismenu: false,
+      type: 'system',
+      authority: 'PROJECT_TEMPLATE_MANAGE'
     }
   },
   {

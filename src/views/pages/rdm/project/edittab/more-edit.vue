@@ -1,10 +1,14 @@
 <template>
   <div>
-    <Button type="primary" @click="isTemplateShow = true">{{ $t('term.rdm.saveastemplate') }}</Button>
-    <div class="text-grey mt-md">{{ $t('term.rdm.saveprojectastemplate') }}</div>
-    <Divider></Divider>
-    <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', { target: $t('term.rdm.project') }) }}</Button>
-    <div class="text-grey mt-md">{{ $t('term.rdm.deleteprojectdesc') }}</div>
+    <div v-if="$AuthUtils.hasRole('PROJECT_TEMPLATE_MANAGE')">
+      <Button type="primary" @click="isTemplateShow = true">{{ $t('term.rdm.saveastemplate') }}</Button>
+      <div class="text-grey mt-md">{{ $t('term.rdm.saveprojectastemplate') }}</div>
+      <Divider></Divider>
+    </div>
+    <div>
+      <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', { target: $t('term.rdm.project') }) }}</Button>
+      <div class="text-grey mt-md">{{ $t('term.rdm.deleteprojectdesc') }}</div>
+    </div>
     <TsDialog
       v-if="isTemplateShow"
       v-bind="templateDialogConfig"
@@ -19,6 +23,7 @@
               v-model="templateName"
               :validateList="['required']"
               border="border"
+              :maxlength="50"
             ></TsFormInput>
           </TsFormItem>
         </div>
@@ -60,13 +65,14 @@ export default {
       const formTemplateName = this.$refs['formTemplateName'];
       if (formTemplateName.valid()) {
         this.$api.rdm.projecttemplate
-          .saveTemplate({
+          .saveTemplateFromProject({
             projectId: this.projectId,
             templateName: this.templateName
           })
           .then(res => {
             if (res.Status === 'OK') {
-              //
+              this.$Message.success(this.$t('message.savesuccess'));
+              this.isTemplateShow = false;
             }
           });
       }

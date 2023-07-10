@@ -3,48 +3,51 @@
     <template v-slot:navigation>
       <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
     </template>
+    <template v-slot:topLeft>
+      <TsFormInput
+        v-model="templateData.name"
+        border="border"
+        :maxlength="50"
+      ></TsFormInput>
+    </template>
+    <template v-slot:topRight>
+      <div class="action-group">
+        <div class="action-item tsfont-save" @click="saveTemplate()">{{ $t('page.save') }}</div>
+      </div>
+    </template>
     <template v-slot:sider>
       <div style="height: calc(100vh - 205px)" class="pr-md">
-        <div class="text-title padding-xs">{{ $t('term.rdm.projectsets') }}</div>
-        <ul>
-          <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectinfo' }" @click="currentTab = 'projectinfo'">
-            <span>{{ $t('page.basicinfo') }}</span>
-          </li>
-          <!-- <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectstatus' }" @click="currentTab = 'projectstatus'">
-            <span>{{ $t('term.rdm.statussets') }}</span>
-          </li>-->
-        </ul>
         <div class="text-title padding-xs">
           <div>{{ $t('term.rdm.appsets') }}</div>
           <div class="fz10">{{ $t('term.rdm.dragapp') }}</div>
         </div>
         <draggable
-          v-if="selectedAppList && selectedAppList.length > 0"
+          v-if="templateData && templateData.appTypeList && templateData.appTypeList.length > 0"
           tag="ul"
-          :list="selectedAppList"
+          :list="templateData.appTypeList"
           handle=".tsfont-drag"
           ghost-class="li-active"
           @end="dragEnd"
         >
           <li
-            v-for="item in selectedAppList"
+            v-for="item in templateData.appTypeList"
             :key="item.id"
             class="text-default overflow radius-sm padding-xs"
             style="position: relative"
-            :title="item.name"
-            :class="{ 'bg-selected': currentTab === 'app_' + item.name }"
+            :title="item.appTypeName"
+            :class="{ 'bg-selected': currentTab === 'app_' + item.appType }"
             @click="
-              currentTab = 'app_' + item.name;
-              appId = null;
+              currentTab = 'app_' + item.appType;
+              currentAppType = null;
               $nextTick(() => {
-                appId = item.id;
+                currentAppType = item;
               });
             "
           >
             <span class="tsfont-drag" style="cursor: move"></span>
-            <span class="cursor overflow" style="margin-right: 50px">{{ item.name }}</span>
+            <span class="cursor overflow" style="margin-right: 50px">{{ item.appTypeName }}</span>
             <span style="position: absolute; right: 0px">
-              <Button size="small" @click.stop="unactiveApp(item.type)">{{ $t('page.disable') }}</Button>
+              <Button size="small" @click.stop="unactiveApp(item.appType)">{{ $t('page.disable') }}</Button>
             </span>
           </li>
         </draggable>
@@ -70,13 +73,10 @@
       </div>
     </template>
     <template v-slot:content>
-      <div v-if="currentTab === 'projectinfo'"><ProjectEdit :id="projectId"></ProjectEdit></div>
-      <div v-else-if="currentTab === 'projectstatus'"><ProjectStatus :projectId="projectId"></ProjectStatus></div>
-      <div v-else-if="currentTab.startsWith('app_') && appId">
-        <AppEditor :projectId="projectId" :appId="appId"></AppEditor>
-      </div>
-      <div v-else-if="currentTab === 'others'">
-        <MoreEdit :projectId="projectId" @close="close"></MoreEdit>
+      <div v-if="currentTab === 'projectinfo'"></div>
+      <div v-else-if="currentTab === 'TemplateStatus'"></div>
+      <div v-else-if="currentTab.startsWith('app_') && currentAppType">
+        <AppEditor :appType="currentAppType"></AppEditor>
       </div>
     </template>
   </TsContain>
@@ -88,14 +88,14 @@ export default {
   name: '',
   components: {
     draggable,
-    ProjectEdit: resolve => require(['./edittab/project-edit.vue'], resolve),
-    AppEditor: resolve => require(['./edittab/app-editor.vue'], resolve),
-    MoreEdit: resolve => require(['./edittab/more-edit.vue'], resolve),
-    ProjectStatus: resolve => require(['./edittab/project-status-edit.vue'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    //TemplateEdit: resolve => require(['@/views/pages/rdm/template/template-info-edit.vue'], resolve),
+    AppEditor: resolve => require(['@/views/pages/rdm/template/template-app-editor.vue'], resolve)
+    //TemplateStatus: resolve => require(['@/views/pages/rdm/template/template-status-edit.vue'], resolve)
   },
   data() {
     return {
-      projectId: null,
+      templateId: null,
       dialogConfig: {
         type: 'slider',
         maskClose: true,
@@ -103,16 +103,17 @@ export default {
         width: 'huge',
         hasFooter: false
       },
+      templateData: {},
       selectedAppList: [],
       appTypeList: [],
-      appId: null,
+      currentAppType: null,
       currentTab: 'projectinfo'
     };
   },
   beforeCreate() {},
   created() {
-    this.projectId = Math.floor(this.$route.params['projectId']);
-    this.getAppByProjectId();
+    this.templateId = Math.floor(this.$route.params['templateId']);
+    this.getProjectTemplateById();
     this.getAllAppTypeList();
   },
   beforeMount() {},
@@ -125,9 +126,9 @@ export default {
   destroyed() {},
   methods: {
     dragEnd() {
-      this.$api.rdm.app
+      this.$api.rdm.projecttemplate
         .updateAppSort({
-          projectId: this.projectId,
+          templateId: this.templateId,
           appList: this.selectedAppList
         })
         .then(res => {
@@ -137,31 +138,27 @@ export default {
         });
     },
     unactiveApp(appType) {
-      this.$api.rdm.app.unactiveApp(this.projectId, appType).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success(this.$t('page.unactivesuccess'));
-          this.getAppByProjectId();
-        }
-      });
-    },
-    activeApp(appType) {
-      this.$api.rdm.app.activeApp(this.projectId, appType).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success(this.$t('page.activesucess'));
-          this.getAppByProjectId();
-        }
-      });
-    },
-    getAppByProjectId() {
-      if (this.projectId) {
-        this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1 }).then(res => {
-          this.selectedAppList = res.Return;
-        });
-      }
+      const index = this.templateData.appTypeList.find(d => d === appType);
+      console.log(index);
     },
     getAllAppTypeList() {
       this.$api.rdm.app.getAllAppTypeList().then(res => {
         this.appTypeList = res.Return;
+      });
+    },
+    getProjectTemplateById() {
+      if (this.templateId) {
+        this.$api.rdm.projecttemplate.getProjectTemplateById(this.templateId).then(res => {
+          this.templateData = res.Return;
+        });
+      }
+    },
+    saveTemplate() {
+      console.log(JSON.stringify(this.templateData, null, 2));
+      this.$api.rdm.projecttemplate.saveProjectTemplate(this.templateData).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+        }
       });
     },
     close() {
@@ -171,9 +168,13 @@ export default {
   filter: {},
   computed: {
     unSelectedAppList() {
-      return this.appTypeList.filter(d => {
-        return !this.selectedAppList.find(dd => d.name == dd.type);
-      });
+      if (this.templateData && this.templateData.appTypeList) {
+        return this.appTypeList.filter(d => {
+          return !this.templateData.appTypeList.find(dd => d.name == dd.appType);
+        });
+      } else {
+        return this.appTypeList;
+      }
     }
   },
   watch: {}
