@@ -13,7 +13,12 @@
           class="link"
           :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
-          <a class="cursor tsfont-blocks" style="position: relative" @click="goTo('/project/' + project.id)">
+          <a
+            class="cursor tsfont-blocks"
+            :style="{ color: project.color }"
+            style="position: relative"
+            @click="goTo('/project/' + project.id)"
+          >
             <span>{{ project.name }}</span>
             <div
               v-if="project.isOwner || project.isLeader"
@@ -38,7 +43,7 @@ export default {
     return {
       isProjectDialogShow: false,
       projectList: [],
-      searchParam: { isMine: 1 }
+      searchParam: { isMine: 1, isClose: 0 }
     };
   },
   created() {

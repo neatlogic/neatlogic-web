@@ -921,5 +921,7 @@
   "userdisabled": "User disabled",
   "userdelete": "User deleted",
   "iselected": "Selected",
-  "importconfirm": "Import Confirmation"
+  "importconfirm": "Import Confirmation",
+  "startdate": "Start date",
+  "enddate": "End date"
 }

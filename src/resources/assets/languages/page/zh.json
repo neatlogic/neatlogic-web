@@ -923,5 +923,7 @@
   "userdisabled": "用户已禁用",
   "userdelete": "用户已删除",
   "iselected": "已选",
-  "importconfirm": "导入确认"
+  "importconfirm": "导入确认",
+  "startdate": "开始日期",
+  "enddate": "结束日期"
 }

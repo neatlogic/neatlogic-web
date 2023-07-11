@@ -1,18 +1,24 @@
 <template>
-  <TsContain :enableCollapse="true">
+  <TsContain>
     <template v-slot:navigation>
       <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
     </template>
     <template v-slot:topLeft>
-      <TsFormInput
-        v-model="templateData.name"
-        border="border"
-        :maxlength="50"
-      ></TsFormInput>
+      <TsFormInput v-model="templateData.name" border="border" :maxlength="50"></TsFormInput>
     </template>
     <template v-slot:topRight>
       <div class="action-group">
-        <div class="action-item tsfont-save" @click="saveTemplate()">{{ $t('page.save') }}</div>
+        <div class="action-item"><TsFormSwitch
+          v-model="templateData.isActive"
+          :trueValue="1"
+          :falseValue="0"
+          :showStatus="true"
+          :trueText="$t('page.isactived')"
+          :falseText="$t('page.ban')"
+        ></TsFormSwitch></div>
+        <div class="action-item">
+          <Button type="primary" @click="saveTemplate()">{{ $t('page.save') }}</Button>
+        </div>
       </div>
     </template>
     <template v-slot:sider>
@@ -27,7 +33,6 @@
           :list="templateData.appTypeList"
           handle=".tsfont-drag"
           ghost-class="li-active"
-          @end="dragEnd"
         >
           <li
             v-for="item in templateData.appTypeList"
@@ -60,22 +65,14 @@
           >
             <span class="tsfont-fullscreen text-grey overflow" style="margin-right: 50px">{{ item.label }}</span>
             <span style="position: absolute; right: 0px">
-              <Button type="success" size="small" @click.stop="activeApp(item.name)">{{ $t('page.enable') }}</Button>
+              <Button type="success" size="small" @click.stop="activeApp(item)">{{ $t('page.enable') }}</Button>
             </span>
-          </li>
-        </ul>
-        <div class="text-title padding-xs">{{ $t('page.others') }}</div>
-        <ul>
-          <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'others' }" @click="currentTab = 'others'">
-            <span>{{ $t('page.othersetting') }}</span>
           </li>
         </ul>
       </div>
     </template>
     <template v-slot:content>
-      <div v-if="currentTab === 'projectinfo'"></div>
-      <div v-else-if="currentTab === 'TemplateStatus'"></div>
-      <div v-else-if="currentTab.startsWith('app_') && currentAppType">
+      <div v-if="currentTab.startsWith('app_') && currentAppType">
         <AppEditor :appType="currentAppType"></AppEditor>
       </div>
     </template>
@@ -89,9 +86,8 @@ export default {
   components: {
     draggable,
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    //TemplateEdit: resolve => require(['@/views/pages/rdm/template/template-info-edit.vue'], resolve),
-    AppEditor: resolve => require(['@/views/pages/rdm/template/template-app-editor.vue'], resolve)
-    //TemplateStatus: resolve => require(['@/views/pages/rdm/template/template-status-edit.vue'], resolve)
+    AppEditor: resolve => require(['@/views/pages/rdm/template/template-app-editor.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   data() {
     return {
@@ -103,7 +99,7 @@ export default {
         width: 'huge',
         hasFooter: false
       },
-      templateData: {},
+      templateData: { appTypeList: [] },
       selectedAppList: [],
       appTypeList: [],
       currentAppType: null,
@@ -125,21 +121,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    dragEnd() {
-      this.$api.rdm.projecttemplate
-        .updateAppSort({
-          templateId: this.templateId,
-          appList: this.selectedAppList
-        })
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.updatesuccess'));
-          }
-        });
+    activeApp(appType) {
+      this.templateData.appTypeList.push({
+        appType: appType.name,
+        appTypeName: appType.label,
+        config: {
+          statusList: [],
+          statusRelList: [],
+          attrList: []
+        }
+      });
     },
     unactiveApp(appType) {
-      const index = this.templateData.appTypeList.find(d => d === appType);
-      console.log(index);
+      const index = this.templateData.appTypeList.findIndex(d => d.appType === appType);
+      if (index >= 0) {
+        this.templateData.appTypeList.splice(index, 1);
+      }
     },
     getAllAppTypeList() {
       this.$api.rdm.app.getAllAppTypeList().then(res => {
@@ -158,6 +155,7 @@ export default {
       this.$api.rdm.projecttemplate.saveProjectTemplate(this.templateData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
+          this.$router.push({path: '/template-edit/' + res.Return});
         }
       });
     },

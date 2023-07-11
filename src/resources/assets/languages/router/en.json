@@ -258,7 +258,8 @@
     "prioritymanage": "Priority Management",
     "manage": "System Management",
     "myreported": "My Reported",
-    "favorite": "My Favorited"
+    "favorite": "My Favorited",
+    "edittemplate": "Edit Template"
   },
   "codehub": {
     "codehub": "Code Center",
