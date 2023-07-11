@@ -26,20 +26,25 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getTableData()"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchTagentData()"></CombineSearcher>
       </template>
       <div slot="content">
+        <Loading
+          v-if="loadingShow"
+          :loadingShow="loadingShow"
+          type="fix"
+        ></Loading>
         <TsTable
+          v-else
           v-bind="tableData"
           :theadList="theadList"
-          @changeCurrent="getTableData"
-          @changePageSize="getTableData(1, ...arguments)"
+          @changeCurrent="changeCurrent"
+          @changePageSize="changePageSize"
           @headerTitleOperation="headerTitleOperation"
         >
           <template v-slot:ip="{ row }">
             <span>{{ row.ip }}: {{ row.port }}</span>
           </template>
-
           <template v-slot:status="{ row }">
             <div v-if="row.loading">
               <Loading :loadingShow="row.loading"></Loading>
@@ -65,157 +70,56 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-rotate-right" @click="operation('restart', row)">{{ $t('page.restart') }}</li>
-                <li class="tsfont-file-single" @click="operation('list', row)">{{ $t('page.log') }}</li>
-                <li class="tsfont-circulation-s" @click="operation('searchpwd', row)">{{ $t('page.password') }}</li>
-                <li class="tsfont-edit-s" @click="operation('edit', row)">{{ $t('page.config') }}</li>
-                <li class="tsfont-restart" @click="operation('reset', row)">{{ $t('page.resetpwd') }}</li>
-                <li class="tsfont-refresh" @click="operation('versionUpdate', row)">{{ $t('page.upgrade') }}</li>
-                <li class="tsfont-trash-o" @click="operation('del', row)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-rotate-right" @click="restartPassword(row)">{{ $t('page.restart') }}</li>
+                <li class="tsfont-file-single" @click="openLogDialog(row)">{{ $t('page.log') }}</li>
+                <li class="tsfont-circulation-s" @click="openPasswordDialog(row)">{{ $t('page.password') }}</li>
+                <li class="tsfont-edit-s" @click="openConfigTagentDialog(row)">{{ $t('page.config') }}</li>
+                <li class="tsfont-restart" @click="resetTagent(row)">{{ $t('page.resetpwd') }}</li>
+                <li class="tsfont-refresh" @click="openVersionUpgradeDialog(row)">{{ $t('page.upgrade') }}</li>
+                <li class="tsfont-trash-o" @click="deleteTagent(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
         </TsTable>
       </div>
     </TsContain>
-    <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <TsDialog
-      type="modal"
-      :isShow="pwdisShow"
-      :title="$t('page.viewtarget',{'target':$t('page.password')})"
-      :hasFooter="false"
-      @on-close="close"
-    >
-      <template v-slot>
-        <TsFormInput v-model="pwdData" :disabled="disabled">
-        </TsFormInput>
-      </template>
-    </TsDialog>
-    <TsDialog
-      type="modal"
-      :isShow="configisShow"
-      :title="$t('page.config')"
-      @on-close="close"
-      @on-ok="saveConfigDetail"
-    >
-      <template>
-        <div class="config-detail-box">
-          <Alert show-icon>
-            <template slot="desc">“<span class="require-label"></span>”<span class="text-tip">{{ $t('term.framework.reqparamstip') }}</span></template>
-          </Alert>
-          <div class="radius-sm border-color bg-op block-border">
-            <div v-for="(item, index) in configData" :key="index" class="config-detail-li">
-              <div class="left-number-box bg-grey border-color">
-                <span class="text-tip">{{ index+1 }}</span>
-                <span class="required-box" :class="getRequiredClass(item) ? 'require-label' : ''"></span>
-              </div>
-              <div ref="codeValue" class="right-code-box" contenteditable="true">
-                {{ item }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </template>
-
-    </TsDialog>
-    <TsDialog
-      type="modal"
-      :isShow="listisShow"
-      :title="$t('page.log')"
-      :hasFooter="false"
-      @on-close="close"
-    >
-      <template v-slot>
-        <TsTable v-bind="listData" :theadList="theadLists">
-          <template v-slot:download="{ row,index }">
-            <span class="action-group tagent-manage-download-box">
-              <span
-                class="text-href action-item"
-                :class="[isDownloading == index ? 'disable' : '']"
-                :title="isDownloading == index ? $t('page.downloadloadingtip') : ''"
-                @click="downloadLogFile(row, index)"
-              >
-                <Icon
-                  v-if="isDownloading == index ? true : false"
-                  type="ios-loading"
-                  size="16"
-                  class="loading"
-                ></Icon>
-                {{ $t('term.framework.logdownload') }} {{ row.id }}
-              </span>
-            </span>
-          </template>
-        </TsTable>
-      </template>
-    </TsDialog>
-    <TsDialog
-      type="modal"
-      :isShow="isShowVersionUpdate"
-      :title="$t('term.framework.upgradeversion')"
-      @on-cancel="versionUpgradeOkBtn('close')"
-      @on-close="versionUpgradeOkBtn('close')"
-      @on-ok="versionUpgradeOkBtn('ok')"
-    >
-      <template v-slot>
-        <TsForm ref="versionUpdateForm" :itemList="versionUpdateConfig"></TsForm>
-      </template>
-    </TsDialog>
     <InstallTipsDialog v-if="isShowInstallTips" @close="closeInstallTipsDialog"></InstallTipsDialog>
+    <ViewPasswordDialog v-if="isShowPasswordDialog" :accountId="accountId" @close="closeDialog"></ViewPasswordDialog>
+    <ViewLogDialog v-if="isShowLogDialog" :tagentId="tagentId" @close="closeDialog"></ViewLogDialog>
+    <UpgradeVersionDialog v-if="isShowVersionUpdate" :tagentId="tagentId" @close="closeDialog"></UpgradeVersionDialog>
+    <TagentConfigDialog v-if="isShowConfigTagentDialog" :tagentId="tagentId" @close="closeDialog"></TagentConfigDialog>
   </div>
 </template>
 <script>
-import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue'; // 漏斗下拉组件
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
 export default {
   name: 'TagentManage',
   components: {
-    TsTable,
-    CombineSearcher,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    InstallTipsDialog: resolve => require(['./tagent/install-tips-dialog'], resolve)
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    InstallTipsDialog: resolve => require(['./tagent/install-tips-dialog'], resolve),
+    ViewPasswordDialog: resolve => require(['./tagent/view-password-dialog'], resolve), // 查看密码
+    ViewLogDialog: resolve => require(['./tagent/view-log-dialog'], resolve), // 查看日志
+    UpgradeVersionDialog: resolve => require(['./tagent/upgrade-version-dialog'], resolve), // 升级版本
+    TagentConfigDialog: resolve => require(['./tagent/tagent-config-dialog'], resolve) // tagent配置
   },
   filters: {},
   props: {},
   data() {
     return {
-      requiredFieldList: [], // 配置详情，必填字段
-      tagentId: '',
-      isDownloading: -1, // 是否正在下载
-      jsonList: [{ 'content': '#!/bin/bash', 'contentHash22': 'f46e2d3f5f3ed2f93bae1ee4cdd4ea68'}],
-      tableData: {},
-      loadingShow: false, // 日志加载效果
-      listData: {
-        tbodyList: []
-      },
-      idData: {},
-      configData: null,
-      pwdData: '',
-      keyword: '',
-      disabled: true,
-      pwdisShow: false,
-      configisShow: false,
-      listisShow: false,
+      loadingShow: true,
+      isShowPasswordDialog: false,
+      isShowConfigTagentDialog: false,
+      isShowLogDialog: false,
       isShowVersionUpdate: false, // 升级版本
       isShowInstallTips: false,
-      versionUpdateConfig: {
-        // 升级版本form表单
-        pkgVersion: {
-          type: 'select',
-          label: this.$t('term.framework.pkgversion'),
-          validateList: ['required'],
-          value: '',
-          dataList: [],
-          transfer: true
-        },
-        tagentId: {
-          type: 'text',
-          isHidden: true,
-          value: '',
-          label: 'tagentId'
-        }
+      tagentId: null,
+      accountId: null,
+      searchVal: {},
+      tableData: {
+        currentPage: 1,
+        pageSize: 20,
+        tbodyList: []
       },
-      searchVal: {}, // 搜索关键字对象
       searchConfig: {
         // 搜索列表配置
         placeholder: this.$t('term.framework.tagentsearchpla'),
@@ -259,10 +163,6 @@ export default {
           }
         ]
       },
-      theadLists: [
-        { key: 'log', title: this.$t('page.filename')},
-        { key: 'download', title: this.$t('term.framework.logdownload')}
-      ],
       theadList: [
         { key: 'name', title: this.$t('page.name'), textValue: 'views'},
         { key: 'ip', title: 'IP:PORT' },
@@ -282,13 +182,10 @@ export default {
   },
   beforeCreate() {},
   created() {
-
+    this.searchTagentData(); // 获取列表数据
   },
   beforeMount() {},
-  mounted() {
-    this.getTableData(); // 获取列表数据
-    this.getVersionList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -296,26 +193,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getVersionList() {
-      // 获取版本列表
-      let newArr = [];
-      this.$api.framework.tagent.getInstallPackageList().then((res) => {
-        let arr = res.Return.tbodyList;
-        arr && arr.forEach((item) => {
-          newArr.push({
-            text: item.version,
-            value: item.version
-          });
-          let obj = {};
-          let uniqueArr = [];
-          uniqueArr = newArr.reduce(function(a, b) {
-            obj[b.value] ? '' : obj[b.value] = true && a.push(b);
-            return a;
-          }, []);
-          this.$set(this.versionUpdateConfig.pkgVersion, 'dataList', uniqueArr);
-        });
-      });
-    },
     headerTitleOperation() {
       // 状态刷新
       if (!this.$utils.isEmpty(this.tableData.tbodyList)) {
@@ -367,194 +244,50 @@ export default {
         }); 
       }
     },
-    downloadLogFile: function(row, index) {
-      //文件下载
-      let data = {
-        path: row.log,
-        tagentId: this.tagentId
-      };
-      if (this.isDownloading >= 0) {
-        // 防止重复点击下载
-        return false;
-      }
-      // this.$utils.download(this, '/api/binary/tagent/exec/log/download', data, 'post');
-      this.isDownloading = index;
-      let url = '/api/binary/tagent/exec/log/download';
-      this.$https.post(url, data, {responseType: 'blob'}).then(res => {
-        if (res.status == '200') {
-          const aLink = document.createElement('a');
-          let blob = new Blob([res.data], {
-            type: 'application/x-msdownload'
-          });
-          aLink.href = URL.createObjectURL(blob);
-          let contentDisposition = decodeURI(res.headers['content-disposition']);
-          let fileName = contentDisposition.substring(22, contentDisposition.length - 1);
-          aLink.download = fileName;
-          aLink.click();
-          document.body.appendChild(aLink);
-          this.isDownloading = -1;
-        } else {
-          this.isDownloading = -1;
-        }
-      }).catch(() => {
-        this.isDownloading = -1;
-      });
+    changeCurrent(currentPage = 1) {
+      this.tableData.currentPage = currentPage;
+      this.searchTagentData();
     },
-    getTableData(currentPage, pageSize) {
+    changePageSize(pageSize) {
+      this.tableData.currentPage = 1;
+      this.tableData.pageSize = pageSize;
+      this.searchTagentData();
+    },
+    searchTagentData() {
       // 获取数据方法
-      const data = {};
-      Object.assign(data, this.searchVal);
-      if (currentPage || pageSize) {
-        data.currentPage = currentPage || this.tableData.currentPage;
-        data.pageSize = pageSize || this.tableData.pageSize;
-      } else {
-        data.currentPage = 1;
-        data.pageSize = 20;
-      }
+      const params = {
+        currentPage: this.tableData.currentPage,
+        pageSize: this.tableData.pageSize,
+        ...this.searchVal
+      };
       this.loadingShow = true;
-      this.$api.framework.tagent.searchTagent(data).then(res => {
+      this.$api.framework.tagent.searchTagent(params).then(res => {
         if (res.Status == 'OK') {
-          this.loadingShow = false;
-          this.tableData = res.Return;
-          this.tableData.theadList = this.theadList;
+          Object.assign(this.tableData, res.Return || {});
         }
-      }).catch((err) => {
+      }).finally(() => {
         this.loadingShow = false;
       });
     },
-    operation(views, row) {
-      switch (views) {
-        case 'del': // 删除
-          this.deleteTagent(row);
-          break;
-        case 'edit':
-          this.editConfig(row);
-          break;
-        case 'reset':
-          this.resetTagent(row);
-          break;
-        case 'searchpwd':
-          this.searchPwd(row);
-          break;
-        case 'list':
-          this.workList(row);
-          break;
-        case 'restart':
-          this.restart(row);
-          break;
-        case 'versionUpdate': // 升级版本
-          this.versionUpdate(row);
-          break;
-        default:
-          this.searchPwd(row);
-          break;
-      }
-    },
-    versionUpdate(row) {
+    openVersionUpgradeDialog(row) {
       // 升级版本
-      if (row && !row.id) {
-        return false;
-      }
+      this.tagentId = (row && row.id) || '';
       this.isShowVersionUpdate = true;
-      this.$set(this.versionUpdateConfig.tagentId, 'value', row.id);
     },
-    versionUpgradeOkBtn(type) {
-      // 版本升级-确定操作
-      if (type == 'ok') {
-        let form = this.$refs.versionUpdateForm;
-        if (!form.valid()) {
-          return false;
-        }
-        let params = form.getFormValue();
-        this.$api.framework.tagent.versionUpgrade(params).then((res) => {
-          if (res.Status == 'OK') {
-            form.resetForm();
-            this.isShowVersionUpdate = false;
-            this.$Message.success(this.$t('message.executesuccess'));
-          }
-        });
-      } else {
-        this.isShowVersionUpdate = false;
-      }
+    openLogDialog(row) {
+      this.tagentId = (row && row.id) || '';
+      this.isShowLogDialog = true;
     },
-    workList(row) {
-      let params = {
-        tagentId: row.id
-      };
-      this.tagentId = row.id;
-      this.loadingShow = true;
-      this.$api.framework.tagent.getWorkList(params)
-        .then((res) => {
-          if (res.Status == 'OK') {
-            this.listisShow = true;
-            this.loadingShow = false;
-            this.listData.tbodyList = res.Return;
-          }
-        }).catch((err) => {
-          this.loadingShow = false;
-        });
+    openPasswordDialog(row) {
+      this.accountId = (row && row.accountId) || null;
+      this.isShowPasswordDialog = true;
     },
-    searchPwd(row) {
-      if (!row.id) {
-        return false;
-      }
-      this.pwdisShow = true;
-      let params = {
-        id: row.accountId
-      };
-      this.$api.framework.tagent.getAccountById(params)
-        .then((res) => {
-          this.pwdData = res.Return.passwordPlain;
-        });
+    openConfigTagentDialog(row) {
+      this.tagentId = (row && row.id) || null;
+      this.isShowConfigTagentDialog = true;
     },
-    editConfig(row) {
-      if (!row.id) {
-        return false;
-      }
-      let params = {
-        tagentId: row.id
-      };
-      this.idData = row.id;
-      this.loadingShow = true;
-      this.$api.framework.tagent.getTagentConfig(params)
-        .then((res) => {
-          if (res.Status == 'OK') {
-            this.loadingShow = false;
-            this.configData = [];
-            if (!this.$utils.isEmpty(res.Return)) {
-              this.requiredFieldList = res.Return.requiredFieldList || [];
-              this.configData = res.Return.configJson && res.Return.configJson.std ? res.Return.configJson.std : [];
-            }
-            this.configisShow = true;
-          }
-        }).catch((err) => {
-          this.loadingShow = false;
-          this.configisShow = false;
-        });
-    },
-    saveConfigDetail() {
-      // 保存配置详情
-      let codeData = [];
-      if (this.$refs.codeValue && this.$refs.codeValue instanceof Array) {
-        this.$refs.codeValue.forEach((item) => {
-          if (item && item.innerText) {
-            codeData.push(item.innerText + '\n');
-          }
-        });
-      }
-      let params = {
-        tagentId: this.idData,
-        data: codeData
-      };
-      this.$api.framework.tagent.saveTagentConfig(params)
-        .then((res) => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-          this.configisShow = false;
-        });
-    },
-    restart(row) {
+    restartPassword(row) {
+      // 重置密码
       if (!row.id) {
         return false;
       }
@@ -569,7 +302,7 @@ export default {
           this.$api.framework.tagent.restart(params)
             .then((res) => {
               if (res.Status == 'OK') {
-                this.getTableData(1);
+                this.changeCurrent();
                 this.$Message.success(this.$t('message.executesuccess'));
               }
             }).finally(res => {
@@ -593,7 +326,7 @@ export default {
           this.$api.framework.tagent.resetPassword(params)
             .then((res) => {
               if (res.Status == 'OK') {
-                this.getTableData(1);
+                this.changeCurrent();
                 this.$Message.success(this.$t('message.executesuccess'));
               }
             }).finally(res => {
@@ -612,14 +345,13 @@ export default {
       // 删除确认提示框
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', {target: 'Tagent？'}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: 'Tagent'}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.tagent.deleteTagents(params)
             .then((res) => {
-              this.getTableData(1);
               if (res.Status == 'OK') {
-                this.getTableData();
+                this.changeCurrent();
                 this.$Message.success(this.$t('message.deletesuccess'));
               }
             }).finally(res => {
@@ -628,68 +360,26 @@ export default {
         }
       });
     },
-    close() {
-      this.configisShow = false;
-      this.listisShow = false;
-      this.pwdisShow = false;
-    },
     openInstallTipsDialog() {
       this.isShowInstallTips = true;
     },
     closeInstallTipsDialog() {
       this.isShowInstallTips = false;
+    },
+    closeDialog() {
+      this.tagentId = null;
+      this.accountId = null;
+      this.isShowConfigTagentDialog = false;
+      this.isShowVersionUpdate = false;
+      this.isShowLogDialog = false;
+      this.isShowPasswordDialog = false;
     }
   },
-  computed: {
-    getRequiredClass(item) {
-      return function(item) {
-        let fieldname = item ? (item.split('=') ? item.split('=')[0] : '') : '';
-        return this.requiredFieldList.indexOf(fieldname) != -1;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
 
 <style lang="less" scoped>
-.config-detail-box {
-  /deep/ .require-label::before {
-    font-size: 21px;
-  }
-  .config-detail-li {
-    display: flex;
-    flex-wrap: nowrap;
-    width: 100%;
-    .left-number-box {
-      display: flex;
-      justify-content: center;
-      position: relative;
-      width: 49px;
-      border-right: 1px solid;
-      margin-right: 8px;
-      .required-box {
-        position: absolute;
-        right: 5px;
-        top: -3px;
-      }
-  }
-  .right-code-box {
-      width: calc(100% - 58px);
-    .code-input {
-        width: 100%;
-        outline: none;
-        border: none;
-        background: none;
-      }
-    }
-  }
-}
 </style>
-<style lang="less">
-.tagent-manage-download-box{
-    // 解决下载日志，宽度变化的问题
-    display: inline-block;
-    width: 100px;
-  }
-</style>
+
