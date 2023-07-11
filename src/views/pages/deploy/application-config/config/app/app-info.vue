@@ -90,6 +90,9 @@ export default {
   destroyed() {},
   methods: {
     getInfo() {
+      if (this.$utils.isEmpty(this.appSystemId)) {
+        return false;
+      }
       this.$api.deploy.applicationConfig.getAppInfo({appSystemId: this.appSystemId}).then((res) => {
         if (res.Status == 'OK') {
           let systemInfo = {};

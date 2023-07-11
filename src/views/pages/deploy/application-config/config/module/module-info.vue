@@ -88,6 +88,9 @@ export default {
   destroyed() {},
   methods: {
     getModuleInfo() {
+      if (this.$utils.isEmpty(this.appSystemId)) {
+        return false;
+      }
       this.$api.deploy.applicationConfig.getModuleInfo({appSystemId: this.appSystemId, appModuleId: this.appModuleId}).then((res) => {
         if (res && res.Status == 'OK') {
           let appModuleInfo = res.Return ? res.Return.appModuleInfo : {};
