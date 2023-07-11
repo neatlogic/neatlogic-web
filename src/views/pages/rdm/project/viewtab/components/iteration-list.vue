@@ -95,7 +95,7 @@ export default {
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {
         const iterationList = res.Return.tbodyList;
-        if (!this.currentIterationId && iterationList.length > 0) {
+        if (!this.currentIterationId && iterationList && iterationList.length > 0) {
           this.selectIteration(iterationList[0]);
         }
         const pageSize = res.Return.pageSize;

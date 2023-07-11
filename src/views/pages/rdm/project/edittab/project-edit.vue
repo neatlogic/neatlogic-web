@@ -78,12 +78,7 @@
       @save="setProjectUser"
       @close="closeAddUser"
     ></UserAdd>
-    <UserDelete
-      v-if="isUserDeleteShow"
-      :projectUser="currentProjectUser"
-      @close="closeDelUser"
-    >
-    </UserDelete>
+    <UserDelete v-if="isUserDeleteShow" :projectUser="currentProjectUser" @close="closeDelUser"></UserDelete>
   </div>
 </template>
 <script>
@@ -121,7 +116,7 @@ export default {
           type: 'slot',
           name: 'templateId',
           validateList: ['required'],
-          label: this.$t('term.rdm.projecttype')
+          label: this.$t('term.rdm.projecttemplate')
         },
         {
           type: 'slot',
@@ -275,7 +270,7 @@ export default {
       this.$set(this.projectData, 'templateId', id);
     },
     searchProjectTemplate() {
-      this.$api.rdm.projecttemplate.searchProjectTemplate({}).then(res => {
+      this.$api.rdm.projecttemplate.searchProjectTemplate({ isActive: 1 }).then(res => {
         this.appType.cardList = res.Return;
       });
     }

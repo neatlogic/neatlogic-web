@@ -14,7 +14,7 @@
     >
       <template v-slot:isActive="{ row, index }">
         <TsFormSwitch
-          :value="row.isActive"
+          :value="row.isActive || 0"
           :trueValue="1"
           :falseValue="0"
           @on-change="
@@ -24,13 +24,16 @@
           "
         ></TsFormSwitch>
       </template>
-      <template v-slot:isRequired="{ row }">
+      <template v-slot:isRequired="{ row, index }">
         <TsFormSwitch
-          v-model="row.isRequired"
+          :value="row.isRequired || 0"
           :trueValue="1"
           :falseValue="0"
-          :trueText="$t('page.yes')"
-          :falseText="$t('page.no')"
+          @on-change="
+            val => {
+              changeIsRequired(index, row, val);
+            }
+          "
         ></TsFormSwitch>
       </template>
       <template v-slot:isPrivate="{ row }">
@@ -46,14 +49,7 @@
         </div>
       </template>
     </TsTable>
-    <!--<div style="text-align:right" class="mt-md">
-      <Button type="primary" @click="save">保存</Button>
-    </div>-->
-    <CustomAttrEdit
-      v-if="isAttrShow"
-      :attrData="currentAttrData"
-      @close="closeAttr"
-    ></CustomAttrEdit>
+    <CustomAttrEdit v-if="isAttrShow" :attrData="currentAttrData" @close="closeAttr"></CustomAttrEdit>
   </div>
 </template>
 <script>
@@ -87,7 +83,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getPrivateAttrList();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -97,8 +95,23 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getPrivateAttrList() {
+      this.$api.rdm.attr.getPrivateAttrList().then(res => {
+        const privateAttrList = res.Return;
+        privateAttrList.forEach(attr => {
+          if (!this.attrList.find(d => d.type === attr.type)) {
+            this.attrList.push({ ...attr, isPrivate: 1 });
+          }
+        });
+      });
+    },
     changeAttrActive(index, attr, isActive) {
       this.$set(attr, 'isActive', isActive);
+      //这是为了触发外部对象发生变化
+      this.attrList.splice(index, 1, attr);
+    },
+    changeIsRequired(index, attr, isRequired) {
+      this.$set(attr, 'isRequired', isRequired);
       //这是为了触发外部对象发生变化
       this.attrList.splice(index, 1, attr);
     },
@@ -110,19 +123,14 @@ export default {
     deleteAttr(attr) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('term.rdm.deletepropertydesc'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.attribute') }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.rdm.project.deleteAttrById(attr.id).then(res => {
-            if (res.Status === 'OK') {
-              const index = this.attrList.findIndex(d => d.id === attr.id);
-              if (index > -1) {
-                this.attrList.splice(index, 1);
-              }
-              vnode.isShow = false;
-              this.$Message.success(this.$t('message.deletesuccess'));
-            }
-          });
+          const index = this.attrList.findIndex(d => d.uuid === attr.uuid);
+          if (index > -1) {
+            this.attrList.splice(index, 1);
+          }
+          vnode.isShow = false;
         }
       });
     },
@@ -136,16 +144,13 @@ export default {
         const index = this.attrList.findIndex(d => d.uuid === attrData.uuid);
         if (index < 0) {
           this.attrList.push(attrData);
+        } else {
+          this.$set(this.attrList, index, attrData);
         }
       }
     },
     updateAttrList(event, val) {
-      this.attrList = val;
-      const idList = [];
-      this.attrList.forEach(element => {
-        idList.push(element.id);
-      });
-      this.$api.rdm.project.updateAttrSort({ idList: idList, appId: this.appId });
+      this.attrList.sort((x, y) => val.findIndex(d => d.uuid === x.uuid) - val.findIndex(d => d.uuid === y.uuid));
     },
     getNewAttrById(id) {
       this.$api.rdm.project.getAttrById(id).then(res => {
@@ -161,8 +166,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>
