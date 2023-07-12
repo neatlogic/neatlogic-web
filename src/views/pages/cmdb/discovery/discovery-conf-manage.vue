@@ -3,8 +3,8 @@
     <TsContain :siderWidth="250" :enableCollapse="true">
       <div slot="topLeft">
         <div class="action-group">
-          <span class="action-item text-action tsfont-plus" @click="isEditShow = true">{{ $t('page.config') }}</span>
-          <span class="action-item text-action tsfont-history" @click="toDiscoveryJobManage()">{{ $t('term.autoexec.executionrecord') }}</span>
+          <span class="action-item tsfont-plus" @click="isEditShow = true">{{ $t('page.config') }}</span>
+          <span class="action-item tsfont-history" @click="toDiscoveryJobManage()">{{ $t('term.autoexec.executionrecord') }}</span>
         </div>
       </div>
       <div slot="topRight"></div>
@@ -22,7 +22,7 @@
           @action="doAction"
           @hover="doHover"
         >
-          <template slot-scope="{ row }" style="position:relative">
+          <template slot-scope="{ row }">
             <div class="grid">
               <div class="content-long mb-xs h4">{{ row.name }}</div>
               <div class="text-grey">{{ $t('page.networksegment') }}</div>

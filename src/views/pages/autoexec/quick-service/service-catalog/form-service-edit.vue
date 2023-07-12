@@ -173,11 +173,13 @@ export default {
       }
       let formAttributeDataList = this.$refs.formSheet.getFormData();
       let hidecomponentList = this.$refs.formSheet.getHiddenComponents();
+      let readcomponentList = this.$refs.formSheet.getReadComponents();
       let params = {
         serviceId: this.serviceData.id,
         name: this.jobName,
         formAttributeDataList: formAttributeDataList || [],
         hidecomponentList: hidecomponentList || [],
+        readcomponentList: readcomponentList || [],
         planStartTime: data ? data.planStartTime : null,
         triggerType: data ? data.triggerType : null
       };

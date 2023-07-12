@@ -4,7 +4,7 @@ export default {
     //针对所有组建的基本校验逻辑
     validDataForAllItem() {
       const errorList = [];
-      if (this.config.isRequired) {
+      if (!this.config.isReadOnly && !this.config.isDisabled && this.config.isRequired) { //只读或者禁用不需要校验
         if (this.value == null || typeof this.value === 'undefined' || this.$utils.isEmpty(this.value)) {
           errorList.push({uuid: this.formItem.uuid, error: this.formItem.label + '：' + $t('form.validate.required', {'target': $t('page.value')})});
         }

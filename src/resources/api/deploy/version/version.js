@@ -70,6 +70,10 @@ const version = {
   getCveloopholeList(params) {
     // 获取cve漏洞列表
     return axios.post('/api/rest/deploy/version/cvelist/get', params);
+  },
+  saveVersionCenterTheadList(params) {
+    // 保存版本中心管理页面，表头可拖拽，可隐藏
+    return axios.post('/api/rest/deploy/version/thead/save', params);
   }
 };
 export default version;
