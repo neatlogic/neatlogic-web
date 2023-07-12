@@ -1,5 +1,5 @@
 <template>
-  <Loading v-if="!isReady" :loadingShow="true" type="fix"></Loading>
+  <Loading v-if="!isReady || isLoading" :loadingShow="true" type="fix"></Loading>
   <div v-else-if="isReady && issueData">
     <TsContain
       v-if="issueData.isProjectOwner || issueData.isProjectMember || issueData.isProjectLeader"
@@ -128,7 +128,7 @@
       </Alert>
     </div>
   </div>
-  <div v-else><NoData></NoData></div>
+  <div v-else-if="!isLoading"><NoData></NoData></div>
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
