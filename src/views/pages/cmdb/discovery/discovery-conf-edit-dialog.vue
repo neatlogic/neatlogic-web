@@ -3,9 +3,27 @@
     <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
       <template v-slot>
         <TsForm ref="form" v-model="confData" :item-list="formConfig">
+          <template v-slot:combopId>
+            <div style="position: relative;" class="action-group">
+              <div style="position: absolute;right: 0;top: -30px;">
+                <span class="action-item tsfont-refresh" :title="$t('page.refreshtarget',{'target':$t('term.autoexec.combinationtool')})" @click.stop="refreshCombopList()"></span>
+                <span
+                  v-if="confData.combopId"
+                  class="action-item tsfont-edit"
+                  :title="$t('dialog.title.edittarget',{'target':$t('term.autoexec.combinationtool')})"
+                  @click.stop="toEdit(confData.combopId)"
+                ></span>
+              </div>
+              <TsFormSelect
+                v-model="confData.combopId"
+                v-bind="combopConfig"
+                @searchCallback="refreshSuccess()"
+              ></TsFormSelect>
+            </div>
+          </template>
           <template v-slot:timingtmpl>
             <div class="grid">
-              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.slowest') }}</span></div>
+              <div class="text-center"><span class="text-grey fz10">{{ $t('page.slowest') }}</span></div>
               <div class="ml-nm mr-nm">
                 <Slider
                   :value="confData.timingtmpl ? parseInt(confData.timingtmpl) : 1"
@@ -19,12 +37,12 @@
                   "
                 ></Slider>
               </div>
-              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.fastest') }}</span></div>
+              <div class="text-center"><span class="text-grey fz10">{{ $t('page.fastest') }}</span></div>
             </div>
           </template>
           <template v-slot:workercount>
             <div class="grid">
-              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.lessest') }}</span></div>
+              <div class="text-center"><span class="text-grey fz10">{{ $t('page.lessest') }}</span></div>
               <div class="ml-nm mr-nm">
                 <Slider
                   :value="confData.workercount ? parseInt(confData.workercount) : 1"
@@ -38,7 +56,7 @@
                   "
                 ></Slider>
               </div>
-              <div style="text-align:center"><span class="text-grey fz10">{{ $t('page.most') }}</span></div>
+              <div class="text-center"><span class="text-grey fz10">{{ $t('page.most') }}</span></div>
             </div>
           </template>
         </TsForm>
@@ -54,14 +72,15 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
     conf: { type: Object }
   },
   data() {
     return {
-      confData: (this.conf && this.$utils.deepClone(this.conf)) || {timingtmpl: 1, workercount: 1},
+      confData: (this.conf && this.$utils.deepClone(this.conf)) || {timingtmpl: 1, workercount: 1, combopId: null},
       formConfig: {
         name: {
           label: this.$t('page.name'),
@@ -81,8 +100,8 @@ export default {
         },
         snmpport: {
           label: this.$t('page.snmpport'),
-          type: 'number',
-          validateList: ['required']
+          type: 'text',
+          validateList: ['required', 'number']
         },
         communities: {
           label: this.$t('page.community'),
@@ -91,15 +110,7 @@ export default {
         },
         combopId: {
           label: this.$t('term.autoexec.combinationtool'),
-          type: 'select',
-          dynamicUrl: '/api/rest/autoexec/combop/list',
-          params: {
-            typeId: 2
-          },
-          rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
-          transfer: true
+          type: 'slot'
         },
         timingtmpl: {
           label: this.$t('term.autoexec.speedlevel'),
@@ -116,6 +127,17 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'medium'
+      },
+      combopConfig: {
+        dynamicUrl: '/api/rest/autoexec/combop/list',
+        params: {
+          typeId: 2 // 查询工具分类是CMDB的分类
+        },
+        rootName: 'tbodyList',
+        textName: 'name',
+        valueName: 'id',
+        transfer: true,
+        needCallback: false
       }
     };
   },
@@ -153,6 +175,17 @@ export default {
           this.$set(this.confData, 'combopId', res.Return.combopId);
         }
       });
+    },
+    toEdit(combopId) {
+      // 跳转到组合工具，详情页面，versionStatus 版本状态是已激活的
+      window.open(HOME + '/autoexec.html#/action-detail?id=' + combopId + '&versionStatus=passed', '_blank');
+    },
+    refreshCombopList() {
+      this.$set(this.combopConfig, 'params', { typeId: 2, timeUuid: this.$utils.setUuid() });
+      this.$set(this.combopConfig, 'needCallback', true);
+    },
+    refreshSuccess() {
+      this.$Message.success(this.$t('message.refreshsuccess'));
     }
   },
   filter: {},
