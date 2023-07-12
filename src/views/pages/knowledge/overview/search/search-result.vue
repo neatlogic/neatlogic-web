@@ -63,7 +63,7 @@
               <Tag v-for="tag in knowledge.tagVoList" :key="tag.id" class="tag">{{ tag.name }}</Tag>
             </div>
             <div class="user-lcu text-tip">
-              <span class="lcu">
+              <span class="lcu" @click.stop>
                 <UserCard v-bind="knowledge.lcuVo"></UserCard>
               </span>
               <span class="lcd">{{ $t('page.in') }}{{ knowledge.lcd | formatDate }}</span>
