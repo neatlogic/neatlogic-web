@@ -1,6 +1,6 @@
 <template>
   <div class="action-group">
-    <span class="action-item"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
+    <span class="action-item" style="padding-right: 0px !important;"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
     <span class="action-item" @click="editTitle()">
       <strong v-if="!isEditing" class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
       <TsFormInput
@@ -15,7 +15,7 @@
         @on-blur="isEditing = false"
       ></TsFormInput>
     </span>
-    <span class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
+    <span v-if="issueData.status && issueData.statusLabel" class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
     <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
     <span class="action-item">
       <Dropdown>

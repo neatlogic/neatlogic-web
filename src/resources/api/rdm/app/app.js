@@ -19,6 +19,9 @@ const app = {
   activeApp(projectId, appType) {
     return axios.post('/api/rest/rdm/app/active', { projectId: projectId, appType: appType });
   },
+  getCompleteRate(appId, fromIssueId, toIssueId) {
+    return axios.post('/api/rest/rdm/app/complaterate', { appId: appId, fromId: fromIssueId, toId: toIssueId });
+  },
   unactiveApp(projectId, appType) {
     return axios.post('/api/rest/rdm/app/unactive', { projectId: projectId, appType: appType });
   },

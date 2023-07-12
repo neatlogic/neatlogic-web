@@ -3,15 +3,10 @@
     <Loading v-if="isLoading" :loadingShow="isLoading"></Loading>
     <div class="mb-md grid">
       <div>
-        <span>
-          <a
-            v-if="canAppend"
-            href="javascript:void(0)"
-            class="tsfont-plus"
-            @click="addIssue()"
-          >{{ $t('dialog.title.addtarget', { target: app.name }) }}</a>
+        <span v-if="canAppend" class="mr-md">
+          <a href="javascript:void(0)" class="tsfont-plus" @click="addIssue()">{{ $t('dialog.title.addtarget', { target: app.name }) }}</a>
         </span>
-        <span v-if="relType && relAppType && (fromId || toId)" class="ml-xs">
+        <span v-if="relType && relAppType && (fromId || toId)" class="mr-md">
           <a
             v-if="getAppByType(relAppType)"
             href="javascript:void(0)"
@@ -82,6 +77,21 @@
           </template>
         </CombineSearcher>
       </div>
+    </div>
+    <div v-if="showStatus" style="text-align: right" class="mb-xs">
+      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
+        <strong>
+          <span class="mr-xs">{{ status.label }}</span>
+          <span>{{ status.issueCount }}</span>
+        </strong>
+        <Divider type="vertical" />
+      </span>
+      <span>
+        <strong>
+          <span class="mr-xs">{{ $t('page.completrate') }}</span>
+          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
+        </strong>
+      </span>
     </div>
     <TsTable
       v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
@@ -178,6 +188,7 @@ export default {
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
     canSelect: { type: Boolean, default: false },
+    showStatus: { type: Boolean, default: false }, //是否显示状态统计信息
     checkedIdList: { type: Array },
     iteration: { type: Number }, //迭代id
     projectId: { type: Number }, //项目id
@@ -212,6 +223,7 @@ export default {
       isEditIssueShow: false,
       isLinkShow: false,
       issueData: {},
+      statusList: [],
       theadList: [
         /* { key: 'name', title: this.$t('page.name') },
         { key: 'status', title: this.$t('page.status') },
@@ -254,7 +266,8 @@ export default {
       searchValue: {},
       appList: [],
       linkApp: null,
-      linkRelType: null
+      linkRelType: null,
+      completeRate: 0
     };
   },
   beforeCreate() {},
@@ -265,6 +278,7 @@ export default {
     this.initSearchConfig();
     this.initAppList();
     this.searchIssue(1);
+    this.getAppStatus();
   },
   beforeMount() {},
   mounted() {},
@@ -275,6 +289,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAppStatus() {
+      if (this.showStatus && this.app) {
+        this.$api.rdm.status
+          .getStatusByAppId(this.app.id, {
+            needIssueCount: 1,
+            fromId: this.fromId,
+            toId: this.toId
+          })
+          .then(res => {
+            this.statusList = res.Return;
+          });
+        this.$api.rdm.app.getCompleteRate(this.app.id, this.fromId, this.toId).then(res => {
+          this.completeRate = res.Return;
+        });
+      }
+    },
     //供外部调用，刷新查询数据
     refresh(currentPage) {
       this.searchIssue(currentPage);

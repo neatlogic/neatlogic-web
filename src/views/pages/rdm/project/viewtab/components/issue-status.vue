@@ -1,6 +1,6 @@
 <template>
   <span
-    v-if="id"
+    v-if="id && label"
     :class="{ actived: actived }"
     class="cursor pl-sm pr-sm radius-lg issue-status fz10"
     :style="{

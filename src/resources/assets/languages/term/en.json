@@ -2155,7 +2155,8 @@
     "projecttemplate": "Project Template",
     "isclose": "Whether to close",
     "openproject": "Open Project",
-    "applist": "Application List"
+    "applist": "Application List",
+    "relativetestcase": "Associated Use Cases"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

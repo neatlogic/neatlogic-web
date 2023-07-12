@@ -51,10 +51,7 @@
           </div>
         </div>
         <Divider />
-        <ContentHandler
-          :issueData="issueData"
-          mode="edit"
-        ></ContentHandler>
+        <ContentHandler :issueData="issueData" mode="edit"></ContentHandler>
       </div>
     </template>
   </TsDialog>
@@ -74,9 +71,12 @@ export default {
     parentId: { type: Number },
     fromId: { type: Number },
     toId: { type: Number },
-    relType: {type: String, validator: function(value) {
-      return ['extend', 'relative', 'repeat'].includes(value);
-    }},
+    relType: {
+      type: String,
+      validator: function(value) {
+        return ['extend', 'relative', 'repeat'].includes(value);
+      }
+    },
     id: { type: Number },
     app: { type: Object },
     catalog: { type: Number },
@@ -140,7 +140,7 @@ export default {
       }
     },
     getStatusByAppId() {
-      this.$api.rdm.status.getStatusByAppId(this.app.id, 0).then(res => {
+      this.$api.rdm.status.getStatusByAppId(this.app.id, { status: 0 }).then(res => {
         this.statusList = res.Return;
         if (this.startStatus && !this.id) {
           this.$set(this.issueData, 'status', this.startStatus.id);

@@ -7,8 +7,12 @@ const status = {
   saveStatus(params) {
     return axios.post('/api/rest/rdm/status/save', params);
   },
-  getStatusByAppId(appId, status) {
-    return axios.post('/api/rest/rdm/status/list', { appId: appId, status: status });
+  getStatusByAppId(appId, params) {
+    const p = {appId: appId};
+    if (params) {
+      Object.assign(p, params);
+    }
+    return axios.post('/api/rest/rdm/status/list', p);
   },
   toggleStatusRel(params) {
     return axios.post('/api/rest/rdm/statusrel/toggle', params);

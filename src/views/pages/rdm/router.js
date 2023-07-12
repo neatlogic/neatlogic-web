@@ -14,12 +14,14 @@ const appModules = {
   taskDetail: () => import('@/views/pages/rdm/project/viewtab/task/task-detail.vue'),
   iterationDetail: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration-detail.vue'),
   testcaseDetail: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase-detail.vue'),
+  testplanDetail: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan-detail.vue'),
   story: () => import('@/views/pages/rdm/project/viewtab/story/story.vue'),
   bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
   task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
   iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue'),
   testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue'),
-  gitlab: () => import('@/views/pages/rdm/project/viewtab/gitlab/gitlab.vue')
+  gitlab: () => import('@/views/pages/rdm/project/viewtab/gitlab/gitlab.vue'),
+  testplan: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -185,7 +187,7 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan'];
 appList.forEach(app => {
   if (appModules[app]) {
     routerArr.push({

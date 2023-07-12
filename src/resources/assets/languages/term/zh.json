@@ -2152,7 +2152,8 @@
     "projecttemplate": "项目模板",
     "isclose": "是否关闭",
     "openproject": "打开项目",
-    "applist": "应用列表"
+    "applist": "应用列表",
+    "relativetestcase": "关联用例"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

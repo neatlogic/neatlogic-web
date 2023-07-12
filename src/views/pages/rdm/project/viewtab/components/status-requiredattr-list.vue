@@ -101,7 +101,7 @@ export default {
       return isValid;
     },
     getStatusByAppId() {
-      this.$api.rdm.status.getStatusByAppId(this.appId, this.issueData.status).then(res => {
+      this.$api.rdm.status.getStatusByAppId(this.appId, { status: this.issueData.status }).then(res => {
         this.statusList = res.Return;
       });
     },
@@ -116,6 +116,7 @@ export default {
       }
     },
     changeTargetStatus(targetStatusId) {
+      //console.log(JSON.stringify(targetStatusId, null, 2));
       this.targetStatus = targetStatusId;
       this.$set(this.issueData, 'status', targetStatusId);
       this.statusRel = null;
