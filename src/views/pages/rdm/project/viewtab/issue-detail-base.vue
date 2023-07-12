@@ -10,7 +10,8 @@ export default {
       projectId: null,
       contentMode: 'read',
       appList: [],
-      isReady: false
+      isReady: false,
+      isLoading: false
     };
   },
   beforeCreate() {},
@@ -36,10 +37,11 @@ export default {
     },
     async init() {
       await this.getIssueById();
-      this.statusRelData = null;
     },
     async getIssueById() {
       if (this.id) {
+        this.issueData = {};
+        this.isLoading = true;
         await this.$api.rdm.issue
           .getIssueById(this.id)
           .then(res => {
@@ -47,8 +49,6 @@ export default {
             if (this.issueData) {
               document.title = this.issueData.name;
               this.$route.meta.title = this.issueData.name;
-              //console.log(this.$route);
-              // this.$route.name = this.issueData.id;//修改route名称，这样可以在多个详情页面之间通过$back跳转
             }
           })
           .finally(() => {

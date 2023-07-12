@@ -1,9 +1,5 @@
 <template>
-  <Loading
-    v-if="!isReady"
-    :loadingShow="true"
-    type="fix"
-  ></Loading>
+  <Loading v-if="!isReady || isLoading" :loadingShow="true" type="fix"></Loading>
   <div v-else-if="isReady && issueData">
     <TsContain v-if="issueData.isProjectOwner || issueData.isProjectMember || issueData.isProjectLeader" :rightWidth="250">
       <template v-slot:navigation>
@@ -15,7 +11,7 @@
       <template v-slot:right>
         <div class="pl-md">
           <AttrList
-            v-if=" appId"
+            v-if="appId"
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
@@ -68,25 +64,19 @@
             <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
               <CommentList :issueData="issueData" :issueId="id"></CommentList>
             </TsFormItem>
-            
+
             <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
               <StatusRequiredAttrList
-                v-if=" !$utils.isEmpty(issueData)"
+                v-if="!$utils.isEmpty(issueData)"
                 ref="requiredAttrList"
                 :appId="appId"
                 :issueData="issueData"
               ></StatusRequiredAttrList>
             </TsFormItem>
 
-            <TsFormItem
-              v-bind="formItemConf"
-              :label="$t('page.reply')"
-            ><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
-            
-            <TsFormItem
-              v-bind="formItemConf"
-              label=""
-            >
+            <TsFormItem v-bind="formItemConf" :label="$t('page.reply')"><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+
+            <TsFormItem v-bind="formItemConf" label="">
               <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('page.confirm') }}</Button>
             </TsFormItem>
           </div>
@@ -94,20 +84,22 @@
       </div>
     </TsContain>
     <div v-else class="auth-container">
-      <Alert type="error" style="width: 450px;">
+      <Alert type="error" style="width: 450px">
         {{ $t('term.rdm.errortip') }}
         <span slot="desc">
           <div>{{ $t('term.rdm.noauthforissue') }}</div>
           <div class="mt-sm">
             <span>{{ $t('term.report.chartsetting.click') }}</span>
-            <span class="ml-sm mr-sm"><Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button></span>
+            <span class="ml-sm mr-sm">
+              <Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button>
+            </span>
             <span>{{ $t('term.rdm.joinproject') }}</span>
           </div>
         </span>
       </Alert>
     </div>
   </div>
-  <div v-else><NoData></NoData></div>
+  <div v-else-if="!isLoading"><NoData></NoData></div>
 </template>
 <script>
 import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
@@ -170,7 +162,6 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
