@@ -1531,6 +1531,18 @@ export default {
       }
       return false;
     },
+    getReadComponents() { //只读或者禁用的组件uuid需要传到后台，过滤校验
+      //获取只读组件
+      let readComponentList = [];
+      if (this.config.tableList && this.config.tableList.length > 0) {
+        this.config.tableList.forEach(item => {
+          if (item.component && item.component.config && (item.component.config.isReadOnly || item.component.config.isDisabled)) {
+            readComponentList.push(item.component.uuid);
+          }
+        });
+      }
+      return readComponentList;
+    },
     getHiddenComponents() {
       //获取隐藏组件
       let hiddenComponentList = [];
