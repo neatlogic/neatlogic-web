@@ -57,8 +57,8 @@
           <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.codechange')" name="codeChange">
             <CodeChangeOverview v-if="tabValue == 'codeChange'" :id="mrId"></CodeChangeOverview>
           </TabPane>
-          <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
-            <CveLoopholeManage v-if="tabValue == 'cveLoophole'"></CveLoopholeManage>
+          <TabPane v-if="isShowCveTab && versionId" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
+            <CveLoopholeManage :versionId="versionId" @hideTab="(hideTab) => isShowCveTab = hideTab"></CveLoopholeManage>
           </TabPane>
         </Tabs>
       </template>
@@ -90,13 +90,14 @@ export default {
     return {
       tabValue: 'deployStatus',
       title: '',
+      mrId: null,
       envId: null,
       versionId: null,
       isFreeze: 0, // 封版
       versionName: '', // 版本名称
       hasAuth: false,
-      mrId: null, // 915224111939584 测试id
-      isShowCodeChange: false // 是否显示代码变更的tab，无数据时，不显示这个tab
+      isShowCodeChange: false, // 是否显示代码变更的tab，无数据时，不显示这个tab
+      isShowCveTab: true
     };
   },
   beforeCreate() {},

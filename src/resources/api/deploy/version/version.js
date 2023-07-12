@@ -69,7 +69,7 @@ const version = {
   },
   getCveloopholeList(params) {
     // 获取cve漏洞列表
-    return axios.post('/api/rest/deploy/version/search', params);
+    return axios.post('/api/rest/deploy/version/cvelist/get', params);
   }
 };
 export default version;
