@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="codeScanContent" :style="{height: remainHeight + 'px', overflowY: 'auto'}">
     <Loading
       :loadingShow="loadingShow"
       type="fix"
@@ -128,6 +128,7 @@ export default {
     return {
       loadingShow: true,
       lastCodeTestResult: '', // 最新一次代码测试结果
+      remainHeight: 100,
       textList: [
         {
           label: this.$t('term.autoexec.executiontime'),
@@ -242,7 +243,13 @@ export default {
     this.getTestRecordList();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      if (this.$refs.codeScanContent) {
+        this.remainHeight = window.innerHeight - this.$refs.codeScanContent.getBoundingClientRect().top - 16;
+      }
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
