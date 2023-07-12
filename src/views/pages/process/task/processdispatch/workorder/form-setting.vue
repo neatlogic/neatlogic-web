@@ -225,6 +225,7 @@ export default {
       } else if (this.$refs.formSheet) {
         formData.formAttributeDataList = this.$refs.formSheet.getFormData();
         formData.hidecomponentList = this.$refs.formSheet.getHiddenComponents();
+        formData.readcomponentList = this.$refs.formSheet.getReadComponents();
       }
       return formData;
     },

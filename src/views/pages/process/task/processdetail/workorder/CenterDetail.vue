@@ -51,7 +51,7 @@
           tab="tab1"
         >
           <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig) && (tabValue == '' || tabValue == 'report')" class="pt-nm pb-nm">
+          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig) && (!tabValue || tabValue == 'report')" class="pt-nm pb-nm">
             <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
               <template v-if="formConfig._type == 'new'">
                 <TsSheet
@@ -717,6 +717,7 @@ export default {
       } else if (this.$refs.formSheet) {
         formData = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormData() : this.$refs.formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
         hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
+        readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
       }
       if (this.actionConfig.save) {
         let data = {

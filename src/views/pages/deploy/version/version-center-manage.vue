@@ -37,9 +37,12 @@
       <template v-slot:content>
         <TsTable
           :theadList="theadList"
+          :canEdit="true"
           v-bind="versionData"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
+          @updateSort="updateSort"
+          @checkshow="checkshow"
         >
           <template slot="version" slot-scope="{ row }">
             <span v-if="row" class="text-href" @click="gotoDeployStatus(row)">{{ row.version }}</span>
@@ -215,36 +218,52 @@ export default {
       theadList: [
         {
           title: this.$t('page.versions'),
-          key: 'version'
+          key: 'version',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('page.compilecount'),
-          key: 'compileCount'
+          key: 'compileCount',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('term.deploy.sealplate'),
-          key: 'isFreeze'
+          key: 'isFreeze',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: 'BuildNo',
-          key: 'buildNo'
+          key: 'buildNo',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('page.environment'),
-          key: 'env'
+          key: 'env',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('page.module'),
-          key: 'appModuleAbbrName'
+          key: 'appModuleAbbrName',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('page.description'),
-          key: 'description'
+          key: 'description',
+          isDisabled: true,
+          isShow: 1
         },
         {
           title: this.$t('page.createtime'),
           type: 'time',
-          key: 'fcd'
+          key: 'fcd',
+          isDisabled: true,
+          isShow: 1
         },
         {
           key: 'action'
@@ -407,6 +426,34 @@ export default {
     },
     restoreHistory(historyData) {
       this.appModuleData = historyData['appModuleEnvData'] || {};
+    },
+    updateSort(sortConfig) {
+      // 拖拽排序
+      // 暂时注释，TODO后端保存接口未提供
+      // this.$set(this.tableConfig, 'sortConfig', sortConfig);
+      // this.changeCurrent();
+    },
+    checkshow(headList, isShowColumn) {
+      // 设置表格列，显示隐藏
+      let theadList = headList
+        .filter(item => !['action'].includes(item.key))
+        .map((d, i) => ({
+          name: d.key,
+          sort: i,
+          isShow: d.isShow,
+          disabled: d.disabled
+        }));
+    // 暂时注释，TODO后端暂未提供保存接口
+    //   this.$api.deploy.version
+    //     .saveVersionCenterTheadList({
+    //       uuid: this.workcenterUuid,
+    //       theadList: theadList
+    //     })
+    //     .then(() => {
+    //       if (isShowColumn === 1) {
+    //         this.changeCurrent();
+    //       }
+    //     });
     }
   },
   filter: {},
