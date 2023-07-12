@@ -17,9 +17,7 @@
   <div class="runner-group-add-wrap">
     <TsDialog
       v-bind="editTsDialog"
-      :isShow="isShow"
       @on-close="close"
-      @on-cancel="close"
       @on-ok="saveRunnerGroup"
     >
       <template v-slot>
@@ -115,11 +113,6 @@ export default {
   filters: {}, 
   mixins: [runnerGroupMixin],
   props: {
-    isShow: {
-      // 是否显示dialog 弹窗
-      type: Boolean,
-      default: false
-    },
     runnerGroupData: {
       type: Object,
       default: function() {
@@ -135,7 +128,7 @@ export default {
       editTsDialog: {
         // 弹框配置信息
         type: 'modal',
-        isShow: false,
+        isShow: true,
         title: this.$t('dialog.title.edittarget', {target: this.$t('page.group')}),
         okText: this.$t('page.save')
       }    
@@ -173,8 +166,7 @@ export default {
       this.$api.framework.runner.saveRunnerGroup(params).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.$emit('refreshList');
-          this.close();
+          this.close(true);
         }
       });
     }
