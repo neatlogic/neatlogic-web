@@ -258,7 +258,8 @@
     "prioritymanage": "优先级管理",
     "manage": "系统管理",
     "myreported": "我上报的",
-    "favorite": "我的关注"
+    "favorite": "我的关注",
+    "edittemplate": "编辑模板"
   },
   "codehub": {
     "codehub": "代码中心",

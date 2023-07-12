@@ -2148,7 +2148,14 @@
     "dburl": "Database Link",
     "dragapp": "Drag activated apps to sort",
     "saveastemplate": "Save as Template",
-    "saveprojectastemplate": "Save the current project configuration as a project template."
+    "saveprojectastemplate": "Save the current project configuration as a project template.",
+    "noauthforeditproject": "You are not the administrator or owner of the current project and cannot edit the project",
+    "endproject": "End Project",
+    "closeprojectdesc": "Closed projects can only be reopened by administrators",
+    "projecttemplate": "Project Template",
+    "isclose": "Whether to close",
+    "openproject": "Open Project",
+    "applist": "Application List"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

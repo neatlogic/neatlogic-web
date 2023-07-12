@@ -16,18 +16,22 @@
           </template>
           <template v-slot:isStart="{ row }">
             <TsFormSwitch
-              v-model="row.isStart"
+              :value="row.isStart"
               :trueValue="1"
               :falseValue="0"
-              @on-change="changeIsStart(row)"
+              @on-change="val => {
+                $set(row, 'isStart', val);
+              }"
             ></TsFormSwitch>
           </template>
           <template v-slot:isEnd="{ row }">
             <TsFormSwitch
-              v-model="row.isEnd"
+              :value="row.isEnd"
               :trueValue="1"
               :falseValue="0"
-              @on-change="changeIsEnd(row)"
+              @on-change="val => {
+                $set(row, 'isEnd', val);
+              }"
             ></TsFormSwitch>
           </template>
           <template v-slot:transfer>
@@ -97,12 +101,7 @@
         </TsTable>
       </div>
     </div>
-    <StatusEditDialog
-      v-if="isStatusEditShow"
-      :uuid="currentStatusId"
-      :appId="appId"
-      @close="closeStatusEditDialog"
-    ></StatusEditDialog>
+    <StatusEditDialog v-if="isStatusEditShow" :statusData="currentStatusData" @close="closeStatusEditDialog"></StatusEditDialog>
     <AppStatusRelConfigDialog v-if="isStatusRelConfigEditShow" :statusrel="currentStatusRel" @close="closeStatusRelConfigDialog"></AppStatusRelConfigDialog>
   </div>
 </template>
@@ -112,8 +111,8 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusEditDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-status-edit-dialog.vue'], resolve),
-    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-statusrel-config-dialog.vue'], resolve)
+    StatusEditDialog: resolve => require(['@/views/pages/rdm/template/edit-tab/components/app-status-edit-dialog.vue'], resolve),
+    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/template/edit-tab/components/app-statusrel-config-dialog.vue'], resolve)
   },
   props: {
     statusList: { type: Array },
@@ -125,29 +124,14 @@ export default {
       isStatusRelConfigEditShow: false,
       objectList: [],
       isStatusEditShow: false,
-      currentStatusId: null,
+      currentStatusData: {},
       actionHide: {},
       currentStatusRel: null,
       statusMatrix: {} //状态矩阵数据，用于重置checkbox的选中状态
     };
   },
   beforeCreate() {},
-  created() {
-    //组装status矩阵数据
-    this.statusList.forEach(fromStatus => {
-      if (this.hasRelation(fromStatus)) {
-        this.$set(fromStatus, '_expand', true);
-      } else {
-        this.$set(fromStatus, '_expand', false);
-      }
-      //组装status矩阵数据
-      this.statusList.forEach(toStatus => {
-        if (fromStatus.uuid !== toStatus.uuid) {
-          this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, true); 
-        }
-      });
-    });
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -188,80 +172,52 @@ export default {
       }
     },
     toggleStatusRel(isCheck, fromStatus, toStatus) {
-      const fn = vsnode => {
-        this.$api.rdm.status
-          .toggleStatusRel({
-            action: isCheck ? 'add' : 'delete',
-            fromStatusUuid: fromStatus.uuid,
-            toStatusUuid: toStatus.uuid,
-            appId: this.appId
-          })
-          .then(res => {
-            if (res.Return) {
-              if (vsnode) {
-                vsnode.isShow = false;
-              }
-              if (isCheck) {
-                this.statusRelList.push({
-                  uuid: res.Return,
-                  appId: this.appId,
-                  fromStatusName: fromStatus.name,
-                  fromStatusLabel: fromStatus.label,
-                  fromStatusColor: fromStatus.color,
-                  fromStatusUuid: fromStatus.uuid,
-                  toStatusName: toStatus.name,
-                  toStatusLabel: toStatus.label,
-                  toStatusColor: toStatus.color,
-                  toStatusUuid: toStatus.uuid
-                });
-                this.$Message.success(this.$t('message.updatesuccess'));
-                this.$set(fromStatus, '_expand', true);
-              } else {
-                const index = this.statusRelList.findIndex(d => d.uuid === res.Return);
-                if (index > -1) {
-                  this.statusRelList.splice(index, 1);
-                  this.$Message.success(this.$t('message.updatesuccess'));
-                  if (this.hasRelation(fromStatus)) {
-                    this.$set(fromStatus, '_expand', true);
-                  } else {
-                    this.$set(fromStatus, '_expand', false);
-                  }
-                }
-              }
-            }
-          });
-      };
-      if (!isCheck) {
-        this.$createDialog({
-          title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.rdm.statusrel') }),
-          btnType: 'error',
-          'on-ok': vsnode => {
-            fn(vsnode);
-          },
-          'on-cancel': vsnode => {
-            this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, false);
-            this.$nextTick(() => {
-              this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, true);
-            });
-          }
+      if (isCheck) {
+        this.statusRelList.push({
+          uuid: this.$utils.setUuid(),
+          fromStatusName: fromStatus.name,
+          fromStatusLabel: fromStatus.label,
+          fromStatusColor: fromStatus.color,
+          fromStatusUuid: fromStatus.uuid,
+          toStatusName: toStatus.name,
+          toStatusLabel: toStatus.label,
+          toStatusColor: toStatus.color,
+          toStatusUuid: toStatus.uuid
         });
+        this.$set(fromStatus, '_expand', true);
       } else {
-        fn();
+        const index = this.statusRelList.findIndex(d => d.fromStatusUuid === fromStatus.uuid && d.toStatusUuid === toStatus.uuid);
+        if (index > -1) {
+          this.statusRelList.splice(index, 1);
+          if (this.hasRelation(fromStatus)) {
+            this.$set(fromStatus, '_expand', true);
+          } else {
+            this.$set(fromStatus, '_expand', false);
+          }
+        }
       }
+      this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, false);
+      this.$nextTick(() => {
+        this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, true);
+      });
     },
     sortStatus() {
       console.log(this.statusList);
     },
     editStatus(status) {
       this.isStatusEditShow = true;
-      this.currentStatusId = status.uuid;
+      this.currentStatusData = status;
     },
-    closeStatusEditDialog(needRefresh) {
+    closeStatusEditDialog(statusData) {
       this.isStatusEditShow = false;
-      this.currentStatusId = null;
-      if (needRefresh) {
-        this.getStatusByAppId();
+      this.currentStatusData = {};
+      if (statusData) {
+        const index = this.statusList.findIndex(d => d.uuid === statusData.uuid);
+        if (index > -1) {
+          this.statusList.splice(index, 1, statusData);
+        } else {
+          this.statusList.push(statusData);
+        }
       }
     },
     deleteStatus(status) {
@@ -270,13 +226,17 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.status') }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.rdm.status.deleteStatus(status.uuid).then(res => {
-            if (res.Status === 'OK') {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              vnode.isShow = false;
-              this.init();
+          const index = this.statusList.findIndex(d => d.uuid === status.uuid);
+          if (index > -1) {
+            this.statusList.splice(index, 1);
+          }
+          for (let i = this.statusRelList.length - 1; i >= 0; i--) {
+            const rel = this.statusRelList[i];
+            if (rel.fromStatusUuid === status.uuid || rel.toStatusUuid === status.uuid) {
+              this.statusRelList.splice(i, 1);
             }
-          });
+          }
+          vnode.isShow = false;
         }
       });
     },
@@ -314,7 +274,29 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    statusList: {
+      handler: function(val) {
+        this.statusMatrix = {};
+        //组装status矩阵数据
+        this.statusList.forEach(fromStatus => {
+          if (this.hasRelation(fromStatus)) {
+            this.$set(fromStatus, '_expand', true);
+          } else {
+            this.$set(fromStatus, '_expand', false);
+          }
+          //组装status矩阵数据
+          this.statusList.forEach(toStatus => {
+            if (fromStatus.uuid !== toStatus.uuid) {
+              this.$set(this.statusMatrix, fromStatus.uuid + '_' + toStatus.uuid, true);
+            }
+          });
+        });
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

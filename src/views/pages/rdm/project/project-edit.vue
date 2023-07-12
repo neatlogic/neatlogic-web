@@ -1,5 +1,6 @@
 <template>
-  <TsContain :enableCollapse="true">
+  <Loading v-if="!projectData" :loadingShow="true" type="fix"></Loading>
+  <TsContain v-else-if="$AuthUtils.hasRole('PROJECT_MANAGE') || projectData.isOwner || projectData.isLeader">
     <template v-slot:navigation>
       <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
     </template>
@@ -80,6 +81,14 @@
       </div>
     </template>
   </TsContain>
+  <div v-else class="auth-container">
+    <Alert type="error" style="width: 450px">
+      {{ $t('term.rdm.errortip') }}
+      <span slot="desc">
+        <div>{{ $t('term.rdm.noauthforeditproject') }}</div>
+      </span>
+    </Alert>
+  </div>
 </template>
 
 <script>
@@ -106,12 +115,14 @@ export default {
       selectedAppList: [],
       appTypeList: [],
       appId: null,
+      projectData: null,
       currentTab: 'projectinfo'
     };
   },
   beforeCreate() {},
   created() {
     this.projectId = Math.floor(this.$route.params['projectId']);
+    this.getProjectById();
     this.getAppByProjectId();
     this.getAllAppTypeList();
   },
@@ -124,6 +135,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getProjectById() {
+      if (this.projectId) {
+        this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+          this.projectData = res.Return;
+        });
+      }
+    },
     dragEnd() {
       this.$api.rdm.app
         .updateAppSort({
@@ -204,5 +222,11 @@ export default {
 // }
 .tsbg-block {
   border-radius: 6px;
+}
+.auth-container {
+  height: calc(100vh - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

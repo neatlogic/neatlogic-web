@@ -1,11 +1,20 @@
 <template>
-  <div>
+  <div v-if="projectData">
     <div v-if="$AuthUtils.hasRole('PROJECT_TEMPLATE_MANAGE')">
       <Button type="primary" @click="isTemplateShow = true">{{ $t('term.rdm.saveastemplate') }}</Button>
       <div class="text-grey mt-md">{{ $t('term.rdm.saveprojectastemplate') }}</div>
       <Divider></Divider>
     </div>
-    <div>
+    <div v-if="!projectData.isClose && (projectData.isOwner || projectData.isLeader)">
+      <Button type="warning" @click="closeProject">{{ $t('term.rdm.endproject') }}</Button>
+      <div class="text-grey mt-md">{{ $t('term.rdm.closeprojectdesc') }}</div>
+      <Divider></Divider>
+    </div>
+    <div v-if="projectData.isClose && $AuthUtils.hasRole('PROJECT_MANAGE')">
+      <Button type="warning" ghost @click="openProject">{{ $t('term.rdm.openproject') }}</Button>
+      <Divider></Divider>
+    </div>
+    <div v-if="projectData.isOwner || $AuthUtils.hasRole('PROJECT_MANAGE')">
       <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', { target: $t('term.rdm.project') }) }}</Button>
       <div class="text-grey mt-md">{{ $t('term.rdm.deleteprojectdesc') }}</div>
     </div>
@@ -47,11 +56,14 @@ export default {
         width: 'small'
       },
       isTemplateShow: false,
-      templateName: ''
+      templateName: '',
+      projectData: null
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getProjectById();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -61,6 +73,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getProjectById() {
+      if (this.projectId) {
+        this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+          this.projectData = res.Return;
+        });
+      }
+    },
     saveTemplate() {
       const formTemplateName = this.$refs['formTemplateName'];
       if (formTemplateName.valid()) {
@@ -77,6 +96,44 @@ export default {
           });
       }
     },
+    closeProject() {
+      if (this.projectId) {
+        this.$createDialog({
+          title: this.$t('dialog.title.closecomfirm'),
+          content: this.$t('dialog.content.closecomfirm', { target: this.$t('term.rdm.project') }),
+          btnType: 'error',
+          'on-ok': vnode => {
+            this.$api.rdm.project.closeProjectById(this.projectId).then(res => {
+              if (res.Status === 'OK') {
+                // 刷新左侧菜单
+                this.$store.commit('leftMenu/setRdmProjectCount', 'minus');
+                vnode.isShow = false;
+                this.$router.push({ path: '/' });
+              }
+            });
+          }
+        });
+      }
+    },
+    openProject() {
+      if (this.projectId) {
+        this.$createDialog({
+          title: this.$t('dialog.title.openconfirm'),
+          content: this.$t('dialog.content.opencomfirm', { target: this.$t('term.rdm.project') }),
+          btnType: 'error',
+          'on-ok': vnode => {
+            this.$api.rdm.project.openProjectById(this.projectId).then(res => {
+              if (res.Status === 'OK') {
+                // 刷新左侧菜单
+                this.$store.commit('leftMenu/setRdmProjectCount', 'minus');
+                vnode.isShow = false;
+                this.$router.push({ path: '/' });
+              }
+            });
+          }
+        });
+      }
+    },
     deleteProject() {
       if (this.projectId) {
         this.$createDialog({
@@ -89,7 +146,7 @@ export default {
                 // 刷新左侧菜单
                 this.$store.commit('leftMenu/setRdmProjectCount', 'minus');
                 vnode.isShow = false;
-                this.$emit('close');
+                this.$router.push({ path: '/' });
               }
             });
           }

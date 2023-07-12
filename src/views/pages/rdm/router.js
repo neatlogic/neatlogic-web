@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 const projectEdit = () => import('./project/project-edit.vue');
 const project = () => import('@/views/pages/rdm/project/viewtab/project/project.vue');
 const taskList = () => import('@/views/pages/rdm/workbench/task-list.vue');
+const projectManage = () => import('@/views/pages/rdm/project/project-manage.vue');
 const priorityManage = () => import('@/views/pages/rdm/priority/priority-manage.vue');
 const templateManage = () => import('@/views/pages/rdm/template/template-manage.vue');
 const templateEdit = () => import('@/views/pages/rdm/template/template-edit.vue');
@@ -137,6 +138,18 @@ let routerArr = [
     }
   },
   {
+    path: '/project-manage',
+    name: 'projectManage',
+    component: projectManage,
+    meta: {
+      title: $t('router.rdm.projectmanage'),
+      ismenu: true,
+      type: 'system',
+      authority: 'PROJECT_MANAGE',
+      icon: 'tsfont-agent'
+    }
+  },
+  {
     path: '/template-manage',
     name: 'templateManage',
     component: templateManage,
@@ -153,6 +166,7 @@ let routerArr = [
     name: 'templateEdit',
     component: templateEdit,
     meta: {
+      title: $t('router.rdm.edittemplate'),
       ismenu: false,
       type: 'system',
       authority: 'PROJECT_TEMPLATE_MANAGE'

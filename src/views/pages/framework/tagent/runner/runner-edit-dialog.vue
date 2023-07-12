@@ -57,14 +57,13 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
-      formData: _this.$utils.isEmptyObj(_this.runnerData) ? {runnerAuthList: []} : _this.runnerData,
+      formData: this.$utils.isEmptyObj(this.runnerData) ? {runnerAuthList: []} : this.runnerData,
       runnerAuthList: [],
       addTsDialogs: {
         type: 'modal',
         isShow: true,
-        title: _this.$utils.isEmptyObj(_this.runnerData) ? this.$t('dialog.title.addtarget', {target: this.$t('term.deploy.actuator')}) : this.$t('dialog.title.edittarget', {target: this.$t('term.deploy.actuator')})
+        title: this.$utils.isEmptyObj(this.runnerData) ? this.$t('dialog.title.addtarget', {target: this.$t('term.deploy.actuator')}) : this.$t('dialog.title.edittarget', {target: this.$t('term.deploy.actuator')})
       },
       formSetting: {
         id: {
@@ -113,8 +112,8 @@ export default {
           falseValue: 0,
           trueValue: 1,
           value: 0,
-          onChange: function(val) {
-            _this.externalAuth(val);
+          onChange: (val) => {
+            this.externalAuth(val);
           }
         }
 
@@ -207,10 +206,9 @@ export default {
         });
     },
     externalAuth(val) {
-      let _this = this;
       if (val === 1) {
-        _this.runnerAuthList = [];
-        _this.runnerAuthList.push(
+        this.runnerAuthList = [];
+        this.runnerAuthList.push(
           {
             type: 'select',
             label: this.$t('term.framework.authenprotocol'),
@@ -220,9 +218,9 @@ export default {
             dynamicUrl: '/api/rest/universal/enum/get',
             params: {enumClass: 'neatlogic.framework.tagent.enums.RunnerAuthType'},
             transfer: true,
-            onChange: function(value) {
+            onChange: (value) => {
               if (value == 'basic') {
-                _this.runnerAuthList.push(
+                this.runnerAuthList.push(
                   {
                     type: 'text',
                     label: this.$t('page.account'),
@@ -239,13 +237,13 @@ export default {
                   }
                 );
               } else {
-                _this.runnerAuthList.splice(1, 2);
+                this.runnerAuthList.splice(1, 2);
               }
             }
           }
         );
       } else {
-        _this.runnerAuthList = [];
+        this.runnerAuthList = [];
       }
     }
   },

@@ -15,7 +15,10 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
   },
   props: {
-    id: {type: Number}
+    id: {type: Number},
+    isReserve: { // 是否是内置版本类型，1表示是，0否
+      type: Number
+    }
   },
   data() {
     return {
@@ -55,13 +58,14 @@ export default {
         name: 'isActive',
         validateList: ['required'],
         dataList: [{
-          text: this.$t('page.yes'), value: 1
+          text: this.$t('page.yes'),
+          value: 1
         },
         {
-          text: this.$t('page.no'), value: 0
+          text: this.$t('page.no'),
+          value: 0
         }],
-        value: 1,
-        disabled: !!this.id
+        disabled: !!this.isReserve // 仅对非内置版本类型生效，1表示内置版本类型
       },
       {
         type: 'codemirror',

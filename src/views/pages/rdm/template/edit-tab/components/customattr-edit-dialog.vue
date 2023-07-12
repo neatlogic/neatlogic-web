@@ -83,7 +83,7 @@ export default {
           type: 'slot',
           label: this.$t('page.config'),
           hideLabel: true,
-          isHidden: true
+          isHidden: !handlers[this.attrData.type + 'attr']
         },
         isActive: {
           type: 'switch',

@@ -64,6 +64,12 @@ const project = {
   },
   deleteProjectById(id) {
     return axios.post('/api/rest/rdm/project/delete', { id: id });
+  },
+  closeProjectById(id) {
+    return axios.post('/api/rest/rdm/project/close', { id: id });
+  },
+  openProjectById(id) {
+    return axios.post('/api/rest/rdm/project/open', { id: id });
   }
 };
 export default project;

@@ -1,9 +1,9 @@
 <template>
   <div>
     <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
-      <div v-if="webhookData.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
+      <div v-if="appType.config.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
         <Code class="bg-block">
-          <span id="webhookUrl">{ip}:{port}/neatlogic/any/api/t/{{ tenant }}/rest/rdm/webhook/push?_t={{ webhookData.webhookUrl }}</span>
+          <span id="webhookUrl">{ip}:{port}/neatlogic/any/api/t/{{ tenant }}/rest/rdm/webhook/push?_t={{ appType.config.webhookUrl }}</span>
           <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
         </Code>
       </div>
@@ -12,20 +12,17 @@
       </div>
     </TsFormItem>
     <TsFormItem label="Secret Token" labelPosition="top">
-      <div v-if="webhookData.secretToken" class="bg-op padding-md radius-md mt-md mb-md">
+      <div v-if="appType.config.secretToken" class="bg-op padding-md radius-md mt-md mb-md">
         <Code class="bg-block">
-          <span id="secretToken">{{ webhookData.secretToken }}</span>
+          <span id="secretToken">{{ appType.config.secretToken }}</span>
           <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#secretToken')"></span>
         </Code>
       </div>
       <div>
-        <a v-if="webhookData.secretToken" class="mr-sm" @click="clearSecretToken()">{{ $t('page.clear') }}</a>
+        <a v-if="appType.config.secretToken" class="mr-sm" @click="clearSecretToken()">{{ $t('page.clear') }}</a>
         <a @click="createSecretToken()">{{ $t('term.framework.recreate') }}</a>
       </div>
     </TsFormItem>
-    <div style="text-align: right" class="mt-md">
-      <Button type="primary" @click="save()">{{ $t('page.save') }}</Button>
-    </div>
   </div>
 </template>
 <script>
@@ -35,13 +32,12 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve)
   },
   props: {
-    appData: { type: Object }
+    appType: { type: Object }
   },
   data() {
     return {
       home: HOME,
       tenant: TENANT,
-      webhookData: { appId: this.appData.id },
       formConfig: [
         {
           type: 'slot',
@@ -59,7 +55,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getWebhookConfig();
   },
   beforeMount() {},
   mounted() {},
@@ -71,33 +66,15 @@ export default {
   destroyed() {},
   methods: {
     createWebhookUrl() {
-      this.$set(this.webhookData, 'webhookUrl', this.$utils.setUuid());
+      this.$set(this.appType.config, 'webhookUrl', this.$utils.setUuid());
     },
     createSecretToken() {
-      this.$set(this.webhookData, 'secretToken', this.$utils.setUuid());
+      this.$set(this.appType.config, 'secretToken', this.$utils.setUuid());
     },
     clearSecretToken() {
-      this.$set(this.webhookData, 'secretToken', null);
-    },
-    getWebhookConfig() {
-      if (this.appData.id) {
-        this.$api.rdm.webhook.getWebhookConfigByAppId(this.appData.id).then(res => {
-          if (res.Return) {
-            this.webhookData = res.Return;
-          }
-        });
-      }
+      this.$set(this.appType.config, 'secretToken', null);
     },
     save() {
-      if (this.webhookData.webhookUrl) {
-        this.$api.rdm.webhook.saveWebhookConfig(this.webhookData).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        });
-      } else {
-        this.$Message.warning(this.$t('term.rdm.pleasecreatewebhookurl'));
-      }
     }
   },
   filter: {},

@@ -34,7 +34,7 @@
                   @on-change="val => {changeStatus(val, row);}"
                 ></TsFormSwitch>
               </div>
-              <div class="action-item tsfont-edit" @click="editVersion(row.id)">{{ $t('page.edit') }}</div>
+              <div class="action-item tsfont-edit" @click="editVersion(row)">{{ $t('page.edit') }}</div>
               <div v-if="!row.isReserve" class="action-item tsfont-trash-o" @click="deleteVersion(row.id)">{{ $t('page.delete') }}</div>
             </div>
           </template>
@@ -55,8 +55,8 @@
                   </div>
                 </Poptip>
               </li>
-              <li>{{ row.description || '-' }}</li>
-              <li class="text-tip">{{ row.lct }}</li>
+              <li class="overflow" :title="row.description">{{ row.description || '-' }}</li>
+              <li v-if="row.lct" class="text-tip mt-xs">{{ row.lct }}</li>
             </ul>
           </template>
         </TsCard>
@@ -65,6 +65,7 @@
     <VersiontypeEditDialog
       v-if="isShowVersionTypeEditDialog"
       :id="versionTypeId"
+      :isReserve="isReserve"
       @close="close"
     ></VersiontypeEditDialog>
   </div>
@@ -86,12 +87,14 @@ export default {
       isShowVersionTypeEditDialog: false,
       loadingShow: true,
       versionTypeId: null,
+      isReserve: null, // isReserve为1就是表示内置版本类型
       versionData: {
         classname: 'version-card',
         classKey: 'isActive',
         padding: false,
         span: 24,
         sm: 24,
+        md: 24,
         lg: 24,
         xl: 24,
         xxl: 24,
@@ -116,10 +119,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    editVersion(id) {
+    editVersion(row) {
       this.isShowVersionTypeEditDialog = true;
-      if (id) {
-        this.versionTypeId = id;
+      if (row) {
+        this.versionTypeId = row.id;
+        this.isReserve = row.isReserve;
       }
     },
     deleteVersion(id) {
@@ -169,6 +173,7 @@ export default {
     close(needRefresh) {
       this.isShowVersionTypeEditDialog = false;
       this.versionTypeId = null;
+      this.isReserve = null;
       if (needRefresh) {
         this.searchList();
       }
