@@ -6,7 +6,7 @@
         <span class="tsfont-plus text-action" @click="addMatrix">
           {{ $t('dialog.title.addtarget',{'target':$t('page.matrix')}) }}
         </span>
-        <span class="tsfont-upload action-item" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</span>
+        <span class="tsfont-upload action-item text-action" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</span>
         <UploadDialog
           ref="uploadDialog"
           :actionUrl="importMatrixDefinitionUrl"
@@ -685,7 +685,7 @@ export default {
                 {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: 
                   [
                     {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'}, 
-                    {name: this.$t('page.export'), value: 'exportDefinition', type: 'download'}
+                    {name: this.$t('page.export'), value: 'export', type: 'download'}
                   ]
                 }
               );

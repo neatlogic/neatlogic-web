@@ -17,7 +17,6 @@
   <div class="runner-group-add-wrap">
     <TsDialog
       v-bind="addTsDialog"
-      :isShow="isShow"
       @on-close="close"
     >
       <template v-slot>
@@ -101,11 +100,6 @@ export default {
   filters: {},
   mixins: [runnerGroupMixin],
   props: {
-    isShow: {
-      // 是否显示dialog 弹窗
-      type: Boolean,
-      default: false
-    },
     runnerGroupData: {
       type: Object
     }
@@ -120,6 +114,7 @@ export default {
         // 弹框配置信息
         type: 'modal',
         hasFooter: false,
+        isShow: true,
         title: this.$t('dialog.title.addtarget', {target: this.$t('page.group')})
       }
     };
@@ -163,8 +158,7 @@ export default {
       this.$api.framework.runner.saveRunnerGroup(params).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.close();
-          this.$emit('refreshList'); // 刷新列表
+          this.close(true);
         }
       });
     }
