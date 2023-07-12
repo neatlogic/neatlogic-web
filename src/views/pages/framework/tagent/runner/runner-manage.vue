@@ -66,11 +66,11 @@
         </div>
       </template>
     </TsContain>
-    <AddRunner
-      v-if="isShowEdit"
+    <RunnerEditDialog
+      v-if="isShowRunnerEditDialog"
       :runnerData="runnerData"
       @close="closeAddRunner"
-    ></AddRunner>
+    ></RunnerEditDialog>
   </div>
 </template>
 <script>
@@ -80,13 +80,13 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    AddRunner: resolve => require(['./runner-add.vue'], resolve)
+    RunnerEditDialog: resolve => require(['./runner-edit-dialog.vue'], resolve)
   },
   filters: {},
   props: {},
   data() {
     return {
-      isShowEdit: false, // 是否显示编辑
+      isShowRunnerEditDialog: false, // 是否显示编辑
       keyword: '',
       runnerData: {},
       theadList: [
@@ -139,7 +139,7 @@ export default {
   created() {
     let route = this.$route;
     if (route && route.query && route.query['type'] == 'add') {
-      this.isShowEdit = true;
+      this.isShowRunnerEditDialog = true;
     }
     this.getTableList();
   },
@@ -153,18 +153,18 @@ export default {
   destroyed() {},
   methods: {
     closeAddRunner(needRefresh) {
-      this.isShowEdit = false;
+      this.isShowRunnerEditDialog = false;
       if (needRefresh) {
         this.getTableList();
       }
     },
     addRunner() {
       this.runnerData = {};
-      this.isShowEdit = true;
+      this.isShowRunnerEditDialog = true;
     },
     editRunner(row) {
       this.runnerData = row;
-      this.isShowEdit = true;
+      this.isShowRunnerEditDialog = true;
     },
     delRunner(row) {
       if (row && !this.$utils.isEmptyObj(row)) {

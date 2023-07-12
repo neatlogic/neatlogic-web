@@ -55,9 +55,9 @@ const runnerGroupMixin = {
     };
   },
   methods: {
-    close() {
+    close(needRefresh = false) {
       // 关闭模态框
-      this.$emit('close', false);
+      this.$emit('close', needRefresh);
     },
     operationRow(type, index) {
       // 操作行，add 表示新增，del表示删除

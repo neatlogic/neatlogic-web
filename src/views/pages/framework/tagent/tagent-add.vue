@@ -59,28 +59,23 @@
     </TsContain>
 
     <!-- 添加分组 -->
-    <RunnerGroupAdd
-      v-if="isShowRunnerGroupAdd"
-      :isShow="isShowRunnerGroupAdd"
+    <GroupAddDialog
+      v-if="isShowGroupAddDialog"
       :runnerGroupData="runnerGroupData"
-      @close="isShowRunnerGroupAdd = false"
-      @refreshList="getTableData(1, 20)"
-    ></RunnerGroupAdd>
+      @close="closeGroupAddDialog"
+    ></GroupAddDialog>
 
     <!-- 编辑分组 -->
-    <RunnerGroupEdit
+    <GroupEditDialog
       v-if="isShowRunnerGroupEdit"
-      :isShow="isShowRunnerGroupEdit"
       :runnerGroupData="runnerGroupData"
-      @close="isShowRunnerGroupEdit = false"
-      @refreshList="getTableData(1, 20)"
-    ></RunnerGroupEdit>
+      @close="closeGroupEditDialog"
+    ></GroupEditDialog>
 
     <!-- runner管理 -->
     <TsDialog
       v-bind="runnerManageDialog"
       @on-ok="saveRunnerDialog"
-      @on-cancel="cancleDialog"
       @on-close="cancleDialog"
     >
       <template v-slot>
@@ -96,11 +91,11 @@
 export default {
   name: 'TagentAdd',
   components: {
-    RunnerGroupAdd: resolve => require(['./runner/runner-groud-add.vue'], resolve),
-    RunnerGroupEdit: resolve => require(['./runner/runner-group-edit.vue'], resolve),
-    RunnerRelate: resolve => require(['./runner/runner-relate.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    GroupAddDialog: resolve => require(['./runner/group-add-dialog.vue'], resolve),
+    GroupEditDialog: resolve => require(['./runner/group-edit-dialog.vue'], resolve),
+    RunnerRelate: resolve => require(['./runner/runner-relate.vue'], resolve)
   },
   filters: {},
   props: {
@@ -112,7 +107,7 @@ export default {
       groupId: '', // 点击runner数量组id
       runnerList: [], // runnerList 点击runner数量
       runnerRowData: {}, // 点击数量，获取行的数据
-      isShowRunnerGroupAdd: false,
+      isShowGroupAddDialog: false,
       isShowRunnerGroupEdit: false,
       runnerGroupData: {},
       runnerManageDialog: {
@@ -224,7 +219,7 @@ export default {
     addGroud() {
       // 添加分组按钮模态框
       this.runnerGroupData.id = '';
-      this.isShowRunnerGroupAdd = true;
+      this.isShowGroupAddDialog = true;
     },
     async getTableData(currentPage, pageSize) {
       // 获取列表数据
@@ -264,6 +259,18 @@ export default {
             });
         }
       });
+    },
+    closeGroupAddDialog(needRefresh) {
+      this.isShowGroupAddDialog = false;
+      if (needRefresh) {
+        this.getTableData();
+      }
+    },
+    closeGroupEditDialog(needRefresh) {
+      this.isShowRunnerGroupEdit = false;
+      if (needRefresh) {
+        this.getTableData();
+      }
     }
   },
   computed: {},
