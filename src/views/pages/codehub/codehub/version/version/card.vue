@@ -79,6 +79,7 @@ export default {
         xxl: 24,
         padding: false,
         boxShadow: false,
+        hasHoverShadow: true,
         pageType: 'number',
         cardList: []
       },
