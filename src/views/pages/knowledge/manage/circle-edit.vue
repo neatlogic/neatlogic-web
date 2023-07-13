@@ -111,7 +111,7 @@ export default {
           labelPosition: 'top',
           tooltip: this.$t('term.knowledge.tooltip.member'),
           type: 'userselect',
-          groupList: ['user', 'team', 'role'],
+          groupList: ['common', 'user', 'team', 'role'],
           value: [],
           onChange: value => {
             this.knowledgeCircle.memberList = value;
