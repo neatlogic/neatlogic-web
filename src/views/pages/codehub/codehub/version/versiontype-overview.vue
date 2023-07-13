@@ -102,7 +102,8 @@ export default {
         currentPage: 1,
         pageSize: 20,
         pageType: 'number',
-        boxShadow: false
+        boxShadow: false,
+        hasHoverShadow: true
       }
     };
   },

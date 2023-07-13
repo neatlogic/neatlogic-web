@@ -143,7 +143,8 @@ export default {
         keyName: 'id',
         classname: 'repository-list',
         cardList: [],
-        boxShadow: false
+        boxShadow: false,
+        hasHoverShadow: true
       },
       issueNo: '',
       isshowIssue: false,
