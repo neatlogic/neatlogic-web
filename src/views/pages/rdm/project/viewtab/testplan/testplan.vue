@@ -12,18 +12,14 @@
           <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.testcase') }}</span>
         </div>
       </template>
-      <template v-slot:sider>
-        <CatalogList :appId="appId" @changeCatalog="changeCatalog"></CatalogList>
-      </template>
       <template v-slot:content>
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
           :projectId="projectId"
-          :mode="displayMode"
           :app="appData"
           :canSearch="true"
-          :catalog="currentCatalog"
+          :canAction="true"
           :isShowEmptyTable="true"
         ></IssueList>
       </template>
@@ -46,7 +42,6 @@ export default {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
     AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
   },
   mixins: [mixins],

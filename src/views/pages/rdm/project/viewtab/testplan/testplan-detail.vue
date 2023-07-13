@@ -29,7 +29,7 @@
                   :autoSave="false"
                   @cancel="contentMode = 'read'"
                 ></ContentHandler>
-                <Divider v-if="issueData.content"></Divider>
+                <Divider v-if="issueData.content && getApp('testcase')"></Divider>
                 <IssueList
                   v-if="id && getApp('testcase')"
                   ref="testcaseList"
@@ -38,6 +38,7 @@
                   :canAppend="true"
                   :canSearch="true"
                   :canAction="true"
+                  :canBatch="true"
                   :fromId="id"
                   relType="extend"
                   relAppType="testcase"

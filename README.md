@@ -20,6 +20,11 @@ npm install
 ```
 npm run serve
 ```
+<font color="red">异常：</font>
+如果启动时发现大量不明报错，可能原因是npm install阶段加载的依赖包不完整导致，可以对npm进行降级再次install，目前测试v14的npm可以正常install，v18+的npm有可能出现异常。或者通过cnpm install加载依赖包也可以。cnpm版本也不能太高，建议使用v8.2.0。
+```
+sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
+```
 
 ## 打包项目代码
 ```

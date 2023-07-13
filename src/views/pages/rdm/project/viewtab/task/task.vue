@@ -14,10 +14,12 @@
       </template>
       <template v-slot:content>
         <IssueList
-          v-if="appData"
+          v-if="isReady && appData"
           ref="issueList"
           :projectId="projectId"
           :app="appData"
+          :canSearch="true"
+          :canAction="true"
           :isShowEmptyTable="true"
         ></IssueList>
       </template>

@@ -22,6 +22,11 @@ npm install
 ```
 npm run serve
 ```
+<font color="red">Exception:</font>
+If a large number of unknown errors are found at startup, the possible reason may be that the dependency packages loaded during the `npm install` phase are incomplete. It is suggested to downgrade npm and install again. Currently, tests indicate that npm v14 can install normally, while npm v18+ might cause exceptions. Alternatively, loading dependency packages through `cnpm install` could also work. The cnpm version should not be too high, it's recommended to use v8.2.0.
+```
+sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
+```
 
 ## Package project code
 ```

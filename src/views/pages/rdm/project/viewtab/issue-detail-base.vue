@@ -1,8 +1,14 @@
 <script>
 export default {
   name: '',
-  components: {},
-  props: {},
+  components: {
+  },
+  props: {
+    pId: { type: Number }, //弹窗模式下的项目id
+    aId: { type: Number }, //弹窗模式下的appId
+    iId: { type: Number }, //弹窗模式下的issueId
+    mode: { type: String, default: 'page' } //显示模式，dialog或page
+  },
   data() {
     return {
       id: null,
@@ -16,9 +22,9 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    this.projectId = Math.floor(this.$route.params['projectId']);
-    this.appId = Math.floor(this.$route.params['appId']);
-    this.id = Math.floor(this.$route.params['id']);
+    this.projectId = Math.floor(this.$route.params['projectId']) || this.pId;
+    this.appId = Math.floor(this.$route.params['appId']) || this.aId;
+    this.id = Math.floor(this.$route.params['id']) || this.iId;
     await this.init();
     await this.getAppByProjectId();
     this.isReady = true;
