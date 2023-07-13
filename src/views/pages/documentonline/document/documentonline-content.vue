@@ -1,7 +1,7 @@
 <template>
   <div v-imgViewer>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <div class="markdown-body pr-nm" v-html="markdownContent"></div>
+    <div id="markdownContent" class="markdown-body pr-nm" v-html="markdownContent"></div>
   </div>
 </template>
 <script>
@@ -22,11 +22,13 @@ export default {
   data() {
     return {
       loadingShow: true,
+      markdownSource: '',
       markdownContent: '',
       merkedSetting: {
         mangle: false,
         headerIds: false
-      }
+      },
+      headings: []
     };
   },
   beforeCreate() {},
@@ -46,38 +48,64 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getDocumentDetail() {
-      if (this.content) {
-        this.markdownContent = marked(this.content, this.merkedSetting); 
-        this.$nextTick(() => {
-          if (this.anchorPoint) {
-            this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
+    getContent() {
+      if (!this.filePath) {
+        return;
+      }
+      let data = {
+        filePath: this.filePath
+      };
+      this.loadingShow = true;
+      return this.$api.documentonline.getDocumentDetail(data).then(res => {
+        if (res.Status === 'OK') {
+          if (res.Return.content) {
+            this.markdownSource = res.Return.content;
           }
-        });
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    async getDocumentDetail() {
+      if (this.content) {
+        this.markdownSource = this.content;
         this.loadingShow = false;
       } else {
-        if (!this.filePath) {
-          return;
-        }
-        let data = {
-          filePath: this.filePath
-        };
-        this.loadingShow = true;
-        this.$api.documentonline.getDocumentDetail(data).then(res => {
-          if (res.Status === 'OK') {
-            if (res.Return.content) {
-              this.markdownContent = marked(res.Return.content, this.merkedSetting); 
-              this.$nextTick(() => {
-                if (this.anchorPoint) {
-                  this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
-                }
-              });
-            }
-          }
-        }).finally(() => {
-          this.loadingShow = false;
-        });
+        await this.getContent();
       }
+      let _this = this;
+      // 创建一个新的renderer实例
+      const renderer = new marked.Renderer();
+      // 重写heading方法，为h1-h6标签添加唯一的ID
+      renderer.heading = function(text, level) {
+        let id = 'heading_' + _this.$utils.setUuid();
+        return `<h${level} id="${id}">${text}</h${level}>`;
+      };
+      this.markdownContent = marked(this.markdownSource, { renderer }); 
+      this.getHeadings();
+      this.$nextTick(() => {
+        if (this.anchorPoint) {
+          this.$utils.jumpTo('#' + this.anchorPoint, 'smooth');
+        }
+      });
+    },
+    getHeadings() { //获取目录
+      this.headings = [];
+      // 提取 h1 到 h6 标签
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(this.markdownContent, 'text/html');
+      const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1));
+        const text = heading.textContent;
+        const id = heading.id;
+        this.headings.push({
+          level: level,
+          text: text,
+          id: id
+        });
+      });
+      this.$emit('getHeadings', this.headings);
     }
   },
   filter: {},
