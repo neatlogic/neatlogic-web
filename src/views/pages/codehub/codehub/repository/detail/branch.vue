@@ -110,7 +110,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
         cardList: [],
-        boxShadow: false
+        boxShadow: false,
+        hasHoverShadow: true
       },
       typeList: {
         defaultBranch: {

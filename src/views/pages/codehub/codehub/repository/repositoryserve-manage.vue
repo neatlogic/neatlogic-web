@@ -124,6 +124,7 @@ export default {
         classname: 'repository-list',
         padding: false,
         boxShadow: false,
+        hasHoverShadow: true,
         cardList: [],
         pageType: 'number',
         currentPage: 1,

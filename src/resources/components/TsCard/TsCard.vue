@@ -17,7 +17,7 @@
             class="card-li"
             @click="selectItem(card)"
           >
-            <div :class="[classname, cardPrev + 'inner radius-md bg-op', { 'card-hover-shadow': boxShadow }, { shadow: boxShadow }, { 'block-border': border }, { userInfoStyle: userInfoStyle }]" :style="setStyle()" @mouseenter="onMouseEnter(card)">
+            <div :class="[classname, cardPrev + 'inner radius-md bg-op', { 'card-hover-shadow': boxShadow || hasHoverShadow }, { shadow: boxShadow }, { 'block-border': border }, { userInfoStyle: userInfoStyle }]" :style="setStyle()" @mouseenter="onMouseEnter(card)">
               <div :class="cardPrev + 'header'" :style="setHeaderpostion()">
                 <slot name="header" :row="card"></slot>
               </div>
@@ -428,6 +428,14 @@ export default {
       //卡片阴影
       type: Boolean,
       default: true
+    },
+    hasHoverShadow: {
+      /**
+       * 使用说明：鼠标经过卡片是否需要阴影，默认不需要
+       * 使用场景：卡片阴影为(boxShadow: false)时，但是鼠标经过的时候，需要阴影，那么可以使用该属性
+       */
+      type: Boolean,
+      default: false
     },
     border: {
       //边框
