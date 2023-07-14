@@ -23,7 +23,7 @@
           v-if="!loadingShow && filePath"
           ref="documentonlineContent"
           class="documentonline-content"
-          @scroll="handleScroll"
+          @scroll="handleScroll()"
         >
           <DocumentonlineContent
             :content="content"
@@ -201,30 +201,49 @@ export default {
     goAnchorPoint(id) {
       if (id) {
         this.anchorPointId = id;
-        this.$utils.jumpTo('#' + id, 'smooth');
+        this.$utils.jumpTo('#' + id, 'smooth', '', 'start');
       }
     },
-    handleScroll(event) {
+    handleScroll() {
       // 监听滚动事件，根据滚动的位置获取当前定位的目录项
-      const contentHeight = this.$refs.documentonlineContent.offsetHeight;
       const scrollTop = this.$refs.documentonlineContent.scrollTop;
-      const scrollBottom = scrollTop + contentHeight;
-      for (let i = 0; i < this.headings.length; i++) {
-        const heading = this.headings[i];
-        const element = document.getElementById(heading.id);
-
-        if (element) {
-          const elementTop = element.offsetTop;
-          const elementBottom = elementTop + element.offsetHeight;
-
-          if (elementTop <= scrollBottom && elementBottom >= scrollTop) {
-            this.anchorPointId = heading.id;
-            return;
+      let foundHeadingId = null;
+      if (scrollTop < 10) {
+        this.anchorPointId = this.headings[0].id;
+      } else {
+        for (let i = 0; i < this.headings.length; i++) {
+          const heading = this.headings[i];
+          const element = document.getElementById(heading.id);
+          let elementTop = 0;
+          let elementBottom = 0;
+          let nextHeading = null;
+          let nextElement = null;
+          if (element) {
+            elementTop = element.offsetTop;
+            elementBottom = elementTop + element.offsetHeight;
+            if (scrollTop <= elementBottom) {
+              foundHeadingId = heading.id;
+              break;
+            }
+          }
+          if (this.headings[i + 1]) {
+            nextHeading = this.headings[i + 1];
+            nextElement = document.getElementById(nextHeading.id);
+          }
+          if (element && nextElement) {
+            const nextElementTop = nextElement.offsetTop;
+            if (scrollTop > elementBottom && nextElementTop > scrollTop) {
+              foundHeadingId = heading.id;
+              break;
+            }
+          } else if (element) {
+            foundHeadingId = heading.id;
           }
         }
+        if (foundHeadingId) {
+          this.anchorPointId = foundHeadingId;
+        }
       }
-
-      this.anchorPointId = null; // 如果没有匹配的
     }
   },
   filter: {},
