@@ -18,30 +18,53 @@
         ></DocumentonlineTree>
       </template>
       <template v-slot:content>
-        <div v-if="!loadingShow">
-          <!-- 文档详情 -->
+        <!-- 文档详情 -->
+        <div
+          v-if="!loadingShow && filePath"
+          ref="documentonlineContent"
+          class="documentonline-content"
+          @scroll="handleScroll()"
+        >
           <DocumentonlineContent
-            v-if="filePath"
             :content="content"
             :filePath="filePath"
             :anchorPoint="anchorPoint"
+            @getHeadings="getHeadings"
           ></DocumentonlineContent>
-          <!-- 文档列表 -->
-          <DocumentonlineList v-else :upwardNameList="upwardNameList" @getDetail="getDetail"></DocumentonlineList>
         </div>
+       
+        <!-- 文档列表 -->
+        <DocumentonlineList v-else-if="!loadingShow" :upwardNameList="upwardNameList" @getDetail="getDetail"></DocumentonlineList>
       </template>
       <template v-if="filePath" v-slot:right>
         <div class="right-list border-color pl-nm">
-          <div class="tsfont-file-single pb-nm">{{ $t('term.process.relateknowledge') }}</div>
-          <div
-            v-for="(item,index) in list"
-            :key="index"
-            class="tsfont-dot text-tip-active overflow pb-nm"
-            @click="getDetail(item)"
-          >
-            {{ item.fileName }}
-          </div>
-          <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
+          <Tabs v-model="currentTab" :animated="false">
+            <TabPane :label="$t('page.catalogue')" name="headings">
+              <!-- 将目录渲染到页面 -->
+              <ul>
+                <li
+                  v-for="heading in headings"
+                  :key="heading.id"
+                  class="tsfont-dot overflow pb-sm cursor-pointer"
+                  :style="{'padding-left': (heading.level *8) + 'px'}"
+                  @click.stop="goAnchorPoint(heading.id)"
+                >
+                  <span :class="{'text-href':anchorPointId === heading.id}">{{ heading.text }}</span>
+                </li>
+              </ul>
+            </TabPane>
+            <TabPane :label="$t('term.process.relateknowledge')" name="file">
+              <div
+                v-for="(item,index) in list"
+                :key="index"
+                class="tsfont-dot text-tip-active overflow pb-nm"
+                @click="getDetail(item)"
+              >
+                {{ item.fileName }}
+              </div>
+              <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
+            </TabPane>
+          </Tabs>
         </div>
       </template>
     </TsContain>
@@ -68,7 +91,10 @@ export default {
       list: [],
       tableData: {},
       preUpwardNameList: [], //文档上层目录列表
-      anchorPoint: ''
+      anchorPoint: '',
+      currentTab: 'headings',
+      headings: [],
+      anchorPointId: ''
     };
   },
   beforeCreate() {},
@@ -165,6 +191,59 @@ export default {
       this.list = [];
       this.upwardNameList = [];
       this.preUpwardNameList = [];
+    },
+    getHeadings(headings) {
+      this.headings = headings;
+      if (this.headings && this.headings.length > 0) {
+        this.anchorPointId = this.headings[0].id;
+      }
+    },
+    goAnchorPoint(id) {
+      if (id) {
+        this.anchorPointId = id;
+        this.$utils.jumpTo('#' + id, 'smooth', '', 'start');
+      }
+    },
+    handleScroll() {
+      // 监听滚动事件，根据滚动的位置获取当前定位的目录项
+      const scrollTop = this.$refs.documentonlineContent.scrollTop;
+      let foundHeadingId = null;
+      if (scrollTop < 10) {
+        this.anchorPointId = this.headings[0].id;
+      } else {
+        for (let i = 0; i < this.headings.length; i++) {
+          const heading = this.headings[i];
+          const element = document.getElementById(heading.id);
+          let elementTop = 0;
+          let elementBottom = 0;
+          let nextHeading = null;
+          let nextElement = null;
+          if (element) {
+            elementTop = element.offsetTop;
+            elementBottom = elementTop + element.offsetHeight;
+            if (scrollTop <= elementBottom) {
+              foundHeadingId = heading.id;
+              break;
+            }
+          }
+          if (this.headings[i + 1]) {
+            nextHeading = this.headings[i + 1];
+            nextElement = document.getElementById(nextHeading.id);
+          }
+          if (element && nextElement) {
+            const nextElementTop = nextElement.offsetTop;
+            if (scrollTop > elementBottom && nextElementTop > scrollTop) {
+              foundHeadingId = heading.id;
+              break;
+            }
+          } else if (element) {
+            foundHeadingId = heading.id;
+          }
+        }
+        if (foundHeadingId) {
+          this.anchorPointId = foundHeadingId;
+        }
+      }
     }
   },
   filter: {},
@@ -184,5 +263,9 @@ export default {
 .right-list {
   height: 100%;
   border-left: 1px solid;
+}
+.documentonline-content {
+  height: 100%;
+  overflow: auto;
 }
 </style>
