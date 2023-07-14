@@ -8,13 +8,13 @@
       :isSiderHide="isSiderHide"
       @toggleSiderHide="toggleSiderHide"
     >
-      <template v-slot:navigation>
+      <template v-if="mode == 'page'" v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
-      <template v-slot:sider>
+      <template v-if="mode == 'page'" v-slot:sider>
         <MyDoingIssueList
           v-if="projectId && appId && id"
           :projectId="projectId"
@@ -157,13 +157,15 @@
       </div>
     </TsContain>
     <div v-else class="auth-container">
-      <Alert type="error" style="width: 450px;">
+      <Alert type="error" style="width: 450px">
         {{ $t('term.rdm.errortip') }}
         <span slot="desc">
           <div>{{ $t('term.rdm.noauthforissue') }}</div>
           <div class="mt-sm">
             <span>{{ $t('term.report.chartsetting.click') }}</span>
-            <span class="ml-sm mr-sm"><Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button></span>
+            <span class="ml-sm mr-sm">
+              <Button disabled size="small" type="primary">{{ $t('term.rdm.apply') }}</Button>
+            </span>
             <span>{{ $t('term.rdm.joinproject') }}</span>
           </div>
         </span>

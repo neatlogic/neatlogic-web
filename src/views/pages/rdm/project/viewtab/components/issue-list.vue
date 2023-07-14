@@ -14,6 +14,9 @@
             @click="linkIssue()"
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
+        <span v-if="canBatch" class="mr-md">
+          <Button type="primary" ghost>批量处理</Button>
+        </span>
       </div>
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
@@ -128,7 +131,7 @@
               @click="toggleChildIssue(row)"
             ></span>
             <span class="overflow">
-              <a href="javascript:void(0)" @click="toIssueDetail(row)">{{ row.name }}</a>
+              <a href="javascript:void(0)" @click="openIssueDetail(row)">{{ row.name }}</a>
             </span>
           </div>
           <IssueStatus v-else-if="attr.type === '_status'" :issueData="row"></IssueStatus>
@@ -166,12 +169,40 @@
       :projectId="projectId"
       @close="closeLinkIssue"
     ></IssueListDialog>
+    <TsDialog
+      v-if="isIssueDetailShow && currentIssue"
+      :hasHeader="false"
+      type="slide"
+      :isShow="true"
+      width="huge"
+      :maskClose="true"
+      :hasFooter="false"
+      @on-close="
+        isIssueDetailShow = false;
+        currentIssue = null;
+      "
+    >
+      <template v-slot>
+        <div>
+          <component
+            :is="app.type + 'Detail'"
+            :pId="currentIssue.projectId"
+            mode="dialog"
+            :aId="currentIssue.appId"
+            :iId="currentIssue.id"
+          ></component>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
+import * as issueDetailHandler from '@/views/pages/rdm/project/viewtab/issus-detail-index.js';
+
 export default {
   name: '',
   components: {
+    ...issueDetailHandler,
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
@@ -188,6 +219,7 @@ export default {
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
     canSelect: { type: Boolean, default: false },
+    canBatch: { type: Boolean, default: false }, //是否允许批量处理
     showStatus: { type: Boolean, default: false }, //是否显示状态统计信息
     checkedIdList: { type: Array },
     iteration: { type: Number }, //迭代id
@@ -219,6 +251,8 @@ export default {
   },
   data() {
     return {
+      issueDetailHandler: issueDetailHandler,
+      currentIssue: null, //当前选中issue，用于打开issue详情窗口
       isLoading: true,
       isEditIssueShow: false,
       isLinkShow: false,
@@ -229,6 +263,7 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'createDate', title: this.$t('page.createdate') }*/
       ],
+      isIssueDetailShow: true, //是否展示任务详情弹窗
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
       pageSize: null,
@@ -439,7 +474,6 @@ export default {
     },
     addIssue() {
       this.isEditIssueShow = true;
-      this.currentIssueId = null;
     },
     closeEditIssue(needRefresh) {
       this.isEditIssueShow = false;
@@ -451,6 +485,14 @@ export default {
     changePageSize(pageSize) {
       this.pageSize = pageSize;
       this.searchIssue(1);
+    },
+    openIssueDetail(issue) {
+      if (this.issueDetailHandler[issue.appType + 'Detail']) {
+        this.isIssueDetailShow = true;
+        this.currentIssue = issue;
+      } else {
+        this.toIssueDetail(issue);
+      }
     },
     toIssueDetail(issue) {
       this.$router.push({ path: '/' + issue.appType + '-detail/' + issue.projectId + '/' + issue.appId + '/' + issue.id });
@@ -633,6 +675,6 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: 40% auto;
+  grid-template-columns: auto 450px;
 }
 </style>
