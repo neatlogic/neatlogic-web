@@ -104,9 +104,6 @@ const repositorydetail = {
   saveGitProtect(data) {
     return axios.post('/api/rest/codehub/repository/gitlab/protectBranch', data);
   },
-  getActiveObject(data) {
-    return axios.post('/api/rest/codehub/action/subject/search', data);
-  },
   getActives(data) {
     return axios.post('/api/rest/codehub/action/search', data);
   },

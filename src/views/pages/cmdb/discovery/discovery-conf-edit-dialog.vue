@@ -15,6 +15,7 @@
                 ></span>
               </div>
               <TsFormSelect
+                ref="combopTool"
                 v-model="confData.combopId"
                 v-bind="combopConfig"
                 @searchCallback="refreshSuccess()"
@@ -183,6 +184,9 @@ export default {
     refreshCombopList() {
       this.$set(this.combopConfig, 'params', { typeId: 2, timeUuid: this.$utils.setUuid() });
       this.$set(this.combopConfig, 'needCallback', true);
+      if (this.$utils.isEmpty(this.confData.combopId)) {
+        this.$refs.combopTool && this.$refs.combopTool.dynamicInit(); // 为空时，列表需要刷新
+      }
     },
     refreshSuccess() {
       this.$Message.success(this.$t('message.refreshsuccess'));
