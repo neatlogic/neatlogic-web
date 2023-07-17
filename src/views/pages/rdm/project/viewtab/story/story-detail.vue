@@ -146,6 +146,7 @@
               v-if="!$utils.isEmpty(issueData)"
               ref="requiredAttrList"
               :appId="appId"
+              :projectId="projectId"
               :issueData="issueData"
             ></StatusRequiredAttrList></TsFormItem>
             <TsFormItem v-bind="formItemConf" :label="$t('page.reply')"><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>

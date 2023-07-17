@@ -39,6 +39,7 @@
         <AttrHandler
           v-if="attr._isReady"
           ref="attrHandler"
+          :projectId="projectId"
           :attrConfig="attr"
           :issueData="issueData"
         ></AttrHandler>
@@ -55,6 +56,7 @@ export default {
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
+    projectId: {type: Number},
     appId: { type: Number },
     issueData: { type: Object }
   },
@@ -120,12 +122,12 @@ export default {
       this.targetStatus = targetStatusId;
       this.$set(this.issueData, 'status', targetStatusId);
       this.statusRel = null;
-      if (this.oldStatusData && this.oldStatusData.id != targetStatusId) {
+      if (!this.oldStatusData || this.oldStatusData.id != targetStatusId) {
         this.isTransferReady = false;
         this.$api.rdm.status
           .getStatusRel({
             appId: this.appId,
-            fromStatusId: this.oldStatusData.id,
+            fromStatusId: this.oldStatusData ? this.oldStatusData.id : 0,
             toStatusId: targetStatusId
           })
           .then(res => {

@@ -925,5 +925,8 @@
   "iselected": "已选",
   "importconfirm": "导入确认",
   "startdate": "开始日期",
-  "enddate": "结束日期"
+  "enddate": "结束日期",
+  "moveup": "上移",
+  "movedown": "下移",
+  "nostatus": "无状态"
 }

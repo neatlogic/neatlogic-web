@@ -70,6 +70,7 @@
                 v-if="!$utils.isEmpty(issueData)"
                 ref="requiredAttrList"
                 :appId="appId"
+                :projectId="projectId"
                 :issueData="issueData"
               ></StatusRequiredAttrList>
             </TsFormItem>

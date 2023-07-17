@@ -1,6 +1,7 @@
 <template>
   <div>
     <TsFormSelect
+      v-if="projectId"
       ref="select"
       :readonly="readonly"
       :value="userIdList"
@@ -18,6 +19,19 @@
         }
       "
     ></TsFormSelect>
+    <UserSelect
+      v-else
+      :value="userIdList"
+      :validateList="validateList"
+      :multiple="true"
+      :transfer="true"
+      :groupList="['user']"
+      @change="
+        (val, opt) => {
+          $emit('setValue', 'userIdList', val);
+        }
+      "
+    ></UserSelect>
   </div>
 </template>
 <script>
@@ -26,6 +40,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   extends: AttrBase,

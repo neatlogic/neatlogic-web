@@ -15,7 +15,7 @@
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
         <span v-if="canBatch" class="mr-md">
-          <Button type="primary" ghost>批量处理</Button>
+          <a class="tsfont-mark-all" @click="batchExecute()">批量处理</a>
         </span>
       </div>
       <div>
@@ -81,21 +81,6 @@
         </CombineSearcher>
       </div>
     </div>
-    <div v-if="showStatus" style="text-align: right" class="mb-xs">
-      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
-        <strong>
-          <span class="mr-xs">{{ status.label }}</span>
-          <span>{{ status.issueCount }}</span>
-        </strong>
-        <Divider type="vertical" />
-      </span>
-      <span>
-        <strong>
-          <span class="mr-xs">{{ $t('page.completrate') }}</span>
-          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
-        </strong>
-      </span>
-    </div>
     <TsTable
       v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
       :theadList="finalTheadList"
@@ -148,6 +133,21 @@
         </div>
       </template>
     </TsTable>
+    <div v-if="showStatus" style="text-align: right" class="mb-xs">
+      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
+        <strong>
+          <span class="mr-xs">{{ status.label }}</span>
+          <span>{{ status.issueCount }}</span>
+        </strong>
+        <Divider type="vertical" />
+      </span>
+      <span>
+        <strong>
+          <span class="mr-xs">{{ $t('page.completrate') }}</span>
+          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
+        </strong>
+      </span>
+    </div>
     <NoData v-else-if="isShowEmptyTable"></NoData>
     <EditIssue
       v-if="isEditIssueShow"
@@ -194,6 +194,12 @@
         </div>
       </template>
     </TsDialog>
+    <BatchExecDialog
+      v-if="isBatchExecuteShow"
+      :projectId="projectId"
+      :appId="app.id"
+      @close="closeBatchExecute"
+    ></BatchExecDialog>
   </div>
 </template>
 <script>
@@ -211,14 +217,15 @@ export default {
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
+    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve)
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
     canSearch: { type: Boolean, default: false },
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
-    canSelect: { type: Boolean, default: false },
+    //canSelect: { type: Boolean, default: false },
     canBatch: { type: Boolean, default: false }, //是否允许批量处理
     showStatus: { type: Boolean, default: false }, //是否显示状态统计信息
     checkedIdList: { type: Array },
@@ -302,7 +309,8 @@ export default {
       appList: [],
       linkApp: null,
       linkRelType: null,
-      completeRate: 0
+      completeRate: 0,
+      isBatchExecuteShow: false//批量执行确认框
     };
   },
   beforeCreate() {},
@@ -324,6 +332,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeBatchExecute() {
+      this.isBatchExecuteShow = false;
+    },
     getAppStatus() {
       if (this.showStatus && this.app) {
         this.$api.rdm.status
@@ -459,6 +470,10 @@ export default {
     },
     getSelected(idList, itemList) {
       this.$emit('selected', itemList);
+    },
+    batchExecute() {
+      this.isBatchExecuteShow = true;
+      // console.log(JSON.stringify(this.issueData.tbodyList, null, 2));
     },
     linkIssue() {
       this.isLinkShow = true;
@@ -624,7 +639,7 @@ export default {
   computed: {
     finalTheadList() {
       const list = [];
-      if (this.canSelect) {
+      if (this.canBatch) {
         list.push({ key: 'checked' });
       }
       list.push(...this.theadList);
@@ -651,6 +666,9 @@ export default {
         }
         return null;
       };
+    },
+    selectedIssueList() {
+      return this.issueData.tbodyList.filter(d => !!d._selected);
     }
   },
   watch: {
