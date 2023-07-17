@@ -1,6 +1,6 @@
 <template>
   <div :style="'max-height:' + height + 'px;'" class="filedetail-main border-color">
-    <table class="table table-hover">
+    <table class="table table-hover bg-grey">
       <tbody v-if="fileConfig && fileConfig.binary && !loading">
         <tr class="line-tr">
           <td style="line-height:3;" class="text-center">
@@ -16,7 +16,7 @@
       </tbody>
       <tbody v-else-if="fileList && fileList.length">
         <tr v-for="li in fileList" :key="li.line" class="line-tr">
-          <td class="code-lineno border-color">{{ li.line }}</td>
+          <td class="code-lineno border-color bg-grey">{{ li.line }}</td>
           <td class="code-content">
             <div style="word-break: break-all;overflow: auto;">
               <code>{{ li.content }}</code>
@@ -24,17 +24,17 @@
           </td>
         </tr>
         <tr v-if="!isEnd && !loading" class="cursor-pointer line-tr" @click="searchFile()">
-          <td class="code-lineno border-color">
+          <td class="code-lineno border-color bg-grey">
             <div class="ts-option-horizontal text-action"></div>
           </td>
-          <td class="code-content">
+          <td class="code-content bg-op">
             <div class="text-center h4 text-href">{{ $t('page.loadmore') }}</div>
           </td>          
         </tr>
         <tr v-else-if="!isEnd && loading" class="line-tr">
-          <td class="code-lineno border-color">
+          <td class="code-lineno border-color bg-grey">
           </td>
-          <td class="code-content">
+          <td class="code-content bg-op">
             <Loading loadingShow></Loading>
           </td>          
         </tr>
@@ -153,34 +153,31 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
 .filedetail-main {
   overflow: auto;
   border: 1px solid;
   > .table {
-    background: @default-gray;
     table-layout: fixed;
     width: 100%;
-  }
-  .line-tr {
-    td{
-      padding: 2px 4px;
-    }
-    td.code-lineno {
-      border-right: 1px solid @default-tip;
-      background: @default-gray;
-      white-space: nowrap;
-      word-break: keep-all;
-      text-align: center;
-      font-size: 12px;
-      width: 34px;
-      user-select: none;
-      padding: 2px 0;
-    }
-    td.code-content {
-      background: fade(@default-warning-color,15%);
-      white-space: pre-wrap;
+      .line-tr {
+      td {
+        padding: 2px 4px;
+      }
+      td.code-lineno {
+        border-right: 1px solid;
+        white-space: nowrap;
+        word-break: keep-all;
+        text-align: center;
+        font-size: 12px;
+        width: 34px;
+        user-select: none;
+        padding: 2px 0;
+      }
+      td.code-content {
+        white-space: pre-wrap;
+      }
     }
   }
+ 
 }
 </style>

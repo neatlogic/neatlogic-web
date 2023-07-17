@@ -32,7 +32,7 @@
           </div>
         </template>
         <template slot-scope="{ row }">
-          <table class="table" style="table-layout:fixed;width:100%;">
+          <table style="table-layout:fixed;width:100%;">
             <colgroup>
               <col />
               <col width="200" />
@@ -104,6 +104,7 @@ export default {
         //卡片的数据
         span: 24,
         sm: 24,
+        md: 24,
         lg: 24,
         xl: 24,
         xxl: 24,
@@ -214,13 +215,7 @@ export default {
       };
     }
   },
-  watch: {
-    isload: {
-      handler: function(val) {
-        this.$emit('updateStatus', val);
-      }      
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

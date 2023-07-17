@@ -1,109 +1,113 @@
 <template>
-  <div v-if="!groupSeaching">
-    <div
-      v-if="hasBranch"
-      class="pl-nm pr-nm"
-    >
-      <Row>
-        <Col span="12">
-          <div>{{ $t('term.codehub.commitcountinfo',{allcount:allCount,currentcount:activeConfig.cardList.length || 0}) }}</div>
-        </Col>
-        <Col span="12">
-          <Row :gutter="8">
-            <Col span="12">
-              <TsFormSelect
-                v-model="queryName"
-                :dataList="searchGrouplist"
-                childrenName="dataList"
-                transfer
-                mode="group"
-                search
-                border="border"
-                :placeholder="$t('term.codehub.choosebranchortag')"
-                :validateList="validateList"
-                @on-change="getSearch"
-              ></TsFormSelect>
-            </Col>
-            <Col span="12">
-              <InputSearcher
-                v-model="keyword"
-                :placeholder="$t('term.codehub.commituserorlogkeyword')"
-                @change="() => searchList()"
-              ></InputSearcher>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </div>
-    <div
-      v-if="hasBranch"
-      ref="mainBody"
-      style="overflow-y: auto;"
-      :style="'max-height:'+ remainHeight +'px;'"
-    >
-      <Loading v-if="isload" loadingShow style="height:100px"></Loading>
-      <TsCard
-        v-else-if="activeConfig && activeConfig.cardList && activeConfig.cardList.length > 0"
-        v-bind="activeConfig"
+  <div>
+    <Loading
+      v-if="groupSeaching"
+      :loadingShow="groupSeaching"
+      type="fix"
+    ></Loading>
+    <template v-else-if="hasBranch">
+      <div
+        class="pl-nm pr-nm"
       >
-        <template slot-scope="{ row }">
-          <div>
-            <table class="table" style="table-layout:fixed;width: 100%;">
-              <colgroup>
-                <col />
-                <col width="120" />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <td>
-                    <div>{{ row.comment }}</div>
-                    <div class="mt-md">
-                      <span class="ml">{{ row.committer }}</span>
-                      <span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span>
-                    </div>
-                  </td>
-                  <td class="text-right">
-                    <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span>
-                    <span v-if="row.issueNo" class="text-action ml-md" @click="openIssuesDialog(row)">
-                      {{ $t('term.rdm.request') }}
-                    </span>
-                  </td>
-                </tr>
-                <tr v-show="row.showcommitdiffInfo">
-                  <td colspan="2">
-                    <CommitDiff
-                      v-if="row.commitdiffInfo"
-                      :id="id"
-                      :queryName="queryName"
-                      :queryType="queryType"
-                      :appModuleId="reposData.appModuleId"
-                      :diffInfo="row.commitdiffInfo"
-                      :leftCommitId="row.commitdiffInfo.leftCommitId"
-                      :rightCommitId="row.commitdiffInfo.rightCommitId"
-                    ></CommitDiff>
-                    <div
-                      v-if="row.commitdiffInfo"
-                      class="text-action text-center ts-angle-double-up"
-                      @click="row.showcommitdiffInfo = false"
-                    >{{ $t('term.codehub.packupcontent') }}</div>
-                    <Loading v-else loadingShow></Loading>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </template>
-      </TsCard>
-      <div v-if="!isAllloaded">
-        <div v-if="!isload" class="text-center text-href" @click="getNextpage">
-          {{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : (activeConfig.cardList && activeConfig.cardList.length < pageSize) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
+        <Row>
+          <Col span="12">
+            <div>{{ $t('term.codehub.commitcountinfo',{allcount:allCount,currentcount:activeConfig.cardList.length || 0}) }}</div>
+          </Col>
+          <Col span="12">
+            <Row :gutter="8">
+              <Col span="12">
+                <TsFormSelect
+                  v-model="queryName"
+                  :dataList="searchGrouplist"
+                  childrenName="dataList"
+                  transfer
+                  mode="group"
+                  search
+                  border="border"
+                  :placeholder="$t('term.codehub.choosebranchortag')"
+                  :validateList="validateList"
+                  @on-change="getSearch"
+                ></TsFormSelect>
+              </Col>
+              <Col span="12">
+                <InputSearcher
+                  v-model="keyword"
+                  :placeholder="$t('term.codehub.commituserorlogkeyword')"
+                  @change="() => searchList()"
+                ></InputSearcher>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </div>
-      <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
-    </div>
+      <div
+        ref="mainBody"
+        style="overflow-y: auto;"
+        :style="'max-height:'+ remainHeight +'px;'"
+      >
+        <Loading v-if="isload" loadingShow style="height:100px"></Loading>
+        <TsCard
+          v-else-if="!$utils.isEmpty(activeConfig.cardList)"
+          v-bind="activeConfig"
+        >
+          <template slot-scope="{ row }">
+            <div>
+              <table class="table" style="table-layout:fixed;width: 100%;">
+                <colgroup>
+                  <col />
+                  <col width="120" />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div>{{ row.comment }}</div>
+                      <div class="mt-md">
+                        <span class="ml">{{ row.committer }}</span>
+                        <span class="text-tip ml-md">{{ row.committerDateStamp | formatDate }}</span>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <span class="text-href" @click="showCommentDiff(row)">{{ row.shortId }}</span>
+                      <span v-if="row.issueNo" class="text-action ml-md" @click="openIssuesDialog(row)">
+                        {{ $t('term.rdm.request') }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr v-show="row.showcommitdiffInfo">
+                    <td colspan="2">
+                      <CommitDiff
+                        v-if="row.commitdiffInfo"
+                        :id="id"
+                        :queryName="queryName"
+                        :queryType="queryType"
+                        :appModuleId="reposData.appModuleId"
+                        :diffInfo="row.commitdiffInfo"
+                        :leftCommitId="row.commitdiffInfo.leftCommitId"
+                        :rightCommitId="row.commitdiffInfo.rightCommitId"
+                      ></CommitDiff>
+                      <div
+                        v-if="row.commitdiffInfo"
+                        class="text-action text-center ts-angle-double-up"
+                        @click="row.showcommitdiffInfo = false"
+                      >{{ $t('term.codehub.packupcontent') }}</div>
+                      <Loading v-else loadingShow></Loading>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+        </TsCard>
+        <div v-if="!isAllloaded">
+          <div v-if="!isload" class="text-center text-href" @click="getNextpage">
+            {{ ((!activeConfig.cardList || !activeConfig.cardList.length) ? $t('term.codehub.continuesearch') : (activeConfig.cardList && activeConfig.cardList.length < pageSize) ? $t('term.codehub.continuesearch') : $t('term.codehub.loadmore')) }}</div>
+        </div>
+        <NoData v-else-if="(!activeConfig.cardList || !activeConfig.cardList.length)"></NoData>
+      </div>
+    </template>
     <NoData v-else></NoData>
     <IssuesDetailDialog v-if="isshowIssue" :issueNo="issueNo" @close="closeIssue"></IssuesDetailDialog>
   </div>
-  <Loading v-else loadingShow></Loading>
 </template>
 
 <script>
@@ -121,6 +125,11 @@ export default {
   props: {},
   data() {
     return {
+      issueNo: '',
+      isshowIssue: false,
+      startCommitId: null, //分页的时候需要记录上一次加载到哪一个提交的id
+      isAllloaded: false,
+      hasBranch: false, //是否可以调用搜索的接口（根据是否有分支）
       loadingShow: true,
       remainHeight: 200,
       activeList: null,
@@ -137,6 +146,7 @@ export default {
         //卡片的数据
         span: 24,
         sm: 24,
+        md: 24,
         lg: 24,
         xl: 24,
         xxl: 24,
@@ -145,12 +155,7 @@ export default {
         cardList: [],
         boxShadow: false,
         hasHoverShadow: true
-      },
-      issueNo: '',
-      isshowIssue: false,
-      startCommitId: null, //分页的时候需要记录上一次加载到哪一个提交的id
-      isAllloaded: false,
-      hasBranch: false //是否可以调用搜索的接口（根据是否有分支）
+      }
     };
   },
   beforeCreate() {},
@@ -327,13 +332,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    isload: {
-      handler: function(val) {
-        this.$emit('updateStatus', val);
-      }
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less">
