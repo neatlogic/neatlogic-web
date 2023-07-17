@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       searchGrouplist: [],
-      groupSeaching: false
+      groupSeaching: true
     };
   },
   mounted() {},
@@ -40,8 +40,6 @@ export default {
         this.groupSeaching = false;
         if (res && res.Status == 'OK') {
           this.searchGrouplist = res.Return || [];
-        } else {
-          this.searchGrouplist = [];
         }
       }).catch((error) => {
         this.groupSeaching = false;

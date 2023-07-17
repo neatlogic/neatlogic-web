@@ -48,7 +48,6 @@
                 v-if="activetab == tab.name"
                 :id="id"
                 :reposData="reposData"
-                @updateStatus="updateTabstatus"
               ></div>
             </TabPane>
           </Tabs>
@@ -103,7 +102,6 @@ export default {
       id: null,
       repositoryId: null,
       reposData: null,
-      tabLoaded: false, //当前tab加载完成
       showSync: true//是否显示同步按钮
     };
   },
@@ -165,9 +163,6 @@ export default {
     copySuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
       this.isLoad = false;
-    },
-    updateTabstatus(status) {
-      this.tabLoaded = !status;
     }
   },
   filter: {},
