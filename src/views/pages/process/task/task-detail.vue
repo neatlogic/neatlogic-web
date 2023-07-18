@@ -167,8 +167,8 @@ export default {
   async mounted() {
     this.$route.query.processTaskId && (this.processTaskId = parseInt(this.$route.query.processTaskId));
     this.$route.query.processTaskStepId && (this.processTaskStepId = parseInt(this.$route.query.processTaskStepId));
-    this.getTaskList();
     await this.getAllData();
+    this.getTaskList();
     let _this = this;
     window.addEventListener('resize', function() {
       if (_this.$refs.processList) {
