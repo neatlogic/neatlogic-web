@@ -46,7 +46,7 @@ export default {
         theadList: [{key: 'typeName', title: this.$t('page.type')},
           {key: 'statusText', title: this.$t('page.status')},
           {key: 'indexCount', title: this.$t('page.indexcount')},
-          {key: 'startTime', title: this.$t('page.buildstartime'), type: 'time'},
+          {key: 'startTime', title: this.$t('page.rebuildstartime'), type: 'time'},
           {key: 'endTime', title: this.$t('page.rebuildendtime'), type: 'time'},
           {key: 'error', title: this.$t('page.exception')},
           {key: 'action'}]
