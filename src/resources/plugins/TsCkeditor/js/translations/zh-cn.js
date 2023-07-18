@@ -118,7 +118,7 @@ import {$t} from '@/resources/init.js';
     'Widget toolbar': $t('term.plugin.widgettoolbar'),
     'Wrap text': $t('term.plugin.wraptext'),
     Yellow: $t('page.yellow'),
-    KnowledgeSelect: $t('term.process.relatedknowledge'),
+    KnowledgeSelect: $t('term.process.relknowlege'),
     'Keyword': $t('form.placeholder.keyword'),
     'SelectKnowledge': $t('form.placeholder.pleaseselect',{'target':'知识'})
   })),
