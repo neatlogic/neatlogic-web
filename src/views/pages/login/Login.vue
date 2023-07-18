@@ -1,5 +1,5 @@
 <template>
-  <div id="login" class="login_bg bg-grey" @keydown.enter="login">
+  <div id="login" class="login-bg" @keydown.enter="login">
     <div id="loginContainer">
       <form
         id="loginForm"
@@ -36,7 +36,7 @@
             </Checkbox>
           </div> -->
           <div>
-            <Button id="btnLogin" :loading="logining" @click="login">{{ t('page.login') }}</Button>
+            <Button id="btnLogin" :loading="logining" @click="login">{{ $t('page.login') }}</Button>
           </div>
         </div>
         <div v-show="error" class="err-block">
@@ -44,11 +44,19 @@
         </div>
       </form>
     </div>
+    <div class="switch-theme">
+      <div class="action-group">
+        <span class="action-item tsfont-flow" @click.stop="changeLanguage">{{ $t('page.language') }}</span>
+        <span class="action-item" :class="themeClass == 'theme-default' ? 'tsfont-night':'tsfont-day'" @click.stop="changeTheme">
+          {{ themeClass == 'theme-default' ? $t('page.themedark'): $t('page.themelight') }}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
-import {$t} from '@/resources/init.js';
+import {mutations} from '@/views/pages/framework/theme/state.js';
 
 export default {
   name: '',
@@ -67,18 +75,16 @@ export default {
       error: false,
       errortxt: '',
       remember: false,
-      logining: false
+      logining: false,
+      themeClass: localStorage.getItem('themeClass') || 'theme-default'
     };
   },
-  beforeCreate() {
-   
-  },
+  beforeCreate() {},
   created() {
-    var that = this;
-    document.onkeydown = function(e) {
+    document.onkeydown = (e) => {
       let key = window.event.keyCode;
       if (key == 13) {
-        that.login();
+        this.login();
       }
     };
     // 解决从IE跳转到chrome，token等数据丢失的问题
@@ -94,32 +100,31 @@ export default {
   beforeMount() {
     ThemeUtils.activeTheme();
   },
-
-  mounted() {},
-
+  mounted() {
+    document.documentElement.classList.add(this.themeClass);
+  },
   methods: {
     login() {
-      let _this = this;
       if (this.loginForm.username === '') {
         this.error = true;
-        this.errortxt = $t('form.placeholder.pleaseinput', {target: $t('page.username')});
+        this.errortxt = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')});
       } else if (this.loginForm.password === '') {
         this.error = true;
-        this.errortxt = $t('form.placeholder.pleaseinput', {target: $t('page.password')});
+        this.errortxt = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.password')});
       } else {
         this.error = false;
-        let psd = '{MD5}' + _this.$md5(this.loginForm.password);
-        if (_this.encrypt === 'base64') {
-          psd = '{BS}' + _this.$base64.encode(this.loginForm.password);
+        let psd = '{MD5}' + this.$md5(this.loginForm.password);
+        if (this.encrypt === 'base64') {
+          psd = '{BS}' + this.$base64.encode(this.loginForm.password);
         }
         let param = {
           userid: this.loginForm.username, 
           password: psd,
-          authType: _this.authtype
+          authType: this.authtype
         };
         this.logining = true;
         this.$axios({method: 'post', url: '/login/check', data: param}).then(res => { //登录页面的接口不在全局（获取租户等，还有减少登录页面不必要的资源加载）
-          _this.logining = false;
+          this.logining = false;
           if (res.data) {
             if (res.data.Status == 'OK') {
               if (res.data.JwtToken) {
@@ -134,15 +139,15 @@ export default {
                 localStorage.themeClass = 'theme-default';
               }
             } else if (res.data.Status == 'ERROR') {
-              _this.error = true;
-              _this.errortxt = res.data.Message;
+              this.error = true;
+              this.errortxt = res.data.Message;
               sessionStorage.removeItem('neatlogic_authorization');
             }
           }
         }).catch(error => {
-          _this.logining = true;
-          _this.error = true;
-          _this.errortxt = $t('page.accountorpwderror');
+          this.logining = true;
+          this.error = true;
+          this.errortxt = this.$t('page.accountorpwderror');
           sessionStorage.removeItem('neatlogic_authorization');
         });
       }
@@ -155,40 +160,60 @@ export default {
         console.log(e);
       }
       return redirecturl;
+    },
+    changeTheme() {
+      let htmlClassList = document.documentElement.classList;
+      htmlClassList.toggle('theme-default');
+      htmlClassList.toggle('theme-dark');
+      localStorage.setItem('themeClass', htmlClassList[0]);
+      ThemeUtils.activeTheme(); //获取定制主题
+      ThemeUtils.updateThemeValue(mutations, 'setLogo', 'logo'); // 这个方法，主要是更新状态管理器，setlogo 是参数名称
+      this.$store.commit('setThemeType', htmlClassList[0]);
+      this.themeClass = htmlClassList[0];
+    },
+    changeLanguage() {
+      let lang = this.$i18n.locale;
+      if (lang == 'zh') {
+        this.$i18n.locale = 'en';
+      } else {
+        this.$i18n.locale = 'zh';
+      }
+      this.$utils.setCookie('neatlogic_language', this.$i18n.locale, 7);
+      this.reloadRouter && this.reloadRouter();
     }
   },
-
-  computed: {
-    t() {
-      return (val) => {
-        return $t(val);
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@primary-color) {
+.theme(@primary-color, @login-bg-color, @bg-op, @input-border, @text-color) {
 html,
 body {
   width: 100%;
   height: 100%;
 }
-.login_bg {
+.login-bg {
+  position: relative;
   display: flex;
   width: 100%;
   height: 100%;
   // background-image: url("../../../resources/assets/images/login/login-bg.png");
   background-position: center center;
   background-size: cover;
-  background: @login-bg-color;
+  background: var(--login-bg-color, @login-bg-color);
+}
+.switch-theme {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 2;
 }
 #loginContainer {
   width: 100%;
   height: 100%;
-  z-index: 99;
+  z-index: 1;
 }
 #loginContainer:before {
   content: '';
@@ -256,12 +281,12 @@ body {
 .login-int{
   width: 336px;
   /deep/.ivu-input {
-    border: 1px solid @default-input-border!important;
+    border: 1px solid var(--input-border, @input-border)!important;
     height: 42px;
     line-height: 42px;
     border-radius: 8px;
-    // background: red;
-    // background: @primary-color!important;
+    background: var(--bg-op, @bg-op);
+    color: var(--text-color, @text-color);
   }
   /deep/.ivu-input:focus{
     // box-shadow: none;
@@ -270,7 +295,7 @@ body {
   }
   /deep/input:focus:-webkit-autofill, /deep/input:-webkit-autofill{
     background: @default-primary-grey!important;
-    -webkit-text-fill-color: @text-color !important;
+    -webkit-text-fill-color: var(--text-color, @text-color) !important;
     // box-shadow: 0 0 0px 1000px @primary-grey inset !important;
     transition: background-color 500000s ease-in-out 50000s;
   }
@@ -281,9 +306,9 @@ body {
 }
 }
 html {
-  .theme(@default-primary-color);
+  .theme(@default-primary-color, @default-login-bg-color, @default-op, @default-input-border, @default-text);
   &.theme-dark {
-    .theme(@default-primary-color);
+    .theme(@dark-primary-color, @dark-login-bg-color, @dark-op, @dark-input-border, @dark-text);
   }
 }
 

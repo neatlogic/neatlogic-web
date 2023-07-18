@@ -6,13 +6,12 @@ import Login from './Login.vue';
 import axios from 'axios';
 import VueI18n from 'vue-i18n';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
-
 import md5 from 'js-md5';
 import { Base64 } from 'js-base64';
-
-import '@/resources/assets/font/tsfont/css/ts-code.less';
 import { initI18n } from '@/resources/init.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+import store from '@/resources/store';
+import '@/resources/base.js'; // 全局样式
 
 Vue.use(ViewUI);
 Vue.use(VueI18n);
@@ -58,6 +57,8 @@ axios({
     Vue.prototype.i18n = i18n;
     new Vue({
       router,
+      i18n,
+      store,
       render: h => h(Login, {props: {'authtype': authtype, 'encrypt': encrypt}})
     }).$mount('#index');
   }
