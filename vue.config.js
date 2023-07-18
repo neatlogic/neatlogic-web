@@ -36,7 +36,7 @@ try {
   pageTitle = 'neatlogic';
   // localStorage.titleLogin = 'neatlogic';
   // window.localStorage.setItem('titleLogin', 'neatlogic');
-  process.env.VUE_APP_LOGINTITLE = 'neatlogic';
+  process.env.VUE_APP_LOGINTITLE = 'welcome';
 }
 //注意：urlPrefix需为包含端口号的完整的访问路径，比如：http://192.168.0.25:8282
 
