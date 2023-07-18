@@ -5,7 +5,11 @@
     </div>
     <div class="tstable-container tstable-normal border tstable-no-fixedHeader radius-lg">
       <div class="tstable-main bg-op table-radius-main">
-        <TsTable :theadList="theadList" :tbodyList="statusList" canExpand>
+        <TsTable
+          :theadList="theadList"
+          :tbodyList="finalStatusList"
+          canExpand
+        >
           <template v-slot:fromstatus="{ row }">
             <div>
               <span :style="{ color: row.color }">
@@ -16,6 +20,7 @@
           </template>
           <template v-slot:isStart="{ row }">
             <TsFormSwitch
+              v-if="row.id"
               v-model="row.isStart"
               :trueValue="1"
               :falseValue="0"
@@ -24,6 +29,7 @@
           </template>
           <template v-slot:isEnd="{ row }">
             <TsFormSwitch
+              v-if="row.id"
               v-model="row.isEnd"
               :trueValue="1"
               :falseValue="0"
@@ -53,9 +59,11 @@
               </span>
             </div>
           </template>
-          <template slot="action" slot-scope="{ row }">
-            <div class="tstable-action">
+          <template slot="action" slot-scope="{ row, index }">
+            <div v-if="row.id" class="tstable-action">
               <ul class="tstable-action-ul">
+                <li v-if="index>0" class="tsfont-arrow-up" @click="moveUp(row)">{{ $t('page.moveup') }}</li>
+                <li v-if="index<statusList.length - 1" class="tsfont-arrow-down" @click="moveDown(row)">{{ $t('page.movedown') }}</li>
                 <li class="tsfont-edit" @click="editStatus(row)">{{ $t('page.edit') }}</li>
                 <li class="tsfont-trash-o" @click="deleteStatus(row)">{{ $t('page.delete') }}</li>
               </ul>
@@ -103,7 +111,12 @@
       :appId="appId"
       @close="closeStatusEditDialog"
     ></StatusEditDialog>
-    <AppStatusRelConfigDialog v-if="isStatusRelConfigEditShow" :statusrel="currentStatusRel" @close="closeStatusRelConfigDialog"></AppStatusRelConfigDialog>
+    <AppStatusRelConfigDialog
+      v-if="isStatusRelConfigEditShow"
+      :projectId="projectId"
+      :statusrel="currentStatusRel"
+      @close="closeStatusRelConfigDialog"
+    ></AppStatusRelConfigDialog>
   </div>
 </template>
 <script>
@@ -146,6 +159,36 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    moveDown(row) {
+      const index = this.statusList.findIndex(d => d.id === row.id);
+      if (index > -1 && index < this.statusList.length - 1) {
+        const tmp = this.statusList[index];
+        this.$set(this.statusList, index, this.statusList[index + 1]);
+        this.$set(this.statusList, index + 1, tmp);
+        const statusIdList = this.statusList.map(d => d.id);
+        this.$api.rdm.status.updateStatusSort(statusIdList).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.init();
+          }
+        });
+      }
+    },
+    moveUp(row) {
+      const index = this.statusList.findIndex(d => d.id === row.id);
+      if (index > 0) {
+        const tmp = this.statusList[index];
+        this.$set(this.statusList, index, this.statusList[index - 1]);
+        this.$set(this.statusList, index - 1, tmp);
+        const statusIdList = this.statusList.map(d => d.id);
+        this.$api.rdm.status.updateStatusSort(statusIdList).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.init();
+          }
+        });
+      }
+    },
     changeIsStart(status) {
       const data = {id: status.id, flag: !!status.isStart, type: 'start'};
       this.$api.rdm.status.changeStatusType(data).then(res => {
@@ -251,9 +294,6 @@ export default {
         fn();
       }
     },
-    sortStatus() {
-      console.log(this.statusList);
-    },
     editStatus(status) {
       this.isStatusEditShow = true;
       this.currentStatusId = status.id;
@@ -298,6 +338,7 @@ export default {
       this.$api.rdm.status.getStatusByAppId(this.appId).then(res => {
         this.statusList = res.Return;
         this.statusList.forEach(fromStatus => {
+          this.$set(this.statusMatrix, '0_' + fromStatus.id, true);
           if (this.hasRelation(fromStatus)) {
             this.$set(fromStatus, '_expand', true);
           } else {
@@ -324,6 +365,9 @@ export default {
   },
   filter: {},
   computed: {
+    finalStatusList() {
+      return [{id: 0, label: this.$t('page.nostatus'), name: '-', _expand: this.hasRelation({id: 0})}, ...this.statusList];
+    },
     hasRelation() {
       return (fromStatus, toStatus) => {
         if (this.statusRelList && this.statusRelList.length > 0) {

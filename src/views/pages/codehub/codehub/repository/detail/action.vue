@@ -4,38 +4,35 @@
       <Col span="18">
         <div style="display: flex;">
           <TsFormSelect
-            v-model="user"
+            v-model="searchParams.userUuid"
             v-bind="userConfig"
             class="mr-sm"
-            :dataList="userList"
-            @on-change="() => changeCurrent(1)"
+            @on-change="() => changeCurrent()"
           ></TsFormSelect>
           <TimeSelect
-            v-model="time"
+            v-model="timeConfig.value"
             v-bind="timeConfig"
             class="mr-sm"
             style="width: 180px;"
-            @on-change="() => changeCurrent(1)"
+            @on-change="() => changeCurrent()"
           ></TimeSelect>
           <TsFormSelect
-            v-model="objectVal"
+            v-model="searchParams.actionSubject"
             v-bind="objectConfig"
             class="mr-sm"
-            :dataList="subjectList"
-            @on-change="() => changeCurrent(1)"
+            @on-change="() => changeCurrent()"
           ></TsFormSelect>
           <TsFormSelect
-            v-model="typeVal"
+            v-model="searchParams.actionType"
             v-bind="typeConfig"
-            :dataList="actionTypeList"
-            @on-change="() => changeCurrent(1)"
+            @on-change="() => changeCurrent()"
           ></TsFormSelect>
         </div>
       </Col>
       <Col span="6">
         <InputSearcher
-          v-model="keyword"
-          @change="() => changeCurrent(1)"
+          v-model="searchParams.keyword"
+          @change="() => changeCurrent()"
         ></InputSearcher>
       </Col>
     </TsRow>
@@ -59,12 +56,6 @@
             :hideAvatar="true"
           ></UserCard>
         </template>
-        <template slot="startTime" slot-scope="{row}">
-          {{ row.startTime | formatDate }}
-        </template>
-        <template slot="endTime" slot-scope="{row}">
-          {{ row.endTime | formatDate }}
-        </template>
         <template slot="action" slot-scope="{row}">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
@@ -75,7 +66,7 @@
       </TsTable>
     </div>
     <TsDialog
-      v-if="isShow"
+      v-if="setting.isShow"
       v-bind="setting"
       @on-close="close"
     >
@@ -112,8 +103,15 @@ export default {
   props: {},
   data() {
     return {
-      user: '',
-      keyword: '',
+      loadingShow: true,
+      tableHeight: null,
+      detailList: [],
+      searchParams: {
+        keyword: '',
+        userUuid: '',
+        actionType: '',
+        actionSubject: ''
+      },
       userConfig: {
         placeholder: this.$t('term.autoexec.operator'),
         transfer: true,
@@ -129,16 +127,23 @@ export default {
         width: 180,
         transfer: true,
         placeholder: this.$t('term.codehub.actionsubject'),
-        border: 'border'
+        border: 'border',
+        dynamicUrl: '/api/rest/codehub/action/subject/search',
+        rootName: 'subjectList',
+        params: {belongType: 'repo'}
       },
       typeConfig: {
         width: 180,
         transfer: true,
         placeholder: this.$t('page.actiontype'),
-        border: 'border'
+        border: 'border',
+        dynamicUrl: '/api/rest/codehub/action/subject/search',
+        rootName: 'actionTypeList',
+        params: {belongType: 'repo'}
       },
       timeConfig: {
-        transfer: true
+        transfer: true,
+        value: ''
       },
       theadList: [{
         title: this.$t('term.autoexec.operator'),
@@ -151,44 +156,34 @@ export default {
         key: 'actionTypeName'
       }, {
         title: this.$t('page.starttime'),
-        key: 'startTime'
+        key: 'startTime',
+        type: 'time'
       }, {
         title: this.$t('page.endtime'),
-        key: 'endTime'
+        key: 'endTime',
+        type: 'time'
       }, {
         key: 'action'
       }],
       tableConfig: {
-        rowKey: 'id',
         tbodyList: [],
         currentPage: 1,
         pageSize: 20
       },
-      time: null,
-      actionTypeList: [],
-      subjectList: [],
-      objectVal: '',
-      typeVal: '',
-      loadingShow: true,
-      userList: [],
-      detailList: [],
-      isShow: false,
       setting: {
         title: this.$t('page.viewdetails'),
         width: 'medium',
         type: 'slider',
         maskClose: true,
         hasFooter: false,
-        isShow: true
-      },
-      tableHeight: null
+        isShow: false
+      }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    this.getActiveObject();
     this.searchList();
     if (this.$refs.table) {
       let totalHeight = window.innerHeight || document.body.clientHeight;
@@ -206,38 +201,26 @@ export default {
       let param = {
         belongType: 'repo',
         belongId: this.id,
-        actionType: this.typeVal,
-        keyword: this.keyword,
+        ...this.searchParams,
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize
       };
-      if (this.user) {
-        this.$set(param, 'userUuid', this.user);
+      if (this.timeConfig.value) {
+        Object.assign(param, this.timeConfig.value);
       }
-      if (this.time) {
-        Object.assign(param, this.time);
-      }
-      if (this.objectVal) {
-        this.$set(param, 'actionSubject', this.objectVal);
+      if (param && param.hasOwnProperty('actionSubject') && this.$utils.isEmpty(param.actionSubject)) {
+        delete param.actionSubject;
       }
       this.loadingShow = true;
       this.$api.codehub.repositorydetail.getActives(param).then(res => {
         if (res.Status == 'OK') {
           Object.assign(this.tableConfig, res.Return);
-        } else {
-          Object.assign(this.tableConfig, {
-            currentPage: 1,
-            pageCount: 1,
-            pageSize: 1,
-            rowNum: 1,
-            tbodyList: []
-          });
         }
       }).finally(() => {
         this.loadingShow = false;
       });
     },
-    changeCurrent(currentPage) {
+    changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
       this.searchList();
     },
@@ -246,29 +229,18 @@ export default {
       this.tableConfig.pageSize = pageSize;
       this.searchList();
     },
-    getActiveObject() {
-      let param = {
-        belongType: 'repo'
-      };
-      this.$api.codehub.repositorydetail.getActiveObject(param).then(res => {
-        if (res.Status == 'OK') {
-          this.subjectList = res.Return.subjectList;
-          this.actionTypeList = res.Return.actionTypeList;
-        }
-      });
-    },
     showDetail(row) {
       try {
         this.detailList = JSON.parse(row.detail);
-        this.isShow = true;
+        this.setting.isShow = true;
       } catch (error) {
         this.detailList = [];
-        this.isShow = true;
+        this.setting.isShow = true;
       }
     },
     close() {
       this.detailList = [];
-      this.isShow = false;
+      this.setting.isShow = false;
     }
   },
   filter: {},

@@ -33,7 +33,8 @@
     "unlinkconfirm": "Release Confirmation",
     "batchcreatetarget": "Batch creation {target}",
     "closecomfirm": "Close Confirmation",
-    "openconfirm": "Open Confirmation"
+    "openconfirm": "Open Confirmation",
+    "batchconfirm": "Batch execution confirmation"
   },
   "content": {
     "deletetargetconfirm": "Are you sure to delete <b>{target}</b>?",

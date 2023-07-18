@@ -22,9 +22,9 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    this.projectId = Math.floor(this.$route.params['projectId']) || this.pId;
-    this.appId = Math.floor(this.$route.params['appId']) || this.aId;
-    this.id = Math.floor(this.$route.params['id']) || this.iId;
+    this.projectId = this.pId || Math.floor(this.$route.params['projectId']);
+    this.appId = this.aId || Math.floor(this.$route.params['appId']);
+    this.id = this.iId || Math.floor(this.$route.params['id']);
     await this.init();
     await this.getAppByProjectId();
     this.isReady = true;

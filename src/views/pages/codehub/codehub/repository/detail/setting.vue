@@ -16,10 +16,7 @@ export default {
     ...types
   },
   mixins: [editmixin],
-  props: {
-    id: [Number],
-    reposData: [Object]
-  },
+  props: {},
   data() {
     return {
     };

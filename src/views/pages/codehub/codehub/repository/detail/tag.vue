@@ -8,13 +8,13 @@
         <Col span="6">
           <InputSearcher
             v-model="keyword"
-            @change="() => getList()"
+            @change="() => searchTagData()"
           ></InputSearcher>
         </Col>
       </Row>
     </div>
     <div>
-      <Loading v-if="isload" loadingShow style="min-height:100px"></Loading>
+      <Loading v-if="loadingShow" loadingShow style="min-height:100px"></Loading>
       <TsCard
         v-else
         v-bind="tagConfig"
@@ -77,12 +77,13 @@ export default {
   data() {
     return {
       keyword: '',
-      isload: false,
+      loadingShow: true,
       isShowTagEdit: false,
       tagConfig: {
         //卡片的数据
         span: 24,
         sm: 24,
+        md: 24,
         lg: 24,
         xl: 24,
         xxl: 24,
@@ -99,7 +100,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getList();
+    this.searchTagData();
   },
   beforeUpdate() {},
   updated() {},
@@ -108,16 +109,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    updateSize(pageSize) {
+    updateSize(pageSize = 10) {
       this.tagConfig.currentPage = 1;
-      this.tagConfig.pageSize = pageSize || 10;
-      this.getList();
+      this.tagConfig.pageSize = pageSize;
+      this.searchTagData();
     },
-    updatePage(currentPage) {
-      this.tagConfig.currentPage = currentPage || 1;
-      this.getList();
+    updatePage(currentPage = 1) {
+      this.tagConfig.currentPage = currentPage;
+      this.searchTagData();
     },
-    getList() {
+    searchTagData() {
       let param = {
         keyword: this.keyword,
         currentPage: this.tagConfig.currentPage,
@@ -125,7 +126,7 @@ export default {
         repositoryId: this.id,
         hasCommit: 1
       };
-      this.isload = true;
+      this.loadingShow = true;
       this.$api.codehub.repositorydetail.getTag(param).then(res => {
         if (res && res.Status == 'OK') {
           Object.assign(this.tagConfig, {
@@ -135,11 +136,9 @@ export default {
             currentPage: res.Return.currentPage,
             cardList: res.Return.list || [{}]
           });
-        } else {
-          this.tagConfig = null;
         }
       }).finally(error => {
-        this.isload = false;
+        this.loadingShow = false;
       });
     },
     editTag() {
@@ -148,7 +147,7 @@ export default {
     close(needRefresh) {
       this.isShowTagEdit = false;
       if (needRefresh) {
-        this.getList();
+        this.searchTagData();
       }
     },
     deleteTag(name) {
@@ -165,7 +164,7 @@ export default {
             this.$api.codehub.repositorydetail.deleteTag(param).then((res) => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
-                this.getList();
+                this.searchTagData();
                 vnode.isShow = false;
               }
             }); 
@@ -176,13 +175,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    isload: {
-      handler: function(val) {
-        this.$emit('updateStatus', val);
-      }      
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang='less'>

@@ -923,5 +923,8 @@
   "iselected": "Selected",
   "importconfirm": "Import Confirmation",
   "startdate": "Start date",
-  "enddate": "End date"
+  "enddate": "End date",
+  "moveup": "Move Up",
+  "movedown": "Move Down",
+  "nostatus": "Stateless"
 }

@@ -42,6 +42,7 @@
                     <AttrHandler
                       v-if="getAttrById(row.attrId)"
                       :value="row.defaultValue"
+                      :projectId="projectId"
                       :attrConfig="getAttrById(row.attrId)"
                       @setValue="
                         val => {
@@ -78,6 +79,7 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
   props: {
+    projectId: {type: Number},
     statusrel: { type: Object }
   },
   data() {
@@ -88,7 +90,7 @@ export default {
         requiredAttrList: []
       },
       dialogConfig: {
-        title: this.statusrel.fromStatusLabel + ' -> ' + this.statusrel.toStatusLabel,
+        title: this.statusrel.fromStatusLabel || this.$t('page.nostatus') + ' -> ' + this.statusrel.toStatusLabel,
         type: 'modal',
         maskClose: false,
         isShow: true,

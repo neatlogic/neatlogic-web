@@ -29,6 +29,9 @@ const status = {
   getStatusRelByAppId(appId) {
     return axios.post('/api/rest/rdm/statusrel/list', { appId: appId });
   },
+  updateStatusSort(statusIdList) {
+    return axios.post('/api/rest/rdm/status/updatesort', { statusIdList: statusIdList});
+  },
   deleteStatus(id) {
     return axios.post('/api/rest/rdm/status/delete', {id: id});
   }

@@ -1,90 +1,92 @@
 <template>
-  <div v-if="!groupSeaching">
-    <div v-if="hasBranch" class="pl-nm text-right">
-      <TsFormSelect
-        v-model="queryName"
-        :dataList="searchGrouplist"
-        childrenName="dataList"
-        transfer
-        mode="group"
-        search
-        border="border"
-        width="250px"
-        :placeholder="$t('term.codehub.choosebranchortag')"
-        :validateList="validateList"
-        @on-change="getSearch"
-      ></TsFormSelect>
-    </div>
-    <div v-if="hasBranch">
-      <Loading v-if="isload" loadingShow style="height:100px"></Loading>
-      <div v-else>
-        <Breadcrumb v-if="parentPath || currentfilePath">
-          <BreadcrumbItem 
-            v-for="(path,pindex) in listPath(parentPath)" 
-            :key="pindex"
-          >
-            <span v-if="(pindex < listPath(parentPath).length-1) ||currentfilePath" class="cursor-pointer" @click="gotoPath(pindex)"> {{ path }}</span>
-            <span v-else>{{ path }}</span>
-          </BreadcrumbItem>
-          <BreadcrumbItem v-if="currentfilePath">{{ currentfilePath }}</BreadcrumbItem>
-        </Breadcrumb>
-        <div v-if="list && list.length">
-          <div class="clearfix lastcommit-container border-color">
-            <div v-if="lastConfig" class="d_f">
-              <span>{{ lastConfig.author }}</span><span class="text-tip ml-sm">{{ lastConfig.message }}</span>
-            </div>
-            <div class="d_f_r">
-              <span class="text-tip">{{ $t('term.codehub.finalcommit') }}</span>
-              <span>{{ showCommitId(lastConfig.commitId) }}</span>
-              <span class="text-tip ml-sm">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
-            </div>
-          </div>
-        </div>
-        <div
-          v-if="parentPath || currentfilePath"
-          class="cursor-pointer text-left h4"
-          :title="$t('term.codehub.backparent')"
-          @click="gotoPrev()"
-        ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
-        <div class="tstable-container border bg-grey radius-lg">
-          <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
-            <table v-if="!currentfilePath && list && list.length" class="tstable-body">
-              <colgroup>
-                <col />
-                <col />
-                <col />
-                <col width="180" />
-              </colgroup>
-              <tbody class="tbody-main">
-                <tr
-                  v-for="(li,lindex) in list"
-                  :key="lindex"
-                  class="cursor-pointer"
-                  @click="toNext(li)"
-                >
-                  <td>
-                    <span :class="li.type == 'D' ? 'ts-folder text-warning':'ts-file'" class="mr-xs"></span>{{ li.path }}
-                  </td>
-                  <td>{{ li.lastAuthor }}</td>
-                  <td>{{ li.lastCommitMessage }}</td>
-                  <td class="text-right">
-                    <div v-if="li.lastChangeDate">
-                      {{ li.lastChangeDate | formatDate }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <FileDetail v-else-if="currentfilePath" :fileConfig="currentfileConfig"></FileDetail>
-            <NoData v-else></NoData>
-          </div>
-        </div>
-     
+  <div>
+    <Loading v-if="groupSeaching" loadingShow></Loading>
+    <template v-else-if="hasBranch">
+      <div class="text-right">
+        <TsFormSelect
+          v-model="queryName"
+          :dataList="searchGrouplist"
+          childrenName="dataList"
+          transfer
+          mode="group"
+          search
+          border="border"
+          width="250px"
+          :placeholder="$t('term.codehub.choosebranchortag')"
+          :validateList="validateList"
+          @on-change="getSearch"
+        ></TsFormSelect>
       </div>
-    </div>
+      <div>
+        <Loading v-if="isload" loadingShow style="height:100px"></Loading>
+        <div v-else>
+          <Breadcrumb v-if="parentPath || currentfilePath">
+            <BreadcrumbItem 
+              v-for="(path,pindex) in listPath(parentPath)" 
+              :key="pindex"
+            >
+              <span v-if="(pindex < listPath(parentPath).length-1) ||currentfilePath" class="cursor-pointer" @click="gotoPath(pindex)"> {{ path }}</span>
+              <span v-else>{{ path }}</span>
+            </BreadcrumbItem>
+            <BreadcrumbItem v-if="currentfilePath">{{ currentfilePath }}</BreadcrumbItem>
+          </Breadcrumb>
+          <div v-if="list && list.length">
+            <div class="clearfix lastcommit-container border-color">
+              <div v-if="lastConfig" class="d_f">
+                <span>{{ lastConfig.author }}</span>
+                <span class="text-tip ml-sm">{{ lastConfig.message }}</span>
+              </div>
+              <div class="d_f_r">
+                <span class="text-tip">{{ $t('term.codehub.finalcommit') }}</span>
+                <span>{{ showCommitId(lastConfig.commitId) }}</span>
+                <span class="text-tip ml-sm">{{ lastConfig.committerDateTimestamp | formatDate }}</span>
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="parentPath || currentfilePath"
+            class="cursor-pointer text-left h4"
+            :title="$t('term.codehub.backparent')"
+            @click="gotoPrev()"
+          ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
+          <div class="tstable-container border bg-grey radius-lg">
+            <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
+              <table v-if="!currentfilePath && list && list.length" class="tstable-body">
+                <colgroup>
+                  <col />
+                  <col />
+                  <col />
+                  <col width="180" />
+                </colgroup>
+                <tbody class="tbody-main">
+                  <tr
+                    v-for="(li,lindex) in list"
+                    :key="lindex"
+                    class="cursor-pointer"
+                    @click="toNext(li)"
+                  >
+                    <td>
+                      <span :class="li.type == 'D' ? 'ts-folder text-warning':'ts-file'" class="mr-xs"></span>{{ li.path }}
+                    </td>
+                    <td>{{ li.lastAuthor }}</td>
+                    <td>{{ li.lastCommitMessage }}</td>
+                    <td class="text-right">
+                      <div v-if="li.lastChangeDate">
+                        {{ li.lastChangeDate | formatDate }}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <FileDetail v-else-if="currentfilePath" :fileConfig="currentfileConfig"></FileDetail>
+              <NoData v-else></NoData>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <NoData v-else :text="$t('term.codehub.nocommitfile')"></NoData>
   </div>
-  <Loading v-else loadingShow></Loading>
 </template>
 <script>
 import editmixin from './edittabmixin.js';
@@ -268,41 +270,17 @@ export default {
       },
       immediate: true,
       deep: true
-    },
-    isload: {
-      handler: function(val) {
-        this.$emit('updateStatus', val);
-      }      
     }
   }
 };
 </script>
-<style lang='less' scoped>
-@default-border: #ddd;
-@default-dividing: #eaebed;
+<style lang="less" scoped>
 .lastcommit-container {
   line-height: 3;
   border-bottom: 1px solid;
   padding-left: 10px;
   margin-top: 10px;
 }
-.file-table {
-  tr {
-    th {
-      font-weight: normal;
-      line-height: 3;
-      border-bottom: 1px solid @default-border;
-    }
-    td {
-      line-height: 2;
-      border-bottom: 1px solid @default-dividing;
-      word-break: keep-all;
-      white-space: nowrap;
-    }
-  }
-  width: 100%;
-}
-
 .d_f {
   float: left;
 }
