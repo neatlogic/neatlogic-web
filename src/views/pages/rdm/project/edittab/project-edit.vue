@@ -24,6 +24,7 @@
               </Tag>
             </div>
           </div>
+          <div v-if="!isValid && !projectData.templateId" class="text-error">{{ $t('form.placeholder.pleaseselect', { target: $t('page.template') }) }}</div>
         </div>
         <div v-else>
           <div class="project-item bg-op padding radius-md border-primary-grey">
@@ -143,7 +144,8 @@ export default {
         }
       ],
       appType: { cardList: [] },
-      projectData: {}
+      projectData: {},
+      isValid: true
     };
   },
   beforeCreate() {},
@@ -253,7 +255,11 @@ export default {
     },
     save(callback) {
       const form = this.$refs['form'];
-      if (form.valid()) {
+      this.isValid = form.valid();
+      if (!this.projectData.templateId) {
+        this.isValid = false;
+      }
+      if (this.isValid) {
         this.$api.rdm.project.saveProject(this.projectData).then(res => {
           if (res.Status === 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
@@ -263,6 +269,8 @@ export default {
             }
             this.getProjectById();
           }
+        }).finally(() => {
+          this.isValid = true;
         });
       }
     },
