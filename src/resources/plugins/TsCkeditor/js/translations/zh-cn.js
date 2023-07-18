@@ -117,7 +117,10 @@ import {$t} from '@/resources/init.js';
     White: $t('page.white'),
     'Widget toolbar': $t('term.plugin.widgettoolbar'),
     'Wrap text': $t('term.plugin.wraptext'),
-    Yellow: $t('page.yellow')
+    Yellow: $t('page.yellow'),
+    KnowledgeSelect: $t('term.process.relatedknowledge'),
+    'Keyword': $t('form.placeholder.keyword'),
+    'SelectKnowledge': $t('form.placeholder.pleaseselect',{'target':'知识'})
   })),
     (t.getPluralForm = function(e) {
       return 0;
