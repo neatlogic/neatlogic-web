@@ -193,6 +193,15 @@ const errorHandle = res => {
         }
       });
       break;
+    case 526:
+      //用户权限不足，跳回每一个路由的404页面提示无访问权限
+      Vue.prototype.$tsrouter.replace({
+        path: '/404',
+        query: {
+          des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
+        }
+      });
+      break;
     case 524:
       //重复提交表单
       tip(other, null, res.config.url, '提示', 'info');
