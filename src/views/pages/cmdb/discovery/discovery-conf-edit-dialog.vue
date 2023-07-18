@@ -18,6 +18,7 @@
                 ref="combopTool"
                 v-model="confData.combopId"
                 v-bind="combopConfig"
+                @on-focus="handleFocus"
                 @searchCallback="refreshSuccess()"
               ></TsFormSelect>
             </div>
@@ -123,7 +124,7 @@ export default {
         }
       },
       dialogConfig: {
-        title: this.conf ? '编辑配置' : '添加配置',
+        title: this.conf ? this.$t('dialog.title.edittarget', {'target': this.$t('page.config')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.config')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -190,6 +191,11 @@ export default {
     },
     refreshSuccess() {
       this.$Message.success(this.$t('message.refreshsuccess'));
+    },
+    handleFocus() {
+      // 获取焦点时，不提示用户刷新成功
+      this.combopConfig.needCallback = false;
+      this.combopConfig.params = {typeof: 2};
     }
   },
   filter: {},
