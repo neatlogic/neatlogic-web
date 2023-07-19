@@ -240,7 +240,7 @@
   </div>
 </template>
 <script>
-import freemarkerHelp from '@/views/pages/process/flow/flowedit/components/nodesetting/freemarker-help';
+import freemarkerHelp from './freemarker-help';
 export default {
   name: 'SettingTemplate',
   components: {
