@@ -148,8 +148,6 @@ export default {
     return {
       loadingShow: true,
       searchParams: {},
-      // authInfo: {},
-      // authList: [],
       hasAuthorityScenarioIdList: [], // 有授权的场景id列表
       hasAuthorityEnvIdList: [], // 有授权的环境id列表
       initData: {},
@@ -191,10 +189,6 @@ export default {
   destroyed() {},
   methods: {
     async init() {
-      // await this.getAuthInfo({
-      //   appSystemIdList: this.searchParams.appSystemId ? [this.searchParams.appSystemId] : [],
-      //   appModuleIdList: this.searchParams.appModuleId ? [this.searchParams.appModuleId] : []
-      // });
       this.getCreateJobData();
       this.getAppPipeline();
       this.loadingShow = false;
@@ -206,15 +200,6 @@ export default {
       this.param = data.param || {};
       this.defaultModuleList = data.moduleList || [];
     },
-    // async getAuthInfo(params) {
-    //   // 获取环境和场景权限信息
-    //   await this.$api.deploy.applicationConfig.searchAppSystemList({...params, authorityActionList: ['view']}).then(res => {
-    //     if (res && res.Status == 'OK') {
-    //       this.authInfo = res.Return && res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0] : null;
-    //       this.authList = (res.Return && res.Return.tbodyList.length > 0 && res.Return.tbodyList[0].authActionSet) ? res.Return.tbodyList[0].authActionSet : [];
-    //     }
-    //   });
-    // },
     getAppPipeline() { //流水线
       this.$api.deploy.apppipeline.getAppPipeline(this.searchParams).then(res => {
         if (res && res.Status == 'OK') {
@@ -260,38 +245,6 @@ export default {
                 }
               }
             }
-            // let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-            //   return this.authList.includes(item.scenarioId);
-            // });
-            // if (this.scenarioId) {
-            //   let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-            //   if (findScenario) {
-            //     this.combopPhaseNameList = findScenario.combopPhaseNameList;
-            //   }
-            // } else {
-            //   if (scenarioIndex != -1) {
-            //   // 有权限，有默认场景，选中默认场景否则选中第一个
-            //     if (this.initData.defaultScenarioId && this.authList.includes(this.initData.defaultScenarioId)) {
-            //       this.scenarioId = this.initData.defaultScenarioId;
-            //       let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-            //       if (findScenario) {
-            //         this.combopPhaseNameList = findScenario.combopPhaseNameList;
-            //       }
-            //     } else {
-            //       this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
-            //       this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-            //     }
-            //   } else if (this.initData.defaultScenarioId) {
-            //     this.scenarioId = this.initData.defaultScenarioId;
-            //     let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-            //     if (findScenario) {
-            //       this.combopPhaseNameList = findScenario.combopPhaseNameList;
-            //     }
-            //   } else {
-            //     this.scenarioId = this.initData.scenarioList[0].scenarioId;
-            //     this.combopPhaseNameList = this.initData.scenarioList[0].combopPhaseNameList;
-            //   }
-            // }
           }
           if (!this.envId && this.initData.envList && this.initData.envList.length) {
             let envIndex = this.initData.envList.findIndex((item) => {
@@ -302,17 +255,6 @@ export default {
               this.envId = this.initData.envList[envIndex].id;
               this.envName = this.initData.envList[envIndex].name;
             }
-            // let envIndex = this.initData.envList.findIndex((item) => {
-            //   return this.authList.includes(item.id);
-            // });
-            // if (envIndex != -1) {
-            //   // 权限禁用之后，默认选中第一个没有禁用的环境
-            //   this.envId = this.initData.envList[envIndex].id;
-            //   this.envName = this.initData.envList[envIndex].name;
-            // } else {
-            //   this.envId = this.initData.envList[0].id;
-            //   this.envName = this.initData.envList[0].name;
-            // }
           }
           this.getJobModuleList();
         }
@@ -449,9 +391,6 @@ export default {
     hasScenarioAuth() {
       // 场景权限
       return (scenarioId) => {
-        // if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
-        //   return true;
-        // } 
         if (this.hasAuthorityScenarioIdList.includes(scenarioId)) {
           return true;
         }
@@ -461,9 +400,6 @@ export default {
     hasEnvAuth() {
       // 环境权限
       return (envId) => {
-        // if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
-        //   return true;
-        // } 
         if (this.hasAuthorityEnvIdList.includes(envId)) {
           return true;
         }
