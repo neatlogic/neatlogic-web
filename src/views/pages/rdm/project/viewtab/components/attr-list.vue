@@ -57,14 +57,7 @@ export default {
       issueDataLocal: null,
       attrList: [],
       editingField: null,
-      isEditing: false,
-      catalogConfig: {
-        url: 'api/rest/rdm/catalog/search',
-        params: { appId: this.appId },
-        valueName: 'id',
-        textName: 'name',
-        showPath: true
-      }
+      isEditing: false
     };
   },
   beforeCreate() {},
