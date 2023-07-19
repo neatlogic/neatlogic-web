@@ -1,5 +1,6 @@
 <template>
   <div class="catalog-viewprocess">
+    iiiiiiiii
     <div class="col-topo bg-op">
       <div ref="topo" class="sitemapMain" style="height:100%"></div>
     </div>
@@ -42,6 +43,7 @@
                         <span v-if="getConditiontValue(ccitem) != ''">
                           <span class="three">{{ conditionShow(ccitem) || '' }}</span>
                           <span style="padding:0 4px">{{ expressionShow(ccitem) || '' }}</span>
+                          000000
                           <span
                             :is="handlerType(ccitem.name)"
                             v-model="ccitem.valueList"
@@ -151,7 +153,7 @@
 <script>
 import '@/views/pages/process/flow/topoComponent/index.js';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
-import Items from '@/resources/components/FormMaker/formedit/items';
+import Items from '@/resources/components/FormItems';
 export default {
   name: 'CatalogViewprocess',
   components: {
