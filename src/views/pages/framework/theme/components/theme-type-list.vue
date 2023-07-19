@@ -17,35 +17,39 @@
   <div>
     <div v-for="(t, index) in titleType" :key="index">
       <Divider orientation="left">{{ t }}</Divider>
-      <Col
-        v-for="item in list"
-        :key="item.key"
-        span="24"
-      >
-        <div v-if="index === item.titleType" class="padding-b">
-          <div class="item">
-            <div class="center">
-              <span class="title">{{ item.label }}</span>
-              <InputType
-                :item="item"
-                class="m-inline"
-              ></InputType>
-            </div>
-            <div v-if="item.example" class="demo">
-              <Poptip @on-popper-show="isExample = true" @on-popper-hide="isExample = false">
-                <span class="text-href">{{ $t('page.eg') }}</span>
-                <div slot="content">
-                  <ExampleType
-                    :item="item"
-                    :list="list"
-                    :type="type"
-                  ></ExampleType>
-                </div>
-              </Poptip>
+      <TsRow>
+        <Col
+          v-for="item in list"
+          :key="item.key"
+          span="24"
+        >
+          <div v-if="index === item.titleType" class="padding-b">
+            <div class="item">
+              <div class="center">
+                <span class="title">{{ item.label }}</span>
+                <InputType
+                  :item="item"
+                  style="width: calc(100% - 230px)"
+                  class="m-inline"
+                ></InputType>
+              </div>
+              <div v-if="item.example" class="demo">
+                <Poptip @on-popper-show="isExample = true" @on-popper-hide="isExample = false">
+                  <span class="text-href">{{ $t('page.eg') }}</span>
+                  <div slot="content">
+                    <ExampleType
+                      :item="item"
+                      :list="list"
+                      :type="type"
+                    ></ExampleType>
+                  </div>
+                </Poptip>
+              </div>
             </div>
           </div>
-        </div>
-      </Col>
+        </Col>
+      </TsRow>
+    
     </div>
   </div>
 </template>
@@ -85,8 +89,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   computed: {},
   watch: {}
 };
@@ -94,18 +97,19 @@ export default {
 
 <style lang="less" scoped>
 .title {
-  vertical-align: middle;
-  height: 32px;
-  line-height: 32px;
   display: inline-block;
   width: 220px;
+  height: 32px;
+  line-height: 32px;
   padding-right: 10px;
+  vertical-align: middle;
 }
 .m-inline {
   display: inline-table;
 }
 .item {
   display: flex;
+  align-items: center;
   .center,
   .demo {
     flex: 1;

@@ -94,6 +94,23 @@ export default {
         removePlugins: this.removePlugins.concat('MediaEmbed'),
         ckfinder: {
           uploadUrl: BASEURLPREFIX + '/api/binary/image/upload'
+        },
+        knowledgeSelect: { //选择知识库插件配置
+          url: BASEURLPREFIX + '/api/rest/knowledge/document/search',
+           params: {
+            knowledgeType: 'all',
+            statusList: ['passed'],
+            type: 'document'
+          },
+          textName: 'title',
+          valueName: 'knowledgeDocumentId',
+          rootName: 'dataList',
+          router:{
+            url: BASEURLPREFIX + '/knowledge.html#/knowledge-detail',
+            params:[
+              'knowledgeDocumentId'
+            ]
+          },
         }
         // ckeditor  是5.0版本的
         // toolbarCanCollapse: true,
