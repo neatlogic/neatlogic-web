@@ -44,7 +44,7 @@ export default {
   display: none;
 }
 /deep/.ivu-input {
-  border: 0px solid #e5e5e5;
+  border: none !important; // 护眼模式下，有边框的问题
   padding: 0;
   height: initial;
   cursor: pointer;
