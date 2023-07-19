@@ -186,7 +186,7 @@
 
 <script>
 //条件
-import Items from '@/resources/components/FormMaker/formedit/items';
+import Items from '@/resources/components/FormItems';
 import nodemixin from './nodemixin.js';
 export default {
   name: '',
@@ -673,7 +673,7 @@ export default {
     },
     formUuid: {
       handler(newVal, oldVal) {
-        this.getConditionNode(newVal);
+        this.getNewConditionList(newVal);
       }
     }
   }
