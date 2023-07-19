@@ -18,22 +18,23 @@
               class="module-name text-action"
               @click.prevent="toMenu(module.moduleId)"
             >{{ module.moduleName }}</div>
-            <div v-for="menuGroup in module.menuGroupList" :key="menuGroup.menuTypeName" class="menu-group">
-              <dt
-                v-if="getFinalmenu(menuGroup.menuList).length > 0"
-                class="menu-type-name text-grey"
-              >{{ $t(menuGroup.menuTypeName) }}</dt>
-              <dd
-                v-for="(menu,mindex) in getFinalmenu(menuGroup.menuList)"
-                :key="menu.name+'_'+mindex"
-                :class="menu.icon"
-                class="menu-name overflow"
-                :href="`${home}/${module.moduleId}.html#${menu.path}`"
-                @click.prevent="toMenu(module.moduleId, menu.path)"
-              >
-                <span class="menu-name-text">{{ $t(menu.name) }}</span>
-              </dd>
-            </div>
+            <template v-for="menuGroup in module.menuGroupList">
+              <div v-if="menuGroup.menuTypeName && getFinalmenu(menuGroup.menuList).length > 0" :key="menuGroup.menuTypeName" class="menu-group">
+                <dt
+                  class="menu-type-name text-grey"
+                >{{ $t(menuGroup.menuTypeName) }}</dt>
+                <dd
+                  v-for="(menu,mindex) in getFinalmenu(menuGroup.menuList)"
+                  :key="menu.name+'_'+ mindex"
+                  :class="menu.icon"
+                  class="menu-name overflow"
+                  :href="`${home}/${module.moduleId}.html#${menu.path}`"
+                  @click.prevent="toMenu(module.moduleId, menu.path)"
+                >
+                  <span class="menu-name-text">{{ $t(menu.name) }}</span>
+                </dd>
+              </div>
+            </template>
           </template>
         </dl>
       </div>

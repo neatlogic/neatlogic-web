@@ -28,33 +28,7 @@ const configfileListManage = () => import('./configfile/configfile-list-manage.v
 // 阈值规则
 const RuleOfThresholdManage = () => import('./application/threshold/rule-of-threshold-manage.vue'); // 阈值规则
 const RuleOfThresholdDetail = () => import('./application/threshold/rule-of-threshold-detail.vue'); // 阈值规则详情
-
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import Zh from '@/resources/assets/languages/zh.js';
-import En from '@/resources/assets/languages/en.js';
-import utils from '@/resources/assets/js/util.js';
-
-Vue.use(VueI18n);
-
-let config = {
-  locale: BASELANGUAGES, // 定义默认语言为中文
-  messages: {
-    zh: {
-      ...Zh
-    },
-    en: {
-      ...En
-    }
-  },
-  silentTranslationWarn: true
-};
-
-let i18n = new VueI18n(config);
-Vue.prototype.i18n = i18n;
-const $t = function(value, targetObj) {
-  return Vue.prototype.i18n.t(value, targetObj);
-};
+import { $t } from '@/resources/init.js';
 
 export default [
   {
