@@ -31,6 +31,7 @@
                   :mode="displayMode"
                   :displayAttrList="displayAttrList"
                   :canSearch="true"
+                  :canAction="true"
                   :isShowEmptyTable="true"
                 ></IssueList>
               </div>
@@ -52,6 +53,7 @@
                   :projectId="currentProjectId"
                   :mode="displayMode"
                   :canSearch="true"
+                  :canAction="true"
                   :isShowEmptyTable="true"
                 ></IssueList>
               </div>
