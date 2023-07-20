@@ -37,9 +37,7 @@ export default {
 
   created() {},
 
-  beforeMount() {
-    this.val = this.value;
-  },
+  beforeMount() {},
 
   mounted() {},
 
