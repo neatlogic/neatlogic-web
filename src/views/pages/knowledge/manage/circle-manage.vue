@@ -25,7 +25,7 @@
           <!-- 包括审批通过与未审批通过的知识数量 -->
           <template v-slot:approverVoList="{row}">
             <!-- {{ row.approverVoList.length }} ++ -->
-            <span v-if="row.approverVoList.length > 0">
+            <span v-if="!$utils.isEmpty(row.approverVoList)">
               <span v-for="(item,index) in slice(row.approverVoList, true)" :key="index" style="margin-right:10px">
                 <UserCard v-bind="item" hideAvatar></UserCard>
               </span>

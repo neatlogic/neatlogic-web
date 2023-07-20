@@ -1,11 +1,10 @@
 import menuApi from '@/resources/api/common/menu';
-import inspectRouterList from '@/views/pages/inspect/router.js'; // 巡检路由列表
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
-  gettingModuleList: new Promise(() => {}), //模块列表获取状态
+  gettingModuleList: new Promise(() => { }), //模块列表获取状态
   dynamicMenu: {},
-  gettingCmdbMenu: new Promise(() => {})
+  gettingCmdbMenu: new Promise(() => { })
 };
 
 const getters = {
@@ -73,11 +72,11 @@ const actions = {
 
   // 更新模块菜单
   updateMenu({ dispatch }, { forceUpdate = false } = {}) {
-    dispatch('updateProcessMenu', {forceUpdate});
-    dispatch('updateKnowledgeMenu', {forceUpdate});
-    dispatch('updateDashboardMenu', {forceUpdate});
-    dispatch('updateReportMenu', {forceUpdate});
-    dispatch('updateCmdbMenu', {forceUpdate});
+    dispatch('updateProcessMenu', { forceUpdate });
+    dispatch('updateKnowledgeMenu', { forceUpdate });
+    dispatch('updateDashboardMenu', { forceUpdate });
+    dispatch('updateReportMenu', { forceUpdate });
+    dispatch('updateCmdbMenu', { forceUpdate });
     dispatch('updateInspectMenu', { forceUpdate }); // 巡检结果
   },
 
@@ -87,7 +86,7 @@ const actions = {
     const processModule = state.moduleList.find(item => item.moduleId === 'process');
     if (!processModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('process')) return;
-    const res = await menuApi.updateProcessMenu({isAll: 0});
+    const res = await menuApi.updateProcessMenu({ isAll: 0 });
     if (!res.Return || !res.Return.workcenterList || res.Return.workcenterList.length === 0) return;
     const processType = res.Return.workcenterList.map(type => ({
       name: type.name,
@@ -220,6 +219,8 @@ const actions = {
     }
     const firstRouteList = []; // 巡检结果分类，排在第一个路由
     const otherRouteList = []; // 巡检结果分类，其他路由列表
+    const routerConfig = getRouterConfig();
+    const inspectRouterList = routerConfig['inspect'];
     if (inspectRouterList && inspectRouterList.length > 0) {
       inspectRouterList.forEach((item) => {
         if (item && item.hasOwnProperty('meta')) {
@@ -265,12 +266,13 @@ function getRouterConfig() {
   }, {});
 }
 function getAllMenuTypeList() {
-  const configs = require.context('@/views/pages', true, /config.json$/);
-  const list = [];
-  configs.keys().forEach((config, cs) => {
-    configs(config) && list.push(configs(config));
+  // 获取菜单分类名称
+  const menuTypeConfig = require.context('@/views/pages', true, /config.js$/);
+  const menuTypeList = [];
+  menuTypeConfig.keys().forEach((config) => {
+    menuTypeConfig(config) && menuTypeConfig(config).config && menuTypeList.push(menuTypeConfig(config).config);
   });
-  return list;
+  return menuTypeList;
 }
 function getMenuTypeList(module, list) {
   let menuType = {};
@@ -324,7 +326,7 @@ function getMenuList(routeList = [], authList, moduleId) {
     if (isAuthMenu(route, authList)) {
       menuList.push(route);
     } else if (moduleId && moduleIdList.includes(moduleId) && hasAuthNoMenu(route, authList)) {
-      menuList.push({path: route.path, meta: {title: '', icon: ''}}); // 解决权限并且自定义菜单不显示问题
+      menuList.push({ path: route.path, meta: { title: '', icon: '' } }); // 解决权限并且自定义菜单不显示问题
     }
   });
   return menuList;

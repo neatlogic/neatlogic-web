@@ -42,7 +42,7 @@
   </div>
 </template>
 <script>
-import Items from '@/resources/components/FormMaker/formedit/items';
+import Items from '@/resources/components/FormItems';
 export default {
   name: '',
   components: {

@@ -586,7 +586,7 @@ import vuedraggable from 'vuedraggable';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 import noticeSetting from './components/nodesetting/notice-setting.vue';
 import * as formItems from '@/resources/plugins/TsSheet/form/component/index.js';
-// import Items from '@/resources/components/FormMaker/formedit/items';
+
 export default {
   name: 'TacticsSetting',
 
@@ -598,7 +598,6 @@ export default {
     TsFormSelect,
     noticeSetting,
     ...formItems
-    // ...Items
   },
   props: {
     slaListPorps: {

@@ -193,9 +193,8 @@ export default {
       this.$Message.success(this.$t('message.refreshsuccess'));
     },
     handleFocus() {
-      // 获取焦点时，不提示用户刷新成功
+      // 获取焦点时，不显示【刷新成功】提示
       this.combopConfig.needCallback = false;
-      this.combopConfig.params = {typeof: 2};
     }
   },
   filter: {},

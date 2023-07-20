@@ -565,14 +565,35 @@ export default {
       // 获取topo图数据
       if (this.processConfig.uuid && !this.isNew) {
         if (this.isDraft) {
-          await this.$api.process.process
-            .processDraftGet({
-              uuid: this.$route.query.draftuuid
-            })
-            .then(res => {
+          try {
+            await this.$api.process.process
+              .processDraftGet({
+                uuid: this.$route.query.draftuuid
+              })
+              .then(res => {
+                if (res.Status == 'OK') {
+                  let data = res.Return.config && (typeof res.Return.config == 'string') ? JSON.parse(res.Return.config) : res.Return.config;
+                  this.referenceCount = res.Return.referenceCount;
+                  this.initTopo(data, action);
+                } else {
+                  Vm.$Message.warning({
+                    content: this.$t('message.process.notinitdata'),
+                    duration: 3,
+                    closable: true
+                  });
+                }
+              });
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          try {
+            await this.$api.process.process.getProcess({ uuid: this.processConfig.uuid }).then(res => {
               if (res.Status == 'OK') {
                 let data = res.Return.config && (typeof res.Return.config == 'string') ? JSON.parse(res.Return.config) : res.Return.config;
                 this.referenceCount = res.Return.referenceCount;
+                Object.assign(this.processConfig, data.process.processConfig);
+                this.processConfig.name = res.Return.name;
                 this.initTopo(data, action);
               } else {
                 Vm.$Message.warning({
@@ -582,22 +603,9 @@ export default {
                 });
               }
             });
-        } else {
-          await this.$api.process.process.getProcess({ uuid: this.processConfig.uuid }).then(res => {
-            if (res.Status == 'OK') {
-              let data = res.Return.config && (typeof res.Return.config == 'string') ? JSON.parse(res.Return.config) : res.Return.config;
-              this.referenceCount = res.Return.referenceCount;
-              Object.assign(this.processConfig, data.process.processConfig);
-              this.processConfig.name = res.Return.name;
-              this.initTopo(data, action);
-            } else {
-              Vm.$Message.warning({
-                content: this.$t('message.process.notinitdata'),
-                duration: 3,
-                closable: true
-              });
-            }
-          });
+          } catch (err) {
+            console.log(err);
+          }
         }
       } else {
         //新的没有设置流程信息
@@ -1180,29 +1188,33 @@ export default {
     }
   },
   beforeRouteLeave(from, to, next, url) {
-    let draftData = this.getFlowData();
-    delete this.portData.config.topo.svg;
-    delete draftData.config.topo.svg;
-    let isSame = this.$utils.isSame(JSON.parse(JSON.stringify(this.portData)), JSON.parse(JSON.stringify(draftData)));
-    if ((from && from.query.validRouter) || isSame) { //form.query.validRouter 代表不用进行跳转校验，如删除时候
+    if (!this.$utils.isEmpty(this.portData)) {
+      let draftData = this.getFlowData();
+      delete this.portData.config.topo.svg;
+      delete draftData.config.topo.svg;
+      let isSame = this.$utils.isSame(JSON.parse(JSON.stringify(this.portData)), JSON.parse(JSON.stringify(draftData)));
+      if ((from && from.query.validRouter) || isSame) { //form.query.validRouter 代表不用进行跳转校验，如删除时候
       //当没有改动时直接跳转页面
-      url ? this.$utils.gotoHref(url) : next();
+        url ? this.$utils.gotoHref(url) : next();
+      } else {
+        let _this = this;
+        this.$utils.jumpDialog.call(this, {
+          save: {//保存数据
+            fn: async(vnode) => {
+              return await _this.flowSave(true); 
+            }
+          },
+          noSave: {//存草稿
+            fn: (vnode) => {
+              vnode.isShow = false;
+              _this.draftAdd();
+              url ? _this.$utils.gotoHref(url) : next();
+            }
+          }
+        }, to, from, next, url);
+      }
     } else {
-      let _this = this;
-      this.$utils.jumpDialog.call(this, {
-        save: {//保存数据
-          fn: async(vnode) => {
-            return await _this.flowSave(true); 
-          }
-        },
-        noSave: {//存草稿
-          fn: (vnode) => {
-            vnode.isShow = false;
-            _this.draftAdd();
-            url ? _this.$utils.gotoHref(url) : next();
-          }
-        }
-      }, to, from, next, url);
+      next();
     }
   }
 };
