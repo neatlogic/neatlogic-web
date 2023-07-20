@@ -20,7 +20,7 @@
         <div class="action-group">
           <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">{{ $t('page.authority') }}</span>
           <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">{{ $t('page.delete') }}</span>
-          <span v-if="canEdit" class="action-item"><Button type="primary" @click="save()">{{ $t('page.save') }}</Button></span>
+          <span v-if="canEdit" class="action-item"><Button type="primary" @click="save()">{{ $t('page.save') + 'A' }}</Button></span>
         </div>
       </template>
       <template v-slot:content>
@@ -93,6 +93,7 @@
       v-if="isJobTemplateDialogShow"
       :id="currentJob&&currentJob.id"
       :job="currentJob"
+      :type="pipelineData.type"
       :appSystemId="pipelineData.appSystemId"
       @close="closeJobTemplateDialog"
       @insert="addJobTemplate"
@@ -192,6 +193,7 @@ export default {
       this.isAuthDialogShow = true;
     },
     showJobDialog(lane, group) {
+      this.currentJob = null;
       this.currentLane = lane;
       this.currentGroup = group;
       this.isJobTemplateDialogShow = true;
