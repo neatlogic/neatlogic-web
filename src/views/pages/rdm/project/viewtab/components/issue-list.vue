@@ -81,6 +81,21 @@
         </CombineSearcher>
       </div>
     </div>
+    <div v-if="showStatus" style="text-align: right" class="mb-xs">
+      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
+        <strong>
+          <span class="mr-xs">{{ status.label }}</span>
+          <span>{{ status.issueCount }}</span>
+        </strong>
+        <Divider type="vertical" />
+      </span>
+      <span>
+        <strong>
+          <span class="mr-xs">{{ $t('page.completrate') }}</span>
+          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
+        </strong>
+      </span>
+    </div>
     <TsTable
       v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
       :theadList="finalTheadList"
@@ -128,26 +143,11 @@
           <ul class="tstable-action-ul">
             <li v-if="fromId || toId || parentId || row.parentId" class="tsfont-unbind" @click="unlinkIssue(row)">{{ $t('term.rdm.disconnect') }}</li>
             <li class="tsfont-inspection" @click="toIssueDetail(row)">{{ $t('page.detail') }}</li>
-            <li class="tsfont-trash-o" @click="deleteIssue(row)">{{ $t('page.delete') }}</li>
+            <li v-if="row.isProjectOwner || row.isProjectMember || row.isProjectLeader" class="tsfont-trash-o" @click="deleteIssue(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
     </TsTable>
-    <div v-if="showStatus" style="text-align: right" class="mb-xs">
-      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
-        <strong>
-          <span class="mr-xs">{{ status.label }}</span>
-          <span>{{ status.issueCount }}</span>
-        </strong>
-        <Divider type="vertical" />
-      </span>
-      <span>
-        <strong>
-          <span class="mr-xs">{{ $t('page.completrate') }}</span>
-          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
-        </strong>
-      </span>
-    </div>
     <NoData v-else-if="isShowEmptyTable"></NoData>
     <EditIssue
       v-if="isEditIssueShow"
@@ -171,7 +171,7 @@
     ></IssueListDialog>
     <TsDialog
       v-if="isIssueDetailShow && currentIssue"
-      :hasHeader="false"
+      :hasHeader="true"
       type="slide"
       :isShow="true"
       width="huge"
@@ -185,7 +185,7 @@
       <template v-slot>
         <div>
           <component
-            :is="app.type + 'Detail'"
+            :is="currentIssue.appType + 'Detail'"
             :pId="currentIssue.projectId"
             mode="dialog"
             :aId="currentIssue.appId"
@@ -482,7 +482,7 @@ export default {
     deleteIssue(issue) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: this.app.name }),
+        content: this.$t('dialog.content.deleteconfirm', { target: issue.appName }),
         btnType: 'error',
         'on-ok': vnode => {}
       });
