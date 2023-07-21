@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!loading"
+    v-if="!needRefresh"
     id="login"
     class="login-bg"
     @keydown.enter="handleLogin"
@@ -81,6 +81,7 @@ export default {
       errorTips: '',
       remember: false,
       loading: false,
+      needRefresh: false, // 点击登录会有闪一下的问题
       themeClass: localStorage.getItem('themeClass') || 'theme-default'
     };
   },
@@ -161,7 +162,7 @@ export default {
       return redirecturl;
     },
     changeTheme() {
-      this.loading = true;
+      this.needRefresh = true;
       let htmlClassList = document.documentElement.classList;
       htmlClassList.toggle('theme-default');
       htmlClassList.toggle('theme-dark');
@@ -171,7 +172,7 @@ export default {
       this.$store.commit('setThemeType', htmlClassList[0]);
       this.themeClass = htmlClassList[0];
       this.$nextTick(() => {
-        this.loading = false; // 解决浏览器自动填充背景，填充背景不随着主题色变化的问题
+        this.needRefresh = false; // 解决浏览器自动填充背景，填充背景不随着主题色变化的问题
       });
     },
     changeLanguage() {
