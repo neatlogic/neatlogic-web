@@ -87,7 +87,7 @@ export default {
           this.checkboxList = res.Return[operationTypeObj[this.operationType]] || [];
           this.defaultAuthList = this.$utils.deepClone(this.checkboxList);
           this.checkAll = this.checkboxList.length == 0 ? false : (this.checkboxList.length == this.value.length);
-          this.indeterminate = this.checkboxList.length != this.value.length;
+          this.indeterminate = this.value.length > 0 && this.checkboxList.length != this.value.length;
           if (!this.isEdit) {
             // 默认选中所有
             let authList = [];
@@ -131,7 +131,7 @@ export default {
         this.checkAll = false;
       } else {
         this.authList = [];
-        this.indeterminate = true;
+        this.indeterminate = false;
         this.checkAll = false;
       }
       this.handleEmit();
