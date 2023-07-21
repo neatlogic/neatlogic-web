@@ -13,6 +13,7 @@
         <div>
           <Loading :loadingShow="loadingShow" type="fix"></Loading>
           <TsForm
+            v-if="!loadingShow"
             ref="form"
             v-model="authConfig"
             :labelWidth="80"
@@ -93,7 +94,7 @@ export default {
         envAuthList: [] // 环境权限列表
       },
       authRequired: false, // 权限必填
-      loadingShow: false,
+      loadingShow: true,
       defaultoperationAuthList: [], // 权限列表，用户回显操作
       defaultscenarioAuthList: [],
       defaultenvAuthList: [],
@@ -211,6 +212,7 @@ export default {
       let params = {
         ...this.params
       };
+      this.loadingShow = true;
       this.$api.deploy.applicationConfig.getAppConfigAuthList(params).then((res) => {
         if (res && res.Status == 'OK') {
           if (res.Return && res.Return.tbodyList) {
