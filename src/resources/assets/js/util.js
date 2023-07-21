@@ -29,10 +29,9 @@ removeHTMLTag(str)                           //去除html标签
 import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
-import validtorJson from '@/resources/plugins/TsForm/TsValidtor';
 import { $t } from '@/resources/init.js';
 export default {
-  getCookie: function(name) {
+  getCookie: function (name) {
     if (name) {
       let cookies = document.cookie.split(';');
       for (var i = 0; i < cookies.length; i++) {
@@ -44,7 +43,7 @@ export default {
       }
     }
   },
-  setCookie: function(name, value, time) {
+  setCookie: function (name, value, time) {
     if (time) {
       if (typeof time == Number) {
         let d = new Date();
@@ -58,14 +57,14 @@ export default {
       document.cookie = name + '=' + encodeURIComponent(value);
     }
   },
-  removeCookie: function(name) {
+  removeCookie: function (name) {
     this.setCookie(name, ' ', new Date(0).toUTCString());
   },
   deepClone(data) {
     return _.cloneDeep(data);
   },
   setUuid() {
-    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       let r = (Math.random() * 16) | 0;
       let v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
@@ -151,7 +150,7 @@ export default {
     return newValue.toString().trim();
   },
   sortNumber() {
-    return function(a, b) {
+    return function (a, b) {
       return a - b;
     };
   },
@@ -299,7 +298,7 @@ export default {
   },
   isSame(val1, val2) {
     let _this = this;
-    let isEqual = _.isEqualWith(val1, val2, function(val1, val2) {
+    let isEqual = _.isEqualWith(val1, val2, function (val1, val2) {
       if (_this.isEmpty(val1) && _this.isEmpty(val2)) {
         return true;
       } else if (_this.isEmpty(val1) || _this.isEmpty(val2)) {
@@ -879,6 +878,7 @@ export default {
   },
   validParamValue(val, validateList) {
     //参数校验规则：判断值是否满足正则规则
+    const validtorJson = require('@/resources/plugins/TsForm/TsValidtor'); // 解决TsValidtor.js加载最快，导致拿不到$t，弹窗校验出不来的问题
     let _this = this;
     let resultValidtorJson = [];
     let isValid = true;
@@ -978,7 +978,7 @@ export default {
       } else {
         text = systemConfig.abbrName;
       }
-    } else if(systemConfig && systemConfig.name) {
+    } else if (systemConfig && systemConfig.name) {
       text = systemConfig.name;
     }
     return text;
