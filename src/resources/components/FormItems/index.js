@@ -7,6 +7,10 @@ import formuserselect from './userSelect.vue';
 import forminput from './input';
 import formtextarea from './input';
 import formckeditor from './input';
+import formtext from './input';
+import formpassword from './input';
+import formtreeselect from './treeselect';
+import formnumber from './number';
 
 export default {
   formcheckbox,
@@ -17,5 +21,9 @@ export default {
   formtextarea,
   formtime,
   formckeditor,
-  formuserselect
+  formuserselect,
+  formtext,
+  formpassword,
+  formtreeselect,
+  formnumber
 };

@@ -45,9 +45,8 @@
                     <span
                       :is="handlerType(ccitem.name)"
                       :value="ccitem.valueList"
-                      :formItem="getselectConfig(ccitem.name)"
+                      :config="getselectConfig(ccitem.name)"
                       :readonly="true"
-                      :disabled="true"
                       style="display: inline-block;"
                     ></span>
                   </span>
@@ -224,7 +223,6 @@
                                       :dataList="formAllData"
                                       valueName="name"
                                       textName="label"
-                                      border="border"
                                       search
                                       transfer
                                       @on-change="formItemChange(citem)"
@@ -238,7 +236,6 @@
                                       :dataList="getselectConfig(citem.name).expressionList"
                                       valueName="expression"
                                       textName="expressionName"
-                                      border="border"
                                       transfer
                                       @on-change="changeExpression(citem)"
                                     ></TsFormSelect>
@@ -253,9 +250,8 @@
                                       <div
                                         :is="handlerType(citem.name)"
                                         :value="citem.valueList"
-                                        :formItem="getselectConfig(citem.name)"
-                                        mode="read"
-                                        @setValue="(val)=>{
+                                        :config="getselectConfig(citem.name)"
+                                        @change="(val)=>{
                                           $set(citem,'valueList', val);
                                         }"
                                       ></div>
@@ -264,7 +260,6 @@
                                       <TsFormSelect
                                         width="100%"
                                         transfer
-                                        border="border"
                                       ></TsFormSelect>
                                     </div>
                                   </div>
@@ -585,7 +580,7 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 import vuedraggable from 'vuedraggable';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 import noticeSetting from './components/nodesetting/notice-setting.vue';
-import * as formItems from '@/resources/plugins/TsSheet/form/component/index.js';
+import formItems from '@/resources/components/FormItems';
 
 export default {
   name: 'TacticsSetting',

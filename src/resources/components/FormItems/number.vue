@@ -1,6 +1,7 @@
 <template>
   <TsFormInput
     :value="value"
+    type="number"
     :readonly="readonly"
     v-bind="getSetting"
     @on-change="updateval"
@@ -20,7 +21,10 @@ export default {
   },
   props: {
     config: Object,
-    value: [String, Boolean, Object, Array],
+    value: {
+      type: [String, Number],
+      default: null
+    },
     readonly: {
       type: Boolean,
       default: false
@@ -72,12 +76,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped>
-/deep/ .tsform-input-readonly {
-  opacity: 1;
-  cursor: text;
-  .tsform-readonly {
-    cursor: text;
-  }
-}
-</style>
+

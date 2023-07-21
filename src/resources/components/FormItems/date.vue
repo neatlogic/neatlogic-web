@@ -35,9 +35,7 @@ export default {
 
   created() {},
 
-  beforeMount() {
-    this.val = this.value;
-  },
+  beforeMount() {},
 
   mounted() {},
 
@@ -68,16 +66,16 @@ export default {
       if (setting.styleType) {
         //format的处理
         let styleType = this.config.config.styleType || '-';
-        json.format = this.config.config.showType.replace(/\-/g, styleType);
+        json.format = this.config.config.format.replace(/\-/g, styleType);
       }
 
       //type的处理
-      if (!setting.type && setting.showType && setting.showType.indexOf(' HH') >= 0) {
+      if (!setting.type && setting.format && setting.format.indexOf(' HH') >= 0) {
         json.type = 'datetime';
-      } else if (!setting.type && setting.showType) {
-        setting.showType == 'yyyy' && (json.type = 'year');
-        setting.showType == 'yyyy-MM' && (json.type = 'month');
-        setting.showType == 'yyyy-MM-dd' && (json.type = 'date');
+      } else if (!setting.type && setting.format) {
+        setting.format == 'yyyy' && (json.type = 'year');
+        setting.format == 'yyyy-MM' && (json.type = 'month');
+        setting.format == 'yyyy-MM-dd' && (json.type = 'date');
       }
 
       //valueType的处理
