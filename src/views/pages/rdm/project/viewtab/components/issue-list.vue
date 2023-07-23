@@ -182,6 +182,7 @@
       @on-close="
         isIssueDetailShow = false;
         currentIssue = null;
+        searchIssue();
       "
     >
       <template v-slot>
@@ -632,9 +633,7 @@ export default {
       }
       if (currentPage) {
         this.searchIssueData.currentPage = currentPage;
-      } else {
-        this.searchIssueData.currentPage = 1;
-      }
+      } 
       this.isSearchReady = false;
       this.$api.rdm.issue
         .searchIssue(this.searchIssueData)
