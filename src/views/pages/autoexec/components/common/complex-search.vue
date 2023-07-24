@@ -1110,7 +1110,7 @@ export default {
   }
   .btn-filter {
     position: absolute;
-    top: 8px;
+    top: 2px;
     right: 10px;
     cursor: pointer;
   }
