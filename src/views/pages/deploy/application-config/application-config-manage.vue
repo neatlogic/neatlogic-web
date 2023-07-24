@@ -448,14 +448,14 @@ export default {
   filter: {},
   computed: {
     canEdit() {
-      // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限，isConfigAuthority 为空，表示没有配置权限，自动有所有人权限
-      if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority) || (this.selectedApp && !this.selectedApp.isConfigAuthority)) {
+      // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
+      if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
         return true;
       }
       return false;
     },
     hasEditPipelineAuth() { //是否有超级流水线权限
-      if (this.authList.includes('operation#all') || this.authList.includes('operation#pipeline') || (this.selectedApp && this.selectedApp.isHasAllAuthority) || (this.selectedApp && !this.selectedApp.isConfigAuthority)) {
+      if (this.authList.includes('operation#all') || this.authList.includes('operation#pipeline') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
         return true;
       }
       return false;
