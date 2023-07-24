@@ -67,34 +67,36 @@ export default {
   destroyed() {},
   methods: {
     async getInfo() {
-      if (this.type == 'group') {
-        // 获取分组列表
-        let param = {
-          repositoryId: this.repositoryId,
-          groupName: this.row.name       
+      try {
+        const param = {
+          repositoryId: this.repositoryId
         };
-        await this.$api.codehub.repositorydetail.searchSvnMember(param).then(res => {
-          if (res && res.Status == 'OK') {
+
+        if (this.type === 'group') {
+          param.groupName = this.row.name;
+
+          const res = await this.$api.codehub.repositorydetail.searchSvnMember(param);
+          if (res && res.Status === 'OK') {
             this.userList = res.Return || [];
+          } else {
+            this.userList = [];
           }
-        }).catch(res => {
-          this.userList = [];
-        });
-      } else {
-        // 获取单个数据
-        let param = {
-          repositoryId: this.repositoryId,
-          id: this.id        
-        };
-        this.$api.codehub.repositorydetail.getUser(param).then(res => {
-          if (res && res.Status == 'OK') {
+        } else {
+          param.id = this.id;
+
+          const res = await this.$api.codehub.repositorydetail.getUser(param);
+          if (res && res.Status === 'OK') {
             this.userInfo = res.Return || {};
           } else {
             this.userInfo = this.row;
           }
-        }).catch(res => {
+        }
+      } catch (error) {
+        if (this.type === 'group') {
+          this.userList = [];
+        } else {
           this.userInfo = this.row;
-        });        
+        }
       }
     }
   },

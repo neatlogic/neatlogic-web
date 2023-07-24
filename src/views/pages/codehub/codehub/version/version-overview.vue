@@ -188,22 +188,15 @@ export default {
         this.updatePage(1);
       }
     },
-    updateAppModule(val) {
-      if (val) {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {appSystemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          } 
-        });
-      } else {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          } 
-        });
-      }
+    updateAppModule(appSystemId) {
+      const params = appSystemId ? {appSystemId} : {};
+      const dynamicUrl = appSystemId ? '/api/rest/codehub/appmodule/search' : '';
+      this.searchConfig.searchList.forEach((item) => {
+        if (item && (item.name == 'appModuleId')) {
+          this.$set(item, 'params', params);
+          this.$set(item, 'dynamicUrl', dynamicUrl);
+        } 
+      });
     },
     changeRadioGroup() {
       this.versionData.currentPage = 1;

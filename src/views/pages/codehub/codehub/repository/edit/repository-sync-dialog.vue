@@ -1,7 +1,7 @@
 <template>
   <TsDialog v-bind="setting" @on-close="close" @on-ok="confirmSync">
     <div>
-      <TsForm ref="editform" :itemList="formConfig">
+      <TsForm ref="form" v-model="formValue" :itemList="formConfig">
       </TsForm>
     </div>
   </TsDialog>
@@ -25,11 +25,13 @@ export default {
       },
       selectSub: null,
       vaildConfig: ['required'],
-      checkoutBranchesVal: [],
+      formValue: {
+        checkoutBranches: []
+      },
       formConfig: [{
         type: 'select',
         label: this.$t('term.codehub.branchtobesynchronized'),
-        name: 'checkoutBranchesVal',
+        name: 'checkoutBranches',
         validateList: ['required'],
         transfer: true,
         url: '/api/rest/codehub/repository/branch/search',
@@ -37,10 +39,7 @@ export default {
         textName: 'name',
         valueName: 'name',
         multiple: true,
-        params: {'repositoryId': this.id},
-        onChange: (val) => {
-          this.checkoutBranchesVal = val;
-        }
+        params: {'repositoryId': this.id}
       }
       ],
       editvalList: {
@@ -65,20 +64,22 @@ export default {
       this.$emit('close');
     },
     confirmSync() {
-      if (this.$refs.editform.valid() && this.checkoutBranchesVal.length > 0) {
-        let param = {
-          'id': this.id,
-          'checkoutBranches': this.checkoutBranchesVal
-        };
-        this.$api.codehub.repository.sync(param).then(res => {
-          if (res && res.Status == 'OK') {
+      if (!this.$refs.form.valid() || (this.formValue && this.$utils.isEmpty(this.formValue.checkoutBranches))) {
+        return;
+      }
+  
+      const param = {
+        id: this.id,
+        checkoutBranches: this.formValue.checkoutBranches
+      };
+  
+      this.$api.codehub.repository.sync(param)
+        .then(res => {
+          if (res?.Status === 'OK') {
             this.$Message.success(this.$t('term.codehub.syncexecuteandback'));
             this.$emit('close', true);
-          } else {
-            this.$Message.error(res.Message);
           }
         });
-      }
     }
   },
   computed: {},
