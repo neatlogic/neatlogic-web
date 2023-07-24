@@ -78,7 +78,7 @@ export default {
           rootName: 'tbodyList',
           dealDataByUrl: this.$utils.getAppForselect,
           onChange: (val) => {
-            this.changeSubsys(val);
+            this.changeAppSystemId(val);
           }
         }, 
         {
@@ -165,23 +165,20 @@ export default {
       if (this.$refs.form && !this.$refs.form.valid()) {
         return false;
       }
-      if (this.formValue.versionStrategyId) {
-        let param = {};
-        Object.assign(param, this.formValue);
-        Object.assign(param, {
-          version: this.strategyPre + this.formValue.version
-        });
-        if (this.id) {
-          Object.assign(param, {id: this.id});
-        }
-        this.$api.codehub.version.save(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.$emit('close', true);
-          }
-        });
-      } else {
+      if (!this.formValue.versionStrategyId) {
         this.$Message.error(this.$t('form.validate.required', {target: this.$t('term.process.policy')}));
+        return false;
       }
+      let param = {
+        ...this.formValue,
+        version: this.strategyPre + this.formValue.version,
+        id: this.id || undefined
+      };
+      this.$api.codehub.version.save(param).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$emit('close', true);
+        }
+      });
     },
     getSelected(val, vals) {
       if (val.length > 0) {
@@ -195,32 +192,26 @@ export default {
       this.autofillName(this.formValue);
     },
     hideName(id) {
-      this.formConfig.forEach((form, findex) => {
-        if (form.name == 'version') {
-          form.isHidden = !id;
-        }
-      });
+      let versionItem = this.formConfig.find(form => form.name === 'version');
+      if (versionItem) {
+        this.$set(versionItem, 'isHidden', !id);
+      }
     },
-    changeSubsys(val) {
-      this.formValue.appSystemId = val;
+    changeAppSystemId(appSystemId) {
+      this.formValue.appSystemId = appSystemId;
       this.formValue.appModuleId = '';
       this.formValue.versionStrategyId = '';
       this.hideName();
-      if (val) {
-        this.formConfig && this.formConfig.forEach((item) => {
-          if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', {appSystemId: val});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          }
-        });
-      } else {
-        this.formConfig && this.formConfig.forEach((item) => {
-          if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          }
-        });
-      }
+
+      const params = appSystemId ? { appSystemId } : {};
+      const dynamicUrl = appSystemId ? '/api/rest/codehub/appmodule/search' : '';
+
+      this.formConfig && this.formConfig.forEach((item) => {
+        if (item && item.name === 'appModuleId') {
+          this.$set(item, 'params', params);
+          this.$set(item, 'dynamicUrl', dynamicUrl);
+        }
+      });
     },
     getVersion(appModuleId) {
       this.strategyPre = '';
@@ -240,23 +231,13 @@ export default {
       }
     },
     autofillName(config) {
-      let appModuleId = config.appModuleId || '';
-      let versionStrategyId = config.versionStrategyId || '';
-      let versionTypeId = config.versionTypeId || '';
-      Object.assign(this.formValue, {
-        version: ''
-      });
+      const { appModuleId = '', versionStrategyId = '', versionTypeId = '' } = config || {};
+      this.formValue.version = '';
       if (appModuleId && versionStrategyId && versionTypeId) {
-        let param = {
-          appModuleId: appModuleId,
-          versionStrategyId: versionStrategyId, 
-          versionTypeId: versionTypeId
-        };
+        const param = { appModuleId, versionStrategyId, versionTypeId };
         this.$api.codehub.version.autofillName(param).then((res) => {
           if (res && res.Status == 'OK' && res.Return.version) {
-            Object.assign(this.formValue, {
-              version: res.Return.version.replace(this.strategyPre, '')
-            });
+            this.formValue.version = res.Return.version.replace(this.strategyPre, '');
           }
         });
       }

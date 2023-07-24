@@ -106,7 +106,7 @@ export default [
       title: $t('router.deploy.applicationconfig'),
       ismenu: true,
       icon: 'tsfont-file-multi',
-      authority: 'DEPLOY_BASE',
+      authority: 'APP_CONFIG_MODIFY',
       type: 'config'
     }
   },

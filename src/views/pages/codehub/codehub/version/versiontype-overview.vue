@@ -161,11 +161,11 @@ export default {
       this.loadingShow = true;
       this.$api.codehub.versiontype.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.$set(this.versionData, 'pageCount', res.Return.pageCount);
-          this.$set(this.versionData, 'rowNum', res.Return.rowNum);
-          this.$set(this.versionData, 'pageSize', res.Return.pageSize);
-          this.$set(this.versionData, 'currentPage', res.Return.currentPage);
-          this.$set(this.versionData, 'cardList', res.Return.tbodyList);
+          const properties = ['pageCount', 'rowNum', 'pageSize', 'currentPage', 'cardList'];
+          properties.forEach(prop => {
+            const value = res?.Return?.[prop];
+            this.$set(this.versionData, prop, value);
+          });
         }
       }).finally(() => {
         this.loadingShow = false;

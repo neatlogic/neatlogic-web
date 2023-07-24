@@ -495,7 +495,7 @@ export default {
     hasScenarioAuth() {
       // 场景权限
       return (scenarioId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
+        if ((this.authInfo && this.authInfo.isHasAllAuthority) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
           return true;
         } 
         return false;
@@ -504,7 +504,7 @@ export default {
     hasEnvAuth() {
       // 环境权限
       return (envId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
+        if ((this.authInfo && this.authInfo.isHasAllAuthority) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
           return true;
         } 
         return false;

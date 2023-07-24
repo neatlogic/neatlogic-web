@@ -124,17 +124,15 @@ function myFun(jsonObj){
       this.$emit('close');
     },
     saveEdit() {
-      if (this.$refs.editform.valid()) {
-        let param = this.$refs.editform.getFormValue();
-        if (this.id) {
-          Object.assign(param, {id: this.id});
-        }
-        this.$api.codehub.versiontype.save(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.$emit('close', true);
-          }
-        });
+      if (this.$refs.editform && !this.$refs.editform.valid()) {
+        return false;
       }
+      let param = Object.assign({}, this.$refs.editform.getFormValue(), { id: this.id });
+      this.$api.codehub.versiontype.save(param).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$emit('close', true);
+        }
+      });
     },
     getDetail(id) {
       this.$api.codehub.versiontype.getDetail({id: id}).then(res => {
