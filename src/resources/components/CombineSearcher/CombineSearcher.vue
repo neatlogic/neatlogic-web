@@ -380,9 +380,7 @@ export default {
     },
     handleSearch() {
       this.$emit('change', this.getFullSearch());
-      if (this.searchMode == 'clickBtnSearch') {
-        this.$emit('confirm', this.getFullSearch()); // 不是实时搜索时，需要分发出去
-      }
+      this.$emit('confirm', this.getFullSearch());
     },
     getFullSearch() {
       let fullSearch = {};
