@@ -33,7 +33,9 @@ Vue.use(VueI18n);
 let i18n = new VueI18n(config);
 Vue.prototype.i18n = i18n;
 export function $t(value, targetObj) {
-  return Vue.prototype.i18n.t(value, targetObj);
+  if (Vue.prototype.i18n) { // 初始化报错问题
+    return Vue.prototype.i18n.t(value, targetObj);
+  }
 }
 
 export function initRouter(VueRouter, store) {

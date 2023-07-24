@@ -13,40 +13,76 @@
       </div>
       <div v-if="jobTemplateData.appSystemId">
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
-        <div>
+        <div v-if="scenarioList && scenarioList.length > 0" id="scenario">
           <Divider orientation="start" class="divier">{{ $t('page.scene') }}</Divider>
           <div>
             <Row :gutter="16">
               <Col
                 v-for="(item, index) in scenarioList"
                 :key="index"
-                :xs="4"
-                :sm="4"
-                :md="4"
+                :xs="12"
+                :sm="8"
+                :md="6"
                 :lg="4"
-                :xl="4"
-                :xxl="4"
+                :xl="3"
+                :xxl="2"
               >
-                <div class="li-item text-action" :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'" @click="selectScenario(item)">{{ item.scenarioName }}</div>
+                <div 
+                  v-if="hasScenarioAuth(item.scenarioId)"
+                  class="li-item text-action" 
+                  :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'" 
+                  @click="selectScenario(item)"
+                >{{ item.scenarioName }}</div>
+                <Tooltip
+                  v-else
+                  placement="top"
+                  max-width="400"
+                  theme="light"
+                  transfer
+                  class="tooltips-box"
+                >
+                  <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.scenarioName }}</div>
+                  <div slot="content">
+                    <div>{{ $t('term.deploy.notsceneauth', {target: item.scenarioName}) }}</div>
+                  </div>
+                </Tooltip>
               </Col>
             </Row>
           </div>
         </div>
-        <div>
+        <div v-if="envList && envList.length" id="env">
           <Divider orientation="start" class="divier">{{ $t('page.environment') }}</Divider>
           <div>
             <Row :gutter="16">
               <Col
                 v-for="(item, index) in envList"
                 :key="index"
-                :xs="4"
-                :sm="4"
-                :md="4"
+                :xs="12"
+                :sm="8"
+                :md="6"
                 :lg="4"
-                :xl="4"
-                :xxl="4"
+                :xl="3"
+                :xxl="2"
               >
-                <div class="li-item text-action" :class="jobTemplateData.envId == item.id ? 'li-active li-text border-primary' : 'border-base bg-op'" @click="selectEnv(item)">{{ item.name }}</div>
+                <div 
+                  v-if="hasEnvAuth(item.id)"
+                  class="li-item text-action" 
+                  :class="jobTemplateData.envId == item.id ? 'li-active li-text border-primary' : 'border-base bg-op'" 
+                  @click="selectEnv(item)"
+                >{{ item.name }}</div>
+                <Tooltip
+                  v-else
+                  placement="top"
+                  max-width="400"
+                  theme="light"
+                  transfer
+                  class="tooltips-box"
+                >
+                  <div class="width-box li-item text-action text-disabled border-base bg-op">{{ item.name }}</div>
+                  <div slot="content">
+                    <div>{{ $t('term.deploy.notenvauth', {target: item.name}) }}</div>
+                  </div>
+                </Tooltip>
               </Col>
             </Row>
           </div>
@@ -113,15 +149,24 @@ export default {
   props: {
     id: { type: Number },
     job: {type: Object},
-    appSystemId: {type: Number}
+    appSystemId: {type: Number},
+    type: {type: String}
   },
   data() {
     return {
       roundList: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
       isLoading: false,
-      jobTemplateData: { roundCount: 1, config: { param: {}, selectNodeList: [] } },
+      jobTemplateData: {
+        appSystemId: null,
+        envId: null,
+        scenarioId: null,
+        roundCount: 1, 
+        config: { param: {}, selectNodeList: [] } 
+      },
       scenarioList: [], //场景列表
       envList: [], //环境列表
+      hasAuthorityScenarioIdList: [], // 有授权的场景id列表
+      hasAuthorityEnvIdList: [], // 有授权的环境id列表
       appModuleList: [], //模块列表
       runtimeParamList: [], //参数列表
       combopPhaseList: [],
@@ -194,23 +239,85 @@ export default {
     getCreateJobData() {
       //发布作业
       this.isLoading = true;
-      this.$api.deploy.job
-        .getCreateJobData({
-          appSystemId: this.jobTemplateData.appSystemId,
-          appModuleId: this.jobTemplateData.appModuleId
-        })
+      this.$api.deploy.job.getCreateJobData({
+        appSystemId: this.jobTemplateData.appSystemId,
+        appModuleId: this.jobTemplateData.appModuleId
+      })
         .then(res => {
           if (res.Status == 'OK') {
             this.scenarioList = res.Return.scenarioList;
             this.envList = res.Return.envList;
+            this.hasAuthorityScenarioIdList = res.Return.hasAuthorityScenarioIdList;
+            this.hasAuthorityEnvIdList = res.Return.hasAuthorityEnvIdList;
             if (this.scenarioList && this.scenarioList.length > 0) {
-              if (!this.jobTemplateData.scenarioId || !this.scenarioList.find(d => d.scenarioId === this.jobTemplateData.scenarioId)) {
-                this.selectScenario(this.scenarioList[0]);
+              if (this.jobTemplateData.scenarioId) {
+                if (this.type == 'global') {
+                  if (this.scenarioList.findIndex(item => item.scenarioId == this.jobTemplateData.scenarioId) == -1) {
+                    this.jobTemplateData.scenarioId = null;
+                  }
+                } else {
+                  if (!this.hasAuthorityScenarioIdList.includes(this.jobTemplateData.scenarioId)) {
+                    this.jobTemplateData.scenarioId = null;
+                  }
+                }
+              }
+              if (!this.jobTemplateData.scenarioId && res.Return.defaultScenarioId) {
+                if (this.type == 'global') {
+                  this.jobTemplateData.scenarioId = res.Return.defaultScenarioId;
+                } else {
+                  if (this.hasAuthorityScenarioIdList.includes(res.Return.defaultScenarioId)) {
+                    this.jobTemplateData.scenarioId = res.Return.defaultScenarioId;
+                  }
+                }
+              }
+              if (this.jobTemplateData.scenarioId) {
+                let findScenario = this.scenarioList.find(d => d.scenarioId === this.jobTemplateData.scenarioId);
+                if (findScenario) {
+                  this.selectScenario(findScenario);
+                }
+              } else {
+                if (this.type == 'global') {
+                  this.selectScenario(this.scenarioList[0]);
+                } else {
+                  let scenarioIndex = this.scenarioList.findIndex((item) => {
+                    return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
+                  });
+                  if (scenarioIndex != -1) {
+                    this.selectScenario(this.scenarioList[scenarioIndex]);
+                  }
+                }
               }
             }
             if (this.envList && this.envList.length > 0) {
-              if (!this.jobTemplateData.envId || !this.envList.find(d => d.id === this.jobTemplateData.envId)) {
-                this.selectEnv(this.envList[0]);
+              if (this.jobTemplateData.envId) {
+                if (!this.hasAuthorityEnvIdList.includes(this.jobTemplateData.envId)) {
+                  if (this.type != 'global') {
+                    this.jobTemplateData.envId = null;
+                    let envIndex = this.envList.findIndex((item) => {
+                      return this.hasAuthorityEnvIdList.includes(item.id);
+                    });
+                    if (envIndex != -1) {
+                      this.jobTemplateData.envId = this.envList[envIndex].id;
+                    }
+                  }
+                }
+              }
+              if (this.jobTemplateData.envId) {
+                let findEnv = this.envList.find(d => d.id === this.jobTemplateData.envId);
+                if (findEnv) {
+                  this.selectEnv(findEnv);
+                }
+              } else {
+                if (this.type == 'global') {
+                  this.selectEnv(this.envList[0]);
+                } else {
+                  let envIndex = this.envList.findIndex((item) => {
+                    return this.hasAuthorityEnvIdList.includes(item.id);
+                  });
+                  if (envIndex != -1) {
+                    this.selectEnv(this.envList[envIndex]);
+                  }
+                }
               }
             }
             this.getJobModuleList();
@@ -309,6 +416,24 @@ export default {
   },
   filter: {},
   computed: {
+    hasScenarioAuth() {
+      // 场景权限
+      return (scenarioId) => {
+        if (this.type == 'global' || this.hasAuthorityScenarioIdList.includes(scenarioId)) {
+          return true;
+        }
+        return false;
+      };
+    },
+    hasEnvAuth() {
+      // 环境权限
+      return (envId) => {
+        if (this.type == 'global' || this.hasAuthorityEnvIdList.includes(envId)) {
+          return true;
+        }
+        return false;
+      };
+    },
     envName() {
       if (this.jobTemplateData.envId) {
         const env = this.envList.find(d => d.id === this.jobTemplateData.envId);
@@ -386,4 +511,15 @@ export default {
     }
   }
 }
+.tooltips-box {
+    /deep/ &.ivu-tooltip {
+      width: 100%;
+    }
+    /deep/ .ivu-tooltip-rel {
+      width: 100%;
+    }
+    .width-box {
+      width: 100%;
+    }
+  }
 </style>

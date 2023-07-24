@@ -1,7 +1,7 @@
 <template>
   <div class="form-li" :class="borderClass">
-    <input v-if="type == 'password'" type="text" class="hidden" />
-    <input v-if="type == 'password'" type="password" class="hidden" />
+    <!-- <input v-if="type == 'password'" type="text" class="hidden" />
+    <input v-if="type == 'password'" type="password" class="hidden" /> -->
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="readonlyTitle">{{ currentValue || currentValue === 0 ? currentValue : '-' }}</span>
     <div v-else :style="getStyle">
       <Input
@@ -23,6 +23,7 @@
         :suffix="suffix"
         :search="search"
         :style="setThemeColor()"
+        :autocomplete="type == 'password'? 'new-password': 'off'"
         @on-change="onChangeValue"
         @on-focus="onFocusValue"
         @on-enter="onEnterValue"

@@ -151,7 +151,7 @@
 <script>
 import '@/views/pages/process/flow/topoComponent/index.js';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
-import Items from '@/resources/components/FormMaker/formedit/items';
+import Items from '@/resources/components/FormItems';
 export default {
   name: 'CatalogViewprocess',
   components: {

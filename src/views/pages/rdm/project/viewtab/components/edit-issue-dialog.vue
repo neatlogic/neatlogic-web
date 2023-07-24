@@ -63,8 +63,6 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
-    //UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    //TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
     AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
   },
   props: {
@@ -79,7 +77,7 @@ export default {
     },
     id: { type: Number },
     app: { type: Object },
-    catalog: { type: Number },
+    catalogId: { type: Number },
     iteration: { type: Number }
   },
   data() {
@@ -91,18 +89,10 @@ export default {
         isShow: true,
         width: 'large'
       },
-      catalogConfig: {
-        url: 'api/rest/rdm/catalog/search',
-        params: { appId: this.app.id },
-        value: this.catalog,
-        valueName: 'id',
-        textName: 'name',
-        showPath: true
-      },
       issueData: {
         appId: this.app.id,
         appType: this.app.type,
-        catalog: this.catalog,
+        catalog: this.catalogId,
         iteration: this.iteration,
         attrList: []
       },

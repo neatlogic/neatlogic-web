@@ -216,7 +216,7 @@ export default {
     },
     getDisabledText(item, type) {
       let text = false;
-      if (!item.isHasAllAuthority && item.isConfigAuthority) {
+      if (!item.isHasAllAuthority) {
         if (!item.authActionSet.includes('operation#edit') && !item.authActionSet.includes('operation#all')) {
           text = this.$t('term.deploy.notapplyeditconfigauth');
         } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {

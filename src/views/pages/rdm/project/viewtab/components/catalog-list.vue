@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div v-if="$AuthUtils.hasRole('PROJECT_MANAGE') || (projectData && projectData.isOwner && projectData.isLeader)">
       <a @click="addRootCatalog()">
         <span class="tsfont-plus" style="margin-left: 3px; margin-right: 4px"></span>
         <span>{{ $t('page.catalogue') }}</span>
@@ -8,9 +8,9 @@
     </div>
     <TsZtree
       :nodes="catalogList"
-      :hoverDomList="hoverDomList"
+      :hoverDomList="hoverItemList"
       :onClick="clickNode"
-      :onDrop="onDrop"
+      :onDrop="($AuthUtils.hasRole('PROJECT_MANAGE') || (projectData && projectData.isOwner && projectData.isLeader)) ? onDrop : null"
       :value="currentCatalogId"
       :enableToggleClick="true"
     ></TsZtree>
@@ -32,10 +32,12 @@ export default {
     EditAppCatalog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-appcatalog-dialog.vue'], resolve)
   },
   props: {
-    appId: { type: Number }
+    appId: { type: Number },
+    projectId: { type: Number }
   },
   data() {
     return {
+      projectData: null,
       currentCatalogId: null,
       currentCatalog: {},
       isEditCatalogShow: false,
@@ -88,6 +90,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.getProjectById();
     this.searchAppCatalog();
   },
   beforeMount() {},
@@ -99,6 +102,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getProjectById() {
+      if (this.projectId) {
+        this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+          this.projectData = res.Return;
+        });
+      }
+    },
     clickNode(tree, node) {
       this.$emit('changeCatalog', node);
       this.currentCatalogId = node ? node.id : null;
@@ -147,7 +157,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    hoverItemList() {
+      if (this.$AuthUtils.hasRole('PROJECT_MANAGE') || (this.projectData && this.projectData.isOwner && this.projectData.isLeader)) {
+        return this.hoverDomList;
+      }
+      return [];
+    }
+  },
   watch: {}
 };
 </script>

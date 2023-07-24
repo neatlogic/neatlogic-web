@@ -81,8 +81,24 @@
         </CombineSearcher>
       </div>
     </div>
+    <div v-if="showStatus" style="text-align: right" class="mb-xs">
+      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
+        <strong>
+          <span class="mr-xs">{{ status.label }}</span>
+          <span>{{ status.issueCount }}</span>
+        </strong>
+        <Divider type="vertical" />
+      </span>
+      <span>
+        <strong>
+          <span class="mr-xs">{{ $t('page.completrate') }}</span>
+          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
+        </strong>
+      </span>
+    </div>
     <TsTable
       v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
+      ref="mainTable"
       :theadList="finalTheadList"
       v-bind="issueData"
       multiple
@@ -106,7 +122,7 @@
       </template>
       <template v-for="(attr, index) in attrList" :slot="attr.id ? attr.id.toString() : attr.type" slot-scope="{ row }">
         <div :key="index">
-          <AttrViewer v-if="attr.id != 0 && isSearchReady" :attrConfig="attr" :issueData="row"></AttrViewer>
+          <AttrViewer v-if="isReady && attr.id != 0 && isSearchReady" :attrConfig="attr" :issueData="row"></AttrViewer>
           <div v-else-if="attr.type === '_name'" :style="{ 'margin-left': (row['_index'] || 0) * 20 + 'px' }">
             <span><AppIcon :appType="row.appType" :appColor="row.appColor"></AppIcon></span>
             <span
@@ -120,6 +136,7 @@
             </span>
           </div>
           <IssueStatus v-else-if="attr.type === '_status'" :issueData="row"></IssueStatus>
+          <span v-else-if="attr.type === '_createuser'"><UserCard :uuid="row.createUser"></UserCard></span>
           <span v-else-if="attr.type === '_createdate'">{{ row.createDate | formatDate('yyyy-mm-dd') }}</span>
         </div>
       </template>
@@ -128,26 +145,11 @@
           <ul class="tstable-action-ul">
             <li v-if="fromId || toId || parentId || row.parentId" class="tsfont-unbind" @click="unlinkIssue(row)">{{ $t('term.rdm.disconnect') }}</li>
             <li class="tsfont-inspection" @click="toIssueDetail(row)">{{ $t('page.detail') }}</li>
-            <li class="tsfont-trash-o" @click="deleteIssue(row)">{{ $t('page.delete') }}</li>
+            <li v-if="row.isProjectOwner || row.isProjectMember || row.isProjectLeader" class="tsfont-trash-o" @click="deleteIssue(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
     </TsTable>
-    <div v-if="showStatus" style="text-align: right" class="mb-xs">
-      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
-        <strong>
-          <span class="mr-xs">{{ status.label }}</span>
-          <span>{{ status.issueCount }}</span>
-        </strong>
-        <Divider type="vertical" />
-      </span>
-      <span>
-        <strong>
-          <span class="mr-xs">{{ $t('page.completrate') }}</span>
-          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
-        </strong>
-      </span>
-    </div>
     <NoData v-else-if="isShowEmptyTable"></NoData>
     <EditIssue
       v-if="isEditIssueShow"
@@ -171,7 +173,7 @@
     ></IssueListDialog>
     <TsDialog
       v-if="isIssueDetailShow && currentIssue"
-      :hasHeader="false"
+      :hasHeader="true"
       type="slide"
       :isShow="true"
       width="huge"
@@ -180,12 +182,13 @@
       @on-close="
         isIssueDetailShow = false;
         currentIssue = null;
+        searchIssue();
       "
     >
       <template v-slot>
         <div>
           <component
-            :is="app.type + 'Detail'"
+            :is="currentIssue.appType + 'Detail'"
             :pId="currentIssue.projectId"
             mode="dialog"
             :aId="currentIssue.appId"
@@ -209,6 +212,7 @@ export default {
   name: '',
   components: {
     ...issueDetailHandler,
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
@@ -258,6 +262,7 @@ export default {
   },
   data() {
     return {
+      isReady: true,
       issueDetailHandler: issueDetailHandler,
       currentIssue: null, //当前选中issue，用于打开issue详情窗口
       isLoading: true,
@@ -310,7 +315,7 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
-      isBatchExecuteShow: false//批量执行确认框
+      isBatchExecuteShow: false //批量执行确认框
     };
   },
   beforeCreate() {},
@@ -455,6 +460,10 @@ export default {
           if (row['_expand']) {
             this.$set(row, '_expand', false);
             this.issueData.tbodyList = this.issueData.tbodyList.filter(d => !d['parents'] || !d['parents'].includes(row.id));
+            this.isReady = false;
+            this.$nextTick(() => {
+              this.isReady = true;
+            });
           } else {
             this.searchChildIssue(row, index);
           }
@@ -473,7 +482,6 @@ export default {
     },
     batchExecute() {
       this.isBatchExecuteShow = true;
-      // console.log(JSON.stringify(this.issueData.tbodyList, null, 2));
     },
     linkIssue() {
       this.isLinkShow = true;
@@ -482,7 +490,7 @@ export default {
     deleteIssue(issue) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: this.app.name }),
+        content: this.$t('dialog.content.deleteconfirm', { target: issue.appName }),
         btnType: 'error',
         'on-ok': vnode => {}
       });
@@ -563,6 +571,7 @@ export default {
       const searchParam = {};
       searchParam.parentId = row.id;
       searchParam.appId = row.appId;
+      searchParam.projectId = row.projectId;
       this.$set(row, '_loading', true);
       this.$api.rdm.issue
         .searchIssue(searchParam)
@@ -584,6 +593,10 @@ export default {
         })
         .finally(() => {
           this.$set(row, '_loading', false);
+          this.isReady = false;
+          this.$nextTick(() => {
+            this.isReady = true;
+          });
         });
     },
     searchIssue(currentPage) {
@@ -620,9 +633,7 @@ export default {
       }
       if (currentPage) {
         this.searchIssueData.currentPage = currentPage;
-      } else {
-        this.searchIssueData.currentPage = 1;
-      }
+      } 
       this.isSearchReady = false;
       this.$api.rdm.issue
         .searchIssue(this.searchIssueData)

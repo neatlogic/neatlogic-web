@@ -460,14 +460,14 @@ export default {
   computed: {
     canEdit() {
       // [编辑配置]权限
-      if ((this.selectedApp && (this.selectedApp.isHasAllAuthority || !this.selectedApp.isConfigAuthority)) || this.authList.includes('operation#edit') || this.authList.includes('operation#all') || this.authList.length == 0) {
+      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#edit') || this.authList.includes('operation#all') || this.authList.length == 0) {
         return true;
       }
       return false;
     },
     hasAuth() {
       // [版本&制品管理]权限
-      if ((this.selectedApp && (this.selectedApp.isHasAllAuthority || !this.selectedApp.isConfigAuthority)) || this.authList.includes('operation#versionAndProductManager') || this.authList.includes('operation#all') || this.authList.length == 0) {
+      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#versionAndProductManager') || this.authList.includes('operation#all') || this.authList.length == 0) {
         return true;
       }
       return false;
@@ -475,7 +475,7 @@ export default {
     hasEnvAuth() {
       return function(envId) {
         // [版本&制品管理&环境]权限
-        if ((this.selectedApp && (this.selectedApp.isHasAllAuthority || !this.selectedApp.isConfigAuthority)) || (envId && this.authList.includes('opeartion#versionAndProductManager') && this.authList.includes(`env#${envId}`)) || (this.authList.includes('operation#all') && this.authList.includes('env#all')) || this.authList.length == 0) {
+        if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || (envId && this.authList.includes('opeartion#versionAndProductManager') && this.authList.includes(`env#${envId}`)) || (this.authList.includes('operation#all') && this.authList.includes('env#all')) || this.authList.length == 0) {
           return true;
         }
         return false;

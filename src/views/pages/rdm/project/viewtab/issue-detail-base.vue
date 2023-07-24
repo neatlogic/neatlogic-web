@@ -52,7 +52,7 @@ export default {
           .getIssueById(this.id)
           .then(res => {
             this.issueData = res.Return;
-            if (this.issueData) {
+            if (this.issueData && this.mode === 'page') {
               document.title = this.issueData.name;
               this.$route.meta.title = this.issueData.name;
             }

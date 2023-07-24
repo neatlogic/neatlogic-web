@@ -226,11 +226,8 @@ export default {
       this.repositoryData.pageSize = pageSize;
       this.searchList();
     },
-    searchList(flushParam) {
-      let param = {};
-      if (flushParam) {
-        param = flushParam;
-      }
+    searchList(flushParam = {}) {
+      let param = {...flushParam};
       if (this.$route.query.serveid) {
         param.repoServiceId = this.$route.query.serveid;
       }
@@ -252,10 +249,11 @@ export default {
               }
             }
           });
-          this.$set(this.repositoryData, 'pageCount', res.Return.pageCount);
-          this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
-          this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
-          this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
+          const {pageCount = 0, pageSize = 10, rowNum = 0, currentPage = 1} = res?.Return || {};
+          this.$set(this.repositoryData, 'pageCount', pageCount);
+          this.$set(this.repositoryData, 'rowNum', rowNum);
+          this.$set(this.repositoryData, 'pageSize', pageSize);
+          this.$set(this.repositoryData, 'currentPage', currentPage);
           // this.searchTime && clearTimeout(this.searchTime);
           // this.searchTime = setTimeout(() => {
           //   this.searchList(param);

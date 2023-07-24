@@ -140,14 +140,14 @@ export default {
       this.$emit('close');
     },
     saveService() {
-      if (this.$refs.form.valid()) {
-        let param = this.formValue;
-        this.$api.codehub.service.save(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.$emit('close', true);
-          }
-        });
+      if (this.$refs.form && !this.$refs.form.valid()) {
+        return;
       }
+      this.$api.codehub.service.save(this.formValue).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$emit('close', true);
+        }
+      });
     },
     getServiceDetail(id) {
       this.$api.codehub.service.getDetail({id: id}).then(res => {
