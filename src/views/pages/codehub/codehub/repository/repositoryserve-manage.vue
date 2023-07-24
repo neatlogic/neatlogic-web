@@ -176,21 +176,19 @@ export default {
     searchRepository() {
       let param = {
         currentPage: this.repositoryData.currentPage,
-        pageSize: this.repositoryData.pageSize
+        pageSize: this.repositoryData.pageSize,
+        ...this.searchParams
       };
-      let searchParams = this.$utils.deepClone(this.searchParams);
-      if (this.searchParams) {
-        Object.assign(param, this.searchParams);
-        param.type = searchParams.type == 'all' ? '' : searchParams.type;
-      }
+      param.type = this.searchParams?.type === 'all' ? '' : this.searchParams?.type;
       this.loadingShow = true;
       this.$api.codehub.service.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.$set(this.repositoryData, 'pageCount', res.Return.pageCount);
-          this.$set(this.repositoryData, 'rowNum', res.Return.rowNum);
-          this.$set(this.repositoryData, 'pageSize', res.Return.pageSize);
-          this.$set(this.repositoryData, 'currentPage', res.Return.currentPage);
-          this.$set(this.repositoryData, 'cardList', res.Return.tbodyList);
+          const { pageCount = 0, rowNum = 0, pageSize = 20, currentPage = 1, tbodyList = [] } = res?.Return || {};
+          this.$set(this.repositoryData, 'pageCount', pageCount);
+          this.$set(this.repositoryData, 'rowNum', rowNum);
+          this.$set(this.repositoryData, 'pageSize', pageSize);
+          this.$set(this.repositoryData, 'currentPage', currentPage);
+          this.$set(this.repositoryData, 'cardList', tbodyList);
         } else {
           this.$set(this.repositoryData, 'cardList', []);
         }

@@ -79,44 +79,47 @@ export default {
   destroyed() {},
   methods: {
     initData() {
-      Object.assign(this.formData, {
-        versionStrategyId: this.versionData.id,
-        versionName: this.versionData.name,
+      const { id = null, name = '', versionTypeId = '', appModuleId = '', versionPrefix = '' } = this.versionData;
+
+      this.formData = {
+        versionStrategyId: id,
+        versionName: name,
         version: '',
-        versionTypeId: this.versionData.versionTypeId || '',
-        appModuleId: this.versionData.appModuleId,
-        versionPrefix: this.versionData.versionPrefix
-      });
+        versionTypeId: versionTypeId || '',
+        appModuleId,
+        versionPrefix
+      };
+
       if (this.formData.versionTypeId) {
         this.getAutoCreateVersionName(this.formData.versionTypeId);
       }
-      this.formConfig.forEach(form => {
-        if (form.name == 'version') {
-          this.$set(form, 'prepend', this.formData.versionPrefix);
-          this.versionPrefix = this.formData.versionPrefix;
-        }
-      });
+      let versionItem = this.formConfig.find((item) => item.name === 'version');
+      if (versionItem) {
+        this.$set(versionItem, 'prepend', this.formData.versionPrefix);
+      }
+
+      this.versionPrefix = this.formData.versionPrefix;
     },
     close() {
       this.$emit('close');
     },
     saveVersion() {
-      if (this.$refs.form.valid()) {
-        let param = {};
-        Object.assign(param, {
-          version: this.versionPrefix + this.formData.version,
-          versionTypeId: this.formData.versionTypeId,
-          versionStrategyId: this.formData.versionStrategyId,
-          appModuleId: this.formData.appModuleId
-        });
-        this.$api.codehub.version.save(param).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.addsuccess'));
-            this.$emit('close', true);
-            this.$router.push({ path: 'merge-create', query: {versionid: res.Return} });
-          }
-        });
+      if (this.$refs.form && !this.$refs.form.valid()) {
+        return false;
       }
+      let param = {
+        version: this.versionPrefix + this.formData.version,
+        versionTypeId: this.formData.versionTypeId,
+        versionStrategyId: this.formData.versionStrategyId,
+        appModuleId: this.formData.appModuleId
+      };
+      this.$api.codehub.version.save(param).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.addsuccess'));
+          this.$emit('close', true);
+          this.$router.push({ path: 'merge-create', query: {versionid: res.Return} });
+        }
+      });
     },
     getAutoCreateVersionName(versionTypeId) {
       // 获取根据规则来生成的版本号
