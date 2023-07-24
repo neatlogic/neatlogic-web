@@ -319,14 +319,12 @@ export default {
         // 全选按钮高亮
         this.checkAll = true;
         this.indeterminate = false;
-        this.checkboxIsSelectedAll(true);
       } else {
         this.checkAll = false;
-        this.indeterminate = true;
-        this.checkboxIsSelectedAll(false);
+        this.indeterminate = !!this.selectedAuthList.length;
       }
     },
-    checkboxIsSelectedAll(isSelectedAll) {
+    checkboxIsSelectedAll(isSelectedAll) { 
       if (isSelectedAll) {
         this.tableConfig.tbodyList.forEach((item) => {
           this.$set(item, 'isSelected', true);
@@ -342,10 +340,10 @@ export default {
       if (this.checkAll) {
         this.checkboxIsSelectedAll(true);
         this.indeterminate = false;
-        this.selectedAuthList = this.tableConfig.tbodyList;
+        this.selectedAuthList = this.$utils.deepClone(this.tableConfig.tbodyList);
       } else {
         this.checkboxIsSelectedAll(false);
-        this.indeterminate = true;
+        this.indeterminate = false;
         this.selectedAuthList = [];
       }
     },
