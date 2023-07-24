@@ -7,8 +7,8 @@
 	margin: 0;
 	line-height: 21px;
 	text-align: left;
-    white-space: nowrap;
-    position: relative;
+	white-space: nowrap;
+	position: relative;
 	outline: 0;
 	padding: 2px;
 	/* fix the bug of overflow-li */
@@ -17,7 +17,7 @@
 	text-overflow: ellipsis;
 	word-break: break-all;
 	white-space: nowrap;
-    list-style: none;
+	list-style: none;
 }
 
 .ztree li ul {
@@ -112,18 +112,23 @@
 	padding-top: 0px;
 	height: 20px;
 }
-.ztree li a.tmpTargetNode_prev::before,.ztree li a.tmpTargetNode_next::before,.ztree li a.tmpTargetNode_inner::before{
-   content:"\e723";
-   font-family: 'ts';
-   position: absolute;
-   left: 4px;
-   font-size: 18px;
+
+.ztree li a.tmpTargetNode_prev::before,
+.ztree li a.tmpTargetNode_next::before,
+.ztree li a.tmpTargetNode_inner::before {
+	content: "\e723";
+	font-family: 'ts';
+	position: absolute;
+	left: 4px;
+	font-size: 18px;
 }
-.ztree li a.tmpTargetNode_prev::before{
-    top:-8px;
+
+.ztree li a.tmpTargetNode_prev::before {
+	top: -8px;
 }
-.ztree li a.tmpTargetNode_next::before{
-    top:12px;
+
+.ztree li a.tmpTargetNode_next::before {
+	top: 12px;
 }
 
 .ztree li a input.rename {
@@ -168,11 +173,12 @@ ul.ztree.zTreeDragUL {
 	width: auto;
 	height: auto;
 	overflow: hidden;
-    opacity: 0.8;
-    z-index: 9;
+	opacity: 0.8;
+	z-index: 9;
 }
-ul.ztree.zTreeDragUL>li a{
-   margin-left: 20px;
+
+ul.ztree.zTreeDragUL>li a {
+	margin-left: 20px;
 }
 
 .zTreeMask {
@@ -454,13 +460,14 @@ ul.ztree.zTreeDragUL>li a{
 	line-height: 26px;
 	vertical-align: middle;
 }
+
 .ztree.hoverDom a[id^="ztree_"]>span[id^="ztree_"] {
-   max-width: 80%;
+	max-width: 80%;
 }
 
 .ztree a[id^="ztree_"]>span[id^="ztree_"] {
 	display: inline-block;
-	/*overflow: hidden;*/
+	overflow: hidden; /* 把注释打开，解决超出隐藏，没有生效的问题 */
 	text-overflow: ellipsis;
 	word-break: break-all;
 	white-space: nowrap;
