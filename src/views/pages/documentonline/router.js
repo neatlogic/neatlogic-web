@@ -1,3 +1,4 @@
+const page404 = () => import('@/views/pages/common/404.vue');
 const documentonline = () => import('./document/documentonline-help-center.vue');
 const documentonlineDetail = () => import('./document/documentonline-detail.vue');
 const documentonlineSearch = () => import('./document/documentonline-search.vue');
@@ -8,6 +9,14 @@ export default [
   {
     path: '/',
     redirect: '/documentonline'
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: page404,
+    meta: {
+      title: $t('page.pagenotvalid')
+    }
   },
   {
     path: '/documentonline',
@@ -38,7 +47,8 @@ export default [
     name: 'directory-manage',
     component: directoryManage,
     meta: {
-      title: $t('router.documentonline.directorymanage')
+      title: $t('router.documentonline.directorymanage'),
+      authority: 'DOCUMENTONLINE_CONFIG_MODIFY'
     }
   }
 ];
