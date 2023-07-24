@@ -212,17 +212,22 @@ export default {
           });
         });
       }
+      console.log(dataList, 'dataList');
       return dataList;
     },
     getDisabledText(item, type) {
       let text = false;
-      if (!item.isHasAllAuthority) {
-        if (!item.authActionSet.includes('operation#edit') && !item.authActionSet.includes('operation#all')) {
+      if (!item.isHasAllAuthority && type == 'app') {
+        if (item.authActionSet && item.authActionSet.length) {
+          if (!item.authActionSet.includes('operation#edit') && !item.authActionSet.includes('operation#all')) {
+            text = this.$t('term.deploy.notapplyeditconfigauth');
+          } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
+            text = this.$t('term.deploy.notapplyallsceneexecuteauth');
+          } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
+            text = this.$t('term.deploy.notapplyallenvexecuteauth');
+          }
+        } else {
           text = this.$t('term.deploy.notapplyeditconfigauth');
-        } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
-          text = this.$t('term.deploy.notapplyallsceneexecuteauth');
-        } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
-          text = this.$t('term.deploy.notapplyallenvexecuteauth');
         }
       } else if (!item.isConfig) {
         text = this.$t('term.deploy.applynotconfigpipeline');

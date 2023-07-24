@@ -35,7 +35,7 @@
                   :xxl="2"
                 >
                   <div
-                    v-if="hasScenarioAuth(item.scenarioId)"
+                    v-if="item.isEnable"
                     class="li-item text-action"
                     :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
                     @click="changeSelect('scenario',item)"
@@ -72,7 +72,7 @@
                   :xxl="2"
                 >
                   <div
-                    v-if="hasEnvAuth(item.id)"
+                    v-if="item.isEnable"
                     class="li-item text-action"
                     :class="envId == item.id?'li-active li-text border-primary':'border-base bg-op'"
                     @click="changeSelect('env',item)"
@@ -197,8 +197,6 @@ export default {
       isShowValidDialog: false,
       combopPhaseNameList: [], //选中场景的阶段列表名称
       selectModuleList: [], //选中的模块列表
-      hasAuthorityScenarioIdList: [], // 有授权的场景id列表
-      hasAuthorityEnvIdList: [], // 有授权的环境id列表
       appModuleLoading: true,
       disabledBtn: true,
       jobId: null, //作业id
@@ -241,39 +239,41 @@ export default {
         if (res.Status == 'OK') {
           this.initData = res.Return || {};
           this.appModuleList = this.initData.appModuleList || [];
-          this.hasAuthorityScenarioIdList = this.initData.hasAuthorityScenarioIdList;
-          this.hasAuthorityEnvIdList = this.initData.hasAuthorityEnvIdList;
-          if (this.initData.scenarioList && this.initData.scenarioList.length) {
-            if (this.initData.defaultScenarioId) {
-              if (this.hasAuthorityScenarioIdList.includes(this.initData.defaultScenarioId)) {
-                this.scenarioId = this.initData.defaultScenarioId;
-              }
-            }
-            if (this.scenarioId) {
-              let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-              if (findScenario) {
-                this.combopPhaseNameList = findScenario.combopPhaseNameList;
-              }
-            } else {
-              let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-                return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
-              });
-              if (scenarioIndex != -1) {
-                this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
-                this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-              }
-            }
-          }
-          if (this.initData.envList && this.initData.envList.length) {
-            let envIndex = this.initData.envList.findIndex((item) => {
-              return this.hasAuthorityEnvIdList.includes(item.id);
-            });
-            if (envIndex != -1) {
-              // 权限禁用之后，默认选中第一个没有禁用的环境
-              this.envId = this.initData.envList[envIndex].id;
-              this.envName = this.initData.envList[envIndex].name;
-            }
-          }
+          this.scenarioId = this.initData.defaultSelectScenario.scenarioId;
+          this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
+          this.envId = this.initData.defaultSelectEnv.id;
+          this.envName = this.initData.defaultSelectEnv.name;
+          // if (this.initData.scenarioList && this.initData.scenarioList.length) {
+          //   if (this.initData.defaultScenarioId) {
+          //     if (this.hasAuthorityScenarioIdList.includes(this.initData.defaultScenarioId)) {
+          //       this.scenarioId = this.initData.defaultScenarioId;
+          //     }
+          //   }
+          //   if (this.scenarioId) {
+          //     let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
+          //     if (findScenario) {
+          //       this.combopPhaseNameList = findScenario.combopPhaseNameList;
+          //     }
+          //   } else {
+          //     let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
+          //       return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
+          //     });
+          //     if (scenarioIndex != -1) {
+          //       this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
+          //       this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
+          //     }
+          //   }
+          // }
+          // if (this.initData.envList && this.initData.envList.length) {
+          //   let envIndex = this.initData.envList.findIndex((item) => {
+          //     return this.hasAuthorityEnvIdList.includes(item.id);
+          //   });
+          //   if (envIndex != -1) {
+          //     // 权限禁用之后，默认选中第一个没有禁用的环境
+          //     this.envId = this.initData.envList[envIndex].id;
+          //     this.envName = this.initData.envList[envIndex].name;
+          //   }
+          // }
           if (this.jobId) {
             this.initJobData();
           }
@@ -515,26 +515,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    hasScenarioAuth() {
-      // 场景权限
-      return (scenarioId) => {
-        if (this.hasAuthorityScenarioIdList.includes(scenarioId)) {
-          return true;
-        }
-        return false;
-      };
-    },
-    hasEnvAuth() {
-      // 环境权限
-      return (envId) => {
-        if (this.hasAuthorityEnvIdList.includes(envId)) {
-          return true;
-        }
-        return false;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
