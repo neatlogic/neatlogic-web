@@ -854,7 +854,7 @@ export default {
         if (node.envId) {
           params = params + '&envId=' + node.envId;
         }
-        if (node.isHasAllAuthority || !node.isConfigAuthority || (node.authActionSet.includes('operation#edit') || node.authActionSet.includes('operation#all'))) {
+        if (node.isHasAllAuthority || (node.authActionSet.includes('operation#edit') || node.authActionSet.includes('operation#all'))) {
           // 是否有编辑配置权限
           params = params + '&hasEditAuth=' + true;
         } else {
@@ -1000,7 +1000,7 @@ export default {
         if (res && res.Status == 'OK') {
           let authInfo = res.Return && res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0] : null;
           let authList = authInfo && authInfo.authActionSet ? authInfo.authActionSet : [];
-          if (authList.includes('operation#all') || authList.includes('operation#edit') || (authInfo && authInfo.isHasAllAuthority) || (authInfo && !authInfo.isConfigAuthority)) {
+          if (authList.includes('operation#all') || authList.includes('operation#edit') || (authInfo && authInfo.isHasAllAuthority)) {
             // 有编辑配置权限
             this.hasEditAuth = true;
           } else {

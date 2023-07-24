@@ -87,10 +87,10 @@ export default {
       if (this.currentIterationId !== iteration.id) {
         this.currentIterationId = iteration.id;
         this.$emit('change', iteration);
-      } else {
+      } /*else {
         this.currentIterationId = null;
         this.$emit('change', null);
-      }
+      }*/
     },
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {

@@ -1,5 +1,10 @@
 <template>
-  <div id="login" class="login-bg" @keydown.enter="login">
+  <div
+    v-if="!needRefresh"
+    id="login"
+    class="login-bg"
+    @keydown.enter="handleLogin"
+  >
     <div id="loginContainer">
       <form
         id="loginForm"
@@ -9,6 +14,7 @@
       >
         <p class="text-title">{{ title }}</p>
         <div class="title-bottom text-grey">For your better IT service</div>
+      
         <div class="form-wrap">
           <div class="user-input">
             <Input
@@ -36,11 +42,11 @@
             </Checkbox>
           </div> -->
           <div>
-            <Button id="btnLogin" :loading="logining" @click="login">{{ $t('page.login') }}</Button>
+            <Button id="btnLogin" :loading="loading" @click="handleLogin">{{ $t('page.login') }}</Button>
           </div>
         </div>
-        <div v-show="error" class="err-block">
-          {{ errortxt }}
+        <div v-show="errorTips" class="text-danger">
+          {{ errorTips }}
         </div>
       </form>
     </div>
@@ -72,10 +78,10 @@ export default {
         password: ''
       },
       title: process.env.VUE_APP_LOGINTITLE,
-      error: false,
-      errortxt: '',
+      errorTips: '',
       remember: false,
-      logining: false,
+      loading: false,
+      needRefresh: false, // 点击登录会有闪一下的问题
       themeClass: localStorage.getItem('themeClass') || 'theme-default'
     };
   },
@@ -84,12 +90,12 @@ export default {
     document.onkeydown = (e) => {
       let key = window.event.keyCode;
       if (key == 13) {
-        this.login();
+        this.handleLogin();
       }
     };
     // 解决从IE跳转到chrome，token等数据丢失的问题
     let fullPath = this.$route.fullPath;
-    if (fullPath.indexOf('/sso1/') != -1) {
+    if (fullPath.includes('/sso1/')) {
       let replaceUrl = fullPath.replace('/sso1/', '/sso/');
       this.$router.push({
         path: replaceUrl,
@@ -97,22 +103,18 @@ export default {
       });
     }
   },
-  beforeMount() {
-    ThemeUtils.activeTheme();
-  },
+  beforeMount() {},
   mounted() {
     document.documentElement.classList.add(this.themeClass);
   },
   methods: {
-    login() {
+    handleLogin() {
       if (this.loginForm.username === '') {
-        this.error = true;
-        this.errortxt = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')});
+        this.errorTips = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')});
       } else if (this.loginForm.password === '') {
-        this.error = true;
-        this.errortxt = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.password')});
+        this.errorTips = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.password')});
       } else {
-        this.error = false;
+        this.errorTips = '';
         let psd = '{MD5}' + this.$md5(this.loginForm.password);
         if (this.encrypt === 'base64') {
           psd = '{BS}' + this.$base64.encode(this.loginForm.password);
@@ -122,9 +124,9 @@ export default {
           password: psd,
           authType: this.authtype
         };
-        this.logining = true;
+        this.loading = true;
         this.$axios({method: 'post', url: '/login/check', data: param}).then(res => { //登录页面的接口不在全局（获取租户等，还有减少登录页面不必要的资源加载）
-          this.logining = false;
+          this.loading = false;
           if (res.data) {
             if (res.data.Status == 'OK') {
               if (res.data.JwtToken) {
@@ -139,15 +141,13 @@ export default {
                 localStorage.themeClass = 'theme-default';
               }
             } else if (res.data.Status == 'ERROR') {
-              this.error = true;
-              this.errortxt = res.data.Message;
+              this.errorTips = res.data.Message;
               sessionStorage.removeItem('neatlogic_authorization');
             }
           }
-        }).catch(error => {
-          this.logining = true;
-          this.error = true;
-          this.errortxt = this.$t('page.accountorpwderror');
+        }).catch(() => {
+          this.loading = true;
+          this.errorTips = this.$t('page.accountorpwderror');
           sessionStorage.removeItem('neatlogic_authorization');
         });
       }
@@ -162,6 +162,7 @@ export default {
       return redirecturl;
     },
     changeTheme() {
+      this.needRefresh = true;
       let htmlClassList = document.documentElement.classList;
       htmlClassList.toggle('theme-default');
       htmlClassList.toggle('theme-dark');
@@ -170,6 +171,9 @@ export default {
       ThemeUtils.updateThemeValue(mutations, 'setLogo', 'logo'); // 这个方法，主要是更新状态管理器，setlogo 是参数名称
       this.$store.commit('setThemeType', htmlClassList[0]);
       this.themeClass = htmlClassList[0];
+      this.$nextTick(() => {
+        this.needRefresh = false; // 解决浏览器自动填充背景，填充背景不随着主题色变化的问题
+      });
     },
     changeLanguage() {
       let lang = this.$i18n.locale;
@@ -189,19 +193,11 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@primary-color, @login-bg-color, @bg-op, @input-border, @text-color) {
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
 .login-bg {
   position: relative;
   display: flex;
   width: 100%;
   height: 100%;
-  // background-image: url("../../../resources/assets/images/login/login-bg.png");
-  background-position: center center;
-  background-size: cover;
   background: var(--login-bg-color, @login-bg-color);
 }
 .switch-theme {
@@ -236,10 +232,6 @@ body {
   float: none;
   padding: 6px 0;
 }
-.err-block {
-  margin: 0 auto;
-    color:@default-error-color
-}
 #loginForm {
  display: block;
   width: 827px;
@@ -258,27 +250,26 @@ body {
   margin-left: 0;
   font-size: 14px;
   padding-bottom: 20px;
-  color: #8E949F;
 }
 #btnLogin {
   width: 102px;
   height: 42px;
   line-height: 41px;
+  margin-left: 20px;
   font-size: 16px;
   background: var(--primary-color, @primary-color);
   border-color: var(--primary-color, @primary-color);
   color: #fff;
-  margin-left: 20px;
   &:focus {
     box-shadow: none;
   }
 }
-.form-wrap{
+.form-wrap {
   /deep/.ivu-btn > span{
     vertical-align: top;
   }
 }
-.login-int{
+.login-int {
   width: 336px;
   /deep/.ivu-input {
     border: 1px solid var(--input-border, @input-border)!important;
@@ -288,22 +279,24 @@ body {
     background: var(--bg-op, @bg-op);
     color: var(--text-color, @text-color);
   }
-  /deep/.ivu-input:focus{
-    // box-shadow: none;
-    box-shadow: 0 0 0 2px @default-primary-color 0.2!important;
-    background: transparent!important;
+  /deep/.ivu-input:focus {
+    box-shadow: 0 0 0 2px var(--bg-op, @bg-op) !important;
+    background: transparent !important;
   }
-  /deep/input:focus:-webkit-autofill, /deep/input:-webkit-autofill{
-    background: @default-primary-grey!important;
-    -webkit-text-fill-color: var(--text-color, @text-color) !important;
-    // box-shadow: 0 0 0px 1000px @primary-grey inset !important;
-    transition: background-color 500000s ease-in-out 50000s;
-  }
+ /deep/ input:-webkit-autofill,
+ /deep/ input:-webkit-autofill:hover,
+ /deep/ input:-webkit-autofill:focus,
+ /deep/ input:-webkit-autofill:active {
+   box-shadow: 0 0 0 1000px var(--bg-op, @bg-op) inset !important; // 自动填充背景颜色，用阴影来填充
+   transition-delay: 99999s; // 延迟
+   transition: color 99999s ease-out, background-color 99999s ease-out;
+  -webkit-text-fill-color: var(--text-color, @text-color) !important; // 自动填充，字体的颜色
+}
   /deep/.ivu-input-prefix i,
   /deep/.ivu-input-suffix i{
     line-height: 40px;
   }
-}
+ }
 }
 html {
   .theme(@default-primary-color, @default-login-bg-color, @default-op, @default-input-border, @default-text);

@@ -694,7 +694,7 @@ export default {
     },
     canEditAuth() {
       // 编辑配置权限
-      if ((this.selectedApp && ((this.selectedApp.isHasAllAuthority) || (!this.selectedApp.isConfigAuthority))) || (this.authList.includes('operation#edit') || this.authList.includes('operation#all'))) {
+      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || (this.authList.includes('operation#edit') || this.authList.includes('operation#all'))) {
         return true;
       }
       return false;
@@ -724,7 +724,7 @@ export default {
       // 创建作业
       // 第一种情况：管理员权限+有模块和环境层
       // 第二种情况：编辑配置权限+环境权限+场景权限+有模块和环境层
-      if (((this.authList.includes('operation#edit') || this.authList.includes('operation#all')) && this.hasEnvAuth && this.hasScenarioAuth && this.hasConfigInfo) || ((this.selectedApp && ((this.selectedApp.isHasAllAuthority) || (!this.selectedApp.isConfigAuthority))) && this.hasConfigInfo)) {
+      if (((this.authList.includes('operation#edit') || this.authList.includes('operation#all')) && this.hasEnvAuth && this.hasScenarioAuth && this.hasConfigInfo) || ((this.selectedApp && this.selectedApp.isHasAllAuthority) && this.hasConfigInfo)) {
         return true;
       }
       return false;

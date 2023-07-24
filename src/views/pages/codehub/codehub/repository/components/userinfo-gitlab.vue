@@ -95,34 +95,25 @@ export default {
   destroyed() {},
   methods: {
     async getInfo() {
-      if (this.type == 'group') {
-        let param = {
-          repositoryId: this.repositoryId,
-          group: this.id        
-        };
-        await this.$api.codehub.repositorydetail.getGroupUser(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.userList = res.Return || [];
-          } else {
-            this.userList = [];
-          }
-        }).catch(res => {
-          this.userList = [];
-        });
-      } else {
-        let param = {
-          repositoryId: this.repositoryId,
-          id: this.id        
-        };
-        this.$api.codehub.repositorydetail.getUser(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.userInfo = res.Return || {};
-          } else {
-            this.userInfo = this.row;
-          }
-        }).catch(res => {
-          this.userInfo = this.row;
-        });        
+      try {
+        if (this.type === 'group') {
+          const param = {
+            repositoryId: this.repositoryId,
+            group: this.id
+          };
+          const res = await this.$api.codehub.repositorydetail.getGroupUser(param);
+          this.userList = res && res.Status === 'OK' ? res.Return || [] : [];
+        } else {
+          const param = {
+            repositoryId: this.repositoryId,
+            id: this.id
+          };
+          const res = await this.$api.codehub.repositorydetail.getUser(param);
+          this.userInfo = res && res.Status === 'OK' ? res.Return || {} : this.row;
+        }
+      } catch (error) {
+        this.userList = [];
+        this.userInfo = this.row;
       }
     }
   },
@@ -130,12 +121,8 @@ export default {
   watch: {
     visible: {
       handler: function(val) {
-        if (val) {
-          if (this.type == 'group' && !this.userList) {
-            this.getInfo();
-          } else if (!this.userInfo) {
-            this.getInfo();
-          }
+        if (val && ((!this.userList && this.type === 'group') || !this.userInfo)) {
+          this.getInfo();
         }
       },
       immediate: true

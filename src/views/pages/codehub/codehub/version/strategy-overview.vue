@@ -172,21 +172,15 @@ export default {
       this.getStrategyList();
     },
     updateAppModule(appSystemId) {
-      if (appSystemId) {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {appSystemId: appSystemId});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          } 
-        });
-      } else {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          } 
-        });
-      }
+      const params = appSystemId ? { appSystemId } : {};
+      const dynamicUrl = appSystemId ? '/api/rest/codehub/appmodule/search' : '';
+
+      this.searchConfig.searchList.forEach((item) => {
+        if (item && item.name === 'appModuleId') {
+          this.$set(item, 'params', params);
+          this.$set(item, 'dynamicUrl', dynamicUrl);
+        }
+      });
     },
     getStrategyList() {
       let param = {
@@ -197,13 +191,12 @@ export default {
       this.loadingShow = true;
       this.$api.codehub.strategy.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          this.$set(this.strategyData, 'pageCount', res.Return.pageCount);
-          this.$set(this.strategyData, 'rowNum', res.Return.rowNum);
-          this.$set(this.strategyData, 'pageSize', res.Return.pageSize);
-          this.$set(this.strategyData, 'currentPage', res.Return.currentPage);
-          this.$set(this.strategyData, 'cardList', res.Return.tbodyList);
-        } else {
-          this.$set(this.strategyData, 'cardList', []);
+          const {pageCount = 0, rowNum = 0, pageSize = 10, currentPage = 1} = res?.Return || {};
+          this.$set(this.strategyData, 'pageCount', pageCount);
+          this.$set(this.strategyData, 'rowNum', rowNum);
+          this.$set(this.strategyData, 'pageSize', pageSize);
+          this.$set(this.strategyData, 'currentPage', currentPage);
+          this.$set(this.strategyData, 'cardList', tbodyList);
         }
       }).finally(() => {
         this.loadingShow = false;

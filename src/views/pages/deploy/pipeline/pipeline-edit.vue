@@ -93,6 +93,7 @@
       v-if="isJobTemplateDialogShow"
       :id="currentJob&&currentJob.id"
       :job="currentJob"
+      :type="pipelineData.type"
       :appSystemId="pipelineData.appSystemId"
       @close="closeJobTemplateDialog"
       @insert="addJobTemplate"
@@ -192,6 +193,7 @@ export default {
       this.isAuthDialogShow = true;
     },
     showJobDialog(lane, group) {
+      this.currentJob = null;
       this.currentLane = lane;
       this.currentGroup = group;
       this.isJobTemplateDialogShow = true;

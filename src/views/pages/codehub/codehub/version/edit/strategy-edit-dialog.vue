@@ -220,21 +220,17 @@ export default {
     },
     changeUsePatternUseComponent(usePattern) {
       // 固定源分支是否时，源分支显示输入框，否则显示下拉框
-      this.formConfig.forEach((item) => {
-        if (usePattern == 1) {
-          if (item.name == 'srcBranch') {
-            this.$set(item, 'isHidden', false);
-          } else if (item.name == 'srcBranchSelect') {
-            this.$set(item, 'isHidden', true);
-            item.params = {appModuleId: this.formValue.appModuleId};
-          }
-        } else {
-          if (item.name == 'srcBranch') {
-            this.$set(item, 'isHidden', true);
-          } else if (item.name == 'srcBranchSelect') {
-            this.$set(item, 'isHidden', false);
-            item.params = {appModuleId: this.formValue.appModuleId};
-          }
+      this.formConfig.forEach(item => {
+        const isSrcBranchHidden = usePattern === 1;
+        const isSrcBranchSelectHidden = !isSrcBranchHidden;
+  
+        if (item.name === 'srcBranch') {
+          this.$set(item, 'isHidden', isSrcBranchHidden);
+        } else if (item.name === 'srcBranchSelect') {
+          this.$set(item, 'isHidden', isSrcBranchSelectHidden);
+          item.params = {
+            appModuleId: this.formValue.appModuleId
+          };
         }
       });
     },
@@ -257,39 +253,39 @@ export default {
       }
     },
     changeAppModule(appSystemId) {
-      //根据系统改变子系统
-      this.formConfig.forEach((item) => {
+      const appModuleItem = this.formConfig.find(item => item.name === 'appModuleId');
+
+      if (appModuleItem) {
         if (appSystemId) {
-          if (item.name == 'appModuleId') {
-            item.isHidden = false;
-            item.params = {appSystemId: appSystemId};
-          }
-        } else if (item.name == 'appModuleId') {
+          appModuleItem.isHidden = false;
+          appModuleItem.params = { appSystemId };
+        } else {
           this.formValue.appModuleId = null;
-          item.isHidden = true;
-          item.params = {};
+          appModuleItem.isHidden = true;
+          appModuleItem.params = {};
           this.changeUsePatternUseComponent(this.formValue.usePattern);
           this.updateComponentStatusByAppModuleId('');
         }
-      });
+      }
     },
     saveStrategy() {
-      if (this.$refs.form.valid()) {
-        let param = this.$utils.deepClone(this.formValue);
-        if (param.issueStatusIdList) {
-          param.issueStatusIdListText = param.issueStatusIdList.length > 0 ? param.issueStatusIdList.join(',') : '';
-          delete param.issueStatusIdList; // 删除这个属性
-        }
-        if (!param.usePattern && param.srcBranchSelect) {
-          param.srcBranch = param.srcBranchSelect;
-          delete param.srcBranchSelect; // 固定分支时，源分支是下拉框，需要重新取值
-        }
-        this.$api.codehub.strategy.save(param).then(res => {
-          if (res && res.Status == 'OK') {
-            this.$emit('close', true);
-          }
-        });
+      if (!this.$refs.form.valid()) {
+        return false;
       }
+      let param = this.$utils.deepClone(this.formValue);
+      if (param.issueStatusIdList) {
+        param.issueStatusIdListText = param.issueStatusIdList.length > 0 ? param.issueStatusIdList.join(',') : '';
+        delete param.issueStatusIdList; // 删除这个属性
+      }
+      if (!param.usePattern && param.srcBranchSelect) {
+        param.srcBranch = param.srcBranchSelect;
+        delete param.srcBranchSelect; // 固定分支时，源分支是下拉框，需要重新取值
+      }
+      this.$api.codehub.strategy.save(param).then(res => {
+        if (res?.Status === 'OK') {
+          this.$emit('close', true);
+        }
+      });
     },
     getStrategyDetail() {
       this.loadingShow = true;

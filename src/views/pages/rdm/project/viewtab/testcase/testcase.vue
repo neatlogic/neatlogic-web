@@ -13,7 +13,7 @@
         </div>
       </template>
       <template v-slot:sider>
-        <CatalogList :appId="appId" @changeCatalog="changeCatalog"></CatalogList>
+        <CatalogList :appId="appId" :projectId="projectId" @changeCatalog="changeCatalog"></CatalogList>
       </template>
       <template v-slot:content>
         <IssueList
