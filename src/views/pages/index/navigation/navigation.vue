@@ -178,13 +178,13 @@ export default {
 }
 .without-background(@module) {
   transition-property: none;
-  background-image: url('~img-module/modules/icon/big/@{module}-default.png');
+  background-image: url('~img-module/img/module/navigation/@{module}-default.png');
   background-position: center 40px;
   background-repeat: no-repeat;
   background-size: 70%;
 
   .theme-dark & {
-    background-image: url('~img-module/modules/icon/big/@{module}-dark.png');
+    background-image: url('~img-module/img/module/navigation/@{module}-dark.png');
   }
 }
 </style>

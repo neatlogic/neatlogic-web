@@ -218,7 +218,7 @@ export default {
   bottom: 8%;
   left: 0;
   position: absolute;
-  background: url('~img-module/login-pic.png') no-repeat center center;
+  background: url('~img-module/img/common/login-pic.png') no-repeat center center;
   background-size: auto 100%;
 }
 .form-wrap {
