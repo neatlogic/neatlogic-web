@@ -212,7 +212,6 @@ export default {
           });
         });
       }
-      console.log(dataList, 'dataList');
       return dataList;
     },
     getDisabledText(item, type) {

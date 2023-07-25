@@ -20,12 +20,12 @@
               <Col
                 v-for="(item, index) in scenarioList"
                 :key="index"
-                :xs="12"
-                :sm="8"
-                :md="6"
+                :xs="4"
+                :sm="4"
+                :md="4"
                 :lg="4"
-                :xl="3"
-                :xxl="2"
+                :xl="4"
+                :xxl="4"
               >
                 <div 
                   v-if="item.isEnable"
@@ -57,12 +57,12 @@
               <Col
                 v-for="(item, index) in envList"
                 :key="index"
-                :xs="12"
-                :sm="8"
-                :md="6"
+                :xs="4"
+                :sm="4"
+                :md="4"
                 :lg="4"
-                :xl="3"
-                :xxl="2"
+                :xl="4"
+                :xxl="4"
               >
                 <div 
                   v-if="item.isEnable"
@@ -245,36 +245,42 @@ export default {
           if (res.Status == 'OK') {
             this.scenarioList = res.Return.scenarioList;
             this.envList = res.Return.envList;
+            let defaultSelectScenario = res.Return.defaultSelectScenario;
+            let defaultSelectEnv = res.Return.defaultSelectEnv;
             if (this.scenarioList && this.scenarioList.length > 0) {
               if (this.type == 'global') {
                 this.scenarioList.forEach(item => { item.isEnable = true; });
+                if (defaultSelectScenario.scenarioId != res.Return.defaultScenarioId) {
+                  defaultSelectScenario = this.scenarioList[0];
+                }
               }
               if (this.jobTemplateData.scenarioId) {
                 let findScenario = this.scenarioList.find(item => item.isEnable == true && item.scenarioId == this.jobTemplateData.scenarioId);
                 if (findScenario) {
                   this.selectScenario(findScenario);
                 } else {
-                  this.jobTemplateData.scenarioId = res.Return.defaultSelectScenario.scenarioId;
-                  this.selectScenario(res.Return.defaultSelectScenario);
+                  this.jobTemplateData.scenarioId = defaultSelectScenario.scenarioId;
+                  this.selectScenario(defaultSelectScenario);
                 }
               } else {
-                this.jobTemplateData.scenarioId = res.Return.defaultSelectScenario.scenarioId;
-                this.selectScenario(res.Return.defaultSelectScenario);
+                this.jobTemplateData.scenarioId = defaultSelectScenario.scenarioId;
+                this.selectScenario(defaultSelectScenario);
               }
             }
             if (this.envList && this.envList.length > 0) {
               if (this.type == 'global') {
                 this.envList.forEach(item => { item.isEnable = true; });
+                defaultSelectEnv = this.envList[0];
               }
               if (this.jobTemplateData.envId) {
                 let findEnv = this.envList.find(d => d.id === this.jobTemplateData.envId);
                 if (findEnv) {
                   this.selectEnv(findEnv);
                 } else {
-                  this.selectEnv(res.Return.defaultSelectEnv);
+                  this.selectEnv(defaultSelectEnv);
                 }
               } else {
-                this.selectEnv(res.Return.defaultSelectEnv);
+                this.selectEnv(defaultSelectEnv);
               }
             }
             this.getJobModuleList();
