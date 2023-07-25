@@ -87,16 +87,28 @@ export default {
       if (this.currentIterationId !== iteration.id) {
         this.currentIterationId = iteration.id;
         this.$emit('change', iteration);
-      } /*else {
+      } else {
+        //创新迭代
         this.currentIterationId = null;
-        this.$emit('change', null);
-      }*/
+        this.$nextTick(() => {
+          this.currentIterationId = iteration.id;
+        });
+      }
     },
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {
         const iterationList = res.Return.tbodyList;
         if (!this.currentIterationId && iterationList && iterationList.length > 0) {
-          this.selectIteration(iterationList[0]);
+          for (let i = 0; i < iterationList.length; i++) {
+            const iteration = iterationList[i];
+            if (this.isProcessing(iteration)) {
+              this.selectIteration(iteration);
+              break;
+            }
+          }
+          if (!this.currentIterationId) {
+            this.selectIteration(iterationList[0]);
+          }
         }
         const pageSize = res.Return.pageSize;
         if (iterationList && iterationList.length) {

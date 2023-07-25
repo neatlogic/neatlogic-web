@@ -7,9 +7,9 @@
       <template v-slot:topRight>
         <div class="action-group">
           <span class="action-item" @click="displayMode = displayMode === 'level' ? 'list' : 'level'">
-            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">列表视图</span>
+            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">{{ $t('term.rdm.listview') }}</span>
             <Divider type="vertical" />
-            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">层级视图</span>
+            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">{{ $t('term.rdm.levelview') }}</span>
           </span>
           <span class="action-item tsfont-plus" @click="addIteration()">{{ $t('term.rdm.iteration') }}</span>
         </div>
