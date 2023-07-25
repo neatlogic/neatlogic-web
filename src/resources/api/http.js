@@ -185,6 +185,11 @@ const errorHandle = res => {
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
       break;
+    case 527:
+      //会话已超时或已被终止,重新登录
+      Vue.prototype.$utils.removeCookie('neatlogic_authorization');
+      toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
+      break;
     case 523:
       //用户权限不足，跳回每一个路由的404页面提示无访问权限
       Vue.prototype.$tsrouter.replace({
