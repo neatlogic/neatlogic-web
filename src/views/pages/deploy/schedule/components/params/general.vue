@@ -16,7 +16,7 @@
             :xxl="2"
           >
             <div
-              v-if="hasScenarioAuth(item.scenarioId)"
+              v-if="item.isEnable"
               class="li-item text-action"
               :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
               @click="changeSelect('scenario',item)"
@@ -53,7 +53,7 @@
             :xxl="2"
           >
             <div
-              v-if="hasEnvAuth(item.id)"
+              v-if="item.isEnable"
               class="li-item text-action"
               :class="envId == item.id?'li-active li-text border-primary':'border-base bg-op'"
               @click="changeSelect('env',item)"
@@ -148,8 +148,6 @@ export default {
     return {
       loadingShow: true,
       searchParams: {},
-      authInfo: {},
-      authList: [],
       initData: {},
       appModuleList: [],
       scenarioId: null,
@@ -189,10 +187,6 @@ export default {
   destroyed() {},
   methods: {
     async init() {
-      await this.getAuthInfo({
-        appSystemIdList: this.searchParams.appSystemId ? [this.searchParams.appSystemId] : [],
-        appModuleIdList: this.searchParams.appModuleId ? [this.searchParams.appModuleId] : []
-      });
       this.getCreateJobData();
       this.getAppPipeline();
       this.loadingShow = false;
@@ -203,15 +197,6 @@ export default {
       this.roundCount = data.roundCount || null;
       this.param = data.param || {};
       this.defaultModuleList = data.moduleList || [];
-    },
-    async getAuthInfo(params) {
-      // 获取环境和场景权限信息
-      await this.$api.deploy.applicationConfig.searchAppSystemList({...params, authorityActionList: ['view']}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.authInfo = res.Return && res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0] : null;
-          this.authList = (res.Return && res.Return.tbodyList.length > 0 && res.Return.tbodyList[0].authActionSet) ? res.Return.tbodyList[0].authActionSet : [];
-        }
-      });
     },
     getAppPipeline() { //流水线
       this.$api.deploy.apppipeline.getAppPipeline(this.searchParams).then(res => {
@@ -229,53 +214,10 @@ export default {
         if (res.Status == 'OK') {
           this.initData = res.Return || {};
           this.appModuleList = this.initData.appModuleList || [];
-          if (this.initData.scenarioList && this.initData.scenarioList.length) {
-            let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-              return this.authList.includes(item.scenarioId);
-            });
-            if (this.scenarioId) {
-              let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-              if (findScenario) {
-                this.combopPhaseNameList = findScenario.combopPhaseNameList;
-              }
-            } else {
-              if (scenarioIndex != -1) {
-              // 有权限，有默认场景，选中默认场景否则选中第一个
-                if (this.initData.defaultScenarioId && this.authList.includes(this.initData.defaultScenarioId)) {
-                  this.scenarioId = this.initData.defaultScenarioId;
-                  let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-                  if (findScenario) {
-                    this.combopPhaseNameList = findScenario.combopPhaseNameList;
-                  }
-                } else {
-                  this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
-                  this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-                }
-              } else if (this.initData.defaultScenarioId) {
-                this.scenarioId = this.initData.defaultScenarioId;
-                let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-                if (findScenario) {
-                  this.combopPhaseNameList = findScenario.combopPhaseNameList;
-                }
-              } else {
-                this.scenarioId = this.initData.scenarioList[0].scenarioId;
-                this.combopPhaseNameList = this.initData.scenarioList[0].combopPhaseNameList;
-              }
-            }
-          }
-          if (!this.envId && this.initData.envList && this.initData.envList.length) {
-            let envIndex = this.initData.envList.findIndex((item) => {
-              return this.authList.includes(item.id);
-            });
-            if (envIndex != -1) {
-              // 权限禁用之后，默认选中第一个没有禁用的环境
-              this.envId = this.initData.envList[envIndex].id;
-              this.envName = this.initData.envList[envIndex].name;
-            } else {
-              this.envId = this.initData.envList[0].id;
-              this.envName = this.initData.envList[0].name;
-            }
-          }
+          this.scenarioId = this.initData.defaultSelectScenario.scenarioId;
+          this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
+          this.envId = this.initData.defaultSelectEnv.id;
+          this.envName = this.initData.defaultSelectEnv.name;
           this.getJobModuleList();
         }
       });
@@ -407,26 +349,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    hasScenarioAuth() {
-      // 场景权限
-      return (scenarioId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
-          return true;
-        } 
-        return false;
-      };
-    },
-    hasEnvAuth() {
-      // 环境权限
-      return (envId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
-          return true;
-        } 
-        return false;
-      };
-    }
-  },
+  computed: {},
   watch: {
     baseParams: {
       handler(val) {
