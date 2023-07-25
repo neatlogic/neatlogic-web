@@ -162,11 +162,12 @@ const errorHandle = res => {
       console.log($t('message.urlnotfound', { target: res.config.url }));
       break;
     case 500:
-      //已知的接口问题
+      //未知的接口问题
       tip('服务器错误');
       throw res.data.Message; //把后端返回的错误信息抛出到页面中，这样页面可以catch这些错误做一些处理
     case 502:
       //已知的接口问题
+      //后端没有主动设置该状态码，可能是Bad Gateway/错误的网关
       window.location.href = '/500.html';
       // 跳到服务器错误页面
       break;
@@ -214,6 +215,7 @@ const errorHandle = res => {
       //接口参数不符合规范
       throw res.data.Message; //把后端返回的校验信息抛出到页面中
     case 429:
+      // 接口设置访问次数限制
       tip(rejectSource, null, res.config.url, '提示', 'info');
       throw rejectSource;
     default:
