@@ -928,5 +928,10 @@
   "enddate": "结束日期",
   "moveup": "上移",
   "movedown": "下移",
-  "nostatus": "无状态"
+  "nostatus": "无状态",
+  "customscript": "自定义脚本",
+  "scripthelp": "脚本说明",
+  "componentinfo": "组件信息",
+  "apimethod": "api方法",
+  "scripterror": "脚本语法异常"
 }

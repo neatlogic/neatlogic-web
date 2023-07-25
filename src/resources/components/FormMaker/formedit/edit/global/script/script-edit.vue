@@ -6,7 +6,7 @@
           <TsCodemirror ref="cm" v-model="scripts"></TsCodemirror>
         </div>
         <div slot="right" class="edit-pane">
-          <h4>填写帮助</h4>
+          <h4>{{ $t('page.help') }}</h4>
           <Collapse v-model="showitem" simple>
             <Panel v-for="(help,hindex) in helplist" :key="hindex" :name="help.value">
               {{ help.title }}
@@ -24,8 +24,8 @@
     </div>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button @click="close">取消</Button>
-        <Button type="primary" @click="saveEdit">确定</Button>
+        <Button @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '编辑自定义脚本',
+        title: this.$t('dialog.title.edittarget', {'target': this.$t('page.customscript')}),
         height: '500px',
         width: '1000px',
         fullscreen: true
@@ -60,9 +60,9 @@ export default {
       scripts: '',
       split: 0.6,
       helplist: [
-        {value: 'config', title: '脚本说明'},
-        {value: 'method', title: 'api方法'},
-        {value: 'components', title: '组件信息'}
+        {value: 'config', title: this.$t('page.scripthelp')},
+        {value: 'method', title: this.$t('page.apimethod')},
+        {value: 'components', title: this.$t('page.componentinfo')}
       ],
       showitem: ['config', 'method', 'components']
     };
@@ -93,7 +93,7 @@ export default {
         this.$emit('close');
       } catch (error) {
         this.$Notice.error({
-          title: '脚本语法异常',
+          title: this.$t('page.scripterror'),
           desc: error
         });
       }

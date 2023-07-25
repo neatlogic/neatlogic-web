@@ -926,5 +926,10 @@
   "enddate": "End date",
   "moveup": "Move Up",
   "movedown": "Move Down",
-  "nostatus": "Stateless"
+  "nostatus": "Stateless",
+  "customscript": "Custom Script",
+  "scripthelp": "Script Description",
+  "componentinfo": "Component Information",
+  "apimethod": "API method",
+  "scripterror": "Script syntax exception"
 }

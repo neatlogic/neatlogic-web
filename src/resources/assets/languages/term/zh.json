@@ -138,7 +138,8 @@
     "publicprivateaccountchooseoneaccountdesc": "公共帐号和私有帐号的集合不能为空，请至少填写一个帐号",
     "successfullyboundaccountforassetstarget": "{target}条资产绑定帐号成功",
     "failedtobindaccountforassetstarget": "{target}条资产绑定帐号失败",
-    "onlyexportselected": "仅导出选中数据"
+    "onlyexportselected": "仅导出选中数据",
+    "driverci": "驱动模型"
   },
   "process": {
     "workordercenter": "工单中心",

@@ -44,10 +44,10 @@
       </template>
     </TsForm>
     <template v-slot:footer>
-      <Button @click="closeDialog">取消</Button>
+      <Button @click="closeDialog">{{ $t('page.cancel') }}</Button>
       <!-- 单个帐号管理才有测试连接，批量暂时不用 -->
-      <Button v-if="operateType == 'accountEdit'" type="primary" @click="testConnect">测试连接</Button>
-      <Button type="primary" @click="save">确定</Button>
+      <Button v-if="operateType == 'accountEdit'" type="primary" @click="testConnect">{{ $t('page.testconnection') }}</Button>
+      <Button type="primary" @click="save">{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>

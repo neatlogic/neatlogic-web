@@ -3,10 +3,10 @@
   <div>
     <div class="padding">
       <TsFormInput
+        v-model="keyword"
         border="bottom"
         :search="true"
         :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
-        @on-change="searchCi"
       ></TsFormInput>
     </div>
     <div style="height:calc(100vh - 205px);overflow-y:auto">
@@ -77,11 +77,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchCi(val) {
-      if (val) {
-        this.keyword = val.trim();
-      } else {
-        this.keyword = val;
+    restoreHistory(historyData) {
+      if (historyData) {
+        this.keyword = historyData['keyword'] || '';
       }
     },
     click(data, nodeData) {
@@ -120,14 +118,24 @@ export default {
         const filterCiTypeList = JSON.parse(JSON.stringify(this.ciTypeList));
         filterCiTypeList.forEach(type => {
           if (type.ciList && type.ciList.length > 0) {
-            type.ciList = type.ciList.filter(ci => ci.label.toLowerCase().indexOf(this.keyword.toLowerCase()) > -1 || ci.name.toLowerCase().indexOf(this.keyword.toLowerCase()) > -1);
+            const k = this.keyword.trim().toLowerCase();
+            type.ciList = type.ciList.filter(ci => ci.label.toLowerCase().indexOf(k) > -1 || ci.name.toLowerCase().indexOf(k) > -1);
           }
         });
         return filterCiTypeList;
       }
     }
   },
-  watch: {}
+  watch: {
+    keyword: {
+      handler: function(val) {
+        if (val) {
+          val = val.trim();
+        }
+        this.$addHistoryData('keyword', val);
+      }
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

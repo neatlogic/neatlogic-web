@@ -57,13 +57,13 @@
                     class="tsfont-close-o"
                     style="cursor:pointer"
                     @click="removeCiType(item)"
-                  >删除</div>
+                  >{{ $t('page.delete') }}</div>
                   <div
                     v-else
                     class="ts-rotate-right"
                     style="cursor:pointer"
                     @click="recoverCiType(item)"
-                  >恢复</div>
+                  >{{ $t('page.recover') }}</div>
                 </div>
               </div>
             </div>
@@ -71,8 +71,8 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="saveCiType()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="saveCiType()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
