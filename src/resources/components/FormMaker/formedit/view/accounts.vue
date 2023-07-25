@@ -43,9 +43,6 @@
       </div>
 
       <TsDialog v-bind="dialogConfig" @on-close="close">
-        <template v-slot:header>
-          <div>选择帐号</div>
-        </template>
         <template v-slot>
           <TsContain
             :gutter="10"
@@ -96,8 +93,8 @@
           </TsContain>
         </template>
         <template v-slot:footer>
-          <Button @click="close()">取消</Button>
-          <Button type="primary" @click="save()">确定</Button>
+          <Button @click="close()">{{ $t('page.cancel') }}</Button>
+          <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
         </template>
       </TsDialog>
     </div>
@@ -124,10 +121,11 @@ export default {
     return {
       currentValue: null,
       dialogConfig: {
+        title: this.$t('dialog.title.choosetarget', {'target': this.$t('page.account')}),
         type: 'modal',
         maskClose: false,
         isShow: false,
-        width: '80%'
+        width: 'large'
       },
       keyword: '', // 资产名称、资产IP
       searchParams: {

@@ -63,7 +63,7 @@ export default [
       title: $t('router.codehub.repositoryservice'),
       ismenu: true,
       icon: 'tsfont-softwareservice',
-      authority: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -75,7 +75,7 @@ export default [
       title: $t('router.codehub.repository'),
       ismenu: true,
       icon: 'tsfont-file-single',
-      authority: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -87,7 +87,7 @@ export default [
       title: $t('router.codehub.versiontype'),
       ismenu: true,
       icon: 'tsfont-type',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -99,7 +99,7 @@ export default [
       title: $t('router.codehub.versioning'),
       ismenu: true,
       icon: 'tsfont-version',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -111,7 +111,7 @@ export default [
       title: $t('router.codehub.versionstrategy'),
       ismenu: true,
       icon: 'tsfont-filter',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -123,7 +123,7 @@ export default [
       title: $t('router.codehub.createmergerequest'),
       ismenu: false,
       icon: 'ts-dev-iplist',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -135,7 +135,7 @@ export default [
       title: $t('router.codehub.handlermergerequest'),
       ismenu: false,
       icon: 'ts-dev-iplist',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   }, 
@@ -147,7 +147,7 @@ export default [
       title: $t('router.codehub.codereview'),
       ismenu: false,
       icon: 'ts-dev-iplist',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -159,7 +159,7 @@ export default [
       title: $t('router.codehub.mergerequestlist'),
       ismenu: true,
       icon: 'tsfont-merge',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -171,7 +171,7 @@ export default [
       title: $t('router.codehub.mergeactionmanage'),
       ismenu: true,
       icon: 'tsfont-action',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -183,7 +183,7 @@ export default [
       title: $t('router.codehub.repositorydetail'),
       ismenu: false,
       icon: 'ts-dev-iplist',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -195,7 +195,7 @@ export default [
       title: $t('router.codehub.projectmapping'),
       ismenu: true,
       icon: 'tsfont-task',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   },
@@ -207,7 +207,7 @@ export default [
       title: $t('router.codehub.repositoryvoucher'),
       ismenu: true,
       icon: 'tsfont-permission',
-      authrity: '',
+      authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
   }

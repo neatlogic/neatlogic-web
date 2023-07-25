@@ -92,7 +92,8 @@ export default {
   destroyed() {},
   methods: {
     toCiEntityList() {
-      this.$router.push({ path: '/ci-view/' + this.ciId });
+      //加上isBack是为了让组件可以恢复历史数据
+      this.$router.push({ path: '/ci-view/' + this.ciId + '?isBack=true' });
     },
     editNewCiEntity(uuid) {
       if (this.saveCiEntityMap[uuid]) {

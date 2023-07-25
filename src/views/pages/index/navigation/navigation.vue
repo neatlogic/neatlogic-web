@@ -135,6 +135,9 @@ export default {
         &-deploy {
           .without-background('deploy'); // 自动发布
         }
+        &-rdm {
+          .without-background('rdm'); // 研发管理
+        }
       }
 
       .module-logo {

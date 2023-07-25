@@ -55,16 +55,16 @@
         </Row>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="ok()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="ok()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
 
     <div class="formsetting-block">
-      <label class="formsetting-label text-grey">输入提示</label>
+      <label class="formsetting-label text-grey">{{ $t('page.inputtip') }}</label>
       <div class="formsetting-text bg-block">
         <div class="formsetting-block">
-          <label class="formsetting-label text-grey inner-label">输入提示</label>
+          <label class="formsetting-label text-grey inner-label">{{ $t('page.inputtip') }}</label>
           <div class="formsetting-text">
             <TsFormInput v-model="setting.placeholder"></TsFormInput>
           </div>

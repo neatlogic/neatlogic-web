@@ -174,7 +174,7 @@
             type="default"
             @click="cancel()"
           >{{ $t('page.cancel') }}</Button>
-          <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">确定</Button>
+          <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
           <Button
             v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
             style="margin-right:10px"

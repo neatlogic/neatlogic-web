@@ -5,7 +5,7 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div>选择配置项</div>
+        <div>{{ $t('dialog.title.choosetarget',{'target':$t('term.cmdb.cientity')}) }}</div>
       </template>
       <template v-slot>
         <CiEntityList
@@ -16,8 +16,8 @@
         ></CiEntityList>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="ok()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="ok()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -27,7 +27,7 @@ export default {
   name: '',
   components: {
     CiEntityList: resolve =>
-      require(['../../../cientity/cientity-list.vue'], resolve)
+      require(['@/views/pages/cmdb/cientity/cientity-list.vue'], resolve)
   },
   props: {
     attrData: {type: Object}
@@ -39,7 +39,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: '800px'
+        width: 'medium'
       }
     };
   },

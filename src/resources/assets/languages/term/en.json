@@ -138,7 +138,8 @@
     "publicprivateaccountchooseoneaccountdesc": "The set of public and private accounts cannot be empty. Please fill in at least one account",
     "successfullyboundaccountforassetstarget": "Successfully bound account for {target} assets",
     "failedtobindaccountforassetstarget": "{target}Asset binding account failed",
-    "onlyexportselected": "Export only selected data"
+    "onlyexportselected": "Export only selected data",
+    "driverci": "Drive Model"
   },
   "process": {
     "workordercenter": "Work Center",
