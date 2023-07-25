@@ -35,7 +35,7 @@
                   :xxl="2"
                 >
                   <div
-                    v-if="hasScenarioAuth(item.scenarioId)"
+                    v-if="item.isEnable"
                     class="li-item text-action"
                     :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
                     @click="changeSelect('scenario',item)"
@@ -72,7 +72,7 @@
                   :xxl="2"
                 >
                   <div
-                    v-if="hasEnvAuth(item.id)"
+                    v-if="item.isEnable"
                     class="li-item text-action"
                     :class="envId == item.id?'li-active li-text border-primary':'border-base bg-op'"
                     @click="changeSelect('env',item)"
@@ -197,8 +197,6 @@ export default {
       isShowValidDialog: false,
       combopPhaseNameList: [], //选中场景的阶段列表名称
       selectModuleList: [], //选中的模块列表
-      authInfo: null, // 管理员权限+是否已配置应用配置权限
-      authList: [], // 权限列表
       appModuleLoading: true,
       disabledBtn: true,
       jobId: null, //作业id
@@ -233,67 +231,49 @@ export default {
   destroyed() {},
   methods: {
     async getInitData() {
-      await this.getAuthInfo({
-        appSystemIdList: this.appSystemId ? [parseInt(this.appSystemId)] : [],
-        appModuleIdList: this.appModuleId ? [parseInt(this.appModuleId)] : []
-      });
       this.getCreateJobData();
       this.getAppPipeline();
-    },
-    async getAuthInfo(params) {
-      // 获取环境和场景权限信息
-      await this.$api.deploy.applicationConfig.searchAppSystemList({...params, authorityActionList: ['view']}).then(res => {
-        if (res && res.Status == 'OK') {
-          this.authInfo = res.Return && res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0] : null;
-          this.authList = (res.Return && res.Return.tbodyList.length > 0 && res.Return.tbodyList[0].authActionSet) ? res.Return.tbodyList[0].authActionSet : [];
-        }
-      });
     },
     getCreateJobData() { //发布作业
       this.$api.deploy.job.getCreateJobData(this.searchParams).then((res) => {
         if (res.Status == 'OK') {
           this.initData = res.Return || {};
           this.appModuleList = this.initData.appModuleList || [];
-          if (this.initData.scenarioList && this.initData.scenarioList.length) {
-            let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-              return this.authList.includes('scenario#' + item.scenarioId);
-            });
-            if (scenarioIndex != -1) {
-              // 有权限，有默认场景，选中默认场景否则选中第一个
-              if (this.initData.defaultScenarioId && this.authList.includes('scenario#' + this.initData.defaultScenarioId)) {
-                this.scenarioId = this.initData.defaultScenarioId;
-                let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-                if (findScenario) {
-                  this.combopPhaseNameList = findScenario.combopPhaseNameList;
-                }
-              } else {
-                this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
-                this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-              }
-            } else if (this.initData.defaultScenarioId) {
-              this.scenarioId = this.initData.defaultScenarioId;
-              let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-              if (findScenario) {
-                this.combopPhaseNameList = findScenario.combopPhaseNameList;
-              }
-            } else {
-              this.scenarioId = this.initData.scenarioList[0].scenarioId;
-              this.combopPhaseNameList = this.initData.scenarioList[0].combopPhaseNameList;
-            }
-          }
-          if (this.initData.envList && this.initData.envList.length) {
-            let envIndex = this.initData.envList.findIndex((item) => {
-              return this.authList.includes('env#' + item.id);
-            });
-            if (envIndex != -1) {
-              // 权限禁用之后，默认选中第一个没有禁用的环境
-              this.envId = this.initData.envList[envIndex].id;
-              this.envName = this.initData.envList[envIndex].name;
-            } else {
-              this.envId = this.initData.envList[0].id;
-              this.envName = this.initData.envList[0].name;
-            }
-          }
+          this.scenarioId = this.initData.defaultSelectScenario.scenarioId;
+          this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
+          this.envId = this.initData.defaultSelectEnv.id;
+          this.envName = this.initData.defaultSelectEnv.name;
+          // if (this.initData.scenarioList && this.initData.scenarioList.length) {
+          //   if (this.initData.defaultScenarioId) {
+          //     if (this.hasAuthorityScenarioIdList.includes(this.initData.defaultScenarioId)) {
+          //       this.scenarioId = this.initData.defaultScenarioId;
+          //     }
+          //   }
+          //   if (this.scenarioId) {
+          //     let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
+          //     if (findScenario) {
+          //       this.combopPhaseNameList = findScenario.combopPhaseNameList;
+          //     }
+          //   } else {
+          //     let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
+          //       return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
+          //     });
+          //     if (scenarioIndex != -1) {
+          //       this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
+          //       this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
+          //     }
+          //   }
+          // }
+          // if (this.initData.envList && this.initData.envList.length) {
+          //   let envIndex = this.initData.envList.findIndex((item) => {
+          //     return this.hasAuthorityEnvIdList.includes(item.id);
+          //   });
+          //   if (envIndex != -1) {
+          //     // 权限禁用之后，默认选中第一个没有禁用的环境
+          //     this.envId = this.initData.envList[envIndex].id;
+          //     this.envName = this.initData.envList[envIndex].name;
+          //   }
+          // }
           if (this.jobId) {
             this.initJobData();
           }
@@ -515,46 +495,27 @@ export default {
           return item.scenarioId == this.jobConfig.scenarioId;
         });
         if (scenarioIndex != -1) { 
-          if (this.authList.includes('scenario#' + this.jobConfig.scenarioId) || this.authList.includes('scenario#all') || this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority) {
+          if (this.hasAuthorityScenarioIdList.includes(this.jobConfig.scenarioId)) {
             this.scenarioId = this.jobConfig.scenarioId;
             this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-          } 
+          }
         }
       }
       if (this.jobConfig.envId) {
         let envIndex = this.initData.envList.findIndex((item) => {
           return item.id == this.jobConfig.envId;
         });
-        if (envIndex != -1) { 
-          if (this.authList.includes('env#' + this.jobConfig.envId) || this.authList.includes('env#all') || this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority) {
+        if (envIndex != -1) {  
+          if (this.hasAuthorityEnvIdList.includes(this.jobConfig.envId)) {
             this.envId = this.jobConfig.envId;
             this.envName = this.initData.envList[envIndex].name;
-          } 
+          }
         }
       }
     }
   },
   filter: {},
-  computed: {
-    hasScenarioAuth() {
-      // 场景权限
-      return (scenarioId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
-          return true;
-        } 
-        return false;
-      };
-    },
-    hasEnvAuth() {
-      // 环境权限
-      return (envId) => {
-        if ((this.authInfo && (this.authInfo.isHasAllAuthority || !this.authInfo.isConfigAuthority)) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
-          return true;
-        } 
-        return false;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

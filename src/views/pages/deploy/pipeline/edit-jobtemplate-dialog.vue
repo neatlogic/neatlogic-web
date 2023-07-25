@@ -28,7 +28,7 @@
                 :xxl="2"
               >
                 <div 
-                  v-if="hasScenarioAuth(item.scenarioId)"
+                  v-if="item.isEnable"
                   class="li-item text-action" 
                   :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'" 
                   @click="selectScenario(item)"
@@ -65,7 +65,7 @@
                 :xxl="2"
               >
                 <div 
-                  v-if="hasEnvAuth(item.id)"
+                  v-if="item.isEnable"
                   class="li-item text-action" 
                   :class="jobTemplateData.envId == item.id ? 'li-active li-text border-primary' : 'border-base bg-op'" 
                   @click="selectEnv(item)"
@@ -165,8 +165,6 @@ export default {
       },
       scenarioList: [], //场景列表
       envList: [], //环境列表
-      hasAuthorityScenarioIdList: [], // 有授权的场景id列表
-      hasAuthorityEnvIdList: [], // 有授权的环境id列表
       appModuleList: [], //模块列表
       runtimeParamList: [], //参数列表
       combopPhaseList: [],
@@ -247,77 +245,36 @@ export default {
           if (res.Status == 'OK') {
             this.scenarioList = res.Return.scenarioList;
             this.envList = res.Return.envList;
-            this.hasAuthorityScenarioIdList = res.Return.hasAuthorityScenarioIdList;
-            this.hasAuthorityEnvIdList = res.Return.hasAuthorityEnvIdList;
             if (this.scenarioList && this.scenarioList.length > 0) {
-              if (this.jobTemplateData.scenarioId) {
-                if (this.type == 'global') {
-                  if (this.scenarioList.findIndex(item => item.scenarioId == this.jobTemplateData.scenarioId) == -1) {
-                    this.jobTemplateData.scenarioId = null;
-                  }
-                } else {
-                  if (!this.hasAuthorityScenarioIdList.includes(this.jobTemplateData.scenarioId)) {
-                    this.jobTemplateData.scenarioId = null;
-                  }
-                }
-              }
-              if (!this.jobTemplateData.scenarioId && res.Return.defaultScenarioId) {
-                if (this.type == 'global') {
-                  this.jobTemplateData.scenarioId = res.Return.defaultScenarioId;
-                } else {
-                  if (this.hasAuthorityScenarioIdList.includes(res.Return.defaultScenarioId)) {
-                    this.jobTemplateData.scenarioId = res.Return.defaultScenarioId;
-                  }
-                }
+              if (this.type == 'global') {
+                this.scenarioList.forEach(item => { item.isEnable = true; });
               }
               if (this.jobTemplateData.scenarioId) {
-                let findScenario = this.scenarioList.find(d => d.scenarioId === this.jobTemplateData.scenarioId);
+                let findScenario = this.scenarioList.find(item => item.isEnable == true && item.scenarioId == this.jobTemplateData.scenarioId);
                 if (findScenario) {
                   this.selectScenario(findScenario);
+                } else {
+                  this.jobTemplateData.scenarioId = res.Return.defaultSelectScenario.scenarioId;
+                  this.selectScenario(res.Return.defaultSelectScenario);
                 }
               } else {
-                if (this.type == 'global') {
-                  this.selectScenario(this.scenarioList[0]);
-                } else {
-                  let scenarioIndex = this.scenarioList.findIndex((item) => {
-                    return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
-                  });
-                  if (scenarioIndex != -1) {
-                    this.selectScenario(this.scenarioList[scenarioIndex]);
-                  }
-                }
+                this.jobTemplateData.scenarioId = res.Return.defaultSelectScenario.scenarioId;
+                this.selectScenario(res.Return.defaultSelectScenario);
               }
             }
             if (this.envList && this.envList.length > 0) {
-              if (this.jobTemplateData.envId) {
-                if (!this.hasAuthorityEnvIdList.includes(this.jobTemplateData.envId)) {
-                  if (this.type != 'global') {
-                    this.jobTemplateData.envId = null;
-                    let envIndex = this.envList.findIndex((item) => {
-                      return this.hasAuthorityEnvIdList.includes(item.id);
-                    });
-                    if (envIndex != -1) {
-                      this.jobTemplateData.envId = this.envList[envIndex].id;
-                    }
-                  }
-                }
+              if (this.type == 'global') {
+                this.envList.forEach(item => { item.isEnable = true; });
               }
               if (this.jobTemplateData.envId) {
                 let findEnv = this.envList.find(d => d.id === this.jobTemplateData.envId);
                 if (findEnv) {
                   this.selectEnv(findEnv);
+                } else {
+                  this.selectEnv(res.Return.defaultSelectEnv);
                 }
               } else {
-                if (this.type == 'global') {
-                  this.selectEnv(this.envList[0]);
-                } else {
-                  let envIndex = this.envList.findIndex((item) => {
-                    return this.hasAuthorityEnvIdList.includes(item.id);
-                  });
-                  if (envIndex != -1) {
-                    this.selectEnv(this.envList[envIndex]);
-                  }
-                }
+                this.selectEnv(res.Return.defaultSelectEnv);
               }
             }
             this.getJobModuleList();
@@ -416,24 +373,6 @@ export default {
   },
   filter: {},
   computed: {
-    hasScenarioAuth() {
-      // 场景权限
-      return (scenarioId) => {
-        if (this.type == 'global' || this.hasAuthorityScenarioIdList.includes(scenarioId)) {
-          return true;
-        }
-        return false;
-      };
-    },
-    hasEnvAuth() {
-      // 环境权限
-      return (envId) => {
-        if (this.type == 'global' || this.hasAuthorityEnvIdList.includes(envId)) {
-          return true;
-        }
-        return false;
-      };
-    },
     envName() {
       if (this.jobTemplateData.envId) {
         const env = this.envList.find(d => d.id === this.jobTemplateData.envId);
