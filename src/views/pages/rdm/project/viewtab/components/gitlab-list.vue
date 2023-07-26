@@ -39,7 +39,6 @@
       :xl="24"
       :xxl="24"
       pageType="number"
-      :padding="false"
       :showElevator="true"
       @updateSize="changePageSize"
       @updatePage="searchWebhookData"
