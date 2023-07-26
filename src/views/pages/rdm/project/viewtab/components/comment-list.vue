@@ -1,8 +1,6 @@
 <template>
   <div>
-    <Loading
-      :loadingShow="isLoading"
-    ></Loading>
+    <Loading :loadingShow="isLoading"></Loading>
     <TsCard
       v-if="!isLoading"
       v-bind="commentData"
@@ -32,11 +30,11 @@
                 ></CommentList>
               </div>
               <div class="text-grey mt-md fz10">
-                <div style="float:left">{{ (row.lcd || row.fcd) | formatDate }}</div>
-                <div class="action-group" style="text-align:right" :style="!parentId ? 'margin-right:22px' : ''">
+                <div style="float: left">{{ (row.lcd || row.fcd) | formatDate }}</div>
+                <div class="action-group comment-action" style="text-align: right" :style="!parentId ? 'margin-right:22px' : ''">
                   <div class="action-item text-grey tsfont-message-o" @click="replayComment(row)">{{ $t('page.reply') }}</div>
-                  <div class="action-item text-grey tsfont-edit" @click="editComment(row)">{{ $t('page.edit') }}</div>
-                  <div class="action-item text-grey tsfont-trash-o" @click="deleteComment(row)">{{ $t('page.delete') }}</div>
+                  <div v-if="row.isEditor" class="action-item text-grey tsfont-edit" @click="editComment(row)">{{ $t('page.edit') }}</div>
+                  <div v-if="row.isEditor" class="action-item text-grey tsfont-trash-o" @click="deleteComment(row)">{{ $t('page.delete') }}</div>
                 </div>
               </div>
               <div v-if="replayTo['c_' + row.id]" class="mt-md">
@@ -70,7 +68,7 @@ export default {
     EditCommentDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-comment-dialog.vue'], resolve)
   },
   props: {
-    issueData: {type: Object},
+    issueData: { type: Object },
     issueId: { type: Number },
     parentId: { type: Number }
   },
@@ -110,7 +108,7 @@ export default {
     deleteComment(comment) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('term.rdm.comment')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.rdm.comment') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.rdm.issue.deleteComment(comment.id).then(res => {
@@ -157,7 +155,7 @@ export default {
       this.$set(this.replayTo, 'c_' + commentId, null);
     },
     searchComment(currentPage) {
-      const param = { issueId: this.issueId, parentId: this.parentId};
+      const param = { issueId: this.issueId, parentId: this.parentId };
       if (currentPage) {
         param.currentPage = currentPage;
       } else {
@@ -192,5 +190,13 @@ export default {
 }
 .comment-content {
   min-height: 25px;
+}
+.comment-grid:hover {
+  .comment-action {
+    visibility: visible;
+  }
+}
+.comment-action {
+  visibility: hidden;
 }
 </style>
