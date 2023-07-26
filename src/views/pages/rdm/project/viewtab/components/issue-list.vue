@@ -2,7 +2,7 @@
   <div>
     <Loading v-if="isLoading" :loadingShow="isLoading"></Loading>
     <div class="mb-md grid">
-      <div class="action-group" style="align-self: end;">
+      <div class="action-group" style="align-self: end">
         <span v-if="canAppend" class="action-item">
           <a href="javascript:void(0)" class="tsfont-plus" @click="addIssue()">{{ app.name }}</a>
         </span>
@@ -79,7 +79,7 @@
             </div>
           </template>
         </CombineSearcher>
-        <div v-if="showStatus" class="mt-xs" style="text-align:right">
+        <div v-if="showStatus" class="mt-xs" style="text-align: right">
           <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
             <strong>
               <span class="mr-xs">{{ status.label }}</span>
@@ -279,6 +279,7 @@ export default {
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
       pageSize: null,
+      currentPage: 1,
       searchConfig: {
         search: false,
         labelPosition: 'left',
@@ -501,7 +502,7 @@ export default {
     closeEditIssue(needRefresh) {
       this.isEditIssueShow = false;
       if (needRefresh) {
-        this.searchIssue(1);
+        this.searchIssue();
         this.$emit('refresh');
       }
     },
@@ -600,10 +601,13 @@ export default {
         });
     },
     searchIssue(currentPage) {
-      this.isLoading = true;
+      if (currentPage) {
+        this.currentPage = currentPage;
+      }
       this.searchIssueData = {};
       this.searchIssueData.projectId = this.projectId;
       this.searchIssueData.pageSize = this.pageSize;
+      this.searchIssueData.currentPage = this.currentPage;
       this.searchIssueData.mode = this.mode;
       this.searchIssueData.parentId = this.parentId;
       this.searchIssueData.fromId = this.fromId;
@@ -631,10 +635,8 @@ export default {
           }
         }
       }
-      if (currentPage) {
-        this.searchIssueData.currentPage = currentPage;
-      } 
       this.isSearchReady = false;
+      this.isLoading = true;
       this.$api.rdm.issue
         .searchIssue(this.searchIssueData)
         .then(res => {
