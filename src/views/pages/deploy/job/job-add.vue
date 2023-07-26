@@ -243,37 +243,6 @@ export default {
           this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
           this.envId = this.initData.defaultSelectEnv.id;
           this.envName = this.initData.defaultSelectEnv.name;
-          // if (this.initData.scenarioList && this.initData.scenarioList.length) {
-          //   if (this.initData.defaultScenarioId) {
-          //     if (this.hasAuthorityScenarioIdList.includes(this.initData.defaultScenarioId)) {
-          //       this.scenarioId = this.initData.defaultScenarioId;
-          //     }
-          //   }
-          //   if (this.scenarioId) {
-          //     let findScenario = this.initData.scenarioList.find(item => item.scenarioId == this.scenarioId);
-          //     if (findScenario) {
-          //       this.combopPhaseNameList = findScenario.combopPhaseNameList;
-          //     }
-          //   } else {
-          //     let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-          //       return this.hasAuthorityScenarioIdList.includes(item.scenarioId);
-          //     });
-          //     if (scenarioIndex != -1) {
-          //       this.scenarioId = this.initData.scenarioList[scenarioIndex].scenarioId;
-          //       this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-          //     }
-          //   }
-          // }
-          // if (this.initData.envList && this.initData.envList.length) {
-          //   let envIndex = this.initData.envList.findIndex((item) => {
-          //     return this.hasAuthorityEnvIdList.includes(item.id);
-          //   });
-          //   if (envIndex != -1) {
-          //     // 权限禁用之后，默认选中第一个没有禁用的环境
-          //     this.envId = this.initData.envList[envIndex].id;
-          //     this.envName = this.initData.envList[envIndex].name;
-          //   }
-          // }
           if (this.jobId) {
             this.initJobData();
           }
@@ -491,25 +460,17 @@ export default {
       this.jobConfig.roundCount && (this.roundCount = this.jobConfig.roundCount);
       this.paramValue = this.jobConfig.param || {};
       if (this.jobConfig.scenarioId) {
-        let scenarioIndex = this.initData.scenarioList.findIndex((item) => {
-          return item.scenarioId == this.jobConfig.scenarioId;
-        });
-        if (scenarioIndex != -1) { 
-          if (this.hasAuthorityScenarioIdList.includes(this.jobConfig.scenarioId)) {
-            this.scenarioId = this.jobConfig.scenarioId;
-            this.combopPhaseNameList = this.initData.scenarioList[scenarioIndex].combopPhaseNameList;
-          }
+        let findScenario = this.initData.scenarioList.find((item) => item.isEnable == true && item.scenarioId == this.jobConfig.scenarioId);
+        if (findScenario) { 
+          this.scenarioId = this.jobConfig.scenarioId;
+          this.combopPhaseNameList = findScenario.combopPhaseNameList;
         }
       }
       if (this.jobConfig.envId) {
-        let envIndex = this.initData.envList.findIndex((item) => {
-          return item.id == this.jobConfig.envId;
-        });
-        if (envIndex != -1) {  
-          if (this.hasAuthorityEnvIdList.includes(this.jobConfig.envId)) {
-            this.envId = this.jobConfig.envId;
-            this.envName = this.initData.envList[envIndex].name;
-          }
+        let findEnv = this.initData.envList.find((item) => item.isEnable == true && item.id == this.jobConfig.envId);
+        if (findEnv) {  
+          this.envId = this.jobConfig.envId;
+          this.envName = findEnv.name;
         }
       }
     }

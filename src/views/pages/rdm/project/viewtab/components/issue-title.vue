@@ -12,7 +12,7 @@
         :maxlength="50"
         :width="350"
         @on-keydown="saveIssue"
-        @on-blur="isEditing = false"
+        @on-blur="saveIssue()"
       ></TsFormInput>
     </span>
     <span v-if="issueData.status && issueData.statusLabel" class="action-item"><IssueStatus :issueData="issueData"></IssueStatus></span>
@@ -76,14 +76,14 @@ export default {
       }
     },
     saveIssue(event) {
-      if (event.keyCode === 13 && this.$refs['input'].valid()) {
+      if ((!event || event.keyCode === 13) && this.$refs['input'].valid()) {
         this.issueData.name = this.issueName;
         this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
           if (res.Status === 'OK') {
             this.isEditing = false;
           }
         });
-      } else if (event.keyCode === 27) {
+      } else if (event && event.keyCode === 27) {
         this.isEditing = false;
       }
     }

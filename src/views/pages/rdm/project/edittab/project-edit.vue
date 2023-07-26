@@ -280,6 +280,9 @@ export default {
     searchProjectTemplate() {
       this.$api.rdm.projecttemplate.searchProjectTemplate({ isActive: 1 }).then(res => {
         this.appType.cardList = res.Return;
+        if (!this.id && this.appType.cardList && this.appType.cardList.length > 0) {
+          this.selectTemplate(this.appType.cardList[0].id);
+        }
       });
     }
   },
