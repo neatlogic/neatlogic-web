@@ -2,11 +2,11 @@
   <div>
     <Loading v-if="isLoading" :loadingShow="isLoading"></Loading>
     <div class="mb-md grid">
-      <div>
-        <span v-if="canAppend" class="mr-md">
-          <a href="javascript:void(0)" class="tsfont-plus" @click="addIssue()">{{ $t('dialog.title.addtarget', { target: app.name }) }}</a>
+      <div class="action-group" style="align-self: end;">
+        <span v-if="canAppend" class="action-item">
+          <a href="javascript:void(0)" class="tsfont-plus" @click="addIssue()">{{ app.name }}</a>
         </span>
-        <span v-if="relType && relAppType && (fromId || toId)" class="mr-md">
+        <span v-if="relType && relAppType && (fromId || toId)" class="action-item">
           <a
             v-if="getAppByType(relAppType)"
             href="javascript:void(0)"
@@ -14,7 +14,7 @@
             @click="linkIssue()"
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
-        <span v-if="canBatch" class="mr-md">
+        <span v-if="canBatch" class="action-item">
           <a class="tsfont-mark-all" @click="batchExecute()">批量处理</a>
         </span>
       </div>
@@ -79,22 +79,22 @@
             </div>
           </template>
         </CombineSearcher>
+        <div v-if="showStatus" class="mt-xs" style="text-align:right">
+          <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
+            <strong>
+              <span class="mr-xs">{{ status.label }}</span>
+              <span>{{ status.issueCount }}</span>
+            </strong>
+            <Divider type="vertical" />
+          </span>
+          <span>
+            <strong>
+              <span class="mr-xs">{{ $t('page.completrate') }}</span>
+              <span>{{ (completeRate * 100).toFixed(2) }}%</span>
+            </strong>
+          </span>
+        </div>
       </div>
-    </div>
-    <div v-if="showStatus" style="text-align: right" class="mb-xs">
-      <span v-for="(status, index) in statusList" :key="index" :style="{ color: status.color }">
-        <strong>
-          <span class="mr-xs">{{ status.label }}</span>
-          <span>{{ status.issueCount }}</span>
-        </strong>
-        <Divider type="vertical" />
-      </span>
-      <span>
-        <strong>
-          <span class="mr-xs">{{ $t('page.completrate') }}</span>
-          <span>{{ (completeRate * 100).toFixed(2) }}%</span>
-        </strong>
-      </span>
     </div>
     <TsTable
       v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
