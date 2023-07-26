@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Loading v-if="isLoading" :loadingShow="isLoading"></Loading>
+    <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
     <div class="mb-md grid">
       <div class="action-group" style="align-self: end;">
         <span v-if="canAppend" class="action-item">
