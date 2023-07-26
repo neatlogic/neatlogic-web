@@ -191,7 +191,7 @@ export default {
       this.loadingShow = true;
       this.$api.codehub.strategy.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          const {pageCount = 0, rowNum = 0, pageSize = 10, currentPage = 1} = res?.Return || {};
+          const {pageCount = 0, rowNum = 0, pageSize = 10, currentPage = 1, tbodyList = []} = res?.Return || {};
           this.$set(this.strategyData, 'pageCount', pageCount);
           this.$set(this.strategyData, 'rowNum', rowNum);
           this.$set(this.strategyData, 'pageSize', pageSize);
