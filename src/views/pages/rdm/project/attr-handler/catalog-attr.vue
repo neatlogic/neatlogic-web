@@ -2,7 +2,7 @@
   <div>
     <TsFormTree
       ref="select"
-      :value="catalog"
+      v-model="catalog"
       :readonly="readonly"
       transfer
       :border="border"
