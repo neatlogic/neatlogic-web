@@ -379,11 +379,11 @@ export default {
       if (this.displayAttrList && this.displayAttrList.length > 0) {
         this.displayAttrList.forEach(attr => {
           this.theadList.push({ key: attr.id ? attr.id.toString() : attr.type, title: attr.label });
-          this.searchConfig.searchList.push({
+          /*this.searchConfig.searchList.push({
             type: 'slot',
             name: attr.isPrivate ? attr.name : 'attr_' + attr.id,
             label: attr.label
-          });
+          });*/
         });
       }
     },
