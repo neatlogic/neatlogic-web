@@ -3,7 +3,6 @@
     <div class="error-message">
       <div class="text-center">
         <div class="background-img"></div>
-        <!-- <img src="~@/resources/assets/images/404.png" /> -->
       </div>
       <p class="h2">{{ des }}</p>
       <div style="padding-top:10px;"><Button type="primary" @click="gotoDefault">{{ $t('page.returntohomepage') }}</Button></div>
@@ -78,12 +77,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/noauthority-default.png') no-repeat center;
+      background: url('~img-module/img/common/noauthority-default.png') no-repeat center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/noauthority-dark.png');
+        background-image: url('~img-module/img/common/noauthority-dark.png');
       }
     }
   }

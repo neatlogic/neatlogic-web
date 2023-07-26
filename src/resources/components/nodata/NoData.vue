@@ -2,7 +2,6 @@
   <div :class="[className, isVerticalCenter ? 'no-data-vertical-center' : '']">
     <div class="content">
       <div :class="[type === 'small' ? 'small' : '',!isSearchIcon ? 'background-img' : 'search-bg-img']"></div>
-      <!-- <img src="../../../resources/assets/images/error/nodata.png" :class="type === 'small' ? 'small' : ''" /> -->
       <p v-if="type === 'small'" class="text-grey"><slot>{{ text }}</slot></p>
     </div>
   </div>
@@ -57,12 +56,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/nodata-default.png') no-repeat center center;
+      background: url('~img-module/img/common/nodata-default.png') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/nodata-dark.png');
+        background-image: url('~img-module/img/common/nodata-dark.png');
       }
     }
   }
@@ -76,12 +75,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/no-search-result-default.png') no-repeat center center;
+      background: url('~img-module/img/common/no-search-result-default.png') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/no-search-result-dark.png');
+        background-image: url('~img-module/img/common/no-search-result-dark.png');
       }
     }
   }

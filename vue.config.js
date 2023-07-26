@@ -46,6 +46,7 @@ let localUrl = '../neatlogic-web/src/resources';
 // let configUrl = '../neatlogic-web-config';
 
 const { tenantName, urlPrefix } = require('./apiconfig.json');
+process.env.VUE_APP_TENANT = tenantName; // 租户名称
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {
