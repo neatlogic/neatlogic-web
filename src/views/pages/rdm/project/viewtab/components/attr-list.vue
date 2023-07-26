@@ -3,36 +3,54 @@
     <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
     <div v-else>
       <TsFormItem
-        v-for="(attr, index) in attrList"
+        v-for="(attr, index) in finalAttrList"
         :key="index"
         class="relative"
         :label="attr.label"
         labelPosition="top"
         :labelWidth="120"
       >
-        <div v-if="!issueData.isEnd && (projectData.isOwner || projectData.isMember || projectData.isLeader)">
-          <AttrHandler
-            v-if="attr._isReady"
-            ref="attrHandler"
-            border="none"
-            :projectId="projectId"
-            :readonly="editingField != 'attr_' + attr.id"
-            :attrConfig="attr"
-            :issueData="issueDataLocal"
-            @click.native="activeController('attr_' + attr.id)"
-          ></AttrHandler>
-          <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
-            <span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
-            <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
-            <Icon
-              v-if="isEditing"
-              type="ios-loading"
-              size="16"
-              class="loading"
-            ></Icon>
+        <div v-if="attr.id != 0">
+          <div v-if="!issueData.isEnd && (projectData.isOwner || projectData.isMember || projectData.isLeader)">
+            <AttrHandler
+              v-if="attr._isReady"
+              ref="attrHandler"
+              v-click-outside="
+                (el, binding, vnode) => {
+                  handleClickOutside(attr.id);
+                }
+              "
+              border="none"
+              :projectId="projectId"
+              :readonly="editingField != 'attr_' + attr.id"
+              :attrConfig="attr"
+              :issueData="issueDataLocal"
+              @click.native.stop="activeController('attr_' + attr.id)"
+            ></AttrHandler>
+            <div v-if="editingField == 'attr_' + attr.id" class="controller-btn">
+              <!--<span v-if="!isEditing" class="tsfont-check text-primary mr-xs" @click="confirmUpdate('attr_' + attr.id)"></span>
+              <span v-if="!isEditing" class="tsfont-close text-primary" @click="cancelUpdate('attr_' + attr.id)"></span>
+              -->
+              <Icon
+                v-if="isEditing"
+                type="ios-loading"
+                size="16"
+                class="loading"
+              ></Icon>
+            </div>
           </div>
+          <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
         </div>
-        <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
+        <div v-else>
+          <div v-if="attr.type === '_name'">
+            <span class="overflow">
+              {{ issueData.name }}
+            </span>
+          </div>
+          <IssueStatus v-else-if="attr.type === '_status'" :issueData="issueData"></IssueStatus>
+          <span v-else-if="attr.type === '_createuser'"><UserCard :uuid="issueData.createUser"></UserCard></span>
+          <span v-else-if="attr.type === '_createdate'">{{ issueData.createDate | formatDate('yyyy-mm-dd') }}</span>
+        </div>
       </TsFormItem>
     </div>
   </div>
@@ -41,9 +59,27 @@
 export default {
   name: '',
   components: {
+    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
+    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+  },
+  directives: {
+    clickOutside: {
+      bind: function(el, binding, vnode) {
+        el.clickOutsideEvent = function(event) {
+          // 检查点击事件是否在元素内部发生，如果在外部，则调用传入的函数
+          if (!(el == event.target || el.contains(event.target))) {
+            binding.value(event, vnode);
+          }
+        };
+        document.body.addEventListener('click', el.clickOutsideEvent);
+      },
+      unbind: function(el) {
+        document.body.removeEventListener('click', el.clickOutsideEvent);
+      }
+    }
   },
   props: {
     projectId: { type: Number },
@@ -61,9 +97,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     this.getProjectById();
-    this.searchAppAttr();
+    await this.searchAppAttr();
+    await this.getAppSetting();
+    this.isLoading = false;
   },
   beforeMount() {},
   mounted() {},
@@ -74,15 +112,43 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleClickOutside(attrId) {
+      if (attrId && this.editingField === 'attr_' + attrId) {
+        this.confirmUpdate(this.editingField);
+      }
+    },
+    async getAppSetting() {
+      if (this.appId) {
+        await this.$api.rdm.app.getAppUserSetting(this.appId).then(res => {
+          this.appSetting = res.Return;
+          if (this.appSetting && this.appSetting?.config?.attrList && this.appSetting.config.attrList.length > 0 && this.attrList && this.attrList.length > 0) {
+            this.appSetting.config.attrList.forEach(attrconf => {
+              const attr = this.attrList.find(d => (d.id ? d.id === attrconf.attrId : d.type === attrconf.attrType));
+              if (attr) {
+                this.$set(attr, 'sort', attrconf.sort);
+                this.$set(attr, 'showType', attrconf.showType || 'all');
+              }
+            });
+          }
+          this.attrList.forEach(attr => {
+            if (!attr.showType) {
+              this.$set(attr, 'showType', 'all');
+            }
+          });
+          this.attrList.sort((a, b) => {
+            return (a.sort || 0) - (b.sort || 0);
+          });
+        });
+      }
+    },
     getProjectById() {
       this.$api.rdm.project.getProjectById(this.projectId).then(res => {
         this.projectData = res.Return;
-        this.isLoading = false;
       });
     },
-    searchAppAttr() {
+    async searchAppAttr() {
       if (this.appId) {
-        this.$api.rdm.app.searchAppAttr({ appId: this.appId, isActive: 1 }).then(res => {
+        await this.$api.rdm.app.searchAppAttr({ appId: this.appId, isActive: 1, needSystemAttr: 1 }).then(res => {
           this.attrList = res.Return;
           this.attrList.forEach(attr => {
             this.$set(attr, '_isReady', true);
@@ -99,9 +165,9 @@ export default {
         });
       }
     },
-    activeController(field) {
+    async activeController(field) {
       if (this.editingField && this.editingField != field) {
-        this.cancelUpdate(this.editingField);
+        await this.confirmUpdate(this.editingField);
       }
       this.editingField = field;
     },
@@ -113,9 +179,9 @@ export default {
         this.refreshAttr(attrId);
       }
     },
-    confirmUpdate(field) {
+    async confirmUpdate(field) {
       this.isEditing = true;
-      this.$api.rdm.issue.saveIssue(this.issueDataLocal).then(res => {
+      await this.$api.rdm.issue.saveIssue(this.issueDataLocal).then(res => {
         this.isEditing = false;
         this.editingField = null;
         if (field && field.startsWith('attr_')) {
@@ -126,7 +192,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalAttrList() {
+      if (this.attrList) {
+        return this.attrList.filter(d => ['all', 'detail'].includes(d.showType));
+      }
+      return [];
+    }
+  },
   watch: {
     issueData: {
       handler: function(val) {

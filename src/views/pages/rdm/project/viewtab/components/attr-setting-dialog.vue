@@ -26,7 +26,7 @@
             <div>
               <TsFormSelect
                 v-model="item.showType"
-                :dataList="item.type.startsWith('_') ? systemAttrShowTypeList : attrShowTypeList"
+                :dataList="attrShowTypeList"
                 :width="100"
                 border="border"
                 :clearable="false"
@@ -77,7 +77,7 @@ export default {
   beforeCreate() {},
   async created() {
     this.getAttrShowTypeList();
-    this.getSystemAttrShowTypeList();
+    //this.getSystemAttrShowTypeList();
     await this.searchAppAttr();
     this.getAppSetting();
   },

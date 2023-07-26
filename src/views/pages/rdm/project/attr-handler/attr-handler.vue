@@ -1,29 +1,31 @@
 <template>
-  <component
-    :is="attrConfig.type + 'attr'"
-    v-if="!attrConfig.isPrivate"
-    ref="component"
-    :readonly="readonly"
-    :border="border"
-    :valueList="valueList"
-    :attrConfig="attrConfig"
-    :mode="mode"
-    :projectId="projectId"
-    @setValue="setValue"
-  ></component>
-  <component
-    :is="attrConfig.type + 'attr'"
-    v-else
-    ref="component"
-    :readonly="readonly"
-    :border="border"
-    :issueData="issueData"
-    :valueList="valueList"
-    :attrConfig="attrConfig"
-    :mode="mode"
-    :projectId="projectId"
-    @setValue="setPrivateValue"
-  ></component>
+  <div class="editable radius-sm">
+    <component
+      :is="attrConfig.type + 'attr'"
+      v-if="!attrConfig.isPrivate"
+      ref="component"
+      :readonly="readonly"
+      :border="border"
+      :valueList="valueList"
+      :attrConfig="attrConfig"
+      :mode="mode"
+      :projectId="projectId"
+      @setValue="setValue"
+    ></component>
+    <component
+      :is="attrConfig.type + 'attr'"
+      v-else
+      ref="component"
+      :readonly="readonly"
+      :border="border"
+      :issueData="issueData"
+      :valueList="valueList"
+      :attrConfig="attrConfig"
+      :mode="mode"
+      :projectId="projectId"
+      @setValue="setPrivateValue"
+    ></component>
+  </div>
 </template>
 <script>
 import * as handlers from './index.js';
@@ -33,13 +35,13 @@ export default {
     ...handlers
   },
   props: {
-    projectId: {type: Number},
-    readonly: {type: Boolean, default: false},
-    border: {type: String, default: 'border'},
-    mode: {type: String, default: 'input'},
-    value: {type: [Array, String, Number]}, //直接从外部传值，一般用在属性默认值设置
-    issueData: {type: Object}, //issue数据
-    attrConfig: {type: Object} //属性设置
+    projectId: { type: Number },
+    readonly: { type: Boolean, default: false },
+    border: { type: String, default: 'border' },
+    mode: { type: String, default: 'input' },
+    value: { type: [Array, String, Number] }, //直接从外部传值，一般用在属性默认值设置
+    issueData: { type: Object }, //issue数据
+    attrConfig: { type: Object } //属性设置
   },
   data() {
     return {
@@ -56,7 +58,7 @@ export default {
     } else {
       if (this.value != null) {
         if (this.value instanceof Array) {
-          this.valueList = this.value; 
+          this.valueList = this.value;
         } else {
           this.valueList = [this.value];
         }
@@ -114,7 +116,7 @@ export default {
           }
         } else {
           if (val && val.length > 0) {
-            this.issueData.attrList.push({attrId: this.attrConfig.id, valueList: val});
+            this.issueData.attrList.push({ attrId: this.attrConfig.id, valueList: val });
           }
         }
       } else {
@@ -127,10 +129,21 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@bg-grey-hover) {
+  .editable:hover {
+    background: @bg-grey-hover;
+  }
+}
+html {
+  .theme(@default-op);
+  &.theme-dark {
+    .theme(@dark-op);
+  }
+}
+</style>
