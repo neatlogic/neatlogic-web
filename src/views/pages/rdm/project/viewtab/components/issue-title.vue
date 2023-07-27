@@ -91,7 +91,7 @@ export default {
   filter: {},
   computed: {
     url() {
-      return window.location.href;
+      return window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/' + TENANT + '/rdm.html#/' + this.issueData.appType + '-detail/' + this.issueData.projectId + '/' + this.issueData.appId + '/' + this.issueData.id;
     }
   },
   watch: {}

@@ -493,7 +493,15 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', { target: issue.appName }),
         btnType: 'error',
-        'on-ok': vnode => {}
+        'on-ok': vnode => {
+          this.$api.rdm.issue.deleteIssue(issue.id).then(res => {
+            if (res.Status === 'OK') {
+              vnode.isShow = false;
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.searchIssue();
+            }
+          });
+        }
       });
     },
     addIssue() {

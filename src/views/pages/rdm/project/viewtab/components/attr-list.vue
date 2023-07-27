@@ -123,7 +123,6 @@ export default {
   destroyed() {},
   methods: {
     handleClickOutside(attrId) {
-      console.log(attrId);
       if (attrId && this.editingField === 'attr_' + attrId) {
         this.confirmUpdate(this.editingField);
       }

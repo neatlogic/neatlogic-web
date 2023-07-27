@@ -64,29 +64,34 @@
                 <span class="mr-sm">{{ commit.timestamp | formatDate }}</span>
                 <span v-if="commit.author" class="mr-xs text-grey">{{ $t('page.presenter') }}</span>
                 <span v-if="commit.author" class="mr-sm">{{ commit.author.name }}</span>
+                <span v-if="row.data.repository && row.data.repository.git_http_url && row.data.repository.name" class="mr-xs text-grey">{{ $t('term.rdm.repository') }}</span>
+                <span v-if="row.data.repository && row.data.repository.git_http_url && row.data.repository.name" class="mr-sm">
+                  <a :href="row.data.repository.git_http_url" target="_blank">{{ row.data.repository.name }}</a>
+                </span>
                 <span class="mr-xs text-grey">{{ $t('term.framework.pkgversion') }}</span>
                 <span class="mr-sm">{{ commit.id }}</span>
               </div>
               <div v-if="commit.added && commit.added.length > 0" class="mb-sm fz10">
                 <div v-for="(added, aindex) in commit.added" :key="aindex">
-                  <span class="tsfont-plus text-grey mr-lg">A</span>
+                  <span class="tsfont-plus text-success mr-lg">A</span>
                   <span>{{ added }}</span>
                 </div>
               </div>
               <div v-if="commit.modified && commit.modified.length > 0" class="mb-sm fz10">
                 <div v-for="(modified, mindex) in commit.modified" :key="mindex">
-                  <span class="tsfont-edit text-grey mr-lg">M</span>
+                  <span class="tsfont-dot text-primary mr-lg">M</span>
                   <span>{{ modified }}</span>
                 </div>
               </div>
               <div v-if="commit.removed && commit.removed.length > 0" class="fz10">
                 <div v-for="(removed, rindex) in commit.removed" :key="rindex">
-                  <span class="tsfont-minus text-grey mr-lg">D</span>
+                  <span class="tsfont-minus text-error mr-lg">D</span>
                   <span>{{ removed }}</span>
                 </div>
               </div>
             </div>
           </div>
+          <div v-else class="text-grey padding">不识别的提交信息，请联系厂商处理，id:{{ row.id }}</div>
         </div>
       </template>
     </TsCard>
