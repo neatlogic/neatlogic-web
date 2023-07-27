@@ -2157,7 +2157,8 @@
     "isclose": "Whether to close",
     "openproject": "Open Project",
     "applist": "Application List",
-    "relativetestcase": "Associated Use Cases"
+    "relativetestcase": "Associated Use Cases",
+    "repository": "Version Library"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
