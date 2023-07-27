@@ -16,7 +16,12 @@
       </template>
       <template v-slot:sider>
         <div ref="iterationList">
-          <IterationList v-if="isIterationReady" :projectId="projectId" @change="selectIteration"></IterationList>
+          <IterationList
+            v-if="isIterationReady"
+            :projectId="projectId"
+            :appId="appId"
+            @change="selectIteration"
+          ></IterationList>
         </div>
       </template>
       <template v-slot:content>
@@ -71,7 +76,6 @@
     </TsContain>
     <EditIteration
       v-if="isEditIterationShow"
-      :id="currentIterationId"
       :app="appData"
       @close="closeEditIteration"
     ></EditIteration>
@@ -95,7 +99,6 @@ export default {
       isIterationReady: true,
       scrollHeight: 500,
       pageName: this.$t('term.rdm.iterationmanage'),
-      currentIterationId: null,
       selectedIteration: null,
       isEditIterationShow: false,
       searchParam: {},
@@ -152,7 +155,6 @@ export default {
     },
     addIteration() {
       this.isEditIterationShow = true;
-      this.currentIterationId = null;
     },
     closeEditIteration(needRefresh) {
       this.isEditIterationShow = false;

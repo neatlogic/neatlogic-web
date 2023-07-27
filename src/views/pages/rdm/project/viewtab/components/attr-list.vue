@@ -69,15 +69,25 @@ export default {
     clickOutside: {
       bind: function(el, binding, vnode) {
         el.clickOutsideEvent = function(event) {
+          event.stopPropagation();
           // 检查点击事件是否在元素内部发生，如果在外部，则调用传入的函数
           if (!(el == event.target || el.contains(event.target))) {
             binding.value(event, vnode);
           }
         };
-        document.body.addEventListener('click', el.clickOutsideEvent);
+        let parent = vnode.context;
+        //由于tsDialog阻止了事件冒泡，为了兼容所有场景需要再每个parent中绑定事件
+        while (parent) {
+          parent.$el.addEventListener('click', el.clickOutsideEvent);
+          parent = parent.$parent;
+        }
       },
-      unbind: function(el) {
-        document.body.removeEventListener('click', el.clickOutsideEvent);
+      unbind: function(el, binding, vnode) {
+        let parent = vnode.context;
+        while (parent) {
+          parent.$el.removeEventListener('click', el.clickOutsideEvent);
+          parent = parent.$parent;
+        }
       }
     }
   },
@@ -113,6 +123,7 @@ export default {
   destroyed() {},
   methods: {
     handleClickOutside(attrId) {
+      console.log(attrId);
       if (attrId && this.editingField === 'attr_' + attrId) {
         this.confirmUpdate(this.editingField);
       }

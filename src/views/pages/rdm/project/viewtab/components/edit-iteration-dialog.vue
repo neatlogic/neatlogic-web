@@ -59,8 +59,7 @@ export default {
         isShow: true,
         width: 'large'
       },
-      iterationData: {
-      }
+      iterationData: {}
     };
   },
   beforeCreate() {},

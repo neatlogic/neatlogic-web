@@ -14,7 +14,11 @@
           </div>
         </div>
       </template>
-      <template v-slot:topRight></template>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <div class="action-item tsfont-edit" @click="isEditIterationShow=true">{{ $t('page.edit') }}</div>
+        </div>
+      </template>
       <div slot="content">
         <div class="radius-md mt-md padding-md bg-op">
           <div class="clearfix fz16">
@@ -35,17 +39,21 @@
                 @on-change="toggleIterationOpen"
               ></TsFormSwitch>
             </div>
-            <div class="float-left ml-lg" style="width: 300px"><Progress status="active" :percent="parseFloat(((iterationData.doneIssueCount / iterationData.issueCount) * 100).toFixed(2))" :stroke-width="20" /></div>
+            <div class="float-left ml-lg" style="width: 300px"><Progress
+              v-if="iterationData.issueCount"
+              status="active"
+              :percent="parseFloat(((iterationData.doneIssueCount / iterationData.issueCount) * 100).toFixed(2))"
+              :stroke-width="20"
+            /></div>
           </div>
-          <div class="grid">
-            <div><IssueBar v-if="issueCountData" :data="issueCountData"></IssueBar></div>
-            <div><IssueRing v-if="issueCountData" :data="issueCountData"></IssueRing></div>
+          <div v-if="iterationData.description" class="mt-lg text-grey" v-html="iterationData.description"></div>
+          <Divider v-if="issueCountData && issueCountData.length > 0"></Divider>
+          <div v-if="issueCountData && issueCountData.length > 0" class="grid">
+            <div><IssueBar :data="issueCountData"></IssueBar></div>
+            <div><IssueRing :data="issueCountData"></IssueRing></div>
           </div>
         </div>
-        <Tabs
-          v-if="issueAppList && issueAppList.length > 0"
-          v-model="currentApp"
-        >
+        <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
           <TabPane
             v-for="(app, index) in issueAppList"
             :key="index"
@@ -68,6 +76,12 @@
         <NoData v-else></NoData>
       </div>
     </TsContain>
+    <EditIteration
+      v-if="isEditIterationShow"
+      :id="id"
+      :app="getApp('iteration')"
+      @close="closeEditIteration"
+    ></EditIteration>
   </div>
 </template>
 <script>
@@ -78,7 +92,8 @@ export default {
     IssueBar: resolve => require(['@/views/pages/rdm/project/viewtab/iteration/issue-bar.vue'], resolve),
     AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    EditIteration: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue'], resolve)
   },
   props: {},
   data() {
@@ -86,6 +101,7 @@ export default {
       id: null,
       appId: null,
       projectId: null,
+      isEditIterationShow: false,
       iterationData: {},
       isReady: true,
       appList: [],
@@ -112,6 +128,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeEditIteration(needRefresh) {
+      this.isEditIterationShow = false;
+      if (needRefresh) {
+        this.getIterationById();
+      }
+    },
     getIterationIssueCount() {
       if (this.id) {
         this.$api.rdm.iteration.getIterationIssueCount(this.id).then(res => {
@@ -136,7 +158,7 @@ export default {
       }
     },
     getAppByProjectId() {
-      this.$api.rdm.project.getAppByProjectId(this.projectId, {isActive: 1, needSystemAttr: 1}).then(res => {
+      this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1, needSystemAttr: 1 }).then(res => {
         this.appList = res.Return;
         const list = this.appList.filter(d => d.hasIssue);
         if (list.length > 0) {
@@ -147,6 +169,11 @@ export default {
   },
   filter: {},
   computed: {
+    getApp() {
+      return type => {
+        return this.appList.find(d => d.type === type);
+      };
+    },
     issueAppList() {
       if (this.appList && this.appList.length > 0) {
         return this.appList.filter(d => d.hasIteration);

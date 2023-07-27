@@ -23,6 +23,7 @@
           <span>{{ iteration.endDate | formatDate('yyyy-mm-dd') }}</span>
           <span style="position: absolute; right: 0px" @click="toInterationDetail(iteration.id)">{{ $t('page.detail') }}</span>
         </div>
+        <div v-if="iteration.description" class="mt-md fz10 text-grey" v-html="iteration.description"></div>
         <Divider v-if="iteration.issueCount" style="margin: 10px 0px"></Divider>
         <div v-if="iteration.issueCount">
           <Progress
@@ -41,6 +42,7 @@ export default {
   name: '',
   components: {},
   props: {
+    appId: { type: Number },
     projectId: { type: Number }
   },
   data() {
