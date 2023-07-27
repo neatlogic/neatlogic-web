@@ -76,7 +76,7 @@ export default {
           }
         };
         let parent = vnode.context;
-        //由于tsDialog阻止了事件冒泡，为了兼容所有场景需要再每个parent中绑定事件
+        //由于TsDialog阻止了事件冒泡，为了兼容所有场景需要在每个parent中绑定事件，确保无论点哪都能触发事件。
         while (parent) {
           parent.$el.addEventListener('click', el.clickOutsideEvent);
           parent = parent.$parent;
