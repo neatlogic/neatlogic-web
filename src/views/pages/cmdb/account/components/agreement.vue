@@ -216,7 +216,7 @@ export default {
     }
   },
   computed: {
-    hasAccountModifyAuth() { //判断帐号管理权限
+    hasAccountModifyAuth() { //判断账号管理权限
       return this.$store.getters.userAuthList.includes('RESOURCECENTER_ACCOUNT_MODIFY');
     }
   },

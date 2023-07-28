@@ -1,9 +1,9 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
     <template v-slot:header>
-      <div v-if="operateType == 'accountEdit'">帐号管理</div>
-      <div v-else-if="operateType == 'addAccount'">批量添加帐号</div>
-      <div v-else>批量删除帐号</div>
+      <div v-if="operateType == 'accountEdit'">账号管理</div>
+      <div v-else-if="operateType == 'addAccount'">批量添加账号</div>
+      <div v-else>批量删除账号</div>
     </template>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="action-icon text-right">
@@ -45,7 +45,7 @@
     </TsForm>
     <template v-slot:footer>
       <Button @click="closeDialog">{{ $t('page.cancel') }}</Button>
-      <!-- 单个帐号管理才有测试连接，批量暂时不用 -->
+      <!-- 单个账号管理才有测试连接，批量暂时不用 -->
       <Button v-if="operateType == 'accountEdit'" type="primary" @click="testConnect">{{ $t('page.testconnection') }}</Button>
       <Button type="primary" @click="save">{{ $t('page.confirm') }}</Button>
     </template>
@@ -100,10 +100,10 @@ export default {
         account: {
           type: 'slot',
           name: 'account',
-          label: '帐号',
+          label: '账号',
           transfer: true,
           multiple: true,
-          firstText: '添加帐号',
+          firstText: '添加账号',
           firstLi: true,
           dynamicUrl: 'api/rest/resourcecenter/account/search',
           rootName: 'tbodyList',
@@ -211,8 +211,8 @@ export default {
           duration: 10,
           render: h => {
             return h('div', [
-              h('div', {class: 'text-success pb-md'}, [h('span', {class: 'text-success valid-icon tsfont-check-s'}, ''), (this.successCount || 0) + '条资产绑定帐号成功']),
-              h('div', {class: 'text-danger pb-md'}, [h('span', {class: 'valid-icon tsfont-close-s'}, ''), (this.failureCount || 0) + '条资产绑定帐号失败']),
+              h('div', {class: 'text-success pb-md'}, [h('span', {class: 'text-success valid-icon tsfont-check-s'}, ''), (this.successCount || 0) + '条资产绑定账号成功']),
+              h('div', {class: 'text-danger pb-md'}, [h('span', {class: 'valid-icon tsfont-close-s'}, ''), (this.failureCount || 0) + '条资产绑定账号失败']),
               h('ul', {class: 'pb-md', style: {lineHeight: '20px', display: this.failureReasonList && this.failureReasonList.length > 0 ? 'block' : 'none'}}, this.failureReasonList.map((item) => {
                 return h('li', {}, item || '');
               }))
@@ -283,7 +283,7 @@ export default {
     getItem() {
       return function(value) {
         if (value.length > 1) {
-          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。 ';
+          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。 ';
         } else {
           return;
         }

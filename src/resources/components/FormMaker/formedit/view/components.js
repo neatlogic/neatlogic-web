@@ -15,7 +15,7 @@ import formlink from './link.vue';
 import formtreeselect from './treeSelect.vue';
 import formcmdbcientity from './cmdbcientity/index.vue'; // 配置项组件
 import cmdb from '@/views/pages/cmdb/form/view/index.js';
-import formaccounts from './accounts.vue'; // 帐号选择组件
+import formaccounts from './accounts.vue'; // 账号选择组件
 import resourceinput from './resourceinput/resourceinput.vue'; // 资产输入组件
 import formresoureces from './resoureces/resoureces.vue'; // 执行目标组件
 import formupload from './upload'; //上传附件

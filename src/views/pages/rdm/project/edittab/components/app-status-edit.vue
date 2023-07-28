@@ -5,11 +5,7 @@
     </div>
     <div class="tstable-container tstable-normal border tstable-no-fixedHeader radius-lg">
       <div class="tstable-main bg-op table-radius-main">
-        <TsTable
-          :theadList="theadList"
-          :tbodyList="finalStatusList"
-          canExpand
-        >
+        <TsTable :theadList="theadList" :tbodyList="finalStatusList" canExpand>
           <template v-slot:fromstatus="{ row }">
             <div>
               <span :style="{ color: row.color }">
@@ -46,7 +42,7 @@
             <div>
               <span v-for="(tostatus, sindex) in statusList.filter(d => row.id != d.id)" :key="sindex" :style="{ color: tostatus.color }">
                 <Checkbox
-                  v-if="statusMatrix[row.id+'_'+tostatus.id]"
+                  v-if="statusMatrix[row.id + '_' + tostatus.id]"
                   :value="hasRelation(row, tostatus)"
                   @on-change="
                     val => {
@@ -62,8 +58,8 @@
           <template slot="action" slot-scope="{ row, index }">
             <div v-if="row.id" class="tstable-action">
               <ul class="tstable-action-ul">
-                <li v-if="index>0" class="tsfont-arrow-up" @click="moveUp(row)">{{ $t('page.moveup') }}</li>
-                <li v-if="index<statusList.length - 1" class="tsfont-arrow-down" @click="moveDown(row)">{{ $t('page.movedown') }}</li>
+                <li v-if="index > 1" class="tsfont-arrow-up" @click="moveUp(row)">{{ $t('page.moveup') }}</li>
+                <li v-if="index < finalStatusList.length - 1" class="tsfont-arrow-down" @click="moveDown(row)">{{ $t('page.movedown') }}</li>
                 <li class="tsfont-edit" @click="editStatus(row)">{{ $t('page.edit') }}</li>
                 <li class="tsfont-trash-o" @click="deleteStatus(row)">{{ $t('page.delete') }}</li>
               </ul>
@@ -72,17 +68,17 @@
           <template v-slot:expand="{ row }">
             <div>
               <div v-for="(statusrel, toindex) in getStatusRelList(row)" :key="toindex" class="grid">
-                <div style="position: relative;text-align:right;line-height:10px">
+                <div style="position: relative; text-align: right; line-height: 10px">
                   <div class="border-color-base border-v" :class="toindex == getStatusRelList(row).length - 1 ? 'half' : ''"></div>
                   <div class="border-color-base border-h"></div>
                   <div class="tsfont-drop-right text-grey border-arrow"></div>
                 </div>
-                <div class="padding-sm overflow" style="display: flex;align-items: center;">
+                <div class="padding-sm overflow" style="display: flex; align-items: center">
                   <span :style="{ color: statusrel.toStatusColor }">
                     <strong>{{ statusrel.toStatusLabel }}</strong>
                   </span>
                 </div>
-                <div class="padding-sm" style="word-break:break-all;white-space:normal">
+                <div class="padding-sm" style="word-break: break-all; white-space: normal">
                   <span class="tsfont-setting cursor text-href" @click="editStatusRelConfig(statusrel)">{{ $t('page.setting') }}</span>
                   <span v-if="getRequiredAttrList(statusrel).length > 0">
                     <Divider type="vertical" />
@@ -143,7 +139,7 @@ export default {
       currentStatusId: null,
       actionHide: {},
       currentStatusRel: null,
-      statusMatrix: {}//状态矩阵数据，用于重置checkbox的选中状态
+      statusMatrix: {} //状态矩阵数据，用于重置checkbox的选中状态
     };
   },
   beforeCreate() {},
@@ -190,7 +186,7 @@ export default {
       }
     },
     changeIsStart(status) {
-      const data = {id: status.id, flag: !!status.isStart, type: 'start'};
+      const data = { id: status.id, flag: !!status.isStart, type: 'start' };
       this.$api.rdm.status.changeStatusType(data).then(res => {
         if (res.Status == 'OK') {
           this.init();
@@ -198,7 +194,7 @@ export default {
       });
     },
     changeIsEnd(status) {
-      const data = {id: status.id, flag: !!status.isEnd, type: 'end'};
+      const data = { id: status.id, flag: !!status.isEnd, type: 'end' };
       this.$api.rdm.status.changeStatusType(data).then(res => {
         if (res.Status == 'OK') {
           this.init();
@@ -234,46 +230,48 @@ export default {
       }
     },
     toggleStatusRel(isCheck, fromStatus, toStatus) {
-      const fn = (vsnode) => {
-        this.$api.rdm.status.toggleStatusRel({
-          action: isCheck ? 'add' : 'delete',
-          fromStatusId: fromStatus.id,
-          toStatusId: toStatus.id,
-          appId: this.appId
-        }).then(res => {
-          if (res.Return) {
-            if (vsnode) {
-              vsnode.isShow = false;
-            }
-            if (isCheck) {
-              this.statusRelList.push({
-                id: res.Return,
-                appId: this.appId,
-                fromStatusName: fromStatus.name,
-                fromStatusLabel: fromStatus.label,
-                fromStatusColor: fromStatus.color,
-                fromStatusId: fromStatus.id,
-                toStatusName: toStatus.name,
-                toStatusLabel: toStatus.label,
-                toStatusColor: toStatus.color,
-                toStatusId: toStatus.id
-              });
-              this.$Message.success(this.$t('message.updatesuccess'));
-              this.$set(fromStatus, '_expand', true);
-            } else {
-              const index = this.statusRelList.findIndex(d => d.id === res.Return);
-              if (index > -1) {
-                this.statusRelList.splice(index, 1);
+      const fn = vsnode => {
+        this.$api.rdm.status
+          .toggleStatusRel({
+            action: isCheck ? 'add' : 'delete',
+            fromStatusId: fromStatus.id,
+            toStatusId: toStatus.id,
+            appId: this.appId
+          })
+          .then(res => {
+            if (res.Return) {
+              if (vsnode) {
+                vsnode.isShow = false;
+              }
+              if (isCheck) {
+                this.statusRelList.push({
+                  id: res.Return,
+                  appId: this.appId,
+                  fromStatusName: fromStatus.name,
+                  fromStatusLabel: fromStatus.label,
+                  fromStatusColor: fromStatus.color,
+                  fromStatusId: fromStatus.id,
+                  toStatusName: toStatus.name,
+                  toStatusLabel: toStatus.label,
+                  toStatusColor: toStatus.color,
+                  toStatusId: toStatus.id
+                });
                 this.$Message.success(this.$t('message.updatesuccess'));
-                if (this.hasRelation(fromStatus)) {
-                  this.$set(fromStatus, '_expand', true);
-                } else {
-                  this.$set(fromStatus, '_expand', false);
+                this.$set(fromStatus, '_expand', true);
+              } else {
+                const index = this.statusRelList.findIndex(d => d.id === res.Return);
+                if (index > -1) {
+                  this.statusRelList.splice(index, 1);
+                  this.$Message.success(this.$t('message.updatesuccess'));
+                  if (this.hasRelation(fromStatus)) {
+                    this.$set(fromStatus, '_expand', true);
+                  } else {
+                    this.$set(fromStatus, '_expand', false);
+                  }
                 }
               }
             }
-          }
-        });
+          });
       };
       if (!isCheck) {
         this.$createDialog({
@@ -347,7 +345,7 @@ export default {
           //组装status矩阵数据
           this.statusList.forEach(toStatus => {
             if (fromStatus.id !== toStatus.id) {
-              this.$set(this.statusMatrix, fromStatus.id + '_' + toStatus.id, true); 
+              this.$set(this.statusMatrix, fromStatus.id + '_' + toStatus.id, true);
             }
           });
         });
@@ -366,7 +364,7 @@ export default {
   filter: {},
   computed: {
     finalStatusList() {
-      return [{id: 0, label: this.$t('page.nostatus'), name: '-', _expand: this.hasRelation({id: 0})}, ...this.statusList];
+      return [{ id: 0, label: this.$t('page.nostatus'), name: '-', _expand: this.hasRelation({ id: 0 }) }, ...this.statusList];
     },
     hasRelation() {
       return (fromStatus, toStatus) => {

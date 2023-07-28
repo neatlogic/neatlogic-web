@@ -214,7 +214,7 @@ export default {
           textName: 'triggerName',
           validateList: ['required'],
           transfer: true
-          // firstText: '添加帐号',
+          // firstText: '添加账号',
           // firstLi: true,
           // rootName: 'tbodyList'
         },

@@ -136,7 +136,7 @@ export default {
         { key: 'selection' },
         { key: 'name', title: '资产名' },
         { key: 'ip', title: '资产IP' },
-        { key: 'account', title: '帐号名称' },
+        { key: 'account', title: '账号名称' },
         { key: 'accountName', title: '用户名' },
         { key: 'protocol', title: '连接协议' },
         { key: 'port', title: '端口' }
@@ -151,7 +151,7 @@ export default {
         // 选中列表表头字段
         { key: 'name', title: '资产名' },
         { key: 'ip', title: '资产IP' },
-        { key: 'account', title: '帐号名称' },
+        { key: 'account', title: '账号名称' },
         { key: 'accountName', title: '用户名' },
         { key: 'protocol', title: '连接协议' },
         { key: 'port', title: '端口' }
@@ -242,7 +242,7 @@ export default {
       let isVaild = true;
       if (this.setting.config.isRequired) {
         if (this.selectedDataList.length == 0) {
-          this.$Message.error('帐号组件:不可为空');
+          this.$Message.error('账号组件:不可为空');
           isVaild = false;
         }
       }
@@ -302,7 +302,7 @@ export default {
       deep: true
     },
     dialogConfig: {
-      // 解决点击选择帐号组件，没有调接口的问题
+      // 解决点击选择账号组件，没有调接口的问题
       handler(val) {
         if (val && val.isShow) {
           this.getTableData(1);

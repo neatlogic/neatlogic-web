@@ -131,7 +131,7 @@ export default {
         account: {
           icon: 'tsfont-userinfo',
           text: this.$t('page.account')
-        }, //帐号
+        }, //账号
         filepath: {
           icon: 'tsfont-wenjian',
           text: this.$t('page.filepath')

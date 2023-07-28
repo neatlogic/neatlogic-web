@@ -7,7 +7,7 @@
   ></component>
 </template>
 <script>
-import * as editor from './edit-tab/index.js';
+import * as editor from './edittab/index.js';
 
 export default {
   name: '',

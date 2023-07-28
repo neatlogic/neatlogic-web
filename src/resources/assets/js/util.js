@@ -592,7 +592,7 @@ export default {
     return columlist;
   },
   getAccountNodeList(nodeList) {
-    // 帐号下拉列表展示数据
+    // 账号下拉列表展示数据
     let columlist = [];
     nodeList &&
       nodeList.forEach(v => {

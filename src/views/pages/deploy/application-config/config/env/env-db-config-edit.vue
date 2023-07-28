@@ -154,7 +154,7 @@ export default {
               this.$set(this.accountSetting, 'disabled', true);
               this.$set(this.accountSetting, 'disabledHoverTitle', this.$t('form.placeholder.pleaseselect', {target: this.$t('page.database')}));
               this.$set(this.accountSetting.params, 'resourceId', null);
-              this.$set(this.formValue, 'accountId', null); // 清空帐号
+              this.$set(this.formValue, 'accountId', null); // 清空账号
             }
           }
         },
@@ -294,16 +294,16 @@ export default {
   destroyed() {},
   methods: {
     async getAccountList() {
-      // 获取协议是database的帐号列表
+      // 获取协议是database的账号列表
       let accountList = [];
       await this.$api.cmdb.asset.listAccount({...this.accountSetting.params, type: 'public'}).then(res => {
-        // 拥有帐号
+        // 拥有账号
         if (res && res.Status == 'OK') {
           accountList = res.Return || [];
         }
       });
       await this.$api.cmdb.asset.listAccount({...this.accountSetting.params, type: 'private'}).then(res => {
-        // 私有帐号
+        // 私有账号
         if (res && res.Status == 'OK') {
           accountList.push(...(res.Return || []));
         }
@@ -429,7 +429,7 @@ export default {
       this.$emit('close', needRefresh);
     },
     toAssetManageEditAccount() {
-      // 跳转到资产清单页面，打开单个帐号管理弹窗
+      // 跳转到资产清单页面，打开单个账号管理弹窗
       window.open(HOME + '/cmdb.html#/asset-manage?resourceId=' + this.dbResourceId, '_blank');
     },
     refreshAccountList() {

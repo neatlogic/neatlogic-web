@@ -416,7 +416,7 @@ export default {
       }
     },
     handleRepoType(repoType, repoTypeConfig = '') {
-      // 处理仓库类型，如果是gitlab 显示帐号和密码输入框，否则不显示
+      // 处理仓库类型，如果是gitlab 显示账号和密码输入框，否则不显示
       if (repoType == 'gitlab') {
         this.storehouseFormList.forEach((item) => {
           if (item.name == 'gitlabUsername' || item.name == 'gitlabPassword') {

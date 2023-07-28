@@ -16,11 +16,11 @@ const asset = {
   batchAddTag(params) {
     return axios.post('/api/rest/resourcecenter/resource/tag/batch/add', params);
   },
-  //保存资源中心帐号
+  //保存资源中心账号
   saveSingleAccount(params) {
     return axios.post('/api/rest/resourcecenter/resource/account/save', params);
   },
-  //批量添加资源中心帐号
+  //批量添加资源中心账号
   batchAddAccount(params) {
     return axios.post('/api/rest/resourcecenter/resource/account/batch/add', params);
   },
@@ -28,12 +28,12 @@ const asset = {
   batchDelTag(params) {
     return axios.post('/api/rest/resourcecenter/resource/tag/batch/delete', params);
   },
-  //批量删除资源中心帐号
+  //批量删除资源中心账号
   batchDelAccount(params) {
     return axios.post('/api/rest/resourcecenter/resource/account/batch/delete', params);
   },
   listAccount(params) {
-    // 获取所有的帐号数据
+    // 获取所有的账号数据
     return axios.post('/api/rest/resourcecenter/resource/account/list', params);
   },
   listTag(param) {
@@ -41,11 +41,11 @@ const asset = {
     return axios.post('/api/rest/resourcecenter/tag/name/list/forselect', param);
   },
   searchAccount(param) {
-    // 获取帐号
+    // 获取账号
     return axios.post('/api/rest/resourcecenter/account/search', param);
   },
   testConnectAccount(params) {
-    // 测试帐号可用性
+    // 测试账号可用性
     return axios.post('/api/rest/resourcecenter/account/accesstest', params);
   }
 };

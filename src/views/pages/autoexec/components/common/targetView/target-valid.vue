@@ -140,10 +140,10 @@ export default {
     close() {
       this.$emit('close');
     },
-    gotoAccountManage() { //添加帐号
+    gotoAccountManage() { //添加账号
       window.open(HOME + '/cmdb.html#/account-manage?isNewAccountShow=true', '_blank');
     },
-    gotoAssetManage(type, list) { //资产绑定帐号
+    gotoAssetManage(type, list) { //资产绑定账号
       let assetIpList = JSON.stringify(list);
       list.length > 1 && sessionStorage.setItem('assetIpList', assetIpList);
       if (type == 'addAccount' && list.length == 1) {

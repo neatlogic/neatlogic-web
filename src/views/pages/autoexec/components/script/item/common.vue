@@ -157,7 +157,7 @@ export default {
         radio: 'tsfont-circle-o', //单选
         checkbox: 'tsfont-check-square', //复选
         node: 'tsfont-blocks', //节点
-        account: 'tsfont-userinfo', //帐号
+        account: 'tsfont-userinfo', //账号
         textarea: 'tsfont-formtextarea', //文本域
         phase: 'tsfont-stage', //阶段
         switch: 'tsfont-canvas' //开关

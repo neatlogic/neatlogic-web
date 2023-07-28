@@ -29,7 +29,7 @@ export default {
   radioHandler, //单选
   checkboxHandler, //复选
   nodeHandler, //节点
-  accountHandler, //帐号
+  accountHandler, //账号
   filepathHandler, //输出文件
   textareaHandler, //文本域
   phaseHandler, //执行阶段

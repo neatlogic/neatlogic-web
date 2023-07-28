@@ -149,8 +149,8 @@ export default {
       this.formConfig.itemList.executeUser.readonly = !!val;
       if (val) {
         if (this.$utils.isEmpty(this.initExecuteConfig)) {
-        //如果当前是环境层，取消继承时需要获取模块层的执行帐号信息
-        //如果当前是模块层，取消继承时需要获取应用层的执行帐号信息
+        //如果当前是环境层，取消继承时需要获取模块层的执行账号信息
+        //如果当前是模块层，取消继承时需要获取应用层的执行账号信息
           let data = {
             appSystemId: this.appSystemId
           };
@@ -185,7 +185,7 @@ export default {
     canEdit: {
       handler(val) {
         this.formConfig.itemList.inherit.disabled = !val;
-        //模块层和环境层继承时，执行帐号不可编辑
+        //模块层和环境层继承时，执行账号不可编辑
         this.formConfig.itemList.protocolId.readonly = !val || !!this.defaultExecuteConfig.inherit;
         this.formConfig.itemList.executeUser.readonly = !val || !!this.defaultExecuteConfig.inherit;
       }, 
