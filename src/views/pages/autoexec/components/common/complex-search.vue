@@ -918,7 +918,11 @@ export default {
         }
       });
       if (keyword) {
-        this.searchConditionList[this.searchConditionList.length - 1]['joinType'] = 'and';// 关键字和其他组合条件是并且的关系
+        if (!this.$utils.isEmpty(this.searchConditionList)) {
+          // 修复为空时，控制台报错问题
+          const lastCondition = this.searchConditionList[this.searchConditionList.length - 1];
+          lastCondition.joinType = 'and';
+        }
         this.searchConditionList.push({
           conditionList: [
             {
