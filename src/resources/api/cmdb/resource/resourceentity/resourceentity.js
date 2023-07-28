@@ -12,7 +12,7 @@ const resourceentity = {
   rebuildAllResourceEntity() {
     return axios.post('api/rest/resourcecenter/resourceentity/rebuild', {});
   },
-  searchResourceAccountList(params) { //表单扩展选择资源中心帐号组件
+  searchResourceAccountList(params) { //表单扩展选择资源中心账号组件
     return axios.post('/api/rest/resourcecenter/resource/account/component/select', params);
   }
 };

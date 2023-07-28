@@ -1,10 +1,10 @@
 import axios from '../../../http';
 const accountManage = {
-  // 查询资源中心帐号
+  // 查询资源中心账号
   searchAccount(params) {
     return axios.post('api/rest/resourcecenter/account/search', params);
   },
-  // 获取资源中心帐号
+  // 获取资源中心账号
   getAccountById(id) {
     return axios.post('api/rest/resourcecenter/account/get', { id: id });
   },
@@ -12,11 +12,11 @@ const accountManage = {
   getAccountList(params) {
     return axios.post('api/rest/resourcecenter/resource/list', params);
   },
-  // 保存资源中心帐号
+  // 保存资源中心账号
   saveAccount(params) {
     return axios.post('api/rest/resourcecenter/account/save', params);
   },
-  // 删除资源中心帐号
+  // 删除资源中心账号
   deleteAccountById(id) {
     return axios.post('api/rest/resourcecenter/account/delete', { id: id });
   }, // 获取枚举值

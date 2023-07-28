@@ -98,8 +98,8 @@ export default {
     return {
       isShowNewAccount: false,
       accountId: null,
-      publicAccountList: [], // 公共帐号列表
-      privateAccountList: [], // 私有帐号列表
+      publicAccountList: [], // 公共账号列表
+      privateAccountList: [], // 私有账号列表
       failureCount: 0, //错误校验信息条数
       successCount: 0, //成功校验信息条数
       failureReasonList: [], //失败校验信息详情
@@ -194,7 +194,7 @@ export default {
     getPublicAccountList() {
       if (this.resourceId) {
         this.$api.cmdb.asset.listAccount({ resourceId: this.resourceId, type: 'public' }).then(res => {
-          // 公有帐号列表
+          // 公有账号列表
           if (res.Return.length > 0) {
             this.settingConfig.accountList = [];
             let publicAccountList = [];
@@ -218,7 +218,7 @@ export default {
     getPrivateAccountList() {
       if (this.resourceId) {
         this.$api.cmdb.asset.listAccount({ resourceId: this.resourceId, type: 'private' }).then(res => {
-          // 私有帐号列表
+          // 私有账号列表
           if (res.Return.length > 0) {
             this.privateAccountList = [];
             let privateAccountList = [];
@@ -299,12 +299,12 @@ export default {
       this.$emit('success', msg);
     },
     openPrivateAccount() {
-      // 私有帐号
+      // 私有账号
       this.accountId = null;
       this.isShowNewAccount = true;
     },
     delPrivateAccount(row, index) {
-      // 删除私有帐号
+      // 删除私有账号
       if (row && row.value) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
@@ -324,7 +324,7 @@ export default {
       }
     },
     editPrivateAccount(item) {
-      // 编辑私有帐号
+      // 编辑私有账号
       if (item && item.value) {
         this.accountId = item.value;
         this.isShowNewAccount = true;
@@ -403,7 +403,7 @@ export default {
     getItem() {
       return function(value) {
         if (value.length > 1) {
-          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。 ';
+          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。 ';
         } else {
           return;
         }

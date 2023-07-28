@@ -58,7 +58,7 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CustomAttrEdit: resolve => require(['@/views/pages/rdm/template/edit-tab/components/customattr-edit-dialog.vue'], resolve)
+    CustomAttrEdit: resolve => require(['@/views/pages/rdm/template/edittab/components/customattr-edit-dialog.vue'], resolve)
   },
   props: {
     attrList: { type: Array }

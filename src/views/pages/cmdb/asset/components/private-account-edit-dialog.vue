@@ -13,7 +13,7 @@ export default {
   filters: {},
   props: {
     accountId: {
-      // 帐号id
+      // 账号id
       type: Number,
       default: null
     },
@@ -23,7 +23,7 @@ export default {
       default: null
     },
     accountList: {
-      // 帐号列表
+      // 账号列表
       type: Array,
       default: function() {
         return [];
@@ -44,7 +44,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        title: this.accountId ? '编辑私有帐号' : '新增私有帐号'
+        title: this.accountId ? '编辑私有账号' : '新增私有账号'
       },
       formConfig: {
         id: {
@@ -70,7 +70,7 @@ export default {
           validateList: ['required', {
             name: 'custom',
             trigger: 'change',
-            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。',
+            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
             validator: (rule, val) => {
               return this.validAccountProtocalUnique(val);
             }
@@ -96,7 +96,7 @@ export default {
           validateList: ['required', {
             name: 'custom',
             trigger: 'change',
-            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。',
+            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
             validator: (rule, protocolId) => {
               return this.validAccountProtocalUnique();
             }
@@ -108,20 +108,20 @@ export default {
           onChange: (val, objectValue) => {
             this.protocol = objectValue ? objectValue.text : '';
             if (!this.validAccountProtocalUnique()) {
-              this.$set(this.formConfig['protocolId'], 'errorMessage', '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。');
+              this.$set(this.formConfig['protocolId'], 'errorMessage', '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。');
             } else {
               this.$set(this.formConfig['protocolId'], 'errorMessage', '');
             }
             if (val == '478184378212353') {
               // 如果选择为 tagent 的时候，用户名为非必填
               this.formConfig.account.validateList = [];
-              this.formConfig.account.isHidden = true; // 隐藏帐号字段
+              this.formConfig.account.isHidden = true; // 隐藏账号字段
             } else {
               this.formConfig.account.validateList = ['required',
                 {
                   name: 'custom',
                   trigger: 'change',
-                  message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。',
+                  message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
                   validator: (rule, val) => {
                     return this.validAccountProtocalUnique(val);
                   }
@@ -165,10 +165,10 @@ export default {
       return protocolName;
     },
     validAccountProtocalUnique(account) {
-      // 验证协议和帐号唯一
+      // 验证协议和账号唯一
       let isValid = true;
       let accountName = '';
-      let accountList = this.$utils.deepClone(this.accountList) || []; // 编辑私有帐号时，不验证自身协议和帐号唯一
+      let accountList = this.$utils.deepClone(this.accountList) || []; // 编辑私有账号时，不验证自身协议和账号唯一
       accountList = accountList.filter((item) => {
         return item.value != this.accountId;
       });
@@ -192,7 +192,7 @@ export default {
         return;
       }
       this.$api.cmdb.accountManage
-        .saveAccount({...formValue, type: 'private', resourceId: this.resourceId, name: `${formValue.account}[${this.protocol}]`}) // 私有帐号
+        .saveAccount({...formValue, type: 'private', resourceId: this.resourceId, name: `${formValue.account}[${this.protocol}]`}) // 私有账号
         .then(res => {
           if (res && (res.Status == 'OK')) {
             this.handleTipsMessage(res.Return);
@@ -214,7 +214,7 @@ export default {
                   return h('li', {}, item || '');
                 })
               ),
-              h('div', {}, '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的帐号。')
+              h('div', {}, '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。')
             ]);
           }
         });

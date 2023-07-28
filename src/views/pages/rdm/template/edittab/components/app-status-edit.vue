@@ -5,7 +5,7 @@
     </div>
     <div class="tstable-container tstable-normal border tstable-no-fixedHeader radius-lg">
       <div class="tstable-main bg-op table-radius-main">
-        <TsTable :theadList="theadList" :tbodyList="statusList" canExpand>
+        <TsTable :theadList="theadList" :tbodyList="finalStatusList" canExpand>
           <template v-slot:fromstatus="{ row }">
             <div>
               <span :style="{ color: row.color }">
@@ -19,9 +19,11 @@
               :value="row.isStart"
               :trueValue="1"
               :falseValue="0"
-              @on-change="val => {
-                $set(row, 'isStart', val);
-              }"
+              @on-change="
+                val => {
+                  $set(row, 'isStart', val);
+                }
+              "
             ></TsFormSwitch>
           </template>
           <template v-slot:isEnd="{ row }">
@@ -29,9 +31,11 @@
               :value="row.isEnd"
               :trueValue="1"
               :falseValue="0"
-              @on-change="val => {
-                $set(row, 'isEnd', val);
-              }"
+              @on-change="
+                val => {
+                  $set(row, 'isEnd', val);
+                }
+              "
             ></TsFormSwitch>
           </template>
           <template v-slot:transfer>
@@ -57,9 +61,11 @@
               </span>
             </div>
           </template>
-          <template slot="action" slot-scope="{ row }">
-            <div class="tstable-action">
+          <template v-slot:action="{ row, index }">
+            <div v-if="row.uuid" class="tstable-action">
               <ul class="tstable-action-ul">
+                <li v-if="index > 1" class="tsfont-arrow-up" @click="moveUp(row)">{{ $t('page.moveup') }}</li>
+                <li v-if="index < finalStatusList.length - 1" class="tsfont-arrow-down" @click="moveDown(row)">{{ $t('page.movedown') }}</li>
                 <li class="tsfont-edit" @click="editStatus(row)">{{ $t('page.edit') }}</li>
                 <li class="tsfont-trash-o" @click="deleteStatus(row)">{{ $t('page.delete') }}</li>
               </ul>
@@ -111,8 +117,8 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusEditDialog: resolve => require(['@/views/pages/rdm/template/edit-tab/components/app-status-edit-dialog.vue'], resolve),
-    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/template/edit-tab/components/app-statusrel-config-dialog.vue'], resolve)
+    StatusEditDialog: resolve => require(['@/views/pages/rdm/template/edittab/components/app-status-edit-dialog.vue'], resolve),
+    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/template/edittab/components/app-statusrel-config-dialog.vue'], resolve)
   },
   props: {
     statusList: { type: Array },
@@ -141,6 +147,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    moveDown(row) {
+      const index = this.statusList.findIndex(d => d.uuid === row.uuid);
+      if (index > -1 && index < this.statusList.length - 1) {
+        const tmp = this.statusList[index];
+        this.$set(this.statusList, index, this.statusList[index + 1]);
+        this.$set(this.statusList, index + 1, tmp);
+      }
+    },
+    moveUp(row) {
+      const index = this.statusList.findIndex(d => d.uuid === row.uuid);
+      if (index > 0) {
+        const tmp = this.statusList[index];
+        this.$set(this.statusList, index, this.statusList[index - 1]);
+        this.$set(this.statusList, index - 1, tmp);
+      }
+    },
     changeIsStart(status) {
       const data = { uuid: status.uuid, flag: !!status.isStart, type: 'start' };
     },
@@ -260,6 +282,9 @@ export default {
   },
   filter: {},
   computed: {
+    finalStatusList() {
+      return [{ uuid: 0, label: this.$t('page.nostatus'), name: '-', _expand: this.hasRelation({ uuid: 0 }) }, ...this.statusList];
+    },
     hasRelation() {
       return (fromStatus, toStatus) => {
         if (this.statusRelList && this.statusRelList.length > 0) {
@@ -280,6 +305,7 @@ export default {
         this.statusMatrix = {};
         //组装status矩阵数据
         this.statusList.forEach(fromStatus => {
+          this.$set(this.statusMatrix, '0_' + fromStatus.uuid, true);
           if (this.hasRelation(fromStatus)) {
             this.$set(fromStatus, '_expand', true);
           } else {

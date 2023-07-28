@@ -69,7 +69,7 @@ export default {
         isDefault: {
           type: 'switch',
           name: 'isDefault',
-          label: this.$t('page.isdefault'), // 默认帐号
+          label: this.$t('page.isdefault'), // 默认账号
           validateList: ['required']
         },
         tagIdList: {
@@ -93,7 +93,7 @@ export default {
         //   width: '100%',
         //   label: this.$t('page.port'),
         //   maxlength: 50,
-        //   tooltip: '主机帐号需要填写端口，应用帐号无需填写端口',
+        //   tooltip: '主机账号需要填写端口，应用账号无需填写端口',
         //   validateList: [
         //     { name: 'port', message: this.$t('form.validate.inputcorrectport') }
         //   ]

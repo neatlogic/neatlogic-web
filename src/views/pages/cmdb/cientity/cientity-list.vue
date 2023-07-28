@@ -448,7 +448,7 @@ export default {
       batchEditCiId: null, //批量修改模型id
       batchEditCiEntityList: [], //批量修改配置项
       attrRelList: [], //属性和关系列表，用于导出excel时选择
-      isShowAddAccountDialog: false, // 帐号管理弹窗
+      isShowAddAccountDialog: false, // 账号管理弹窗
       resourceId: null
     };
   },

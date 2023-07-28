@@ -229,7 +229,7 @@ export default {
         isEditRuntimeParam: false //是否可以添加作业参数
       },
       defaultScenarioId: null,
-      executeConfig: { //执行帐号
+      executeConfig: { //执行账号
         protocolId: null,
         executeUser: {}
       },
@@ -320,7 +320,7 @@ export default {
           if (this.profileIdList.length > 0) {
             this.getProfileList(this.profileIdList);
           }
-          //执行帐号
+          //执行账号
           if (this.actionConfig.config.executeConfig) {
             Object.keys(this.executeConfig).forEach(key => {
               if (this.actionConfig.config.executeConfig[key]) {

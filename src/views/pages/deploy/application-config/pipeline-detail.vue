@@ -534,7 +534,7 @@ export default {
       }
       if (this.executeConfig) {
         this.$set(data.config, 'executeConfig', this.executeConfig);
-        if ((!this.appModuleId && !this.envId) && this.executeConfig.hasOwnProperty('inherit')) { //只有模块层和环境层的执行帐号有继承关系
+        if ((!this.appModuleId && !this.envId) && this.executeConfig.hasOwnProperty('inherit')) { //只有模块层和环境层的执行账号有继承关系
           delete data.config.executeConfig.inherit;
         }
       }

@@ -21,7 +21,7 @@ export var labelName = {
   formpriority: '修改优先级',
   formtreeselect: '多级下拉框',
   formcmdbcientity: '配置项组件',
-  formaccounts: '帐号组件',
+  formaccounts: '账号组件',
   resourceinput: '资产输入组件',
   formresoureces: '执行目标',
   formupload: '附件上传',
@@ -231,7 +231,7 @@ var component = {
     // defaultValueList: ['', ''] // 默认值
   },
   formaccounts: {
-    placeholder: '选择帐号组件'
+    placeholder: '选择账号组件'
   },
   //资产输入组件
   resourceinput: {
