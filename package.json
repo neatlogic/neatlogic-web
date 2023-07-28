@@ -38,7 +38,7 @@
     "lodash": "^4.17.20",
     "marked": "^5.0.5",
     "navigator": "^1.0.1",
-    "neatlogic-ui": "^1.0.2",
+    "neatlogic-ui": "^1.0.4",
     "particles.vue": "^2.42.2",
     "qs": "^6.9.1",
     "save": "^2.4.0",
