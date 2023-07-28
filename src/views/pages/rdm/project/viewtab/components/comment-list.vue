@@ -5,6 +5,7 @@
       v-if="!isLoading"
       v-bind="commentData"
       :sm="24"
+      :md="24"
       :lg="24"
       :xl="24"
       :xxl="24"
@@ -20,7 +21,7 @@
               <UserCard alignMode="vertical" :iconSize="32" :uuid="row.fcu"></UserCard>
             </div>
             <div>
-              <div class="comment-content" v-html="row.content"></div>
+              <div v-imgViewer class="comment-content" v-html="row.content"></div>
               <div v-if="commentReady['c_' + row.id] && row.childCount > 0" class="mt-md">
                 <CommentList
                   :issueData="issueData"
@@ -58,8 +59,10 @@
   </div>
 </template>
 <script>
+import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
+  directives: { imgViewer },
   components: {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
