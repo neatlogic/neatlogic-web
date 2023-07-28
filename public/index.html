@@ -59,6 +59,10 @@
           return -1; //不是ie浏览器
         }
       }
+      document.body.ondrop = function (event) { //使用拖拽组件draggble，火狐浏览器弹出新窗口的兼容问题
+        event.preventDefault();
+        event.stopPropagation();
+      }
     </script>
   </body>
 </html>
