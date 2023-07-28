@@ -15,7 +15,7 @@
       border="border"
       @change="
         (val, opt) => {
-          $emit('setValue', 'userIdList', val);
+          setValue('userIdList', val, opt);
         }
       "
     ></TsFormSelect>
@@ -28,7 +28,7 @@
       :groupList="['user']"
       @change="
         (val, opt) => {
-          $emit('setValue', 'userIdList', val);
+          setValue('userIdList', val, opt);
         }
       "
     ></UserSelect>
@@ -63,6 +63,17 @@ export default {
   methods: {
     valid() {
       return this.$refs['select'].valid();
+    },
+    setValue(attr, val, opt) {
+      let text;
+      if (opt) {
+        if (opt instanceof Array) {
+          text = opt.map(d => d.text);
+        } else if (typeof opt === 'object') {
+          text = opt.text;
+        }
+      }
+      this.$emit('setValue', attr, val, text);
     }
   },
   filter: {},
