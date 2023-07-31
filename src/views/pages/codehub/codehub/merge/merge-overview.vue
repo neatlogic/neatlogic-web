@@ -111,20 +111,13 @@ export default {
       this.getMergeList();
     },
     changeAppModule(appSystemId) {
-      if (appSystemId) {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {appSystemId: appSystemId});
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          } 
-        });
-      } else {
-        this.searchConfig.searchList.forEach((item) => {
-          if (item && (item.name == 'appModuleId')) {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          } 
-        });
+      const params = appSystemId ? { appSystemId } : {};
+      const dynamicUrl = appSystemId ? '/api/rest/codehub/appmodule/search' : '';
+
+      const targetItem = this.searchConfig.searchList.find(item => item && item.name === 'appModuleId');
+      if (targetItem) {
+        this.$set(targetItem, 'params', params);
+        this.$set(targetItem, 'dynamicUrl', dynamicUrl);
       }
     },
     restoreHistory(historyData) {

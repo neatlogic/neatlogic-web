@@ -98,7 +98,7 @@ export default {
         lg: 24,
         xl: 24,
         xxl: 24,
-        cardList: [],
+        tbodyList: [],
         currentPage: 1,
         pageSize: 20,
         pageType: 'number',
@@ -161,7 +161,7 @@ export default {
       this.loadingShow = true;
       this.$api.codehub.versiontype.getList(param).then(res => {
         if (res && res.Status == 'OK') {
-          const properties = ['pageCount', 'rowNum', 'pageSize', 'currentPage', 'cardList'];
+          const properties = ['pageCount', 'rowNum', 'pageSize', 'currentPage', 'tbodyList'];
           properties.forEach(prop => {
             const value = res?.Return?.[prop];
             this.$set(this.versionData, prop, value);

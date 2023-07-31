@@ -8,7 +8,6 @@ const versiontypeOverview = () => import('@/views/pages/codehub/codehub/version/
 const strategyOverview = () => import('@/views/pages/codehub/codehub/version/strategy-overview.vue');
 const mergeAction = () => import('@/views/pages/codehub/codehub/merge/merge-action.vue');
 const mergeCreate = () => import('@/views/pages/codehub/codehub/merge/merge-create.vue');
-const mergeHandler = () => import('@/views/pages/codehub/codehub/merge/merge-handler.vue');
 const mergeReview = () => import('@/views/pages/codehub/codehub/merge/merge-review.vue');
 const mergeOverview = () => import('@/views/pages/codehub/codehub/merge/merge-overview.vue');
 const repositoryDetail = () => import('@/views/pages/codehub/codehub/repository/repository-detail.vue');
@@ -127,18 +126,6 @@ export default [
       type: 'codehub'
     }
   },
-  {
-    path: '/merge-handler',
-    name: 'merge-handler',
-    component: mergeHandler,
-    meta: {
-      title: $t('router.codehub.handlermergerequest'),
-      ismenu: false,
-      icon: 'ts-dev-iplist',
-      authority: 'CODEHUB_BASE',
-      type: 'codehub'
-    }
-  }, 
   {
     path: '/merge-review',
     name: 'merge-review',

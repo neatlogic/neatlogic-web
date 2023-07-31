@@ -122,8 +122,10 @@ export default {
         this.isLoad = false;
         return;
       }
+  
       this.isLoad = true;
-      let param = {
+  
+      const param = {
         appModuleId: this.versionData.appModuleId,
         targetBranch: this.targetBranch,
         srcBranch: this.srcBranch,
@@ -131,52 +133,44 @@ export default {
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
       };
+
       //取消正在搜索的请求
-      let cancel = this.cancelAxios;
-      cancel && cancel.cancel();
+      if (this.cancelAxios) {
+        this.cancelAxios.cancel();
+      }
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      this.$api.codehub.merge.getVaildlist(param, { cancelToken: this.cancelAxios.token }).then(res => {
-        if (res && res.Status == 'OK') {
-          let newlist = res.Return.list || [];
-          if (newlist.length > 0) {
-            this.$set(
-              this,
-              'tbodyList',
-              newlist.map(n => {
-                return {
-                  no: n.issueNo,
-                  name: '',
-                  handleUserId: '',
-                  isValid: n.issueNo ? 1 : 0, // 有需求编号，表示有效需求，否则就是无效需求
-                  status: null,
-                  issueUpdateTime: '',
-                  sourceId: '',
-                  commitList: n.commitList || []
-                };
-              })
-            );
-            if (this.tbodyList && this.tbodyList.length > 0) {
-              let list = this.tbodyList.map(l => {
-                return l.no;
-              });
-              this.$emit('getIsuuelist', list);
-            } else {
-              this.$emit('getIsuuelist', []);
-            }
-            this.$emit('getIssue', true);
-            this.getMoreinfo(); // 获取除需求编号和需求状态之外的其他信息
-          } else {
-            this.tbodyList = [];
-            this.$emit('getIssue', false);
+
+      this.$api.codehub.merge.getVaildlist(param, { cancelToken: this.cancelAxios.token })
+        .then(res => {
+          if (res && res.Status == 'OK') {
+            const { list = [] } = res.Return || [];
+
+            this.tbodyList = list.map(n => ({
+              no: n.issueNo,
+              name: '',
+              handleUserId: '',
+              isValid: n.issueNo ? 1 : 0,
+              status: null,
+              issueUpdateTime: '',
+              sourceId: '',
+              commitList: n.commitList || []
+            }));
+
+            this.emitGetIsuuelist();
+            this.$emit('getIssue', this.tbodyList.length > 0);
+            this.getMoreinfo();
           }
-        }
-      }).finally(() => {
-        this.isLoad = false;
-      });
+        })
+        .finally(() => {
+          this.isLoad = false;
+        });
+    },
+    emitGetIsuuelist() {
+      const list = this.tbodyList.map(l => l.no);
+      this.$emit('getIsuuelist', this.tbodyList.length > 0 ? list : []);
     },
     getMoreinfo() {
-      // 获取所有和需求列表和tbodyList 里面的no 需求编号相等，从需求列表取其他的字段
       let param = {
         versionId: this.versionId || null,
         keyword: this.keyword,
@@ -184,62 +178,59 @@ export default {
         currentPage: this.tableData.currentPage
       };
       this.isLoad = true;
-      this.$api.codehub.merge
-        .getIssuelist(param)
+
+      this.$api.codehub.merge.getIssuelist(param)
         .then(res => {
           this.isLoad = false;
           if (res && res.Status == 'OK') {
-            this.$set(this.tableData, 'pageCount', res.Return.pageCount);
-            this.$set(this.tableData, 'rowNum', res.Return.rowNum);
-            this.$set(this.tableData, 'pageSize', res.Return.pageSize);
-            this.$set(this.tableData, 'currentPage', res.Return.currentPage);
-            let tbodylist = res.Return.list || [];
-            if (tbodylist && tbodylist.length > 0) {
-              //单独添加是否有效的字段
-              tbodylist.forEach(t => {
-                this.tbodyList.forEach(tbody => {
-                  if (tbody.no == t.no) {
-                    Object.assign(tbody, {
-                      name: t.name || '',
-                      handleUserId: t.handleUserId || '',
-                      status: t.status,
-                      issueUpdateTime: t.issueUpdateTime,
-                      sourceId: t.sourceId
-                    });
-                  }
-                });
-              });
+            const { pageCount = 0, rowNum = 0, pageSize = 20, currentPage = 1, list = [] } = res.Return;
+
+            this.tableData = {
+              ...this.tableData,
+              pageCount,
+              rowNum,
+              pageSize,
+              currentPage
+            };
+
+            for (let t of list || []) {
+              let tbody = this.tbodyList.find(({ no }) => no === t.no);
+              if (tbody) {
+                tbody.name = t.name || '';
+                tbody.handleUserId = t.handleUserId || '';
+                tbody.status = t.status;
+                tbody.issueUpdateTime = t.issueUpdateTime;
+                tbody.sourceId = t.sourceId;
+              }
             }
           } else {
             this.$set(this, 'tbodyList', []);
             this.$emit('getIsuuelist', []);
           }
         })
-        .catch(error => {
+        .finally(() => {
           this.isLoad = false;
         });
     },
     openInnerTable(row, index) {
-      // 展开收起内嵌表格
-      if (row['_expand']) {
-        row._expand = false;
-        this.$set(this.tbodyList, index, row);
-      } else {
-        row._expand = true;
-        this.$set(this.tbodyList, index, row);
-      }
+      const shouldExpand = !row['_expand'];
+
+      row._expand = shouldExpand;
+      this.$set(this.tbodyList, index, row);
+    },
+    handleBranchChange() {
+      this.$emit('getIsuuelist', []);
+      this.getList();
     }
   },
   filter: {},
   computed: {},
   watch: {
     srcBranch(val) {
-      this.$emit('getIsuuelist', []);
-      this.getList();
+      this.handleBranchChange();
     },
     targetBranch(val) {
-      this.$emit('getIsuuelist', []);
-      this.getList();      
+      this.handleBranchChange();   
     }
   }
 };

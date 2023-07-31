@@ -21,7 +21,7 @@
         </Row>
       </div>
       <Loading v-if="isLoad" loadingShow></Loading>
-      <div v-else :class="'issue-'+isValid">
+      <div v-else :class="'issue-' + isValid">
         <TsTable
           ref="showtable"
           v-bind="tableData"

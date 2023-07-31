@@ -17,30 +17,38 @@ export default {
       syncSourceList: [],
       isValid: false, //是否过滤有效需求
       maxSearchCount: '300', //检索提交日志条数
-      theadList: [{
-        key: 'selection'
-      }, {
-        title: this.$t('term.codehub.issuesnumber'),
-        key: 'no'
-      }, {
-        title: this.$t('page.description'),
-        key: 'name'
-      }, {
-        title: this.$t('page.responsibleperson'),
-        key: 'handleUserId'
-      }, {
-        title: this.$t('page.effectiveness'),
-        key: 'isValid'
-      }, {
-        title: this.$t('page.status'),
-        key: 'status'
-      }, {
-        title: this.$t('page.updatetime'),
-        key: 'issueUpdateTime'
-      }, {
-        title: this.$t('page.source'),
-        key: 'sourceId'
-      }
+      theadList: [
+        {
+          key: 'selection'
+        },
+        {
+          title: this.$t('term.codehub.issuesnumber'),
+          key: 'no'
+        },
+        {
+          title: this.$t('page.description'),
+          key: 'name'
+        },
+        {
+          title: this.$t('page.responsibleperson'),
+          key: 'handleUserId'
+        },
+        {
+          title: this.$t('page.effectiveness'),
+          key: 'isValid'
+        },
+        {
+          title: this.$t('page.status'),
+          key: 'status'
+        },
+        {
+          title: this.$t('page.updatetime'),
+          key: 'issueUpdateTime'
+        },
+        {
+          title: this.$t('page.source'),
+          key: 'sourceId'
+        }
       ],
       tableData: {
         keyName: 'no',
@@ -50,28 +58,36 @@ export default {
       },
       selectedTableData: {
         // 选择需要待合并的需求列表
-        theadList: [{
-          title: this.$t('term.codehub.issuesnumber'),
-          key: 'no'
-        }, {
-          title: this.$t('page.name'),
-          key: 'name'
-        }, {
-          title: this.$t('term.process.dealwithuser'),
-          key: 'lcu',
-          type: 'user'
-        }, {
-          title: this.$t('term.codehub.issuesvalid'),
-          key: 'isValid'
-        }, {
-          title: this.$t('page.updatetime'),
-          key: 'issueUpdateTime'
-        }, {
-          title: this.$t('page.source'),
-          key: 'sourceId'
-        }, {
-          key: 'action'
-        }],
+        theadList: [
+          {
+            title: this.$t('term.codehub.issuesnumber'),
+            key: 'no'
+          },
+          {
+            title: this.$t('page.name'),
+            key: 'name'
+          },
+          {
+            title: this.$t('term.process.dealwithuser'),
+            key: 'lcu',
+            type: 'user'
+          },
+          {
+            title: this.$t('term.codehub.issuesvalid'),
+            key: 'isValid'
+          },
+          {
+            title: this.$t('page.updatetime'),
+            key: 'issueUpdateTime'
+          },
+          {
+            title: this.$t('page.source'),
+            key: 'sourceId'
+          },
+          {
+            key: 'action'
+          }
+        ],
         tbodyList: [],
         keyName: 'no',
         hideAction: false,
@@ -88,7 +104,7 @@ export default {
       this.maxSearchCount = parseInt(count);
     }
   },
-  beforeDestroy() { },
+  beforeDestroy() {},
   methods: {
     changeCurrent(page) {
       this.tableData.currentPage = page;
@@ -98,7 +114,8 @@ export default {
       this.tableData.pageSize = size;
       this.getList();
     },
-    getSouce() { //获取需求列表
+    getSouce() {
+      //获取需求列表
       this.$api.codehub.issue.getSource({ type: 'issue' }).then(res => {
         if (res && res.Status == 'OK') {
           this.syncSourceList = res.Return.syncSourceList;
@@ -115,7 +132,7 @@ export default {
     },
     updateVaildStatus(list, no) {
       if (list.length > 0) {
-        list.forEach((l) => {
+        list.forEach(l => {
           Object.assign(l, {
             isValid: 0
           });
@@ -132,7 +149,7 @@ export default {
   computed: {
     getSourceName() {
       // 获取来源名称
-      return (sourceId) => {
+      return sourceId => {
         let sourceName = '';
         this.syncSourceList.forEach(sync => {
           if (sync.id == sourceId) {
@@ -149,7 +166,7 @@ export default {
     },
     getClassNameByValid() {
       // 获取类名，根据需求有效性
-      return (isValid) => {
+      return isValid => {
         if (isValid == 1) {
           return 'text-success';
         } else if (isValid == 0) {
@@ -161,7 +178,7 @@ export default {
     },
     getTextByValid() {
       // 获取名称，根据需求有效性
-      return (isValid) => {
+      return isValid => {
         if (isValid == 1) {
           return this.$t('term.codehub.effectivedemand');
         } else if (isValid == 0) {
