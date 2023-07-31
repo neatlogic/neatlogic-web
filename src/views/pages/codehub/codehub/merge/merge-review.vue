@@ -60,10 +60,10 @@
               </div>
             </Tooltip>
             <Tag v-if="mrData.versionVo && mrData.versionVo.version" class="mr-sm ml-sm status-tag" color="success">{{ mrData.versionVo.version }}</Tag>
-            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
-            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
-            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
-            <span v-if="mrData && mrData.versionTypeStrategyRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
+            <span v-if="hasRelationVo" class="text-tip ml-sm">{{ $t('page.sourcebranch') }}:</span>
+            <span v-if="hasRelationVo" class="ml-sm">{{ mrData.srcBranch }}</span>
+            <span v-if="hasRelationVo" class="text-tip ml-sm">{{ $t('page.targetbranch') }}:</span>
+            <span v-if="hasRelationVo" class="ml-sm">{{ mrData.targetBranch }}</span>
           </div>
         </div>
       </template>
@@ -84,7 +84,7 @@
             v-model="activeTab"
             :animated="false"
             class="block-tabs"
-            @on-click="selectedCommitId=null;selectFilepath=null"
+            @on-click="selectedCommitId = null;selectFilepath = null"
           >
             <TabPane 
               v-for="(tab,tindex) in tabList" 
@@ -325,8 +325,11 @@ export default {
       this.selectFilepath = null;
     },
     clearItem(item) {
-      if (this.refreshItem && this.refreshItem.length > 0 && this.refreshItem.includes(item)) {
-        this.refreshItem.splice(this.refreshItem.indexOf(item), 1);
+      if (this.refreshItem && this.refreshItem.length > 0) {
+        const index = this.refreshItem.indexOf(item);
+        if (index !== -1) {
+          this.refreshItem.splice(index, 1);
+        }
       }
     },
     selectFile(path) {
@@ -339,17 +342,14 @@ export default {
     setStatus() {
       //状态的颜色
       return function(type, val) {
-        let text = '';
-        this.statusList.length > 0 &&
-          this.statusList.forEach(status => {
-            if (status.value == val) {
-              text = status[type];
-            }
-          });
-        if (text == 'info') {
-          text = '#00c1de';
-        }
-        return text;
+        const status = this.statusList.find(status => status.value === val);
+        const text = status ? status[type] : '';
+        return text === 'info' ? '#00c1de' : text;
+      };
+    },
+    hasRelationVo() {
+      return () => {
+        return this.mrData && this.mrData.versionTypeStrategyRelationVo;
       };
     }
   },

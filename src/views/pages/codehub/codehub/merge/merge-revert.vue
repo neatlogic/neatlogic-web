@@ -118,7 +118,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getSouce();
+    this.getSyncSourceList();
   },
   beforeUpdate() {},
   updated() {},
@@ -130,7 +130,7 @@ export default {
     gotoPrev() {
       this.$emit('resetRevert', true);
     },
-    getSouce() { //获取需求列表
+    getSyncSourceList() { //获取需求列表
       this.$api.codehub.issue.getSource({type: 'issue'}).then(res => {
         if (res && res.Status == 'OK') {
           this.syncSourceList = res.Return.syncSourceList;
@@ -158,12 +158,8 @@ export default {
     getSourceName() {
       // 根据来源id获取来源名称
       return function(sourceId) {
-        let sourceName = '';
-        this.syncSourceList.forEach(item => {
-          if (item.id == sourceId) {
-            sourceName = item.source;
-          }
-        });
+        const sourceItem = this.syncSourceList.find(item => item.id === sourceId);
+        const sourceName = sourceItem ? sourceItem.source : '';
         return sourceName;
       };
     },
