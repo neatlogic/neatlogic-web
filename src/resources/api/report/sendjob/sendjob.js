@@ -24,9 +24,6 @@ const report = {
   getAuditLog(params) {
     return axios.post('/api/rest/job/audit/log/get', params);
   },
-  getAllUsers(params) {
-    return axios.post('/api/rest/user/search', params);
-  },
   getReportContent({ id, ...params } = {}) {
     return axios.post('/api/binary/report/show/' + id, params);
   }

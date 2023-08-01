@@ -86,7 +86,7 @@ export default {
       _this.currentPage = page || _this.currentPage;
       let param = {keyword: '', currentPage: _this.currentPage, pageSize: 12};
       param[_this.type + 'Uuid'] = _this.uuid;
-      this.$https.post('/api/rest/user/search', param).then(res => {
+      this.$https.post('/api/rest/user/search/forselect', param).then(res => {
         if (res && res.Status == 'OK') {
           _this.isshow = true;
           _this.$set(_this, 'groupList', res.Return);
