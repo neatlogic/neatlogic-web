@@ -50,7 +50,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientityinsert',
-          label: this.$t('term.cmdb.newcientity'),
+          label: this.$t('term.cmdb.addcientity'),
           transfer: true,
           desc: this.$t('message.cmdb.newcientity'),
           groupList: ['common', 'user', 'team', 'role'],
