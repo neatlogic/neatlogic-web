@@ -91,7 +91,7 @@ export default {
       editorConfig: {
         //基本配置
         language: 'zh-cn',
-        removePlugins: this.removePlugins.concat('MediaEmbed'),
+        removePlugins: this.$AuthUtils.hasRole('KNOWLEDGE_BASE')? this.removePlugins.concat('MediaEmbed'): this.removePlugins.concat(['KnowledgeSelect','MediaEmbed']),//用户没有知识库基础权限时，需要禁用关联知识按钮
         ckfinder: {
           uploadUrl: BASEURLPREFIX + '/api/binary/image/upload'
         },

@@ -158,132 +158,99 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    //取消正在搜索的请求
-    let cancel = this.cancelAxios;
-    cancel && cancel.cancel();
+    this.cancelPreviousRequest();
   },
   destroyed() {},
   methods: {
     addIssue() {
-      let addlist = [];
-      try {
-        if (this.addItem) {
-          let list = [];
-          if (this.addItem.indexOf(',') > -1) {
-            list = this.addItem.split(',');
-          } else {
-            list = [this.addItem];
-          }
-          list = list.map(l => {
-            return l.replace(/\s+/g, '');
-          }).filter(l => {
-            return l != '';
-          });
-          //先过滤掉已经在上面的table列表里的
-          if (this.tableData && this.tableData.tbodyList && this.tableData.tbodyList.length) {
-            let tableli = this.tableData.tbodyList.map((t) => {
-              return t.no;
-            });
-            addlist = list.filter((l) => {
-              return tableli.indexOf(l) == -1;
-            });
-            //不相等就是有上面的table的数据，要把属于table的数组先取出来，再在选中列表加上没加上的
-            if (addlist.length != list.length) {
-              let morelist = list.filter((l) => {
-                return tableli.indexOf(l) > -1;
-              });
-              if (morelist && morelist.length > 0) {
-                morelist.forEach((m) => {
-                  if (this.selectIssuelist.indexOf(m) == -1) {
-                    this.selectIssuelist.push(m);
-                  }
-                });
-              }
-            }
-          } else if (list && list.length > 0) {
-            addlist = list;
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-      this.addLi = this.totalIssue(this.addLi, addlist);
-      let totalIssue = this.totalIssue(this.selectIssuelist, this.addLi);
+      if (!this.addItem) return;
+
+      const addlist = this.addItem.split(',').map(l => l.trim()).filter(l => l !== '');
+
+      const tableNoSet = new Set(this.tableData?.tbodyList?.map(t => t.no));
+
+      const addlistWithoutExisting = addlist.filter(l => !tableNoSet.has(l));
+      const addlistInTable = addlist.filter(l => tableNoSet.has(l));
+
+      this.selectIssuelist.push(...addlistInTable);
+      this.addLi = this.totalIssue(this.addLi, addlistWithoutExisting);
+      const totalIssue = this.totalIssue(this.selectIssuelist, this.addLi);
       this.$emit('getIsuuelist', totalIssue);
-      this.$nextTick(() => {
-        this.addItem = '';
-      });
+      this.addItem = '';
     },
     totalIssue(li1, li2) {
       return Array.from(new Set(li1.concat(li2)));
     },
     deleteIssue(id) {
-      if (this.addLi.length > 0 && this.addLi.indexOf(id) > -1) {
-        let li = this.addLi.filter((ad) => {
-          return ad != id;
-        });
-        this.addLi = li;
-        let totalIssue = this.totalIssue(this.selectIssuelist, li);
+      if (this.addLi.includes(id)) {
+        this.addLi = this.addLi.filter(ad => ad !== id);
+        const totalIssue = this.totalIssue(this.selectIssuelist, this.addLi);
         this.$emit('getIsuuelist', totalIssue);
-      } else if (this.selectIssuelist.length && this.selectIssuelist.indexOf(id) > -1) {
-        this.selectIssuelist = this.selectIssuelist.filter(s => {
-          return s != id;
-        });        
+      } else if (this.selectIssuelist.includes(id)) {
+        this.selectIssuelist = this.selectIssuelist.filter(s => s !== id);
         if (this.$refs.showtable) {
           this.$refs.showtable.removeSelectlist(id);
         }
       }
     },
     getList(srcBranch) {
-      //获取需求列表（不含有效性）
-      let param = {
+      const param = {
         versionId: this.versionId,
         keyword: this.keyword,
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
       };
+
       this.isLoad = true;
-      this.$api.codehub.merge.getIssuelist(param).then((res) => {
-        this.isLoad = false;
-        if (res && res.Status == 'OK') {
-          this.$set(this.tableData, 'pageCount', res.Return.pageCount);
-          this.$set(this.tableData, 'rowNum', res.Return.rowNum);
-          this.$set(this.tableData, 'pageSize', res.Return.pageSize);
-          this.$set(this.tableData, 'currentPage', res.Return.currentPage);
-          let tbodylist = res.Return.list || [];
-          if (tbodylist && tbodylist.length > 0) {
-            //单独添加是否有效的字段
-            tbodylist.forEach((t) => {
-              Object.assign(t, {
-                isValid: null
+      this.$api.codehub.merge.getIssuelist(param)
+        .then((res) => {
+          this.isLoad = false;
+          if (res && res.Status === 'OK' && res.Return) {
+            const { pageCount = 0, rowNum = 0, pageSize = 20, currentPage = 1, list = [] } = res.Return;
+
+            this.tableData.pageCount = pageCount;
+            this.tableData.rowNum = rowNum;
+            this.tableData.pageSize = pageSize;
+            this.tableData.currentPage = currentPage;
+
+            const tbodylist = list || [];
+            if (tbodylist.length > 0) {
+              tbodylist.forEach((t) => {
+                Object.assign(t, {
+                  isValid: null
+                });
               });
-            });
-            this.$emit('getIssue', true);
+              this.$emit('getIssue', true);
+            } else {
+              this.$emit('getIssue', false);
+            }
+
+            const filteredList = this.filterValidIssuesList(tbodylist);
+            this.tableData.tbodyList = filteredList;
+            this.getVaildlist(filteredList);
           } else {
-            this.$emit('getIssue', false);
+            this.tableData.tbodyList = [];
           }
-          this.$set(this.tableData, 'tbodyList', this.filterValidIssuesList(tbodylist));
-          this.getVaildlist(tbodylist);
-        } else {
-          this.$set(this.tableData, 'tbodyList', []);
-        }
-      }).catch((error) => {
-        this.$set(this.tableData, 'tbodyList', []);
-        this.isLoad = false;
-      }); 
+        })
+        .catch((error) => {
+          this.tableData.tbodyList = [];
+          this.isLoad = false;
+        });
     },
-    getVaildlist() {
-      let resList = [];
+    getValidList() {
+      let resList = this.tableData.tbodyList || [];
+
       if (!this.srcBranch || !this.targetBranch) {
         return;
       }
-      if (this.type == 'issue' && this.maxSearchCount < 1) {
+
+      if (this.type === 'issue' && this.maxSearchCount < 1) {
         this.$Message.error(this.$t('term.codehub.issueslogmaxcount'));
         return;
       }
-      let list = resList.map((r) => {
-        return r.no;
-      });
+
+      let list = resList.map((r) => r.no);
+
       let param = {
         srcBranch: this.srcBranch,
         issueList: list || [],
@@ -291,80 +258,91 @@ export default {
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
       };
+
       if (this.versionData.appModuleId) {
-        this.$set(param, 'appModuleId', this.versionData.appModuleId);
-        this.$utils.setCookie(this.versionData.appModuleId + '_searchCommitCount', this.maxSearchCount);
+        param.appModuleId = this.versionData.appModuleId;
+        this.$utils.setCookie(`${this.versionData.appModuleId}_searchCommitCount`, this.maxSearchCount);
       }
+
       if (this.targetBranch) {
-        this.$set(param, 'targetBranch', this.targetBranch);
+        param.targetBranch = this.targetBranch;
       }
-      //取消正在搜索的请求
-      let cancel = this.cancelAxios;
-      cancel && cancel.cancel();
+
+      this.cancelPreviousRequest();
+
       const CancelToken = this.$https.CancelToken;
       this.cancelAxios = CancelToken.source();
-      this.tableData.tbodyList && (resList = this.tableData.tbodyList);
-      this.$api.codehub.merge.getVaildlist(param, { cancelToken: this.cancelAxios.token }).then((res) => {
-        if (res && res.Status == 'OK') {
-          let newlist = res.Return.list || [];
-          this.tableData.tbodyList.forEach((l) => {
-            Object.assign(l, {
-              isValid: 0              
+
+      this.$api.codehub.merge
+        .getValidList(param, { cancelToken: this.cancelAxios.token })
+        .then((res) => {
+          if (res && res.Status === 'OK') {
+            let newlist = res.Return.list || [];
+
+            resList.forEach((l) => {
+              Object.assign(l, {
+                isValid: 0
+              });
+
+              newlist.forEach((n) => {
+                if (l.no === n.issueNo) {
+                  Object.assign(l, {
+                    isValid: 1
+                  });
+                }
+              });
             });
-            newlist.forEach((n) => { // 需求有效性，需求编号和commit的需求编号相同，就设置需求的有效性
-              if (l.no == n.issueNo) {
-                Object.assign(l, {
-                  isValid: 1              
-                });
-              }
-            });
-          });
-        }
-      });
+          }
+        });
+    },
+    cancelPreviousRequest() {
+      const cancel = this.cancelAxios;
+      cancel && cancel.cancel();
+    },
+    resetList() {
+      if (this.selectIssuelist.length > 0 || this.addLi.length > 0) {
+        this.selectIssuelist = [];
+        this.addLi = [];
+        this.$emit('getIsuuelist', []);
+      }
     }
   },
   filter: {},
   computed: {
     filterValidIssuesList() {
       // 过滤有效需求列表
-      return function(tbodyList) {
-        let list = [];
-        if (tbodyList && tbodyList.length > 0) {
-          list = tbodyList.filter(tbody => {
-            return this.isValid ? tbody.isValid : tbody;
-          });
+      return (tbodyList) => {
+        if (!tbodyList || tbodyList.length === 0) {
+          return [];
         }
-        return list;
+
+        return tbodyList.filter((tbody) => this.isValid ? tbody.isValid : tbody);
       };
     },
     allIssue() {
       return function(selectIssuelist, li) {
+        if (!selectIssuelist || !li) {
+          return [];
+        }
+
         let issueList = this.totalIssue(selectIssuelist, li);
         let tlist = this.tableData.tbodyList || [];
-        let totalIssue = issueList.map(to => {
-          let totalLi = tlist.filter(tbody => {
-            return tbody.no == to;
-          });
-          return totalLi.length > 0 ? totalLi[0] : {
-            no: to
-          };
+
+        return issueList.map(to => {
+          let totalLi = tlist.filter(tbody => tbody.no === to);
+          return totalLi.length > 0 ? totalLi[0] : { no: to };
         });
-        return totalIssue;        
       };
     }
   },
   watch: {
     srcBranch(val) {
-      this.selectIssuelist = [];
-      this.addLi = [];
-      this.$emit('getIsuuelist', []);
+      this.resetList();
       this.getVaildlist();
     },
     targetBranch() {
-      this.selectIssuelist = [];
-      this.addLi = [];
-      this.$emit('getIsuuelist', []);
-      this.getVaildlist();      
+      this.resetList();
+      this.getVaildlist();   
     }
   }
 };

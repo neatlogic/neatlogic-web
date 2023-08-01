@@ -32,6 +32,9 @@ const apiManage = {
   apiUdpateList(params) {
     return axios.post('/api/rest/apimanage/needaudit/udpate', params);
   },
+  getApiManageAuditDetail(params) {
+    return axios.post('/api/rest/apimanage/audit/detail/get', params);
+  },
   // 获取接口的使用帮助
   help(url) {
     return axios.get(`${url}`);

@@ -24,7 +24,12 @@
             <template v-slot:toList>
               <TsFormSelect v-model="basicInfoFormConfig.toList.value" v-bind="formSelectConfig" :dealDataByUrl="dealDataByUrl">
                 <template v-slot:option="{ item }">
-                  <Tooltip transfer theme="light" placement="left-end">
+                  <Tooltip
+                    transfer
+                    theme="light"
+                    placement="left-end"
+                    :disabled="$utils.isEmpty(item.teamNameList)"
+                  >
                     <div>{{ item.userNameAndUserId }}</div>
                     <div slot="content">
                       <p>{{ getTeamNameList(item.teamNameList) }}</p>
@@ -41,7 +46,12 @@
                 :dealDataByUrl="ccListDealDataByUrl"
               >
                 <template v-slot:option="{ item }">
-                  <Tooltip transfer theme="light" placement="left-end">
+                  <Tooltip
+                    transfer
+                    theme="light"
+                    placement="left-end"
+                    :disabled="$utils.isEmpty(item.teamNameList)"
+                  >
                     <div>{{ item.userNameAndUserId }}</div>
                     <div slot="content">
                       <p>{{ getTeamNameList(item.teamNameList) }}</p>
@@ -131,7 +141,12 @@
               :dealDataByUrl="dealDataByUrl"
             >
               <template v-slot:option="{ item }">
-                <Tooltip transfer theme="light" placement="left-end">
+                <Tooltip
+                  transfer
+                  theme="light"
+                  placement="left-end"
+                  :disabled="$utils.isEmpty(item.teamNameList)"
+                >
                   <div>{{ item.userNameAndUserId }}</div>
                   <div slot="content">
                     <p>{{ getTeamNameList(item.teamNameList) }}</p>
@@ -148,7 +163,12 @@
               :dealDataByUrl="ccListDealDataByUrl"
             >
               <template v-slot:option="{ item }">
-                <Tooltip transfer theme="light" placement="left-end">
+                <Tooltip
+                  transfer
+                  theme="light"
+                  placement="left-end"
+                  :disabled="$utils.isEmpty(item.teamNameList)"
+                >
                   <div>{{ item.userNameAndUserId }}</div>
                   <div slot="content">
                     <p>{{ getTeamNameList(item.teamNameList) }}</p>
@@ -200,7 +220,10 @@ export default {
         multiple: true,
         search: true,
         validateList: ['required'],
-        dynamicUrl: '/api/rest/user/search',
+        dynamicUrl: '/api/rest/user/search/forselect',
+        params: {
+          needTeam: true
+        },
         rootName: 'tbodyList'
       },
       jobConfig: {
@@ -276,7 +299,7 @@ export default {
     getTeamNameList(list) {
       let teamNameList = '';
       if (list && !this.$utils.isEmpty(list)) {
-        teamNameList = list.join(',') ? list.join(',').replace(/,/g, '/') : '';
+        teamNameList = list.join(',');
       }
       return teamNameList;
     },

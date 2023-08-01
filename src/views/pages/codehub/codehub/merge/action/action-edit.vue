@@ -203,68 +203,63 @@ export default {
   destroyed() {},
   methods: {
     getAction(id) {
-      if (id) {
-        this.loadingShow = true;
-        this.$api.codehub.merge.getActionById({ id: id }).then(res => {
-          if (res.Status == 'OK') {
-            let dataInfo = res.Return;
-            for (const key in dataInfo) {
-              if (key == 'argumentJSON') {
-                this.actionData['arguments'] = dataInfo[key] || {};
-              } else if (key == 'statusList') { // 处理触发状态值
-                if (!this.$utils.isEmpty(dataInfo[key])) {
-                  dataInfo[key].forEach((item) => {
-                    this.actionData.triggerStatus.push(item.value);
-                  });
-                }
-              } else if (key != 'arguments' && key != 'triggerStatus' && this.actionData.hasOwnProperty(key)) {
-                this.actionData[key] = dataInfo[key];
-              }
-            }
-            this.changeAppModule();
-          }
-        }).finally(() => {
-          this.loadingShow = false;
-        });
-      } else {
+      if (!id) {
         this.loadingShow = false;
+        return;
       }
+      this.loadingShow = true;
+      this.$api.codehub.merge.getActionById({ id: id }).then(res => {
+        if (res.Status == 'OK') {
+          const { argumentJSON = {}, statusList = [], ...rest } = res.Return || {};
+          for (const key in rest) {
+            if (this.actionData.hasOwnProperty(key)) {
+              this.actionData[key] = rest[key];
+            }
+          }
+          this.actionData.arguments = argumentJSON;
+          if (!this.$utils.isEmpty(statusList)) {
+            this.actionData.triggerStatus = [];
+            this.actionData.triggerStatus.push(...statusList.map(item => item.value));
+          }
+          this.changeAppModule();
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     },
     changeAppModule() {
-      if (this.actionData.appSystemId) {
-        this.actionFormConfig.forEach(item => {
-          if (item.name == 'appModuleId') {
-            this.$set(item, 'params', { appSystemId: this.actionData.appSystemId });
-            this.$set(item, 'dynamicUrl', '/api/rest/deploy/app/config/module/list');
-          } else if (item.name == 'versionId') {
-            this.$set(item, 'params', { appSystemId: this.actionData.appSystemId, appModuleId: this.actionData.appModuleId });
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/version/search');
-          }
-        });
-      } else {
-        this.actionFormConfig.forEach(item => {
-          if (item.name == 'appModuleId') {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          }
-        });
-      }
+      const { appSystemId = '', appModuleId = '' } = this.actionData;
+      const appModuleIdDynamicUrl = appSystemId ? '/api/rest/deploy/app/config/module/list' : '';
+      const versionIdDynamicUrl = appSystemId ? '/api/rest/codehub/version/search' : '';
+
+      this.actionFormConfig.forEach(item => {
+        if (item.name === 'appModuleId') {
+          item.params = { appSystemId };
+          item.dynamicUrl = appModuleIdDynamicUrl;
+        } else if (item.name === 'versionId') {
+          item.params = { appSystemId, appModuleId };
+          item.dynamicUrl = versionIdDynamicUrl;
+        }
+      });
     },
     saveAction() {
-      let form = this.$refs['actionForm'];
-      let argumentEditForm = this.$refs.argumentEdit;
-      let params = this.$utils.deepClone(this.actionData);
-      params.arguments = argumentEditForm ? argumentEditForm.getFormValue() : {};
-      if ((form && form.valid()) && (argumentEditForm && argumentEditForm.valid())) {
-        this.$api.codehub.merge
-          .saveAction(params)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.savesuccess'));
-              this.close(true);
-            }
-          });
+      const form = this.$refs['actionForm'];
+      const argumentEditForm = this.$refs.argumentEdit;
+  
+      if ((form && !form.valid()) || (argumentEditForm && !argumentEditForm.valid())) {
+        return;
       }
+
+      const params = {
+        ...this.actionData,
+        arguments: argumentEditForm.getFormValue()
+      };
+      this.$api.codehub.merge.saveAction(params).then((res) => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
+      });
     },
     close(needRefresh) {
       this.$emit('close', needRefresh);

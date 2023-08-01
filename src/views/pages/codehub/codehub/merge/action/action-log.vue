@@ -2,7 +2,6 @@
   <div class="integration-audit-box">
     <TsDialog
       v-if="actionLogData"
-      :is-show="isShow"
       v-bind="dialogConfig"
       @on-close="close"
     >
@@ -13,6 +12,7 @@
           <TsTable
             v-if="actionLogData"
             v-bind="actionLogData"
+            :theadList="theadList"
             :height="tableHeight"
             @changeCurrent="searchActionLog"
             @changePageSize="pageSize => searchActionLog(1, pageSize)"
@@ -32,8 +32,8 @@
               <span v-if="!row.outputArgument">-</span>
             </template>
             <template slot="result" slot-scope="{ row }">
-              <span v-if="row.result=='succeed'" class="text-success">{{ statusData[row.result] }}</span>
-              <span v-if="row.result=='failed'" class="text-error">{{ statusData[row.result] }}</span>
+              <span v-if="row.result == 'succeed'" class="text-success">{{ statusData[row.result] }}</span>
+              <span v-if="row.result == 'failed'" class="text-error">{{ statusData[row.result] }}</span>
             </template>
           </TsTable>
         </div>
@@ -42,7 +42,7 @@
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
       </template>
     </TsDialog>
-    <ArgumentDetail :argument="argument" @close="closeArgumentDetailDialog"></ArgumentDetail>
+    <ArgumentDetailDialog v-if="isArgumentShow" :argument="argument" @close="closeArgumentDetailDialog"></ArgumentDetailDialog>
   </div>
 </template>
 <script>
@@ -50,14 +50,14 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ArgumentDetail: resolve => require(['./argument-detail.vue'], resolve)
+    ArgumentDetailDialog: resolve => require(['./argument-detail-dialog.vue'], resolve)
   },
   props: {
     id: {type: Number}
   },
   data() {
     return {
-      isShow: false,
+      isArgumentShow: false,
       argument: null,
       detailData: {},
       actionLogData: {},
@@ -66,7 +66,7 @@ export default {
       dialogConfig: {
         type: 'slider',
         maskClose: true,
-        isShow: false,
+        isShow: true,
         title: this.$t('term.codehub.triggerrecord'),
         width: 'large',
         isScrollbar: true
@@ -111,26 +111,15 @@ export default {
   },
   destroyed() {},
   methods: {
-    handleChange() {
-      // 搜索条件下拉
-      this.searchActionLog(1);
-    },
-    searchActionLog: function(currentPage, pageSize) {
-      let params = {actionId: this.id};
-      if (currentPage) {
-        params['currentPage'] = currentPage;
-      }
-      if (pageSize) {
-        params['pageSize'] = pageSize;
-      } else {
-        params['pageSize'] = this.actionLogData.pageSize || 10;
-      }
+    searchActionLog(currentPage = 1, pageSize) {
+      const params = { 
+        actionId: this.id, 
+        currentPage, 
+        pageSize: pageSize || (this.actionLogData.pageSize || 10)
+      };
       this.$api.codehub.merge.searchActionLog(params).then(res => {
         if (res.Status == 'OK') {
           this.actionLogData = res.Return;
-          this.actionLogData.theadList = this.theadList;
-          this.actionLogData.tbodyList = res.Return.tbodyList;
-          this.isShow = true;
           this.initHeight();
         }
       });
@@ -138,15 +127,14 @@ export default {
     goDetail(val) {
       this.$router.push({ path: 'merge-review', query: {id: val} });
     },
-    close: function() {
-      this.isShow = false;
+    close() {
       this.$emit('close');
     },
-    showArgument: function(val) {
+    showArgument(val) {
       this.isArgumentShow = true;
       this.argument = val;
     },
-    closeArgumentDetailDialog: function() {
+    closeArgumentDetailDialog() {
       this.isArgumentShow = false;
       this.argument = null;
     },

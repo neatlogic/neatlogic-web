@@ -218,17 +218,11 @@ export default {
     },
     changeIsActive(row, isActive) {
       let id = row.id;
-      if (isActive) {
-        isActive = 1;
-      } else {
-        isActive = 0;
-      }
-      row.isActive = isActive;
-      this.$api.codehub.merge.activeAction({ id: id, isActive: isActive }).then(res => {
+      const newIsActive = isActive ? 1 : 0;
+      row.isActive = newIsActive;
+      this.$api.codehub.merge.activeAction({ id: id, isActive: newIsActive }).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-        } else {
-          this.$Message.error(res.Message);
         }
       });
     },
@@ -257,8 +251,6 @@ export default {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.changeCurrent(1);
               vnode.isShow = false;
-            } else {
-              this.$Message.error(res.Message);
             }
           });
         }
@@ -274,21 +266,14 @@ export default {
         this.changeCurrent(1);
       }
     },
-    updateModule(val) {
-      if (val) {
-        this.searchConfig.searchList.forEach(item => {
-          if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', { appSystemId: val });
-            this.$set(item, 'dynamicUrl', '/api/rest/codehub/appmodule/search');
-          }
-        });
-      } else {
-        this.searchConfig.searchList.forEach(item => {
-          if (item && item.name == 'appModuleId') {
-            this.$set(item, 'params', {});
-            this.$set(item, 'dynamicUrl', '');
-          }
-        });
+    updateModule(appSystemId) {
+      const params = appSystemId ? { appSystemId: appSystemId } : {};
+      const dynamicUrl = appSystemId ? '/api/rest/codehub/appmodule/search' : '';
+
+      const moduleItem = this.searchConfig.searchList.find(item => item?.name === 'appModuleId');
+      if (moduleItem) {
+        moduleItem.params = params;
+        moduleItem.dynamicUrl = dynamicUrl;
       }
     }
   },
