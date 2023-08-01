@@ -40,7 +40,7 @@ export default {
             message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
             params: { id: this.id}
           }],
-        maxlength: 255,
+        maxlength: 50,
         disabled: !!this.id
       },
       {

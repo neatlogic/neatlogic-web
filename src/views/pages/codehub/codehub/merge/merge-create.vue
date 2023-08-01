@@ -109,14 +109,15 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.$route.query.versionid) {
-      this.versionId = parseInt(this.$route.query.versionid);
+  // 存储参数
+    this.versionId = parseInt(this.$route.query.versionid) || null;
+    this.type = this.$route.query.type || null;
+
+    // 获取版本信息
+    if (this.versionId) {
       this.getVersion(this.versionId);
     } else {
       this.loadingShow = false;
-    }
-    if (this.$route.query.type) {
-      this.type = this.$route.query.type;
     }
   },
   beforeMount() {},
@@ -133,107 +134,90 @@ export default {
   destroyed() {},
   methods: {
     getVersion(versionId) {
-      //取消正在搜索的请求
-      let cancel = this.cancelAxios;
-      cancel && cancel.cancel();
-      const CancelToken = this.$https.CancelToken;
-      this.cancelAxios = CancelToken.source();
+      this.cancelAxios && this.cancelAxios.cancel();
+      this.cancelAxios = this.$https.CancelToken.source();
       let param = { id: versionId, expandBranch: true };
       this.loadingShow = true;
-      this.$api.codehub.version.getDetail(param, { cancelToken: this.cancelAxios.token }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.versionData = res.Return;
-          if (this.versionData.srcBranchList) {
-            this.srcBranchList = this.versionData.srcBranchList || [];
-          }
-          if (this.versionData.targetBranchList) {
-            this.targetBranchList = this.versionData.targetBranchList || [];
-          }
-          //默认选中源分支
-          if (this.versionData.srcBranchList && this.versionData.srcBranchList.length) {
-            if (this.$route.query.srcBranch) {
-              this.srcBranch = this.$route.query.srcBranch;
-              this.srcBranchList = [{text: this.srcBranch, value: this.srcBranch}];
-            } else {
-              let selectedSrc = this.versionData.srcBranchList.find(s => { return s.isSelected; });
-              if (selectedSrc) {
-                this.srcBranch = selectedSrc.value;
+  
+      this.$api.codehub.version.getDetail(param, { cancelToken: this.cancelAxios.token })
+        .then(res => {
+          if (res && res.Status == 'OK') {
+            this.versionData = res.Return || null;
+            this.srcBranchList = this.versionData?.srcBranchList || [];
+            this.targetBranchList = this.versionData?.targetBranchList || [];
+        
+            // 默认选中源分支
+            if (this.versionData.srcBranchList?.length) {
+              this.srcBranch = this.$route.query.srcBranch ?? this.versionData.srcBranchList.find(s => s.isSelected)?.value; // ?? 表示空值合并操作符，this.$route.query.srcBranch为空，就取后面的值
+              if (this.srcBranch) {
+                this.srcBranchList = [{ text: this.srcBranch, value: this.srcBranch }];
               }
             }
-          }
-          //默认选中目标分支
-          if (this.versionData.targetBranchList && this.versionData.targetBranchList.length) {
-            if (this.$route.query.targetBranch) {
-              this.targetBranch = this.$route.query.targetBranch;
-              this.targetBranchList = [{text: this.targetBranch, value: this.targetBranch}];
-            } else {
-              let selectedTarget = this.versionData.targetBranchList.find(s => { return s.isSelected; });
-              if (selectedTarget) {
-                this.targetBranch = selectedTarget.value;
+        
+            // 默认选中目标分支
+            if (this.versionData.targetBranchList?.length) {
+              this.targetBranch = this.$route.query.targetBranch ?? this.versionData.targetBranchList.find(s => s.isSelected)?.value;
+              if (this.targetBranch) {
+                this.targetBranchList = [{ text: this.targetBranch, value: this.targetBranch }];
               }
             }
+        
+            // 默认描述
+            this.description = this.$route.query.description ?? '';
+        
+            this.type = this.versionData?.versionTypeStrategyRelationVo?.versionStrategyType;
+          } else {
+            this.versionData = null;
           }
-          if (this.$route.query.description) {
-            this.description = this.$route.query.description;
-          }
-          this.type = this.versionData.versionTypeStrategyRelationVo.versionStrategyType;
-        } else {
-          this.versionData = null;
-        }
-      }).finally(e => {
-        this.loadingShow = false;
-      });
+        })
+        .finally(e => {
+          this.loadingShow = false;
+        });
     },
     submitMr() {
       this.$nextTick(() => {
-        if (this.issueNoList && this.issueNoList.length > 0) {
-          let param = {
-            versionId: this.versionId,
-            description: this.description,
-            srcBranch: this.srcBranch,
-            targetBranch: this.targetBranch,
-            type: 'standard'
-          };
-          if (this.$route.query.mrType) {
-            param['type'] = this.$route.query.mrType;
-          }
-          if (this.type == 'issue') {
-            let issueList = this.issueNoList.filter(issue => {
-              return issue;
-            });
-            if (parseInt(this.maxSearchCount) < 1) {
-              this.$Message.error(this.$t('term.codehub.issueslogmaxcount'));
-              return;
-            }
-            Object.assign(param, {
-              issueNoList: issueList,
-              searchCommitCount: parseInt(this.maxSearchCount)
-            });
-          }
-          if (this.$refs.srcbranch) {
-            if (this.$refs.srcbranch.valid()) {
-              this.$api.codehub.merge.save(param).then(res => {
-                if (res && res.Status == 'OK') {
-                  this.$router.push({ path: 'merge-review', query: { id: res.Return } });
-                }
-              });
-            } else {
-              this.$Message.error(this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.sourcebranch')}));
-            }
-          } else {
-            this.$api.codehub.merge.save(param).then(res => {
-              if (res && res.Status == 'OK') {
-                this.$router.push({ path: 'merge-review', query: { id: res.Return } });
-              }
-            });
-          }
-        } else {
+        if (!(this.issueNoList && this.issueNoList.length > 0)) {
           this.$Message.error(this.$t('term.codehub.pleaseselectatleastonerequirement'));
+          return;
         }
+
+        const param = {
+          versionId: this.versionId,
+          description: this.description,
+          srcBranch: this.srcBranch,
+          targetBranch: this.targetBranch,
+          type: 'standard'
+        };
+
+        if (this.$route.query.mrType) {
+          param['type'] = this.$route.query.mrType;
+        }
+
+        if (this.type === 'issue') {
+          const issueList = this.issueNoList.filter(issue => issue);
+          if (parseInt(this.maxSearchCount) < 1) {
+            this.$Message.error(this.$t('term.codehub.issueslogmaxcount'));
+            return;
+          }
+          Object.assign(param, {
+            issueNoList: issueList,
+            searchCommitCount: parseInt(this.maxSearchCount)
+          });
+        }
+
+        if (this.$refs.srcbranch && !this.$refs.srcbranch.valid()) {
+          this.$Message.error(this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.sourcebranch')}));
+          return false;
+        }
+        this.$api.codehub.merge.save(param).then(res => {
+          if (res?.Status === 'OK') {
+            this.$router.push({ path: 'merge-review', query: { id: res.Return } });
+          }
+        });
       });
     },
     sysnIssue(val) {
-      this.$refs.issueList && this.$refs.issueList.getList();
+      this.$refs.issueList?.getList();
     },
     getDes(val) {
       this.description = val;
@@ -251,14 +235,18 @@ export default {
   filter: {},
   computed: {
     getAbbrNameAndName() {
-      return function(config, type) {
-        let text = '';
-        let prev = config.appSystemVo || '';
-        let next = config.appModuleVo || '';
-        if (type == 'text') {
-          text = (prev ? (prev.abbrName ? (prev.name ? `${prev.abbrName}(${prev.name})` : '') : prev.name) : '') + (next ? '/' + (next.abbrName ? (next.name ? `${next.abbrName}(${next.name})` : '') : (next.name || '')) : '');
+      return (config, type) => {
+        const prev = config.appSystemVo || {};
+        const next = config.appModuleVo || {};
+
+        if (type !== 'text') {
+          return '';
         }
-        return text;
+
+        const prevText = prev.abbrName ? `${prev.abbrName}(${prev.name || ''})` : prev.name || '';
+        const nextText = next.abbrName ? `${next.abbrName}(${next.name || ''})` : next.name || '';
+
+        return prevText + (nextText ? `/${nextText}` : '');
       };
     }
   },

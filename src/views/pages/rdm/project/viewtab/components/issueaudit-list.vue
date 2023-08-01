@@ -55,14 +55,17 @@
         </div>
         <div v-else-if="row.attrName && row.attrName === 'file'">
           <div v-if="row.oldValue && row.oldValue.length > 0">
-            <Tag
+            <span
               v-for="(file, index) in row.oldValue"
               :key="index"
+            ><Tag
+              v-if="file"
               v-download="download(file.id)"
               class="tsfont-attachment cursor"
             >
               {{ file.name }}
             </Tag>
+            </span>
           </div>
           <span v-else class="text-grey">-</span>
         </div>
@@ -95,14 +98,17 @@
         </div>
         <div v-else-if="row.attrName && row.attrName === 'file'">
           <div v-if="row.newValue && row.newValue.length > 0">
-            <Tag
+            <span
               v-for="(file, index) in row.newValue"
               :key="index"
+            ><Tag
+              v-if="file"
               v-download="download(file.id)"
               class="tsfont-attachment cursor"
             >
               {{ file.name }}
             </Tag>
+            </span>
           </div>
           <span v-else class="text-grey">-</span>
         </div>

@@ -484,16 +484,19 @@ export default {
             this.$set(this.totalText, key, val);
           });
           Object.keys(this.totalText).forEach(k => {
-            if (k != this.keywordName && !Object.keys(this.textConfig).includes(k)) {
+            if ((k != this.keywordName || (k == this.keywordName && !this.search)) && !Object.keys(this.textConfig).includes(k)) {
+              // (k == this.keywordName && !this.search) 修复关键字搜索，放到searchList里时，关键字删除不了的问题
               this.$delete(this.totalText, k);
             }
           });
         } else {
-          Object.keys(this.totalText).length && Object.keys(this.totalText).forEach(k => {
-            if (k != this.keywordName) {
-              this.$delete(this.totalText, k);
-            }
-          });            
+          Object.keys(this.totalText).length &&
+            Object.keys(this.totalText).forEach(k => {
+              if (k != this.keywordName || (k == this.keywordName && !this.search)) {
+                // (k == this.keywordName && !this.search) 修复关键字搜索，放到searchList里时，关键字删除不了的问题
+                this.$delete(this.totalText, k);
+              }
+            });
         }
       }
       this.$emit('change-label', this.totalText);
