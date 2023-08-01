@@ -534,13 +534,19 @@ export default {
         const elementList = this.ciEntityData['_elementList'];
         const uniqueObj = { type: 'unique', label: this.$t('term.cmdb.uniquerule'), elementList: [], isShow: true };
         uniqueObj.elementList = elementList.filter(d => d.type === 'attr' && uniqueList.includes(d.element.id));
-        typeList.push(uniqueObj);
+        if (uniqueObj.elementList.length > 0) {
+          typeList.push(uniqueObj);
+        }
         const manualObj = { type: 'manual', label: this.$t('term.cmdb.manualinput'), elementList: [], isShow: false };
         manualObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'mt');
-        typeList.push(manualObj);
+        if (manualObj.elementList.length > 0) {
+          typeList.push(manualObj);
+        }
         const autoObj = { type: 'auto', label: this.$t('page.autocollect'), elementList: [], isShow: true };
         autoObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'at');
-        typeList.push(autoObj);
+        if (autoObj.elementList.length > 0) {
+          typeList.push(autoObj);
+        }
       }
       return typeList;
     },
