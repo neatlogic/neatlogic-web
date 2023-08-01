@@ -179,6 +179,8 @@
       width="huge"
       :maskClose="true"
       :hasFooter="false"
+      :isScrollbar="true"
+      :hasContentPadding="false"
       @on-close="
         isIssueDetailShow = false;
         currentIssue = null;
