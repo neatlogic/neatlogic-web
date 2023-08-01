@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Drawer
-      :value="isShow"
+    <TsDialog
+      :isShow="isShow"
       :title="$t('term.framework.apirecord')"
-      width="920px"
-      :mask-closable="true"
-      :mask="true"
-      placement="right"
-      @on-visible-change="handleVisibleChange"
+      type="slider"
+      width="large"
+      :hasFooter="false"
+      :maskClose="true"
+      @on-close="handleVisibleChange"
     >
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <div class="search-box">
@@ -60,21 +60,26 @@
           </div>
         </template>
       </TsTable>
-    </Drawer>
-    <Drawer
-      v-model="isCallDetailShow"
-      :title="paramType"
-      width="600px"
-      draggable
-    >
-      <pre>{{ callDetail }}</pre>
-    </Drawer>
+      
+    </TsDialog>
+    <TsDialog :isShow.sync="isCallDetailShow" v-bind="dialogConfig" @on-close="close">
+      <template v-slot:header>
+        详细内容
+      </template>
+      <template v-slot><pre>{{ callDetail }}</pre></template>
+      <template v-slot:footer>
+        <Button @click="close()">取消</Button>
+        <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">下载</Button>
+      </template>
+    </TsDialog>
   </div>
 </template>
 
 <script>
+import download from '@/resources/directives/download.js';
 export default {
   name: 'CallRecord',
+  directives: {download},
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
@@ -117,7 +122,14 @@ export default {
       },
       callDetail: null,
       paramType: null,
+      hasMore: false,
+      filePath: null,
       isCallDetailShow: false,
+      dialogConfig: {
+        type: 'slider',
+        maskClose: true,
+        width: 'medium'
+      },
       timeHandlerConfig: {//时间选择器的数据
         border: 'border',
         placement: 'bottom-start',
@@ -192,12 +204,14 @@ export default {
     getCallDetail(filePath, paramType) {
       this.callDetail = this.$t('page.loadingtip');
       this.isCallDetailShow = true;
+      this.filePath = filePath;
       this.paramType = paramType;
       const params = { filePath };
-      this.$api.framework.file
-        .getFileContentByPath(params)
+      this.$api.framework.apiManage
+        .getApiManageAuditDetail(params)
         .then(res => {
           if (res.Status === 'OK') {
+            this.hasMore = res.Return.hasMore;
             try {
               this.callDetail = JSON.stringify(JSON.parse(res.Return.content), null, 2);
             } catch {
@@ -207,6 +221,8 @@ export default {
         })
         .catch(error => {
           this.callDetail = this.$t('message.framework.calldetailerror');
+          this.filePath = null;
+          this.hasMore = false;
         });
     },
     changeSearchParam() { //改变搜索条件
@@ -222,6 +238,22 @@ export default {
           list.length > 0 && (this.statusDataList.push(...list));
         }
       });
+    },
+    close() {
+      this.isCallDetailShow = false;
+      this.filePath = null;
+      this.hasMore = false;
+      this.$emit('close');
+    }
+  },
+  computed: {
+    auditDetailDownloadParams() {
+      return {
+        url: 'api/binary/apimanage/audit/detail/download',
+        param: {
+          filePath: this.filePath
+        }
+      };
     }
   }
 };

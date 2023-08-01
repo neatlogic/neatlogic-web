@@ -44,7 +44,7 @@ export default {
   destroyed() {},
   methods: {
     getAuditDetail: function() {
-      this.$api.framework.file.getFileContentByPath({filePath: this.filePath}).then(res => {
+      this.$api.framework.integration.getIntegrationAuditDetail({filePath: this.filePath}).then(res => {
         if (res.Status == 'OK') {
           this.content = res.Return.content;
           this.hasMore = res.Return.hasMore;
@@ -69,7 +69,7 @@ export default {
     },
     auditDetailDownloadParams() {
       return {
-        url: 'api/binary/apimanage/audit/detail/download',
+        url: 'api/binary/integration/audit/detail/download',
         params: {
           filePath: this.filePath
         }
