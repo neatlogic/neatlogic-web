@@ -43,7 +43,7 @@ export default {
         ciId: this.ciId
       },
       dialogConfig: {
-        title: '编辑',
+        title: this.$t('page.edit'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -54,7 +54,7 @@ export default {
           name: 'ciId',
           _belong: 'realci',
           type: 'tree',
-          label: this.$t('根模型'),
+          label: this.$t('term.cmdb.ci'),
           value: this.ciId,
           width: '100%',
           validateList: ['required'],
