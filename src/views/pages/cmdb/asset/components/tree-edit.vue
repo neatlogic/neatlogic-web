@@ -16,7 +16,11 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
-      <span v-if="!topCi">资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图未设置成功，资产清单功能不可用</span>
+      <div v-if="!topCi">
+        <span>{{ $t('term.cmdb.resourcetypetreenosettingdesc') }}</span>
+        <br>
+        <a class="text-href" href="javascript:void(0);" @click.stop="gotoResourceentityManagePage()">{{ $t('term.cmdb.gotoresourceentitymanagepage') }}</a>
+      </div>
       <TsForm v-if="topCi && topCi.id" ref="form" :item-list="formConfig">
       </TsForm>
     </template>
@@ -110,7 +114,8 @@ export default {
                 this.$set(this.formData, 'ciId', this.topCi.id);
               }
             }
-            this.$set(this.formConfig[0], 'desc', '资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是' + this.topCi.label + '(' + this.topCi.name + ')，可以选择该模型或其子模型作为资产清单根目录');
+            // this.$set(this.formConfig[0], 'desc', '资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是' + this.topCi.label + '(' + this.topCi.name + ')，可以选择该模型或其子模型作为资产清单根目录');
+            this.$set(this.formConfig[0], 'desc', this.$t('term.cmdb.resourcetypetreesettingdesc', { label: this.topCi.label, name: this.topCi.name }));
           }
         }
       });
@@ -133,6 +138,9 @@ export default {
           this.close('refresh');
         }
       });
+    },
+    gotoResourceentityManagePage() {
+      window.open(HOME + '/cmdb.html#/resourceentity-manage');
     }
   },
   computed: {},
