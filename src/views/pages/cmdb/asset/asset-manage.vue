@@ -3,6 +3,9 @@
   <div>
     <loading :loadingShow="loadingShow" type="fix"></loading>
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
+      <template v-slot:navigation>
+        <i class="tsfont-edit add-root text-action" @click="editTree()">{{ $t('page.edit') }}</i>
+      </template>
       <template v-slot:topLeft>
         <div class="action-group">
           <span v-if="resourceIdList.length == 0" class="action-item disable">
@@ -215,6 +218,11 @@
       :exportCondition="searchVal"
       @close="isExportAssetDialog = false"
     ></ExportAsset>
+    <TreeEdit 
+      v-if="isShowTreeEdit"
+      :ciId="treeTypeRootCiId"
+      @close="closeTreeEdit"
+    ></TreeEdit>
   </div>
 </template>
 <script>
@@ -226,6 +234,7 @@ export default {
     DeleteCiEntityDialog: resolve => require(['../cientity/cientity-delete-dialog.vue'], resolve),
     AssetEdit: resolve => require(['./asset-edit-dialog.vue'], resolve),
     TagEdit: resolve => require(['./components/tag-edit'], resolve),
+    TreeEdit: resolve => require(['./components/tree-edit'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
     ExportAsset: resolve => require(['./export-asset-dialog.vue'], resolve),
@@ -525,7 +534,9 @@ export default {
       implementName: '',
       contentHeight: '100',
       isExportAssetDialog: false,
-      defaultValue: []
+      defaultValue: [],
+      isShowTreeEdit: false,
+      treeTypeRootCiId: null
     };
   },
   beforeCreate() {},
@@ -608,6 +619,7 @@ export default {
       //获取树形类型
       return this.$api.cmdb.asset.getResourceTreeType().then(res => {
         let data = res.Return;
+        this.treeTypeRootCiId = data[0]?.id;
         if (this.selectType.typeId) {
           this.setTreeDataSelect(this.selectType.typeId, data);
         } else {
@@ -882,6 +894,18 @@ export default {
     changeLabelCombineSearcher(val) {
       if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
         this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
+      }
+    },
+    editTree() {
+      this.isShowTreeEdit = true;
+    },
+    async closeTreeEdit(action) {
+      this.isShowTreeEdit = false;
+      if (action == 'refresh') {
+        this.treeTypeRootCiId = null;
+        this.selectType.typeId = null;
+        await this.getTreeType();
+        await this.init();
       }
     }
   },
