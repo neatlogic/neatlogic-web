@@ -30,7 +30,7 @@
         </div>
       </template>
       <template slot="content">
-        <div class="padding-t">
+        <div>
           <EditMain
             ref="editConfig"
             :config="knowledgeConfing"
