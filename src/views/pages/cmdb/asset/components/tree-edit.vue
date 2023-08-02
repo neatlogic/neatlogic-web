@@ -16,7 +16,8 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
-      <TsForm ref="form" :item-list="formConfig">
+      <span v-if="!topCi">资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图未设置成功，资产清单功能不可用</span>
+      <TsForm v-if="topCi && topCi.id" ref="form" :item-list="formConfig">
       </TsForm>
     </template>
     <template v-slot:footer>
@@ -42,12 +43,17 @@ export default {
       formData: {
         ciId: this.ciId
       },
+      topCi: {
+        id: null,
+        name: null,
+        label: null
+      },
       dialogConfig: {
         title: this.$t('page.edit'),
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'small'
       },
       formConfig: [
         {
@@ -59,11 +65,12 @@ export default {
           width: '100%',
           validateList: ['required'],
           url: 'api/rest/cmdb/ci/listtree',
-          params: { ciId: null },
+          params: { rootCiId: null },
           valueName: 'id',
           textName: 'label',
           transfer: true,
           showPath: true,
+          desc: '',
           onChange: name => {
             if (name) {
               this.$set(_this.formData, 'ciId', name);
@@ -75,10 +82,15 @@ export default {
       ]
     };
   },
-  beforCreate() {},
-  created() {},
+  beforCreate() {
+  },
+  async created() {
+    await this.getResourceEntity();
+  },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    
+  },
   beforedUpdate() {},
   updated() {},
   activated() {},
@@ -86,6 +98,23 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async getResourceEntity() {
+      await this.$api.cmdb.resourceentity.getResourceEntity('scence_ipobject_detail').then(res => {
+        if (res.Status == 'OK') {
+          this.topCi = res.Return?.ci;
+          if (this.topCi) {
+            if (this.topCi.id) {
+              this.$set(this.formConfig[0].params, 'rootCiId', this.topCi.id);
+              if (this.ciId == null) {
+                this.$set(this.formConfig[0], 'value', this.topCi.id);
+                this.$set(this.formData, 'ciId', this.topCi.id);
+              }
+            }
+            this.$set(this.formConfig[0], 'desc', '资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是' + this.topCi.label + '(' + this.topCi.name + ')，可以选择该模型或其子模型作为资产清单根目录');
+          }
+        }
+      });
+    },
     close(action) {
       this.$emit('close', action);
     },
