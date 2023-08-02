@@ -4,6 +4,7 @@
     :class="{ actived: actived }"
     class="cursor pl-sm pr-sm radius-lg issue-status fz10"
     :style="{
+      '--scale': scale,
       '--color': color,
       'border-color': color,
       color: color,
@@ -21,8 +22,9 @@ export default {
   props: {
     issueData: { type: Object },
     status: { type: Number },
-    statusData: {type: Object},
-    actived: { type: Boolean }
+    statusData: { type: Object },
+    actived: { type: Boolean },
+    scale: { type: Number, default: 1 }
   },
   data() {
     return {
@@ -32,8 +34,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -91,6 +92,8 @@ export default {
 .issue-status {
   border-width: 1px;
   border-style: solid;
+  display: inline-block;
+  transform: scale(var(--scale));
 }
 .issue-status.actived:before {
   font-family: 'tsfont' !important;

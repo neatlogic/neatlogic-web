@@ -4,7 +4,8 @@ export const AttrBase = {
   },
   props: {
     attrConfig: {type: Object}, //属性设置
-    valueList: {type: [Array, Object, Number, String, Boolean]}//属性数据
+    valueList: {type: [Array, Object, Number, String, Boolean]}, //属性数据
+    scale: { type: Number, default: 1 }//某些组件支持缩小尺寸
   },
   data() {
     return {

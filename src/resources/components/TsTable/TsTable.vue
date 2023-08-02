@@ -697,11 +697,16 @@ export default {
       this.$set(this, 'tableheight', Math.max(tableheight - 20, 40) + 'px');
       this.setWidth();
     },
+    setScrollTop(st) {
+      this.scrollTop = st;
+      this.$refs['tablemain'].scrollTop = st;
+    },
     scrollTable: function(e) {
       let sTop = e.srcElement.scrollTop;
       let sLeft = e.srcElement.scrollLeft;
       this.scrollTop = sTop;
       this.scrollLeft = sLeft;
+      this.$emit('scroll', sTop);
     },
     unActiveAutoScroll: function() {
       if (this.scrollTimmer) {

@@ -1,19 +1,17 @@
 export const AttrBase = {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
-    issueData: {type: Object}, //issue数据
-    attrConfig: {type: Object}, //属性设置
-    valueList: { type: Array } //属性数据
+    issueData: { type: Object }, //issue数据
+    attrConfig: { type: Object }, //属性设置
+    valueList: { type: Array }, //属性数据
+    scale: { type: Number, default: 1 }//某些组件支持缩小尺寸
   },
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -22,8 +20,7 @@ export const AttrBase = {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

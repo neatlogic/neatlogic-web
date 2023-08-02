@@ -139,7 +139,8 @@
     "successfullyboundaccountforassetstarget": "Successfully bound account for {target} assets",
     "failedtobindaccountforassetstarget": "{target}Asset binding account failed",
     "onlyexportselected": "Export only selected data",
-    "driverci": "Drive Model"
+    "driverci": "Drive Model",
+    "addcientity": "Add Configuration Item"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2158,7 +2159,8 @@
     "openproject": "Open Project",
     "applist": "Application List",
     "relativetestcase": "Associated Use Cases",
-    "repository": "Version Library"
+    "repository": "Version Library",
+    "gantt": "Gantt chart Chart"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

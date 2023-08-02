@@ -139,7 +139,8 @@
     "successfullyboundaccountforassetstarget": "{target}条资产绑定账号成功",
     "failedtobindaccountforassetstarget": "{target}条资产绑定账号失败",
     "onlyexportselected": "仅导出选中数据",
-    "driverci": "驱动模型"
+    "driverci": "驱动模型",
+    "addcientity": "新增配置项"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -2155,7 +2156,8 @@
     "openproject": "打开项目",
     "applist": "应用列表",
     "relativetestcase": "关联用例",
-    "repository": "版本库"
+    "repository": "版本库",
+    "gantt": "甘特图"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

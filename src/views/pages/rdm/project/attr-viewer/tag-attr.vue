@@ -1,9 +1,12 @@
 <template>
   <div v-if="tagList && tagList.length > 0">
-    <span v-for="(tag, index) in tagList" :key="index" class="icon-padding">
-      <Tag>
-        <span class="tsfont-label">{{ tag }}</span>
-      </Tag>
+    <span
+      v-for="(tag, index) in tagList"
+      :key="index"
+      class="tsfont-label"
+      :class="{ 'pl-xs': index > 0 }"
+    >
+      {{ tag }}
     </span>
   </div>
   <div v-else class="text-grey">-</div>
@@ -44,4 +47,8 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.tag {
+  transform: scale(var(--scale));
+}
+</style>

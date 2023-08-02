@@ -1,8 +1,13 @@
 <template>
   <div v-if="valueList && valueList.length > 0">
-    <Tag v-for="(v,index) in valueList" :key="index">
+    <span
+      v-for="(v, index) in valueList"
+      :key="index"
+      class="tsfont-check-o"
+      :class="{ 'pl-xs': index > 0 }"
+    >
       {{ v }}
-    </Tag>
+    </span>
   </div>
   <div v-else class="text-grey">-</div>
 </template>
@@ -10,16 +15,14 @@
 import { AttrBase } from './base-attr.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   extends: AttrBase,
   props: {},
   data() {
     return {};
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -28,13 +31,14 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.tag {
+  transform: scale(var(--scale));
+}
 </style>
