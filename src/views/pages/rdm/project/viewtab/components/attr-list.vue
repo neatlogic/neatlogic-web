@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-nm">
     <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
     <div v-else>
       <TsFormItem
