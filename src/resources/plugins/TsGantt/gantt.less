@@ -1,0 +1,202 @@
+@import (reference) '@/resources/assets/css/variable.less';
+.theme(@op-color,
+ @title-color, 
+ @text-color,  
+ @background-color,   
+ @info-color,  
+ @info-bg-color,  
+ @warning-color,
+ @warning-bg-color, 
+  @th-bg-color) {
+  .gantt {
+    .grid-background {
+      fill: none;
+    }
+
+    .grid-row {
+      fill: @op-color;
+    }
+
+    /*.grid-row:nth-child(even) {
+		fill: #f5f5f5;
+	}*/
+
+    .row-line {
+      stroke: @background-color;
+    }
+
+    .tick {
+      stroke: @background-color;
+      stroke-width: 0.2;
+
+      &.thick {
+        stroke-width: 0.4;
+      }
+    }
+
+    .today-highlight {
+      fill: @warning-bg-color;
+      opacity: 0.5;
+    }
+
+    .arrow {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.4;
+    }
+
+    .bar {
+      fill: @info-bg-color;
+      stroke: @info-bg-color;
+      stroke-width: 0;
+      transition: stroke-width 0.3s ease;
+      user-select: none;
+    }
+
+    .bar-progress {
+      fill: @info-color;
+    }
+
+    .bar-invalid {
+      fill: transparent;
+      stroke: @info-color;
+      stroke-width: 1;
+      stroke-dasharray: 2;
+
+      & ~ .bar-label {
+        fill: @text-color;
+      }
+    }
+
+    .bar-label {
+      fill: @text-color;
+      dominant-baseline: central;
+      text-anchor: middle;
+      font-size: 12px;
+      font-weight: lighter;
+
+      &.big {
+        fill: @text-color;
+        text-anchor: start;
+      }
+    }
+
+    .handle {
+      fill: @warning-color;
+      cursor: ew-resize;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .bar-wrapper {
+      cursor: pointer;
+      outline: none;
+
+      &:hover {
+        .bar {
+          fill: darken(@info-bg-color, 5);
+        }
+
+        .bar-progress {
+          fill: darken(@info-color, 5);
+        }
+
+        .handle {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+
+      &.active {
+        .bar {
+          fill: darken(@info-bg-color, 5);
+        }
+
+        .bar-progress {
+          fill: darken(@info-color, 5);
+        }
+      }
+    }
+
+    .hide {
+      display: none;
+    }
+  }
+
+  .gantt-header {
+    position: sticky;
+    top: 0px;
+    display: block;
+    .lower-text,
+    .upper-text {
+      font-size: 12px;
+      text-anchor: middle;
+    }
+
+    .upper-text {
+      fill: @title-color;
+    }
+
+    .lower-text {
+      fill: @title-color;
+    }
+  }
+
+  .header {
+    .grid-header {
+      fill: @th-bg-color;
+      stroke: @th-bg-color;
+      stroke-width: 1.4;
+    }
+  }
+
+  .gantt-container {
+    position: relative;
+    overflow: hidden;
+    font-size: 12px;
+  }
+}
+
+.theme-dark {
+  .ivu-notice-notice-close:hover {
+    i {
+      color: @dark-icon;
+    }
+  }
+
+  .ivu-date-picker-cells-cell-range:before {
+    background-color: @dark-selectbg !important;
+  }
+}
+
+@default-type: 'white';
+@dark-type: 'dark';
+
+html {
+  .theme(
+    @default-op,
+    @default-title,
+    @default-text,
+    @default-background,
+    @default-info-color,
+    @default-info-bg-color,
+    @default-warning-color,
+    @default-primary-bg-color,
+    @default-th-bg-color
+  );
+
+  &.theme-dark {
+    .theme(
+      @dark-op,
+      @dark-title,
+      @dark-text,
+      @dark-background,
+      @dark-info-color,
+      @dark-info-bg-color,
+      @dark-warning-color,
+      @dark-primary-bg-color,
+      @dark-th-bg-color
+    );
+  }
+}

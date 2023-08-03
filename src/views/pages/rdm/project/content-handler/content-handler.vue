@@ -18,8 +18,8 @@
       </div>
       <div
         v-else
+        v-imgViewer
         class="content"
-        @click="showImage"
         v-html="issueData.content"
       ></div>
     </div>
@@ -31,9 +31,10 @@
 </template>
 <script>
 import * as handlers from './index.js';
-
+import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
+  directives: { imgViewer },
   components: {
     ...handlers,
     TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve)
@@ -63,18 +64,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    showImage(event) {
-      if (event.target.tagName.toLowerCase() === 'img') {
-        console.log(event.target.getAttribute('src'));
-        this.$createDialog({
-          content: '<img src="' + event.target.getAttribute('src') + '">',
-          width: 'large',
-          'on-ok': vnode => {
-            vnode.isShow = false;
-          }
-        });
-      }
-    },
     editContent() {
       this.editMode = 'edit';
     },

@@ -1,10 +1,12 @@
 <template>
-  <component
-    :is="appData.type + 'Editor'"
-    v-if="appData"
-    ref="editor"
-    :appData="appData"
-  ></component>
+  <div v-if="appData && editors[appData.type + 'Editor']">
+    <component
+      :is="appData.type + 'Editor'"
+      ref="editor"
+      :appData="appData"
+    ></component>
+  </div>
+  <div v-else><Alert>{{ $t('term.rdm.noconfig') }}</Alert></div>
 </template>
 <script>
 import * as editor from './index.js';
@@ -20,6 +22,7 @@ export default {
   },
   data() {
     return {
+      editors: editor,
       appData: null
     };
   },

@@ -140,6 +140,8 @@
     "failedtobindaccountforassetstarget": "{target}条资产绑定账号失败",
     "onlyexportselected": "仅导出选中数据",
     "driverci": "驱动模型",
+    "addcientity": "新增配置项"
+    "driverci": "驱动模型",
     "resourcetypetreenosettingdesc": "资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图未设置成功，资产清单功能不可用",
     "gotoresourceentitymanagepage": "点击此处设置该视图",
     "resourcetypetreesettingdesc": "资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是{label}({name})，可以选择该模型或其子模型作为资产清单根目录"
@@ -2158,7 +2160,9 @@
     "openproject": "打开项目",
     "applist": "应用列表",
     "relativetestcase": "关联用例",
-    "repository": "版本库"
+    "repository": "版本库",
+    "gantt": "甘特图",
+    "noconfig": "此组件无需配置"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

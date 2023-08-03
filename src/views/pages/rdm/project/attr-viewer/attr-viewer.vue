@@ -5,6 +5,7 @@
         :is="attrConfig.type + 'attr'"
         v-if="!attrConfig.isPrivate"
         ref="component"
+        :scale="scale"
         :valueList="valueListLocal"
         :attrConfig="attrConfig"
       ></component>
@@ -12,6 +13,7 @@
         :is="attrConfig.type + 'attr'"
         v-else
         ref="component"
+        :scale="scale"
         :issueData="issueData"
         :valueList="valueListLocal"
         :attrConfig="attrConfig"
@@ -35,7 +37,8 @@ export default {
   props: {
     issueData: { type: Object }, //issue数据
     attrConfig: { type: Object }, //属性设置
-    valueList: { type: Array }
+    valueList: { type: Array },
+    scale: { type: Number, default: 1 }
   },
   data() {
     return {

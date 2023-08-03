@@ -6,6 +6,25 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
+          <span class="action-item">
+            <TsFormSwitch
+              :value="isShowGantt"
+              :showStatus="true"
+              :trueValue="true"
+              :falseValue="false"
+              :trueText="$t('term.rdm.gantt')"
+              :falseText="$t('term.rdm.gantt')"
+              @on-change="
+                val => {
+                  isReady = false;
+                  isShowGantt = val;
+                  $nextTick(() => {
+                    isReady = true;
+                  });
+                }
+              "
+            ></TsFormSwitch>
+          </span>
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
@@ -29,6 +48,7 @@
           :app="appData"
           :canSearch="true"
           :canAction="true"
+          :isShowGantt="isShowGantt"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
         ></IssueList>
@@ -49,6 +69,7 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
@@ -64,12 +85,12 @@ export default {
       currentIssueId: null,
       isEditIssueShow: false,
       displayMode: 'level',
-      isAttrSettingShow: false
+      isAttrSettingShow: false,
+      isShowGantt: false
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
