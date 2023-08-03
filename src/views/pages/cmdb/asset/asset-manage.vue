@@ -5,6 +5,7 @@
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
       <template v-slot:topLeft>
         <div class="action-group">
+          <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
           <span v-if="resourceIdList.length == 0" class="action-item disable">
             <div v-auth="['RESOURCECENTER_MODIFY']">
               <span>{{ $t('page.batchoperation') }}</span>
@@ -39,7 +40,7 @@
           <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0" v-auth="['RESOURCECENTER_MODIFY']" class="action-item">
             <Button type="primary" @click="addAsset">{{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}</Button>
           </span>
-          <span class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
+          <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -74,6 +75,7 @@
         </div>
       </template>
       <template v-slot:sider>
+        <span v-if="(!treeData || treeData.length == 0) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
         <Tree
           :data="treeData"
           :render="renderContent"
@@ -215,6 +217,11 @@
       :exportCondition="searchVal"
       @close="isExportAssetDialog = false"
     ></ExportAsset>
+    <TreeEdit 
+      v-if="isShowTreeEdit"
+      :ciId="treeTypeRootCiId"
+      @close="closeTreeEdit"
+    ></TreeEdit>
   </div>
 </template>
 <script>
@@ -226,6 +233,7 @@ export default {
     DeleteCiEntityDialog: resolve => require(['../cientity/cientity-delete-dialog.vue'], resolve),
     AssetEdit: resolve => require(['./asset-edit-dialog.vue'], resolve),
     TagEdit: resolve => require(['./components/tag-edit'], resolve),
+    TreeEdit: resolve => require(['./components/tree-edit'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
     ExportAsset: resolve => require(['./export-asset-dialog.vue'], resolve),
@@ -525,7 +533,9 @@ export default {
       implementName: '',
       contentHeight: '100',
       isExportAssetDialog: false,
-      defaultValue: []
+      defaultValue: [],
+      isShowTreeEdit: false,
+      treeTypeRootCiId: null
     };
   },
   beforeCreate() {},
@@ -608,6 +618,7 @@ export default {
       //获取树形类型
       return this.$api.cmdb.asset.getResourceTreeType().then(res => {
         let data = res.Return;
+        this.treeTypeRootCiId = data[0]?.id;
         if (this.selectType.typeId) {
           this.setTreeDataSelect(this.selectType.typeId, data);
         } else {
@@ -882,6 +893,18 @@ export default {
     changeLabelCombineSearcher(val) {
       if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
         this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
+      }
+    },
+    editTree() {
+      this.isShowTreeEdit = true;
+    },
+    async closeTreeEdit(action) {
+      this.isShowTreeEdit = false;
+      if (action == 'refresh') {
+        this.treeTypeRootCiId = null;
+        this.selectType.typeId = null;
+        await this.getTreeType();
+        await this.init();
       }
     }
   },
