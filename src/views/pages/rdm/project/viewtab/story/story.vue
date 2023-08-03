@@ -12,8 +12,8 @@
               :showStatus="true"
               :trueValue="true"
               :falseValue="false"
-              trueText="显示甘特图"
-              falseText="显示甘特图"
+              :trueText="$t('term.rdm.gantt')"
+              :falseText="$t('term.rdm.gantt')"
               @on-change="
                 val => {
                   isReady = false;

@@ -122,6 +122,15 @@
         <table v-if="issueData && issueData.tbodyList && issueData.tbodyList.length > 0" class="table">
           <thead class="thead">
             <tr>
+              <th :colspan="finalTheadList.length">
+                <span :class="{ 'text-href': ganttViewMode === 'Day', cursor: ganttViewMode !== 'Day' }" @click="ganttViewMode='Day'">{{ $t('page.da') }}</span>
+                <Divider type="vertical" />
+                <span :class="{ 'text-href': ganttViewMode === 'Week', cursor: ganttViewMode !== 'Week' }" @click="ganttViewMode='Week'">{{ $t('page.wee') }}</span>
+                <Divider type="vertical" />
+                <span :class="{ 'text-href': ganttViewMode === 'Month', cursor: ganttViewMode !== 'Month' }" @click="ganttViewMode='Month'">{{ $t('page.month') }}</span>
+              </th>
+            </tr>
+            <tr>
               <th v-for="(th, index) in finalTheadList" :key="index">{{ th.title }}</th>
             </tr>
           </thead>
@@ -441,7 +450,8 @@ export default {
       isBatchExecuteShow: false, //批量执行确认框
       gantt: null,
       resizing: false,
-      actionRight: 0
+      actionRight: 0,
+      ganttViewMode: 'Day'
     };
   },
   beforeCreate() {},
@@ -840,9 +850,11 @@ export default {
           date_format: 'YYYY-MM-DD',
           language: 'zh', // or 'es', 'it', 'ru', 'ptBr', 'fr', 'tr', 'zh', 'de', 'hu'
           custom_popup_html: null,
-          onScroll: t => {
+          on_scroll: t => {
             this.$refs['mainTable'].scrollTop = t;
-          }
+          },
+          on_date_change: this.ganttDateChange,
+          on_progress_change: this.ganttProgressChange
         });
       } else {
         this.gantt.refresh(this.ganttTaskList);
@@ -858,8 +870,8 @@ export default {
       if (!this.resizing) return;
       const width = this.$refs['tableMain'].offsetWidth;
       let left = e.clientX - this.$refs['tableMain'].getBoundingClientRect().left;
-      left = Math.max(300, left);
-      left = Math.min(width - 300, left);
+      left = Math.max(200, left);
+      left = Math.min(width - 200, left);
       this.$refs['divider'].style.left = left + 'px';
     },
     stopResize() {
@@ -905,6 +917,12 @@ export default {
         return main.getBoundingClientRect().left;
       }
       return 0;
+    },
+    ganttDateChange(...arg) {
+      console.log(JSON.stringify(...arg, null, 2));
+    },
+    ganttProgressChange(...arg) {
+      console.log(JSON.stringify(...arg, null, 2));
     }
   },
   filter: {},
@@ -952,7 +970,7 @@ export default {
           tasks.push({
             id: '#' + t.id,
             name: t.name,
-            start: t.startDate,
+            start: t.startDate || t.createDate,
             end: t.endDate,
             progress: 20
           });
@@ -962,6 +980,11 @@ export default {
     }
   },
   watch: {
+    ganttViewMode(val) {
+      if (this.gantt) {
+        this.gantt.change_view_mode(val);
+      }
+    },
     ganttTaskList: {
       handler: function(val) {
         if (this.isShowGantt) {
@@ -1008,7 +1031,10 @@ export default {
   .table th {
     color: @title-color;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: normal;
+    padding: 0px 9px;
+    height: 29px;
+    line-height: 29px;
   }
   .table td {
     position: relative;

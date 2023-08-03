@@ -126,15 +126,15 @@ export default class Gantt {
       if (!task.start && !task.end) {
         const today = date_utils.today();
         task._start = today;
-        task._end = date_utils.add(today, 2, 'day');
+        task._end = date_utils.add(today, 3, 'day');
       }
 
       if (!task.start && task.end) {
-        task._start = date_utils.add(task._end, -2, 'day');
+        task._start = date_utils.add(task._end, -3, 'day');
       }
 
       if (task.start && !task.end) {
-        task._end = date_utils.add(task._start, 2, 'day');
+        task._end = date_utils.add(task._start, 3, 'day');
       }
 
       // if hours is not set, assume the last day is full day
@@ -143,11 +143,11 @@ export default class Gantt {
       if (task_end_values.slice(3).every(d => d === 0)) {
         task._end = date_utils.add(task._end, 24, 'hour');
       }
-      
+
       // invalid flag
       if (!task.start || !task.end) {
         task.invalid = true;
-      } 
+      }
 
       // dependencies
       if (typeof task.dependencies === 'string' || !task.dependencies) {
@@ -335,13 +335,13 @@ export default class Gantt {
       x: 0,
       y: 0,
       width: grid_width,
-      height: grid_height, 
+      height: grid_height,
       class: 'grid-background',
       append_to: this.layers.grid
     });
 
     $.attr(this.$svg, {
-      height: grid_height// + this.options.padding
+      height: grid_height // + this.options.padding
       //width: '100%'
     });
   }
@@ -354,7 +354,7 @@ export default class Gantt {
     const row_height = this.options.bar_height + this.options.padding;
 
     //let row_y = this.options.header_height + this.options.padding / 2;
-    let row_y = 0;//this.options.padding / 2;
+    let row_y = 0; //this.options.padding / 2;
 
     for (let task of this.tasks) {
       createSVG('rect', {
@@ -606,20 +606,20 @@ export default class Gantt {
 
   bind_grid_drag() {
     this.isDragging = false;
-    $.on(this.$svg, 'mousedown', '.grid', (e) => {
+    $.on(this.$svg, 'mousedown', '.grid', e => {
       this.isDragging = true;
       this.oldX = e.clientX;
       this.oldY = e.clientY;
       this.oldLeft = this.$container.scrollLeft;
       this.oldTop = this.$container.scrollTop;
     });
-    $.on(this.$svg, 'mousemove', '.grid', (e) => {
+    $.on(this.$svg, 'mousemove', '.grid', e => {
       if (this.isDragging) {
         this.$container.scrollTop = this.oldTop - (e.clientY - this.oldY);
         this.$container.scrollLeft = this.oldLeft - (e.clientX - this.oldX);
       }
     });
-    $.on(this.$svg, 'mouseup', '.grid', (e) => {
+    $.on(this.$svg, 'mouseup', '.grid', e => {
       this.isDragging = false;
       this.oldX = null;
       this.oldY = null;
@@ -630,9 +630,7 @@ export default class Gantt {
     $.on(this.$container, 'scroll', e => {
       const st = e.target.scrollTop;
       //this.$header.style.top = st + 'px';
-      if (this.options.onScroll) {
-        this.options.onScroll(st);
-      }
+      this.trigger_event('scroll', [st]);
     });
   }
 

@@ -2157,7 +2157,8 @@
     "applist": "应用列表",
     "relativetestcase": "关联用例",
     "repository": "版本库",
-    "gantt": "甘特图"
+    "gantt": "甘特图",
+    "noconfig": "此组件无需配置"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

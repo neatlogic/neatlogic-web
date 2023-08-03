@@ -933,5 +933,6 @@
   "scripthelp": "脚本说明",
   "componentinfo": "组件信息",
   "apimethod": "api方法",
-  "scripterror": "脚本语法异常"
+  "scripterror": "脚本语法异常",
+  "wee": "周"
 }

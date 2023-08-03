@@ -72,6 +72,7 @@ let routerArr = [
     name: 'project-edit',
     component: projectEdit,
     meta: {
+      title: $t('router.rdm.projectconfig'),
       ismenu: false,
       icon: 'tsfont-task',
       authority: 'RDM_BASE',

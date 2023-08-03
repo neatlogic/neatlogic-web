@@ -2160,7 +2160,8 @@
     "applist": "Application List",
     "relativetestcase": "Associated Use Cases",
     "repository": "Version Library",
-    "gantt": "Gantt chart Chart"
+    "gantt": "Gantt chart Chart",
+    "noconfig": "This component does not require configuration"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

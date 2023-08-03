@@ -11,6 +11,14 @@ export default {
     if (date instanceof Date) {
       return date;
     }
+    if (typeof date === 'number') {
+      if (String(date).length === 10) {
+        return new Date(date * 1000);
+      } else if (String(date).length === 13) {
+        return new Date(date);
+      }
+      return null;
+    }
     if (typeof date === 'string') {
       let date_parts, time_parts;
       const parts = date.split(' ');
