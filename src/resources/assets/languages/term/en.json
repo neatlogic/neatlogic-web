@@ -140,7 +140,7 @@
     "failedtobindaccountforassetstarget": "{target}Asset binding account failed",
     "onlyexportselected": "Export only selected data",
     "driverci": "Drive Model",
-    "addcientity": "Add Configuration Item"
+    "addcientity": "Add Configuration Item",
     "driverci": "Drive Model",
     "resourcetypetreenosettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view was not successfully set in the view settings, and the asset list function is not available",
     "gotoresourceentitymanagepage": "Click here to set this view",
