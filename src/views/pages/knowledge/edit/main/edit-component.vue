@@ -330,7 +330,7 @@ export default {
       pastedText = clipboardData.getData('text/html');
       let $target = editorUtils.comGetTargetCom();
       if (!pastedText && clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
-        clipboardData.files.forEach(file => {
+        Array.form(clipboardData.files).forEach(file => {
           file.type.indexOf('image') >= 0 && this.uploadePasteImage(file);
         });
         e.preventDefault();

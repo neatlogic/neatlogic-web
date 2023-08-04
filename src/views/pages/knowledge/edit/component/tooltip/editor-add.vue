@@ -6,21 +6,52 @@
     class="editor-add bg-op border-color" 
     :style="getStyle"
   >
-    <span class="span-add" :title="$t('dialog.title.addtarget', {target: $t('page.component')})" @mousedown.prevent="isShow=!isShow"></span>
-    <div class="contain bg-op border-color bottom-shadow" :class="{'show':isShow}"> 
-      <template v-for="(tool,index) in dataList">
-        <Tooltip
-          :key="index"
-          :content="tool.title"
-          placement="top"
-          :disabled="tool.disabled"
-          theme="light"
-          :transfer="true"
-        >
-          <span :class="[tool.icon,{'active':tool.isActive}]" class="tool tool-icon" @mousedown.prevent="addFn(tool)"></span>
-        </Tooltip>
+    <Dropdown transfer trigger="click" :visible="isShow">
+      <div class="span-add" :title="$t('dialog.title.addtarget', {target: $t('page.component')})" @click.stop="isShow=!isShow">
+        <span class="tsfont-plus"></span>
+      </div>
+      <template v-if="showDialog">
+        <DropdownMenu slot="list">
+          <template v-for="(tool,index) in dataList">
+            <DropdownItem v-if="tool.type !='table'" :key="index" @click.native="addFn(tool)">
+              <span :class="[tool.icon,{'active':tool.isActive}]" class="tool tool-icon">{{ tool.title }}</span>
+            </DropdownItem>
+            <Dropdown
+              v-else
+              :key="index"
+              placement="right-start"
+              transfer
+              transfer-class-name="table-select"
+            >
+              <DropdownItem>
+                <span :class="[tool.icon]">{{ tool.title }}</span>
+                <Icon type="ios-arrow-forward"></Icon>
+              </DropdownItem>
+              <DropdownMenu slot="list">
+                <DropdownItem>
+                  <div>
+                    <div class="tooltip-title">
+                      <div v-if="tableRow">{{ tableRow }}x{{ tableCol }}</div>
+                    </div>
+                    <div class="table-grid" @click="selectTable()">
+                      <div v-for="row in num" :key="row" class="row">
+                        <div
+                          v-for="col in num"
+                          :key="col"
+                          class="cell bg-tip-grey"
+                          :class="{'bg-info-grey':tableRow && row <= tableRow && col <= tableCol }"
+                          @mouseover="drag(row, col)"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </template>
+        </DropdownMenu>
       </template>
-    </div>
+    </Dropdown>
   </div>
 </template>
 <script>
@@ -40,32 +71,34 @@ export default {
     config: Object
   },
   data() {
-    let _this = this;
     return {
       isShow: false,
       dataList: [{
         type: 'ul',
-        title: this.$t('dialog.title.addtarget', { target: this.$t('page.unorderedlist') }),
+        title: this.$t('page.unorderedlist'),
         icon: 'tsfont-list'
       }, {
         type: 'ol',
-        title: this.$t('dialog.title.addtarget', { target: this.$t('page.orderedlist') }),
+        title: this.$t('page.orderedlist'),
         icon: 'tsfont-orderlist'
       }, {
         type: 'img',
-        title: this.$t('dialog.title.addtarget', { target: this.$t('page.image') }),
+        title: this.$t('page.image'),
         icon: 'tsfont-addimg'
       }, {
         type: 'table',
-        title: this.$t('dialog.title.addtarget', { target: this.$t('page.table') }),
+        title: this.$t('page.table'),
         icon: 'tsfont-chart-table'
       }, {
         type: 'code',
-        title: this.$t('dialog.title.addtarget', { target: this.$t('page.code') }),
+        title: this.$t('page.code'),
         icon: 'tsfont-code'
       }],
       range: null,
-      showDialog: false
+      showDialog: true,
+      tableRow: 0,
+      tableCol: 0,
+      num: 10
     };
   },
   beforeCreate() {},
@@ -93,6 +126,9 @@ export default {
       } 
     },
     addFn(tool) {
+      if (tool.type === 'table') {
+        return;
+      }
       let $target = document.querySelector(`#rightSider [data_id="${this.focusUuid}"]`);
       let uuid = this.$utils.setUuid();
       if (tool.type == 'img') {
@@ -114,6 +150,19 @@ export default {
         let clientr = $target.getBoundingClientRect();
         this.$el.style.top = (clientr.bottom - cliento.top + $scroll.scrollTop - clientr.height) + 'px';
       } 
+    },
+    drag(row, col) {
+      this.$set(this, 'tableRow', row);
+      this.$set(this, 'tableCol', col);
+    },
+    selectTable() {
+      this.$parent.addComponent({uuid: this.$utils.setUuid(), handler: 'table', content: '', config: {row: this.tableRow, col: this.tableCol}});
+      this.$set(this, 'tableRow', null);
+      this.$set(this, 'tableCol', null);
+      this.showDialog = false;
+      this.$nextTick(() => {
+        this.showDialog = true;
+      });
     }
   },
   filter: {},
@@ -145,65 +194,43 @@ export default {
   position: absolute;
   z-index: 3;
   border-radius: 2px;
-  min-height: 23px;
+  min-height: 24px;
   top:0px;
   left: 8px;
-
   .span-add{
-    // padding:2px 6px;
     width: 20px;
     height: 20px;
+    line-height: 20px;
+    text-align: center;
     cursor: pointer;
-    position: relative;
-    font-size: 20px;
+    // position: relative;
+    font-size: 16px;
     display: block;
-    float: left;
+    // float: left;
     opacity: 0.8;
-    &::before{
-     content: '';
-    width: 2px;
-    height: 10px;
-    background: #fff;
-    left: 50%;
-    top: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    }
-    &::after{
-     content: '';
-     width: 10px;
-     height: 2px;
-     background: #fff;
-      left: 50%;
-    top: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    }
+    color: #fff;
   }
-  .contain{
-    display: none;
-    left:0px;
-    &.show{
-      display: block;
-      z-index: 3;
-      border: 1px solid;
-      float: left;
-      position: relative;
-      top: 50%;
-      margin-left: 3px;
-      transform: translate(0, -25%);
-    }
-    .tool{
-      display: inline-block;
-      cursor: pointer;
-      line-height: 2.2;
-      padding: 0px 6px;
-      margin: 0px 3px;
-      &.tool-icon{
-        font-size:16px;
-      }
-    }
+}
+.tooltip-title {
+  display: flex;
+  justify-content: space-between;
+}
+.table-grid {
+  display: grid;
+  gap: 2px;
+  .row {
+    display: grid;
+    grid-template-columns: repeat(10,auto);
+    gap: 2px;
   }
-
+  .cell {
+    width: 16px;
+    height: 16px;
+  }
+}
+.table-select {
+  .ivu-dropdown-item:hover {
+      background-color: transparent !important;
+  }
 }
 </style>

@@ -20,7 +20,7 @@
         :history="historyList.length"
         :back="backList.length"
       ></editorTool>
-      <div ref="scrollContian" class="main scrollContian">
+      <div ref="scrollContian" class="main scrollContian" @click="focusEnd">
         <!-- 添加按钮 -->
         <editorAdd
           v-if="focusUuid"
@@ -407,6 +407,17 @@ export default {
         this.isAddTag = false;
         this.tagList = [];
       }
+    },
+    focusEnd() { //点击空白处，焦点聚焦到最后一行
+      let focusUuid = this.dataList[this.dataList.length - 1].uuid;
+      this.focusUuid = focusUuid;
+      let uuid = this.$utils.setUuid();
+      this.addComponent({ handler: 'p', uuid: uuid, content: '<br>' }, this.focusUuid);
+      this.dataList = this.updataMenuList();
+      this.$nextTick(() => {
+        let $target = document.querySelector(`#rightSider [data_id="${uuid}"]`);
+        editorUtils.comSetfocus($target);
+      });
     }
   },
   computed: {
