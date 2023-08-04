@@ -409,14 +409,14 @@ export default {
       }
     },
     focusEnd() { //点击空白处，焦点聚焦到最后一行
-      let focusUuid = this.dataList[this.dataList.length - 1].uuid;
+      let focusUuid = this.focusUuid || this.dataList[this.dataList.length - 1].uuid;
       this.focusUuid = focusUuid;
       let uuid = this.$utils.setUuid();
       this.addComponent({ handler: 'p', uuid: uuid, content: '<br>' }, this.focusUuid);
-      this.dataList = this.updataMenuList();
       this.$nextTick(() => {
         let $target = document.querySelector(`#rightSider [data_id="${uuid}"]`);
         editorUtils.comSetfocus($target);
+        this.focusUuid = uuid;
       });
     }
   },

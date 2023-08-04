@@ -6,52 +6,59 @@
     class="editor-add bg-op border-color" 
     :style="getStyle"
   >
-    <Dropdown transfer trigger="click" :visible="isShow">
-      <div class="span-add" :title="$t('dialog.title.addtarget', {target: $t('page.component')})" @click.stop="isShow=!isShow">
-        <span class="tsfont-plus"></span>
-      </div>
-      <template v-if="showDialog">
-        <DropdownMenu slot="list">
-          <template v-for="(tool,index) in dataList">
-            <DropdownItem v-if="tool.type !='table'" :key="index" @click.native="addFn(tool)">
-              <span :class="[tool.icon,{'active':tool.isActive}]" class="tool tool-icon">{{ tool.title }}</span>
-            </DropdownItem>
-            <Dropdown
-              v-else
-              :key="index"
-              placement="right-start"
-              transfer
-              transfer-class-name="table-select"
-            >
-              <DropdownItem>
-                <span :class="[tool.icon]">{{ tool.title }}</span>
-                <Icon type="ios-arrow-forward"></Icon>
+    <div @click.stop>
+      <Dropdown
+        transfer
+        trigger="click"
+        :visible="isShow"
+      >
+        <div class="span-add" :title="$t('dialog.title.addtarget', {target: $t('page.component')})">
+          <span class="tsfont-plus"></span>
+        </div>
+        <template v-if="showDialog">
+          <DropdownMenu slot="list">
+            <template v-for="(tool,index) in dataList">
+              <DropdownItem v-if="tool.type !='table'" :key="index" @click.native="addFn(tool)">
+                <div :class="[tool.icon,{'active':tool.isActive}]" class="tool tool-icon">{{ tool.title }}</div>
               </DropdownItem>
-              <DropdownMenu slot="list">
+              <Dropdown
+                v-else
+                :key="index"
+                placement="right"
+                transfer
+                transfer-class-name="table-select"
+                @click.native.stop
+              >
                 <DropdownItem>
-                  <div>
-                    <div class="tooltip-title">
-                      <div v-if="tableRow">{{ tableRow }}x{{ tableCol }}</div>
-                    </div>
-                    <div class="table-grid" @click="selectTable()">
-                      <div v-for="row in num" :key="row" class="row">
-                        <div
-                          v-for="col in num"
-                          :key="col"
-                          class="cell bg-tip-grey"
-                          :class="{'bg-info-grey':tableRow && row <= tableRow && col <= tableCol }"
-                          @mouseover="drag(row, col)"
-                        ></div>
+                  <span :class="[tool.icon]">{{ tool.title }}</span>
+                  <Icon type="ios-arrow-forward"></Icon>
+                </DropdownItem>
+                <DropdownMenu slot="list">
+                  <DropdownItem>
+                    <div>
+                      <div class="tooltip-title">
+                        <div v-if="tableRow">{{ tableRow }}x{{ tableCol }}</div>
+                      </div>
+                      <div class="table-grid" @click="selectTable()">
+                        <div v-for="row in num" :key="row" class="row">
+                          <div
+                            v-for="col in num"
+                            :key="col"
+                            class="cell bg-tip-grey"
+                            :class="{'bg-info-grey':tableRow && row <= tableRow && col <= tableCol }"
+                            @mouseover="drag(row, col)"
+                          ></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </template>
-        </DropdownMenu>
-      </template>
-    </Dropdown>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </template>
+          </DropdownMenu>
+        </template>
+      </Dropdown>
+    </div>
   </div>
 </template>
 <script>
@@ -86,13 +93,13 @@ export default {
         title: this.$t('page.image'),
         icon: 'tsfont-addimg'
       }, {
-        type: 'table',
-        title: this.$t('page.table'),
-        icon: 'tsfont-chart-table'
-      }, {
         type: 'code',
         title: this.$t('page.code'),
         icon: 'tsfont-code'
+      }, {
+        type: 'table',
+        title: this.$t('page.table'),
+        icon: 'tsfont-chart-table'
       }],
       range: null,
       showDialog: true,
