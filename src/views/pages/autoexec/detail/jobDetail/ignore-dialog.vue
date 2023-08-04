@@ -3,18 +3,10 @@
     <template v-slot>
       <div v-if="pendingCount || succeedCount || runningCount" class="mb-nm">
         <span>{{ $t('term.autoexec.selectednodeinclude') }}</span>
-        <span v-if="ignoreCount" class="ml-xs mr-xs">
-          {{ $t('term.autoexec.ignorecount', {target: ignoreCount}) }}
-        </span>
-        <span v-if="pendingCount" class="ml-xs mr-xs">
-          {{ $t('term.autoexec.pendingcount', {target: pendingCount}) }}
-        </span>
-        <span v-if="succeedCount" class="ml-xs mr-xs">
-          {{ $t('term.autoexec.runningcount', {target: succeedCount}) }}
-        </span>
-        <span v-if="runningCount" class="ml-xs mr-xs">
-          {{ $t('term.autoexec.ignorecount', {target: runningCount}) }}
-        </span>
+        <span v-if="ignoreCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.ignorecount', {target: ignoreCount})"></span>
+        <span v-if="pendingCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.pendingcount', {target: pendingCount})"></span>
+        <span v-if="succeedCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.runningcount', {target: succeedCount})"></span>
+        <span v-if="runningCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.ignorecount', {target: runningCount})"></span>
         <span>{{ $t('term.autoexec.deletenodecontinue') }}</span>
       </div>
       <div v-else class="mb-nm">{{ $t('term.autoexec.ignoreselectednodeconfirm') }}</div>
