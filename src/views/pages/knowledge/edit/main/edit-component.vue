@@ -360,7 +360,6 @@ export default {
             });
           }
         });
-        debugger;
         if ($el.children.length == 1) {
           //如果只有一个子元素则直接拼接上去
           let textEle = document.createTextNode($el.innerText);
