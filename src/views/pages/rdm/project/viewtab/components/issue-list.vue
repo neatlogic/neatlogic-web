@@ -123,11 +123,11 @@
           <thead class="thead">
             <tr>
               <th :colspan="finalTheadList.length">
-                <span :class="{ 'text-href': ganttViewMode === 'Day', cursor: ganttViewMode !== 'Day' }" @click="ganttViewMode='Day'">{{ $t('page.da') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Day', cursor: ganttViewMode !== 'Day' }" @click="ganttViewMode = 'Day'">{{ $t('page.da') }}</span>
                 <Divider type="vertical" />
-                <span :class="{ 'text-href': ganttViewMode === 'Week', cursor: ganttViewMode !== 'Week' }" @click="ganttViewMode='Week'">{{ $t('page.wee') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Week', cursor: ganttViewMode !== 'Week' }" @click="ganttViewMode = 'Week'">{{ $t('page.wee') }}</span>
                 <Divider type="vertical" />
-                <span :class="{ 'text-href': ganttViewMode === 'Month', cursor: ganttViewMode !== 'Month' }" @click="ganttViewMode='Month'">{{ $t('page.month') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Month', cursor: ganttViewMode !== 'Month' }" @click="ganttViewMode = 'Month'">{{ $t('page.month') }}</span>
               </th>
             </tr>
             <tr>
@@ -967,12 +967,21 @@ export default {
       const tasks = [];
       if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
         this.issueData.tbodyList.forEach(t => {
+          let progress = 0;
+          if (t.timecost && t.costList && t.costList.length > 0) {
+            let sum = 0;
+            t.costList.forEach(c => {
+              sum += c.timecost;
+            });
+            progress = Math.min((sum / t.timecost) * 100, 100);
+          }
+         
           tasks.push({
             id: '#' + t.id,
             name: t.name,
             start: t.startDate || t.createDate,
             end: t.endDate,
-            progress: 20
+            progress: progress
           });
         });
       }

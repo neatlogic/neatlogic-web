@@ -73,13 +73,12 @@ export default {
   },
   data() {
     return {
+      pageName: this.$t('term.rdm.gantt'),
       isReady: false,
       displayMode: 'list',
       needAttr: ['_name', '_createuser', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
       attrList: [],
       appList: [],
-      projectList: [],
-      currentProject: null,
       currentApp: '#',
       allIssueCount: 0
     };
@@ -101,7 +100,6 @@ export default {
     getPrivateAttrList() {
       this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
         this.attrList = res.Return;
-        this.isReady = true;
       });
     },
     getAppList() {

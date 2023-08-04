@@ -2158,7 +2158,11 @@
     "relativetestcase": "关联用例",
     "repository": "版本库",
     "gantt": "甘特图",
-    "noconfig": "此组件无需配置"
+    "noconfig": "此组件无需配置",
+    "cost": "花费",
+    "costdate": "花费日期",
+    "costtime": "花费工时",
+    "usedtimecost": "已用工时"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

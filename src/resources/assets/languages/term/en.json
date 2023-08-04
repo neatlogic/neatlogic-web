@@ -2161,7 +2161,11 @@
     "relativetestcase": "Associated Use Cases",
     "repository": "Version Library",
     "gantt": "Gantt chart Chart",
-    "noconfig": "This component does not require configuration"
+    "noconfig": "This component does not require configuration",
+    "cost": "spend",
+    "costdate": "Spending date",
+    "costtime": "Labor hours spent",
+    "usedtimecost": "Labor hours used"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

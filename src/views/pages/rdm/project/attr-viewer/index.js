@@ -8,4 +8,5 @@ export { default as fileattr } from './file-attr.vue';
 export { default as iterationattr } from './iteration-attr.vue';
 export { default as startdateattr } from './startdate-attr.vue';
 export { default as enddateattr } from './enddate-attr.vue';
+export { default as timecostattr } from './timecost-attr.vue';
 export { default as userattr } from './user-attr.vue';

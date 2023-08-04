@@ -7,7 +7,8 @@
  @info-bg-color,  
  @warning-color,
  @warning-bg-color, 
-  @th-bg-color) {
+  @th-bg-color,
+  @success-color) {
   .gantt {
     .grid-background {
       fill: none;
@@ -55,6 +56,10 @@
 
     .bar-progress {
       fill: @info-color;
+    }
+
+    .bar-progress.done {
+      fill: @success-color !important;
     }
 
     .bar-invalid {
@@ -183,7 +188,8 @@ html {
     @default-info-bg-color,
     @default-warning-color,
     @default-primary-bg-color,
-    @default-th-bg-color
+    @default-th-bg-color,
+    @default-success-color
   );
 
   &.theme-dark {
@@ -196,7 +202,8 @@ html {
       @dark-info-bg-color,
       @dark-warning-color,
       @dark-primary-bg-color,
-      @dark-th-bg-color
+      @dark-th-bg-color,
+      @dark-success-color
     );
   }
 }

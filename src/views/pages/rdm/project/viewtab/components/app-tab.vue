@@ -1,5 +1,6 @@
 <template>
-  <!--<ButtonGroup>
+  <div>
+    <!--<ButtonGroup>
     <Button :type="currentTab === 'project' ? 'primary' : 'default'" @click="changeTab('project')">{{ $t('term.rdm.projectinfo') }}</Button>
     <Button
       v-for="item in appList"
@@ -8,16 +9,31 @@
       @click="changeTab('app_' + item.id)"
     >{{ item.name }}</Button>
   </ButtonGroup>-->
-  <Tabs :animated="false" :value="currentTab" @on-click="changeTab">
-    <TabPane :label="$t('term.rdm.projectinfo')" name="project" @click.native="changeTab('project')"></TabPane>
-    <TabPane
-      v-for="item in appList"
-      :key="item.id"
-      :label="item.name"
-      :name="'app_' + item.id"
-      @click.native="changeTab('app_' + item.id)"
-    ></TabPane>
-  </Tabs>
+    <!--<Tabs :animated="false" :value="currentTab" @on-click="changeTab">
+      <TabPane :label="$t('term.rdm.projectinfo')" name="project" @click.native="changeTab('project')"></TabPane>
+      <TabPane
+        v-for="item in appList"
+        :key="item.id"
+        :label="item.name"
+        :name="'app_' + item.id"
+        @click.native="changeTab('app_' + item.id)"
+      ></TabPane>
+    </Tabs>-->
+    <div class="action-group">
+      <span class="action-item" :class="{ 'text-grey': currentTab !== 'project', 'text-primary': currentTab === 'project', 'tsfont-location': currentTab === 'project' }" @click="changeTab('project')">
+        <strong>{{ $t('term.rdm.projectinfo') }}</strong>
+      </span>
+      <span
+        v-for="item in appList"
+        :key="item.id"
+        class="action-item"
+        :class="{ 'text-grey': currentTab !== 'app_' + item.id, 'text-primary': currentTab === 'app_' + item.id, 'tsfont-location': currentTab === 'app_' + item.id }"
+        @click="changeTab('app_' + item.id)"
+      >
+        <strong>{{ item.name }}</strong>
+      </span>
+    </div>
+  </div>
 </template>
 <script>
 export default {
@@ -71,4 +87,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped></style>

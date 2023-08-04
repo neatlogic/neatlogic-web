@@ -96,7 +96,7 @@ export default class Bar {
       height: this.height,
       rx: this.corner_radius,
       ry: this.corner_radius,
-      class: 'bar-progress',
+      class: 'bar-progress' + (this.task.progress >= 100 ? ' done' : ''),
       append_to: this.bar_group
     });
 
@@ -322,6 +322,11 @@ export default class Bar {
     if (this.invalid) return;
     this.$bar_progress.setAttribute('x', this.$bar.getX());
     this.$bar_progress.setAttribute('width', this.$bar.getWidth() * (this.task.progress / 100));
+    if (this.task.process >= 100) {
+      this.$bar_progress.classList.add('done');
+    } else {
+      this.$bar_progress.classList.remove('done');
+    }
   }
 
   update_label_position() {

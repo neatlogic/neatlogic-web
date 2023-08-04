@@ -94,6 +94,8 @@ export default {
   border-style: solid;
   display: inline-block;
   transform: scale(var(--scale));
+  height: 20px;
+  line-height: 20px;
 }
 .issue-status.actived:before {
   font-family: 'tsfont' !important;
