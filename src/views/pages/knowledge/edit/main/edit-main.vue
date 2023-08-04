@@ -409,9 +409,14 @@ export default {
       }
     },
     focusEnd() { //点击空白处，焦点聚焦到最后一行
-      let focusUuid = this.focusUuid || this.dataList[this.dataList.length - 1].uuid;
-      this.focusUuid = focusUuid;
+      let focusUuid = this.dataList[this.dataList.length - 1].uuid;
       let uuid = this.$utils.setUuid();
+      if (this.$refs.editorComponet && this.$refs.editorComponet.changeMenuList()) {
+        let dataList = this.$refs.editorComponet.changeMenuList();
+        this.focusUuid = dataList[dataList.length - 1].uuid;
+      } else {
+        this.focusUuid = focusUuid;
+      }
       this.addComponent({ handler: 'p', uuid: uuid, content: '<br>' }, this.focusUuid);
       this.$nextTick(() => {
         let $target = document.querySelector(`#rightSider [data_id="${uuid}"]`);
