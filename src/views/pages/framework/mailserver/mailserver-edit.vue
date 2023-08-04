@@ -90,6 +90,15 @@ export default {
           validateList: ['required']
         },
         {
+          type: 'radio',
+          name: 'sslEnable',
+          label: this.$t('使用SSL'),
+          value: '',
+          defaultValue: 'false',
+          dataList: [{ value: 'true', text: '是'}, { value: 'false', text: '否'}],
+          validateList: ['required']
+        },
+        {
           type: 'number',
           name: 'port',
           label: this.$t('term.framework.smptport'),
