@@ -161,7 +161,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: this.$t('term.autoexec.planstarttime'), // 计划结束时间
+          label: this.$t('term.autoexec.planendtime'), // 计划结束时间
           options: {
             disabledDate(date) {
               if (_this.formSetting.beginTime.value) {
