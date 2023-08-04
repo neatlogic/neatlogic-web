@@ -99,7 +99,9 @@ export default {
     return {toolAccessList: toolAccessList, toolActiveList: toolActiveList || []};
   },
   comInsertAfter: function(node, newNode) { //在节点后面加入新节点 同时设置焦点
-    node.nextSibling ? node.parentNode.insertBefore(newNode, node.nextSibling) : node.parentNode ? node.parentNode.appendChild(newNode) : '';
+    if (node) {
+      node.nextSibling ? node.parentNode.insertBefore(newNode, node.nextSibling) : node.parentNode ? node.parentNode.appendChild(newNode) : '';
+    }
     this.comSetfocus(newNode);
   },
   comSetfocus($target, islast) { //设置元素获取焦点
@@ -117,7 +119,7 @@ export default {
       sel.addRange(range);
       islast ? range.collapse() : sel.collapseToStart();
     }
-    $target = $target.nodeType == 3 ? this.comGetTargetCom($target) : $target; 
+    $target = $target && $target.nodeType == 3 ? this.comGetTargetCom($target) : $target; 
     $target && $target.click();
   },
   comSetfocusByRange(rangeConfig) { //通过已有的range 来设置光标 

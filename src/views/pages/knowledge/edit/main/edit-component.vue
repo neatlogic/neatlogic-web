@@ -329,8 +329,8 @@ export default {
       let clipboardData = window.clipboardData && window.clipboardData.getData ? window.clipboardData : e.clipboardData;
       pastedText = clipboardData.getData('text/html');
       let $target = editorUtils.comGetTargetCom();
-      if (!pastedText && clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
-        clipboardData.files.forEach(file => {
+      if (clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
+        Array.from(clipboardData.files).forEach(file => {
           file.type.indexOf('image') >= 0 && this.uploadePasteImage(file);
         });
         e.preventDefault();
@@ -360,13 +360,12 @@ export default {
             });
           }
         });
-        
         if ($el.children.length == 1) {
           //如果只有一个子元素则直接拼接上去
           let textEle = document.createTextNode($el.innerText);
           range.insertNode(textEle);
           editorUtils.comSetfocus(textEle, true);
-        } else {
+        } else if ($el.children.length > 1) {
           //如果有多个子元素，着添加多个组件，同时存在中间换行也要添加元素
           this.breakTag();
           list = this.pasteMoreDom($el);
@@ -400,7 +399,7 @@ export default {
       let ulList = ['ul', 'ol'];
       let $div = document.createElement('div');
       let list = [];
-      $el.children.forEach((item, index) => {
+      Array.from($el.children).forEach((item, index) => {
         let nodeName = item.nodeName.toLowerCase();
         let content = item.innerText;
         if (textList.indexOf(nodeName) >= 0 || ulList.indexOf(nodeName) >= 0) {
