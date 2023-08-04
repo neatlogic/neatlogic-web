@@ -417,7 +417,7 @@ export default {
       } else {
         this.focusUuid = focusUuid;
       }
-      this.addComponent({ handler: 'p', uuid: uuid, content: '<br>' }, this.focusUuid);
+      this.addComponent({ handler: 'p', uuid: uuid, content: '' }, this.focusUuid);
       this.$nextTick(() => {
         let $target = document.querySelector(`#rightSider [data_id="${uuid}"]`);
         editorUtils.comSetfocus($target);
