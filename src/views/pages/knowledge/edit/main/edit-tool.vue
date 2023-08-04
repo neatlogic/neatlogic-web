@@ -594,6 +594,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .tool-container{
+  height: 40px;
   .tool{
     display: inline-block;
     cursor: pointer;

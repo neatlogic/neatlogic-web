@@ -931,5 +931,6 @@
   "scripthelp": "Script Description",
   "componentinfo": "Component Information",
   "apimethod": "API method",
-  "scripterror": "Script syntax exception"
+  "scripterror": "Script syntax exception",
+  "wee": "week"
 }

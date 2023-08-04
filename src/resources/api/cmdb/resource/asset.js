@@ -5,6 +5,9 @@ const asset = {
   getResourceTreeType(params) {
     return axios.get('/api/rest/resourcecenter/resourcetype/tree', {params: params});
   },
+  saveResourceType(params) {
+    return axios.get('/api/rest/resourcecenter/resourcetype/save', {params: params});
+  },
   getResourceList(params, config) {
     return axios.post('/api/rest/resourcecenter/resource/list', params, config);
   },
