@@ -66,6 +66,25 @@ export default class Bar {
     this.draw_progress_bar();
     this.draw_label();
     this.draw_resize_handles();
+    this.draw_confirm();
+  }
+
+  draw_confirm() {
+    if (this.invalid) {
+      const bar = this.$bar;
+      this.$confirm = createSVG('use', {
+        x: bar.getX() + bar.getWidth() + 3,
+        y: bar.getY() + 3,
+        width: 16,
+        height: 16,
+        class: 'confirm',
+        href: '#tsfont-plus-s',
+        append_to: this.bar_group
+      });
+      $.on(this.$confirm, 'click', e => {
+        this.gantt.trigger_event('add_task', [this.task]);
+      });
+    }
   }
 
   draw_bar() {
@@ -223,6 +242,7 @@ export default class Bar {
     this.update_handle_position();
     this.update_progressbar_position();
     this.update_arrow_position();
+    this.update_confirm_position();
   }
 
   date_changed() {
@@ -329,13 +349,25 @@ export default class Bar {
     }
   }
 
+  update_confirm_position() {
+    if (this.invalid) {
+      const bar = this.$bar;
+      this.$confirm.setAttribute('x', bar.getX() + bar.getWidth() + 3);
+      this.$confirm.setAttribute('y', bar.getY() + 3);
+    }
+  }
+
   update_label_position() {
     const bar = this.$bar;
     const label = this.group.querySelector('.bar-label');
 
     if (label.getBBox().width > bar.getWidth()) {
       label.classList.add('big');
-      label.setAttribute('x', bar.getX() + bar.getWidth() + 5);
+      if (this.invalid) {
+        label.setAttribute('x', bar.getX() + bar.getWidth() + 20);
+      } else {
+        label.setAttribute('x', bar.getX() + bar.getWidth() + 5);
+      }
     } else {
       label.classList.remove('big');
       label.setAttribute('x', bar.getX() + bar.getWidth() / 2);

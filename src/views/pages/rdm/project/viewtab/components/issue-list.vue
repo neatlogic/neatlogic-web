@@ -111,7 +111,7 @@
       <div
         ref="mainTable"
         class="table-parent table-container"
-        :style="resizing ? 'user-select: none;overflow-x:hidden' : ''"
+        :style="resizing || dragging ? 'user-select: none;overflow-x:hidden' : ''"
         @scroll="
           e => {
             scrollTable(e.target.scrollTop);
@@ -196,7 +196,7 @@
         <NoData v-else-if="isShowEmptyTable"></NoData>
         <div ref="flag"><!--此div用于判断内容出现滚动条，不要删除--></div>
       </div>
-      <div id="gantt" class="gantt-parent" :style="resizing ? 'user-select: none;' : ''"></div>
+      <div id="gantt" class="gantt-parent" :style="resizing || dragging ? 'user-select: none;' : ''"></div>
       <div v-if="hasPage" class="pager bg-op">
         <Page
           size="small"
@@ -328,9 +328,12 @@
       :appId="app.id"
       @close="closeBatchExecute"
     ></BatchExecDialog>
+    <IssueTimeEditDialog v-if="isIssueTimeShow && currentIssue" :issueData="currentIssue" @close="closeIssueTimeEdit"></IssueTimeEditDialog>
   </div>
 </template>
 <script>
+import '@/resources/assets/font/tsfont/font/tsfont.js';
+import '@/resources/assets/font/tsfonts/iconfont.js';
 import * as issueDetailHandler from '@/views/pages/rdm/project/viewtab/issus-detail-index.js';
 import Gantt from '@/resources/plugins/TsGantt/gantt.js';
 
@@ -348,7 +351,8 @@ export default {
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
     TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve)
+    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve),
+    IssueTimeEditDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issuetime-edit-dialog.vue'], resolve)
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -406,7 +410,7 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'createDate', title: this.$t('page.createdate') }*/
       ],
-      isIssueDetailShow: true, //是否展示任务详情弹窗
+      isIssueDetailShow: false, //是否展示任务详情弹窗
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
       pageSize: null,
@@ -450,8 +454,10 @@ export default {
       isBatchExecuteShow: false, //批量执行确认框
       gantt: null,
       resizing: false,
+      dragging: false, //甘特图是否拖拽中
       actionRight: 0,
-      ganttViewMode: 'Day'
+      ganttViewMode: 'Day',
+      isIssueTimeShow: false
     };
   },
   beforeCreate() {},
@@ -854,7 +860,14 @@ export default {
             this.$refs['mainTable'].scrollTop = t;
           },
           on_date_change: this.ganttDateChange,
-          on_progress_change: this.ganttProgressChange
+          on_progress_change: this.ganttProgressChange,
+          on_add_task: this.ganttTaskAdd,
+          on_drag_start: () => {
+            this.dragging = true;
+          },
+          on_drag_end: () => {
+            this.dragging = false;
+          }
         });
       } else {
         this.gantt.refresh(this.ganttTaskList);
@@ -923,6 +936,19 @@ export default {
     },
     ganttProgressChange(...arg) {
       console.log(JSON.stringify(...arg, null, 2));
+    },
+    ganttTaskAdd(task) {
+      this.isIssueTimeShow = true;
+      const currentIssueId = parseInt(task.id.replace('#', ''));
+      this.currentIssue = this.issueData.tbodyList.find(d => d.id === currentIssueId);
+      console.log(this.currentIssue);
+    },
+    closeIssueTimeEdit(needRefresh) {
+      this.isIssueTimeShow = false;
+      this.currentIssue = null;
+      if (needRefresh) {
+        this.searchIssue();
+      }
     }
   },
   filter: {},
@@ -975,7 +1001,7 @@ export default {
             });
             progress = Math.min((sum / t.timecost) * 100, 100);
           }
-         
+
           tasks.push({
             id: '#' + t.id,
             name: t.name,
@@ -1095,7 +1121,7 @@ html {
   position: relative;
   grid-template-columns: 1fr 1fr;
   .divider {
-    width: 3px;
+    width: 2px;
     border-radius: 2px;
     cursor: ew-resize;
     position: absolute;

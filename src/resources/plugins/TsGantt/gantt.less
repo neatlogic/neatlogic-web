@@ -10,6 +10,9 @@
   @th-bg-color,
   @success-color) {
   .gantt {
+    .grid {
+      cursor: grab;
+    }
     .grid-background {
       fill: none;
     }
@@ -84,6 +87,11 @@
         fill: @text-color;
         text-anchor: start;
       }
+    }
+
+    .confirm {
+      fill: @info-color;
+      cursor: pointer;
     }
 
     .handle {
@@ -187,7 +195,7 @@ html {
     @default-info-color,
     @default-info-bg-color,
     @default-warning-color,
-    @default-primary-bg-color,
+    @default-warning-bg-color,
     @default-th-bg-color,
     @default-success-color
   );
@@ -201,7 +209,7 @@ html {
       @dark-info-color,
       @dark-info-bg-color,
       @dark-warning-color,
-      @dark-primary-bg-color,
+      @dark-warning-bg-color,
       @dark-th-bg-color,
       @dark-success-color
     );

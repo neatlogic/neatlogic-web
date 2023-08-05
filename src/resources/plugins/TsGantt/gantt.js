@@ -612,17 +612,30 @@ export default class Gantt {
       this.oldY = e.clientY;
       this.oldLeft = this.$container.scrollLeft;
       this.oldTop = this.$container.scrollTop;
+      this.trigger_event('drag_start');
     });
     $.on(this.$svg, 'mousemove', '.grid', e => {
       if (this.isDragging) {
         this.$container.scrollTop = this.oldTop - (e.clientY - this.oldY);
         this.$container.scrollLeft = this.oldLeft - (e.clientX - this.oldX);
+        this.trigger_event('dragging');
+      }
+    });
+    $.on(this.$svg, 'mouseout', '.grid', e => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        this.oldX = null;
+        this.oldY = null;
+        this.trigger_event('drag_end');
       }
     });
     $.on(this.$svg, 'mouseup', '.grid', e => {
-      this.isDragging = false;
-      this.oldX = null;
-      this.oldY = null;
+      if (this.isDragging) {
+        this.isDragging = false;
+        this.oldX = null;
+        this.oldY = null;
+        this.trigger_event('drag_end');
+      }
     });
   }
 
