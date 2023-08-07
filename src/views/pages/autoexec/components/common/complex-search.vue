@@ -544,7 +544,9 @@ export default {
                 multiple: true,
                 type: 'select',
                 dynamicUrl: '/api/rest/user/search/forselect',
-                rootName: 'list',
+                rootName: 'tbodyList',
+                textName: 'userName',
+                valueName: 'uuid',
                 params: {
                   needPage: true
                 },

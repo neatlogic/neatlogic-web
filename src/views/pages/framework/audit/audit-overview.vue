@@ -396,9 +396,9 @@ export default {
         if (res.Status === 'OK') {
           this.hasMore = res.Return.hasMore;
           try {
-            this.auditDetail = JSON.stringify(JSON.parse(res.Return.result), null, 2);
+            this.auditDetail = JSON.stringify(JSON.parse(res.Return.content), null, 2);
           } catch {
-            this.auditDetail = res.Return.result;
+            this.auditDetail = res.Return.content;
           }
         }
       });

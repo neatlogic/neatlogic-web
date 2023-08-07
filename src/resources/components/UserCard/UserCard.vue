@@ -377,7 +377,7 @@ export default {
       };
       this.isLoading = true;
       this.$https
-        .post('/api/rest/user/search', params, { headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+        .post('/api/rest/user/search/forselect', params, { headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
         .then(res => {
           setTimeout(function() {
             _this.$refs.pop && _this.$refs.pop.updatePopper();

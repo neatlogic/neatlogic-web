@@ -16,6 +16,13 @@ export default {
     this.getAppById();
   },
   methods: {
+    getAppByProjectId() {
+      this.$api.rdm.project.getAppByProjectId(this.projectId, {
+        isActive: 1
+      }).then(res => {
+        this.appList = res.Return;
+      });
+    },
     getAppById() {
       this.$api.rdm.app.getAppById(this.appId, 1).then(res => {
         this.appData = res.Return;

@@ -57,6 +57,10 @@ const integration = {
   getStatusList(params) {
     // 集成管理/调用记录/状态列表
     return axios.post('/api/rest/universal/enum/get', params);
+  },
+  getIntegrationAuditDetail(params) {
+    // 查看集成调用记录内容
+    return axios.post('/api/rest/integration/audit/detail/get', params);
   }
 
 };

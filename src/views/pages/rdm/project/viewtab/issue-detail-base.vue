@@ -136,6 +136,22 @@ export default {
       }
       return h('div', controllList);
     },
+    renderCostTabLabel(h, costCount) {
+      const controllList = [];
+      controllList.push(h('span', this.$t('term.rdm.cost')));
+      if (costCount) {
+        controllList.push(
+          h(
+            'span',
+            {
+              class: 'ml-xs text-grey'
+            },
+            costCount
+          )
+        );
+      }
+      return h('div', controllList);
+    },
     renderAuditTabLabel(h, auditCount) {
       const controllList = [];
       controllList.push(h('span', this.$t('term.rdm.auditlist')));

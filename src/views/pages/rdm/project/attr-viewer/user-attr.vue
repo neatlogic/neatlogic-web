@@ -4,6 +4,7 @@
       v-for="(user, index) in valueList"
       :key="index"
       :uuid="user"
+      :iconSize="20"
       class="pr-sm"
     ></UserCard>
   </div>

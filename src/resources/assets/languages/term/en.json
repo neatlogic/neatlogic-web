@@ -139,7 +139,11 @@
     "successfullyboundaccountforassetstarget": "Successfully bound account for {target} assets",
     "failedtobindaccountforassetstarget": "{target}Asset binding account failed",
     "onlyexportselected": "Export only selected data",
-    "driverci": "Drive Model"
+    "driverci": "Drive Model",
+    "addcientity": "Add Configuration Item",
+    "resourcetypetreenosettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view was not successfully set in the view settings, and the asset list function is not available",
+    "gotoresourceentitymanagepage": "Click here to set this view",
+    "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2158,7 +2162,15 @@
     "openproject": "Open Project",
     "applist": "Application List",
     "relativetestcase": "Associated Use Cases",
-    "repository": "Version Library"
+    "repository": "Version Library",
+    "gantt": "Gantt chart Chart",
+    "noconfig": "This component does not require configuration",
+    "cost": "spend",
+    "costdate": "Spending date",
+    "costtime": "Labor hours spent",
+    "usedtimecost": "Labor hours used",
+    "editstartenddate": "Edit Schedule Time",
+    "plantimecost": "Estimated working hours"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

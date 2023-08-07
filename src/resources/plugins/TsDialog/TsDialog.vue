@@ -91,7 +91,7 @@
 
           <!-- 中间body内容 -->
           <div v-scrollHidden :class="[modalPrev + 'body', { 'bg-block': bgOp }]" :style="setStyle()">
-            <div :class="modalPrev + 'content'" :style="'width:100%'">
+            <div :class="modalPrev + 'content'" :style="getSliderContentStyle()">
               <slot></slot>
             </div>
           </div>
@@ -279,7 +279,11 @@ export default {
       default: true      
     },
     theme: Object, //主题
-    titleDes: String //标题详情
+    titleDes: String, //标题详情
+    hasContentPadding: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     let _this = this;
@@ -386,7 +390,7 @@ export default {
           remainHeight = remainHeight + 57;
         }
         return {
-          height: `calc(100% - ${remainHeight}px - 24px)`
+          height: `calc(100% - ${remainHeight}px - 16px)`
         };
       };
     },
@@ -461,6 +465,18 @@ export default {
             height: `calc(100vh - ${remainHeight}px)`
           };
         }
+      };
+    },
+    getSliderContentStyle() {
+      return () => {
+        let padding = '0px';
+        if (this.hasContentPadding) {
+          padding = '12px';
+        }
+        return {
+          width: '100%',
+          padding: padding + ' !important' 
+        };
       };
     }
   },

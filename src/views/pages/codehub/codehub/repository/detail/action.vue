@@ -119,7 +119,7 @@ export default {
         search: true,
         textName: 'userName',
         valueName: 'uuid',
-        dynamicUrl: '/api/rest/user/search',
+        dynamicUrl: '/api/rest/user/search/forselect',
         rootName: 'tbodyList',
         border: 'border'
       },

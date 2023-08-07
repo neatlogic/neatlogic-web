@@ -4,6 +4,9 @@ const integrated = {
     // 持续集成列表
     return axios.post('/api/rest/deploy/ci/search', params);
   },
+  getIntegratedAuditDetail() {
+    return axios.post('/api/rest/deploy/ci/audit/detail/get', params);
+  },
   delIntegratedById(params) {
     // 删除持续集成
     return axios.post('/api/rest/deploy/ci/delete', params);

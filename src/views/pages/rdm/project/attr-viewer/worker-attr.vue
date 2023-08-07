@@ -5,6 +5,7 @@
       :key="index"
       :uuid="user"
       class="pr-sm"
+      :iconSize="20"
     ></UserCard>
   </div>
   <div v-else class="text-grey">-</div>

@@ -63,7 +63,7 @@ export default {
     searchLog() {
       if (this.filePath) {
         this.isLoading = true;
-        this.$api.framework.file.getFileContentByPath({filePath: this.filePath}).then(res => {
+        this.$api.deploy.integrated.getIntegratedAuditDetail({filePath: this.filePath}).then(res => {
           if (res && res.Status == 'OK') {
             this.logContent = res.Return ? res.Return.content : '';
           }

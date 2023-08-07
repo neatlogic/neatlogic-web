@@ -21,7 +21,8 @@ const appModules = {
   iteration: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration.vue'),
   testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue'),
   gitlab: () => import('@/views/pages/rdm/project/viewtab/gitlab/gitlab.vue'),
-  testplan: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan.vue')
+  testplan: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan.vue'),
+  gantt: () => import('@/views/pages/rdm/project/viewtab/gantt/gantt.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -71,6 +72,7 @@ let routerArr = [
     name: 'project-edit',
     component: projectEdit,
     meta: {
+      title: $t('router.rdm.projectconfig'),
       ismenu: false,
       icon: 'tsfont-task',
       authority: 'RDM_BASE',
@@ -187,7 +189,7 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan', 'gantt'];
 appList.forEach(app => {
   if (appModules[app]) {
     routerArr.push({
