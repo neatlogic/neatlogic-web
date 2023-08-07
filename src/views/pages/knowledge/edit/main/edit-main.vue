@@ -455,10 +455,10 @@ function findParent(node) {
     /deep/#rightSider {
       white-space: pre-wrap;
       >:first-of-type{
-        .tool{
-          top: 0px;
-          z-index: 20;
-        }
+        // .tool{
+        //   top: 0px;
+        //   z-index: 20;
+        // }
       }
       > *:nth-last-child(1):first-child {
         &:empty:before {

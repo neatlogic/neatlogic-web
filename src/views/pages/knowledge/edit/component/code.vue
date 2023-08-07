@@ -9,15 +9,15 @@
   >
     <div ref="editorCode" class="editor-code" contenteditable="false">
       <div class="bg-op">
-        <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="baseLanguageT('dialog.title.deletetarget', {target: baseLanguageT('page.code')})" @click="removeItem"></span></div>
+        <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('page.code')})" @click="removeItem"></span></div>
         <div class="top-title">
-          <span>{{ baseLanguageT('page.code') }}</span>
+          <span>{{ $t('page.code') }}</span>
           <Select
             v-model="codeMode"
             style="width:200px"
             clearable
             transfer
-            :placeholder="baseLanguageT('form.placeholder.pleaseinput')"
+            :placeholder="$t('form.placeholder.pleaseinput')"
             @on-change="changeMode"
           >
             <Option v-for="item in typeDataList" :key="item.value" :value="item.value">{{ item.text }}</Option>
@@ -141,9 +141,8 @@ export default {
   }
   .tool{
     position: absolute;
-    top: -40px;
-    left: 0px;
-    z-index: 10;
+    top: -19px;
+    left: 10px;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     padding: 5px;

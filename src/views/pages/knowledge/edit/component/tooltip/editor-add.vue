@@ -63,6 +63,11 @@ export default {
         type: 'code',
         title: this.$t('dialog.title.addtarget', { target: this.$t('page.code') }),
         icon: 'tsfont-code'
+      },
+      {
+        type: 'mardown',
+        title: this.$t('dialog.title.addtarget', { target: 'markdown' }),
+        icon: 'tsfont-memcached'
       }],
       range: null,
       showDialog: false

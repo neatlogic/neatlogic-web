@@ -1,54 +1,53 @@
 <template>
   <section
     :data_id="uuid"
-    type="editor"
+    type="markdown"
     contenteditable="false"
     z-index="0"
-    @click="handlerClick"
     @paste.stop.prevent
   >
     <div ref="editorEditor" class="editor-editor" contenteditable="false">
-      <div class="bg-op">
-        <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span></div>
-        <TsCkeditor v-model="value" width="100%"></TsCkeditor>
-      </div>
+      <div
+        v-for="(item, index) in value"
+        :key="index"
+        class="markdown-body md-code knowledge-markdown"
+        v-html="item"
+      ></div>
     </div>
-    <span
-      ref="editorSpan"
-      class="editorSpan"
-      contenteditable
-      @keydown.stop="complexComHandlerKeydown"
-      @input.stop="complexComHandlerKeydown"
-    ></span>
   </section>
 </template>
 <script>
-import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';
-import editorMixins from './common/mixins.js';
-import domUtils from '@/views/pages/knowledge/edit/component/range/domUtils.js';
+// import 'github-markdown-css';
+// import hljs from 'highlight.js';
+// import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
+import { marked } from 'marked';
 export default {
   name: '',
-  components: {
-    TsCkeditor
-  },
+  components: {},
   filters: {},
-  mixins: [editorMixins],
+  mixins: {},
   props: {
     uuid: String,
     handler: String,
     content: String,
-    config: Object
+    config: Object,
+    changeType: String
   },
   data() {
-    let _this = this;
     return {
-      value: _this.content
+      value: '',
+      toolbars: {
+        subfield: false // 单双栏模式
+      }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
+    // this.$nextTick(() => {
+    //   hljs.highlightAll();
+    // });
   },
   beforeUpdate() {},
   updated() {},
@@ -56,33 +55,34 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    getContent() {
-      let _this = this;
-      return {content: _this.value};
-    },
-
-    handlerClick(e) {
-      this.comClick();
-      if (e.target == this.$refs.editorEditor || e.target.className == 'top-title' || e.target == this.$el) {
-        this.$refs.editorSpan && this.$refs.editorSpan.focus();
-      }
-    }
-  },
+  methods: {},
   computed: {},
   watch: {
-    content(val) {
-      this.value = val; 
+    content: {
+      handler(val) {
+        try {
+          let value = JSON.parse(val);
+          const str = value?.map(item => marked(item));
+          this.value = str;
+        } catch (error) {
+          this.value = '';
+        }
+      }, 
+      immediate: true
     }
   }
 };
 </script>
+<style>
+.knowledge-markdown img {
+  max-width: 200px;
+}
+</style>
 <style lang="less" scoped>
  section {
   position: relative;
   .editor-editor{
     position: relative;
-    padding:10px;
     &:hover{
       .tool{
         display: block;
@@ -96,9 +96,6 @@ export default {
       /deep/.TsFormSelect .ivu-input{
         text-align: right;
       }
-    }
-   /deep/ .ck-editor__editable:hover, .ck-editor__editable:focus {
-      border-color: #dcdee1 !important;
     }
   }
   &:hover{

@@ -1781,7 +1781,7 @@
   .tsForm-border-nobg.tsForm-item {
     .ivu-input,
     .ivu-input-number,
-    .ivu-select-selection{
+    .ivu-select-selection {
       background-color: transparent;
       border: 1px solid var(--border-color, @border-color-base);
     }
@@ -1794,7 +1794,6 @@
       border: none;
     }
   }
-  
 
   .tsForm-item .tsForm-formItem-error,
   .tsForm-formItem-error {
@@ -3663,11 +3662,10 @@
         color: var(--primary-hover-color, @primary-hover-color);
       }
     }
-    >span:last-child {
+    > span:last-child {
       color: @text-color;
     }
   }
- 
 
   //水波纹
   @sglqprefix: sg-liquid-;
@@ -3921,14 +3919,22 @@
   .markdown-body {
     background-color: transparent !important;
     color: @text-color;
-    h1, h2 {
+    &.md-code {
+      pre,
+      code {
+        background-color: @gray-color !important;
+      }
+    }
+    h1,
+    h2 {
       border: none;
     }
-    pre, code {
+    pre,
+    code {
       background-color: @op-color !important;
     }
-    .hljs, 
-    blockquote{
+    .hljs,
+    blockquote {
       color: @text-color;
     }
     table {
@@ -3939,7 +3945,8 @@
           background-color: var(--table-stripe-color, @table-stripe-color);
         }
       }
-      th, td{
+      th,
+      td {
         border-top: 1px solid var(--border-color, @border-color-base) !important;
       }
     }
