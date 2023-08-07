@@ -4,10 +4,11 @@ import ItemOl from './ol.vue';
 import ItemUl from './ul.vue';
 import ItemP from './p.vue';
 import ItemImg from './img.vue';
-import ItemTable from './table.vue';
+import ItemTable from '@/views/pages/knowledge/common/table.vue';
 import ItemCode from './code.vue';
 import ItemFormtable from './formtable.vue';
 import ItemEditor from './editor.vue';
+import ItemMardown from './markdown.vue';
 export default {
   ItemH1,
   ItemH2,
@@ -18,5 +19,6 @@ export default {
   ItemCode,
   ItemTable,
   ItemFormtable,
-  ItemEditor
+  ItemEditor,
+  ItemMardown
 };

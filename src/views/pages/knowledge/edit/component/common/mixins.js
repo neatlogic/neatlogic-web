@@ -1,5 +1,4 @@
 import editorUtils from '@/views/pages/knowledge/edit/component/common/editor-util.js';
-import { $t } from '@/resources/init.js';
 export default {
   inject: {
     $fn: {
@@ -13,9 +12,9 @@ export default {
     changeFocue: String
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       if (this.uuid == this.changeFocue) {
-        this.$el && this.$el.click();
+        this.$el && this.$el?.click && this.$el.click();
         this.$refs.editorSpan && this.$refs.editorSpan.focus();
         this.$parentTop.changeFocue = '';
       }
@@ -43,15 +42,18 @@ export default {
         toolActiveList: []
       });
     },
-    comFocus(component, last) { //设置元素获取焦点
+    comFocus(component, last) {
+      //设置元素获取焦点
       let $focus = document.querySelector(`${component.handler}[data_id="${component.uuid}"]`);
       $focus.focus();
       if (last) {
-        if (window.getSelection) { //ie11 10 9 ff safari
+        if (window.getSelection) {
+          //ie11 10 9 ff safari
           let range = window.getSelection(); //创建range
           range.selectAllChildren($focus); //range 选择obj下所有子内容
           range.collapseToEnd(); //光标移至最后
-        } else if (document.selection) { //ie10 9 8 7 6 5
+        } else if (document.selection) {
+          //ie10 9 8 7 6 5
           let range = document.selection.createRange(); //创建选择对象
           range.moveToElementText($focus); //range定位到obj
           range.collapse(false); //光标移至最后
@@ -59,12 +61,13 @@ export default {
         }
       }
     },
-    comGetCursor() { //获取光标
+    comGetCursor() {
+      //获取光标
       let sel = null;
       let range = document.createRange();
-      if (window.getSelection) { 
+      if (window.getSelection) {
         sel = window.getSelection();
-      } else if (document.selection) { 
+      } else if (document.selection) {
         sel = document.selection.createRange();
       }
       if (sel && sel.type != 'None' && sel.rangeCount) {
@@ -75,13 +78,14 @@ export default {
       }
       return range;
     },
-    comSetfocus($target, islast) { //设置元素获取焦点
+    comSetfocus($target, islast) {
+      //设置元素获取焦点
       $target = $target || document.querySelector(`[data_id="${this.focusUuid}"]`);
       if ($target) {
         let sel = null;
-        if (window.getSelection) { 
+        if (window.getSelection) {
           sel = window.getSelection();
-        } else if (document.selection) { 
+        } else if (document.selection) {
           sel = document.selection.createRange();
         }
         document.getElementById('rightSider').focus();
@@ -94,17 +98,20 @@ export default {
       }
     },
     complexComHandlerKeydown(e) {
-      if (e.keyCode == '8' || e.keyCode == '46') { //删除操作
+      if (e.keyCode == '8' || e.keyCode == '46') {
+        //删除操作
         this.removeItem();
-      } else if (e.keyCode == '13') { //新增节点
+      } else if (e.keyCode == '13') {
+        //新增节点
         //enter
-        let config = { handler: 'p', uuid: this.$utils.setUuid(), content: ''};
+        let config = { handler: 'p', uuid: this.$utils.setUuid(), content: '' };
         let newEl = editorUtils.createDom(config);
         editorUtils.comInsertAfter(this.$el, newEl);
         editorUtils.comSetfocus(newEl, true);
-      } else if (e.keyCode == '38' || e.keyCode == '40' || e.keyCode == '39' || e.keyCode == '37') { //上下左右
+      } else if (e.keyCode == '38' || e.keyCode == '40' || e.keyCode == '39' || e.keyCode == '37') {
+        //上下左右
         return true;
-      } 
+      }
       e.target.innerHTML = '';
       e.preventDefault();
       e.stopPropagation();
@@ -112,12 +119,5 @@ export default {
     }
   },
   watch: {},
-  computed: {
-    baseLanguageT() {
-      // 解决edit-component组件，使用Vue.extend注册组件，拿不到vue实例的this.$t问题
-      return (value, targetObj = {}) => {
-        return $t(value, targetObj);
-      };
-    }
-  }
+  computed: {}
 };

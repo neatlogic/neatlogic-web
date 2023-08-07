@@ -29,6 +29,7 @@
           :uuid="list.uuid"
           :content="list.content"
           :changeType="list.changeType"
+          mode="read"
         ></div>
         <div v-if="config.fileList && config.fileList.length > 0">
           <div id="item_file" ref="item_file" class="fileContain">

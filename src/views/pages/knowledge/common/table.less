@@ -1,0 +1,150 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@border-color,@resizer-bg-color,@selected-bg-color,@selected-th-bg-color,@border-handle-color,@title-bg-color) {
+  .tssheet-container.resizing {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10+ and Edge */
+    user-select: none; /* Standard syntax */
+  }
+  .editmode {
+    background: radial-gradient(circle, #5a5a5a 0.5px, transparent 0.5px);
+    background-size: 10px 10px;
+  }
+  .corner-icon {
+    position: absolute;
+    top: 0px;
+    right: -5px;
+    z-index: 3;
+  }
+  .corner-bottom-icon {
+    position: absolute;
+    bottom: 0px;
+    right: -2px;
+    z-index: 1;
+  }
+  .color-item {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    border-radius: 2px;
+  }
+  .color-item.selected {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    border-radius: 2px;
+    border: 2px solid @border-handle-color;
+  }
+  .tssheet-container {
+    position: relative;
+    .horizontal-resizer {
+      position: absolute;
+      background-color: @resizer-bg-color;
+      width: 1px;
+      height: 100%;
+      z-index: 97;
+    }
+    .vertical-resizer {
+      position: absolute;
+      background-color: @resizer-bg-color;
+      height: 1px;
+      width: 100%;
+      z-index: 97;
+    }
+    .horizontal-resize-handler {
+      position: absolute;
+      background-color: @resizer-bg-color;
+      top: 0px;
+      right: 0px;
+      width: 8px;
+      height: 100%;
+      z-index: 97;
+      opacity: 0;
+      cursor: ew-resize;
+    }
+    .horizontal-resize-handler:hover {
+      opacity: 0.6;
+    }
+    .vertical-resize-handler {
+      position: absolute;
+      background-color: @resizer-bg-color;
+      bottom: 0px;
+      left: 0px;
+      height: 8px;
+      width: 100%;
+      z-index: 97;
+      opacity: 0;
+      cursor: ns-resize;
+    }
+    .vertical-resize-handler:hover {
+      opacity: 0.6;
+    }
+    .tssheet-context-menu {
+      position: absolute;
+    }
+  }
+  .tssheet-main-shadow-head {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+  }
+  .tssheet-main-shadow-left {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 98;
+  }
+  .tssheet-main-shadow-left,
+  .tssheet-main-shadow-head,
+  .tssheet-main {
+    border-collapse: collapse;
+    th {
+      background-color: @title-bg-color;
+    }
+    th,
+    td {
+      border: 1px solid @border-color;
+      position: relative;
+      .content-inputer {
+        border: 0px;
+        background: transparent;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        resize: none;
+        overflow: hidden; // 隐藏textarea的滚动条
+      }
+    }
+    th.selected {
+      background-color: @selected-th-bg-color;
+    }
+    td.selected {
+      background-color: @selected-bg-color;
+    }
+    td.handler {
+      border: 2px solid @border-handle-color;
+    }
+    .thead-th {
+      position: relative;
+      .resize-handler {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 8px;
+        height: 100%;
+        background-color: @resizer-bg-color;
+        opacity: 0;
+      }
+    }
+  }
+}
+
+html {
+  .theme(@default-dividing, @default-info-color, @default-info-bg-color, @default-primary-bg-color, @default-primary-color, @default-th-bg-color);
+
+  &.theme-dark {
+    .theme(@dark-dividing, @dark-info-color, @dark-info-bg-color, @dark-primary-bg-color, @dark-primary-color, @dark-th-bg-color);
+  }
+}
