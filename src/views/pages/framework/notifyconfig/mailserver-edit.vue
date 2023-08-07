@@ -1,24 +1,20 @@
 <template>
   <div class="mailserver-edit">
-    <TsContain>
-      <template v-slot:topRight>
-        <div>
-          <Button
-            type="primary"
-            ghost
-            class="mr-sm"
-            @click="test()"
-          >{{ $t('term.framework.emailtest') }}</Button>
-          <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-        </div>
-      </template>
-      <div slot="content" class="content border-color">
-        <div class="form">
-          <TsForm ref="form" :itemList="formData"></TsForm>
-          <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-        </div>
+    <div class="text-right">
+      <Button
+        type="primary"
+        ghost
+        class="mr-sm"
+        @click="test()"
+      >{{ $t('term.framework.emailtest') }}</Button>
+      <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
+    </div>
+    <div slot="content" class="content border-color">
+      <div class="form">
+        <TsForm ref="form" :itemList="formData"></TsForm>
+        <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
       </div>
-    </TsContain>
+    </div>
     <TsDialog
       v-if="isShow"
       v-bind="setting"

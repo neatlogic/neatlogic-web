@@ -1,24 +1,20 @@
 <template>
   <div class="wechat-edit">
-    <TsContain>
-      <template v-slot:topRight>
-        <div>
-          <Button
-            type="primary"
-            ghost
-            class="mr-sm"
-            @click="test()"
-          >{{ $t('page.test') }}</Button>
-          <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-        </div>
-      </template>
-      <div slot="content">
-        <div class="form">
-          <TsForm ref="form" :itemList="formData"></TsForm>
-          <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-        </div>
+    <div class="text-right">
+      <Button
+        type="primary"
+        ghost
+        class="mr-sm"
+        @click="test()"
+      >{{ $t('page.test') }}</Button>
+      <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
+    </div>
+    <div slot="content">
+      <div class="form">
+        <TsForm ref="form" :itemList="formData"></TsForm>
+        <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
       </div>
-    </TsContain>
+    </div>
     <TsDialog
       :isShow="isShow"
       :title="$t('page.test')"
@@ -71,13 +67,13 @@ export default {
       testForm: [
         {
           type: 'text',
-          name: 'userId',
-          label: 'userId',
+          name: 'toUser',
+          label: 'toUser',
           validateList: ['required']
         }
       ],
       testVal: {
-        userId: ''
+        toUser: ''
       },
       disabledTest: false
     };
@@ -137,7 +133,7 @@ export default {
     close() {
       this.isShow = false;
       this.disabledTest = false;
-      this.$set(this.testVal, 'userId', '');
+      this.$set(this.testVal, 'toUser', '');
     }
   },
   filter: {},
