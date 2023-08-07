@@ -77,6 +77,7 @@ export default {
       let fr = null;
       if (this.issueData && this.issueData.timecost) {
         fr = Math.min((this.timecostSum / this.issueData.timecost) * 100, 100);
+        fr = parseFloat(fr.toFixed(2));
       }
       return fr;
     }

@@ -17,6 +17,7 @@ export default {
   },
   data() {
     return {
+      localData: this.$utils.deepClone(this.data),
       plots: []
     };
   },
@@ -76,8 +77,8 @@ export default {
   computed: {
     finalData() {
       const dataList = [];
-      if (this.data && this.data.length > 0) {
-        this.data.forEach(d => {
+      if (this.localData && this.localData.length > 0) {
+        this.localData.forEach(d => {
           let existsData = dataList.find(dd => dd.appType === d.appType);
           if (!existsData) {
             existsData = d;
