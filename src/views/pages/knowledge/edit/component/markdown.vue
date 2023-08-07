@@ -14,16 +14,54 @@
     <div ref="editorEditor" class="editor-editor">
       <div class="bg-op">
         <div class="tool bg-op shadow">
-          <span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span>
-          <span
-            v-for="(item, index) in toolbarsList"
-            :key="index"
-            :class="item.icon"
-            :title="item.title"
-            @click.stop="handleClick(item.value)"
-          ></span>
+          <div class="action-group" style="display: flex;">
+            <span class="action-item tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span>
+            <template
+              v-for="(item, index) in toolbarsList"
+            >
+              <div v-if="item.value == 'table'" :key="index" class="action-item">
+                <Poptip
+                  trigger="hover"
+                  word-wrap
+                  width="250"
+                >
+                  <span :class="item.icon" :title="item.title"></span>
+                  <div slot="content">
+                    <div class="tooltip-title">
+                      <div v-if="tableRow">{{ tableRow }}x{{ tableCol }}</div>
+                    </div>
+                    <div class="table-grid">
+                      <div
+                        v-for="row in num"
+                        :key="row"
+                        class="row"
+                        @click="selectedTable"
+                      >
+                        <div
+                          v-for="col in num"
+                          :key="col"
+                          class="cell bg-tip-grey"
+                          :class="{'bg-info-grey':tableRow && row <= tableRow && col <= tableCol }"
+                          @mouseover="drag(row, col)"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </Poptip>
+              </div>
+              <span
+                v-else
+                :key="index"
+                class="action-item"
+                :class="item.icon"
+                :title="item.title"
+                @click.stop="handleClick(item.value)"
+              >
+              </span>
+            </template>
+          </div>
         </div>
-        <mavon-editor v-model="value" v-bind="markdownOption"></mavon-editor>
+        <mavon-editor v-model="value" class="mavon-markdown-editor-container" v-bind="markdownOption"></mavon-editor>
       </div>
     </div>
     <span
@@ -53,7 +91,7 @@ export default {
   },
   data() {
     return {
-      value: '',
+      value: this.content,
       uploadConfig: {
         //上传图片配置
         actionUrl: BASEURLPREFIX + '/api/binary/file/upload', //导入地址
@@ -80,6 +118,11 @@ export default {
           value: '*斜体*'
         },
         {
+          icon: 'tsfont-bind',
+          title: '链接',
+          value: '[输入链接说明](http://)'
+        },
+        {
           icon: 'tsfont-text-delete',
           title: '中划线',
           value: '~~中划线~~'
@@ -96,13 +139,13 @@ export default {
         },
         {
           icon: 'tsfont-code',
-          title: '代码库',
+          title: '代码块',
           value: '```js\n\n```'
         },
         {
           icon: 'tsfont-chart-table',
           title: '表格',
-          value: ''
+          value: 'table'
         },
         {
           icon: 'tsfont-addimg',
@@ -114,7 +157,10 @@ export default {
           title: '预览',
           value: 'previewMd'
         }
-      ]
+      ],
+      tableRow: 0,
+      tableCol: 0,
+      num: 10
     };
   },
   beforeCreate() {},
@@ -129,35 +175,12 @@ export default {
   destroyed() {},
   methods: {
     getContent() {
-      // 使用正则表达式分割数据
-      const lines = this.value.split('\n');
-      const contentArray = [];
-
-      let tempValue = '';
-      lines.forEach((line) => {
-        if (line.startsWith('```')) {
-          if (tempValue) {
-            contentArray.push(tempValue.trim());
-            tempValue = '';
-          }
-          tempValue += line;
-        } else if (line.endsWith('```')) {
-          tempValue += '\n' + line;
-          if (tempValue) {
-            contentArray.push(tempValue.trim());
-            tempValue = '';
-          }
-        } else {
-          if (tempValue) {
-            tempValue += '\n' + line;
-          } else {
-            contentArray.push(line);
-          }
-        }
-      });
-      return {content: contentArray};
+      return {content: this.value};
     },
     handleClick(value) {
+      if (value == 'table') {
+        return;
+      }
       if (value == 'previewMd') {
         this.markdownOption.defaultOpen = this.markdownOption.defaultOpen == 'edit' ? 'preview' : 'edit';
       } else if (value == 'uploadImg') {
@@ -168,25 +191,53 @@ export default {
     },
     uploadSuccess(data, file, fileList) {
       this.value = `${this.value}\n![${data.Return.name}](${data.Return.url})`;
+    },
+    drag(row, col) {
+      this.$set(this, 'tableRow', row);
+      this.$set(this, 'tableCol', col);
+    },
+    selectedTable() {
+      // 处理几行几列
+      const rows = this.tableRow;
+      const columns = this.tableCol;
+
+      let newStr = '';
+
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+          if (j === 0) {
+            newStr += '|   ';
+          } else if (j === columns - 1) {
+            newStr += '|   |\n';
+          } else {
+            newStr += '|-';
+          }
+        }
+
+        if (i < rows - 1) {
+          for (let k = 0; k < columns; k++) {
+            if (k === 0) {
+              newStr += '|-';
+            } else if (k === columns - 1) {
+              newStr += '|-|\n';
+            } else {
+              newStr += '|-';
+            }
+          }
+        }
+      }
+      this.value = `${this.value}\n${newStr}`;
     }
   },
   computed: {},
-  watch: {
-    content: {
-      handler(val) {
-        try {
-          let value = JSON.parse(val);
-          const str = value?.map(item => item + '\n').join('');
-          this.value = str;
-        } catch (error) {
-          this.value = '';
-        }
-      }, 
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
+<style>
+.mavon-markdown-editor-container .v-note-show {
+  overflow-y: hidden !important;
+}
+</style>
 <style lang="less" scoped>
  section {
   position: relative;
@@ -207,19 +258,6 @@ export default {
       border-radius: 2px;
       padding: 5px;
       display: none;
-      &>span{
-          padding: 7px 8px;
-          cursor: pointer;
-      }
-    }
-    .top-title{
-      border-bottom: 0 !important;
-      padding: 0px 4px;
-      line-height: 32px;
-      height: 32px;
-      /deep/.TsFormSelect .ivu-input{
-        text-align: right;
-      }
     }
   }
   .editorSpan{
@@ -230,6 +268,23 @@ export default {
     height: 24px;
     outline: none;
     z-index: 3;
+  }
+  .tooltip-title {
+    display: flex;
+    justify-content: space-between;
+  }
+  .table-grid {
+    display: grid;
+    gap: 2px;
+    .row {
+      display: grid;
+      grid-template-columns: repeat(10,auto);
+      gap: 2px;
+    }
+    .cell {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 </style>

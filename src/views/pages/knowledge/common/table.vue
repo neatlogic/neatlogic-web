@@ -334,20 +334,11 @@
 </template>
 <script>
 import editorMixins from '@/views/pages/knowledge/edit/component/common/mixins.js';
-import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
   components: {},
-  mixins: [conditionMixin, editorMixins],
+  mixins: [editorMixins],
   props: {
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    readonly: {
-      type: Boolean,
-      default: false
-    },
     init: {
       type: Array,
       default: () => {
@@ -427,15 +418,21 @@ export default {
   destroyed() {},
   methods: {
     adjustCellHeight(event, cell) {
-      // 根据内容调整单元格的高度
+      /**
+       * 根据内容的高度设置单元格的高度
+       * 没有高度时，使用默认值，
+       * 原有当前行的高度比现在当前行高度高，使用原有，否则使用当前高度值
+       *  */
+      const targetTextarea = event.target;
+      const lefterList = this.tableConfig.lefterList;
+
       this.$nextTick(() => {
-        const textarea = event.target;
-        console.log('textarea.scrollHeight', textarea.scrollHeight);
-        this.tableConfig.lefterList.forEach((item, tIndex) => {
-          if (tIndex == cell.index) {
-            item.height = textarea.scrollHeight; // 撑开内容高度
-          }
-        });
+        const cellIndex = cell.index;
+        const newHeight = targetTextarea.scrollHeight < 45 ? 45 : Math.max(lefterList[cellIndex].height, targetTextarea.scrollHeight);
+        const targetItem = lefterList.find((item, lefterIndex) => lefterIndex == cellIndex);
+        if (targetItem) {
+          targetItem.height = newHeight;
+        }
       });
     },
     getContent() {
@@ -646,8 +643,8 @@ export default {
     initTable() {
       //使用init初始化表格
       if (this.init && this.init.length == 2) {
-        const row = this.init[0];
-        const col = this.init[1];
+        const row = this.config?.row || this.init[0];
+        const col = this.config?.col || this.init[1];
         this.$set(this.tableConfig, 'headerList', []);
         this.$set(this.tableConfig, 'lefterList', []);
         this.$set(this.tableConfig, 'tableList', []);
@@ -672,7 +669,6 @@ export default {
       const container = this.$refs.tableContainer;
       if (container) {
         const rect = container.getBoundingClientRect();
-        // this.containerHeight = '300px'; //20是根据页面调出来的高度
         this.initContainerWidth(rect.width);
       }
     },
@@ -797,33 +793,18 @@ export default {
             for (let key in this.tableConfig.reaction) {
               this.tableConfig.reaction[key].forEach(reaction => {
                 if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
-                  const reactionResult = this.executeReaction(reaction, newVal, oldVal);
                   if (key === 'hiderow') {
-                    if (reactionResult) {
-                      reaction.rows.forEach(row => {
-                        this.hideRow(row);
-                      });
-                    } else {
-                      reaction.rows.forEach(row => {
-                        this.displayRow(row);
-                      });
-                    }
+                    reaction.rows.forEach(row => {
+                      this.displayRow(row);
+                    });
                   } else if (key === 'displayrow') {
-                    if (reactionResult) {
-                      reaction.rows.forEach(row => {
-                        this.displayRow(row);
-                      });
-                    } else {
-                      reaction.rows.forEach(row => {
-                        this.hideRow(row);
-                      });
-                    }
+                    reaction.rows.forEach(row => {
+                      this.hideRow(row);
+                    });
                   }
                 }
               });
             }
-            // 根据隐藏行，获取隐藏组件
-            this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
           },
           { deep: true, immediate: true }
         );

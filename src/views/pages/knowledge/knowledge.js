@@ -9,7 +9,7 @@ import { $t } from '@/resources/init.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
-Vue.use(mavonEditor);
+
 import VueI18n from 'vue-i18n';
 //公共的全局组件、样式等
 import '@/resources/base.js';
@@ -18,6 +18,7 @@ import { initRouter, initI18n } from '@/resources/init.js';
 Vue.use(VueRouter);
 Vue.use(VueI18n);
 Vue.use(CompareUtil); //必须要在use router之后执行
+Vue.use(mavonEditor);
 
 import { config } from './config.js';
 MODULEID = config.module;

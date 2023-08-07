@@ -52,7 +52,6 @@
             :uuid="list.uuid"
             :content="list.content"
             mode="read"
-            :readonly="true"
           ></div>
         </div>
         <div v-if="config.fileList && config.fileList.length > 0">

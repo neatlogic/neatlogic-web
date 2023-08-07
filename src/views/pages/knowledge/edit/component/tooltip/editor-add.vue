@@ -104,7 +104,7 @@ export default {
       },
       {
         type: 'mardown',
-        title: this.$t('dialog.title.addtarget', { target: 'markdown' }),
+        title: 'markdown',
         icon: 'tsfont-memcached'
       }],
       range: null,
