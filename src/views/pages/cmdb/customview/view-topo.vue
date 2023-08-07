@@ -193,7 +193,7 @@ export default {
       param.layout = this.currentLayout;
       this.$api.cmdb.customview.getCustomViewCiEntityTopoData(param).then((res) => {
         if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
-          const nodesString = res.Return.dot;
+          const nodesString = this.$utils.handleTopoImagePath(res.Return.dot);
           this.loadImage(nodesString);
           this.graph.graphviz
             .transition()
