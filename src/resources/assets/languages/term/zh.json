@@ -1153,7 +1153,10 @@
     "sharefile": "共享文档",
     "waitto": "待",
     "forward": "转",
-    "norelateknowledge": "无相关知识"
+    "norelateknowledge": "无相关知识",
+    "strikethrough": "中划线",
+    "uploadimages": "上传图片",
+    "enterlinkdescription": "输入链接说明"
   },
   "report": {
     "report": "报表",

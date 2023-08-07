@@ -96,10 +96,16 @@ export default {
         type: 'code',
         title: this.$t('page.code'),
         icon: 'tsfont-code'
-      }, {
+      },
+      {
         type: 'table',
         title: this.$t('page.table'),
         icon: 'tsfont-chart-table'
+      },
+      {
+        type: 'mardown',
+        title: 'markdown',
+        icon: 'tsfont-memcached'
       }],
       range: null,
       showDialog: true,
