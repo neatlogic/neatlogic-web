@@ -18,6 +18,7 @@
                 val => {
                   isReady = false;
                   isShowGantt = val;
+                  $addHistoryData('isShowGantt', isShowGantt);
                   $nextTick(() => {
                     isReady = true;
                   });
@@ -100,6 +101,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData && historyData['isShowGantt']) {
+        this.isShowGantt = historyData['isShowGantt'];
+      }
+    },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
     },

@@ -48,7 +48,7 @@ export default class Popup {
       // set data
       this.title.innerHTML = options.title;
       this.subtitle.innerHTML = options.subtitle;
-      this.parent.style.width = this.parent.clientWidth + 'px';
+      //this.parent.style.width = this.parent.clientWidth + 'px';
     }
     // set position
     let position_meta;

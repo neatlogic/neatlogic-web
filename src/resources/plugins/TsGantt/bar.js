@@ -96,6 +96,7 @@ export default class Bar {
       rx: this.corner_radius,
       ry: this.corner_radius,
       class: 'bar',
+      id: 'bar_' + this.task.id,
       append_to: this.bar_group
     });
 
@@ -162,7 +163,7 @@ export default class Bar {
       append_to: this.handle_group
     });
 
-    if (this.task.progress && this.task.progress < 100) {
+    if (this.task.progress && this.task.progress < 100 && this.gantt.options.need_progress_handler) {
       this.$handle_progress = createSVG('polygon', {
         points: this.get_progress_polygon_points().join(','),
         class: 'handle progress',
@@ -207,7 +208,8 @@ export default class Bar {
     if (this.gantt.bar_being_dragged) return;
 
     const start_date = date_utils.format(this.task._start, 'MMM D', this.gantt.options.language);
-    const end_date = date_utils.format(date_utils.add(this.task._end, -1, 'second'), 'MMM D', this.gantt.options.language);
+    //const end_date = date_utils.format(date_utils.add(this.task._end, -1, 'second'), 'MMM D', this.gantt.options.language);
+    const end_date = date_utils.format(this.task._end, 'MMM D', this.gantt.options.language);
     const subtitle = start_date + ' - ' + end_date;
 
     this.gantt.show_popup({

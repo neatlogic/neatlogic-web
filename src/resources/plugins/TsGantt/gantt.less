@@ -10,6 +10,12 @@
   @th-bg-color,
   @success-color) {
   .gantt {
+    .locater-group {
+      cursor: pointer;
+    }
+    .locater {
+      fill: @info-color;
+    }
     .grid {
       cursor: grab;
     }
@@ -34,7 +40,7 @@
       stroke-width: 0.2;
 
       &.thick {
-        stroke-width: 0.4;
+        stroke-width: 1.5;
       }
     }
 
@@ -77,7 +83,7 @@
     }
 
     .bar-label {
-      fill: @text-color;
+      fill: #fff;
       dominant-baseline: central;
       text-anchor: middle;
       font-size: 12px;

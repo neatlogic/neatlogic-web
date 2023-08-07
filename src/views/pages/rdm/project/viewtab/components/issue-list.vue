@@ -457,7 +457,8 @@ export default {
       dragging: false, //甘特图是否拖拽中
       actionRight: 0,
       ganttViewMode: 'Day',
-      isIssueTimeShow: false
+      isIssueTimeShow: false,
+      isGanttFullscreen: false
     };
   },
   beforeCreate() {},
@@ -844,6 +845,7 @@ export default {
     initGantt() {
       if (!this.gantt) {
         this.gantt = new Gantt('#gantt', this.ganttTaskList, {
+          need_progress_handler: false,
           header_height: 50,
           column_width: 30,
           step: 24,
@@ -870,14 +872,17 @@ export default {
           }
         });
       } else {
+        console.log('refresh');
         this.gantt.refresh(this.ganttTaskList);
       }
       this.initTableSize();
     },
     startResize(e) {
-      this.resizing = true;
-      this.startX = e.clientX;
-      this.oldLeft = this.dividerLeft;
+      if (!this.isGanttFullscreen) {
+        this.resizing = true;
+        this.startX = e.clientX;
+        this.oldLeft = this.dividerLeft;
+      }
     },
     doResize(e) {
       if (!this.resizing) return;
@@ -931,15 +936,24 @@ export default {
       }
       return 0;
     },
-    ganttDateChange(...arg) {
-      console.log(JSON.stringify(...arg, null, 2));
+    ganttDateChange(task) {
+      if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
+        const issue = this.issueData.tbodyList.find(d => d.id === parseInt(task.id));
+        if (issue) {
+          this.$set(issue, 'startDate', this.$utils.getDateByFormat(task._start, 'yyyy-MM-dd'));
+          this.$set(issue, 'endDate', this.$utils.getDateByFormat(task._end, 'yyyy-MM-dd'));
+          this.$api.rdm.issue.saveIssue(issue).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.savesuccess'));
+            }
+          });
+        }
+      }
     },
-    ganttProgressChange(...arg) {
-      console.log(JSON.stringify(...arg, null, 2));
-    },
+    ganttProgressChange(task) {},
     ganttTaskAdd(task) {
       this.isIssueTimeShow = true;
-      const currentIssueId = parseInt(task.id.replace('#', ''));
+      const currentIssueId = parseInt(task.id);
       this.currentIssue = this.issueData.tbodyList.find(d => d.id === currentIssueId);
       console.log(this.currentIssue);
     },
@@ -1003,7 +1017,7 @@ export default {
           }
 
           tasks.push({
-            id: '#' + t.id,
+            id: t.id.toString(),
             name: t.name,
             start: t.startDate || t.createDate,
             end: t.endDate,
@@ -1015,6 +1029,16 @@ export default {
     }
   },
   watch: {
+    isGanttFullscreen(val) {
+      const width = this.$refs['tableMain'].offsetWidth;
+      let left = this.$refs['tableMain'].getBoundingClientRect().left;
+      if (val === true) {
+        this.$refs['divider'].style.left = '0px';
+      } else {
+        this.$refs['divider'].style.left = '200px';
+      }
+      this.initTableSize();
+    },
     ganttViewMode(val) {
       if (this.gantt) {
         this.gantt.change_view_mode(val);
