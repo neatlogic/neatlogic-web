@@ -246,7 +246,6 @@ export default class Gantt {
 
     this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
     this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
-    console.log('b', this.gantt_start, this.gantt_end);
     // add date padding on both sides
     if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
       this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
@@ -261,7 +260,6 @@ export default class Gantt {
       this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
       this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
     }
-    console.log('a', this.gantt_start, this.gantt_end);
   }
 
   setup_date_values() {

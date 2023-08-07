@@ -16,11 +16,13 @@
         "
       ></TsFormInput>
     </div>
-    <div v-if="timecostSum">
+    <div v-if="timecostSum" class="keep">
       <div class="text-grey">{{ $t('term.rdm.usedtimecost') }}</div>
       <div>{{ timecostSum }}</div>
+      <div v-if="timecostSum - timecost > 0" class="text-grey">{{ $t('term.rdm.exceedtimecost') }}</div>
+      <div v-if="timecostSum - timecost > 0" class="text-error">{{ timecostSum - timecost }}</div>
       <div class="text-grey">{{ $t('page.completrate') }}</div>
-      <div><Progress :percent="finishRate" status="active" /></div>
+      <div v-if="finishRate != null"><Progress :percent="finishRate" status="active" /></div>
     </div>
   </div>
 </template>
@@ -74,7 +76,7 @@ export default {
     finishRate() {
       let fr = null;
       if (this.issueData && this.issueData.timecost) {
-        fr = Math.min(this.timecostSum / this.issueData.timecost * 100, 100);
+        fr = Math.min((this.timecostSum / this.issueData.timecost) * 100, 100);
       }
       return fr;
     }
@@ -82,4 +84,17 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@default-bg) {
+  .keep {
+    background: @default-bg !important;
+  }
+}
+html {
+  .theme(@default-background,);
+  &.theme-dark {
+    .theme(@dark-background,);
+  }
+}
+</style>

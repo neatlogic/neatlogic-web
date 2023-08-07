@@ -2170,7 +2170,10 @@
     "costtime": "Labor hours spent",
     "usedtimecost": "Labor hours used",
     "editstartenddate": "Edit Schedule Time",
-    "plantimecost": "Estimated working hours"
+    "plantimecost": "Estimated working hours",
+    "exceedtimecost": "Exceeding work hours",
+    "used": "Used",
+    "exceed": "go beyond"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

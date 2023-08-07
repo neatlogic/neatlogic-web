@@ -2167,7 +2167,10 @@
     "costtime": "花费工时",
     "usedtimecost": "已用工时",
     "editstartenddate": "编辑计划时间",
-    "plantimecost": "预估工时"
+    "plantimecost": "预估工时",
+    "exceedtimecost": "超出工时",
+    "used": "已用",
+    "exceed": "超出"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
