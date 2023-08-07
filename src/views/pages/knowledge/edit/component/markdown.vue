@@ -109,52 +109,52 @@ export default {
       toolbarsList: [
         {
           icon: 'tsfont-bold',
-          title: '粗体',
-          value: '**粗体**'
+          title: this.$t('term.report.fontweight.bold'),
+          value: `**${this.$t('term.report.fontweight.bold')}**`
         },
         {
           icon: 'tsfont-italic',
-          title: '倾斜',
-          value: '*斜体*'
+          title: this.$t('message.plugin.italic'),
+          value: `*${this.$t('message.plugin.italic')}*`
         },
         {
           icon: 'tsfont-bind',
-          title: '链接',
-          value: '[输入链接说明](http://)'
+          title: this.$t('page.link'),
+          value: `[${this.$t('term.knowledge.enterlinkdescription')}](http://)`
         },
         {
           icon: 'tsfont-text-delete',
-          title: '中划线',
-          value: '~~中划线~~'
+          title: this.$t('term.knowledge.strikethrough'),
+          value: `~~${this.$t('term.knowledge.strikethrough')}~~`
         },
         {
           icon: 'tsfont-orderlist',
-          title: '有序列表',
-          value: '1. 有序列表 '
+          title: this.$t('page.orderedlist'),
+          value: `1. ${this.$t('page.orderedlist')} `
         },
         {
           icon: 'tsfont-list',
-          title: '无序列表',
-          value: '- 无序列表'
+          title: this.$t('page.unorderedlist'),
+          value: `- ${this.$t('page.unorderedlist')}`
         },
         {
           icon: 'tsfont-code',
-          title: '代码块',
+          title: this.$t('page.code'),
           value: '```js\n\n```'
         },
         {
           icon: 'tsfont-chart-table',
-          title: '表格',
+          title: this.$t('page.table'),
           value: 'table'
         },
         {
           icon: 'tsfont-addimg',
-          title: '上传图片',
+          title: this.$t('term.knowledge.uploadimages'),
           value: 'uploadImg'
         },
         {
           icon: 'tsfont-eye',
-          title: '预览',
+          title: this.$t('page.preview'),
           value: 'previewMd'
         }
       ],
@@ -178,9 +178,6 @@ export default {
       return {content: this.value};
     },
     handleClick(value) {
-      if (value == 'table') {
-        return;
-      }
       if (value == 'previewMd') {
         this.markdownOption.defaultOpen = this.markdownOption.defaultOpen == 'edit' ? 'preview' : 'edit';
       } else if (value == 'uploadImg') {
@@ -190,7 +187,11 @@ export default {
       }
     },
     uploadSuccess(data, file, fileList) {
-      this.value = `${this.value}\n![${data.Return.name}](${data.Return.url})`;
+      const { name = '', url = '' } = data.Return || {};
+      if (name && url) {
+        const imageMarkdown = `![${name}](${url})`;
+        this.value = `${this.value}\n${imageMarkdown}`;
+      }
     },
     drag(row, col) {
       this.$set(this, 'tableRow', row);

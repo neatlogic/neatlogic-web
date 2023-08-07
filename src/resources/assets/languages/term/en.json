@@ -1154,7 +1154,10 @@
     "sharefile": "Shared Documents",
     "waitto": "wait to",
     "forward": "forward",
-    "norelateknowledge": "No relevant knowledge"
+    "norelateknowledge": "No relevant knowledge",
+    "strikethrough": "strikethrough ",
+    "uploadimages": "Upload images",
+    "enterlinkdescription": "Enter link description"
   },
   "report": {
     "report": "Report",
