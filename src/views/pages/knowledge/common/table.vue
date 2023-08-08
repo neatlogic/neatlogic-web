@@ -1609,7 +1609,6 @@ export default {
         const tableList = [];
         this.cellList.forEach(cell => {
           if (cell.row == rowindex) {
-            // tableList.push(cell);
             if (!this.checkCellIsInSpan(cell)) {
               tableList.push(cell);
             }
