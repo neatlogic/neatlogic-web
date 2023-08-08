@@ -1,7 +1,9 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close()" @on-ok="save()">
     <template v-slot>
-      <TsForm ref="form" :item-list="formConfig"></TsForm>
+      <div>
+        <TsForm ref="form" :item-list="formConfig"></TsForm>
+      </div>
     </template>
   </TsDialog>
 </template>
@@ -31,6 +33,8 @@ export default {
         {
           type: 'number',
           name: 'timecost',
+          min: 0,
+          step: 1,
           label: this.$t('term.rdm.plantimecost'),
           validateList: ['required'],
           onChange: val => {

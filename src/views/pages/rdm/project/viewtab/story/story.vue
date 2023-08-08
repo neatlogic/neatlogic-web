@@ -34,7 +34,11 @@
             <Divider type="vertical" />
             <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">{{ $t('term.rdm.levelview') }}</span>
           </span>
-          <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.request') }}</span>
+          <span class="action-item" @click="addIssue()">
+            <Button type="success">
+              <span class="tsfont-plus">{{ $t('term.rdm.request') }}</span>
+            </Button>
+          </span>
         </div>
       </template>
       <template v-slot:sider>

@@ -11,7 +11,11 @@
             <Divider type="vertical" />
             <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">{{ $t('term.rdm.levelview') }}</span>
           </span>
-          <span class="action-item tsfont-plus" @click="addIteration()">{{ $t('term.rdm.iteration') }}</span>
+          <span class="action-item">
+            <Button type="success" @click="addIteration()">
+              <span class="tsfont-plus">{{ $t('term.rdm.iteration') }}</span>
+            </Button>
+          </span>
         </div>
       </template>
       <template v-slot:sider>
@@ -61,8 +65,9 @@
                     :app="app"
                     :projectId="projectId"
                     :canAppend="true"
-                    :mode="displayMode"
+                    :canSearch="true"
                     :canAction="true"
+                    :mode="displayMode"
                     :iteration="selectedIteration.id"
                     :isShowEmptyTable="true"
                   ></IssueList>
@@ -74,11 +79,7 @@
         </div>
       </template>
     </TsContain>
-    <EditIteration
-      v-if="isEditIterationShow"
-      :app="appData"
-      @close="closeEditIteration"
-    ></EditIteration>
+    <EditIteration v-if="isEditIterationShow" :app="appData" @close="closeEditIteration"></EditIteration>
   </div>
 </template>
 <script>

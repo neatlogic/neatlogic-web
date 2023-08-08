@@ -6,10 +6,34 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
+          <span class="action-item">
+            <TsFormSwitch
+              :value="isShowGantt"
+              :showStatus="true"
+              :trueValue="true"
+              :falseValue="false"
+              :trueText="$t('term.rdm.gantt')"
+              :falseText="$t('term.rdm.gantt')"
+              @on-change="
+                val => {
+                  isReady = false;
+                  isShowGantt = val;
+                  $addHistoryData('isShowGantt', isShowGantt);
+                  $nextTick(() => {
+                    isReady = true;
+                  });
+                }
+              "
+            ></TsFormSwitch>
+          </span>
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.bug') }}</span>
+          <span class="action-item" @click="addIssue()">
+            <Button type="success">
+              <span class="tsfont-plus">{{ $t('term.rdm.bug') }}</span>
+            </Button>
+          </span>
         </div>
       </template>
       <template v-slot:content>
@@ -18,6 +42,7 @@
           ref="issueList"
           :projectId="projectId"
           :app="appData"
+          :isShowGantt="isShowGantt"
           :canSearch="true"
           :canAction="true"
           :isShowEmptyTable="true"
@@ -39,6 +64,7 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
@@ -54,7 +80,8 @@ export default {
       currentIssueId: null,
       isEditIssueShow: false,
       isAttrSettingShow: false,
-      isReady: true//刷新issue-list组件
+      isReady: true, //刷新issue-list组件
+      isShowGantt: false
     };
   },
   beforeCreate() {},
