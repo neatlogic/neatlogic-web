@@ -67,10 +67,10 @@ export default {
         {
           type: 'radio',
           name: 'sslEnable',
-          label: this.$t('使用SSL'),
+          label: this.$t('term.framework.smptsslenable'),
           value: '',
           defaultValue: 'false',
-          dataList: [{ value: 'true', text: '是'}, { value: 'false', text: '否'}],
+          dataList: [{ value: 'true', text: this.$t('page.yes')}, { value: 'false', text: this.$t('page.no')}],
           validateList: ['required']
         },
         {

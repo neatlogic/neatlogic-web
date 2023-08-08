@@ -38,11 +38,11 @@ export default {
       tabList: [
         {
           value: 'mail',
-          text: '邮件'
+          text: this.$t('page.mail')
         },
         {
           value: 'wechat',
-          text: '企业微信'
+          text: this.$t('page.wechat')
         }
       ]
     };
@@ -71,7 +71,6 @@ export default {
     width: 100%;
     height: 56px;
     line-height: 54px;
-    // border-bottom: 1px solid;
     li {
       display: inline-block;
       text-align: center;

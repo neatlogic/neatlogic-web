@@ -407,7 +407,7 @@ export default [
     name: 'notifyconfig-manage',
     component: notifyConfigManage,
     meta: {
-      title: '通知配置管理',
+      title: $t('router.framework.notifyconfigmanage'),
       ismenu: true,
       icon: 'tsfont-mail-s',
       authority: 'NOTIFY_CONFIG_MODIFY',

@@ -130,6 +130,7 @@
     "subscriptionsetting": "Subscribe",
     "noticemanage": "Notice",
     "mailserveredit": "Mail Server",
+    "notifyconfigmanage": "Notification configuration management",
     "notifytacticsmanage": "Notification Tactics",
     "notifytacticsedit": "Notify Tactics Edit",
     "mqmanage": "Message Queue",

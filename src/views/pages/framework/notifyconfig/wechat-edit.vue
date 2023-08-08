@@ -43,7 +43,7 @@ export default {
           name: 'corpId',
           value: null,
           defaultValue: null,
-          label: '企业ID',
+          label: this.$t('term.framework.corpid'),
           validateList: ['required']
         },
         {
@@ -51,7 +51,7 @@ export default {
           name: 'corpSecret',
           value: null,
           defaultValue: null,
-          label: '企业密钥',
+          label: this.$t('term.framework.corpsecret'),
           validateList: ['required']
         },
         {
@@ -59,7 +59,7 @@ export default {
           name: 'agentId',
           value: null,
           defaultValue: null,
-          label: '代理ID',
+          label: this.$t('term.framework.agentid'),
           validateList: ['required']
         }
       ],
@@ -69,6 +69,7 @@ export default {
           type: 'text',
           name: 'toUser',
           label: 'toUser',
+          desc: this.$t('message.framework.editwechattouser'),
           validateList: ['required']
         }
       ],

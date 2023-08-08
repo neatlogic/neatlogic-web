@@ -1104,7 +1104,11 @@
     "syncsceneattr": "Synchronize default scene attributes",
     "matrix": {
       "isoverride": "The same Matrix of ones already exists in the current environment. Do you want to overwrite it?"
-    }
+    },
+    "corpid": "Enterprise ID",
+    "corpsecret": "Applied credential key",
+    "agentid": "Enterprise Application ID",
+    "smptsslenable": "Using SSL"
   },
   "knowledge": {
     "document": "Document",
