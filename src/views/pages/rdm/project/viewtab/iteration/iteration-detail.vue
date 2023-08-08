@@ -105,7 +105,7 @@ export default {
       iterationData: {},
       isReady: true,
       appList: [],
-      displayMode: 'level',
+      displayMode: 'list',
       currentApp: null,
       issueCountData: null
     };

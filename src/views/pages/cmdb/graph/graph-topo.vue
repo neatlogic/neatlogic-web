@@ -146,7 +146,7 @@ export default {
       const graphEl = document.getElementById('graph');
       this.$api.cmdb.graph.getGraphTopo(this.searchParam).then(res => {
         try {
-          const nodesString = res.Return;
+          const nodesString = this.$utils.handleTopoImagePath(res.Return);
           this.loadImage(nodesString);
           this.graph.graphviz
             .transition()

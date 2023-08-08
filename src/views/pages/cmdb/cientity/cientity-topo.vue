@@ -315,7 +315,7 @@ export default {
       this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
         if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
           this.error = '';
-          const nodesString = res.Return.dot || '';
+          const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
           this.relList = res.Return.relList || [];
           this.loadImage(nodesString);
           this.graph.graphviz

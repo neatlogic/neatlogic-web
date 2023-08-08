@@ -141,7 +141,6 @@
     "onlyexportselected": "Export only selected data",
     "driverci": "Drive Model",
     "addcientity": "Add Configuration Item",
-    "driverci": "Drive Model",
     "resourcetypetreenosettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view was not successfully set in the view settings, and the asset list function is not available",
     "gotoresourceentitymanagepage": "Click here to set this view",
     "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list"
@@ -1155,7 +1154,10 @@
     "sharefile": "Shared Documents",
     "waitto": "wait to",
     "forward": "forward",
-    "norelateknowledge": "No relevant knowledge"
+    "norelateknowledge": "No relevant knowledge",
+    "strikethrough": "strikethrough ",
+    "uploadimages": "Upload images",
+    "enterlinkdescription": "Enter link description"
   },
   "report": {
     "report": "Report",
@@ -2165,7 +2167,16 @@
     "relativetestcase": "Associated Use Cases",
     "repository": "Version Library",
     "gantt": "Gantt chart Chart",
-    "noconfig": "This component does not require configuration"
+    "noconfig": "This component does not require configuration",
+    "cost": "spend",
+    "costdate": "Spending date",
+    "costtime": "Labor hours spent",
+    "usedtimecost": "Labor hours used",
+    "editstartenddate": "Edit Schedule Time",
+    "plantimecost": "Estimated working hours",
+    "exceedtimecost": "Exceeding work hours",
+    "used": "Used",
+    "exceed": "go beyond"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

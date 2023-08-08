@@ -32,8 +32,11 @@
 <script>
 import items from '../component/index.js';
 import editorUtils from '@/views/pages/knowledge/edit/component/common/editor-util.js';
-import { BTNLIST, TITLELIST } from '@/views/pages/knowledge/edit/component/common/editor-config.js';//公共配置
+import { TITLELIST } from '@/views/pages/knowledge/edit/component/common/editor-config.js';//公共配置
 import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+import {initI18n} from '@/resources/init.js';
+import store from '@/resources/store';
 export default {
   name: 'EditComponent',
   tagComponent: 'EditComponent',
@@ -60,7 +63,6 @@ export default {
     historyRange: Object
   },
   data() {
-    let _this = this;
     return {
       componentList: [], //渲染頁面的插件
       newdataList: [], //中途修改之后更改的数据 主要是用來记录
@@ -119,7 +121,10 @@ export default {
     },
     addItem(itemData, $insertDom, isAppend) {
       let _this = this;
-      var ItemComponent = Vue.extend({
+      Vue.use(VueI18n);
+      let i18n = initI18n(VueI18n, {}); //语言包配置
+
+      const ItemComponent = Vue.extend({
         provide() {
           return {
             $fn: _this.$fn,
@@ -129,7 +134,7 @@ export default {
         components: {
           ...items
         },
-        data: function() {
+        data() {
           return {
             itemData: itemData,
             changeFocue: _this.changeFocue
@@ -137,9 +142,12 @@ export default {
         },
         template: `<item-${itemData.handler} :ref="itemData.uuid" :config="itemData.config" :handler="itemData.handler" :uuid="itemData.uuid" :content="itemData.content" :changeFocue="changeFocue" is_add="true"></item-${itemData.handler}>`
       });
+
       let $newDom = editorUtils.createDom({handler: 'div'});
       !isAppend ? editorUtils.insertAfter($insertDom, $newDom) : $insertDom.appendChild($newDom);
-      return new ItemComponent().$mount($newDom);
+
+      const vm = new ItemComponent({i18n, store}).$mount($newDom); // i18n和store引入，主要解决父子组件层级深，找不到$t的问题
+      return vm;
     },
     removeComponent(item, uuid) {
       this.refVue && delete this.refVue[uuid];
@@ -329,8 +337,8 @@ export default {
       let clipboardData = window.clipboardData && window.clipboardData.getData ? window.clipboardData : e.clipboardData;
       pastedText = clipboardData.getData('text/html');
       let $target = editorUtils.comGetTargetCom();
-      if (!pastedText && clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
-        clipboardData.files.forEach(file => {
+      if (clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
+        Array.from(clipboardData.files).forEach(file => {
           file.type.indexOf('image') >= 0 && this.uploadePasteImage(file);
         });
         e.preventDefault();
@@ -360,13 +368,12 @@ export default {
             });
           }
         });
-        
         if ($el.children.length == 1) {
           //如果只有一个子元素则直接拼接上去
           let textEle = document.createTextNode($el.innerText);
           range.insertNode(textEle);
           editorUtils.comSetfocus(textEle, true);
-        } else {
+        } else if ($el.children.length > 1) {
           //如果有多个子元素，着添加多个组件，同时存在中间换行也要添加元素
           this.breakTag();
           list = this.pasteMoreDom($el);
@@ -400,7 +407,7 @@ export default {
       let ulList = ['ul', 'ol'];
       let $div = document.createElement('div');
       let list = [];
-      $el.children.forEach((item, index) => {
+      Array.from($el.children).forEach((item, index) => {
         let nodeName = item.nodeName.toLowerCase();
         let content = item.innerText;
         if (textList.indexOf(nodeName) >= 0 || ulList.indexOf(nodeName) >= 0) {

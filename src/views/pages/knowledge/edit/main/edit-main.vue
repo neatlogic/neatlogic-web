@@ -20,7 +20,7 @@
         :history="historyList.length"
         :back="backList.length"
       ></editorTool>
-      <div ref="scrollContian" class="main scrollContian">
+      <div ref="scrollContian" class="main scrollContian" @click="focusEnd">
         <!-- 添加按钮 -->
         <editorAdd
           v-if="focusUuid"
@@ -407,6 +407,22 @@ export default {
         this.isAddTag = false;
         this.tagList = [];
       }
+    },
+    focusEnd() { //点击空白处，焦点聚焦到最后一行
+      let focusUuid = this.dataList[this.dataList.length - 1].uuid;
+      let uuid = this.$utils.setUuid();
+      if (this.$refs.editorComponet && this.$refs.editorComponet.changeMenuList()) {
+        let dataList = this.$refs.editorComponet.changeMenuList();
+        this.focusUuid = dataList[dataList.length - 1].uuid;
+      } else {
+        this.focusUuid = focusUuid;
+      }
+      this.addComponent({ handler: 'p', uuid: uuid, content: '' }, this.focusUuid);
+      this.$nextTick(() => {
+        let $target = document.querySelector(`#rightSider [data_id="${uuid}"]`);
+        editorUtils.comSetfocus($target);
+        this.focusUuid = uuid;
+      });
     }
   },
   computed: {
@@ -455,10 +471,10 @@ function findParent(node) {
     /deep/#rightSider {
       white-space: pre-wrap;
       >:first-of-type{
-        .tool{
-          top: 0px;
-          z-index: 20;
-        }
+        // .tool{
+        //   top: 0px;
+        //   z-index: 20;
+        // }
       }
       > *:nth-last-child(1):first-child {
         &:empty:before {

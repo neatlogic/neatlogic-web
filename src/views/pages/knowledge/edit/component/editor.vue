@@ -9,7 +9,7 @@
   >
     <div ref="editorEditor" class="editor-editor" contenteditable="false">
       <div class="bg-op">
-        <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="baseLanguageT('dialog.title.deletetarget', {target: baseLanguageT('term.knowledge.editor')})" @click="removeItem"></span></div>
+        <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span></div>
         <TsCkeditor v-model="value" width="100%"></TsCkeditor>
       </div>
     </div>
@@ -106,14 +106,13 @@ export default {
   }
   .tool{
     position: absolute;
-    top: -40px;
-    left: 0px;
+    top: -19px;
+    left: 10px;
     z-index: 10;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     padding: 5px;
     display: none;
-    z-index: 1;
      &>span{
         padding: 7px 8px;
         cursor: pointer;

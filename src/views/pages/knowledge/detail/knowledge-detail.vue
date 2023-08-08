@@ -64,7 +64,9 @@
         <div v-if="knowledgeConfing">
           <span class="action-group">
             <span v-if="knowledgeConfing.isEditable" class="action-item tsfont-edit" @click="goEdit">{{ $t('page.edit') }}</span>
-            <span v-if="isDowning" class="action-item disable" :title="$t('page.downloadloadingtip')"><Icon type="ios-loading" size="18" class="loading"></Icon>{{ $t('page.export') }}</span>
+            <span v-if="isDowning" class="action-item disable" :title="$t('page.downloadloadingtip')">
+              <Icon type="ios-loading" size="18" class="loading"></Icon>{{ $t('page.export') }}
+            </span>
             <span v-else class="action-item">
               <Dropdown trigger="click">
                 <span class="tsfont-download">{{ $t('page.export') }}</span>

@@ -11,13 +11,13 @@
     <div class="wrapper" :class="align">
       <div class="img">
         <div class="top tool bg-op shadow">
-          <div :title="baseLanguageT('term.knowledge.leftalign')" @click="setAlign('left')"><span class="tsfont-horizontal-left text-action" :class="{'text-primary' : align=='left'}"></span></div>
-          <div :title="baseLanguageT('page.centeralign')" @click="setAlign('center')"><span class="tsfont-horizontal-center text-action" :class="{'text-primary' : align=='center'}"></span></div>
-          <div :title="baseLanguageT('term.knowledge.rightalign')" @click="setAlign('right')"><span class="tsfont-horizontal-right text-action" :class="{'text-primary' : align=='right'}"></span></div>
-          <div :title="baseLanguageT('page.delete')" class="delete" @click="removeItem"><span class="tsfont-trash-s text-action"></span></div>
+          <div :title="$t('term.knowledge.leftalign')" @click="setAlign('left')"><span class="tsfont-horizontal-left text-action" :class="{'text-primary' : align=='left'}"></span></div>
+          <div :title="$t('page.centeralign')" @click="setAlign('center')"><span class="tsfont-horizontal-center text-action" :class="{'text-primary' : align=='center'}"></span></div>
+          <div :title="$t('term.knowledge.rightalign')" @click="setAlign('right')"><span class="tsfont-horizontal-right text-action" :class="{'text-primary' : align=='right'}"></span></div>
+          <div :title="$t('page.delete')" class="delete" @click="removeItem"><span class="tsfont-trash-s text-action"></span></div>
         </div>
-        <div v-if="isError" class="img-loading bg-op text-error">{{ baseLanguageT('term.knowledge.imageloadfail') }}</div>
-        <div v-else-if="loading || !config.url" class="img-loading bg-op"><span class="loading ivu-icon ivu-icon-ios-loading"></span>{{ baseLanguageT('term.knowledge.imageloadding') }}</div>
+        <div v-if="isError" class="img-loading bg-op text-error">{{ $t('term.knowledge.imageloadfail') }}</div>
+        <div v-else-if="loading || !config.url" class="img-loading bg-op"><span class="loading ivu-icon ivu-icon-ios-loading"></span>{{ $t('term.knowledge.imageloadding') }}</div>
         <img
           v-if="config.url"
           ref="img"
@@ -31,7 +31,7 @@
           ref="editorInput"
           v-model="pasteTitle"
           class="img-input text-default"
-          :placeholder="baseLanguageT('form.placeholder.pleaseinput', {target: baseLanguageT('term.knowledge.imagedesc')})"
+          :placeholder="$t('form.placeholder.pleaseinput', {target: $t('term.knowledge.imagedesc')})"
         />
         <span
           ref="editorSpan"

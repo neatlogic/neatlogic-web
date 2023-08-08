@@ -7,8 +7,18 @@
  @info-bg-color,  
  @warning-color,
  @warning-bg-color, 
-  @th-bg-color) {
+  @th-bg-color,
+  @success-color) {
   .gantt {
+    .locater-group {
+      cursor: pointer;
+    }
+    .locater {
+      fill: @info-color;
+    }
+    .grid {
+      cursor: grab;
+    }
     .grid-background {
       fill: none;
     }
@@ -30,7 +40,7 @@
       stroke-width: 0.2;
 
       &.thick {
-        stroke-width: 0.4;
+        stroke-width: 1.5;
       }
     }
 
@@ -57,6 +67,10 @@
       fill: @info-color;
     }
 
+    .bar-progress.done {
+      fill: @success-color !important;
+    }
+
     .bar-invalid {
       fill: transparent;
       stroke: @info-color;
@@ -69,7 +83,7 @@
     }
 
     .bar-label {
-      fill: @text-color;
+      fill: #fff;
       dominant-baseline: central;
       text-anchor: middle;
       font-size: 12px;
@@ -79,6 +93,11 @@
         fill: @text-color;
         text-anchor: start;
       }
+    }
+
+    .confirm {
+      fill: @info-color;
+      cursor: pointer;
     }
 
     .handle {
@@ -182,8 +201,9 @@ html {
     @default-info-color,
     @default-info-bg-color,
     @default-warning-color,
-    @default-primary-bg-color,
-    @default-th-bg-color
+    @default-warning-bg-color,
+    @default-th-bg-color,
+    @default-success-color
   );
 
   &.theme-dark {
@@ -195,8 +215,9 @@ html {
       @dark-info-color,
       @dark-info-bg-color,
       @dark-warning-color,
-      @dark-primary-bg-color,
-      @dark-th-bg-color
+      @dark-warning-bg-color,
+      @dark-th-bg-color,
+      @dark-success-color
     );
   }
 }

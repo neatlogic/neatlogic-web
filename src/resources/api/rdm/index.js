@@ -6,6 +6,7 @@ import attr from './app/attr.js';
 import projecttemplate from './projecttemplate/projecttemplate.js';
 import issue from './issue/issue.js';
 import issueaudit from './issue/issueaudit.js';
+import issuecost from './issue/issuecost.js';
 import priority from './issue/priority.js';
 import catalog from './issue/catalog.js';
 import tag from './tag/tag.js';
@@ -19,6 +20,7 @@ export default {
   projecttemplate,
   issue,
   issueaudit,
+  issuecost,
   priority,
   catalog,
   tag,

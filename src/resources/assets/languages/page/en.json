@@ -932,5 +932,6 @@
   "componentinfo": "Component Information",
   "apimethod": "API method",
   "scripterror": "Script syntax exception",
-  "wee": "week"
+  "wee": "week",
+  "sum": "total"
 }

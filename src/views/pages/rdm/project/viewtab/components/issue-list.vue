@@ -111,7 +111,7 @@
       <div
         ref="mainTable"
         class="table-parent table-container"
-        :style="resizing ? 'user-select: none;overflow-x:hidden' : ''"
+        :style="resizing || dragging ? 'user-select: none;overflow-x:hidden' : ''"
         @scroll="
           e => {
             scrollTable(e.target.scrollTop);
@@ -123,11 +123,11 @@
           <thead class="thead">
             <tr>
               <th :colspan="finalTheadList.length">
-                <span :class="{ 'text-href': ganttViewMode === 'Day', cursor: ganttViewMode !== 'Day' }" @click="ganttViewMode='Day'">{{ $t('page.da') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Day', cursor: ganttViewMode !== 'Day' }" @click="ganttViewMode = 'Day'">{{ $t('page.da') }}</span>
                 <Divider type="vertical" />
-                <span :class="{ 'text-href': ganttViewMode === 'Week', cursor: ganttViewMode !== 'Week' }" @click="ganttViewMode='Week'">{{ $t('page.wee') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Week', cursor: ganttViewMode !== 'Week' }" @click="ganttViewMode = 'Week'">{{ $t('page.wee') }}</span>
                 <Divider type="vertical" />
-                <span :class="{ 'text-href': ganttViewMode === 'Month', cursor: ganttViewMode !== 'Month' }" @click="ganttViewMode='Month'">{{ $t('page.month') }}</span>
+                <span :class="{ 'text-href': ganttViewMode === 'Month', cursor: ganttViewMode !== 'Month' }" @click="ganttViewMode = 'Month'">{{ $t('page.month') }}</span>
               </th>
             </tr>
             <tr>
@@ -196,7 +196,7 @@
         <NoData v-else-if="isShowEmptyTable"></NoData>
         <div ref="flag"><!--此div用于判断内容出现滚动条，不要删除--></div>
       </div>
-      <div id="gantt" class="gantt-parent" :style="resizing ? 'user-select: none;' : ''"></div>
+      <div id="gantt" class="gantt-parent" :style="resizing || dragging ? 'user-select: none;' : ''"></div>
       <div v-if="hasPage" class="pager bg-op">
         <Page
           size="small"
@@ -328,9 +328,12 @@
       :appId="app.id"
       @close="closeBatchExecute"
     ></BatchExecDialog>
+    <IssueTimeEditDialog v-if="isIssueTimeShow && currentIssue" :issueData="currentIssue" @close="closeIssueTimeEdit"></IssueTimeEditDialog>
   </div>
 </template>
 <script>
+import '@/resources/assets/font/tsfont/font/tsfont.js';
+import '@/resources/assets/font/tsfonts/iconfont.js';
 import * as issueDetailHandler from '@/views/pages/rdm/project/viewtab/issus-detail-index.js';
 import Gantt from '@/resources/plugins/TsGantt/gantt.js';
 
@@ -348,7 +351,8 @@ export default {
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
     TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve)
+    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve),
+    IssueTimeEditDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issuetime-edit-dialog.vue'], resolve)
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -406,7 +410,7 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'createDate', title: this.$t('page.createdate') }*/
       ],
-      isIssueDetailShow: true, //是否展示任务详情弹窗
+      isIssueDetailShow: false, //是否展示任务详情弹窗
       isSearchReady: true, //用于刷新自定义属性控件
       searchIssueData: {},
       pageSize: null,
@@ -450,8 +454,11 @@ export default {
       isBatchExecuteShow: false, //批量执行确认框
       gantt: null,
       resizing: false,
+      dragging: false, //甘特图是否拖拽中
       actionRight: 0,
-      ganttViewMode: 'Day'
+      ganttViewMode: 'Day',
+      isIssueTimeShow: false,
+      isGanttFullscreen: false
     };
   },
   beforeCreate() {},
@@ -838,6 +845,7 @@ export default {
     initGantt() {
       if (!this.gantt) {
         this.gantt = new Gantt('#gantt', this.ganttTaskList, {
+          need_progress_handler: false,
           header_height: 50,
           column_width: 30,
           step: 24,
@@ -854,17 +862,27 @@ export default {
             this.$refs['mainTable'].scrollTop = t;
           },
           on_date_change: this.ganttDateChange,
-          on_progress_change: this.ganttProgressChange
+          on_progress_change: this.ganttProgressChange,
+          on_add_task: this.ganttTaskAdd,
+          on_drag_start: () => {
+            this.dragging = true;
+          },
+          on_drag_end: () => {
+            this.dragging = false;
+          }
         });
       } else {
+        console.log('refresh');
         this.gantt.refresh(this.ganttTaskList);
       }
       this.initTableSize();
     },
     startResize(e) {
-      this.resizing = true;
-      this.startX = e.clientX;
-      this.oldLeft = this.dividerLeft;
+      if (!this.isGanttFullscreen) {
+        this.resizing = true;
+        this.startX = e.clientX;
+        this.oldLeft = this.dividerLeft;
+      }
     },
     doResize(e) {
       if (!this.resizing) return;
@@ -918,11 +936,33 @@ export default {
       }
       return 0;
     },
-    ganttDateChange(...arg) {
-      console.log(JSON.stringify(...arg, null, 2));
+    ganttDateChange(task) {
+      if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
+        const issue = this.issueData.tbodyList.find(d => d.id === parseInt(task.id));
+        if (issue) {
+          this.$set(issue, 'startDate', this.$utils.getDateByFormat(task._start, 'yyyy-MM-dd'));
+          this.$set(issue, 'endDate', this.$utils.getDateByFormat(task._end, 'yyyy-MM-dd'));
+          this.$api.rdm.issue.saveIssue(issue).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.savesuccess'));
+            }
+          });
+        }
+      }
     },
-    ganttProgressChange(...arg) {
-      console.log(JSON.stringify(...arg, null, 2));
+    ganttProgressChange(task) {},
+    ganttTaskAdd(task) {
+      this.isIssueTimeShow = true;
+      const currentIssueId = parseInt(task.id);
+      this.currentIssue = this.issueData.tbodyList.find(d => d.id === currentIssueId);
+      console.log(this.currentIssue);
+    },
+    closeIssueTimeEdit(needRefresh) {
+      this.isIssueTimeShow = false;
+      this.currentIssue = null;
+      if (needRefresh) {
+        this.searchIssue();
+      }
     }
   },
   filter: {},
@@ -967,12 +1007,21 @@ export default {
       const tasks = [];
       if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
         this.issueData.tbodyList.forEach(t => {
+          let progress = 0;
+          if (t.timecost && t.costList && t.costList.length > 0) {
+            let sum = 0;
+            t.costList.forEach(c => {
+              sum += c.timecost;
+            });
+            progress = Math.min((sum / t.timecost) * 100, 100);
+          }
+
           tasks.push({
-            id: '#' + t.id,
+            id: t.id.toString(),
             name: t.name,
             start: t.startDate || t.createDate,
             end: t.endDate,
-            progress: 20
+            progress: progress
           });
         });
       }
@@ -980,6 +1029,16 @@ export default {
     }
   },
   watch: {
+    isGanttFullscreen(val) {
+      const width = this.$refs['tableMain'].offsetWidth;
+      let left = this.$refs['tableMain'].getBoundingClientRect().left;
+      if (val === true) {
+        this.$refs['divider'].style.left = '0px';
+      } else {
+        this.$refs['divider'].style.left = '200px';
+      }
+      this.initTableSize();
+    },
     ganttViewMode(val) {
       if (this.gantt) {
         this.gantt.change_view_mode(val);
@@ -1086,7 +1145,7 @@ html {
   position: relative;
   grid-template-columns: 1fr 1fr;
   .divider {
-    width: 3px;
+    width: 2px;
     border-radius: 2px;
     cursor: ew-resize;
     position: absolute;

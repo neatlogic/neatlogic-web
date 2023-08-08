@@ -141,7 +141,8 @@ export default class Gantt {
       // e.g: 2018-09-09 becomes 2018-09-09 23:59:59
       const task_end_values = date_utils.get_date_values(task._end);
       if (task_end_values.slice(3).every(d => d === 0)) {
-        task._end = date_utils.add(task._end, 24, 'hour');
+        //不要放大日期
+        //task._end = date_utils.add(task._end, 24, 'hour');
       }
 
       // invalid flag
@@ -185,6 +186,12 @@ export default class Gantt {
   refresh(tasks) {
     this.setup_tasks(tasks);
     this.change_view_mode();
+    if (this.scrollTop) {
+      this.$container.scrollTop = this.scrollTop;
+    }
+    if (this.scrollLeft) {
+      this.$container.scrollLeft = this.scrollLeft;
+    }
   }
 
   change_view_mode(mode = this.options.view_mode) {
@@ -239,7 +246,6 @@ export default class Gantt {
 
     this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
     this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
-
     // add date padding on both sides
     if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
       this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
@@ -251,8 +257,8 @@ export default class Gantt {
       this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
       this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
     } else {
-      this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
-      this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
+      this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
+      this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
     }
   }
 
@@ -357,13 +363,79 @@ export default class Gantt {
     let row_y = 0; //this.options.padding / 2;
 
     for (let task of this.tasks) {
+      const rowGroup = createSVG('g', { taskId: task.id, append_to: rows_layer });
       createSVG('rect', {
         x: 0,
         y: row_y,
         width: row_width,
         height: row_height,
         class: 'grid-row',
-        append_to: rows_layer
+        id: 'group-row-' + task.id,
+        append_to: rowGroup
+      });
+
+      $.on(rowGroup, 'mouseleave', e => {
+        const tid = e.currentTarget.getAttribute('taskId');
+        if (tid) {
+          let locaterGroup = rows_layer.querySelector('#locater_' + tid);
+          if (locaterGroup) {
+            locaterGroup.remove();
+          }
+        }
+      });
+      $.on(rowGroup, 'mouseenter', e => {
+        const tid = e.currentTarget.getAttribute('taskId');
+        if (tid) {
+          const bar = this.layers.bar.querySelector('#bar_' + tid);
+          const row = rowGroup.querySelector('#group-row-' + tid);
+          let icon;
+          if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(bar.getAttribute('x'))) {
+            icon = '#tsfont-arrow-right';
+          } else if (this.$container.scrollLeft > parseFloat(bar.getAttribute('x')) + parseFloat(bar.getAttribute('width'))) {
+            icon = '#tsfont-arrow-left';
+          }
+          if (icon) {
+            const rowY = parseFloat(row.getAttribute('y'));
+            const height = parseFloat(row.getAttribute('height'));
+
+            let locaterGroup = rowGroup.querySelector('#locater_' + tid);
+            if (!locaterGroup) {
+              locaterGroup = createSVG('g', {
+                id: 'locater_' + tid,
+                taskId: tid,
+                class: 'locater-group',
+                append_to: rowGroup
+              });
+              createSVG('circle', {
+                cx: this.$container.scrollLeft + 10 + 8,
+                cy: rowY + 10 + 8,
+                r: 8,
+                fill: 'transparent',
+                append_to: locaterGroup
+              });
+              createSVG('use', {
+                x: this.$container.scrollLeft + 10,
+                y: rowY + 10,
+                width: 16,
+                height: 16,
+                href: icon,
+                class: 'locater',
+                append_to: locaterGroup
+              });
+            }
+            $.on(locaterGroup, 'click', le => {
+              const letid = le.currentTarget.getAttribute('taskId');
+              const tbar = this.layers.bar.querySelector('#bar_' + letid);
+              if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(tbar.getAttribute('x'))) {
+                this.scrollLeft = tbar.getAttribute('x') - 10;
+                this.$container.scrollLeft = tbar.getAttribute('x') - 10;
+              } else if (this.$container.scrollLeft > parseFloat(tbar.getAttribute('x')) + parseFloat(tbar.getAttribute('width'))) {
+                this.scrollLeft = tbar.getAttribute('x') - 10;
+                this.$container.scrollLeft = tbar.getAttribute('x') - 10;
+              }
+            });
+          }
+        }
       });
 
       createSVG('line', {
@@ -400,7 +472,7 @@ export default class Gantt {
   make_grid_ticks() {
     let tick_x = 0;
     //let tick_y = this.options.header_height + this.options.padding / 2;
-    let tick_y = this.options.padding / 2;
+    let tick_y = 0;//this.options.padding / 2;
     let tick_height = (this.options.bar_height + this.options.padding) * this.tasks.length;
 
     for (let date of this.dates) {
@@ -612,17 +684,32 @@ export default class Gantt {
       this.oldY = e.clientY;
       this.oldLeft = this.$container.scrollLeft;
       this.oldTop = this.$container.scrollTop;
+      this.trigger_event('drag_start');
     });
     $.on(this.$svg, 'mousemove', '.grid', e => {
       if (this.isDragging) {
         this.$container.scrollTop = this.oldTop - (e.clientY - this.oldY);
         this.$container.scrollLeft = this.oldLeft - (e.clientX - this.oldX);
+        this.scrollTop = this.oldTop - (e.clientY - this.oldY);
+        this.scrollLeft = this.oldLeft - (e.clientX - this.oldX);
+        this.trigger_event('dragging');
       }
     });
+    /*$.on(this.$svg, 'mouseout', '.grid', e => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        this.oldX = null;
+        this.oldY = null;
+        this.trigger_event('drag_end');
+      }
+    });*/
     $.on(this.$svg, 'mouseup', '.grid', e => {
-      this.isDragging = false;
-      this.oldX = null;
-      this.oldY = null;
+      if (this.isDragging) {
+        this.isDragging = false;
+        this.oldX = null;
+        this.oldY = null;
+        this.trigger_event('drag_end');
+      }
     });
   }
 
@@ -636,6 +723,7 @@ export default class Gantt {
 
   setScrollTop(scrollTop) {
     //this.$header.style.top = scrollTop + 'px';
+    this.scrollTop = scrollTop;
     this.$container.scrollTop = scrollTop;
   }
 
@@ -691,6 +779,10 @@ export default class Gantt {
 
       bars.forEach(bar => {
         const $bar = bar.$bar;
+        //invalid的任务不可拖动
+        if (bar.task.invalid) {
+          return;
+        }
         $bar.finaldx = this.get_snap_position(dx);
         this.hide_popup();
         if (is_resizing_left) {
@@ -734,6 +826,7 @@ export default class Gantt {
         bar.date_changed();
         bar.set_action_completed();
       });
+      bars = [];
     });
 
     this.bind_bar_progress();
