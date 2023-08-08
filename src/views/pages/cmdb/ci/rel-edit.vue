@@ -310,7 +310,8 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'medium',
+        zindex: 999
       },
       formConfig: {
         content: {

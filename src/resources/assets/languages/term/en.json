@@ -2177,7 +2177,8 @@
     "exceedtimecost": "Exceeding work hours",
     "used": "Used",
     "exceed": "go beyond",
-    "testplan": "test plan"
+    "testplan": "test plan",
+    "statusreluser": "The system automatically sets the handler during status flow"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

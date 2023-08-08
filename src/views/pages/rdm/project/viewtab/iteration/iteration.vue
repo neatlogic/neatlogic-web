@@ -6,7 +6,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <span class="action-item" @click="displayMode = displayMode === 'level' ? 'list' : 'level'">
+          <span class="action-item" @click="toggleDisplayMode()">
             <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">{{ $t('term.rdm.listview') }}</span>
             <Divider type="vertical" />
             <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">{{ $t('term.rdm.levelview') }}</span>
@@ -123,6 +123,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData['displayMode']) {
+        this.displayMode = historyData['displayMode'];
+      }
+    },
+    toggleDisplayMode() {
+      this.displayMode = (this.displayMode === 'level' ? 'list' : 'level');
+      this.$addHistoryData('displayMode', this.displayMode);
+    },
     toggleIterationOpen(val) {
       this.$api.rdm.iteration
         .toggleIterationIsOpen({

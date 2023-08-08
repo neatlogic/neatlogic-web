@@ -7,10 +7,25 @@
             :value="authIdList"
             :multiple="true"
             :transfer="true"
-            :groupList="['issueUserType', 'user', 'role', 'team']"
+            :extendCondition="{ projectId: projectId }"
+            :groupList="['rdm.project']"
             @on-change="
               (val, item) => {
-                setAuthList(item);
+                $set(config, 'authList', item);
+              }
+            "
+          ></UserSelect>
+        </TsFormItem>
+        <TsFormItem :label="$t('term.process.dealwithuser')" labelPosition="top" :tooltip="$t('term.rdm.statusreluser')">
+          <UserSelect
+            :value="userIdList"
+            :multiple="true"
+            :transfer="true"
+            :extendCondition="{ projectId: projectId }"
+            :groupList="['rdm.project']"
+            @on-change="
+              (val, item) => {
+                $set(config, 'userList', item);
               }
             "
           ></UserSelect>
@@ -79,7 +94,7 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
   props: {
-    projectId: {type: Number},
+    projectId: { type: Number },
     statusrel: { type: Object }
   },
   data() {
@@ -128,15 +143,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    setAuthList(itemList) {
-      if (itemList && itemList.length > 0) {
-        const authList = [];
-        itemList.forEach(auth => {
-          authList.push({value: auth.value, text: auth.text});
-        });
-        this.$set(this.config, 'authList', itemList);
-      }
-    },
     setAttrId(row, attrId) {
       if (attrId) {
         const attr = this.getAttrById(attrId);
@@ -157,7 +163,6 @@ export default {
     },
     setAttrValue(row, val) {
       this.$set(row, 'defaultValue', val);
-      console.log(JSON.stringify(this.config.requiredAttrList, null, 2));
     },
     filtedAttrList(row) {
       const other = this.config.requiredAttrList.filter(d => d !== row);
@@ -201,6 +206,17 @@ export default {
         });
       }
       return authIdList;
+    },
+    userIdList() {
+      const userList = [];
+      if (this.config && this.config.userList) {
+        this.config.userList.forEach(user => {
+          if (user.value) {
+            userList.push(user.value);
+          }
+        });
+      }
+      return userList;
     }
   },
   watch: {}

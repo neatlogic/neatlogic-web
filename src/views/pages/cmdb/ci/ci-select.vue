@@ -52,7 +52,8 @@ export default {
         type: 'slide',
         maskClose: false,
         isShow: false,
-        width: '400px'
+        width: '400px',
+        zindex: 1000
       },
       ciTypeList: [],
       searchParam: {isVirtual: 0}//关系不支持虚拟模型
