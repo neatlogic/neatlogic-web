@@ -130,6 +130,7 @@
     "subscriptionsetting": "订阅设置",
     "noticemanage": "系统公告",
     "mailserveredit": "邮件服务器管理",
+    "notifyconfigmanage": "通知配置管理",
     "notifytacticsmanage": "通知策略管理",
     "notifytacticsedit": "通知策略编辑",
     "mqmanage": "消息队列管理",
