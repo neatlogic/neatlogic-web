@@ -174,12 +174,11 @@ export default {
       }
     },
     getData() {
-      const data = {};
       this.$api.framework.mailserver
-        .search(data)
+        .get()
         .then(res => {
           if (res.Status == 'OK') {
-            const obj = res.Return.tbodyList[0];
+            const obj = res.Return;
             if (obj) {
               this.formData.forEach(item => {
                 item.value = obj[item.name];
