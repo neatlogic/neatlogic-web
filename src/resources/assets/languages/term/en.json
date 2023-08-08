@@ -2176,7 +2176,8 @@
     "plantimecost": "Estimated working hours",
     "exceedtimecost": "Exceeding work hours",
     "used": "Used",
-    "exceed": "go beyond"
+    "exceed": "go beyond",
+    "testplan": "test plan"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

@@ -1,7 +1,12 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-ok="save()" @on-close="close">
     <template v-slot>
-      <TsForm ref="form" v-model="issueCostData" :item-list="formConfig"></TsForm>
+      <div>
+        <TsFormItem :label="$t('term.rdm.plantimecost')">
+          {{ issueData.timecost || '-' }}
+        </TsFormItem>
+        <TsForm ref="form" v-model="issueCostData" :item-list="formConfig"></TsForm>
+      </div>
     </template>
   </TsDialog>
 </template>
@@ -9,15 +14,16 @@
 export default {
   name: '',
   components: {
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
     id: { type: Number },
-    issueId: { type: Number }
+    issueData: { type: Object }
   },
   data() {
     return {
-      issueCostData: { issueId: this.issueId },
+      issueCostData: { issueId: this.issueData.id },
       formConfig: [
         {
           type: 'date',

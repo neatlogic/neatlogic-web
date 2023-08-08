@@ -113,7 +113,7 @@
             </TabPane>
             <TabPane :label="render => renderCostTabLabel(render, issueData.costList && issueData.costList.length)" name="timecost">
               <div v-if="currentTab == 'timecost'" class="pl-nm pr-nm">
-                <TimeCostList :issueId="issueData.id"></TimeCostList>
+                <TimeCostList :issueData="issueData"></TimeCostList>
               </div>
             </TabPane>
             <TabPane v-if="getApp('gitlab')" :label="render => renderWebhookLabel(render, getApp('gitlab').id, $t('term.rdm.gitlabcommit'))" name="gitlab">

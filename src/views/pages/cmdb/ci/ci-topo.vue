@@ -134,7 +134,7 @@ export default {
       param.layout = this.currentLayout;
       this.$api.cmdb.ci.getCiTopoData(param).then(res => {
         try {
-          const nodesString = this.handleImagePath(res.Return);
+          const nodesString = this.$utils.handleTopoImagePath(res.Return);
           this.loadImage(nodesString);
           this.graph.graphviz
             .transition()
@@ -173,22 +173,6 @@ export default {
         }
         this.isloading = false;
       });
-    },
-    handleImagePath(nodesString) {
-      /**
-       * 处理图片路径，本地开发环境，图片路径需带上租户，否则图片显示不出来
-       * 获取image=最后一个/后的值，然后拼接resource/img/icons静态资源文件路径
-       */
-      if (!nodesString) {
-        return '';
-      }
-      let regex = /image="(?:\/resource\/img\/icons\/|\/)([^\/"]+)"/g;// 正则匹配 image="/resource/img/icons/xxxxx.xxx.png" 或者 image="/xxxx.xxxx.png" 取最后一个/后的值
-      let newNodesString = nodesString.replace(regex, (match, imageName) => {
-        let imagePath = `resource/img/icons/${imageName}`;
-        let newImagePath = process.env.NODE_ENV === 'development' ? `${process.env.VUE_APP_TENANT}/${imagePath}` : `${imagePath}`;
-        return `image="/${newImagePath}"`;
-      });
-      return newNodesString;
     },
     unColorNode() {
       d3.selectAll('g path')

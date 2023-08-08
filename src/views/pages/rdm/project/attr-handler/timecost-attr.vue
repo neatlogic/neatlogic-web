@@ -19,9 +19,9 @@
     <div v-if="timecostSum" class="keep">
       <div class="text-grey">{{ $t('term.rdm.usedtimecost') }}</div>
       <div>{{ timecostSum }}</div>
-      <div v-if="timecostSum - timecost > 0" class="text-grey">{{ $t('term.rdm.exceedtimecost') }}</div>
-      <div v-if="timecostSum - timecost > 0" class="text-error">{{ timecostSum - timecost }}</div>
-      <div class="text-grey">{{ $t('page.completrate') }}</div>
+      <div v-if="timecost && timecostSum - timecost > 0" class="text-grey">{{ $t('term.rdm.exceedtimecost') }}</div>
+      <div v-if="timecost && timecostSum - timecost > 0" class="text-error">{{ timecostSum - timecost }}</div>
+      <div v-if="finishRate != null" class="text-grey">{{ $t('page.completrate') }}</div>
       <div v-if="finishRate != null"><Progress :percent="finishRate" status="active" /></div>
     </div>
   </div>
@@ -77,6 +77,7 @@ export default {
       let fr = null;
       if (this.issueData && this.issueData.timecost) {
         fr = Math.min((this.timecostSum / this.issueData.timecost) * 100, 100);
+        fr = parseFloat(fr.toFixed(2));
       }
       return fr;
     }

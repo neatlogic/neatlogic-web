@@ -9,7 +9,11 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item tsfont-plus" @click="addIssue()">{{ $t('term.rdm.testcase') }}</span>
+          <span class="action-item" @click="addIssue()">
+            <Button type="success">
+              <span class="tsfont-plus">{{ $t('term.rdm.testplan') }}</span>
+            </Button>
+          </span>
         </div>
       </template>
       <template v-slot:content>

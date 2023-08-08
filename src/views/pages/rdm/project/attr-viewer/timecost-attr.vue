@@ -2,14 +2,14 @@
   <div>
     <span v-if="timecost">
       <span style="display: inline-block">
-        <span>{{ $t('page.sum') }}:{{ timecost }}</span>
+        <span>{{ timecost }}</span>
         <span v-if="timecostSum">/{{ $t('term.rdm.used') }}:{{ timecostSum }}</span>
         <span v-if="timecostSum - timecost > 0" class="text-error">/{{ $t('term.rdm.exceed') }}:{{ timecostSum - timecost }}</span>
       </span>
       <span v-if="finishRate != null" class="ml-xs" style="display: inline-block; width: 66px">
         <Progress
           style="font-size: 12px"
-          stroke-width="17"
+          :stroke-width="17"
           text-inside
           :percent="finishRate"
           status="active"

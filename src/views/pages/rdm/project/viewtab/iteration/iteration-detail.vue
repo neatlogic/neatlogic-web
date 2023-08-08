@@ -16,7 +16,11 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <div class="action-item tsfont-edit" @click="isEditIterationShow=true">{{ $t('page.edit') }}</div>
+          <div class="action-item">
+            <Button type="primary" @click="isEditIterationShow = true">
+              {{ $t('page.edit') }}
+            </Button>
+          </div>
         </div>
       </template>
       <div slot="content">
@@ -53,7 +57,7 @@
             <div><IssueRing :data="issueCountData"></IssueRing></div>
           </div>
         </div>
-        <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp">
+        <Tabs v-if="issueAppList && issueAppList.length > 0" v-model="currentApp" :animated="false">
           <TabPane
             v-for="(app, index) in issueAppList"
             :key="index"
@@ -64,6 +68,8 @@
               <IssueList
                 v-if="currentApp === app.type"
                 :canAppend="true"
+                :canSearch="true"
+                :canAction="true"
                 :app="app"
                 :projectId="projectId"
                 :mode="displayMode"
@@ -105,7 +111,7 @@ export default {
       iterationData: {},
       isReady: true,
       appList: [],
-      displayMode: 'level',
+      displayMode: 'list',
       currentApp: null,
       issueCountData: null
     };

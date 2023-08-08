@@ -40,8 +40,8 @@ html {
     box-shadow: none;
   }
   .@{iv-prev}input-number-handler {
-      height: 16px; // 解决less升级到4.0版本后，85/2不支持，需要加小括号的问题
-   }
+    height: 16px; // 解决less升级到4.0版本后，85/2不支持，需要加小括号的问题
+  }
   textarea {
     &.@{iv-prev}input {
       height: auto;
@@ -631,7 +631,7 @@ html {
       }
       .@{iv-prev}tabs-content {
         border-radius: @block-border-radius;
-        overflow: hidden;//防止child的覆盖broder-radius
+        overflow: hidden; //防止child的覆盖broder-radius
         border-top-left-radius: 0px;
       }
     }
@@ -691,6 +691,11 @@ html {
 ul,
 li {
   list-style: none;
+}
+
+.noselect {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .home {
@@ -1184,6 +1189,8 @@ span {
 
 //操作分类组
 .action-group {
+  -webkit-user-select: none;
+  user-select: none;
   word-break: keep-all;
   .action-item:last-child {
     padding: 0 0px 0px 8px !important;
@@ -1771,7 +1778,7 @@ span {
   animation: loadingText 1.4s infinite linear;
 }
 
-.keyframes(all, fade, {50% {opacity: .6;} 0%, 100%{opacity: 1;}});
+.keyframes(all, fade, {50% {opacity: 0.6;} 0%, 100%{opacity: 1;}});
 //晃铃效果
 .keyframes(all, rocking, {0% {animation-timing-function: cubic-bezier(0.146, 0.2111, 0.5902, 1.3204) ; transform: rotate(0)} 11% {animation-timing-function: cubic-bezier(0.1079, 0.1992, -0.6462, 0.828) ; transform: rotate(7.61deg)} 23% {animation-timing-function: cubic-bezier(0.0504, 0.0951, 0.0163, 0.9677) ; transform: rotate(-5.789999999999999deg)} 36% {animation-timing-function: cubic-bezier(0.0475, 0.0921, 0.3134, 1.0455) ; transform: rotate(3.35deg)} 49% {animation-timing-function: cubic-bezier(0.0789, 0.1565, 0.3413, 1.0972) ; transform: rotate(-1.9300000000000002deg)} 62% {animation-timing-function: cubic-bezier(0.141, 0.2885, 0.406, 1.1519) ; transform: rotate(1.12deg)} 75% {animation-timing-function: cubic-bezier(0.226, 0.4698, 0.5031, 1.1722) ; transform: rotate(-0.64deg)} 88% {animation-timing-function: cubic-bezier(0.3121, 0.5521, 0.5655, 0.8997) ; transform: rotate(0.37deg)} 100% {transform: rotate(-0.28deg)}});
 //水波纹效果
@@ -2054,7 +2061,8 @@ span {
   overflow: hidden;
 }
 
-.pre { //textarea保留格式
+.pre {
+  //textarea保留格式
   white-space: pre-wrap;
   white-space: -o-pre-wrap;
   white-space: -pre-wrap;

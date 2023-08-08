@@ -2173,7 +2173,8 @@
     "plantimecost": "预估工时",
     "exceedtimecost": "超出工时",
     "used": "已用",
-    "exceed": "超出"
+    "exceed": "超出",
+    "testplan": "测试计划"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

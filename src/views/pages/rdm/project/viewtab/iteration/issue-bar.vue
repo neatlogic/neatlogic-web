@@ -12,6 +12,7 @@ export default {
   },
   data() {
     return {
+      localData: this.$utils.deepClone(this.data),
       plot: null
     };
   },
@@ -79,9 +80,10 @@ export default {
   computed: {
     finalData() {
       const dataList = [];
-      if (this.data && this.data.length > 0) {
-        this.data.forEach(d => {
+      if (this.localData && this.localData.length > 0) {
+        this.localData.forEach(d => {
           const existsData = dataList.find(dd => dd.appType === d.appType);
+          
           if (!existsData) {
             dataList.push({...d, yField: '任务'});
           } else {

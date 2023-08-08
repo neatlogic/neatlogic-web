@@ -25,7 +25,7 @@
     <TimeCostEdit
       v-if="isTimecostEditShow"
       :id="currentTimecostId"
-      :issueId="issueId"
+      :issueData="issueData"
       @close="closeTimeCostEdit"
     ></TimeCostEdit>
   </div>
@@ -38,7 +38,7 @@ export default {
     TimeCostEdit: resolve => require(['@/views/pages/rdm/project/viewtab/components/timecost-edit-dialog.vue'], resolve)
   },
   props: {
-    issueId: { type: Number }
+    issueData: { type: Object }
   },
   data() {
     return {
@@ -52,7 +52,7 @@ export default {
         { key: 'action' }
       ],
       issueCostData: {},
-      searchParam: { issueId: this.issueId },
+      searchParam: { issueId: this.issueData.id },
       isTimecostEditShow: false,
       currentTimecostId: null
     };
@@ -76,7 +76,7 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('term.rdm.cost')}),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.rdm.issuecost.deleteIssueCost(this.issueId, id).then(res => {
+          this.$api.rdm.issuecost.deleteIssueCost(this.issueData.id, id).then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               vnode.isShow = false;
