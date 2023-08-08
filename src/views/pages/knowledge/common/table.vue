@@ -655,9 +655,13 @@ export default {
         for (let r = 0; r < row; r++) {
           this.tableConfig.lefterList.push({ height: this.minHeight });
         }
-        for (let r = 0; r < row; r++) {
-          for (let c = 0; c < col; c++) {
-            this.tableConfig.tableList.push({ row: r, col: c });
+        if (this.config && !this.$utils.isEmpty(this.config.tableList)) {
+          this.$set(this.tableConfig, 'tableList', this.config.tableList);
+        } else {
+          for (let r = 0; r < row; r++) {
+            for (let c = 0; c < col; c++) {
+              this.tableConfig.tableList.push({ row: r, col: c });
+            }
           }
         }
       }
@@ -1605,6 +1609,7 @@ export default {
         const tableList = [];
         this.cellList.forEach(cell => {
           if (cell.row == rowindex) {
+            // tableList.push(cell);
             if (!this.checkCellIsInSpan(cell)) {
               tableList.push(cell);
             }

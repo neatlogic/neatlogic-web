@@ -63,6 +63,7 @@ export default {
     historyRange: Object
   },
   data() {
+    let _this = this;
     return {
       componentList: [], //渲染頁面的插件
       newdataList: [], //中途修改之后更改的数据 主要是用來记录
@@ -337,7 +338,8 @@ export default {
       let clipboardData = window.clipboardData && window.clipboardData.getData ? window.clipboardData : e.clipboardData;
       pastedText = clipboardData.getData('text/html');
       let $target = editorUtils.comGetTargetCom();
-      if (clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
+      let innerText = clipboardData.getData('text/plain');
+      if ((!pastedText || !innerText) && clipboardData.files && clipboardData.files.length > 0) { //添加文件，主要是图片
         Array.from(clipboardData.files).forEach(file => {
           file.type.indexOf('image') >= 0 && this.uploadePasteImage(file);
         });
@@ -357,7 +359,7 @@ export default {
       let $el = document.createElement('div');
       $el.innerHTML = pastedText.replace(/<br>/g, '\n'); 
       if ($el && $el.children.length > 0) {
-        let excludeList = ['img', 'table', 'style', 'meta', 'script']; //排除的标签
+        let excludeList = ['img', 'style', 'meta', 'script']; //排除的标签
         let list = [];
         excludeList.forEach(exc => {
           if (excludeList.indexOf($el.nodeName.toLowerCase()) >= 0) {
@@ -370,9 +372,15 @@ export default {
         });
         if ($el.children.length == 1) {
           //如果只有一个子元素则直接拼接上去
-          let textEle = document.createTextNode($el.innerText);
-          range.insertNode(textEle);
-          editorUtils.comSetfocus(textEle, true);
+          let textEle = document.createTextNode($el.children[0].innerText);
+          let nodeName = $el.children[0].nodeName.toLowerCase();
+          if (nodeName == 'table') {
+            let tableConfig = this.dealTableDom(pastedText);
+            this.addComponent(tableConfig);
+          } else {
+            range.insertNode(textEle);
+            editorUtils.comSetfocus(textEle, true);
+          }
         } else if ($el.children.length > 1) {
           //如果有多个子元素，着添加多个组件，同时存在中间换行也要添加元素
           this.breakTag();
@@ -381,10 +389,16 @@ export default {
         let $target = editorUtils.comGetTargetCom() || document.getElementById('rightSider').children[0];
         if (list && list.length > 0) {
           let $insertDom = $target;
-          list.forEach(item => {
-            let newNode = editorUtils.createDom(item);
-            editorUtils.insertAfter($insertDom, newNode);
-            $insertDom = newNode;
+          list.forEach((item, index) => {
+            if (item.handler == 'table') {
+              let uuid = index > 0 ? list[index - 1].uuid : '';
+              this.addComponent(item, uuid);
+              $insertDom = document.querySelector(`#rightSider [data_id="${item.uuid}"]`);
+            } else {
+              let newNode = editorUtils.createDom(item);
+              editorUtils.insertAfter($insertDom, newNode);
+              $insertDom = newNode;
+            }
           });
           this.focusUuid = list[list.length - 1].uuid;
           if ($target.nodeName.toLowerCase() == 'p' && $target.innerText.replace('\n', '') == '') {
@@ -410,12 +424,16 @@ export default {
       Array.from($el.children).forEach((item, index) => {
         let nodeName = item.nodeName.toLowerCase();
         let content = item.innerText;
-        if (textList.indexOf(nodeName) >= 0 || ulList.indexOf(nodeName) >= 0) {
+        if (textList.indexOf(nodeName) >= 0 || ulList.indexOf(nodeName) >= 0 || nodeName === 'table') {
           list = list.concat(this.dealMoreDom($div));
           $div = document.createElement('div');
         }
-
-        if (textList.indexOf(nodeName) >= 0) {
+        if (nodeName === 'table') {
+          const $trs = Array.from(item.querySelectorAll('table tr'));
+          let tableconfig = this.dealTableDom(null, $trs);
+          this.$set(tableconfig, 'content', item.innerHTML);
+          list.push(tableconfig);
+        } else if (textList.indexOf(nodeName) >= 0) {
           item.innerHTML = item.innerHTML.replace(/<br>/g, '\n'); 
           content = item.innerText;
           content.split('\n').forEach(cc => {
@@ -579,6 +597,84 @@ export default {
         target = document.querySelector(`#rightSider`);
         this.$utils.toggleClass(target, 'isInput', 'remove');
       }
+    },
+    dealTableDom(pastedText, tr) { //处理table
+      // 加载所有的行
+      let $trs = [];
+      if (!this.$utils.isEmpty(tr)) {
+        $trs = tr;
+      } else {
+        const $doc = new DOMParser().parseFromString(pastedText, 'text/html');
+        $trs = Array.from($doc.querySelectorAll('table tr'));
+      }
+      let tableList = [];
+      let row = Array.from($trs).length;
+      let col = 0;
+      $trs.forEach((tr, rindex) => {
+        if (!col || (col && col < tr.children.length)) {
+          col = tr.children.length;
+        }
+        Array.from(tr.children).forEach((td, dindex) => {
+          let rowList = tableList.filter(t => {
+            return t.row == rindex;
+          }).map(e => e.col);
+          if (rowList.includes(dindex)) {
+            for (let r = 0; r < col; r++) {
+              if (!rowList.includes(r)) {
+                tableList.push({
+                  row: rindex,
+                  col: r,
+                  colspan: td.colSpan,
+                  rowspan: td.rowSpan,
+                  content: td.innerText
+                });
+              }
+            }
+          } else {
+            tableList.push({
+              row: rindex,
+              col: dindex,
+              colspan: td.colSpan,
+              rowspan: td.rowSpan,
+              content: td.innerText
+            });
+          }
+          
+          if (td.colSpan > 1) {
+            for (let j = 1; j < td.colSpan; j++) {
+              tableList.push({
+                row: rindex,
+                col: dindex + j,
+                colspan: 1,
+                rowspan: 1
+              });
+            }
+          }
+          if (td.rowSpan > 1) {
+            for (let i = 1; i < td.rowSpan; i++) {
+              tableList.push({
+                row: rindex + i,
+                col: dindex,
+                colspan: 1,
+                rowspan: 1
+              });
+            }
+          }
+        });
+      });
+      tableList.sort((a, b) => {
+        if (a.row != b.row) {
+          return a.row - b.row;
+        } else {
+          return a.col - b.col;
+        }
+      });
+      return { 
+        uuid: this.$utils.setUuid(), 
+        handler: 'table', 
+        content: '', 
+        config: {tableList: tableList, row: row, col: col}
+      };
     }
   },
   computed: {},
