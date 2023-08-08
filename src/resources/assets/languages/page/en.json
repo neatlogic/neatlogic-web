@@ -933,5 +933,6 @@
   "apimethod": "API method",
   "scripterror": "Script syntax exception",
   "wee": "week",
-  "sum": "total"
+  "sum": "total",
+  "wechat": "WeCom"
 }

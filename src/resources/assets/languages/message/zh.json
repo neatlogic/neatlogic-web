@@ -205,7 +205,8 @@
     "selectcusaction": "选择当前自定义组件可以使用的交互操作",
     "leastoneselectattr": "请至少选择一个矩阵固有属性",
     "staticrepeat": "静态数据选项存在重复数据，请重新编辑",
-    "syncsceneattrtip": "默认场景包含属性A、B、C，且当前场景不包含A、B、C，将A、B、C属性添加至当前场景"
+    "syncsceneattrtip": "默认场景包含属性A、B、C，且当前场景不包含A、B、C，将A、B、C属性添加至当前场景",
+    "editwechattouser": "要与企业微信后台的用户管理中用户账号一致"
   },
   "dashboard": {
     "templatehelp": "模板需要符合vue模板语法规范，必须指定一个根标签，一般是div，支持所有iView组件。数据源结果以数组的形式返回，根属性为：dataList，访问数据时请直接迭代dataList获取需要的数据。",

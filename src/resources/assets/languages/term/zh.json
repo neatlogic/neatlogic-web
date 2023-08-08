@@ -1103,7 +1103,11 @@
     "syncsceneattr": "同步默认场景属性",
     "matrix": {
       "isoverride": "当前环境已存在同一矩阵，是否覆盖？"
-    }
+    },
+    "corpid": "企业ID",
+    "corpsecret": "应用的凭证密钥",
+    "agentid": "企业应用ID",
+    "smptsslenable": "使用SSL"
   },
   "knowledge": {
     "document": "文档",
