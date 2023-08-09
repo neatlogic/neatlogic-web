@@ -2097,7 +2097,9 @@
     border-color: var(--primary-color, @primary-color);
     background: @op-color;
   }
-
+  .ck.ck-balloon-panel {
+    z-index: 1001;
+  }
   .cke_editable {
     color: @text-color;
 
@@ -2687,7 +2689,6 @@
   }
 
   .@{iv-prev}select-dropdown {
-    max-height: 300px;
     background-color: @blockbg-color;
     box-shadow: 0 1px 6px @boxshadow-bolck;
 

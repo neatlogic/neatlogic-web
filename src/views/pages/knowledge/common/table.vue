@@ -597,7 +597,19 @@ export default {
       }
       for (let r = 0; r < row; r++) {
         for (let c = 0; c < col; c++) {
-          this.tableConfig.tableList.push({ row: r, col: c });
+          this.tableConfig.headerList.push({ width: this.defaultWidth });
+        }
+        for (let r = 0; r < row; r++) {
+          this.tableConfig.lefterList.push({ height: this.minHeight });
+        }
+        if (this.config && !this.$utils.isEmpty(this.config.tableList)) {
+          this.$set(this.tableConfig, 'tableList', this.config.tableList);
+        } else {
+          for (let r = 0; r < row; r++) {
+            for (let c = 0; c < col; c++) {
+              this.tableConfig.tableList.push({ row: r, col: c });
+            }
+          }
         }
       }
     },
