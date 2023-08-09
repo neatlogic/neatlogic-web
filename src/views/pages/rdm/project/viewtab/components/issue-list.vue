@@ -873,7 +873,6 @@ export default {
           }
         });
       } else {
-        console.log('refresh');
         this.gantt.refresh(this.ganttTaskList);
       }
       this.initTableSize();
