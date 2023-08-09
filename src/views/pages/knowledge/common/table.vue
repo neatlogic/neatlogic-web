@@ -6,15 +6,7 @@
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
     @contextmenu.prevent
-    @mousemove="doDrag"
-    @mouseup="endResize"
-    @click="
-      event => {
-        isContextMenuShow = false;
-        event.stopPropagation();
-      }
-    "
-    @mouseleave="endResize"
+    @keydown.stop.prevent
   >
     <div v-if="mode === 'edit'" ref="editorTable" class="editor-table">
       <div class="tool bg-op shadow">
@@ -100,7 +92,7 @@
     </div>
     <div
       ref="tableContainer"
-      style="position:relative;"
+      style="position:relative;overflow:auto;"
       :class="{ editmode: mode === 'edit' }"
       :style="{ height: mode === 'edit'?containerHeight:'100%' }"
       @scroll="
@@ -109,7 +101,12 @@
         }
       "
     >
-      <table v-if="mode === 'edit'" class="tssheet-main-shadow-head" :style="{ top: scrollTop + 'px', width: tableSize.width + 'px' }">
+      <table
+        v-if="mode === 'edit'"
+        contenteditable="false"
+        class="tssheet-main-shadow-head"
+        :style="{ top: scrollTop + 'px', width: tableSize.width + 'px' }"
+      >
         <thead>
           <tr>
             <th :style="{ height: minHeight + 'px', width: minWidth + 'px' }">&nbsp;</th>
@@ -151,7 +148,12 @@
           </tr>
         </thead>
       </table>
-      <table v-if="mode === 'edit'" class="tssheet-main-shadow-left" :style="{ left: scrollLeft + 'px', height: tableSize.height + 'px' }">
+      <table
+        v-if="mode === 'edit'"
+        contenteditable="false"
+        class="tssheet-main-shadow-left"
+        :style="{ left: scrollLeft + 'px', height: tableSize.height + 'px' }"
+      >
         <thead>
           <tr>
             <th :style="{ height: minHeight + 'px', width: minWidth + 'px' }"></th>
@@ -190,7 +192,6 @@
               ></div>
               <!-- 行号 -->
               {{ left.index + 1 }}
-              <div v-if="isHideRow(left.index)" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
             </th>
           </tr>
         </tbody>
@@ -258,26 +259,13 @@
               "
               @mouseup="isDragging = false"
             >
-              <div v-if="$utils.isEmpty(cell.component)">
-                <textarea
-                  v-if="mode === 'edit'"
-                  v-model="cell.content"
-                  class="content-inputer padding-xs"
-                  :class="{...cell.class}"
-                  :style="cell.style"
-                  @input="adjustCellHeight($event, left)"
-                  @keydown.enter="adjustCellHeight($event, left)"
-                ></textarea>
-                <div
-                  v-else
-                  class="content-inputer padding-xs"
-                  :class="{...cell.class}"
-                  :style="cell.style"
-                  style="word-wrap: break-word;"
-                >
-                  {{ cell.content }}
-                </div>
-              </div>
+              <div
+                :ref="`content_${cell.row}${cell.col}`"
+                :contenteditable="mode === 'edit' ? true : false"
+                class="content-inputer padding-xs"
+                :class="{...cell.class}"
+                :style="cell.style"
+              >{{ cell.content }}</div>
               <div v-if="!cell._isHandler && cell.border">
                 <div style="border-top-width:1px;border-top-style:solid;position:absolute;top:-1px;left:0px;height:1px;width:100%" :class="cell.border"></div>
                 <div style="border-bottom-width:1px;border-bottom-style:solid;position:absolute;bottom:-1px;left:0px;height:1px;width:100%" :class="cell.border"></div>
@@ -339,12 +327,6 @@ export default {
   components: {},
   mixins: [editorMixins],
   props: {
-    init: {
-      type: Array,
-      default: () => {
-        return [4, 4];
-      }
-    }, //如果data为空，则使用此参数初始化表格[row,col]
     mode: {
       type: String, //edit编辑模式|read使用模式
       default: 'edit',
@@ -352,16 +334,22 @@ export default {
         return ['edit', 'read'].includes(value);
       }
     },
-    data: { type: [Object, Array] }, //表单数据
-    formHighlightData: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    },
     uuid: String,
-    content: String,
-    config: Object // 双向绑定的值
+    /**
+     * 回显值 
+     * config: {
+     *        tableList: [
+     *                    {
+     *                     row: 1, 
+     *                     col: 1, 
+     *                     rowspan: 1, 
+     *                     colspan: 1, 
+     *                     class: 'xxx', 
+     *                     content: 'xxxx'
+     *                    }] 
+     *        }
+     */
+    config: Object
   },
   data() {
     return {
@@ -381,9 +369,7 @@ export default {
       resizeRow: null, //正在改变高度的行
       resizerPosition: { top: 0, left: 0 }, //水平垂直线共用
       contextMenuPosition: { top: 0, left: 0 }, //右键菜单位置
-      tableConfig: { reaction: { hiderow: [], displayrow: [] } }, //隐藏|显示行支持多套规则，因此是数组
-      componentIndex: 1,
-      formData: {}, //表单控件的值，key是控件uuid
+      tableConfig: { },
       fontSizeList: [
         { value: '12px', text: this.$t('page.small') },
         { value: '14px', text: this.$t('page.medium') },
@@ -396,7 +382,6 @@ export default {
   beforeCreate() {},
   created() {
     this.initSheet();
-    this.initReactionWatch();
   },
   beforeMount() {},
   mounted() {
@@ -417,24 +402,6 @@ export default {
   },
   destroyed() {},
   methods: {
-    adjustCellHeight(event, cell) {
-      /**
-       * 根据内容的高度设置单元格的高度
-       * 没有高度时，使用默认值，
-       * 原有当前行的高度比现在当前行高度高，使用原有，否则使用当前高度值
-       *  */
-      const targetTextarea = event.target;
-      const lefterList = this.tableConfig.lefterList;
-
-      this.$nextTick(() => {
-        const cellIndex = cell.index;
-        const newHeight = targetTextarea.scrollHeight < 45 ? 45 : Math.max(lefterList[cellIndex].height, targetTextarea.scrollHeight);
-        const targetItem = lefterList.find((item, lefterIndex) => lefterIndex == cellIndex);
-        if (targetItem) {
-          targetItem.height = newHeight;
-        }
-      });
-    },
     getContent() {
       // 外部调用，获取内容
       const data = this.$utils.deepClone(this.tableConfig);
@@ -444,27 +411,12 @@ export default {
             this.$delete(cell, k);
           }
         }
-        //递归消除所有comonent的私有属性
-        if (cell.component) {
-          let component = cell.component;
-          let componentList = [component];
-          while (componentList.length > 0) {
-            const subComponentList = [];
-            componentList.forEach(com => {
-              for (let k in com) {
-                if (k.startsWith('_')) {
-                  this.$delete(com, k);
-                }
-              }
-              if (com.component) {
-                subComponentList.push(...com.component);
-              }
-            });
-            componentList = subComponentList;
-          }
+        if (this.$refs[`content_${cell.row}${cell.col}`] instanceof Array) {
+          this.$refs[`content_${cell.row}${cell.col}`].forEach((item) => {
+            cell.content = item.innerText; // 获取content值
+          });
         }
       });
-      this.$set(data, '_type', 'new'); //标识新表单
       return {
         config: {
           ...data
@@ -503,9 +455,7 @@ export default {
             'on-ok': vnode => {
               if (this.copyedCell.content) {
                 this.$set(this.handlerCell, 'content', this.copyedCell.content);
-                this.$delete(this.handlerCell, 'component');
               } else if (this.copyedCell.component) {
-                this.$set(this.handlerCell, 'component', this.copyedCell.component);
                 this.$delete(this.handlerCell, 'content');
               }
               this.copyedCell = null;
@@ -515,9 +465,7 @@ export default {
         } else {
           if (this.copyedCell.content) {
             this.$set(this.handlerCell, 'content', this.copyedCell.content);
-            this.$delete(this.handlerCell, 'component');
           } else if (this.copyedCell.component) {
-            this.$set(this.handlerCell, 'component', this.copyedCell.component);
             this.$delete(this.handlerCell, 'content');
           }
           this.copyedCell = null;
@@ -565,10 +513,6 @@ export default {
             d.width = this.minWidth;
           }
         });
-        if (this.mode === 'edit' || !this.tableConfig.hiddenRowList) {
-          this.$set(this.tableConfig, 'hiddenRowList', []);
-        }
-        this.componentIndex = this.tableConfig.tableList.filter(d => !!d.component && !this.$utils.isEmpty(d.component)).length;
       } else {
         this.initTable();
       }
@@ -588,7 +532,6 @@ export default {
           }
         }
       }
-      this.$emit('updateItemList', '', '', this.tableConfig);
     },
     //撤销
     fallback() {
@@ -609,7 +552,6 @@ export default {
         }
         this.isReady = true;
       }
-      this.$emit('updateItemList', '', '', this.tableConfig);
     },
     //给恢复队列增加历史数据
     addHistory(isFallback) {
@@ -642,23 +584,20 @@ export default {
     },
     initTable() {
       //使用init初始化表格
-      if (this.init && this.init.length == 2) {
-        const row = this.config?.row || this.init[0];
-        const col = this.config?.col || this.init[1];
-        this.$set(this.tableConfig, 'headerList', []);
-        this.$set(this.tableConfig, 'lefterList', []);
-        this.$set(this.tableConfig, 'tableList', []);
-        this.$set(this.tableConfig, 'hiddenRowList', []);
+      const row = this.config?.row || 4;
+      const col = this.config?.col || 4;
+      this.$set(this.tableConfig, 'headerList', []);
+      this.$set(this.tableConfig, 'lefterList', []);
+      this.$set(this.tableConfig, 'tableList', []);
+      for (let c = 0; c < col; c++) {
+        this.tableConfig.headerList.push({ width: this.defaultWidth });
+      }
+      for (let r = 0; r < row; r++) {
+        this.tableConfig.lefterList.push({ height: this.minHeight });
+      }
+      for (let r = 0; r < row; r++) {
         for (let c = 0; c < col; c++) {
-          this.tableConfig.headerList.push({ width: this.defaultWidth });
-        }
-        for (let r = 0; r < row; r++) {
-          this.tableConfig.lefterList.push({ height: this.minHeight });
-        }
-        for (let r = 0; r < row; r++) {
-          for (let c = 0; c < col; c++) {
-            this.tableConfig.tableList.push({ row: r, col: c });
-          }
+          this.tableConfig.tableList.push({ row: r, col: c });
         }
       }
     },
@@ -725,27 +664,11 @@ export default {
     },
     //获取真正的rowspan，排除隐藏行
     getActualRowSpan(cell) {
-      if (this.tableConfig.hiddenRowList.length > 0 && cell.rowspan && cell.rowspan > 1) {
+      if (cell.rowspan && cell.rowspan > 1) {
         let rowspan = cell.rowspan;
-        for (let i = cell.row + 1; i < cell.row + cell.rowspan; i++) {
-          if (this.tableConfig.hiddenRowList.includes(i)) {
-            rowspan -= 1;
-          }
-        }
         return rowspan;
       }
       return cell.rowspan;
-    },
-    //提供外部使用，返回表单数据
-    getFormData() {
-      const formItemList = [];
-      for (let key in this.formData) {
-        const formitem = this.formItemList.find(d => d.uuid === key);
-        if (formitem) {
-          formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
-        }
-      }
-      return formItemList;
     },
     //是否包含class
     hasClass(classname) {
@@ -774,54 +697,6 @@ export default {
         }
       }
       return fz;
-    },
-    //根据联动配置初始化watch
-    initReactionWatch() {
-      let needWatch = false;
-      if (this.tableConfig.reaction) {
-        for (let key in this.tableConfig.reaction) {
-          if (this.tableConfig.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
-            needWatch = true;
-            break;
-          }
-        }
-      }
-      if (needWatch && this.formData) {
-        this.$watch(
-          'formDataForWatch',
-          (newVal, oldVal) => {
-            for (let key in this.tableConfig.reaction) {
-              this.tableConfig.reaction[key].forEach(reaction => {
-                if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
-                  if (key === 'hiderow') {
-                    reaction.rows.forEach(row => {
-                      this.displayRow(row);
-                    });
-                  } else if (key === 'displayrow') {
-                    reaction.rows.forEach(row => {
-                      this.hideRow(row);
-                    });
-                  }
-                }
-              });
-            }
-          },
-          { deep: true, immediate: true }
-        );
-      }
-    },
-    //隐藏行
-    hideRow(row) {
-      if (!this.tableConfig.hiddenRowList.includes(row)) {
-        this.tableConfig.hiddenRowList.push(row);
-      }
-    },
-    //显示行
-    displayRow(row) {
-      const index = this.tableConfig.hiddenRowList.findIndex(d => d === row);
-      if (index > -1) {
-        this.tableConfig.hiddenRowList.splice(index, 1);
-      }
     },
     //获取字体颜色类
     getColorClass(type) {
@@ -904,29 +779,11 @@ export default {
       });
       this.$forceUpdate();
     },
-    //激活单元格为可输入状态
-    focusCell(cell) {
-      if (!cell.component && cell === this.handlerCell) {
-        this.$set(cell, '_isEditing', true);
-      }
-    },
-    deleteFormItem(item) { //删除组件
-      if (item.component) {
-        this.addHistory();
-        this.$emit('removeComponent', item.component.uuid);
-        this.$delete(item, 'content');
-        this.$delete(item, 'component');
-      }
-    },
     //清空单元格内容
     clearCell() {
       if (this.handlerCell) {
         this.addHistory();
-        if (this.handlerCell.component) {
-          this.$emit('removeComponent', this.handlerCell.component.uuid);
-        }
         this.$delete(this.handlerCell, 'content');
-        this.$delete(this.handlerCell, 'component');
       }
     },
     //清空单元格格式
@@ -966,7 +823,6 @@ export default {
           }
         }
         this.unselectCell();
-        this.$emit('updateItemList', '', '', this.tableConfig);
       }
     },
     //删除一列
@@ -998,7 +854,6 @@ export default {
           }
         }
         this.unselectCell();
-        this.$emit('updateItemList', '', '', this.tableConfig);
       }
     },
     //插入一行
@@ -1164,7 +1019,6 @@ export default {
           for (let i = 1; i < this.selectedCell.length; i++) {
             const cell = this.selectedCell[i];
             this.$delete(cell, 'content');
-            this.$delete(cell, 'component');
             this.$set(cell, 'rowspan', 1);
             this.$set(cell, 'colspan', 1);
           }
@@ -1350,18 +1204,21 @@ export default {
       }
       return false;
     },
-    isHideRow(index) {
-      if (this.tableConfig.reaction && this.tableConfig.reaction.hiderow) {
-        for (let i = 0; i < this.tableConfig.reaction.hiderow.length; i++) {
-          const hiderow = this.tableConfig.reaction.hiderow[i];
-          if (hiderow.rows && hiderow.rows.length > 0 && hiderow.rows.includes(index)) {
-            return true;
-          }
-        }
-      }
-      return false;
-    },
     windowKeypress(event) {
+      this.tableConfig.lefterList.forEach((item, index) => {
+        if (this.$refs[`lefter${index}`] && this.$refs[`lefter${index}`][0].offsetHeight) {
+          item.height = this.$refs[`lefter${index}`][0].offsetHeight;
+        }
+      });
+      if (event?.code == 'Enter') {
+        const range = window.getSelection().getRangeAt(0);
+        const br = document.createElement('br');
+        range.deleteContents();
+        range.insertNode(br);
+        range.collapse(false);
+        event.preventDefault();
+        return false;
+      }
       if (event.key == 'c' && event.ctrlKey) {
         //复制组件
         if (!event.target._value && this.hasCopy) {
@@ -1383,7 +1240,7 @@ export default {
   filter: {},
   computed: {
     hasCopy() {
-      if (this.handlerCell && this.handlerCell.component && !this.$utils.isEmpty(this.handlerCell.component) && !this.handlerCell.component.hasOwnProperty('inherit')) {
+      if (this.handlerCell) {
         return true;
       }
       return false;
@@ -1399,35 +1256,6 @@ export default {
           width += this.tableConfig.headerList[cell.col + i].width;
         }
         return width - 2; //减掉左右边框的宽度;
-      };
-    },
-    //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
-    formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
-    },
-    //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
-    conditionData() {
-      return uuid => {
-        const conditionData = {};
-        if (this.tableConfig.reaction) {
-          for (let key in this.tableConfig.reaction) {
-            const reactionList = this.tableConfig.reaction[key];
-            if (reactionList && reactionList.length > 0) {
-              reactionList.forEach(reaction => {
-                if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
-                  reaction.conditionGroupList.forEach(cg => {
-                    if (cg.conditionList) {
-                      cg.conditionList.forEach(c => {
-                        conditionData[c.uuid] = c.valueList;
-                      });
-                    }
-                  });
-                }
-              });
-            }
-          }
-        }
-        return conditionData[uuid];
       };
     },
     tableSize() {
@@ -1451,16 +1279,14 @@ export default {
     shownLefterList() {
       const lefterList = [];
       this.tableConfig.lefterList.forEach((left, index) => {
-        if (!this.tableConfig.hiddenRowList.includes(index)) {
-          const newLeft = this.$utils.deepClone(left);
-          newLeft.index = index;
-          lefterList.push(newLeft);
-        }
+        const newLeft = this.$utils.deepClone(left);
+        newLeft.index = index;
+        lefterList.push(newLeft);
       });
       if (this.mode !== 'edit') {
         //只读模式，从下面消除所有没有设置组件的单元格
         for (let i = lefterList.length - 1; i >= 0; i--) {
-          if (!this.tableConfig.tableList.find(cell => cell.row === i && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
+          if (!this.tableConfig.tableList.find(cell => cell.row === i && (cell.content || this.checkCellIsInSpan(cell)))) {
             lefterList.splice(i, 1);
           }
         }
@@ -1486,7 +1312,7 @@ export default {
         return false;
       } else {
         const cell = this.selectedCell[0];
-        return (cell.hasOwnProperty('content') && cell.content != null && cell.content != '') || (cell.hasOwnProperty('component') && !this.$utils.isEmpty(cell.component));
+        return (cell.hasOwnProperty('content') && cell.content != null && cell.content != '');
       }
     },
     //是否允许清空单元格格式
@@ -1570,9 +1396,7 @@ export default {
       const tableList = [];
       this.cellList.forEach(cell => {
         if ((cell.colspan && cell.colspan > 1) || (cell.rowspan && cell.rowspan > 1)) {
-          if (!this.tableConfig.hiddenRowList.includes(cell.row)) {
-            tableList.push(cell);
-          }
+          tableList.push(cell);
         }
       });
       tableList.sort((a, b) => {
@@ -1674,21 +1498,6 @@ export default {
         }
       },
       deep: true
-    },
-    data: {
-      handler: function(val) {
-        if (val && val instanceof Array) {
-          //将后台的数据格式转换回原始的数据格式
-          this.formData = {};
-          val.forEach(element => {
-            this.$set(this.formData, element.attributeUuid, element.dataList);
-          });
-        } else if (val && val instanceof Object) {
-          this.formData = this.$utils.deepClone(val);
-        }
-      },
-      deep: true,
-      immediate: true
     }
   }
 };
