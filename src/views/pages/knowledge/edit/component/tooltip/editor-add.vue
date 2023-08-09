@@ -237,8 +237,8 @@ export default {
     gap: 2px;
   }
   .cell {
-    width: 16px;
-    height: 16px;
+    width: 14;
+    height: 14px;
   }
 }
 .table-select {
