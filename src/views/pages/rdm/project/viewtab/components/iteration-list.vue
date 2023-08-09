@@ -29,7 +29,7 @@
           <Progress
             status="active"
             :percent="parseFloat(((iteration.doneIssueCount / iteration.issueCount) * 100).toFixed(2))"
-            :stroke-width="20"
+            :stroke-width="18"
             text-inside
           />
         </div>
