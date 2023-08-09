@@ -237,7 +237,7 @@ export default {
     gap: 2px;
   }
   .cell {
-    width: 14;
+    width: 14px;
     height: 14px;
   }
 }
