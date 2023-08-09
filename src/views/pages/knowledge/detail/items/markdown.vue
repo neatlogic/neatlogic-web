@@ -56,6 +56,10 @@ export default {
 .mavon-markdown-editor-container .v-note-show {
   overflow-y: hidden !important;
 }
+.mavon-markdown-editor-container.markdown-body table{
+  /* 解决github-markdown 样式影响，导致表格，表头和内容之前有一个很大的空行*/
+  display: inline-table !important;
+}
 </style>
 <style lang="less" scoped>
  section {
