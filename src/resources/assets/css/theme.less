@@ -2,7 +2,75 @@
 
 @import (reference) './variable.less';
 
-.theme(@type, @op-color,@op-color-opacity, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @disabled-bg, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow, @tip-color, @primary-color, @primary-active-color, @primary-hover-color, @link-color, @info-color, @info-active-color, @info-hover-color, @info-bg-color, @success-color , @success-active-color , @success-hover-color, @success-bg-color, @warning-color, @warning-active-color, @warning-hover-color, @warning-bg-color, @error-color, @error-active-color, @error-hover-color, @error-bg-color, @invert-bg, @pending-color, @modal-bg-color, @modal-header-bg-color, @table-stripe-color, @topbg-color, @bg-grey, @bg-grey-hover, @table-hover-color, @menu-select, @menu-hover, @top-active, @menu-cmdbselect, @th-bg-color, @form-sheet-style-setting, @tag-bg, @primary-color20, @form-text-disabled, @form-disabled, @form-disabled-after, @switch-bg,@bg-dark-grey,@dot-color) {
+.theme(
+  @type,
+  @op-color,
+  @op-color-opacity,
+  @title-color,
+  @text-color,
+  @icon-color,
+  @dividing-color,
+  @mongolia-color,
+  @background-color,
+  @blockbg-color,
+  @gray-color,
+  @border-color-base,
+  @boxshadow-main,
+  @boxshadow-bolck,
+  @disable-color,
+  @disabled-bg,
+  @primary-grey,
+  @selected-bg,
+  @placeholder-color,
+  @topo-node,
+  @footer-btn-bg,
+  @shadow,
+  @main-shadow,
+  @tip-color,
+  @primary-color,
+  @primary-active-color,
+  @primary-hover-color,
+  @link-color,
+  @info-color,
+  @info-active-color,
+  @info-hover-color,
+  @info-bg-color,
+  @success-color,
+  @success-active-color,
+  @success-hover-color,
+  @success-bg-color,
+  @warning-color,
+  @warning-active-color,
+  @warning-hover-color,
+  @warning-bg-color,
+  @error-color,
+  @error-active-color,
+  @error-hover-color,
+  @error-bg-color,
+  @invert-bg,
+  @pending-color,
+  @modal-bg-color,
+  @modal-header-bg-color,
+  @table-stripe-color,
+  @topbg-color,
+  @bg-grey,
+  @bg-grey-hover,
+  @table-hover-color,
+  @menu-select,
+  @menu-hover,
+  @top-active,
+  @menu-cmdbselect,
+  @th-bg-color,
+  @form-sheet-style-setting,
+  @tag-bg,
+  @primary-color20,
+  @form-text-disabled,
+  @form-disabled,
+  @form-disabled-after,
+  @switch-bg,
+  @bg-dark-grey,
+  @dot-color
+  ) {
   // @disable-color : tint(@icon-color, 70%);
   @bg-shadow: 0px 10px 35px 0px @boxshadow-main;
   @white: @op-color;
@@ -423,7 +491,8 @@
 
   //表格嵌表格，内层表格样式
   .inner-table {
-    > .tstable-container,.table-container {
+    > .tstable-container,
+    .table-container {
       .folder-tr {
         background: @bg-grey-hover;
 
@@ -509,7 +578,8 @@
     //border-top: 1px solid var(--border-color, @border-color-base);
   }
 
-  .tstable-container,.table-container {
+  .tstable-container,
+  .table-container {
     //border-top: 1px solid var(--border-color, @border-color-base);
     &.tstable-allborder {
       border-top: 1px solid var(--border-color, @border-color-base);
@@ -542,7 +612,8 @@
 
     &.border {
       .tstable-body {
-        > .tbody-main,.tbody {
+        > .tbody-main,
+        .tbody {
           //添加层级关系主要是为了防止存在表格嵌套表格时导致各种样式覆盖问题
           > tr:not(:last-of-type) {
             > td {
@@ -559,7 +630,8 @@
         margin-bottom: 2px;
       }
 
-      .tstable-body,.table {
+      .tstable-body,
+      .table {
         th,
         thead {
           background: @td-bg-color;
@@ -738,7 +810,8 @@
     }
 
     &.tstable-nohover {
-      .tstable-body,.table {
+      .tstable-body,
+      .table {
         tbody {
           tr {
             &:hover {
@@ -2024,7 +2097,9 @@
     border-color: var(--primary-color, @primary-color);
     background: @op-color;
   }
-
+  .ck.ck-balloon-panel {
+    z-index: 1001;
+  }
   .cke_editable {
     color: @text-color;
 
@@ -2614,7 +2689,6 @@
   }
 
   .@{iv-prev}select-dropdown {
-    max-height: 300px;
     background-color: @blockbg-color;
     box-shadow: 0 1px 6px @boxshadow-bolck;
 

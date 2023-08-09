@@ -5,6 +5,8 @@
     contenteditable="false"
     class="knowledge-markdown-container"
     @contextmenu.prevent
+    @keydown.stop
+    @paste.stop
     @click="
       event => {
         event.stopPropagation();
@@ -198,36 +200,21 @@ export default {
       this.$set(this, 'tableCol', col);
     },
     selectedTable() {
-      // 处理几行几列
-      const rows = this.tableRow;
-      const columns = this.tableCol;
+      // 根据选择的行列，生成表格
+      const row = this.tableRow;
+      const col = this.tableCol;
+      let result = '';
 
-      let newStr = '';
+      // 生成表头
+      result += '|   '.repeat(col) + '|\n';
+      result += '|---'.repeat(col) + '|\n';
 
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < columns; j++) {
-          if (j === 0) {
-            newStr += '|   ';
-          } else if (j === columns - 1) {
-            newStr += '|   |\n';
-          } else {
-            newStr += '|-';
-          }
-        }
-
-        if (i < rows - 1) {
-          for (let k = 0; k < columns; k++) {
-            if (k === 0) {
-              newStr += '|-';
-            } else if (k === columns - 1) {
-              newStr += '|-|\n';
-            } else {
-              newStr += '|-';
-            }
-          }
-        }
+      // 生成每行的内容
+      for (let i = 0; i < row; i++) {
+        result += '|   '.repeat(col) + '|\n';
       }
-      this.value = `${this.value}\n${newStr}`;
+      // 返回生成的字符串
+      this.value = `${this.value}\n${result}`;
     }
   },
   computed: {},
@@ -237,6 +224,10 @@ export default {
 <style>
 .mavon-markdown-editor-container .v-note-show {
   overflow-y: hidden !important;
+}
+.mavon-markdown-editor-container.markdown-body table{
+  /* 解决github-markdown 样式影响，导致表格，表头和内容之前有一个很大的空行*/
+  display: inline-table !important;
 }
 </style>
 <style lang="less" scoped>

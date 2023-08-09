@@ -58,7 +58,7 @@ export default {
       'titleType': 'table',
       'label': $t('term.framework.theme.tablestripecolor'),
       'param': '--table-stripe-color',
-      'value': '#333547',
+      'value': '#f7f8fa',
       'type': 'common',
       'input': 'colorpicker',
       'example': 'table'
