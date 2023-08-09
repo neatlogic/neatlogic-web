@@ -50,7 +50,15 @@
               :iconSize="32"
             ></UserCard></div>
             <div v-if="user.userTypeList && user.userTypeList.length > 0" class="text-grey">
-              <span>{{ user.userTypeList[0].userTypeName }}</span>
+              <span v-if="user.userTypeList.length == 1">{{ user.userTypeList[0].userTypeName }}</span>
+              <span v-if="user.userTypeList.length > 1">
+                <Tooltip>
+                  <span class="cursor">{{ user.userTypeList[0].userTypeName }}<i class="tsfont-drop-down"></i></span>
+                  <ul slot="content">
+                    <li v-for="(usertype, uindex) in user.userTypeList.slice(1)" :key="uindex">{{ usertype.userTypeName }}</li>
+                  </ul>
+                </Tooltip>
+              </span>
               <span v-if="user.isNew" class="text-success">·{{ $t('term.rdm.new') }}</span>
             </div>
           </div>

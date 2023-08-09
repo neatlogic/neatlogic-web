@@ -243,42 +243,45 @@ export default class Gantt {
         this.gantt_end = task._end;
       }
     }
-
-    this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
-    this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
-    // add date padding on both sides
-    if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
-      this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
-      this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
-    } else if (this.view_is(VIEW_MODE.MONTH)) {
-      this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
-      this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
-    } else if (this.view_is(VIEW_MODE.YEAR)) {
-      this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
-      this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
-    } else {
-      this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
-      this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
+    if (this.gantt_start && this.gantt_end) {
+      this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
+      this.gantt_end = date_utils.start_of(this.gantt_end, 'day');
+      // add date padding on both sides
+      if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
+        this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
+        this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
+      } else if (this.view_is(VIEW_MODE.MONTH)) {
+        this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
+        this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
+      } else if (this.view_is(VIEW_MODE.YEAR)) {
+        this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
+        this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
+      } else {
+        this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
+        this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
+      }
     }
   }
 
   setup_date_values() {
-    this.dates = [];
-    let cur_date = null;
+    if (this.gantt_start && this.gantt_end) {
+      this.dates = [];
+      let cur_date = null;
 
-    while (cur_date === null || cur_date < this.gantt_end) {
-      if (!cur_date) {
-        cur_date = date_utils.clone(this.gantt_start);
-      } else {
-        if (this.view_is(VIEW_MODE.YEAR)) {
-          cur_date = date_utils.add(cur_date, 1, 'year');
-        } else if (this.view_is(VIEW_MODE.MONTH)) {
-          cur_date = date_utils.add(cur_date, 1, 'month');
+      while (cur_date === null || cur_date < this.gantt_end) {
+        if (!cur_date) {
+          cur_date = date_utils.clone(this.gantt_start);
         } else {
-          cur_date = date_utils.add(cur_date, this.options.step, 'hour');
+          if (this.view_is(VIEW_MODE.YEAR)) {
+            cur_date = date_utils.add(cur_date, 1, 'year');
+          } else if (this.view_is(VIEW_MODE.MONTH)) {
+            cur_date = date_utils.add(cur_date, 1, 'month');
+          } else {
+            cur_date = date_utils.add(cur_date, this.options.step, 'hour');
+          }
         }
+        this.dates.push(cur_date);
       }
-      this.dates.push(cur_date);
     }
   }
 
@@ -291,16 +294,18 @@ export default class Gantt {
 
   render() {
     this.clear();
-    this.setup_layers();
-    //画固定头部
-    this.make_grid_header();
-    this.make_grid();
-    //this.make_dates();
-    this.make_bars();
-    this.make_arrows();
-    this.map_arrows_on_bars();
-    this.set_width();
-    this.set_scroll_position();
+    if (this.tasks && this.tasks.length > 0) {
+      this.setup_layers();
+      //画固定头部
+      this.make_grid_header();
+      this.make_grid();
+      //this.make_dates();
+      this.make_bars();
+      this.make_arrows();
+      this.map_arrows_on_bars();
+      this.set_width();
+      this.set_scroll_position();
+    }
   }
 
   setup_layers() {
@@ -332,181 +337,189 @@ export default class Gantt {
   }
 
   make_grid_background() {
-    const grid_width = this.dates.length * this.options.column_width;
-    //const grid_height = this.options.header_height + this.options.padding + (this.options.bar_height + this.options.padding) * this.tasks.length;
-    //6是滚动条的宽度，避免因为出现滚动条导致两边滚动高度不一致
-    const grid_height = (this.options.bar_height + this.options.padding) * this.tasks.length;
+    if (this.dates) {
+      const grid_width = this.dates.length * this.options.column_width;
+      //const grid_height = this.options.header_height + this.options.padding + (this.options.bar_height + this.options.padding) * this.tasks.length;
+      //6是滚动条的宽度，避免因为出现滚动条导致两边滚动高度不一致
+      const grid_height = (this.options.bar_height + this.options.padding) * this.tasks.length;
 
-    createSVG('rect', {
-      x: 0,
-      y: 0,
-      width: grid_width,
-      height: grid_height,
-      class: 'grid-background',
-      append_to: this.layers.grid
-    });
+      createSVG('rect', {
+        x: 0,
+        y: 0,
+        width: grid_width,
+        height: grid_height,
+        class: 'grid-background',
+        append_to: this.layers.grid
+      });
 
-    $.attr(this.$svg, {
-      height: grid_height // + this.options.padding
+      $.attr(this.$svg, {
+        height: grid_height // + this.options.padding
       //width: '100%'
-    });
+      });
+    }
   }
 
   make_grid_rows() {
-    const rows_layer = createSVG('g', { append_to: this.layers.grid });
-    const lines_layer = createSVG('g', { append_to: this.layers.grid });
+    if (this.dates) {
+      const rows_layer = createSVG('g', { append_to: this.layers.grid });
+      const lines_layer = createSVG('g', { append_to: this.layers.grid });
 
-    const row_width = this.dates.length * this.options.column_width;
-    const row_height = this.options.bar_height + this.options.padding;
+      const row_width = this.dates.length * this.options.column_width;
+      const row_height = this.options.bar_height + this.options.padding;
 
-    //let row_y = this.options.header_height + this.options.padding / 2;
-    let row_y = 0; //this.options.padding / 2;
+      //let row_y = this.options.header_height + this.options.padding / 2;
+      let row_y = 0; //this.options.padding / 2;
 
-    for (let task of this.tasks) {
-      const rowGroup = createSVG('g', { taskId: task.id, append_to: rows_layer });
-      createSVG('rect', {
-        x: 0,
-        y: row_y,
-        width: row_width,
-        height: row_height,
-        class: 'grid-row',
-        id: 'group-row-' + task.id,
-        append_to: rowGroup
-      });
+      for (let task of this.tasks) {
+        const rowGroup = createSVG('g', { taskId: task.id, append_to: rows_layer });
+        createSVG('rect', {
+          x: 0,
+          y: row_y,
+          width: row_width,
+          height: row_height,
+          class: 'grid-row',
+          id: 'group-row-' + task.id,
+          append_to: rowGroup
+        });
 
-      $.on(rowGroup, 'mouseleave', e => {
-        const tid = e.currentTarget.getAttribute('taskId');
-        if (tid) {
-          let locaterGroup = rows_layer.querySelector('#locater_' + tid);
-          if (locaterGroup) {
-            locaterGroup.remove();
+        $.on(rowGroup, 'mouseleave', e => {
+          const tid = e.currentTarget.getAttribute('taskId');
+          if (tid) {
+            let locaterGroup = rows_layer.querySelector('#locater_' + tid);
+            if (locaterGroup) {
+              locaterGroup.remove();
+            }
           }
-        }
-      });
-      $.on(rowGroup, 'mouseenter', e => {
-        const tid = e.currentTarget.getAttribute('taskId');
-        if (tid) {
-          const bar = this.layers.bar.querySelector('#bar_' + tid);
-          const row = rowGroup.querySelector('#group-row-' + tid);
-          let icon;
-          if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(bar.getAttribute('x'))) {
-            icon = '#tsfont-arrow-right';
-          } else if (this.$container.scrollLeft > parseFloat(bar.getAttribute('x')) + parseFloat(bar.getAttribute('width'))) {
-            icon = '#tsfont-arrow-left';
-          }
-          if (icon) {
-            const rowY = parseFloat(row.getAttribute('y'));
-            const height = parseFloat(row.getAttribute('height'));
+        });
+        $.on(rowGroup, 'mouseenter', e => {
+          const tid = e.currentTarget.getAttribute('taskId');
+          if (tid) {
+            const bar = this.layers.bar.querySelector('#bar_' + tid);
+            const row = rowGroup.querySelector('#group-row-' + tid);
+            let icon;
+            if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(bar.getAttribute('x'))) {
+              icon = '#tsfont-arrow-right';
+            } else if (this.$container.scrollLeft > parseFloat(bar.getAttribute('x')) + parseFloat(bar.getAttribute('width'))) {
+              icon = '#tsfont-arrow-left';
+            }
+            if (icon) {
+              const rowY = parseFloat(row.getAttribute('y'));
+              const height = parseFloat(row.getAttribute('height'));
 
-            let locaterGroup = rowGroup.querySelector('#locater_' + tid);
-            if (!locaterGroup) {
-              locaterGroup = createSVG('g', {
-                id: 'locater_' + tid,
-                taskId: tid,
-                class: 'locater-group',
-                append_to: rowGroup
-              });
-              createSVG('circle', {
-                cx: this.$container.scrollLeft + 10 + 8,
-                cy: rowY + 10 + 8,
-                r: 8,
-                fill: 'transparent',
-                append_to: locaterGroup
-              });
-              createSVG('use', {
-                x: this.$container.scrollLeft + 10,
-                y: rowY + 10,
-                width: 16,
-                height: 16,
-                href: icon,
-                class: 'locater',
-                append_to: locaterGroup
+              let locaterGroup = rowGroup.querySelector('#locater_' + tid);
+              if (!locaterGroup) {
+                locaterGroup = createSVG('g', {
+                  id: 'locater_' + tid,
+                  taskId: tid,
+                  class: 'locater-group',
+                  append_to: rowGroup
+                });
+                createSVG('circle', {
+                  cx: this.$container.scrollLeft + 10 + 8,
+                  cy: rowY + 10 + 8,
+                  r: 8,
+                  fill: 'transparent',
+                  append_to: locaterGroup
+                });
+                createSVG('use', {
+                  x: this.$container.scrollLeft + 10,
+                  y: rowY + 10,
+                  width: 16,
+                  height: 16,
+                  href: icon,
+                  class: 'locater',
+                  append_to: locaterGroup
+                });
+              }
+              $.on(locaterGroup, 'click', le => {
+                const letid = le.currentTarget.getAttribute('taskId');
+                const tbar = this.layers.bar.querySelector('#bar_' + letid);
+                if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(tbar.getAttribute('x'))) {
+                  this.scrollLeft = tbar.getAttribute('x') - 10;
+                  this.$container.scrollLeft = tbar.getAttribute('x') - 10;
+                } else if (this.$container.scrollLeft > parseFloat(tbar.getAttribute('x')) + parseFloat(tbar.getAttribute('width'))) {
+                  this.scrollLeft = tbar.getAttribute('x') - 10;
+                  this.$container.scrollLeft = tbar.getAttribute('x') - 10;
+                }
               });
             }
-            $.on(locaterGroup, 'click', le => {
-              const letid = le.currentTarget.getAttribute('taskId');
-              const tbar = this.layers.bar.querySelector('#bar_' + letid);
-              if (this.$container.scrollLeft + this.$container.offsetWidth < parseFloat(tbar.getAttribute('x'))) {
-                this.scrollLeft = tbar.getAttribute('x') - 10;
-                this.$container.scrollLeft = tbar.getAttribute('x') - 10;
-              } else if (this.$container.scrollLeft > parseFloat(tbar.getAttribute('x')) + parseFloat(tbar.getAttribute('width'))) {
-                this.scrollLeft = tbar.getAttribute('x') - 10;
-                this.$container.scrollLeft = tbar.getAttribute('x') - 10;
-              }
-            });
           }
-        }
-      });
+        });
 
-      createSVG('line', {
-        x1: 0,
-        y1: row_y + row_height,
-        x2: row_width,
-        y2: row_y + row_height,
-        class: 'row-line',
-        append_to: lines_layer
-      });
+        createSVG('line', {
+          x1: 0,
+          y1: row_y + row_height,
+          x2: row_width,
+          y2: row_y + row_height,
+          class: 'row-line',
+          append_to: lines_layer
+        });
 
-      row_y += this.options.bar_height + this.options.padding;
+        row_y += this.options.bar_height + this.options.padding;
+      }
     }
   }
 
   make_grid_header() {
-    const header_width = this.dates.length * this.options.column_width;
-    const header_height = this.options.header_height + 10;
-    createSVG('rect', {
-      x: 0,
-      y: 0,
-      width: header_width,
-      height: header_height,
-      class: 'grid-header',
-      append_to: this.layers.header
-    });
-    $.attr(this.$header, {
-      width: header_width,
-      height: header_height
-    });
-    this.make_dates();
+    if (this.dates) {
+      const header_width = this.dates.length * this.options.column_width;
+      const header_height = this.options.header_height + 10;
+      createSVG('rect', {
+        x: 0,
+        y: 0,
+        width: header_width,
+        height: header_height,
+        class: 'grid-header',
+        append_to: this.layers.header
+      });
+      $.attr(this.$header, {
+        width: header_width,
+        height: header_height
+      });
+      this.make_dates();
+    }
   }
 
   make_grid_ticks() {
-    let tick_x = 0;
-    //let tick_y = this.options.header_height + this.options.padding / 2;
-    let tick_y = 0;//this.options.padding / 2;
-    let tick_height = (this.options.bar_height + this.options.padding) * this.tasks.length;
+    if (this.dates) {
+      let tick_x = 0;
+      //let tick_y = this.options.header_height + this.options.padding / 2;
+      let tick_y = 0;//this.options.padding / 2;
+      let tick_height = (this.options.bar_height + this.options.padding) * this.tasks.length;
 
-    for (let date of this.dates) {
-      let tick_class = 'tick';
-      // thick tick for monday
-      if (this.view_is(VIEW_MODE.DAY) && date.getDate() === 1) {
-        tick_class += ' thick';
-      }
-      // thick tick for first week
-      if (this.view_is(VIEW_MODE.WEEK) && date.getDate() >= 1 && date.getDate() < 8) {
-        tick_class += ' thick';
-      }
-      // thick ticks for quarters
-      if (this.view_is(VIEW_MODE.MONTH) && date.getMonth() % 3 === 0) {
-        tick_class += ' thick';
-      }
+      for (let date of this.dates) {
+        let tick_class = 'tick';
+        // thick tick for monday
+        if (this.view_is(VIEW_MODE.DAY) && date.getDate() === 1) {
+          tick_class += ' thick';
+        }
+        // thick tick for first week
+        if (this.view_is(VIEW_MODE.WEEK) && date.getDate() >= 1 && date.getDate() < 8) {
+          tick_class += ' thick';
+        }
+        // thick ticks for quarters
+        if (this.view_is(VIEW_MODE.MONTH) && date.getMonth() % 3 === 0) {
+          tick_class += ' thick';
+        }
 
-      createSVG('path', {
-        d: `M ${tick_x} ${tick_y} v ${tick_height}`,
-        class: tick_class,
-        append_to: this.layers.grid
-      });
+        createSVG('path', {
+          d: `M ${tick_x} ${tick_y} v ${tick_height}`,
+          class: tick_class,
+          append_to: this.layers.grid
+        });
 
-      if (this.view_is(VIEW_MODE.MONTH)) {
-        tick_x += (date_utils.get_days_in_month(date) * this.options.column_width) / 30;
-      } else {
-        tick_x += this.options.column_width;
+        if (this.view_is(VIEW_MODE.MONTH)) {
+          tick_x += (date_utils.get_days_in_month(date) * this.options.column_width) / 30;
+        } else {
+          tick_x += this.options.column_width;
+        }
       }
     }
   }
 
   make_grid_highlights() {
     // highlight today's date
-    if (this.view_is(VIEW_MODE.DAY)) {
+    if (this.view_is(VIEW_MODE.DAY) && this.gantt_start) {
       const x = (date_utils.diff(date_utils.today(), this.gantt_start, 'hour') / this.options.step) * this.options.column_width;
       const y = 0;
 
@@ -553,13 +566,16 @@ export default class Gantt {
   }
 
   get_dates_to_draw() {
-    let last_date = null;
-    const dates = this.dates.map((date, i) => {
-      const d = this.get_date_info(date, last_date, i);
-      last_date = date;
-      return d;
-    });
-    return dates;
+    if (this.dates) {
+      let last_date = null;
+      const dates = this.dates.map((date, i) => {
+        const d = this.get_date_info(date, last_date, i);
+        last_date = date;
+        return d;
+      });
+      return dates;
+    }
+    return [];
   }
 
   get_date_info(date, last_date, i) {
@@ -650,23 +666,27 @@ export default class Gantt {
   }
 
   set_width() {
-    const cur_width = this.$svg.getBoundingClientRect().width;
-    const actual_width = this.$svg.querySelector('.grid .grid-row').getAttribute('width');
-    //if (cur_width < actual_width) {
-    this.$svg.setAttribute('width', actual_width);
-    this.$header.setAttribute('width', actual_width);
+    //const cur_width = this.$svg.getBoundingClientRect().width;
+    if (this.$svg.querySelector('.grid .grid-row')) {
+      const actual_width = this.$svg.querySelector('.grid .grid-row').getAttribute('width');
+      //if (cur_width < actual_width) {
+      this.$svg.setAttribute('width', actual_width);
+      this.$header.setAttribute('width', actual_width);
     //}
+    }
   }
 
   set_scroll_position() {
-    const parent_element = this.$svg.parentElement;
-    if (!parent_element) return;
+    if (this.dates && this.tasks && this.tasks.length > 0) {
+      const parent_element = this.$svg.parentElement;
+      if (!parent_element) return;
 
-    const hours_before_first_task = date_utils.diff(this.get_oldest_starting_date(), this.gantt_start, 'hour');
+      const hours_before_first_task = date_utils.diff(this.get_oldest_starting_date(), this.gantt_start, 'hour');
 
-    const scroll_pos = (hours_before_first_task / this.options.step) * this.options.column_width - this.options.column_width;
+      const scroll_pos = (hours_before_first_task / this.options.step) * this.options.column_width - this.options.column_width;
 
-    parent_element.scrollLeft = scroll_pos;
+      parent_element.scrollLeft = scroll_pos;
+    }
   }
 
   bind_grid_click() {
@@ -981,6 +1001,7 @@ export default class Gantt {
    * @memberof Gantt
    */
   clear() {
+    this.$header.innerHTML = '';
     this.$svg.innerHTML = '';
   }
 }
