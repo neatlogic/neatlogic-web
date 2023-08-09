@@ -7,8 +7,8 @@
         class="mb-md cursor"
         @click="selectIssue(issue)"
       >
-        <div :class="{ grid: !!issue.status }">
-          <div v-if="issue.status" class="mr-xs"><IssueStatus :issueData="issue"></IssueStatus></div>
+        <div :class="{ grid: !!issue.status }" class="status-container">
+          <div v-if="issue.status" class="status"><IssueStatus :scale="0.8" :issueData="issue"></IssueStatus></div>
           <div class="overflow" :class="{ 'text-primary': issue.id === issueId }">{{ issue.name }}</div>
         </div>
       </li>
@@ -125,5 +125,14 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: auto auto;
+}
+.status-container {
+  position: relative;
+  padding-right: 50px;
+}
+.status {
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 </style>
