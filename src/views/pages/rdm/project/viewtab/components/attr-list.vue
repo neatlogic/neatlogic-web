@@ -42,10 +42,8 @@
           <div v-else><AttrViewer v-if="attr._isReady" :attrConfig="attr" :issueData="issueDataLocal"></AttrViewer></div>
         </div>
         <div v-else>
-          <div v-if="attr.type === '_name'">
-            <span class="overflow">
-              {{ issueData.name }}
-            </span>
+          <div v-if="attr.type === '_name'" class="overflow">
+            {{ issueData.name }}
           </div>
           <IssueStatus v-else-if="attr.type === '_status'" :issueData="issueData"></IssueStatus>
           <span v-else-if="attr.type === '_createuser'"><UserCard :uuid="issueData.createUser"></UserCard></span>

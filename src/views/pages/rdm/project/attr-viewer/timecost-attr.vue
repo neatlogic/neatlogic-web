@@ -3,8 +3,8 @@
     <span v-if="timecost">
       <span style="display: inline-block">
         <span>{{ timecost }}</span>
-        <span v-if="timecostSum">/{{ $t('term.rdm.used') }}:{{ timecostSum }}</span>
-        <span v-if="timecostSum - timecost > 0" class="text-error">/{{ $t('term.rdm.exceed') }}:{{ timecostSum - timecost }}</span>
+        <span v-if="timecostSum">/{{ $t('term.rdm.used') }}{{ timecostSum }}</span>
+        <span v-if="timecostSum - timecost > 0"><span>/{{ $t('term.rdm.exceed') }}</span><span class="text-error">{{ timecostSum - timecost }}</span></span>
       </span>
       <span v-if="finishRate != null" class="ml-xs" style="display: inline-block; width: 66px">
         <Progress

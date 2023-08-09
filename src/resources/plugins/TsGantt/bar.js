@@ -64,12 +64,12 @@ export default class Bar {
   draw() {
     this.draw_bar();
     this.draw_progress_bar();
-    this.draw_label();
     this.draw_resize_handles();
-    this.draw_confirm();
+    this.draw_label();
+    this.draw_addtask();
   }
 
-  draw_confirm() {
+  draw_addtask() {
     if (this.invalid) {
       const bar = this.$bar;
       this.$confirm = createSVG('use', {
@@ -91,7 +91,7 @@ export default class Bar {
     this.$bar = createSVG('rect', {
       x: this.x,
       y: this.y,
-      width: this.width,
+      width: this.invalid ? 0 : this.width,
       height: this.height,
       rx: this.corner_radius,
       ry: this.corner_radius,
@@ -125,7 +125,7 @@ export default class Bar {
 
   draw_label() {
     createSVG('text', {
-      x: this.x + this.width / 2,
+      x: this.x + (this.invalid ? 0 : this.width / 2),
       y: this.y + this.height / 2,
       innerHTML: this.task.name,
       class: 'bar-label',
