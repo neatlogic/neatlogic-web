@@ -1,9 +1,8 @@
-
 <template>
   <div v-if="isShow">
     <!-- modal -->
     <div v-if="type == 'modal'" v-transfer-dom :data-transfer="transfer">
-      <div :class="modalPrev + 'wrap'" :style="{'background-color':!hasMask?'transparent':''}" @click.stop="maskClose ? onRemove() : ''">
+      <div :style="(zindex ? 'z-index:' + zindex : '') + (';background-color:' + !hasMask ? 'transparent' : '')" :class="modalPrev + 'wrap'" @click.stop="maskClose ? onRemove() : ''">
         <div :class="setClass()" :style="setPosition(top, currentWidth)" @click.stop>
           <!-- 头部header内容设置 -->
           <div v-if="hasHeader == true" :class="isFull ? modalPrev + 'header isfull' : modalPrev + 'header'">
@@ -25,7 +24,7 @@
           <!-- 中间body内容 -->
           <div :class="[modalPrev + 'body', { 'bg-block': bgOp }]" :style="setBody()">
             <div v-if="!hasHeader && showCloseIcon" class="tsfont-close btn-close" @click="onRemove"></div>
-            <div ref="dialogContent" :class="modalPrev + 'content'" :style="setHeight(height,isFull == true && fullscreen == true)">
+            <div ref="dialogContent" :class="modalPrev + 'content'" :style="setHeight(height, isFull == true && fullscreen == true)">
               <slot>
                 <div v-html="content"></div>
               </slot>
@@ -38,7 +37,7 @@
               <!-- 通过参数来渲染btn -->
               <template v-if="btnList">
                 <Button
-                  v-for="(btn,index) in btnList"
+                  v-for="(btn, index) in btnList"
                   :key="index"
                   :type="btn.type"
                   :ghost="btn.ghost || false"
@@ -76,9 +75,9 @@
       v-else
       v-transfer-dom
       :data-transfer="transfer"
-      :class="{isScrollbar:isScrollbar}"
+      :class="{ isScrollbar: isScrollbar }"
     >
-      <div :class="hasMask == true ? modalPrev + 'wrap' : ''" @click.stop="maskClose ? onRemove() : ''">
+      <div :style="zindex ? 'z-index:' + zindex : ''" :class="hasMask == true ? modalPrev + 'wrap' : ''" @click.stop="maskClose ? onRemove() : ''">
         <div :class="setClass(position)" :style="setWidth()" @click.stop>
           <!-- 头部header内容设置 -->
           <div v-if="hasHeader == true" :class="modalPrev + 'header'">
@@ -127,7 +126,7 @@
         <div :class="setClass()" :style="setPosition(top, currentWidth)" @click.stop>
           <!-- 中间body内容 -->
           <div :class="modalPrev + 'body'" :style="setBody()">
-            <div :class="modalPrev + 'content'" :style="setHeight(height,isFull == true && fullscreen == true)">
+            <div :class="modalPrev + 'content'" :style="setHeight(height, isFull == true && fullscreen == true)">
               <slot>
                 <div v-html="content"></div>
               </slot>
@@ -168,6 +167,7 @@ export default {
   directives: { TransferDom, scrollHidden },
   components: {},
   props: {
+    zindex: { type: Number },
     type: {
       //弹窗类型，默认modal中间弹窗；slider侧滑窗
       type: String,
@@ -233,7 +233,8 @@ export default {
         return this.$t('page.confirm');
       }
     },
-    okBtnDisable: {//禁用确定按钮，一般用于调用接口时使用
+    okBtnDisable: {
+      //禁用确定按钮，一般用于调用接口时使用
       type: Boolean,
       default: false
     },
@@ -267,16 +268,18 @@ export default {
       type: Boolean,
       default: false
     },
-    defaultFull: { //modal情况下面是否满屏设置
+    defaultFull: {
+      //modal情况下面是否满屏设置
       type: Boolean,
       default: false
     },
-    btnList: {//底部操作区域的按钮数组
+    btnList: {
+      //底部操作区域的按钮数组
       type: Array
     },
     transfer: {
       type: Boolean,
-      default: true      
+      default: true
     },
     theme: Object, //主题
     titleDes: String, //标题详情
@@ -444,9 +447,10 @@ export default {
           //!this.top &&  (top = this.top);
           style['max-height'] = `calc(100vh - ${remainHeight}px - 24px)`;
         }
-        isFull && Object.assign(style, {
-          width: `${this.currentWidth}`
-        });
+        isFull &&
+          Object.assign(style, {
+            width: `${this.currentWidth}`
+          });
         return style;
       };
     },
@@ -475,7 +479,7 @@ export default {
         }
         return {
           width: '100%',
-          padding: padding + ' !important' 
+          padding: padding + ' !important'
         };
       };
     }
@@ -516,12 +520,12 @@ function getWidth(width) {
 </style>
 <style lang="less" scoped>
 /deep/.ivu-btn-icon-only {
-	padding: 0 15px;
-	width:initial;
+  padding: 0 15px;
+  width: initial;
 }
-.isScrollbar{
-  .tsslider-body{
-    overflow: hidden!important;
+.isScrollbar {
+  .tsslider-body {
+    overflow: hidden !important;
   }
 }
 </style>

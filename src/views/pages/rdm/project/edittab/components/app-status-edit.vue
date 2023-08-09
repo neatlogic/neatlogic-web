@@ -94,6 +94,13 @@
                       {{ auth.text }}
                     </Tag>
                   </span>
+                  <span v-if="getUserList(statusrel).length > 0">
+                    <Divider type="vertical" />
+                    <span class="text-grey mr-sm">{{ $t('term.process.dealwithuser') }}</span>
+                    <Tag v-for="(auth, aindex) in getUserList(statusrel)" :key="aindex">
+                      {{ auth.text }}
+                    </Tag>
+                  </span>
                 </div>
               </div>
             </div>
@@ -208,6 +215,12 @@ export default {
     getAuthList(statusrel) {
       if (statusrel && statusrel.config && statusrel.config.authList && statusrel.config.authList.length > 0) {
         return statusrel.config.authList;
+      }
+      return [];
+    },
+    getUserList(statusrel) {
+      if (statusrel && statusrel.config && statusrel.config.userList && statusrel.config.userList.length > 0) {
+        return statusrel.config.userList;
       }
       return [];
     },

@@ -14,7 +14,8 @@ const roleAddview = () => import('./users/role-addview.vue');
 const authAdduser = () => import('./users/auth-adduser.vue');
 const teamAddview = () => import('./users/team-addview.vue');
 const integrationManage = () => import('./integration/integration-manage.vue');
-const mailserverEdit = () => import('./mailserver/mailserver-edit.vue');
+// const mailserverEdit = () => import('./mailserver/mailserver-edit.vue');
+const notifyConfigManage = () => import('./notifyconfig/notifyconfig-manage.vue');
 const notifytacticsOverview = () => import('./notifytactics/notifytactics-overview.vue');
 const notifytacticsEdit = () => import('./notifytactics/notifytactics-edit.vue');
 const matrixOverview = () => import('./matrix/matrix-overview.vue');
@@ -389,15 +390,27 @@ export default [
       type: 'message'
     }
   },
+  // {
+  //   path: '/mailserver-edit',
+  //   name: 'mailserver-edit',
+  //   component: mailserverEdit,
+  //   meta: {
+  //     title: $t('router.framework.mailserveredit'),
+  //     ismenu: true,
+  //     icon: 'tsfont-mail-s',
+  //     authority: 'MAIL_SERVER_MODIFY',
+  //     type: 'notify'
+  //   }
+  // },
   {
-    path: '/mailserver-edit',
-    name: 'mailserver-edit',
-    component: mailserverEdit,
+    path: '/notifyconfig-manage',
+    name: 'notifyconfig-manage',
+    component: notifyConfigManage,
     meta: {
-      title: $t('router.framework.mailserveredit'),
+      title: $t('router.framework.notifyconfigmanage'),
       ismenu: true,
       icon: 'tsfont-mail-s',
-      authority: 'MAIL_SERVER_MODIFY',
+      authority: 'NOTIFY_CONFIG_MODIFY',
       type: 'notify'
     }
   },

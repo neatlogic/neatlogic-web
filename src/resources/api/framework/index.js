@@ -31,6 +31,7 @@ import license from './license/license';//许可管理
 import globallock from './globallock/globallock';//全局锁
 import databaseview from './databaseview/databaseview';//重建数据库视图
 import tenantconfig from './tenantconfig/tenantconfig';//租户配置信息
+import wechat from './wechat/wechat';// 企业微信
 
 export default {
   menu,
@@ -64,5 +65,6 @@ export default {
   license,
   globallock,
   databaseview,
-  tenantconfig
+  tenantconfig,
+  wechat
 };

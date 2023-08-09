@@ -767,6 +767,7 @@ export default {
       const searchParam = {};
       searchParam.parentId = row.id;
       searchParam.appId = row.appId;
+      searchParam.iteration = this.iteration;
       searchParam.projectId = row.projectId;
       this.$set(row, '_loading', true);
       this.$api.rdm.issue

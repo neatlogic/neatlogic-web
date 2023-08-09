@@ -1103,7 +1103,11 @@
     "syncsceneattr": "同步默认场景属性",
     "matrix": {
       "isoverride": "当前环境已存在同一矩阵，是否覆盖？"
-    }
+    },
+    "corpid": "企业ID",
+    "corpsecret": "应用的凭证密钥",
+    "agentid": "企业应用ID",
+    "smptsslenable": "使用SSL"
   },
   "knowledge": {
     "document": "文档",
@@ -2174,7 +2178,8 @@
     "exceedtimecost": "超出工时",
     "used": "已用",
     "exceed": "超出",
-    "testplan": "测试计划"
+    "testplan": "测试计划",
+    "statusreluser": "状态流转时系统自动设置处理人"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
