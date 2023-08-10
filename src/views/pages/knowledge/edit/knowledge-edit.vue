@@ -21,7 +21,7 @@
         <div class="action-group" style="text-align:right">
           <span class="action-item tsfont-drafts" :class="{disable:disabledBtn.saveDraftDocument}" @click="saveDraftDocument(true)">{{ $t('term.knowledge.savedraft') }}</span>
           <span class="action-item tsfont-send" :class="{disable:disabledBtn.submitDocument}" @click="submitDocument">{{ $t('page.submitaudit') }}</span>
-          <span v-if="hasTemplateAuth" class="action-item tsfont-save" @click="saveTempalet">{{ $t('term.knowledge.savetemplate') }}</span>
+          <span v-if="hasTemplateAuth" class="action-item tsfont-save" @click="saveTempalet">{{ $t('term.rdm.saveastemplate') }}</span>
           <span
             v-if="isMember"
             class="action-item tsfont-history"

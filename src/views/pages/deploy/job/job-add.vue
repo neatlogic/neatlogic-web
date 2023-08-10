@@ -424,7 +424,7 @@ export default {
           this.isShowResultDialog = true;
         }
       } else {
-        this.$Notice.error({ title: this.$t('term.deploy.moduleaddjobfail', {target: ''}) });
+        this.$Notice.error({ title: this.$t('term.autoexec.targetjoberror', {target: ''}) });
       }
     },
     jumpToItem(obj) { //定位参数，校验定位

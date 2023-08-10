@@ -15,7 +15,7 @@
           >
             <div class="flex-between result-top">
               <div>
-                <span v-if="knowledge.sourceName" :title="knowledge.sourceName" class="status-name bg-warning-grey">{{ $t('term.knowledge.forward') }}</span>
+                <span v-if="knowledge.sourceName" :title="knowledge.sourceName" class="status-name bg-warning-grey">{{ $t('term.process.transfer') }}</span>
                 <span class="title" v-html="knowledge.title"></span>
                 <span v-if="knowledgeType == 'share' || knowledgeType == 'waitingforreview'" class="h3">
                   <span v-if="knowledge.fromVersion">【{{ knowledge.fromVersionName }}】</span>
