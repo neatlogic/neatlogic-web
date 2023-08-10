@@ -78,7 +78,7 @@ export default {
     return {
       isReady: false,
       displayMode: 'list',
-      needAttr: ['_name', '_createuser', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
+      needAttr: ['_name', '_createuser', '_createdate', '_status', 'priority', 'worker', 'startdate', 'enddate', 'timecost'],
       attrList: [],
       appList: [],
       projectList: [],

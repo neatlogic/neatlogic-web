@@ -1,31 +1,13 @@
 <template>
   <div>
-    <TsFormSelect
-      v-if="projectId"
-      ref="select"
-      :readonly="readonly"
-      :value="userIdList"
-      :validateList="validateList"
-      :multiple="true"
-      transfer
-      url="/api/rest/rdm/project/user/list"
-      valueName="userId"
-      textName="userName"
-      :params="{ projectId: projectId, userType: 'member' }"
-      border="border"
-      @change="
-        (val, opt) => {
-          setValue('userIdList', val, opt);
-        }
-      "
-    ></TsFormSelect>
     <UserSelect
-      v-else
-      :value="userIdList"
+      :readonly="readonly"
+      :value="finalUserIdList"
       :validateList="validateList"
       :multiple="true"
       :transfer="true"
-      :groupList="['user']"
+      :extendCondition="{ projectId: projectId }"
+      :groupList="projectId?['rdm.project']:['user']"
       @change="
         (val, opt) => {
           setValue('userIdList', val, opt);
@@ -40,8 +22,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
   },
   extends: AttrBase,
   props: {},
@@ -73,11 +54,25 @@ export default {
           text = opt.text;
         }
       }
+      if (val) {
+        if (val instanceof Array) {
+          val = val.map(str => str.substring(str.indexOf('#') + 1));
+        } else {
+          val = val.substring(val.indexOf('#') + 1);
+        }
+      }
       this.$emit('setValue', attr, val, text);
     }
   },
   filter: {},
   computed: {
+    finalUserIdList() {
+      let userIdList = [];
+      if (this.userIdList && this.userIdList.length > 0) {
+        userIdList = this.userIdList.map(str => str.indexOf('#') == -1 ? 'rdm.project#' + str : str);
+      }
+      return userIdList;
+    },
     validateList() {
       if (this.mode === 'input' && this.attrConfig.isRequired) {
         return [{ name: 'required', message: ' ' }];

@@ -1,6 +1,6 @@
 <template>
   <div class="action-group">
-    <span class="action-item" style="padding-right: 0px !important;"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
+    <span class="action-item" style="padding-right: 0px !important"><AppIcon :appType="issueData.appType" :appColor="issueData.appColor"></AppIcon></span>
     <span class="action-item" @click="editTitle()">
       <strong v-if="!isEditing" class="fz16">[{{ issueData.id }}]{{ issueData.name }}</strong>
       <TsFormInput
@@ -19,14 +19,15 @@
     <span class="action-item"><IssueFavorite :issueId="issueData.id"></IssueFavorite></span>
     <span class="action-item">
       <Dropdown>
-        <span class="tsfont-attachment cursor text-grey">
-        </span>
+        <span class="tsfont-attachment cursor text-grey"></span>
         <DropdownMenu slot="list">
-          <DropdownItem @click.native="copy('#spnId')">{{ $t('term.rdm.copyissueid') }}
-            <span id="spnId" style="display:none">{{ issueData.id }}</span>
+          <DropdownItem @click.native="copy('#spnId' + issueData.id)">
+            {{ $t('term.rdm.copyissueid') }}
+            <span :id="'spnId' + issueData.id" style="display: none">{{ issueData.id }}</span>
           </DropdownItem>
-          <DropdownItem @click.native="copy('#spnCommitWord')">{{ $t('term.rdm.copycommitword') }}
-            <span id="spnCommitWord" style="display:none">#[{{ issueData.id }}]{{ issueData.name }} {{ url }}</span>
+          <DropdownItem @click.native="copy('#spnCommitWord' + issueData.id)">
+            {{ $t('term.rdm.copycommitword') }}
+            <span :id="'spnCommitWord' + issueData.id" style="display: none">#[{{ issueData.id }}]{{ issueData.name }} {{ url }}</span>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
