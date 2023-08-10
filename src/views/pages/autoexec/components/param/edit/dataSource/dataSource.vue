@@ -16,7 +16,7 @@
 <template>
   <TsDialog
     :isShow="isShow"
-    :title="$t('page.datasourcesetting')"
+    :title="$t('term.autoexec.datasourcesetting')"
     @on-close="close()"
     @on-ok="saveSourc()"
   >
