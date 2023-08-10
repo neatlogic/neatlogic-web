@@ -1,6 +1,7 @@
 <template>
   <div>
     <UserSelect
+      ref="select"
       :readonly="readonly"
       :value="finalUserIdList"
       :validateList="validateList"
