@@ -35,11 +35,9 @@
             <div class="block-contnet">
               <!-- 当前页大于1并且总页数大于1 -->
               <div v-if="favoriteData.currentPage > 1 && favoriteData.pageCount > 1" class="left arrow arrow-left" @click="goLeft()">
-                <!-- <img src="../../../../resources/assets/images/itsm/left.png" /> -->
               </div>
               <!-- 当前页小于总页数并且总页数大于1 -->
               <div v-if="favoriteData.currentPage < favoriteData.pageCount && favoriteData.pageCount > 1" class="right arrow arrow-right" @click="goRight()">
-                <!-- <img src="../../../../resources/assets/images/itsm/right.png" /> -->
               </div>
               <TsRow>
                 <template v-slot>

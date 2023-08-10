@@ -111,7 +111,7 @@ export default {
     deleteComment(comment) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.rdm.comment') }),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.comment') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.rdm.issue.deleteComment(comment.id).then(res => {

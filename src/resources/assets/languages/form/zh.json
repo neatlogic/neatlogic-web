@@ -50,7 +50,6 @@
     "selectprotocol": "请选择协议",
     "filecount": "最多上传{target}个文件",
     "leastonetarget": "请至少添加一个{target}",
-    "pleaseinputcorrecttarget": "请输入正确的{target}",
     "completetheform": "表单填写完整"
   }
 }

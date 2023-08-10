@@ -17,7 +17,7 @@
             <span class="text-error">{{ $t('term.deploy.createfail') }}</span>
             <span>{{ $t('term.deploy.applymodule') }}{{ item.appModuleName }}{{ item.errorMsg }}</span>
           </div>
-          <div v-else>{{ $t('term.deploy.moduleaddjobfail', {target: item.appModuleName}) }}</div>
+          <div v-else>{{ $t('term.autoexec.targetjoberror', {target: item.appModuleName}) }}</div>
         </div>
       </template>
     </TsDialog>

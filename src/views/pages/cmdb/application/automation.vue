@@ -81,7 +81,7 @@ export default {
           maxlength: 50,
           validateList: [
             { name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.port')}) },
-            { name: 'port', message: this.$t('form.validate.pleaseinputcorrecttarget', {target: this.$t('page.portnumber')}) }
+            { name: 'port', message: this.$t('message.pleaseentertruetarget', {target: this.$t('page.portnumber')}) }
           ],
           isHidden: true
         }
