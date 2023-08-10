@@ -23,7 +23,7 @@
 <script>
 import imgViewer from '@/resources/directives/img-viewer.js';
 import './js/translations/zh-cn';
-import ClassicEditor from 'cssCkeditor-module/ckeditor.js';
+import ClassicEditor from './js/ckeditor.js';
 import CKEditor from './js/ckeditor-vue.js';
 import formMixins from '@/resources/mixins/formMixins.js';
 
