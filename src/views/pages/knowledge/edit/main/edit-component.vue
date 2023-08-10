@@ -216,7 +216,7 @@ export default {
                 editorUtils.comSetfocus(newEl, true);
               }
             } else {
-              let $preNode = $target.previousSibling;
+              let $preNode = $target?.previousSibling;
               if ($preNode && $preNode.nodeName.toLowerCase() == 'section') { //如果上一个节点是selection等复杂组件，需要特殊处理
                 $target.remove();
                 $preNode.click();
@@ -231,7 +231,7 @@ export default {
           let _this = this;
           setTimeout(($target) => {
             let newEl = $target.nextSibling;
-            if ($target.previousSibling && $target.previousSibling.getAttribute('data_id') == targetUuid) {
+            if ($target?.previousSibling && $target.previousSibling.getAttribute('data_id') == targetUuid) {
               newEl = $target;
             }
             if (newEl) {
@@ -519,7 +519,7 @@ export default {
     },
     ulDelete(e, $target) { //ul ol 里面的li对应的删除事件 因为第一个li删除需要变成p标签
       let liTarget = editorUtils.comGetTargetCom(null, ['li']);
-      let preEl = liTarget.previousSibling;
+      let preEl = liTarget?.previousSibling;
       let range = editorUtils.comGetCursor();
       if ((range.startContainer == liTarget || range.startContainer == liTarget.childNodes[0]) && range.startOffset == 0 && !preEl) { //位于开始位置 而且是第一个li元素
         let newNode = editorUtils.createDom({handler: 'p', content: liTarget.innerHTML, uuid: this.$utils.setUuid()});

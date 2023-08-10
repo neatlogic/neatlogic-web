@@ -6,15 +6,15 @@
     z-index="0"
     @paste.stop.prevent
   >
-    <div ref="editorEditor" class="editor-editor" contenteditable="false">
-      <mavon-editor v-model="value" class="mavon-markdown-editor-container" v-bind="markdownOption"></mavon-editor>
-    </div>
+    <MarkdownEditor v-model="value" mode="read"></MarkdownEditor>
   </section>
 </template>
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    MarkdownEditor: resolve => require(['pages/knowledge/common/markdown-editor.vue'], resolve)
+  },
   filters: {},
   mixins: {},
   props: {
@@ -26,12 +26,7 @@ export default {
   },
   data() {
     return {
-      value: this.content,
-      markdownOption: {
-        subfield: false, // 单栏(编辑预览分屏)
-        toolbarsFlag: false, // 工具栏不显示
-        defaultOpen: 'preview'
-      }
+      value: this.content
     };
   },
   beforeCreate() {},
@@ -50,22 +45,10 @@ export default {
 };
 </script>
 <style>
-.knowledge-markdown img {
-  max-width: 200px;
-}
-.mavon-markdown-editor-container .v-note-show {
-  overflow-y: hidden !important;
-}
-.mavon-markdown-editor-container.markdown-body table{
-  /* 解决github-markdown 样式影响，导致表格，表头和内容之前有一个很大的空行*/
-  display: inline-table !important;
-}
+
 </style>
 <style lang="less" scoped>
  section {
   position: relative;
-  .editor-editor{
-    position: relative;
-  }
 }
 </style>
