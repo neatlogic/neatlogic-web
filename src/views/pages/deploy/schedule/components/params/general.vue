@@ -214,10 +214,24 @@ export default {
         if (res.Status == 'OK') {
           this.initData = res.Return || {};
           this.appModuleList = this.initData.appModuleList || [];
-          this.scenarioId = this.initData.defaultSelectScenario.scenarioId;
-          this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
-          this.envId = this.initData.defaultSelectEnv.id;
-          this.envName = this.initData.defaultSelectEnv.name;
+          if (this.scenarioId) {
+            let scenario = this.initData.scenarioList.find(e => e.scenarioId == this.scenarioId);
+            if (scenario) {
+              this.combopPhaseNameList = scenario.combopPhaseNameList;
+            }
+          } else {
+            this.scenarioId = this.initData.defaultSelectScenario.scenarioId;
+            this.combopPhaseNameList = this.initData.defaultSelectScenario.combopPhaseNameList;
+          }
+          if (this.envId) {
+            let env = this.initData.envList.find(e => e.id == this.envId);
+            if (env) {
+              this.envName = env.name;
+            }
+          } else {
+            this.envId = this.initData.defaultSelectEnv.id;
+            this.envName = this.initData.defaultSelectEnv.name;
+          }
           this.getJobModuleList();
         }
       });
