@@ -53,7 +53,7 @@
         v-show="isEditMode"
         ref="textareaHeight"
         v-model="markdownContent"
-        class="border-color"
+        class="border-color padding fz14"
         :style="{height: textareaHeight + 'px'}"
         @input="changeInput"
       ></textarea>
@@ -238,7 +238,6 @@ export default {
       });
     },
     changeInput() {
-      console.log('返回的值', this.markdownContent);
       this.$emit('input', this.markdownContent);
     }
   },

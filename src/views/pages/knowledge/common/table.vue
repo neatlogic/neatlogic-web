@@ -1213,18 +1213,23 @@ export default {
     },
     adjustLefterListHeight() {
       this.tableConfig.lefterList.forEach((item, index) => {
-        if (this.$refs[`lefter${index}`] && this.$refs[`lefter${index}`][0].offsetHeight) {
-          item.height = this.$refs[`lefter${index}`][0].offsetHeight;
+        const lefterRef = this.$refs[`lefter${index}`];
+        if (lefterRef && lefterRef[0].offsetHeight) {
+          const findContent = this.tableConfig.tableList[index];
+          item.height = findContent && findContent.content ? lefterRef[0].offsetHeight : 45;
         }
       });
     },
     windowKeypress(event) {
       this.adjustLefterListHeight();
       if (event?.code == 'Enter') {
+        // 回车换行，需要加两个br换行，要不然需要回车两次，换行才生效
         const range = window.getSelection().getRangeAt(0);
-        const br = document.createElement('br');
+        const br1 = document.createElement('br');
+        const br2 = document.createElement('br');
         range.deleteContents();
-        range.insertNode(br);
+        range.insertNode(br1);
+        range.insertNode(br2);
         range.collapse(false);
         event.preventDefault();
         return false;
