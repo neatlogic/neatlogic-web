@@ -1215,8 +1215,7 @@ export default {
       this.tableConfig.lefterList.forEach((item, index) => {
         const lefterRef = this.$refs[`lefter${index}`];
         if (lefterRef && lefterRef[0].offsetHeight) {
-          const findContent = this.tableConfig.tableList[index];
-          item.height = findContent && findContent.content ? lefterRef[0].offsetHeight : 45;
+          item.height = lefterRef[0].offsetHeight || 45;
         }
       });
     },
