@@ -60,6 +60,9 @@
           <TabPane v-if="isShowCveTab && versionId" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
             <CveLoopholeManage :versionId="versionId" @hideTab="(hideTab) => isShowCveTab = hideTab"></CveLoopholeManage>
           </TabPane>
+          <TabPane :label="$t('term.rdm.relativerequest')" name="relativerequest">
+            <RelatedIssuesManage v-if="versionId" :versionId="versionId"></RelatedIssuesManage>
+          </TabPane>
         </Tabs>
       </template>
     </TsContain>
@@ -82,7 +85,8 @@ export default {
     UnitTestOverview: resolve => require(['./detail/unit-test-overview'], resolve), // 单元测试
     CodeScanOverview: resolve => require(['./detail/code-scan-overview'], resolve), // 代码扫描
     CodeChangeOverview: resolve => require(['./detail/code-change-overview'], resolve), // 代码变更
-    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve) // cve漏洞
+    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve), // cve漏洞
+    RelatedIssuesManage: resolve => require(['./detail/related-issues-manage'], resolve) // 关联需求
   },
   mixins: [versionCenterMixin],
   props: {},
