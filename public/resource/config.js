@@ -66,26 +66,26 @@ function getDirectUrl() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
   //浏览器URL显示传递参数
-  if(SSOTICKETKEY && SSOTICKETVALUE) {
+  if (SSOTICKETKEY && SSOTICKETVALUE) {
     xhr.setRequestHeader('AuthType', SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
   }
   //从其他已登录的系统跳转过来，浏览器URL不带任何参数的时候
-  if(!SSOTICKETVALUE){
+  if (!SSOTICKETVALUE) {
     SSOTICKETVALUE = getCookie(SSOTICKETKEY);
     xhr.setRequestHeader('AuthType', SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
   }
   xhr.send();
-  if(xhr.readyState == 4) {
-    if(xhr.status == 522){
+  if (xhr.readyState == 4) {
+    if (xhr.status == 522) {
       var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
       removeCookie('neatlogic_authorization');
       if (responseText && responseText.Status == 'FAILED' && responseText.DirectUrl) {
         if (responseText.DirectUrl.indexOf('http://') == -1 || responseText.DirectUrl.indexOf('https://') == -1) {
           window.open('http://' + responseText.DirectUrl, '_self');
         } else {
-          window.open(responseText.DirectUrl,'_self');
+          window.open(responseText.DirectUrl, '_self');
         }
       }
     }
@@ -97,21 +97,21 @@ function getSsoTokenKey() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', BASEURLPREFIX + '/tenant/check', false);
   xhr.send();
-  if(xhr.readyState == 4) {
-    if(xhr.status == 200){
+  if (xhr.readyState == 4) {
+    if (xhr.status == 200) {
       var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
-      if(responseText && responseText.Status == 'OK' && responseText.ssoTicketKey) {
+      if (responseText && responseText.Status == 'OK' && responseText.ssoTicketKey) {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
-        if(SSOTICKETKEY && currentUrl && currentUrl.split(SSOTICKETKEY + '=')) {
+        if (SSOTICKETKEY && currentUrl && currentUrl.split(SSOTICKETKEY + '=')) {
           var token = currentUrl.split(SSOTICKETKEY + '=')[1];
           if (token) {
             SSOTICKETVALUE = token.split('&')[0]; //post请求头
           }
         }
-      } else if(responseText && responseText.Status != 'OK') {
+      } else if (responseText && responseText.Status != 'OK') {
         window.location.href = '/404.html';
       }
-    } else if(xhr.status == 500) {
+    } else if (xhr.status == 500) {
       window.location.href = '/404.html';
     }
   }
