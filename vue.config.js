@@ -1,42 +1,40 @@
 const path = require('path');
 const glob = require('glob');
 let custommodule_home;
-let baseConfiglUrl = '';
-let baseImg = '';
 let src = './src';
 let rootSrc = './src';
-let cssCkeditor = ''; //主要是用来工单处理-回复-编辑器的段落样式,为了改颜色才加的这个js
-let pageTitle = ''; //页面标题名称
+let baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
+let baseImg = './public/resource';
+
+let pageTitle = 'neatlogic'; //页面标题名称
 let currentModuleName = '';
-let projectName = '';
+let projectName = ''; //引入项目配置信息
+// process.env.VUE_APP_CUSTOMPAGES = 'neatlogic';
+process.env.VUE_APP_LOGINTITLE = 'welcome';
 try {
   custommodule_home = require('../neatlogic-web-config/config.json'); //查找是否有配置信息
   currentModuleName = custommodule_home.currentModuleName; //项目信息
   projectName = custommodule_home[currentModuleName];
-  if (projectName.hasUrl) {
-    baseConfiglUrl = projectName.baseConfiglUrl;
-    baseImg = projectName.baseImg;
-    cssCkeditor = projectName.cssCkeditor;
-  } else {
-    baseImg = './public/resource';
-    baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
-    cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
+  if (projectName) {
+    if (projectName.baseConfiglUrl) {
+      baseConfiglUrl = projectName.baseConfiglUrl; //自定义页面引入路径
+    }
+    if (projectName.baseImg) {
+      baseImg = projectName.baseImg; //图片引入路径
+    }
+    if (projectName.loginTitle) {
+      process.env.VUE_APP_LOGINTITLE = projectName.loginTitle; // 登陆页标题
+    }
+    if (projectName.tableStyle) {
+      process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
+    }
+    process.env.VUE_APP_CUSTOMPAGES = projectName.home; //自定义项目文件夹名称
+    process.env.VUE_APP_CUSTOMMODULE = true;
+    pageTitle = projectName.title;
   }
-  process.env.VUE_APP_CUSTOMMODULE = true;
-  process.env.VUE_APP_CUSTOMPAGES = projectName.home; //当前模块是否是银行的
-  pageTitle = projectName.title;
-  process.env.VUE_APP_LOGINTITLE = projectName.loginTitle; // 登陆页标题
-  process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
 } catch (e) {
-  baseImg = './public/resource';
-  process.env.VUE_APP_CUSTOMPAGES = 'neatlogic';
-  process.env.VUE_APP_CUSTOMMODULE = false;
-  baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
-  cssCkeditor = src + '/resources/plugins/TsCkeditor/js';
-  pageTitle = 'neatlogic';
   // localStorage.titleLogin = 'neatlogic';
   // window.localStorage.setItem('titleLogin', 'neatlogic');
-  process.env.VUE_APP_LOGINTITLE = 'welcome';
 }
 //注意：urlPrefix需为包含端口号的完整的访问路径，比如：http://192.168.0.25:8282
 
@@ -123,7 +121,6 @@ module.exports = {
     config.resolve.alias.set('custom-module', resolve(baseConfiglUrl));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-    config.resolve.alias.set('cssCkeditor-module', resolve(cssCkeditor));
 
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
