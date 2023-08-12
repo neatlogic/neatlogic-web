@@ -68,22 +68,27 @@ export default {
       if (this.$refs.container) {
         this.plot = new Gauge(this.$refs.container, {
           ...this.chartConfig,
-          percent: this.customData
+          percent: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.customData);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
   computed: {
-    customData() {
+    finalData() {
+      let number = 0;
       if (this.data && this.data.length > 0) {
-        return this.data[0]['number'];
+        this.data.forEach(d => {
+          number += d.number;
+        });
       }
-      return null;
+      return number;
     }
   },
   watch: {

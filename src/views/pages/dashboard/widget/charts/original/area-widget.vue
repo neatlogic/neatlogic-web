@@ -75,9 +75,9 @@ export default {
       if (this.data && this.data.length > 0) {
         //数据合并汇聚
         this.data.forEach(d => {
-          const dd = data.find(dd => dd.yField == d.yField);
+          const dd = data.find(dd => dd.xField == d.xField);
           if (dd) {
-            dd.xField += d.xField;
+            dd.yField += d.yField;
           } else {
             data.push(d);
           }

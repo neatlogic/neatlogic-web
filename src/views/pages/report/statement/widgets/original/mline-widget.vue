@@ -10,8 +10,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -27,8 +26,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -40,7 +38,7 @@ export default {
       this.data = [];
       for (var i = 1; i <= 10; i++) {
         for (var j = 1; j <= 3; j++) {
-          this.data.push({xField: this.$t('page.data') + i, yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + j});
+          this.data.push({ xField: this.$t('page.data') + i, yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + j });
         }
       }
     },
@@ -52,19 +50,36 @@ export default {
       if (this.$refs.container) {
         this.plot = new Line(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-  }
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.xField == d.xField && dd.seriesField == d.seriesField);
+          if (dd) {
+            dd.yField += d.yField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
+  watch: {}
 };
 </script>
 <style lang="less"></style>
