@@ -1,6 +1,7 @@
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 export const WidgetBase = {
   props: {
+    presetData: { type: Object }, //预设数据，用于替换内置变量
     widgetComponent: { type: Object }, //组件配置
     widget: { type: Object } //组件数据
   },
@@ -36,10 +37,19 @@ export const WidgetBase = {
     },
     async getData(isFirstGetData) {
       const data = [];
-      const params = { 
-        dataSourceId: this.widget.datasourceId, 
-        conditionList: this.widget.conditionList, 
-        sortList: this.widget.sortList, 
+      const conditionList = this.widget.conditionList;
+      //有预设值需要把预设值设进条件列表中，后台进行替换
+      if (this.presetData) {
+        if (conditionList && conditionList.length > 0) {
+          conditionList.forEach(condition => {
+            condition.presetData = this.presetData;
+          });
+        }
+      }
+      const params = {
+        dataSourceId: this.widget.datasourceId,
+        conditionList: conditionList,
+        sortList: this.widget.sortList,
         limit: this.widget.limit
       };
       await this.$api.framework.datawarehouse.searchData(params).then(res => {
@@ -56,7 +66,8 @@ export const WidgetBase = {
               });
             } else {
               res.Return.theadList.forEach(head => {
-                if (head.name) { //有name的字段才是数据源的数据字段
+                if (head.name) {
+                  //有name的字段才是数据源的数据字段
                   d[head.name] = element[head.key];
                 }
               });

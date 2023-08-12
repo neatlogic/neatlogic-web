@@ -8,6 +8,7 @@ const projectManage = () => import('@/views/pages/rdm/project/project-manage.vue
 const priorityManage = () => import('@/views/pages/rdm/priority/priority-manage.vue');
 const templateManage = () => import('@/views/pages/rdm/template/template-manage.vue');
 const templateEdit = () => import('@/views/pages/rdm/template/template-edit.vue');
+const dashboardEdit = () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard-edit.vue');
 const appModules = {
   bugDetail: () => import('@/views/pages/rdm/project/viewtab/bug/bug-detail.vue'),
   storyDetail: () => import('@/views/pages/rdm/project/viewtab/story/story-detail.vue'),
@@ -22,7 +23,9 @@ const appModules = {
   testcase: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase.vue'),
   gitlab: () => import('@/views/pages/rdm/project/viewtab/gitlab/gitlab.vue'),
   testplan: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan.vue'),
-  gantt: () => import('@/views/pages/rdm/project/viewtab/gantt/gantt.vue')
+  gantt: () => import('@/views/pages/rdm/project/viewtab/gantt/gantt.vue'),
+  dashboard: () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard.vue'),
+  dashboardDetail: () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard-detail.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -187,9 +190,17 @@ let routerArr = [
       authority: 'PRIORITY_MANAGE',
       icon: 'tsfont-check-o'
     }
+  },
+  {
+    path: '/dashboard-edit/:projectId/:appId/:id?',
+    name: 'dashboardEdit',
+    component: dashboardEdit,
+    meta: {
+      title: $t('router.rdm.editdashboard')
+    }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan', 'gantt'];
+const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan', 'gantt', 'dashboard'];
 appList.forEach(app => {
   if (appModules[app]) {
     routerArr.push({

@@ -11,13 +11,13 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div v-if="dashboard" class="action-group" style="text-align:right">
+        <div v-if="dashboard" class="action-group" style="text-align: right">
           <span v-if="dashboard.type == 'custom' && dashboard.fcu == $AuthUtils.getCurrentUser().uuid" class="action-item tsfont-trash-o" @click="delDashboard">{{ $t('page.delete') }}</span>
           <span v-if="(dashboard.type == 'system' && $AuthUtils.hasRole('DASHBOARD_MODIFY')) || (dashboard.type == 'custom' && dashboard.fcu == $AuthUtils.getCurrentUser().uuid)" class="action-item ts-setting" @click="editDashboard">{{ $t('page.edit') }}</span>
           <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
         </div>
       </template>
-      <div slot="content" style="width: 100%; height: 100%;padding:0px" class="canvas">
+      <div slot="content" style="width: 100%; height: 100%; padding: 0px" class="canvas">
         <div ref="canvasContainer" class="bg-grey">
           <grid-layout
             v-if="dashboard && dashboard.widgetList && dashboard.widgetList.length > 0"
@@ -48,6 +48,7 @@
                 :ref="'widget' + item.uuid"
                 mode="read"
                 :widget="item"
+                :presetData="presetData"
                 :widgetComponent="getWidgetComponentByType(item)"
                 :isResizing="getWidgetResizeStatusByUuid(item.uuid)"
               ></DashboardWidget>
@@ -68,18 +69,20 @@
 <script>
 import VueGridLayout from 'vue-grid-layout';
 import screenfull from '@/resources/assets/js/screenfull.js';
-import { WIDGETS } from './widget/widget-list.js';
+import { WIDGETS } from '@/views/pages/dashboard/widget/widget-list.js';
+import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base.vue';
+
 export default {
   name: '',
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    DashboardWidget: resolve => require(['./widget/dashboard-widget.vue'], resolve)
+    DashboardWidget: resolve => require(['@/views/pages/dashboard/widget/dashboard-widget.vue'], resolve)
   },
+  extends: IssueDetailBase,
   props: [],
   data() {
     return {
-      id: this.$route.params['id'],
       dashboard: null,
       isLoading: false,
       isWindowReszing: false
@@ -92,13 +95,12 @@ export default {
     window.removeEventListener('resize', this.resizeWindow);
   },
   mounted() {
-    this.getDashboardById();
     window.addEventListener('resize', this.resizeWindow);
   },
   methods: {
-    getDashboardById() {
+    async init() {
       if (this.id) {
-        this.$api.dashboard.dashboard.getDashboard(this.id).then(res => {
+        this.$api.rdm.dashboard.getDashboardById(this.appId, this.id).then(res => {
           if (res.Status == 'OK') {
             this.dashboard = res.Return;
           }
@@ -136,7 +138,7 @@ export default {
       if (this.id) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('term.dashboard.dashboard')}),
+          content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.dashboard.dashboard') }),
           btnType: 'error',
           'on-ok': vnode => {
             this.$api.dashboard.dashboard.deleteDashboard(this.id).then(res => {
@@ -151,7 +153,19 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    presetData() {
+      const presetData = {};
+      if (this.appList && this.appList.length > 0) {
+        this.appList.forEach(app => {
+          if (app.hasIssue) {
+            presetData[app.type + 'Id'] = app.id;
+          }
+        });
+      }
+      return presetData;
+    }
+  },
   watch: {}
 };
 </script>

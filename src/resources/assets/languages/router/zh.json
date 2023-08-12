@@ -253,7 +253,7 @@
     "projectdetail": "项目详情",
     "projectmanage": "项目管理",
     "templatemanage": "模板管理",
-    "projectconfig":"项目设置",
+    "projectconfig": "项目设置",
     "workbench": "工作台",
     "mydoing": "我的待办",
     "mycompleted": "我的已办",
@@ -261,7 +261,8 @@
     "manage": "系统管理",
     "myreported": "我上报的",
     "favorite": "我的关注",
-    "edittemplate": "编辑模板"
+    "edittemplate": "编辑模板",
+    "editdashboard": "编辑仪表板"
   },
   "codehub": {
     "codehub": "代码中心",

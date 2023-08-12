@@ -4,22 +4,15 @@
       <template slot="topLeft">
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addReportDataSource()">{{ $t('page.datasource') }}</span>
-          <span
-            class="tsfont-upload action-item"
-            @click="uploadAction()"
-          >{{ $t('page.import') }}</span>
-          <span :class="{'text-disabled':!selectList || selectList.length == 0}" class="tsfont-download action-item" @click="exportList()">{{ $t('page.export') }}</span>
+          <span class="tsfont-upload action-item" @click="uploadAction()">{{ $t('page.import') }}</span>
+          <span :class="{ 'text-disabled': !selectList || selectList.length == 0 }" class="tsfont-download action-item" @click="exportList()">{{ $t('page.export') }}</span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig :title="$t('term.framework.saveexpire')" auditName="DATAWAREHOUSE-AUDIT"></AuditConfig></span>
         </div>
       </template>
       <template slot="topRight">
-        <InputSearcher
-          v-model="searchParam.keyword"
-          @change="searchReportDataSource(1)"
-        ></InputSearcher>
+        <InputSearcher v-model="searchParam.keyword" @change="searchReportDataSource(1)"></InputSearcher>
       </template>
-      <template slot="topRight">
-      </template>
+      <template slot="topRight"></template>
       <div slot="content">
         <TsTable
           v-if="reportDataSourceData"
@@ -36,15 +29,11 @@
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template v-slot:cronExpression="{ row }">
-            <TsQuartz
-              v-if="row.cronExpression"
-              :value="row.cronExpression"
-              showType="read"
-            ></TsQuartz>
+            <TsQuartz v-if="row.cronExpression" :value="row.cronExpression" showType="read"></TsQuartz>
           </template>
           <template v-slot:status="{ row }">
             <div>
-              <div v-if="row.status == 'doing'" style="width:42px">
+              <div v-if="row.status == 'doing'" style="width: 42px">
                 <Progress
                   :percent="99"
                   :stroke-width="10"
@@ -57,13 +46,13 @@
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
-              <ul v-if="row.status !='doing'" class="tstable-action-ul">
+              <ul v-if="row.status != 'doing'" class="tstable-action-ul">
                 <li class="tsfont-formstaticlist" @click="showReportDataSyncAudit(row)">{{ $t('term.framework.syncreport') }}</li>
                 <li class="tsfont-play" @click="runReportDataSource(row)">{{ $t('term.framework.syncdata') }}</li>
-                <li class="tsfont-db" @click="showReportData(row)">{{ $t('page.viewtarget',{'target':$t('page.data')}) }}</li>
-                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-filter-o" @click="editCondition(row)">{{ $t('dialog.title.edittarget',{'target':$t('page.condition')}) }}</li>
+                <li class="tsfont-db" @click="showReportData(row)">{{ $t('page.viewtarget', { target: $t('page.data') }) }}</li>
+                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-filter-o" @click="editCondition(row)">{{ $t('dialog.title.edittarget', { target: $t('page.condition') }) }}</li>
                 <!--<li class="tsfont-cloud" @click="editReportDataSource(row)">编辑同步策略</li>-->
-                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-batch-upload" @click="editReportDataSource(row)">{{ $t('dialog.title.edittarget',{'target':$t('page.datasource')}) }}</li>
+                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-batch-upload" @click="editReportDataSource(row)">{{ $t('dialog.title.edittarget', { target: $t('page.datasource') }) }}</li>
                 <li class="tsfont-trash-o" @click="deleteReportDataSource(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -76,7 +65,7 @@
     <DataWarehouseAudit v-if="isAuditShow" :id="currentDataSourceId" @close="closeAuditDialog"></DataWarehouseAudit>
     <DataWarehouseData v-if="isDataShow" :id="currentDataSourceId" @close="closeDataDialog"></DataWarehouseData>
     <DataWarehouseConditionEdit v-if="isConditionShow" :id="currentDataSourceId" @close="closeConditionDialog"></DataWarehouseConditionEdit>
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
       :formatList="formatList"
@@ -109,22 +98,26 @@ export default {
       doingIdList: [],
       currentDataSourceId: null,
       reportDataSourceData: {},
-      searchParam: {keyword: ''},
+      searchParam: { keyword: '' },
       isShow: false,
       isEditShow: false,
       isAuditShow: false,
       isDataShow: false,
       isConditionShow: false,
       theadList: [
-        {key: 'selection', multiple: true},
-        {key: 'name', title: this.$t('page.uniquekey')},
-        {key: 'label', title: this.$t('page.name')},
-        {key: 'isActive', title: this.$t('page.enable')},
-        {key: 'status', title: this.$t('page.status')},
-        {key: 'dataCount', title: this.$t('page.datacapacity')},
-        {key: 'cronExpression', title: this.$t('term.framework.cronexpression')},
-        {key: 'description', title: this.$t('page.explain')},
-        {key: 'action'}
+        {
+          key: 'selection',
+          multiple: true
+        },
+        { key: 'name', title: this.$t('page.uniquekey') },
+        { key: 'label', title: this.$t('page.name') },
+        { key: 'isActive', title: this.$t('page.enable') },
+        { key: 'moduleName', title: this.$t('term.framework.belongmodule') },
+        { key: 'status', title: this.$t('page.status') },
+        { key: 'dataCount', title: this.$t('page.datacapacity') },
+        { key: 'cronExpression', title: this.$t('term.framework.cronexpression') },
+        { key: 'description', title: this.$t('page.explain') },
+        { key: 'action' }
       ],
       timer: null,
       selectList: [],
@@ -148,7 +141,7 @@ export default {
     runReportDataSource(row) {
       this.$createDialog({
         title: this.$t('dialog.title.syncconfirm'),
-        content: this.$t('dialog.content.syncconfirm', {target: row.label}),
+        content: this.$t('dialog.content.syncconfirm', { target: row.label }),
         'on-ok': vnode => {
           this.$api.framework.datawarehouse.execDataSource(row.id).then(res => {
             if (res.Status == 'OK') {
@@ -173,7 +166,7 @@ export default {
               const oldElement = this.reportDataSourceData.tbodyList.find(a => a.id == element.id);
               if (element.status == 'doing') {
                 this.doingIdList.push(element.id);
-              } 
+              }
               if (oldElement) {
                 this.$set(oldElement, 'statusText', element.statusText);
                 this.$set(oldElement, 'status', element.status);
@@ -185,7 +178,7 @@ export default {
             this.timer = setTimeout(() => {
               this.refreshReportDataSource();
             }, 3000);
-          } 
+          }
         });
       }
     },
@@ -206,7 +199,7 @@ export default {
         this.reportDataSourceData.tbodyList.forEach(element => {
           if (element.status == 'doing') {
             this.doingIdList.push(element.id);
-          } 
+          }
         });
         this.refreshReportDataSource();
       });
@@ -234,7 +227,7 @@ export default {
     deleteReportDataSource(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.datasource')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.datasource') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.datawarehouse.deleteDataSource(row.id).then(res => {
@@ -298,5 +291,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

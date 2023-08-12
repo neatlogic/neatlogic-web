@@ -261,7 +261,8 @@
     "manage": "System Management",
     "myreported": "My Reported",
     "favorite": "My Favorited",
-    "edittemplate": "Edit Template"
+    "edittemplate": "Edit Template",
+    "editdashboard": "Edit Dashboard"
   },
   "codehub": {
     "codehub": "Code Center",
