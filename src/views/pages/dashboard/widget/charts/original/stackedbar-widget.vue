@@ -9,8 +9,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -22,8 +21,8 @@ export default {
         seriesField: 'seriesField',
         legend: { visible: true, position: 'bottom' },
         meta: {
-          xField: {alias: this.$t('term.report.axis.xfield')},
-          yField: {alias: this.$t('term.report.axis.yfield')}
+          xField: { alias: this.$t('term.report.axis.xfield') },
+          yField: { alias: this.$t('term.report.axis.yfield') }
         },
         color: this.getChartTheme('chart'),
         statistic: {
@@ -35,20 +34,18 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     createRandomData() {
       this.data = [];
       for (var i = 0; i < 10; i++) {
-        this.data.push({yField: this.$t('page.data') + Math.floor(i / 2), xField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
+        this.data.push({ yField: this.$t('page.data') + Math.floor(i / 2), xField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
       }
     },
     createPlot() {
@@ -59,19 +56,36 @@ export default {
       if (this.$refs.container) {
         this.plot = new Bar(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-  }
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.yField == d.yField && dd.seriesField == d.seriesField);
+          if (dd) {
+            dd.xField += d.xField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
+  watch: {}
 };
 </script>
 <style lang="less"></style>

@@ -49,19 +49,35 @@ export default {
       if (this.$refs.container) {
         this.plot = new Pie(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
       if (this.plot) {
-        this.plot.changeData(this.data);
+        this.plot.changeData(this.finalData);
       }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.colorField == d.colorField);
+          if (dd) {
+            dd.angleField += d.angleField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
   watch: {
   }
 };
