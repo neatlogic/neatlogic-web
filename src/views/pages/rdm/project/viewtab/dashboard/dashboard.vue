@@ -15,10 +15,10 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="mb-md grid">
+        <!-- <div class="mb-md grid">
           <div></div>
           <div><InputSearcher v-model="searchParam.keyword" @change="searchDashboard()"></InputSearcher></div>
-        </div>
+        </div>-->
         <TsCard
           v-if="dashboardData.tbodyList && dashboardData.tbodyList.length > 0"
           :padding="false"
@@ -29,20 +29,13 @@
           @updatePage="searchDashboard"
         >
           <template slot="header" slot-scope="{ row }">
-            <div class="text-right"></div>
             <div class="overflow h3">{{ row.name }}</div>
-            <div style="font-size: 13px">
-              <span>
-                <UserCard v-bind="row.lcuVo" hideAvatar class="m-users"></UserCard>
-              </span>
-              <span>{{ $t('page.in') }}：</span>
-              <span v-if="row.lcd">{{ row.lcd | formatDate }}</span>
-              <span v-else>{{ row.fcd | formatDate }}</span>
-              <span v-if="row.lcd" class="text-grey">{{ $t('page.update') }}</span>
-              <span v-else class="text-grey">{{ $t('page.created') }}</span>
-            </div>
           </template>
           <template slot-scope="{ row }">
+            <div class="action-group" style="text-align: right">
+              <span v-if="row.lcd" class="action-item fz10 text-grey">{{ row.lcd | formatDate }}</span>
+              <span v-else class="action-item fz10 text-grey">{{ row.fcd | formatDate }}</span>
+            </div>
             <div class="dashbord-overview" @click="toDashboardDetail(row.id)">
               <widget-overview v-if="row.widgetList.length > 0" :widgetList="row.widgetList"></widget-overview>
               <div class="slider-container text-op">
@@ -66,14 +59,6 @@
         <NoData v-else></NoData>
       </template>
     </TsContain>
-    <UploadDialog
-      ref="uploadDialog"
-      :actionUrl="actionUrl"
-      :formatList="formatList"
-      :showSuccessNotice="false"
-      :isValid="true"
-      @on-success="searchDashboard(1)"
-    />
   </div>
 </template>
 
@@ -85,11 +70,9 @@ export default {
   name: '',
   components: {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    WidgetOverview: resolve => require(['@/views/pages/dashboard/widget/widget-overview.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    WidgetOverview: resolve => require(['@/views/pages/dashboard/widget/widget-overview.vue'], resolve)
+    //InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
   },
   mixins: [download, mixins],
   props: [],
@@ -132,7 +115,14 @@ export default {
       this.$router.push({ path: '/dashboard-edit/' + this.projectId + '/' + this.appId + '/' + id });
     },
     copyDashboard(dashboard) {
-      this.$router.push({ name: 'dashboard-edit', params: { dashboard: dashboard } });
+      this.$router.push({
+        name: 'dashboardEdit',
+        params: {
+          projectId: this.projectId,
+          appId: this.appId,
+          dashboard: dashboard
+        }
+      });
     },
     searchDashboard(page) {
       if (page) {
@@ -145,7 +135,7 @@ export default {
         }
       });
     },
-    deleteDashboard: function(item) {
+    deleteDashboard(item) {
       const id = item.id;
       const name = item.name;
       this.$createDialog({
@@ -153,11 +143,10 @@ export default {
         content: this.$t('dialog.content.deletetargetconfirm', { target: name }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.dashboard.dashboard.deleteDashboard(id).then(res => {
+          this.$api.rdm.dashboard.deleteDashboard(id).then(res => {
             if (res.Status == 'OK') {
               vnode.isShow = false;
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.$store.commit('leftMenu/setDashboardCount', 'minus');
               this.searchDashboard();
             }
           });

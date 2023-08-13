@@ -58,7 +58,9 @@ export default {
       }
     },
     changeData() {
-      this.plot.changeData(this.finalData);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
