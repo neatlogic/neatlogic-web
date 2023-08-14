@@ -722,7 +722,8 @@
     "currenttoolisalreadydependentonanothertool": "当前工具已被其他工具依赖，",
     "deletefailedcombinatetoolpresetcitetips": "删除失败，请检查是否已被组合工具或预置参数集引用",
     "usedtooldesc": "当前类型已被工具引用，无法删除",
-    "targetjoberror": "{target}创建作业失败"
+    "targetjoberror": "{target}创建作业失败",
+    "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
