@@ -2,16 +2,16 @@
 <template>
   <div class="dashboard-li ts-border" :style="!widget.name ? 'padding-top:0px' : ''" :class="{ selected: widget._selected, 'bg-op': !widget.isOpacity }">
     <div class="dashboard-title">
-      <div v-if="widget.name" style="white-space:nowrap;font-size:15px" class="padding-sm overflow">
+      <div v-if="widget.name" style="white-space: nowrap; font-size: 15px" class="padding-sm overflow">
         <span>{{ widget.name }}</span>
       </div>
       <div v-if="mode === 'edit'">
         <div class="dashboard-action pt-xs">
-          <span class="tsfont-close" style="cursor:pointer" @click.stop="removeWidget()"></span>
+          <span class="tsfont-close" style="cursor: pointer" @click.stop="removeWidget()"></span>
         </div>
       </div>
     </div>
-    <div ref="container" style="width:100%;height:100%">
+    <div ref="container" style="width: 100%; height: 100%">
       <component
         :is="widgetComponent.type + 'widget'"
         v-if="isReady"
@@ -20,6 +20,7 @@
         :height="height - widget.padding * 2"
         :widgetComponent="widgetComponent"
         :widget="widget"
+        :presetData="presetData"
         :style="{
           overflow: 'auto',
           padding: widget.padding + 'px',
@@ -48,6 +49,7 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
   },
   props: {
+    presetData: { type: Object },
     widgetComponent: { type: Object },
     widget: { type: Object },
     mode: { type: String },
@@ -78,7 +80,7 @@ export default {
     removeWidget() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.component')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.component') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$emit('remove', this.widget);

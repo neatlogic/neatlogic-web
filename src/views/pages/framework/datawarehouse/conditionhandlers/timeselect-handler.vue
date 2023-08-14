@@ -22,7 +22,7 @@ export default {
       //时间选择器的数据（含各种默认配置）
       border: 'border',
       placement: 'bottom-start',
-      clearable: false,
+      clearable: true,
       transfer: true,
       width: '100%'
     } };

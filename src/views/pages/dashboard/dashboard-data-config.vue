@@ -10,130 +10,124 @@
     </template>
     <template v-slot:config>
       <div>
-        <div v-if="widget && widget.dataType && widget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
-          <label class="ivu-form-item-label overflow">{{ $t('term.report.refreshrate') }}</label>
-          <div class="ivu-form-item-content">
-            <div class="pl-md pr-md">
-              <Slider
-                v-model="widget.dataInterval"
-                :min="0"
-                :max="300"
-                :step="10"
-                :tip-format="
-                  val => {
-                    return val + $t('page.second');
-                  }
-                "
-              ></Slider>
-            </div>
-          </div>
-        </div>
-        <div v-if="widget && widget.dataType && widget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
-          <label class="ivu-form-item-label overflow">{{ $t('page.datasource') }}</label>
-          <div class="ivu-form-item-content">
-            <TsFormSelect
-              dynamicUrl="/api/rest/datawarehouse/datasource/search"
-              valueName="id"
-              textName="label"
-              rootName="tbodyList"
-              :transfer="true"
-              :value="widget.datasourceId"
-              @change="
+        <TsFormItem v-if="widget && widget.dataType && widget.dataType === 'dynamic'" labelPosition="top" :label="$t('term.report.refreshrate')">
+          <div class="pl-md pr-md">
+            <Slider
+              v-model="widget.dataInterval"
+              :min="0"
+              :max="300"
+              :step="10"
+              :tip-format="
                 val => {
-                  //重置条件和排序设置
-                  $set(widget, 'sortList', []);
-                  $set(widget, 'conditionList', []);
-                  $set(widget, 'datasourceId', val);
+                  return val + $t('page.second');
                 }
               "
-            ></TsFormSelect>
+            ></Slider>
           </div>
-        </div>
+        </TsFormItem>
+        <TsFormItem v-if="widget && widget.dataType && widget.dataType === 'dynamic'" labelPosition="top" :label="$t('page.datasource') ">
+          <TsFormSelect
+            dynamicUrl="/api/rest/datawarehouse/datasource/search"
+            valueName="id"
+            textName="label"
+            rootName="tbodyList"
+            :params="{ moduleId: moduleId }"
+            :transfer="true"
+            :value="widget.datasourceId"
+            @change="
+              val => {
+                //重置条件和排序设置
+                $set(widget, 'sortList', []);
+                $set(widget, 'conditionList', []);
+                $set(widget, 'datasourceId', val);
+              }
+            "
+          ></TsFormSelect>
+        </TsFormItem>
         <div v-if="currentWidgetComponent && currentWidgetComponent.fields && currentWidgetComponent.fields.length > 0">
-          <div v-if="widget && widget.dataType === 'static'" class="ivu-form-item tsform-item ivu-form-label-top">
-            <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('term.report.datatype.bindstaticdata') }}</Divider>
-            <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
-              <label class="ivu-form-item-label overflow">{{ field.label }}</label>
-              <div class="ivu-form-item-content">
-                <TsFormInput
-                  :value="getCurrentWidgetField(field.name) && getCurrentWidgetField(field.name)['value']"
-                  @change="
-                    val => {
-                      setCurrentWidgetField(field.name, 'value', val);
-                    }
-                  "
-                ></TsFormInput>
-              </div>
-            </div>
+          <div v-if="widget && widget.dataType === 'static'">
+            <Divider plain orientation="right" style="font-size: 12px; margin: 0px">{{ $t('term.report.datatype.bindstaticdata') }}</Divider>
+            <TsFormItem
+              v-for="(field, index) in currentWidgetComponent.fields"
+              :key="index"
+              :label="field.label"
+              labelPosition="top"
+            >
+              <TsFormInput
+                :value="getCurrentWidgetField(field.name) && getCurrentWidgetField(field.name)['value']"
+                @change="
+                  val => {
+                    setCurrentWidgetField(field.name, 'value', val);
+                  }
+                "
+              ></TsFormInput>
+            </TsFormItem>
           </div>
           <div v-else-if="widget && widget.dataType === 'dynamic'">
-            <div v-if="datasourceSortList && datasourceSortList.length > 0" class="ivu-form-item tsform-item ivu-form-label-top">
-              <label class="ivu-form-item-label overflow">{{ $t('page.sort') }}</label>
-              <div class="ivu-form-item-content bg-op padding-xs radius-md" style="white-space:normal">
-                <Tag
-                  v-for="(field, index) in datasourceSortList"
-                  :key="index"
-                  size="large"
-                >
-                  <Badge v-if="getFieldSortIndex(field)" :count="getFieldSortIndex(field)"></Badge>
-                  <span>{{ field.label }}</span>
-                  <span
-                    class="tssort"
-                    style="cursor:pointer"
-                    :class="getFieldSort(field)"
-                    @click="changeSort(field)"
-                  ></span>
-                </Tag>
+            <TsFormItem v-if="datasourceSortList && datasourceSortList.length > 0" :label="$t('page.sort')" labelPosition="top">
+              <Tag v-for="(field, index) in datasourceSortList" :key="index" size="large">
+                <Badge v-if="getFieldSortIndex(field)" :count="getFieldSortIndex(field)"></Badge>
+                <span>{{ field.label }}</span>
+                <span
+                  class="tssort"
+                  style="cursor: pointer"
+                  :class="getFieldSort(field)"
+                  @click="changeSort(field)"
+                ></span>
+              </Tag>
+            </TsFormItem>
+            <TsFormItem :label="$t('term.report.returnrows')" labelPosition="top">
+              <div class="pl-md pr-md">
+                <Slider
+                  v-model="widget.limit"
+                  :min="0"
+                  :max="50"
+                  :step="1"
+                ></Slider>
               </div>
-            </div>
-            <div class="ivu-form-item tsform-item ivu-form-label-top">
-              <label class="ivu-form-item-label overflow">{{ $t('term.report.returnrows') }}</label>
-              <div class="ivu-form-item-content">
-                <div class="pl-md pr-md">
-                  <Slider
-                    v-model="widget.limit"
-                    :min="0"
-                    :max="50"
-                    :step="1"
-                  ></Slider>
-                </div>
-              </div>
-            </div>
-            <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('page.fieldmapping') }}</Divider>
-            <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
-              <label class="ivu-form-item-label overflow">{{ field.label }}</label>
-              <div class="ivu-form-item-content">
-                <TsFormSelect
-                  :value="getCurrentWidgetField(field.name) && getCurrentWidgetField(field.name)['datasourceField']"
-                  :transfer="true"
-                  valueName="id"
-                  textName="label"
-                  :dataList="getDatasourceFieldList(field)"
+            </TsFormItem>
+            <Divider plain orientation="right" style="font-size: 12px; margin: 0px">{{ $t('page.fieldmapping') }}</Divider>
+            <TsFormItem
+              v-for="(field, index) in currentWidgetComponent.fields"
+              :key="index"
+              labelPosition="top"
+              :label="field.label"
+            >
+              <TsFormSelect
+                :value="getCurrentWidgetField(field.name) && getCurrentWidgetField(field.name)['datasourceField']"
+                :transfer="true"
+                valueName="id"
+                textName="label"
+                :dataList="getDatasourceFieldList(field)"
+                @change="
+                  val => {
+                    setCurrentWidgetField(field.name, 'datasourceField', val);
+                  }
+                "
+              ></TsFormSelect>
+            </TsFormItem>
+            <div v-if="datasourceConditionList && datasourceConditionList.length > 0">
+              <Divider plain orientation="right" style="font-size: 12px; margin: 0px">{{ $t('page.filtercondition') }}</Divider>
+              <TsFormItem :label="$t('term.rdm.innerparam')" labelPosition="top">
+                <Tag v-for="(con, index) in presetList" :key="index"><span v-html="'#{' + con + '}'"></span></Tag>
+              </TsFormItem>
+              <TsFormItem
+                v-for="(field, index) in datasourceConditionList"
+                :key="index"
+                labelPosition="top"
+                :label="field.label"
+              >
+                <ConditionHandler
+                  :handler="field.inputType"
+                  :config="field.config"
+                  :value="getConditionValue(field.id)"
                   @change="
                     val => {
-                      setCurrentWidgetField(field.name, 'datasourceField', val);
+                      changeCondition(field, val);
                     }
                   "
-                ></TsFormSelect>
-              </div>
-            </div>
-            <div v-if="datasourceConditionList && datasourceConditionList.length > 0">
-              <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('page.filtercondition') }}</Divider>
-              <div v-for="(field, index) in datasourceConditionList" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
-                <label class="ivu-form-item-label overflow">{{ field.label }}</label>
-                <div class="ivu-form-item-content">
-                  <ConditionHandler
-                    :handler="field.inputType"
-                    :config="field.config"
-                    :value="getConditionValue(field.id)"
-                    @change="
-                      val => {
-                        changeCondition(field, val);
-                      }
-                    "
-                  ></ConditionHandler>
-                </div>
-              </div>
+                ></ConditionHandler>
+              </TsFormItem>
             </div>
           </div>
         </div>
@@ -148,20 +142,24 @@ export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
     ConditionHandler: resolve => require(['@/views/pages/framework/datawarehouse/condition-handler.vue'], resolve)
   },
   props: {
-    widget: { type: Object }
+    moduleId: { type: String }, //所属模块
+    widget: { type: Object },
+    presetList: { type: Array } //内部条件变量
   },
   data() {
     return {
       datasourceFieldList: [],
       datasourceConditionList: [],
       filterTypeList: ['text', 'number', 'date', 'time', 'datetime'], //允许排序的字段类型
-      dataFormConfig: {//数据表单设置
+      dataFormConfig: {
+        //数据表单设置
         dataType: {
           type: 'slot',
           label: this.$t('term.report.datatype.name')
@@ -219,7 +217,7 @@ export default {
           this.$delete(this.widget.sortList, sortfieldIndex);
         }
       } else {
-        this.widget.sortList.push({fieldId: field.id, type: 'ASC'});
+        this.widget.sortList.push({ fieldId: field.id, type: 'ASC' });
       }
     },
     getConditionValue(fieldId) {

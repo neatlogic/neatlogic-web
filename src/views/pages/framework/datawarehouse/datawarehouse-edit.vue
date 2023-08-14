@@ -21,6 +21,19 @@
               </template>
             </TsTable>
           </template>
+          <template v-slot:moduleId>
+            <TsFormSelect
+              :value="reportDataSourceData.moduleId"
+              :dataList="moduleList"
+              transfer
+              border="border"
+              @on-change="
+                val => {
+                  $set(reportDataSourceData, 'moduleId', val);
+                }
+              "
+            ></TsFormSelect>
+          </template>
           <template v-slot:params>
             <TsTable
               v-if="reportDataSourceData.paramList && reportDataSourceData.paramList.length > 0"
@@ -63,7 +76,7 @@
   &lt;params&gt;
   &lt;!--column是返回字段，返回字段的类型必须是数字型（如果需要保存时间可以先把时间转换成时间戳）。
       在where条件中可以通过#{column值}使用，--&gt;
-    &lt;param column="id" type="max" label="最大id" default="0"/&gt;
+    &lt;param column="id" label="最大id" default="0"/&gt;
   &lt;/params&gt;
   &lt;!--select元素支持多个，但每个select语句返回的字段需要和fields中定义的一致。--&gt;
   &lt;!--mongodb 仅支持aggregation pipeline,具体api 参考官方文档:https://www.mongodb.com/docs/manual/reference/operator/aggregation/ --&gt;
@@ -87,7 +100,7 @@
             </div>
           </template>
           <template v-slot:expireTime>
-            <div style="display:grid; grid-template-columns: 50% 50%;grid-gap: 10px;">
+            <div style="display: grid; grid-template-columns: 50% 50%; grid-gap: 10px">
               <div>
                 <TsFormInput v-model="reportDataSourceData.expireCount" type="number" :min="1"></TsFormInput>
               </div>
@@ -154,11 +167,12 @@ export default {
       isValiding: false,
       dataSourceData: {},
       showFileError: false,
+      moduleList: [],
       dialogConfig: {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        title: !this.id ? this.$t('page.created') : this.$t('page.edit'),
+        title: !this.id ? this.$t('dialog.title.addtarget', { target: this.$t('page.datasource') }) : this.$t('dialog.title.edittarget', { target: this.$t('page.datasource') }),
         width: 'medium'
       },
       reportDataSourceData: {},
@@ -207,6 +221,11 @@ export default {
           onChange: isActive => {
             this.reportDataSourceData.isActive = isActive;
           }
+        },
+        {
+          type: 'slot',
+          name: 'moduleId',
+          label: this.$t('term.framework.belongmodule')
         },
         {
           type: 'radio',
@@ -284,10 +303,12 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getModuleList();
+    this.getDatasourceById();
+  },
   beforeMount() {},
   mounted() {
-    this.getDatasourceById();
   },
   beforeUpdate() {},
   updated() {},
@@ -296,6 +317,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getModuleList() {
+      this.$api.framework.module.searchModule().then(res => {
+        if (res.Return) {
+          res.Return.forEach(g => {
+            this.moduleList.push({value: g.group, text: g.groupName});
+          });
+        }
+      });
+    },
     toggleCronExpression(val) {
       if (!val) {
         this.$set(this.reportDataSourceData, 'cronExpression', '');
@@ -348,7 +378,7 @@ export default {
           });
         });
       } else {
-        this.reportDataSourceData = {dbType: 'mysql'};
+        this.reportDataSourceData = { dbType: 'mysql' };
         this.formConfig.forEach(element => {
           this.$set(element, 'value', this.reportDataSourceData[element.name]);
         });
@@ -360,7 +390,7 @@ export default {
         if (!this.reportDataSourceData.xml) {
           this.$Notice.info({
             title: this.$t('page.tip'),
-            desc: this.$t('form.placeholder.pleaseinput', {'target': this.$t('term.framework.xmlconfig')})
+            desc: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.xmlconfig') })
           });
           return;
         }
@@ -410,7 +440,7 @@ export default {
               } else {
                 this.reportDataSourceData.paramList = datasourceData.paramList;
               }
-            
+
               this.formConfig.forEach(element => {
                 if (element.name == 'fields') {
                   if (!datasourceData.fieldList || datasourceData.fieldList.length == 0) {

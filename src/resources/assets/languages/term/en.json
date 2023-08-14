@@ -2179,7 +2179,8 @@
     "used": "Used",
     "exceed": "go beyond",
     "testplan": "test plan",
-    "statusreluser": "The system automatically sets the handler during status flow"
+    "statusreluser": "The system automatically sets the handler during status flow",
+    "innerparam": "Internal variables"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
