@@ -271,12 +271,12 @@ export default {
       }
     },
     getResourceEntity() {
-      this.$api.cmdb.applicationManage.getResourceEntityByName('resource_appsystem').then(res => {
+      this.$api.cmdb.applicationManage.getResourceEntityByName('scence_appsystem').then(res => {
         if (res.Return && res.Return.ciId) {
           this.appCiId = res.Return.ciId;
         }
       });
-      this.$api.cmdb.applicationManage.getResourceEntityByName('resource_appmodule').then(res => {
+      this.$api.cmdb.applicationManage.getResourceEntityByName('scence_appmodule').then(res => {
         if (res.Return && res.Return.ciId) {
           this.appModuleCiId = res.Return.ciId;
         }
