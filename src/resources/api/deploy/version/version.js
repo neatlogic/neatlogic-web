@@ -77,7 +77,7 @@ const version = {
   },
   getRelatedIssuesList(params) {
     // 关联需求列表
-    return axios.post('/api/rest/deploy/version/cvelist/get', params);
+    return axios.post('/api/rest/deploy/version/issuelist/get', params);
   }
 };
 export default version;

@@ -60,8 +60,8 @@
           <TabPane v-if="isShowCveTab && versionId" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
             <CveLoopholeManage :versionId="versionId" @hideTab="(hideTab) => isShowCveTab = hideTab"></CveLoopholeManage>
           </TabPane>
-          <TabPane :label="$t('term.rdm.relativerequest')" name="relativerequest">
-            <RelatedIssuesManage v-if="versionId" :versionId="versionId"></RelatedIssuesManage>
+          <TabPane :label="$t('term.rdm.relativerequest')" name="relatedIssues">
+            <RelatedIssuesManage v-if="versionId && tabValue == 'relatedIssues'" :versionId="versionId"></RelatedIssuesManage>
           </TabPane>
         </Tabs>
       </template>
