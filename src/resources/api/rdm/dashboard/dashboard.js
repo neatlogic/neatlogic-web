@@ -9,5 +9,8 @@ export default {
   },
   saveDashboard(params) {
     return axios.post('/api/rest/rdm/dashboard/save', params);
+  },
+  deleteDashboard(id) {
+    return axios.post('/api/rest/rdm/dashboard/delete', { id: id });
   }
 };

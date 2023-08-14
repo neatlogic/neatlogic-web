@@ -47,17 +47,35 @@ export default {
       if (this.$refs.container) {
         this.plot = new Rose(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.seriesField == d.seriesField && dd.xField == d.xField);
+          if (dd) {
+            dd.yField += d.yField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
   watch: {}
 };
 </script>

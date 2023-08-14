@@ -51,17 +51,35 @@ export default {
       if (this.$refs.container) {
         this.plot = new Area(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.xField == d.xField && dd.seriesField == d.seriesField);
+          if (dd) {
+            dd.yField += d.yField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
   watch: {
   }
 };

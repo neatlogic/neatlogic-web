@@ -14,10 +14,10 @@
           ref="profileForm"
           v-model="profileFormConfig"
           :item-list="profileForm"
-          :labelWidth="80"
+          :labelWidth="100"
         >
           <template v-slot:profileParamVoList>
-            <div style="margin-top: 10px;">
+            <div class="mt-sm">
               <ParamsList
                 ref="param"
                 :paramList="profileFormConfig.profileParamVoList"
@@ -118,6 +118,7 @@ export default {
           type: 'slot',
           name: 'profileParamVoList',
           label: this.$t('term.autoexec.toolparameter'),
+          tooltip: this.$t('term.autoexec.toolparamstooltip'),
           value: []
         }
       }
@@ -154,9 +155,7 @@ export default {
       data.profileParamVoList = this.$refs && this.$refs.param ? this.$refs.param.getValueList() : [];
       this.$api.autoexec.profile.saveProfile(data).then(res => {
         if (res.Status == 'OK') {
-          this.dialogSetting.isShow = false;
           this.$Message.success(this.$t('message.savesuccess'));
-          this.resetFormValue();
           this.close(true);
         }
       });
@@ -204,18 +203,6 @@ export default {
           }
         });
       }
-    },
-    resetFormValue() {
-      // 重置弹框值
-      Object.keys(this.profileFormConfig).forEach(key => {
-        if (key == 'name' || key == 'description') {
-          this.profileFormConfig[key] = '';
-        } else if (key == 'fromSystemId') {
-          this.profileFormConfig[key] = null;
-        } else {
-          this.profileFormConfig[key] = [];
-        }
-      });
     },
     editProfile(profileId) {
       if (!profileId) {

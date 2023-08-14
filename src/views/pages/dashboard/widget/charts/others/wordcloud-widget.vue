@@ -9,8 +9,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -26,8 +25,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -38,7 +36,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 1; i <= 50; i++) {
-        this.data.push({wordField: this.$t('page.data') + i, colorField: this.$t('page.data') + i, weightField: Math.floor(Math.random() * 100) });
+        this.data.push({ wordField: this.$t('page.data') + i, colorField: this.$t('page.data') + i, weightField: Math.floor(Math.random() * 100) });
       }
     },
     createPlot() {
@@ -49,19 +47,36 @@ export default {
       if (this.$refs.container) {
         this.plot = new WordCloud(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-  }
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.wordField == d.wordField && dd.colorField == d.colorField);
+          if (dd) {
+            dd.weightField += d.weightField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
+  watch: {}
 };
 </script>
 <style lang="less"></style>

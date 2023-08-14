@@ -10,8 +10,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -26,20 +25,18 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     createRandomData() {
       this.data = [];
       for (var i = 1; i <= 5; i++) {
-        this.data.push({colorField: this.$t('page.data') + i, angleField: Math.floor(Math.random() * 100) + 1});
+        this.data.push({ colorField: this.$t('page.data') + i, angleField: Math.floor(Math.random() * 100) + 1 });
       }
     },
     createPlot() {
@@ -50,19 +47,36 @@ export default {
       if (this.$refs.container) {
         this.plot = new Pie(this.$refs.container, {
           ...this.chartConfig,
-          data: this.data
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
-      this.plot.changeData(this.data);
+      if (this.plot) {
+        this.plot.changeData(this.finalData);
+      }
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-  }
+  computed: {
+    finalData() {
+      const data = [];
+      if (this.data && this.data.length > 0) {
+        //数据合并汇聚
+        this.data.forEach(d => {
+          const dd = data.find(dd => dd.colorField == d.colorField);
+          if (dd) {
+            dd.angleField += d.angleField;
+          } else {
+            data.push(d);
+          }
+        });
+      }
+      return data;
+    }
+  },
+  watch: {}
 };
 </script>
 <style lang="less"></style>
