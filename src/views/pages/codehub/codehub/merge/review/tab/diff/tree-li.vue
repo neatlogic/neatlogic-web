@@ -152,7 +152,7 @@ export default {
       this.$nextTick(() => {
         if (this.$el.querySelectorAll('.diff-treefile') && this.$el.querySelectorAll('.diff-treefile').length) {
           this.$el.querySelectorAll('.diff-treefile').forEach(d => {
-            if (d.querySelector('.sum-count').getBoundingClientRect().width) {
+            if (d.querySelector('.sum-count')?.getBoundingClientRect().width) {
               d.querySelector('.diff-name').style = 'padding-right:' + parseInt(d.querySelector('.sum-count').getBoundingClientRect().width + 1) + 'px';
             }
           });

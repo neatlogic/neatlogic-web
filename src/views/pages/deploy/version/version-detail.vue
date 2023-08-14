@@ -54,8 +54,8 @@
           <TabPane :label="$t('page.codescan')" name="codeScan">
             <CodeScanOverview v-if="tabValue == 'codeScan'" :versionId="versionId"></CodeScanOverview>
           </TabPane>
-          <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.codechange')" name="codeChange">
-            <CodeChangeOverview v-if="tabValue == 'codeChange'" :id="mrId"></CodeChangeOverview>
+          <TabPane :label="$t('term.deploy.codechange')" name="codeChange">
+            <CodeChangeOverview v-if="tabValue == 'codeChange'" :versionId="909325637058560"></CodeChangeOverview>
           </TabPane>
           <TabPane v-if="isShowCveTab && versionId" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
             <CveLoopholeManage :versionId="versionId" @hideTab="(hideTab) => isShowCveTab = hideTab"></CveLoopholeManage>
@@ -94,7 +94,6 @@ export default {
     return {
       tabValue: 'deployStatus',
       title: '',
-      mrId: null,
       envId: null,
       versionId: null,
       isFreeze: 0, // 封版

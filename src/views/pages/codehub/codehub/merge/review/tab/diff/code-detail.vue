@@ -65,7 +65,7 @@
                     <td class="from-lineno code-lineno" :class="showType=='separate'?'from':''">
                       <div class="text-tip">{{ setNumtext('from', hunk, i) }}</div>
                       <template v-if="!readOnly">
-                        <div v-if="showType=='separate' && line.lineType!='TO'" class="comment-line" @click.stop="toggleShowComment(line)">
+                        <div v-if="showType == 'separate' && line?.lineType != 'TO'" class="comment-line" @click.stop="toggleShowComment(line)">
                           <Badge 
                             v-if="getLineCommit('left',setNumtext('from', hunk, i),commentList).length" 
                             :count="getLineCommit('left',setNumtext('from', hunk, i),commentList).length"
@@ -73,10 +73,10 @@
                           ></Badge>
                           <span v-else class="comment-icon tsfont-message text-action text-primary" :title="$t('page.comment')"></span>                        
                         </div>
-                        <div v-else-if="showType!='separate'" class="comment-line" @click.stop="toggleShowComment(line)">
+                        <div v-else-if="showType != 'separate'" class="comment-line" @click.stop="toggleShowComment(line)">
                           <Badge 
-                            v-if="line.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length" 
-                            :count="line.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
+                            v-if="line?.lineType != 'TO' ? getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length" 
+                            :count="line?.lineType != 'TO' ? getLineCommit('left',setNumtext('from', hunk, i),commentList).length:getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
                             style="transform: scale(0.7);"
                           ></Badge>
                           <span v-else class="comment-icon tsfont-message text-action text-primary" :title="$t('page.comment')"></span>
@@ -84,13 +84,13 @@
                       </template>
                     </td>
                     <td v-if="showType=='separate'" class="code-content from">
-                      <div v-if="line && line.lineType!='TO'" style="word-break: break-all;overflow: auto;">
+                      <div v-if="line && line.lineType != 'TO'" style="word-break: break-all;overflow: auto;">
                         <code>{{ line.content }}</code>
                       </div>
                     </td>
-                    <td class="to-lineno code-lineno" :class="showType=='separate'?'to':''">
+                    <td class="to-lineno code-lineno" :class="showType == 'separate' ? 'to': '' ">
                       <div class="text-tip">{{ setNumtext('to', hunk, i) }}</div>
-                      <div v-if="showType=='separate'&& line.lineType =='TO' && !readOnly" class="comment-line" @click.stop="toggleShowComment(line)">
+                      <div v-if="showType == 'separate'&& line?.lineType =='TO' && !readOnly" class="comment-line" @click.stop="toggleShowComment(line)">
                         <Badge 
                           v-if="getLineCommit('right',setNumtext('to', hunk, i),commentList).length" 
                           :count="getLineCommit('right',setNumtext('to', hunk, i),commentList).length"
@@ -100,19 +100,19 @@
                       </div>
                     </td>
                     <td class="code-content" :class="showType=='separate'?'to':''">
-                      <div v-if="line &&( showType!='separate' || (showType=='separate' && line.lineType!='FROM'))" style="word-break: break-all;overflow: auto;">
+                      <div v-if="line &&( showType != 'separate' || (showType=='separate' && line?.lineType!='FROM'))" style="word-break: break-all;overflow: auto;">
                         <code>{{ line.content }}</code>
                       </div>
                     </td>
                   </tr>
-                  <tr v-if="line.onComment && !readOnly" :key="'comment_'+hindex+'_'+i">
+                  <tr v-if="line?.onComment && !readOnly" :key="'comment_'+hindex+'_'+i">
                     <td v-if="showType=='separate'" colspan="2">
                       <CommentLine 
-                        v-if="line.lineType!='TO'"
+                        v-if="line?.lineType!='TO'"
                         :commentList="getLineCommit('left',setNumtext('from', hunk, i),commentList)"
-                        :line="setNumtext(line.lineType.toLowerCase(), hunk, i)" 
+                        :line="setNumtext(line?.lineType.toLowerCase(), hunk, i)" 
                         :filePath="diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName" 
-                        :lineType="line.lineType" 
+                        :lineType="line?.lineType" 
                         @close="toggleShowComment(line)"
                         @updateComment="updateComment"
                       ></CommentLine>                      
@@ -124,21 +124,21 @@
                       style="border-left:1px solid;"
                     >
                       <CommentLine 
-                        v-if="line.lineType=='TO'"
+                        v-if="line?.lineType=='TO'"
                         :commentList="getLineCommit('right',setNumtext('to', hunk, i),commentList)"
-                        :line="setNumtext(line.lineType.toLowerCase(), hunk, i)" 
+                        :line="setNumtext(line?.lineType.toLowerCase(), hunk, i)" 
                         :filePath="diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName" 
-                        :lineType="line.lineType" 
+                        :lineType="line?.lineType" 
                         @close="toggleShowComment(line)"
                         @updateComment="updateComment"
                       ></CommentLine> 
                     </td>
                     <td v-else-if="!readOnly" colspan="3">
                       <CommentLine 
-                        :commentList="line.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList):getLineCommit('right',setNumtext('to', hunk, i),commentList)"
-                        :line="setNumtext(line.lineType.toLowerCase(), hunk, i)" 
+                        :commentList="line?.lineType!='TO'?getLineCommit('left',setNumtext('from', hunk, i),commentList):getLineCommit('right',setNumtext('to', hunk, i),commentList)"
+                        :line="setNumtext(line?.lineType.toLowerCase(), hunk, i)" 
                         :filePath="diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName" 
-                        :lineType="line.lineType" 
+                        :lineType="line?.lineType" 
                         @close="toggleShowComment(line)"
                         @updateComment="updateComment"
                       ></CommentLine>
@@ -327,7 +327,7 @@ export default {
           let moreList = res.Return && res.Return.list ? res.Return.list : [];
           if (!moreList.length) {
             Object.assign(hunk, {
-              'isEnd': true
+              isEnd: true
             });
           }
           let newList = moreList.map((m) => {
@@ -335,16 +335,16 @@ export default {
           });
           let lineCount = res.Return.list.length;
           let newHunk = {
-            'isEnd': res.Return.list.length < this.moreLineCount,
-            'toFileRange': {
-              'lineStart': toNo, 
-              'lineCount': lineCount
+            isEnd: res.Return.list.length < this.moreLineCount,
+            toFileRange: {
+              lineStart: toNo, 
+              lineCount: lineCount
             }, 
-            'fromFileRange': {
-              'lineStart': startLine, 
-              'lineCount': lineCount
+            fromFileRange: {
+              lineStart: startLine, 
+              lineCount: lineCount
             }, 
-            'lines': newList           
+            lines: newList           
           };
           let nIndex = 0;//获取对应的是第几个hunk
           this.diff.hunks.forEach((h, hindex) => {
@@ -367,7 +367,7 @@ export default {
     },
     toggleShowComment(hunk) {
       Object.assign(hunk, {
-        onComment: !hunk.onComment
+        onComment: !hunk?.onComment
       });
       this.$forceUpdate();
     },
