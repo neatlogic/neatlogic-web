@@ -136,7 +136,7 @@
             >
               <DashboardWidget
                 :ref="'widget' + item.uuid"
-                mode="edit"
+                :mode="mode"
                 :widget="item"
                 :widgetComponent="getWidgetComponentByType(item)"
                 :isResizing="getWidgetResizeStatusByUuid(item.uuid)"
@@ -204,6 +204,7 @@ export default {
       isWindowReszing: false,
       resizeStatus: {},
       copedWidget: null, //复制的组件
+      mode: 'edit',
       dashboardNameValidateList: [
         { name: 'required', message: ' ' },
         { name: 'name-special', message: ' ' }
@@ -213,6 +214,9 @@ export default {
   beforeCreate() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.resizeWindow);
+    if (screenfull.isEnabled) {    
+      screenfull.off('change', this.screenfullChange);
+    }
   },
   created() {
     //用于复制时传参
@@ -454,7 +458,11 @@ export default {
       let fullDiv = this.$refs.canvasContainer;
       if (screenfull.isEnabled) {
         screenfull.request(fullDiv);
+        screenfull.on('change', this.screenfullChange); // 开启监听change事件
       }
+    },
+    screenfullChange() {
+      this.mode = screenfull.isFullscreen ? 'read' : 'edit'; // 全屏模式，组件上不显示删除图标
     },
     save() {
       if (this.dashboard.name) {
