@@ -6,7 +6,15 @@
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
     @contextmenu.prevent
-    @keydown.stop.prevent
+    @mousemove="doDrag"
+    @mouseup="endResize"
+    @mouseleave="endResize"
+    @click="
+      event => {
+        isContextMenuShow = false;
+        event.stopPropagation();
+      }
+    "
   >
     <div v-if="mode === 'edit'" ref="editorTable" class="editor-table">
       <div class="tool bg-op shadow">
@@ -1219,7 +1227,7 @@ export default {
     },
     windowKeypress(event) {
       let $target = editorUtils.comGetTargetCom() || null;
-      if ($target && $target.nodeName.toLowerCase() == 'section') {
+      if ($target && $target.nodeName.toLowerCase() == 'section' && $target.getAttribute('type') && $target.getAttribute('type') === 'table') {
         this.adjustLefterListHeight();
         if (event?.code == 'Enter') {
         // 回车换行，需要加两个br换行，要不然需要回车两次，换行才生效
