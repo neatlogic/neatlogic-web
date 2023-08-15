@@ -1,34 +1,12 @@
 <template>
-  <div class="padding">
+  <div id="box" class="padding">
     <div class="diff-container" :class="showTree ?'':'hideLeft'">
-      <div class="clearfix mb-xs">
-        <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="flex-between ml-md" :class="commitId ? 'pt-sm' : ''">
-          <div v-if="!loading && diffList && diffList.length">
-            <span>{{ $t('page.total') }}</span>
-            <span class="text-primary count-text">{{ getFileCount(diffList) }}</span>
-            <span>{{ $t('term.codehub.filechangenumber') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">，{{ getFileCount(diffList,'addCount') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}</span>
-            <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">，{{ getFileCount(diffList,'deleteCount') }}</span>
-            <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
-          </div>
-          <div class="flex-start">
-            <TsFormSelect
-              v-if="!loading && commitList && commitList.length"
-              v-model="selectedCommit"
-              :dataList="commitList"
-              v-bind="selectConfig"
-              class="mr-sm"
-              @on-change="getDiff()"
-            ></TsFormSelect>
-            <RadioGroup v-if="!loading" v-model="showType" type="button">
-              <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
-            </RadioGroup>
-          </div>
-        </div>
-      </div>
-      <div v-if="!loading" ref="diffTree" class="diff-left bg-op border-color">
+      <div
+        v-if="!loading"
+        ref="diffTree"
+        class="diff-left bg-op border-color"
+        :style="{ width: leftWidth + 'px' }"
+      >
         <TreeLi 
           v-if="fileList && fileList.length>0" 
           :diffList="nameList"
@@ -39,12 +17,46 @@
         ></TreeLi>
         <NoData v-else></NoData>
       </div>
+      <!-- 拖拽的内容 -->
+      <div
+        id="resize"
+        @mousedown="startDrag"
+        @mousemove="dragThrottled"
+        @mouseup="stopDrag"
+      ></div>
       <div
         v-if="!loading"
         ref="diffMain"
         class="diff-main"
         @scroll="scroll($event)"
       >
+        <div class="mb-xs">
+          <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
+          <div class="flex-between ml-md" :class="commitId ? 'pt-sm' : ''">
+            <div v-if="!loading && diffList && diffList.length">
+              <span>{{ $t('page.total') }}</span>
+              <span class="text-primary count-text">{{ getFileCount(diffList) }}</span>
+              <span>{{ $t('term.codehub.filechangenumber') }}</span>
+              <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">，{{ getFileCount(diffList,'addCount') }}</span>
+              <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}</span>
+              <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">，{{ getFileCount(diffList,'deleteCount') }}</span>
+              <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
+            </div>
+            <div class="flex-start">
+              <TsFormSelect
+                v-if="!loading && commitList && commitList.length"
+                v-model="selectedCommit"
+                :dataList="commitList"
+                v-bind="selectConfig"
+                class="mr-sm"
+                @on-change="getDiff()"
+              ></TsFormSelect>
+              <RadioGroup v-if="!loading" v-model="showType" type="button">
+                <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
+              </RadioGroup>
+            </div>
+          </div>
+        </div>
         <DiffDetail
           v-if="diffList && diffList.length>0"
           :showType="showType" 
@@ -54,6 +66,7 @@
           :leftCommitId="leftCommitId"
           :rightCommitId="selectedCommit || rightCommitId"
           :mrId="id"
+          :readOnly="readOnly"
           @endScroll="finishScroll =true"
           @hasFixtop="showFixtop"
           @affix="affix"
@@ -63,7 +76,7 @@
       </div>
       <Loading v-else loadingShow style="height:100px"></Loading>
       <div 
-        v-if="isFixtop && scrollTop && scrollTop>100" 
+        v-if="isFixtop && scrollTop && scrollTop > 100" 
         class="tsfont-arrow-up btn-gotop bg-grey border-color cursor-pointer" 
         @click="scrolltoTop"
       ></div>
@@ -71,31 +84,34 @@
         v-if="!loading"
         class="btn-toggle-left text-action border-color bg-op" 
         :class="showTree ?'ts-angle-left':'ts-bars'" 
-        :style="showTree ?'left:170px':'left:-40px'"
+        :style="leftWidth ? { left: (leftWidth - 28) + 'px' } : (showTree ? { left: '170px' } : { left: '-40px' })"
         @click="toggleshowTree"
       ></div>
+      {{ leftWidth }}
     </div>
   </div>
 </template>
 <script>
-import mixins from './tabmixins.js';
+import mixins from 'pages/codehub/codehub/merge/review/tab/tabmixins.js';
 import axios from '@/resources/api/http.js';
 export default {
   name: '',
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DiffDetail: resolve => require(['./diff/diff-detail.vue'], resolve),
-    TreeLi: resolve => require(['./diff/tree-li.vue'], resolve)
+    DiffDetail: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/diff-detail.vue'], resolve),
+    TreeLi: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/tree-li.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
   props: {},
   provide() {
     return {
-      appModuleId: (this.mrData.appModuleVo && this.mrData.appModuleVo.id) || null,
-      repositoryId: this.mrData.appModuleId || null,
-      branchname: this.mrData.srcBranch || null,
-      smrId: this.id || null
+      appModuleId: (this.mrData?.appModuleVo && this.mrData.appModuleVo.id) || null,
+      repositoryId: this.mrData?.appModuleId || null,
+      branchname: this.mrData?.srcBranch || null,
+      smrId: this.id || this.versionId || null,
+      canDownloadBinaryFile: this.canBinaryFileDownload,
+      canExpand: this.canExpandContent
     };
   },
   data() {
@@ -132,6 +148,10 @@ export default {
         search: true,
         transfer: true
       },
+      isDragging: false,
+      startX: 0,
+      startLeftWidth: 0,
+      leftWidth: 200,
       commitList: [],
       supportTypeList: [//支持哪些文件类型的展示
         'css',
@@ -179,6 +199,12 @@ export default {
   beforeMount() {},
   mounted() {
     this.loading = true;
+    if (this.commitId) {
+      this.selectedCommit = this.commitId;
+    } else {
+      this.selectedCommit = null;
+    }
+    this.getDiff();
   },
   beforeUpdate() {},
   updated() {},
@@ -204,12 +230,40 @@ export default {
   },
   destroyed() {},
   methods: {
+    startDrag(event) {
+      this.isDragging = true;
+      this.startX = event.clientX;
+      this.startLeftWidth = this.leftWidth;
+      // 添加事件监听到document对象上
+      document.addEventListener('mousemove', this.dragThrottled);
+      document.addEventListener('mouseup', this.stopDrag);
+    },
+    dragThrottled(event) {
+      if (!this.isDragging) return;
+
+      const deltaX = event.clientX - this.startX;
+      const newLeftWidth = this.startLeftWidth + deltaX;
+
+      this.$nextTick(() => {
+        this.leftWidth = newLeftWidth;
+      });
+    },
+    stopDrag() {
+      this.isDragging = false;
+      // 移除事件监听
+      document.removeEventListener('mousemove', this.dragThrottled);
+      document.removeEventListener('mouseup', this.stopDrag);
+    },
     getDiff(forceFlush) {
-      let param = {
-        mrId: this.id
-      };
-      if (!this.id) {
+      let param = {};
+      if (!this.id && !this.versionId) {
         return;
+      }
+      if (this.id) {
+        param.mrId = this.id;
+      }
+      if (this.versionId) {
+        param.versionId = this.versionId;
       }
       if (this.selectedCommit || this.commitId) {
         Object.assign(param, {
@@ -227,7 +281,7 @@ export default {
       cancel && cancel.cancel();
       const CancelToken = axios.CancelToken;
       this.cancelAxios = CancelToken.source();
-      axios.post('/api/rest/codehub/mergerequest/diff', param, { cancelToken: this.cancelAxios.token }).then(res => {
+      axios.post(this.url, param, { cancelToken: this.cancelAxios.token }).then(res => {
         if (res.Status == 'OK') {
           this.leftCommitId = res.Return.leftCommitId;
           this.rightCommitId = res.Return.rightCommitId;
@@ -474,23 +528,29 @@ export default {
 
 </script>
 <style lang='less' scoped>
+#box {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  user-select: none; /* Standard syntax */
+}
+#resize {
+  width: 5px;
+  height: 100%;
+  cursor: w-resize;
+}
 .diff-container{
+  display: flex;
   position: relative;
-  padding-left: 200px;
   height:calc(100vh - 180px); // 头部+导航栏+tab+文件描述信息+16间隙
   .diff-left{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    bottom: 0;
-    border-right: 1px solid;
+    min-width: 200px;
     overflow: auto;
+    border-right: 1px solid;
   }
   .diff-main{
+    flex: 1;
     padding: 10px 0 50px 10px;
     overflow: auto;
-    max-height: calc(100vh - 218px);
   }
   &.hideLeft{
     padding-left: 0px;

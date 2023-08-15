@@ -87,14 +87,13 @@
       </li>
     </ul>
   </div>
-
 </template>
 <script>
 export default {
   name: 'TreeLi',
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TreeLi: resolve => require(['./tree-li'], resolve)
+    TreeLi: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/tree-li'], resolve)
   },
   filters: {},
   props: {

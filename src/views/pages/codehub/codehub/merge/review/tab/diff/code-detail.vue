@@ -42,15 +42,15 @@
               <template v-for="(hunk, hindex) in diff.hunks">
                 <template v-for="(line,i) in hunk.lines">
                   <!-- 第一行_start -->
-                  <tr v-if="!hindex && !i && (hunk.fromFileRange.lineStart>1&&hunk.toFileRange.lineStart>1) && !diff.collapsed" :key="'prev_'+hindex+'_'+i">
-                    <td 
+                  <tr v-if="!hindex && !i && (hunk.fromFileRange.lineStart>1&&hunk.toFileRange.lineStart>1) && !diff.collapsed && canExpand" :key="'prev_'+hindex+'_'+i">
+                    <td
                       class="from-lineno code-lineno cursor-pointer pre" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
                     >
                       <div class="ts-option-horizontal text-action icon-more"></div>
                     </td>
-                    <td v-if="showType=='separate'" class="code-content"></td>
+                    <td v-if="showType == 'separate'" class="code-content"></td>
                     <td 
                       class="to-lineno code-lineno cursor-pointer" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
@@ -145,14 +145,15 @@
                     </td>
                   </tr>
                   <!-- 最后一行_start -->
-                  <tr v-if="hasNext(hunk,diff,i,setNumtext('from', hunk,hunk.lines.length-1),diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)" :key="'next_'+hindex+'_'+i">
+                  <tr v-if="hasNext(hunk,diff,i,setNumtext('from', hunk,hunk.lines.length-1),diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null) && canExpand" :key="'next_'+hindex+'_'+i">
                     <td v-if="hunk.getMoreLine" :colspan="showType=='separate'?4:3"><Spin size="small"></Spin></td>
                     <td 
                       v-if="!hunk.getMoreLine"
                       class="from-lineno code-lineno cursor-pointer next" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('next',setNumtext('from', hunk,hunk.lines.length-1,true),setNumtext('to', hunk,hunk.lines.length-1),hunk,diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)"
-                    ><div class="ts-option-horizontal text-action icon-more"></div></td>
+                    ><div class="ts-option-horizontal text-action icon-more"></div>
+                    </td>
                     <td v-if="!hunk.getMoreLine && showType=='separate'" class="code-content"></td>
                     <td 
                       v-if="!hunk.getMoreLine"
@@ -193,14 +194,20 @@
                     {{ $t('term.codehub.filedeleted') }}
                   </div>
                   <template v-else>
-                    <span>{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
-                    <span
-                      v-if="!isDowning"
-                      v-download="downPath(diff)"
-                      v-download:success="downloadok"
-                      class="text-href"
-                    >{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
-                    <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon>{{ $t('page.downloading') }}</span>
+                    <template v-if="canDownloadBinaryFile">
+                      <span>{{ $t('term.codehub.binaryfilecannotviewcontent') }}</span>
+                      <span
+                        v-if="!isDowning"
+                        v-download="downPath(diff)"
+                        v-download:success="downloadok"
+                        class="text-href"
+                      >{{ $t('term.codehub.clickheretodownloadthefile') }}</span>
+                      <span v-else><Icon type="ios-loading" size="16" class="loading"></Icon>{{ $t('page.downloading') }}</span>
+                    </template>
+                    <template v-else>
+                      {{ $t('term.codehub.binaryfilenosupportview') }}
+                    </template>
+                  
                   </template>
                 </td>
               </tr>
@@ -230,11 +237,11 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    CommentLine: resolve => require(['./comment-line.vue'], resolve)
+    CommentLine: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/comment-line.vue'], resolve)
   },
   filters: {},
   directives: {clipboard, download},
-  inject: ['appModuleId', 'branchname', 'leftcommitid', 'rightcommitid'],
+  inject: ['appModuleId', 'branchname', 'leftcommitid', 'rightcommitid', 'canDownloadBinaryFile', 'canExpand'],
   props: {
     diffList: [Array, Object],
     type: {
@@ -413,11 +420,11 @@ export default {
   computed: {
     getType() {
       return function(item) {
-        let classname = null;
-        if (item && item.lineType) {
-          classname = 'line-tr linetype-' + item.lineType.toLowerCase();
+        let className = null;
+        if (item?.lineType) {
+          className = 'line-tr linetype-' + item.lineType.toLowerCase();
         }
-        return classname;
+        return className;
       };
     },
     setNumtext() {
@@ -472,12 +479,14 @@ export default {
       return function(diff, isCurrent) {
         //如果是当前的，就把路径都过滤掉只保留文件名（含文件后缀）
         let name = '';
+        let fullName = diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName;
+
         if (isCurrent) {
-          let fullName = diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName;
-          name = fullName.substr(fullName.lastIndexOf('/') + 1);
+          name = fullName?.substr(fullName?.lastIndexOf('/') + 1);
         } else {
-          name = diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName;
+          name = fullName;
         }
+
         return name;
       };
     },

@@ -13,17 +13,18 @@
     >
       <template slot="description" slot-scope="{row}">
         <Poptip
-          v-if="row.description"
+          v-if="row.description && canBeyondHidden(row.description)"
           width="450"
           transfer
           trigger="hover"
           word-wrap
         >
           {{ truncateString(row.description) }}
-          <div slot="content" style="height: 500px;overflow-y: auto;">
-            <div>{{ row.description }}</div>
+          <div slot="content" style="max-height: 500px;overflow-y: auto;">
+            {{ row.description }}
           </div>
         </Poptip>
+        <span v-else>{{ row.description }}</span>
       </template>
     </TsTable>
   </div>
@@ -52,54 +53,54 @@ export default {
       },
       theadList: [
         {
-          title: '编号',
+          title: this.$t('term.codehub.issuesnumber'),
           key: 'no'
         },
         {
-          title: '名称',
+          title: this.$t('page.name'),
           key: 'name'
         },
         {
-          title: '类型',
+          title: this.$t('page.type'),
           key: 'type'
         },
         {
-          title: '状态',
+          title: this.$t('page.status'),
           key: 'status'
         },
         {
-          title: '描述',
+          title: this.$t('page.description'),
           key: 'description'
         },
         {
-          title: '需求处理人',
+          title: this.$t('term.process.dealwithuser'),
           key: 'handleUserId'
         },
         {
-          title: '需求创建时间',
+          title: this.$t('page.createtime'),
           key: 'issueCreateTime',
           type: 'time'
         },
         {
-          title: '更新时间',
+          title: this.$t('page.updatetime'),
           key: 'issueUpdateTime',
           type: 'time'
         },
         {
-          title: '最后同步时间',
+          title: this.$t('term.deploy.lastsynchronizationtime'),
           key: 'issueLastSyncTime',
           type: 'time'
         },
         {
-          title: '创建人',
+          title: this.$t('page.creator'),
           key: 'issueCreator'
         },
         {
-          title: '更新人',
+          title: this.$t('page.updateuser'),
           key: 'issueUpdateUser'
         },
         {
-          title: '负责人',
+          title: this.$t('page.responsibleperson'),
           key: 'issuePersonInCharge'
         }
       ]
@@ -136,7 +137,7 @@ export default {
       };
       this.$api.deploy.version.getRelatedIssuesList(params).then(res => {
         if (res.Status == 'OK') {
-          Object.assign(this.tableConfig, res.Return);
+          this.tableConfig = Object.assign(this.tableConfig, res.Return);
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -145,8 +146,8 @@ export default {
   },
   filter: {},
   computed: {
-    truncateString(str, maxLength = 20) {
-      return () => {
+    truncateString() {
+      return (str, maxLength = 20) => {
         if (typeof str !== 'string') {
           return str;
         }
@@ -154,6 +155,18 @@ export default {
           return str;
         } else {
           return str.slice(0, maxLength) + '...'; // 使用 slice() 方法截取前 maxLength 个字符，并添加省略号
+        }
+      };
+    },
+    canBeyondHidden() {
+      // 文字超出隐藏
+      return (str, maxLength = 20) => {
+        if (typeof str === 'boolean' || typeof str === 'number') {
+          return false;
+        } else if (str.length <= maxLength) {
+          return false;
+        } else {
+          return true;
         }
       };
     }

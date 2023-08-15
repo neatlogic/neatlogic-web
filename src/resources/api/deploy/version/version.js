@@ -78,9 +78,6 @@ const version = {
   getRelatedIssuesList(params) {
     // 关联需求列表
     return axios.post('/api/rest/deploy/version/issuelist/get', params);
-  },
-  getVersionCommitDiff(params) {
-    return axios.post('/api/rest/deploy/version/commit/diff/get', params);
   }
 };
 export default version;

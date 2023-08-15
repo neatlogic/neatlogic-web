@@ -25,7 +25,7 @@
   </div>
 </template>
 <script>
-import CodeDetail from './code-detail.vue';
+import CodeDetail from 'pages/codehub/codehub/merge/review/tab/diff/code-detail.vue';
 export default {
   name: '',
   components: {
@@ -123,7 +123,7 @@ export default {
       }
     },
     checkFixttop() {
-      if (this.$el.getBoundingClientRect().height > this.$el.parentNode.getBoundingClientRect().height) {
+      if (this.$el?.getBoundingClientRect().height > this.$el?.parentNode?.getBoundingClientRect().height) {
         this.$emit('hasFixtop', true);
       } else {
         this.$emit('hasFixtop', false);
@@ -147,10 +147,8 @@ export default {
         this.$api.codehub.merge.getCommentOfLine(param).then((res) => {
           if (res.Status == 'OK') {
             this.commentList = res.Return.list || [];
-          } else {
-            this.commentList = [];
           }
-        }).catch((e) => {
+        }).catch(() => {
           this.commentList = [];
         });
       }
@@ -159,9 +157,9 @@ export default {
   computed: {
     getType() {
       return function(diff) {
-        let name = diff.modifiedType == 'A' ? diff.toFileName : diff.fromFileName;
-        let index = name.lastIndexOf('.');
-        return name.substring(index + 1);
+        let name = diff.modifiedType === 'A' ? diff.toFileName : diff.fromFileName;
+        let index = name ? name.lastIndexOf('.') : -1;
+        return index !== -1 ? name.substring(index + 1) : '';
       };
     }
   },

@@ -1872,7 +1872,8 @@
     "applynotconfigenv": "当前应用未配置环境",
     "modulenotconfigenv": "当前模块未配置环境",
     "codechange": "代码变更",
-    "cveloophole": "cve漏洞"
+    "cveloophole": "cve漏洞",
+    "lastsynchronizationtime": "最后同步时间"
   },
   "inspect": {
     "alarmprompt": "告警提示",
@@ -2424,7 +2425,8 @@
     "noaddauthresource": "暂无可添加权限的资源",
     "backmergerequest": "返回MR",
     "branchproject": "分支保护",
-    "filenameadjusttotarget": "文件名由{fromfileName}修改为{tofileName}"
+    "filenameadjusttotarget": "文件名由{fromfileName}修改为{tofileName}",
+    "binaryfilenosupportview": "此文件为二进制文件，暂不支持查看"
   },
   "documentonline": {
     "currentpagesearch": "当前页面相关帮助",

@@ -253,6 +253,36 @@ export default {
           isShow: 1
         },
         {
+          title: '文件增加数',
+          key: 'fileAddCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: '文件修改数',
+          key: 'fileModifyCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: '文件删除数',
+          key: 'fileDeleteCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: '代码行增加数量',
+          key: 'lineAddCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: '代码行减少数量',
+          key: 'lineDeleteCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
           title: this.$t('page.description'),
           key: 'description',
           isDisabled: true,
