@@ -1515,9 +1515,9 @@ export default {
     }
     .tool {
       position: absolute;
-      top: -36px !important;
+      top: -30px !important;
       left: 0px !important;
-      z-index: 30;
+      z-index: 100;
       box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
       border-radius: 2px;
       padding: 5px;
