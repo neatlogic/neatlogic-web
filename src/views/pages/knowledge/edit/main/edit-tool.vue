@@ -341,7 +341,7 @@ export default {
           this.removeMark();
           if ($target.innerText.indexOf(value) >= 0) {
             let $focusTarget = editorUtils.comGetTargetCom();
-            $target.children.forEach(child => {
+            Array.from($target.children).forEach(child => {
               let typeList = ['code', 'table', 'img'];
               if (typeList.indexOf(child.getAttribute('type')) >= 0) {
                 return;

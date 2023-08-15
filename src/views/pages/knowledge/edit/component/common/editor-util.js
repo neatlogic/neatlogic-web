@@ -173,7 +173,7 @@ export default {
   comRemoveMark($target) { //删除目标元素中的mark元素
     $target = $target.cloneNode(true);
     if ($target.querySelector('mark')) {
-      $target.children.forEach(child => {
+      Array.from($target.children).forEach(child => {
         let $mark = child.querySelectorAll('mark');
         if ($mark && $mark.length > 0) {
           child.innerHTML = child.innerHTML.replace(/<mark[\s\S]*?>([\s\S]*?)<\/mark>/g, '$1');
