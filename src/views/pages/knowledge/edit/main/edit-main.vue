@@ -569,7 +569,6 @@ html {
     min-height: 300px;
     outline: none;
     height: 100%;
-    padding-bottom: 30px;
     > *:nth-last-child(1):first-child {
       &:empty:before {
         content: attr(content-data);
