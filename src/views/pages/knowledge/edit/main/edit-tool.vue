@@ -341,7 +341,7 @@ export default {
           this.removeMark();
           if ($target.innerText.indexOf(value) >= 0) {
             let $focusTarget = editorUtils.comGetTargetCom();
-            $target.children.forEach(child => {
+            Array.from($target.children).forEach(child => {
               let typeList = ['code', 'table', 'img'];
               if (typeList.indexOf(child.getAttribute('type')) >= 0) {
                 return;
@@ -400,7 +400,7 @@ export default {
         // //当没有选中的数据，利用焦点元素
         let range = editorUtils.comGetCursor();
         let activeRange = {startContainer: range.startContainer, startOffset: range.startOffset, commonAncestorContainer: range.commonAncestorContainer};
-        $target.children.forEach(child => {
+        Array.from($target.children).forEach(child => {
           let $mark = child.querySelectorAll('mark');
           if ($mark && $mark.length > 0) {
             if ($focusTarget == child) {

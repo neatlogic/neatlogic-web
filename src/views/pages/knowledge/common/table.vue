@@ -6,7 +6,15 @@
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
     @contextmenu.prevent
-    @keydown.stop.prevent
+    @mousemove="doDrag"
+    @mouseup="endResize"
+    @mouseleave="endResize"
+    @click="
+      event => {
+        isContextMenuShow = false;
+        event.stopPropagation();
+      }
+    "
   >
     <div v-if="mode === 'edit'" ref="editorTable" class="editor-table">
       <div class="tool bg-op shadow">
@@ -322,6 +330,7 @@
 </template>
 <script>
 import editorMixins from '@/views/pages/knowledge/edit/component/common/mixins.js';
+import editorUtils from '@/views/pages/knowledge/edit/component/common/editor-util.js';
 export default {
   name: '',
   components: {},
@@ -440,9 +449,6 @@ export default {
         this.copyedCell = {};
         if (this.handlerCell.content) {
           this.copyedCell.content = this.$utils.deepClone(this.handlerCell.content);
-        } else if (this.handlerCell.component) {
-          this.copyedCell.component = this.$utils.deepClone(this.handlerCell.component);
-          this.copyedCell.component.uuid = this.$utils.setUuid(); //重新生成组件uuid
         }
       }
     },
@@ -1220,34 +1226,21 @@ export default {
       });
     },
     windowKeypress(event) {
-      this.adjustLefterListHeight();
-      if (event?.code == 'Enter') {
+      let $target = editorUtils.comGetTargetCom() || null;
+      if ($target && $target.nodeName.toLowerCase() == 'section' && $target.getAttribute('type') && $target.getAttribute('type') === 'table') {
+        this.adjustLefterListHeight();
+        if (event?.code == 'Enter') {
         // 回车换行，需要加两个br换行，要不然需要回车两次，换行才生效
-        const range = window.getSelection().getRangeAt(0);
-        const br1 = document.createElement('br');
-        const br2 = document.createElement('br');
-        range.deleteContents();
-        range.insertNode(br1);
-        range.insertNode(br2);
-        range.collapse(false);
-        event.preventDefault();
-        return false;
-      }
-      if (event.key == 'c' && event.ctrlKey) {
-        //复制组件
-        if (!event.target._value && this.hasCopy) {
-          this.copyCell();
-        }
-      } else if (event.key == 'v' && event.ctrlKey) {
-        //粘贴组件
-        if (!event.target._value && this.hasPaste) {
-          this.pasteCell();
-        }
-      } else if (event.key == 'x' && event.ctrlKey) {
-        //剪切组件
-        if (!event.target._value && this.hasCopy) {
-          this.cutCell();
-        }
+          const range = window.getSelection().getRangeAt(0);
+          const br1 = document.createElement('br');
+          const br2 = document.createElement('br');
+          range.deleteContents();
+          range.insertNode(br1);
+          range.insertNode(br2);
+          range.collapse(false);
+          event.preventDefault();
+          return false;
+        } 
       }
     }
   },
@@ -1530,9 +1523,9 @@ export default {
     }
     .tool {
       position: absolute;
-      top: -36px !important;
+      top: -30px !important;
       left: 0px !important;
-      z-index: 30;
+      z-index: 100;
       box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
       border-radius: 2px;
       padding: 5px;

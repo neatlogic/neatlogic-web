@@ -312,7 +312,7 @@ function getParent(node) {
 </script>
 <style lang="less" scoped>
 ul.main-left{
-   white-space: pre;
+  //  white-space: pre;
 }
 .menu-ul {
   overflow: hidden;
