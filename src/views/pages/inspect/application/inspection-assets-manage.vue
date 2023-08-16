@@ -209,7 +209,7 @@ export default {
       this.loadingShow = true;
       await this.$api.cmdb.applicationManage.getEnvironmenteList().then(res => {
         if (res.Status == 'OK') {
-          this.envList = res.Return.tbodyList || [];
+          this.envList = res.Return?.tbodyList || [];
           this.envList.unshift({
             name: this.$t('term.inspect.allenv'),
             id: ''
