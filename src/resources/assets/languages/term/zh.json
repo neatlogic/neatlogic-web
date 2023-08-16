@@ -1873,7 +1873,13 @@
     "modulenotconfigenv": "当前模块未配置环境",
     "codechange": "代码变更",
     "cveloophole": "cve漏洞",
-    "lastsynchronizationtime": "最后同步时间"
+    "lastsynchronizationtime": "最后同步时间",
+    "issuecount": "需求数量",
+    "fileaddcount": "文件增加数",
+    "filemodifycount": "文件修改数",
+    "filedeletecount": "文件删除数",
+    "lineaddcount": "代码行增加数量",
+    "linedeletecount": "代码行减少数量"
   },
   "inspect": {
     "alarmprompt": "告警提示",

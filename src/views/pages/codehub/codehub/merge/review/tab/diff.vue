@@ -8,7 +8,7 @@
         :style="{ width: leftWidth + 'px' }"
       >
         <TreeLi 
-          v-if="fileList && fileList.length>0" 
+          v-if="fileList && fileList.length > 0" 
           :diffList="nameList"
           :treeList="fileList" 
           :selectedFile="selectedFile"
@@ -26,7 +26,6 @@
       ></div>
       <div
         v-if="!loading"
-        
         class="diff-main"
       >
         <div class="mb-xs">
@@ -56,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div ref="diffMain" class="code-diff-content" @scroll="scroll($event)">
+        <div ref="codeDiffContent" class="code-diff-content" @scroll="scroll($event)">
           <DiffDetail
             v-if="hasDiffList"
             :showType="showType" 
@@ -86,7 +85,7 @@
         v-if="!loading"
         class="btn-toggle-left text-action border-color bg-op" 
         :class="showTree ?'ts-angle-left':'ts-bars'" 
-        :style="{ left: (leftWidth - 28) + 'px' }"
+        :style="{ left: (leftWidth > 0 ? leftWidth - 28 : '-40') + 'px' }"
         @click="toggleshowTree"
       ></div>
     </div>
@@ -134,7 +133,7 @@ export default {
       showTree: true,
       selectedCommit: null, //选中哪个对比的commit
       selectConfig: {
-        width: 160,
+        width: 342,
         border: 'border',
         clearable: false,
         textName: 'commitId',
@@ -360,8 +359,8 @@ export default {
       this.isFixtop = status;
     },
     scrolltoTop() {
-      if (this.$refs.diffMain) {
-        this.$refs.diffMain.scrollTo(0, 0);
+      if (this.$refs.codeDiffContent) {
+        this.$refs.codeDiffContent.scrollTo(0, 0);
       }
       if (this.$refs.diffTree) {
         this.$refs.diffTree.scrollTo(0, 0);
@@ -413,7 +412,7 @@ export default {
     },
     toggleshowTree() {
       this.showTree = !this.showTree;
-      this.leftWidth = this.showTree ? 200 : '-40';
+      this.leftWidth = this.showTree ? 200 : 0;
     },
     selectFile(path) {
       const selectedFile = this.fileList?.find(f => f.path === path);
@@ -473,7 +472,6 @@ export default {
     display: flex;
     position: relative;
     height:calc(100vh - 180px); // 头部+导航栏+tab+文件描述信息+16间隙
-    overflow: hidden;
     .diff-left{
       overflow: auto;
       border-right: 1px solid;

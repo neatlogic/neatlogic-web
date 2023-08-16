@@ -253,31 +253,37 @@ export default {
           isShow: 1
         },
         {
-          title: '文件增加数',
+          title: this.$t('term.deploy.issuecount'),
+          key: 'issueCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.fileaddcount'),
           key: 'fileAddCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: '文件修改数',
+          title: this.$t('term.deploy.filemodifycount'),
           key: 'fileModifyCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: '文件删除数',
+          title: this.$t('term.deploy.filedeletecount'),
           key: 'fileDeleteCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: '代码行增加数量',
+          title: this.$t('term.deploy.lineaddcount'),
           key: 'lineAddCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: '代码行减少数量',
+          title: this.$t('term.deploy.linedeletecount'),
           key: 'lineDeleteCount',
           isDisabled: false,
           isShow: 1
