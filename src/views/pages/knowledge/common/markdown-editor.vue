@@ -60,7 +60,7 @@
       <div
         v-show="!isEditMode"
         id="markdownContent"
-        class="markdown-body pr-nm"
+        class="markdown-body pr-nm pl-nm"
         v-html="markdownPreviewContent"
       ></div>
     </div>
