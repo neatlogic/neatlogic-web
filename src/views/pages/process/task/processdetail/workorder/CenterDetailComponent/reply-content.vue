@@ -308,7 +308,7 @@ export default {
       this.$set(data, 'content', this.commentContent.content);
       let fileIdList = [];
 
-      if (this.commentContent.fileList.length > 0) {
+      if (this.commentContent.fileList?.length > 0) {
         fileIdList = this.commentContent.fileList.map(f => {
           return f.id;
         });

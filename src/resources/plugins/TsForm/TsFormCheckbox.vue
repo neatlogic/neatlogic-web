@@ -147,7 +147,7 @@ export default {
         needdataLi.indexOf(_this.ajaxType) < 0 ? Object.assign(ajaxArr, {params: params}) : Object.assign(ajaxArr, {data: params});
         this.$https(ajaxArr).then(res => {
           if (res && res.Status == 'OK') {
-            _this.nodeList = _this.rootName ? res.Return[_this.rootName] : res.Return;
+            _this.nodeList = _this.rootName ? (res.Return?.[_this.rootName] || []) : res.Return;
             _this.nodeList && _this.nodeList.length > 500 && (_this.nodeList.length = 500);
             if (_this.dealDataByUrl && typeof _this.dealDataByUrl == 'function') {
               _this.nodeList = _this.dealDataByUrl(_this.nodeList);
