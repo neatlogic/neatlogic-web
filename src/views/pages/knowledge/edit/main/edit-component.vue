@@ -521,7 +521,7 @@ export default {
       let liTarget = editorUtils.comGetTargetCom(null, ['li']);
       let preEl = liTarget?.previousSibling;
       let range = editorUtils.comGetCursor();
-      if ((range.startContainer == liTarget || range.startContainer == liTarget.childNodes[0]) && range.startOffset == 0 && !preEl) { //位于开始位置 而且是第一个li元素
+      if ((range.startContainer == liTarget || range.startContainer == liTarget?.childNodes[0]) && range.startOffset == 0 && !preEl) { //位于开始位置 而且是第一个li元素
         let newNode = editorUtils.createDom({handler: 'p', content: liTarget.innerHTML, uuid: this.$utils.setUuid()});
         $target.parentNode.insertBefore(newNode, $target);
         editorUtils.comSetfocus(newNode);

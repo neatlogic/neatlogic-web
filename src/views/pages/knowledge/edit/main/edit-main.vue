@@ -550,7 +550,7 @@ html {
     .main {
       height: calc(100% - 40px);
       overflow: auto;
-      padding: 10px 30px;
+      padding: 30px 30px 10px;
       position: relative;
     }
   }
@@ -587,7 +587,6 @@ html {
     //块状的样式
     > section {
       position: relative;
-      z-index: 1;
     }
     //标题一的样式
     > h1 {
