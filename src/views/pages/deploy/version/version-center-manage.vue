@@ -253,6 +253,42 @@ export default {
           isShow: 1
         },
         {
+          title: this.$t('term.deploy.issuecount'),
+          key: 'issueCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.fileaddcount'),
+          key: 'fileAddCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.filemodifycount'),
+          key: 'fileModifyCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.filedeletecount'),
+          key: 'fileDeleteCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.lineaddcount'),
+          key: 'lineAddCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: this.$t('term.deploy.linedeletecount'),
+          key: 'lineDeleteCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
           title: this.$t('page.description'),
           key: 'description',
           isDisabled: true,

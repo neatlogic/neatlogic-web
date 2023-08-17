@@ -54,11 +54,21 @@
           <TabPane :label="$t('page.codescan')" name="codeScan">
             <CodeScanOverview v-if="tabValue == 'codeScan'" :versionId="versionId"></CodeScanOverview>
           </TabPane>
-          <TabPane v-if="isShowCodeChange" :label="$t('term.deploy.codechange')" name="codeChange">
-            <CodeChangeOverview v-if="tabValue == 'codeChange'" :id="mrId"></CodeChangeOverview>
+          <TabPane :label="$t('term.deploy.codechange')" name="codeChange">
+            <CodeDiff
+              v-if="tabValue == 'codeChange'"
+              :versionId="versionId"
+              url="/api/rest/deploy/version/commit/diff/get"
+              :readOnly="true"
+              :canBinaryFileDownload="false"
+              :canExpandContent="false"
+            ></CodeDiff>
           </TabPane>
           <TabPane v-if="isShowCveTab && versionId" :label="$t('term.deploy.cveloophole')" name="cveLoophole">
             <CveLoopholeManage :versionId="versionId" @hideTab="(hideTab) => isShowCveTab = hideTab"></CveLoopholeManage>
+          </TabPane>
+          <TabPane :label="$t('term.rdm.relativerequest')" name="relatedIssues">
+            <RelatedIssuesManage v-if="versionId && tabValue == 'relatedIssues'" :versionId="versionId"></RelatedIssuesManage>
           </TabPane>
         </Tabs>
       </template>
@@ -81,8 +91,9 @@ export default {
     DeployStatusOverview: resolve => require(['./detail/deploy-status-overview'], resolve),
     UnitTestOverview: resolve => require(['./detail/unit-test-overview'], resolve), // 单元测试
     CodeScanOverview: resolve => require(['./detail/code-scan-overview'], resolve), // 代码扫描
-    CodeChangeOverview: resolve => require(['./detail/code-change-overview'], resolve), // 代码变更
-    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve) // cve漏洞
+    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve), // cve漏洞
+    RelatedIssuesManage: resolve => require(['./detail/related-issues-manage'], resolve), // 关联需求
+    CodeDiff: resolve => require(['pages/codehub/codehub/merge/review/tab/diff.vue'], resolve) // 代码变更
   },
   mixins: [versionCenterMixin],
   props: {},
@@ -90,7 +101,6 @@ export default {
     return {
       tabValue: 'deployStatus',
       title: '',
-      mrId: null,
       envId: null,
       versionId: null,
       isFreeze: 0, // 封版
