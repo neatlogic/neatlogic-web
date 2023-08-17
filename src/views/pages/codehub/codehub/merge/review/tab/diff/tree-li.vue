@@ -87,14 +87,13 @@
       </li>
     </ul>
   </div>
-
 </template>
 <script>
 export default {
   name: 'TreeLi',
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TreeLi: resolve => require(['./tree-li'], resolve)
+    TreeLi: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/tree-li'], resolve)
   },
   filters: {},
   props: {
@@ -152,7 +151,7 @@ export default {
       this.$nextTick(() => {
         if (this.$el.querySelectorAll('.diff-treefile') && this.$el.querySelectorAll('.diff-treefile').length) {
           this.$el.querySelectorAll('.diff-treefile').forEach(d => {
-            if (d.querySelector('.sum-count').getBoundingClientRect().width) {
+            if (d.querySelector('.sum-count')?.getBoundingClientRect().width) {
               d.querySelector('.diff-name').style = 'padding-right:' + parseInt(d.querySelector('.sum-count').getBoundingClientRect().width + 1) + 'px';
             }
           });

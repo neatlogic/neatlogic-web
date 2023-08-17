@@ -64,7 +64,9 @@ const ci = {
     return axios.post('/api/rest/cmdb/ciview/listconst', {ciId: ciId, showType: showType});
   },
   getAttrByCiId(ciId, showType, isSimple, allowEdit) {
-    let param = {};
+    let param = {
+      ciId: ciId
+    };
     if (showType) {
       param['showType'] = showType;
     }
@@ -74,7 +76,7 @@ const ci = {
     if (allowEdit) {
       param['allowEdit'] = allowEdit;
     }
-    return axios.post('/api/rest/cmdb/ci/' + ciId + '/listattr', param);
+    return axios.post('/api/rest/cmdb/ci/listattr', param);
   },
   getExpressionAttrRelByCiId(ciId) {
     return axios.post('/api/rest/cmdb/ci/' + ciId + '/listexpressionattrrel', {});

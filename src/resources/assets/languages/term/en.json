@@ -1876,7 +1876,14 @@
     "applynotconfigenv": "The current application does not configure the environment",
     "modulenotconfigenv": "The current module does not have an environment configured",
     "codechange": "Code change",
-    "cveloophole": "CVE vulnerability"
+    "cveloophole": "CVE vulnerability",
+    "lastsynchronizationtime": "Last synchronization time",
+    "issuecount": "Required quantity",
+    "fileaddcount": "Number of file additions",
+    "filemodifycount": "Number of file modifications",
+    "filedeletecount": "Number of file deletions",
+    "lineaddcount": "Number of code lines added",
+    "linedeletecount": "Number of code lines reduced"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2424,7 +2431,8 @@
     "revokerequirement": "Revoke requirement",
     "backmergerequest": "Return to MR",
     "branchproject": "Branch protection",
-    "filenameadjusttotarget": "Change the file name from {fromfileName} to {tofileName}"
+    "filenameadjusttotarget": "Change the file name from {fromfileName} to {tofileName}",
+    "binaryfilenosupportview": "This file is binary and currently does not support viewing"
   },
   "documentonline": {
     "currentpagesearch": "Help related to the current page",

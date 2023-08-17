@@ -180,16 +180,19 @@ export default {
   },
   deactivated() {
     //取消正在搜索的请求
-    let cancel = this.cancelAxios;
-    cancel && cancel.cancel();
+    this.handleRequest();
   },
   beforeDestroy() {
     //取消正在搜索的请求
-    let cancel = this.cancelAxios;
-    cancel && cancel.cancel();
+    this.handleRequest();
   },
   destroyed() {},
   methods: {
+    handleRequest() {
+      let cancel = this.cancelAxios;
+      cancel?.cancel();
+      this.flushTimer && clearTimeout(this.flushTimer); // 页面离开时，定时器关闭
+    },
     getList(forceFlush) {
       let param = {
         mrId: this.id
