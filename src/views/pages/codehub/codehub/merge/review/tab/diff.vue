@@ -473,7 +473,7 @@ export default {
     position: relative;
     height:calc(100vh - 180px); // 头部+导航栏+tab+文件描述信息+16间隙
     .diff-left{
-      overflow: auto;
+      overflow: hidden;
       border-right: 1px solid;
     }
     .diff-main{
