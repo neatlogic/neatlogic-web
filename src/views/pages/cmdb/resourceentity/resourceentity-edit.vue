@@ -20,7 +20,13 @@
             v-model="resourceEntityData.mainCi"
             v-bind="treeConfig"
           ></TsFormTree>
-          <MappingSetting :mainCi="resourceEntityData.mainCi" class="pt-nm"></MappingSetting>
+          <MappingSetting
+            v-if="!$utils.isEmpty(resourceEntityData)"
+            ref="mappingSetting"
+            :data="resourceEntityData"
+            :mainCi="resourceEntityData.mainCi"
+            class="pt-nm"
+          ></MappingSetting>
         </template>
       </TsForm>
     </template>
@@ -74,7 +80,7 @@ export default {
         },
         {
           name: 'mainCi',
-          label: '主模型',
+          label: this.$t('term.cmdb.mainci'),
           type: 'slot',
           validateList: ['required']
         }
@@ -109,8 +115,19 @@ export default {
       }
     },
     save() {
-      console.log(JSON.stringify(this.resourceEntityData, null, 2));
-      
+      // console.log(JSON.stringify(this.resourceEntityData, null, 2));
+      if (!this.$refs.mappingSetting.valid()) {
+        return; 
+      }
+      let fieldMappingList = this.$refs.mappingSetting.getData();
+      fieldMappingList.forEach(item => {
+        for (let key in item) {
+          if (this.$utils.isEmpty(item[key])) { //清除多余字段
+            this.$delete(item, key);
+          }
+        }
+      });
+      this.$set(this.resourceEntityData.config, 'fieldMappingList', fieldMappingList);
       this.$api.cmdb.resourceentity.saveResourceEntity(this.resourceEntityData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));

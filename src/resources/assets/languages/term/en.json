@@ -143,7 +143,10 @@
     "addcientity": "Add Configuration Item",
     "resourcetypetreenosettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view was not successfully set in the view settings, and the asset list function is not available",
     "gotoresourceentitymanagepage": "Click here to set this view",
-    "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list"
+    "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list",
+    "mainci": "Main model",
+    "inherentfield": "Inherent field",
+    "attrci": "Model where the field is located"
   },
   "process": {
     "workordercenter": "Work Center",
