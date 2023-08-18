@@ -146,7 +146,14 @@
     "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list",
     "mainci": "Main model",
     "inherentfield": "Inherent field",
-    "attrci": "Model where the field is located"
+    "attrci": "Model where the field is located",
+    "inspectime": "Inspection time",
+    "monitortime": "Monitoring time",
+    "modelkey": "Model identification",
+    "modelname": "Model Name",
+    "toattr": "Mapping Properties",
+    "fromci": "Upstream model",
+    "toci": "Downstream model"
   },
   "process": {
     "workordercenter": "Work Center",

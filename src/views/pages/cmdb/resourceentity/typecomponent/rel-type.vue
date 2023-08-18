@@ -4,13 +4,13 @@
       ref="fromCi"
       v-model="item.fromCi"
       v-bind="treeConfig"
-      placeholder="上游模型"
+      :placeholder="$t('term.cmdb.fromci')"
     ></TsFormTree>
     <TsFormTree
       ref="toCi"
       v-model="item.toCi"
       v-bind="treeConfig"
-      placeholder="上游模型"
+      :placeholder="$t('term.cmdb.toci')"
     ></TsFormTree>
     <TsFormSelect
       v-if="item.fromCi && item.toCi"
@@ -18,7 +18,7 @@
       v-model="item.direction"
       :dataList="directionList"
       :validateList="validateList"
-      placeholder="字段所在模型"
+      :placeholder="$t('term.cmdb.attrci')"
       transfer
     ></TsFormSelect>
     <template v-if="item.direction">
@@ -62,11 +62,11 @@ export default {
       validateList: ['required'],
       directionList: [
         {
-          text: '上游模型',
+          text: this.$t('term.cmdb.fromci'),
           value: 'from'
         },
         {
-          text: '下游模型',
+          text: this.$t('term.cmdb.toci'),
           value: 'to'
         }
       ],
@@ -75,7 +75,7 @@ export default {
         validateList: ['required'],
         valueName: 'name',
         textName: 'label',
-        placeholder: '属性',
+        placeholder: this.$t('page.attribute'),
         transfer: true
       }
     };

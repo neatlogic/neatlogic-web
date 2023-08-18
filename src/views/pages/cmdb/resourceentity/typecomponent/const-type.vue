@@ -56,47 +56,47 @@ export default {
         },
         {
           'value': '_fcu',
-          'text': '创建人'
+          'text': this.$t('page.creator')
         },
         {
           'value': '_fcd',
-          'text': '创建日期'
+          'text': this.$t('page.createdate')
         },
         {
           'value': '_lcu',
-          'text': '修改人'
+          'text': this.$t('page.fcu')
         },
         {
           'value': '_lcd',
-          'text': '修改日期'
+          'text': this.$t('page.lcu')
         },
         {
           'value': '_inspectStatus',
-          'text': '巡检状态'
+          'text': this.$t('term.autoexec.inspectstatus')
         },
         {
           'value': '_inspectTime',
-          'text': '巡检时间'
+          'text': this.$t('term.cmdb.inspectime')
         },
         {
           'value': '_monitorStatus',
-          'text': '监控状态'
+          'text': this.$t('term.inspect.monitoringstate')
         },
         {
           'value': '_monitorTime',
-          'text': '监控时间'
+          'text': this.$t('term.cmdb.monitortime')
         },
         {
           'value': '_typeId',
-          'text': '模型ID'
+          'text': this.$t('page.model') + 'ID'
         },
         {
           'value': '_typeName',
-          'text': '模型标识'
+          'text': this.$t('term.cmdb.modelkey')
         },
         {
           'value': '_typeLabel',
-          'text': '模型名称'
+          'text': this.$t('term.cmdb.modelname')
         }
       ]
     };

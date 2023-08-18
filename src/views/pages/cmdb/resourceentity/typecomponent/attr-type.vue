@@ -4,7 +4,7 @@
       ref="fromCi"
       v-model="item.fromCi"
       v-bind="treeConfig"
-      placeholder="字段所在模型"
+      :placeholder="$t('term.cmdb.attrci')"
       @on-change="changeFromCi()"
     ></TsFormTree>
     <template v-if="item.fromCi">
@@ -12,7 +12,7 @@
         ref="fromAttr"
         v-model="item.fromAttr"
         v-bind="attrConfig"
-        placeholder="属性"
+        :placeholder="$t('page.attribute')"
         :params="getParams(item.fromCi)"
         @on-change="(val, config, selectItem)=>{changeFromAttr(selectItem, item)}"
       ></TsFormSelect>
@@ -21,7 +21,7 @@
         ref="toAttr"
         v-model="item.toAttr"
         v-bind="attrConfig"
-        placeholder="映射属性"
+        :placeholder="$t('term.cmdb.toattr')"
         :params="getParams(item.toCi)"
         transfer
       ></TsFormSelect>
