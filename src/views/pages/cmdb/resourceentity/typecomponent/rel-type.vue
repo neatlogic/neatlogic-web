@@ -5,12 +5,14 @@
       v-model="item.fromCi"
       v-bind="treeConfig"
       :placeholder="$t('term.cmdb.fromci')"
+      @on-change="changeCi(item)"
     ></TsFormTree>
     <TsFormTree
       ref="toCi"
       v-model="item.toCi"
       v-bind="treeConfig"
       :placeholder="$t('term.cmdb.toci')"
+      @on-change="changeCi(item)"
     ></TsFormTree>
     <TsFormSelect
       v-if="item.fromCi && item.toCi"
@@ -20,6 +22,10 @@
       :validateList="validateList"
       :placeholder="$t('term.cmdb.attrci')"
       transfer
+      @on-change="()=>{
+        $set(item,'fromAttr','');
+        $set(item,'toAttr','');
+      }"
     ></TsFormSelect>
     <template v-if="item.direction">
       <TsFormSelect
@@ -91,6 +97,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeCi(item) {
+      this.$set(item, 'direction', '');
+      this.$set(item, 'fromAttr', '');
+      this.$set(item, 'toAttr', '');
+    },
     setConfig(val, attr) {
       this.$emit('change', val, attr);
     },
