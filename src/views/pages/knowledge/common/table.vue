@@ -91,18 +91,15 @@
             <span class="h3 action-item tsfont-horizontal-center" :class="{ 'text-info': getStyle('text-align') == 'center' }" @click="setStyle({ 'text-align': 'center' })"></span>
             <span class="h3 action-item tsfont-horizontal-right" :class="{ 'text-info': getStyle('text-align') == 'right' }" @click="setStyle({ 'text-align': 'right' })"></span>
             <span class="h3 action-item tsfont-horizontal-justify" :class="{ 'text-info': getStyle('text-align') == 'justify' }" @click="setStyle({ 'text-align': 'justify' })"></span>
-            <span v-if="canFallback || canForward"><Divider type="vertical" /></span>
-            <span v-if="canFallback" class="h3 action-item tsfont-reply" @click="fallback()"></span>
-            <span v-if="canForward" class="h3 action-item tsfont-revover" @click="forward()"></span>
           </div>
         </div>
       </div>
     </div>
     <div
       ref="tableContainer"
-      style="position:relative;overflow:auto;"
+      style="overflow:auto hidden;"
       :class="{ editmode: mode === 'edit' }"
-      :style="{ height: mode === 'edit'?containerHeight:'100%' }"
+      :style="{ height: mode === 'edit' ? containerHeight:'100%' }"
       @scroll="
         event => {
           scrollContainer(event);
@@ -112,55 +109,8 @@
       <table
         v-if="mode === 'edit'"
         contenteditable="false"
-        class="tssheet-main-shadow-head"
-        :style="{ top: scrollTop + 'px', width: tableSize.width + 'px' }"
-      >
-        <thead>
-          <tr>
-            <th :style="{ height: minHeight + 'px', width: minWidth + 'px' }">&nbsp;</th>
-            <th
-              v-for="(head, index) in tableConfig.headerList"
-              :key="index"
-              class="thead-th"
-              :class="{ selected: !!head._selected }"
-              :style="{ width: head.width + 'px' }"
-              @mouseup="isDragging = false"
-              @mouseenter="multipleSelectColumn(index)"
-              @mousedown="
-                event => {
-                  if (mode === 'edit') {
-                    if (event.buttons === 1) {
-                      clearSelectedRowCol();
-                      isDragging = true;
-                      selectColumn(index);
-                      multipleSelectColumn(index);
-                    }
-                  }
-                }
-              "
-            >
-              <div
-                v-if="mode === 'edit'"
-                class="horizontal-resize-handler"
-                @mousedown.stop="
-                  event => {
-                    startResize(event, 'h', index);
-                  }
-                "
-              ></div>
-              <span>
-                <!-- 水平轴头部文案 -->
-                {{ getHeadText(index) }}
-              </span>
-            </th>
-          </tr>
-        </thead>
-      </table>
-      <table
-        v-if="mode === 'edit'"
-        contenteditable="false"
         class="tssheet-main-shadow-left"
-        :style="{ left: scrollLeft + 'px', height: tableSize.height + 'px' }"
+        :style="{ left: 0 + 'px', height: tableSize.height + 'px' }"
       >
         <thead>
           <tr>
@@ -221,7 +171,22 @@
         <thead v-if="mode === 'edit'">
           <tr>
             <th :style="{ height: minHeight + 'px' }"></th>
-            <th v-for="(head, index) in tableConfig.headerList" :key="index" class="thead-th"></th>
+            <th
+              v-for="(head, index) in tableConfig.headerList"
+              :key="index"
+              contenteditable="false"
+              class="thead-th"
+            > 
+              <div
+                v-if="mode === 'edit'"
+                class="horizontal-resize-handler"
+                @mousedown.stop="
+                  event => {
+                    startResize(event, 'h', index);
+                  }
+                "
+              ></div>
+              {{ getHeadText(index) }}</th>
           </tr>
         </thead>
         <tbody>
@@ -286,7 +251,12 @@
       </table>
       <div v-if="resizeColumn && mode === 'edit'" :style="{ top: resizerPosition.top + 'px', left: resizerPosition.left + 'px' }" class="horizontal-resizer"></div>
       <div v-if="resizeRow && mode === 'edit'" :style="{ top: resizerPosition.top + 'px', left: resizerPosition.left + 'px' }" class="vertical-resizer"></div>
-      <div v-if="isContextMenuShow && mode === 'edit'" :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }" class="tssheet-context-menu padding-sm">
+      <div
+        v-if="isContextMenuShow && mode === 'edit'"
+        ref="contextMenu"
+        :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }"
+        class="tssheet-context-menu padding-sm"
+      >
         <Dropdown trigger="custom" :visible="isContextMenuShow">
           <DropdownMenu slot="list">
             <DropdownItem v-if="canMerge" class="cursor" @click.native="mergeCell">{{ $t('page.merge') }}</DropdownItem>
@@ -362,7 +332,7 @@ export default {
   },
   data() {
     return {
-      copyedCell: null, //已复制的单元格，包含component或content
+      copyedCell: null, //已复制的单元格，包含content
       defaultWidth: 200,
       minWidth: 50,
       minHeight: 45,
@@ -385,7 +355,22 @@ export default {
         { value: '16px', text: this.$t('page.big') },
         { value: '18px', text: this.$t('page.maximum') }
       ],
-      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-']
+      colorList: [
+        'color-picker-th-',
+        'color-picker-',
+        'color-picker-border-',
+        'color-picker-tip-',
+        'color-picker-text-',
+        'color-picker-info-',
+        'color-picker-warning-',
+        'color-picker-success-',
+        'color-picker-error-',
+        'color-picker-info-grey-',
+        'color-picker-warning-grey-',
+        'color-picker-success-grey-',
+        'color-picker-error-grey-',
+        'color-picker-form-sheet-style-setting-'
+      ]
     };
   },
   beforeCreate() {},
@@ -397,7 +382,6 @@ export default {
     this.$nextTick(() => {
       this.calcContainerHeight();
     });
-   
     window.addEventListener('resize', this.calcContainerHeight);
     window.addEventListener('keydown', this.windowKeypress);
   },
@@ -438,9 +422,6 @@ export default {
         if (this.handlerCell.content) {
           this.copyedCell.content = this.handlerCell.content;
           this.$delete(this.handlerCell, 'content');
-        } else if (this.handlerCell.component) {
-          this.copyedCell.component = this.handlerCell.component;
-          this.$delete(this.handlerCell, 'component');
         }
       }
     },
@@ -454,15 +435,13 @@ export default {
     },
     pasteCell() {
       if (this.copyedCell && this.handlerCell) {
-        if (this.handlerCell.component || this.handlerCell.content) {
+        if (this.handlerCell.content) {
           this.$createDialog({
             title: this.$t('page.warning'),
             content: this.$t('message.framework.pastecelltip'),
             'on-ok': vnode => {
               if (this.copyedCell.content) {
                 this.$set(this.handlerCell, 'content', this.copyedCell.content);
-              } else if (this.copyedCell.component) {
-                this.$delete(this.handlerCell, 'content');
               }
               this.copyedCell = null;
               vnode.isShow = false;
@@ -471,8 +450,6 @@ export default {
         } else {
           if (this.copyedCell.content) {
             this.$set(this.handlerCell, 'content', this.copyedCell.content);
-          } else if (this.copyedCell.component) {
-            this.$delete(this.handlerCell, 'content');
           }
           this.copyedCell = null;
         }
@@ -521,71 +498,6 @@ export default {
         });
       } else {
         this.initTable();
-      }
-    },
-    //重做
-    forward() {
-      if (this.canForward) {
-        const currentIndex = this.recoverQueue.findIndex(d => d.isInUse);
-        if (currentIndex > -1 && currentIndex < this.recoverQueue.length - 1) {
-          this.recoverQueue[currentIndex].isInUse = false;
-          const historyData = this.recoverQueue[currentIndex + 1];
-          this.tableConfig = historyData.sheetData;
-          if (currentIndex + 1 == this.recoverQueue.length - 1) {
-            this.recoverQueue.splice(currentIndex + 1, 1);
-          } else {
-            historyData.isInUse = true;
-          }
-        }
-      }
-    },
-    //撤销
-    fallback() {
-      if (this.canFallback) {
-        const currentIndex = this.recoverQueue.findIndex(d => d.isInUse);
-        if (currentIndex == -1) {
-          //第一次fallback把最新状态放入历史队列
-          const index = this.recoverQueue.length - 1;
-          this.addHistory(true);
-          const historyData = this.recoverQueue[index];
-          historyData.isInUse = true;
-          this.tableConfig = historyData.sheetData;
-        } else if (currentIndex > 0) {
-          this.recoverQueue[currentIndex].isInUse = false;
-          const historyData = this.recoverQueue[currentIndex - 1];
-          historyData.isInUse = true;
-          this.tableConfig = historyData.sheetData;
-        }
-        this.isReady = true;
-      }
-    },
-    //给恢复队列增加历史数据
-    addHistory(isFallback) {
-      const currentSheetData = this.$utils.deepClone(this.tableConfig);
-      if (this.recoverQueue.length > 0) {
-        const lastSheetData = this.recoverQueue[this.recoverQueue.length - 1].sheetData;
-        if (this.$utils.isSame(currentSheetData, lastSheetData)) {
-          return;
-        }
-      }
-      //如果已经是恢复途中，则把isInUse后面的数据先清除再Push
-      const inUseIndex = this.recoverQueue.findIndex(d => d.isInUse);
-      if (inUseIndex > -1) {
-        this.recoverQueue.length = inUseIndex;
-      }
-      this.recoverQueue.push({
-        sheetData: currentSheetData,
-        isInUse: false
-      });
-      //如果不是fallback而产生的数据，这时候需要清空所有isInUse状态，让数据回到原始状态而不是恢复状态
-      if (!isFallback) {
-        this.recoverQueue.forEach(element => {
-          element.isInUse = false;
-        });
-      }
-      //最多保留10个记录
-      if (this.recoverQueue.length > 10) {
-        this.recoverQueue.shift();
       }
     },
     initTable() {
@@ -795,13 +707,11 @@ export default {
     //清空单元格内容
     clearCell() {
       if (this.handlerCell) {
-        this.addHistory();
         this.$delete(this.handlerCell, 'content');
       }
     },
     //清空单元格格式
     clearCellStyle() {
-      this.addHistory();
       this.selectedCell.forEach(cell => {
         this.$delete(cell, 'style');
         this.$delete(cell, 'class');
@@ -820,7 +730,6 @@ export default {
             endRow = cell.row + (cell.rowspan || 1);
           }
         });
-        this.addHistory();
         for (let index = endRow - 1; index >= startRow; index--) {
           this.tableConfig.lefterList.splice(index, 1);
           for (let i = this.tableConfig.tableList.length - 1; i >= 0; i--) {
@@ -851,7 +760,6 @@ export default {
             endCol = cell.col + (cell.colspan || 1);
           }
         });
-        this.addHistory();
         for (let index = endCol - 1; index >= startCol; index--) {
           this.tableConfig.headerList.splice(index, 1);
           for (let i = this.tableConfig.tableList.length - 1; i >= 0; i--) {
@@ -872,7 +780,6 @@ export default {
     //插入一行
     insertRow(direction) {
       if (this.handlerCell) {
-        this.addHistory();
         let rindex = -1;
         if (direction === 'prepend') {
           rindex = this.handlerCell.row;
@@ -898,7 +805,6 @@ export default {
     //插入一列
     insertColumn(direction) {
       if (this.handlerCell) {
-        this.addHistory();
         let cindex = -1;
         if (direction === 'prepend') {
           cindex = this.handlerCell.col;
@@ -924,14 +830,10 @@ export default {
     //显示右键菜单
     showContextMenu(event) {
       this.contextMenuPosition.left = event.clientX - this.parentX + this.calculateScroll(this.$refs.tableContainer)[1];
+      const contextMenuHeight = this.$refs.contextMenu?.offsetHeight || 100;
       let top = event.clientY - this.parentY + this.calculateScroll(this.$refs.tableContainer)[0];
-      if (this.handlerCell.content) {
-        event.clientY - this.parentY > 400 && (top -= 360);
-      } else if (this.handlerCell.component) {
-        event.clientY - this.parentY > 350 && (top -= 320);
-      } else if (!this.handlerCell.content && !this.handlerCell.component) {
-        event.clientY - this.parentY > 250 && (top -= 210);
-      }
+      event.clientY - this.parentY > 0 ? top -= contextMenuHeight : 10;
+  
       this.contextMenuPosition.top = top;
       this.isContextMenuShow = true;
     },
@@ -987,9 +889,7 @@ export default {
         const rowCellList = [];
         this.cellList.forEach(cell => {
           if (cell.col <= headerIndex && cell.col + (cell.colspan || 1) > headerIndex) {
-            //if (this.columnCells(cell.col).includes(cell)) {
             rowCellList.push(cell);
-            //}
           }
         });
         //按column优先级进行排序
@@ -1024,7 +924,6 @@ export default {
     mergeCell() {
       if (this.selectedCell.length > 1) {
         const ok = () => {
-          this.addHistory();
           const startCell = this.selectedCell[0];
           const endCell = this.selectedCell[this.selectedCell.length - 1];
           this.$set(startCell, 'rowspan', endCell.row - startCell.row + (endCell.rowspan || 1));
@@ -1042,8 +941,6 @@ export default {
           const cell = this.selectedCell[i];
           if (cell.content) {
             componentList.push(cell.content);
-          } else if (cell.component) {
-            componentList.push(cell.component.label);
           }
         }
         if (componentList.length > 0) {
@@ -1063,7 +960,6 @@ export default {
     //分拆单元格
     splitCell() {
       if (this.selectedCell.length === 1) {
-        this.addHistory();
         this.$set(this.selectedCell[0], 'rowspan', 1);
         this.$set(this.selectedCell[0], 'colspan', 1);
       }
@@ -1123,18 +1019,14 @@ export default {
     },
     //选中一个单元格,isForce=true代表强行重选，用于合并单元格后重新选中，刷新数据
     selectCell(cell, isForce) {
-      //if (isForce || !this.handlerCell || this.handlerCell !== cell) {
       this.selectedCell.forEach(cell => {
         this.$delete(cell, '_selected');
       });
       this.$set(cell, '_selected', true);
       if (this.handlerCell) {
-        this.$set(this.handlerCell, '_isEditing', false);
         this.$set(this.handlerCell, '_isHandler', false);
       }
       this.$set(cell, '_isHandler', true);
-      this.$emit('selectCell', cell, cell.component);
-      //}
     },
     //取消选中单元格
     unselectCell() {
@@ -1142,7 +1034,6 @@ export default {
         this.$set(cell, '_selected', false);
       });
       if (this.handlerCell) {
-        this.$set(this.handlerCell, '_isEditing', false);
         this.$set(this.handlerCell, '_isHandler', false);
       }
     },
@@ -1173,8 +1064,6 @@ export default {
           //有些组件高度压缩不了，需要重新修正高度
           this.resizeCell(index);
         }
-      } else if (this.handlerCell) {
-        //
       }
     },
     startResize(event, type, index) {
@@ -1247,7 +1136,7 @@ export default {
   filter: {},
   computed: {
     hasCopy() {
-      if (this.handlerCell) {
+      if (this.handlerCell?.content) {
         return true;
       }
       return false;
@@ -1515,7 +1404,6 @@ export default {
     position: relative;
   }
   .tssheet-container {
-    padding: 10px;
     &:hover {
       .tool {
         display: block;

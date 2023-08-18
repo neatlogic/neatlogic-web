@@ -933,5 +933,6 @@
   "scripterror": "Script syntax exception",
   "wee": "week",
   "sum": "total",
-  "wechat": "WeCom"
+  "wechat": "WeCom",
+  "updateuser": "Updated by"
 }

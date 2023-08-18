@@ -23,8 +23,12 @@ export default {
           visible: true
         },
         meta: {
-          xField: {alias: this.$t('term.report.axis.xfield')},
-          yField: {alias: this.$t('term.report.axis.yfield')}
+          xField: {
+            alias: this.widget.config.xAxis?.title?.text || this.$t('term.report.axis.xfield')
+          },
+          yField: {
+            alias: this.widget.config.yAxis?.title?.text || this.$t('term.report.axis.yfield')
+          }
         },
         color: this.getChartTheme('chart')
       }

@@ -74,6 +74,10 @@ const version = {
   saveVersionCenterTheadList(params) {
     // 保存版本中心管理页面，表头可拖拽，可隐藏
     return axios.post('/api/rest/deploy/version/thead/save', params);
+  },
+  getRelatedIssuesList(params) {
+    // 关联需求列表
+    return axios.post('/api/rest/deploy/version/issuelist/get', params);
   }
 };
 export default version;

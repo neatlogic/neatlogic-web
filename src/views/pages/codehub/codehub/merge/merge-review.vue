@@ -84,7 +84,7 @@
             v-model="activeTab"
             :animated="false"
             class="block-tabs"
-            @on-click="selectedCommitId = null;selectFilepath = null"
+            @on-click="selectedCommitId = null; selectFilepath = null"
           >
             <TabPane 
               v-for="(tab,tindex) in tabList" 

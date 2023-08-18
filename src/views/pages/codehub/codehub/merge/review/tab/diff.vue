@@ -1,36 +1,14 @@
 <template>
-  <div class="padding">
-    <div class="diff-container" :class="showTree ?'':'hideLeft'">
-      <div class="clearfix mb-xs">
-        <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
-        <div class="flex-between ml-md" :class="commitId ? 'pt-sm' : ''">
-          <div v-if="!loading && diffList && diffList.length">
-            <span>{{ $t('page.total') }}</span>
-            <span class="text-primary count-text">{{ getFileCount(diffList) }}</span>
-            <span>{{ $t('term.codehub.filechangenumber') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">，{{ getFileCount(diffList,'addCount') }}</span>
-            <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}</span>
-            <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">，{{ getFileCount(diffList,'deleteCount') }}</span>
-            <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
-          </div>
-          <div class="flex-start">
-            <TsFormSelect
-              v-if="!loading && commitList && commitList.length"
-              v-model="selectedCommit"
-              :dataList="commitList"
-              v-bind="selectConfig"
-              class="mr-sm"
-              @on-change="getDiff()"
-            ></TsFormSelect>
-            <RadioGroup v-if="!loading" v-model="showType" type="button">
-              <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
-            </RadioGroup>
-          </div>
-        </div>
-      </div>
-      <div v-if="!loading" ref="diffTree" class="diff-left bg-op border-color">
+  <div id="diff-container" class="padding">
+    <div class="diff-container" :class="showTree ? '' : 'hideLeft' ">
+      <div
+        v-if="!loading"
+        ref="diffTree"
+        class="diff-left bg-op border-color"
+        :style="{ width: leftWidth + 'px' }"
+      >
         <TreeLi 
-          v-if="fileList && fileList.length>0" 
+          v-if="fileList && fileList.length > 0" 
           :diffList="nameList"
           :treeList="fileList" 
           :selectedFile="selectedFile"
@@ -39,63 +17,102 @@
         ></TreeLi>
         <NoData v-else></NoData>
       </div>
+      <!-- 拖拽的内容 -->
+      <div
+        id="resize"
+        @mousedown="startDrag"
+        @mousemove="dragThrottled"
+        @mouseup="stopDrag"
+      ></div>
       <div
         v-if="!loading"
-        ref="diffMain"
         class="diff-main"
-        @scroll="scroll($event)"
       >
-        <DiffDetail
-          v-if="diffList && diffList.length>0"
-          :showType="showType" 
-          :diffList="diffList" 
-          :supportTypeList="supportTypeList" 
-          :selectedFile="selectedFile"
-          :leftCommitId="leftCommitId"
-          :rightCommitId="selectedCommit || rightCommitId"
-          :mrId="id"
-          @endScroll="finishScroll =true"
-          @hasFixtop="showFixtop"
-          @affix="affix"
-          @getMore="getMore"
-        ></DiffDetail>
-        <NoData v-else></NoData>
+        <div class="mb-xs">
+          <div v-if="commitId" class="ml-sm" style="line-height: 2;">{{ commitInfo }}</div>
+          <div class="ml-md" :class="[commitId ? 'pt-sm' : '', hasDiffList ? 'flex-between' : 'flex-end']">
+            <div v-if="hasDiffList">
+              <span>{{ $t('page.total') }}</span>
+              <span class="text-primary count-text">{{ getFileCount(diffList) }}</span>
+              <span>{{ $t('term.codehub.filechangenumber') }}</span>
+              <span v-if="getFileCount(diffList,'addCount')" class="text-success count-text">，{{ getFileCount(diffList,'addCount') }}</span>
+              <span v-if="getFileCount(diffList,'addCount')">{{ $t('term.codehub.rowadd') }}</span>
+              <span v-if="getFileCount(diffList,'deleteCount')" class="text-error count-text">，{{ getFileCount(diffList,'deleteCount') }}</span>
+              <span v-if="getFileCount(diffList,'deleteCount')">{{ $t('term.codehub.rowdelete') }}</span>
+            </div>
+            <div class="flex-start">
+              <TsFormSelect
+                v-if="!loading && commitList && commitList.length"
+                v-model="selectedCommit"
+                :dataList="commitList"
+                v-bind="selectConfig"
+                class="mr-sm"
+                @change="() => getDiff()"
+              ></TsFormSelect>
+              <RadioGroup v-if="!loading" v-model="showType" type="button">
+                <Radio v-for="(type,tindex) in typeList" :key="tindex" :label="type.name">{{ type.label }}</Radio>
+              </RadioGroup>
+            </div>
+          </div>
+        </div>
+        <div ref="codeDiffContent" class="code-diff-content" @scroll="scroll($event)">
+          <DiffDetail
+            v-if="hasDiffList"
+            :showType="showType" 
+            :diffList="diffList" 
+            :supportTypeList="supportTypeList" 
+            :selectedFile="selectedFile"
+            :leftCommitId="leftCommitId"
+            :rightCommitId="selectedCommit || rightCommitId"
+            :mrId="id || versionId"
+            :readOnly="readOnly"
+            @endScroll="finishScroll = true"
+            @hasFixtop="showFixtop"
+            @affix="affix"
+            @getMore="getMore"
+          ></DiffDetail>
+          <NoData v-else></NoData>
+        </div>
+       
       </div>
       <Loading v-else loadingShow style="height:100px"></Loading>
       <div 
-        v-if="isFixtop && scrollTop && scrollTop>100" 
-        class="tsfont-arrow-up btn-gotop bg-grey border-color cursor-pointer" 
+        v-if="isFixtop && scrollTop && scrollTop > 100" 
+        class="tsfont-arrow-up back-to-top bg-grey border-color cursor-pointer" 
         @click="scrolltoTop"
       ></div>
       <div 
         v-if="!loading"
         class="btn-toggle-left text-action border-color bg-op" 
         :class="showTree ?'ts-angle-left':'ts-bars'" 
-        :style="showTree ?'left:170px':'left:-40px'"
+        :style="{ left: (leftWidth > 0 ? leftWidth - 28 : '-40') + 'px' }"
         @click="toggleshowTree"
       ></div>
     </div>
   </div>
 </template>
 <script>
-import mixins from './tabmixins.js';
+import mixins from 'pages/codehub/codehub/merge/review/tab/tabmixins.js';
 import axios from '@/resources/api/http.js';
 export default {
   name: '',
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DiffDetail: resolve => require(['./diff/diff-detail.vue'], resolve),
-    TreeLi: resolve => require(['./diff/tree-li.vue'], resolve)
+    DiffDetail: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/diff-detail.vue'], resolve),
+    TreeLi: resolve => require(['pages/codehub/codehub/merge/review/tab/diff/tree-li.vue'], resolve)
   },
   filters: {},
   mixins: [mixins],
   props: {},
   provide() {
+    // provide 和inject 跨孙子组件使用
     return {
-      appModuleId: (this.mrData.appModuleVo && this.mrData.appModuleVo.id) || null,
-      repositoryId: this.mrData.appModuleId || null,
-      branchname: this.mrData.srcBranch || null,
-      smrId: this.id || null
+      appModuleId: (this.mrData?.appModuleVo && this.mrData.appModuleVo.id) || null,
+      repositoryId: this.mrData?.appModuleId || null,
+      branchname: this.mrData?.srcBranch || null,
+      smrId: this.id || this.versionId || null,
+      canDownloadBinaryFile: this.canBinaryFileDownload,
+      canExpand: this.canExpandContent
     };
   },
   data() {
@@ -106,13 +123,28 @@ export default {
       fileList: null, //文件列表
       nameList: [], //文件名列表
       diffList: [], //完整的数据
+      commitList: [],
       selectedFile: null, //选中树图文件
       finishScroll: true, //右侧定位是否完成
       isFixtop: false, //是否需要快速返回顶部
       scrollTop: 0, //滚动的位置
-      cancelAxios: null, //取消接口调用用
       commitInfo: null, //如果有commitid的需要获取commit的messsage
       showType: 'combine', //代码对比显示的模式
+      showTree: true,
+      selectedCommit: null, //选中哪个对比的commit
+      selectConfig: {
+        width: 342,
+        border: 'border',
+        clearable: false,
+        textName: 'commitId',
+        valueName: 'commitId',
+        search: true,
+        transfer: true
+      },
+      isDragging: false,
+      startX: 0,
+      startLeftWidth: 0,
+      leftWidth: 200,
       typeList: [{
         name: 'combine',
         label: this.$t('term.codehub.linebylinecomparison')
@@ -120,19 +152,6 @@ export default {
         name: 'separate',
         label: this.$t('term.codehub.leftandrightcomparison')        
       }],
-      showTree: true,
-      selectedCommit: null, //选中哪个对比的commit
-      selectConfig: {
-        width: 160,
-        border: 'border',
-        clearable: false,
-        textName: 'commitId',
-        valueName: 'commitId',
-        showTitle: true,
-        search: true,
-        transfer: true
-      },
-      commitList: [],
       supportTypeList: [//支持哪些文件类型的展示
         'css',
         'bat',
@@ -178,103 +197,91 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.loading = true;
+    this.handleDiff();
   },
   beforeUpdate() {},
   updated() {},
   activated() {
-    if (this.commitId) {
-      this.selectedCommit = this.commitId;
-    } else {
-      this.selectedCommit = null;
-    }
-    this.getDiff();
+    this.handleDiff();
   },
-  deactivated() {
-    //取消正在搜索的请求
-    this.loading = true;  
-    let cancel = this.cancelAxios;
-    cancel && cancel.cancel(); 
-  },
-  beforeDestroy() {
-    //取消正在搜索的请求
-    let cancel = this.cancelAxios;
-    cancel && cancel.cancel();   
-    this.loading = true;  
-  },
+  beforeDestroy() {},
+  deactivated() {},
   destroyed() {},
   methods: {
+    handleDiff() {
+      this.loading = true;
+      this.selectedCommit = this.commitId || null;
+      this.getDiff();
+    },
+    startDrag(event) {
+      this.isDragging = true;
+      this.startX = event.clientX;
+      this.startLeftWidth = this.leftWidth;
+      // 添加事件监听到document对象上
+      document.addEventListener('mousemove', this.dragThrottled);
+      document.addEventListener('mouseup', this.stopDrag);
+    },
+    dragThrottled(event) {
+      if (!this.isDragging) return;
+
+      const deltaX = event.clientX - this.startX;
+      const newLeftWidth = this.startLeftWidth + deltaX;
+
+      this.$nextTick(() => {
+        this.leftWidth = newLeftWidth;
+      });
+    },
+    stopDrag() {
+      this.isDragging = false;
+      // 移除事件监听
+      document.removeEventListener('mousemove', this.dragThrottled);
+      document.removeEventListener('mouseup', this.stopDrag);
+    },
     getDiff(forceFlush) {
-      let param = {
-        mrId: this.id
-      };
-      if (!this.id) {
+      if (!this.id && !this.versionId) {
         return;
       }
-      if (this.selectedCommit || this.commitId) {
-        Object.assign(param, {
-          rightCommitId: this.selectedCommit || this.commitId
-        });
-      }
-      if (forceFlush) {
-        Object.assign(param, {
-          forceFlush: true
-        });        
-      }
-      this.loading = true;
-      //取消正在搜索的请求
-      let cancel = this.cancelAxios;
-      cancel && cancel.cancel();
-      const CancelToken = axios.CancelToken;
-      this.cancelAxios = CancelToken.source();
-      axios.post('/api/rest/codehub/mergerequest/diff', param, { cancelToken: this.cancelAxios.token }).then(res => {
+      const param = {
+        ...(this.id && { mrId: this.id }),
+        ...(this.versionId && { versionId: this.versionId }),
+        ...(this.selectedCommit || this.commitId ? { [this.versionId ? 'commitId' : 'rightCommitId']: this.selectedCommit || this.commitId } : {}),
+        ...(forceFlush ? { forceFlush: true } : {})
+      };
+      axios.post(this.url, param).then(res => {
         if (res.Status == 'OK') {
-          this.leftCommitId = res.Return.leftCommitId;
-          this.rightCommitId = res.Return.rightCommitId;
-          if (res.Return.fileDiffList && res.Return.fileDiffList.length > 0) {
-            let fileDiffList = res.Return.fileDiffList.filter(f => {
+          this.diffList == [];
+          const {fileDiffList = [], leftCommitId = '', rightCommitId = '', commitList = []} = res.Return || {};
+          this.leftCommitId = leftCommitId;
+          this.rightCommitId = rightCommitId;
+          if (fileDiffList?.length > 0) {
+            this.diffList = fileDiffList.filter(f => {
               Object.assign(f, {
                 filepathUuid: this.$utils.setUuid(),
                 loadingMore: false
               });
               return f.toFileName || f.fromFileName;
             });
-            this.diffList = fileDiffList;
-          } else {
-            this.diffList == [];
           }
           this.fileList = this.initTree(this.diffList);
 
-          this.nameList = this.diffList.map(d => {
-            let name = d.modifiedType == 'A' ? d.toFileName : d.fromFileName;
+          this.nameList = this.diffList.map(({ modifiedType, toFileName, fromFileName, filepathUuid, insertedCount, deletedCount }) => {
+            const name = modifiedType === 'A' ? toFileName : fromFileName;
+            const substrIndex = name ? name.lastIndexOf('/') + 1 : 0;
             return {
-              filepathUuid: d.filepathUuid,
-              name: name.substr(name.lastIndexOf('/') + 1),
-              path: name,
-              modifiedType: d.modifiedType,
-              insertedCount: d.insertedCount,
-              deletedCount: d.deletedCount
+              filepathUuid,
+              name: name ? name.substr(substrIndex) : '',
+              path: name || '',
+              modifiedType,
+              insertedCount,
+              deletedCount
             };
           });
-          if (res.Return.commitList && res.Return.commitList.length) {
-            this.commitList = res.Return.commitList.map(c => {
-              Object.assign(c, {
-                titletxt: c.message
-              });
-              return c;
-            });
-            let commitLi = res.Return.commitList.filter(c => {
-              return c.commitId == this.commitId;
-            });
-            try {
-              this.commitInfo = commitLi[0].messsage || null;
-            } catch (e) {
-              //
-            }
-          } else {
-            this.commitList = [];
-            this.commitInfo = null;
-          }
+          this.commitList = commitList.map(c => ({
+            ...c,
+            titletxt: c.message
+          }));
+          const commitLi = this.commitList.filter(c => c.commitId == this.commitId);
+          this.commitInfo = commitLi[0]?.message || null;
           
           //如果有从评论跳过来的在这里做定位
           if (this.selectFilepath) {
@@ -283,17 +290,17 @@ export default {
             }, 200);
           }
         } else {
-          this.clearSetting();
+          this.initData();
         }
         this.$emit('clearItem', 'diff');
         this.loading = false;
       }).catch(res => {
         this.loading = false;
-        this.clearSetting();
+        this.initData();
         this.$emit('clearItem', 'diff');
       });
     },
-    clearSetting() {
+    initData() {
       this.diffList = [];
       this.fileList = [];
       this.nameList = [];
@@ -352,8 +359,8 @@ export default {
       this.isFixtop = status;
     },
     scrolltoTop() {
-      if (this.$refs.diffMain) {
-        this.$refs.diffMain.scrollTo(0, 0);
+      if (this.$refs.codeDiffContent) {
+        this.$refs.codeDiffContent.scrollTo(0, 0);
       }
       if (this.$refs.diffTree) {
         this.$refs.diffTree.scrollTo(0, 0);
@@ -374,34 +381,27 @@ export default {
       }
     },
     getMore(path, index) {
-      let param = {
-        mrId: this.id,
-        filePath: path
-      };
       if (!this.id) {
         return;
       }
-      if (this.selectedCommit || this.commitId) {
-        Object.assign(param, {
-          rightCommitId: this.selectedCommit || this.commitId
-        });
-      }
-      if (this.diffList && this.diffList[index]) {
+      let param = {
+        mrId: this.id,
+        filePath: path,
+        ...(this.selectedCommit || this.commitId ? { rightCommitId: this.selectedCommit || this.commitId } : {})
+      };
+      if (this.diffList?.[index]) {
         Object.assign(this.diffList[index], {
           loadingMore: true
         });
       }
       this.$api.codehub.merge.getDiff(param).then(res => {
-        Object.assign(this.diffList[index], {
-          loadingMore: false
-        });
         if (res.Status == 'OK') {
           if (this.diffList && this.diffList[index]) {
             let hunks = res.Return.fileDiffList[0];
             Object.assign(this.diffList[index], hunks);
           }
         }
-      }).catch((res) => {
+      }).finally(() => {
         Object.assign(this.diffList[index], {
           loadingMore: false
         });
@@ -412,44 +412,28 @@ export default {
     },
     toggleshowTree() {
       this.showTree = !this.showTree;
+      this.leftWidth = this.showTree ? 200 : 0;
     },
     selectFile(path) {
-      if (this.fileList && this.fileList.length > 0) {
-        this.fileList.forEach(f => {
-          if (f.path == path) {
-            this.selectedFile = f.filepathUuid;
-          }
-        });
-      }
+      const selectedFile = this.fileList?.find(f => f.path === path);
+      this.selectedFile = selectedFile?.filepathUuid || null;
     }
   },
   computed: {
+    hasDiffList() {
+      return this.diffList?.length > 0;
+    },
     getFileCount() {
       return function(list, type) {
-        let count = 0;
-        switch (type) {
-          case 'deleteCount':
-            if (list.length > 0) {
-              list.forEach(l => {
-                if (l.deletedCount) {
-                  count = count + l.deletedCount;
-                }
-              });
-            }
-            break;
-          case 'addCount':
-            if (list.length > 0) {
-              list.forEach(l => {
-                if (l.insertedCount) {
-                  count = count + l.insertedCount;
-                }
-              });
-            }
-            break;
-          default:
-            count = list.length;
-        }
-        return count;
+        const countProp = {
+          deleteCount: 'deletedCount',
+          addCount: 'insertedCount'
+        };
+
+        return list.reduce((accumulator, item) => {
+          const prop = countProp[type];
+          return accumulator + (prop && item[prop] ? item[prop] : 1);
+        }, 0);
       };
     }
   },
@@ -474,37 +458,45 @@ export default {
 
 </script>
 <style lang='less' scoped>
-.diff-container{
-  position: relative;
-  padding-left: 200px;
-  height:calc(100vh - 180px); // 头部+导航栏+tab+文件描述信息+16间隙
-  .diff-left{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    bottom: 0;
-    border-right: 1px solid;
-    overflow: auto;
-  }
-  .diff-main{
-    padding: 10px 0 50px 10px;
-    overflow: auto;
-    max-height: calc(100vh - 218px);
-  }
-  &.hideLeft{
-    padding-left: 0px;
-    .diff-left{
-      width: 0;
-      overflow: hidden;
-      border-right: 0 none;
-    }
-    .btn-toggle-left{
-      font-size: 12px;
-    }
-  }
+#diff-container {
+  // 左右拖动宽度时，会有选中文字的问题
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ and Edge */
+  user-select: none; /* Standard syntax */ 
+  #resize {
+  width: 5px;
+  height: 100%;
+  cursor: w-resize;
 }
-.btn-gotop{
+.diff-container{
+    display: flex;
+    position: relative;
+    height:calc(100vh - 180px); // 头部+导航栏+tab+文件描述信息+16间隙
+    .diff-left{
+      overflow: hidden;
+      border-right: 1px solid;
+    }
+    .diff-main{
+      flex: 1;
+      padding: 0 0 50px 10px;
+      .code-diff-content {
+        overflow: auto;
+        height: calc(100vh - 180px - 32px - 50px);
+      }
+    }
+    &.hideLeft{
+      padding-left: 0px;
+      .diff-left{
+        width: 0;
+        overflow: hidden;
+        border-right: 0 none;
+      }
+      .btn-toggle-left{
+        font-size: 12px;
+      }
+    }
+  }
+  .back-to-top{
     position: absolute;
     bottom: 0px;
     right: 15px;
@@ -514,26 +506,27 @@ export default {
     border: 1px solid;
     font-size: 16px;
     text-align: center;
-}
-.btn-toggle-left{
-  position: absolute;
+  }
+  .btn-toggle-left{
+    position: absolute;
+    left: 170px;
     top: 50%;
-    border: 1px solid;
+    z-index: 9;
     width: 30px;
     height: 30px;
     line-height: 30px;
+    border: 1px solid;
     text-align: center;
-    z-index: 9;
     transform: translate(15px, -38px);
     border-radius: 50%;
-    left: 170px;
     &:before{
       margin-right: 0;
     }
-}
-.count-text{
-  padding-left: 3px;
-  padding-right: 3px;
-  font-weight: bolder;
+  }
+  .count-text{
+    padding-left: 3px;
+    padding-right: 3px;
+    font-weight: bolder;
+  }
 }
 </style>
