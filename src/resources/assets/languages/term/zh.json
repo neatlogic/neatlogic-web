@@ -2177,7 +2177,8 @@
     "exceed": "超出",
     "testplan": "测试计划",
     "statusreluser": "状态流转时系统自动设置处理人",
-    "innerparam": "内部变量"
+    "innerparam": "内部变量",
+    "storywall": "故事墙"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

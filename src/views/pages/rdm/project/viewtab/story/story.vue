@@ -7,24 +7,17 @@
       <template v-slot:topRight>
         <div class="action-group">
           <span class="action-item">
-            <TsFormSwitch
-              :value="isShowGantt"
-              :showStatus="true"
-              :trueValue="true"
-              :falseValue="false"
-              :trueText="$t('term.rdm.gantt')"
-              :falseText="$t('term.rdm.gantt')"
-              @on-change="
-                val => {
-                  isReady = false;
-                  isShowGantt = val;
-                  $addHistoryData('isShowGantt', isShowGantt);
-                  $nextTick(() => {
-                    isReady = true;
-                  });
-                }
-              "
-            ></TsFormSwitch>
+            <Dropdown>
+              <a href="javascript:void(0)" class="tsfont-blocks">
+                {{ viewModeName }}
+                <Icon type="ios-arrow-down"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem @click.native="changeViewMode('table')">{{ $t('page.list') }}</DropdownItem>
+                <DropdownItem @click.native="changeViewMode('storywall')">{{ $t('term.rdm.storywall') }}</DropdownItem>
+                <DropdownItem @click.native="changeViewMode('gantt')">{{ $t('term.rdm.gantt') }}</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </span>
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
@@ -53,7 +46,7 @@
           :app="appData"
           :canSearch="true"
           :canAction="true"
-          :isShowGantt="isShowGantt"
+          :viewmode="viewMode"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
         ></IssueList>
@@ -74,7 +67,6 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
@@ -106,8 +98,8 @@ export default {
   destroyed() {},
   methods: {
     restoreHistory(historyData) {
-      if (historyData && historyData['isShowGantt']) {
-        this.isShowGantt = historyData['isShowGantt'];
+      if (historyData && historyData['viewmode']) {
+        this.viewMode = historyData['viewmode'];
       }
     },
     editDisplayAttr() {
