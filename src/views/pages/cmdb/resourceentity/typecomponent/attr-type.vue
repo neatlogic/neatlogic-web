@@ -5,7 +5,7 @@
       v-model="item.fromCi"
       v-bind="treeConfig"
       :placeholder="$t('term.cmdb.attrci')"
-      @on-change="changeFromCi()"
+      @on-change="changeFromCi(item)"
     ></TsFormTree>
     <template v-if="item.fromCi">
       <TsFormSelect
@@ -69,7 +69,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeFromCi() {
+    changeFromCi(item) {
       this.$set(item, 'fromAttr', '');
       this.$set(item, 'toCi', '');
     },

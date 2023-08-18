@@ -17,6 +17,7 @@
         </template>
         <template v-slot:mainCi>
           <TsFormTree
+            ref="mainCi"
             v-model="resourceEntityData.mainCi"
             v-bind="treeConfig"
           ></TsFormTree>
@@ -116,8 +117,11 @@ export default {
     },
     save() {
       // console.log(JSON.stringify(this.resourceEntityData, null, 2));
-      if (!this.$refs.mappingSetting.valid()) {
-        return; 
+      let isValid = true;
+      isValid = this.$refs.mainCi.valid() && isValid;
+      isValid = this.$refs.mappingSetting.valid() && isValid;
+      if (!isValid) {
+        return;
       }
       let fieldMappingList = this.$refs.mappingSetting.getData();
       fieldMappingList.forEach(item => {
