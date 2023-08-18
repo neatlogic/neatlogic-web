@@ -24,7 +24,7 @@
                 :displayAttrList="displayAttrList"
                 :canSearch="true"
                 :canAction="true"
-                :isShowGantt="true"
+                viewmode="gantt"
                 :isShowEmptyTable="true"
               ></IssueList>
             </div>
@@ -47,7 +47,7 @@
                 :mode="displayMode"
                 :canSearch="true"
                 :canAction="true"
-                :isShowGantt="true"
+                viewmode="gantt"
                 :isShowEmptyTable="true"
               ></IssueList>
             </div>

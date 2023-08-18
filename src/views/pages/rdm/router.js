@@ -16,6 +16,7 @@ const appModules = {
   iterationDetail: () => import('@/views/pages/rdm/project/viewtab/iteration/iteration-detail.vue'),
   testcaseDetail: () => import('@/views/pages/rdm/project/viewtab/testcase/testcase-detail.vue'),
   testplanDetail: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan-detail.vue'),
+  dashboardDetail: () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard-detail.vue'),
   story: () => import('@/views/pages/rdm/project/viewtab/story/story.vue'),
   bug: () => import('@/views/pages/rdm/project/viewtab/bug/bug.vue'),
   task: () => import('@/views/pages/rdm/project/viewtab/task/task.vue'),
@@ -25,7 +26,7 @@ const appModules = {
   testplan: () => import('@/views/pages/rdm/project/viewtab/testplan/testplan.vue'),
   gantt: () => import('@/views/pages/rdm/project/viewtab/gantt/gantt.vue'),
   dashboard: () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard.vue'),
-  dashboardDetail: () => import('@/views/pages/rdm/project/viewtab/dashboard/dashboard-detail.vue')
+  storywall: () => import('@/views/pages/rdm/project/viewtab/storywall/storywall.vue')
 };
 
 import { $t } from '@/resources/init.js';
@@ -200,7 +201,7 @@ let routerArr = [
     }
   }
 ];
-const appList = ['story', 'bug', 'task', 'iteration', 'testcase', 'gitlab', 'testplan', 'gantt', 'dashboard'];
+const appList = ['story', 'bug', 'task', 'iteration', 'storywall', 'testcase', 'gitlab', 'testplan', 'gantt', 'dashboard'];
 appList.forEach(app => {
   if (appModules[app]) {
     routerArr.push({
