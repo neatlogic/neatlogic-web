@@ -59,12 +59,11 @@ export default {
     tipShow: Boolean //选中工具栏是否显示
   },
   data() {
-    const _this = this;
     return {
       imgStyle: null,
       loading: true,
       isError: false,
-      align: _this.config.align || 'left', //图片位置
+      align: this.config.align || 'left', //图片位置
       pasteTitle: '' //图片说明
     };
   },
@@ -79,8 +78,7 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     getContent() {
@@ -174,7 +172,7 @@ p {
       cursor: pointer;
       .top {
         position: absolute;
-        top: -45px;
+        top: -40px;
         left: 0;
         z-index: 10000;
         box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);

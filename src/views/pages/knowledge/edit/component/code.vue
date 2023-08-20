@@ -23,7 +23,12 @@
             <Option v-for="item in typeDataList" :key="item.value" :value="item.value">{{ item.text }}</Option>
           </Select>
         </div>
-        <TsCodemirror ref="code" v-model="value" :codeMode="codeMode"></TsCodemirror>
+        <TsCodemirror
+          ref="code"
+          v-model="value"
+          :placeholder="$t('form.validate.pleaseenterthecontent')"
+          :codeMode="codeMode"
+        ></TsCodemirror>
       </div>
     </div>
     <span
