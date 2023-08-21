@@ -36,7 +36,8 @@ export default {
     TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
   },
   props: {
-    item: Object
+    item: Object,
+    mainCi: String 
   },
   data() {
     return {
@@ -46,6 +47,9 @@ export default {
         textName: 'label',
         transfer: true,
         showPath: true,
+        params: {
+          rootCiName: this.mainCi
+        },
         validateList: ['required']
       },
       attrConfig: {

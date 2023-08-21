@@ -26,6 +26,7 @@
             :is="handlerType(item.type)"
             ref="item"
             :item="item"
+            :mainCi="mainCi"
             @change="(val,attr)=>{setConfig(val, attr, item)}"
           ></Items>
         </template>

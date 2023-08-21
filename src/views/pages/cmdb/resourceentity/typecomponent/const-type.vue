@@ -28,7 +28,8 @@ export default {
  
   },
   props: {
-    item: Object
+    item: Object,
+    mainCi: String
   },
   data() {
     return {
@@ -36,6 +37,9 @@ export default {
         url: 'api/rest/cmdb/ci/listtree',
         valueName: 'name',
         textName: 'label',
+        params: {
+          rootCiName: this.mainCi
+        },
         transfer: true,
         showPath: true,
         validateList: ['required']
