@@ -254,6 +254,7 @@ export default {
       ciEntityId: null, //当前编辑或删除的配置id
       ciId: null, //当前编辑的配置项模型id
       ciEntityList: [],
+      selectedCiEntityList: [], // 选中的配置项列表
       ciData: {}, //当前配置项模型数据
       isSiderHide: false,
       accountslist: [],
@@ -555,8 +556,7 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    let _this = this;
-    _this.setTimeGetData && clearTimeout(_this.setTimeGetData);
+    this.setTimeGetData && clearTimeout(this.setTimeGetData);
   },
   destroyed() {},
   methods: {
@@ -609,11 +609,13 @@ export default {
       this.isSiderHide = !this.isSiderHide;
     },
     closeDeleteDialog(needRefresh) {
-      if (needRefresh) {
-        this.getData(1, null);
-      }
       this.isDeleteDialogShow = false;
-      this.tableConfig.value = [];
+      this.selectedCiEntityList = [];
+      this.ciEntityList = [];
+      this.selectList = [];
+      if (needRefresh) {
+        this.getData(1, null, true);
+      }
     },
     getTreeType() {
       //获取树形类型
@@ -661,7 +663,6 @@ export default {
       if (!this.selectType.typeId) {
         return;
       }
-      let _this = this;
       this.CancelToken && this.CancelToken.cancel();
       this.CancelToken = this.$https.CancelToken.source();
       // this.loading = true;
@@ -692,7 +693,7 @@ export default {
         })
         .finally(res => {
           this.loading = false;
-          this.tableConfig.value = [];
+          this.selectedCiEntityList = [];
         });
     },
     renderContent(h, { root, node, data }) {
@@ -722,7 +723,8 @@ export default {
     },
     getSelected(indexList, itemList) {
       this.resourceIdList = itemList;
-      this.tableConfig.value = this.$utils.deepClone(itemList || []);
+      this.selectedCiEntityList = this.$utils.deepClone(itemList || []);
+      this.selectedRemain = true;
     },
     tagEdit(row) {
       // this.resourceId = row.id;
@@ -767,13 +769,11 @@ export default {
       this.isDeleteDialogShow = true;
     },
     delSelectedAsset() {
-      this.ciEntityList = this.tableConfig.value?.map((item) => {
-        return {
-          ciId: item.id,
-          ciEntityId: item.id, 
-          ciEntityName: item.name
-        };
-      }) || [];
+      this.ciEntityList = this.selectedCiEntityList?.map((item) => ({
+        ciId: item.typeId,
+        ciEntityId: item.id, 
+        ciEntityName: item.name
+      })) || [];
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
