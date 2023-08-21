@@ -89,8 +89,18 @@ export default {
       this.list = [];
       if (this.data) {
         this.fieldList = this.data.fieldList || [];
-        if (!this.$utils.isEmpty(this.data.config)) {
-          this.list = this.data.config.fieldMappingList || [];
+        if (this.data.config && !this.$utils.isEmpty(this.data.config.fieldMappingList)) {
+          this.fieldList.forEach(item => {
+            let findItem = this.data.config.fieldMappingList.find(f => f.field === item.value);
+            if (findItem) {
+              this.list.push(findItem);
+            } else {
+              this.list.push({
+                field: item.value,
+                type: ''
+              });
+            }
+          });
         } else {
           this.updateList();
         }
