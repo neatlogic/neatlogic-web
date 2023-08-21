@@ -257,7 +257,7 @@ export default {
   textarea {
     resize: none;
     width: 100%;
-    overflow: hidden;
+    overflow-y: scroll;
   }
    
     &:hover{
