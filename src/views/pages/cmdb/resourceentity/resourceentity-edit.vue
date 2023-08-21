@@ -16,18 +16,20 @@
           ></TsCodemirror>
         </template>
         <template v-slot:mainCi>
-          <TsFormTree
-            ref="mainCi"
-            v-model="resourceEntityData.mainCi"
-            v-bind="treeConfig"
-          ></TsFormTree>
-          <MappingSetting
-            v-if="!$utils.isEmpty(resourceEntityData)"
-            ref="mappingSetting"
-            :data="resourceEntityData"
-            :mainCi="resourceEntityData.mainCi"
-            class="pt-nm"
-          ></MappingSetting>
+          <template v-if="resourceEntityData.config">
+            <TsFormTree
+              ref="mainCi"
+              v-model="resourceEntityData.config.mainCi"
+              v-bind="treeConfig"
+            ></TsFormTree>
+            <MappingSetting
+              v-if="!$utils.isEmpty(resourceEntityData)"
+              ref="mappingSetting"
+              :data="resourceEntityData"
+              :mainCi="resourceEntityData.config.mainCi"
+              class="pt-nm"
+            ></MappingSetting>
+          </template>
         </template>
       </TsForm>
     </template>
@@ -111,7 +113,11 @@ export default {
     getResourceEntityData() {
       if (this.name) {
         this.$api.cmdb.resourceentity.getResourceEntity(this.name).then(res => {
-          this.resourceEntityData = res.Return;
+          this.resourceEntityData = res.Return || {};
+          if (!this.resourceEntityData.config) {
+            this.$set(this.resourceEntityData, 'config', {});
+            this.$set(this.resourceEntityData.config, 'mainCi', '');
+          }
         });
       }
     },
