@@ -107,6 +107,7 @@
         :fromId="fromId"
         :toId="toId"
         :mode="mode"
+        :projectId="projectId"
         :checkedIdList="checkedIdList"
         @searchIssue="searchIssue"
         @changePageSize="changePageSize"
@@ -128,6 +129,7 @@
         :fromId="fromId"
         :toId="toId"
         :mode="mode"
+        :projectId="projectId"
         :checkedIdList="checkedIdList"
         @selected="getSelected"
         @searchIssue="searchIssue"
@@ -151,6 +153,7 @@
         :toId="toId"
         :mode="mode"
         :app="app"
+        :projectId="projectId"
         :checkedIdList="checkedIdList"
         @selected="getSelected"
         @searchIssue="searchIssue"
@@ -332,6 +335,7 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
+      searchParamHistory: {},
       isBatchExecuteShow: false //批量执行确认框
     };
   },
@@ -354,6 +358,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData) {
+        if (historyData['searchValue']) {
+          Object.assign(this.searchValue, historyData['searchValue']);
+        }
+        if (historyData['searchIssueData']) {
+          this.searchParamHistory = historyData['searchIssueData'];
+        }
+      }
+    },
     closeBatchExecute() {
       this.isBatchExecuteShow = false;
     },
@@ -411,6 +425,7 @@ export default {
           multiple: true,
           valueName: 'id',
           textName: 'label',
+          value: this.searchValue['status'],
           url: '/api/rest/rdm/status/list',
           params: { appId: this.app.id },
           transfer: true
@@ -630,6 +645,9 @@ export default {
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
+      Object.assign(this.searchIssueData, this.searchParamHistory);
+      //保存查询历史
+      this.$addHistoryData('searchIssueData', this.$utils.deepClone(this.searchIssueData));
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -645,6 +663,8 @@ export default {
           }
         }
       }
+      //保存查询历史
+      this.$addHistoryData('searchValue', this.searchValue);
       this.isSearchReady = false;
       this.isLoading = true;
       this.$api.rdm.issue

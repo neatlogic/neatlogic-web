@@ -88,11 +88,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    restoreHistory(historyData) {
-      if (historyData && historyData['viewmode']) {
-        this.viewMode = historyData['viewmode'];
-      }
-    },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
     },
