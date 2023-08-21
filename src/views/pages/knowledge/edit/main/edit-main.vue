@@ -453,7 +453,7 @@ function findParent(node) {
 .theme(@border-color-base,@warning-color,@gray-color,@placeholder-color ,@blockbg,@dividing-color,@add-bg,@primary-color) {
   .sider-container {
     /deep/#rightSider {
-      white-space: pre-wrap;
+      // white-space: pre-wrap;解决markdown预览会有一个空白行的问题
       >:first-of-type{
         // .tool{
         //   top: 0px;
