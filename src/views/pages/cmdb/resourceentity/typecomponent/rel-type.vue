@@ -34,6 +34,7 @@
         v-model="item.toAttr"
         v-bind="attrConfig"
         :params="getParams(item.toCi)"
+        :dealDataByUrl="dealDataByUrl"
       ></TsFormSelect>
       <TsFormSelect
         v-else
@@ -41,6 +42,7 @@
         v-model="item.fromAttr"
         v-bind="attrConfig"
         :params="getParams(item.fromCi)"
+        :dealDataByUrl="dealDataByUrl"
       ></TsFormSelect>
     </template>
   </div>
@@ -83,7 +85,65 @@ export default {
         textName: 'label',
         placeholder: this.$t('page.attribute'),
         transfer: true
-      }
+      },
+      dataList: [
+        {
+          name: '_id',
+          label: 'ID'
+        },
+        {
+          name: '_uuid',
+          label: 'UUID'
+        },
+        {
+          name: '_name',
+          label: this.$t('page.name')
+        },
+        {
+          name: '_fcu',
+          label: this.$t('page.creator')
+        },
+        {
+          name: '_fcd',
+          label: this.$t('page.createdate')
+        },
+        {
+          name: '_lcu',
+          label: this.$t('page.fcu')
+        },
+        {
+          name: '_lcd',
+          label: this.$t('page.lcu')
+        },
+        {
+          name: '_inspectStatus',
+          label: this.$t('term.autoexec.inspectstatus')
+        },
+        {
+          name: '_inspectTime',
+          label: this.$t('term.cmdb.inspectime')
+        },
+        {
+          name: '_monitorStatus',
+          label: this.$t('term.inspect.monitoringstate')
+        },
+        {
+          name: '_monitorTime',
+          label: this.$t('term.cmdb.monitortime')
+        },
+        {
+          name: '_typeId',
+          label: this.$t('page.model') + 'ID'
+        },
+        {
+          name: '_typeName',
+          label: this.$t('term.cmdb.modelkey')
+        },
+        {
+          name: '_typeLabel',
+          label: this.$t('term.cmdb.modelname')
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -114,6 +174,17 @@ export default {
         }
       });
       return isValid;
+    },
+    dealDataByUrl(nodeList) {
+      let columlist = this.$utils.deepClone(this.dataList); //映射属性需要补上一些固有属性选项
+      if (nodeList && nodeList.length > 0) {
+        nodeList.forEach(item => {
+          if (item.type != 'select') {
+            columlist.push(item);
+          }
+        });
+      }
+      return columlist;
     }
   },
   filter: {},
