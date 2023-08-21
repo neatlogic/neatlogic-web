@@ -176,7 +176,7 @@ export default {
       return isValid;
     },
     dealDataByUrl(nodeList) {
-      let columlist = this.$utils.deepClone(this.dataList); //映射属性需要补上一些固有属性选项
+      let columlist = this.$utils.deepClone(this.dataList); //需要补上一些固有属性选项
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach(item => {
           if (item.type != 'select') {
