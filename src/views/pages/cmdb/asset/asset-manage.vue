@@ -613,6 +613,7 @@ export default {
         this.getData(1, null);
       }
       this.isDeleteDialogShow = false;
+      this.tableConfig.value = [];
     },
     getTreeType() {
       //获取树形类型
@@ -721,6 +722,7 @@ export default {
     },
     getSelected(indexList, itemList) {
       this.resourceIdList = itemList;
+      this.tableConfig.value = this.$utils.deepClone(itemList || []);
     },
     tagEdit(row) {
       // this.resourceId = row.id;
@@ -765,8 +767,13 @@ export default {
       this.isDeleteDialogShow = true;
     },
     delSelectedAsset() {
-      let dataList = this.tableConfig;
-      this.ciEntityList = dataList.value;
+      this.ciEntityList = this.tableConfig.value?.map((item) => {
+        return {
+          ciId: item.id,
+          ciEntityId: item.id, 
+          ciEntityName: item.name
+        };
+      }) || [];
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
