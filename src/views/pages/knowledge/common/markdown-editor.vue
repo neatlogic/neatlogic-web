@@ -54,12 +54,11 @@
         ref="textareaHeight"
         v-model="markdownContent"
         class="border-color padding fz14"
-        :style="{height: textareaHeight + 'px'}"
+        style="height: 300px"
         @input="changeInput"
       ></textarea>
       <div
         v-show="!isEditMode"
-        id="markdownContent"
         class="markdown-body pr-nm pl-nm"
         v-html="markdownPreviewContent"
       ></div>
@@ -98,7 +97,6 @@ export default {
   },
   data() {
     return {
-      textareaHeight: 300,
       markdownContent: this.value,
       markdownPreviewContent: this.value,
       uploadConfig: {
@@ -176,7 +174,6 @@ export default {
       hljs.highlightAll();
       this.markdownPreviewContent = marked(this.value);
     });
-    this.setTextareaHeight();
   },
   beforeUpdate() {},
   updated() {},
@@ -192,27 +189,36 @@ export default {
       } else if (value == 'uploadImg') {
         this.$refs.uploadDialog?.showDialog();
       } else {
-        this.markdownContent = `${this.markdownContent}\n${value}`;
-        this.setTextareaHeight();
+        this.insertContent(value);
       }
+    },
+    insertContent(newContent) {
+      const textarea = this.$refs.textareaHeight;
+      const startPos = textarea.selectionStart;
+      const endPos = textarea.selectionEnd;
+
+      // 组合新的textarea值
+      const newValue = textarea.value.substring(0, startPos) + newContent + textarea.value.substring(endPos);
+
+      // 更新绑定的textareaContent数据
+      this.markdownContent = newValue;
+
+      // 新的光标位置（在插入的内容之后）
+      const newCursorPos = startPos + newContent.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+      textarea.focus(); // 使 textarea 获得焦点，以确保光标显现
     },
     uploadSuccess(data, file, fileList) {
       const { name = '', url = '' } = data.Return || {};
       if (name && url) {
         const imageMarkdown = `![${name}](${url})`;
-        this.markdownContent = `${this.markdownContent}\n${imageMarkdown}`;
-        this.setTextareaHeight();
+        this.insertContent(imageMarkdown);
         this.changeInput();
       }
     },
     drag(row, col) {
       this.tableRow = row;
       this.tableCol = col;
-    },
-    setTextareaHeight() {
-      this.$nextTick(() => {
-        this.textareaHeight = this.$refs.textareaHeight?.scrollHeight || 300;
-      });
     },
     selectedTable() {
       // 根据选择的行列，生成表格
@@ -229,9 +235,8 @@ export default {
         result += '|   '.repeat(col) + '|\n';
       }
       // 返回生成的字符串
-      this.markdownContent = `${this.markdownContent}\n${result}`;
+      this.insertContent(result);
       this.changeInput();
-      this.setTextareaHeight();
       this.$nextTick(() => {
         this.tableRow = '';
         this.tableCol = '';
@@ -250,16 +255,14 @@ export default {
   .editor-editor{
      position: relative;
      padding: 10px;
-      /deep/.markdown-body table{
-      /* 解决github-markdown 样式影响，导致表格，表头和内容之前有一个很大的空行*/
-      display: inline-table !important;
+    /deep/ .markdown-body em {
+      font-style: italic; // 修复markdown中的倾斜样式不生效问题
     }
-  textarea {
-    resize: none;
-    width: 100%;
-    overflow: hidden;
-  }
-   
+    textarea {
+      resize: none;
+      width: 100%;
+      overflow: hidden;
+    }
     &:hover{
       .tool{
         display: block;
