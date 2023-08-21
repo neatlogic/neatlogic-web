@@ -1,43 +1,37 @@
 <template>
   <div>
-    <TsContain :enableCollapse="true">
+    <TsContain :enableCollapse="false">
       <template v-slot:topLeft>
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
           <span class="action-item">
-            <Dropdown>
-              <a href="javascript:void(0)" class="tsfont-blocks">
-                {{ viewModeName }}
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <DropdownItem @click.native="changeViewMode('table')">{{ $t('page.list') }}</DropdownItem>
-                <DropdownItem @click.native="changeViewMode('storywall')">{{ $t('term.rdm.storywall') }}</DropdownItem>
-                <DropdownItem @click.native="changeViewMode('gantt')">{{ $t('term.rdm.gantt') }}</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
           </span>
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item" @click="addIssue()">
+          <span class="action-item" @click="addStoryWall()">
             <Button type="success">
-              <span class="tsfont-plus">{{ $t('term.rdm.bug') }}</span>
+              <span class="tsfont-plus">{{ $t('term.rdm.storywall') }}</span>
             </Button>
           </span>
         </div>
+      </template>
+      <template v-slot:sider>
+        <CatalogList :appId="appId" :projectId="projectId" @changeCatalog="changeCatalog"></CatalogList>
       </template>
       <template v-slot:content>
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
           :projectId="projectId"
+          :mode="displayMode"
           :app="appData"
-          :viewmode="viewMode"
           :canSearch="true"
           :canAction="true"
+          :viewmode="isShowGantt?'gantt':'table'"
+          :catalog="currentCatalog"
           :isShowEmptyTable="true"
         ></IssueList>
       </template>
@@ -46,6 +40,7 @@
       v-if="isEditIssueShow"
       :id="currentIssueId"
       :app="appData"
+      :catalogId="currentCatalog"
       @close="closeEditIssue"
     ></EditIssue>
     <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
@@ -53,32 +48,30 @@
 </template>
 <script>
 import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
-
 export default {
   name: '',
   components: {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
+    CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
     AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
   },
   mixins: [mixins],
-  props: {
-  
-  },
+  props: {},
   data() {
     return {
-      pageName: this.$t('term.rdm.bugmanage'),
+      pageName: this.$t('term.rdm.requestmanage'),
+      currentCatalog: null,
       currentIssueId: null,
       isEditIssueShow: false,
+      displayMode: 'level',
       isAttrSettingShow: false,
-      isReady: true, //刷新issue-list组件
       isShowGantt: false
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -88,10 +81,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    restoreHistory(historyData) {
-      if (historyData && historyData['viewmode']) {
-        this.viewMode = historyData['viewmode'];
-      }
+    addStoryWall() {
+
     },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
@@ -101,6 +92,9 @@ export default {
       if (needRefresh) {
         this.reloadIssueList();
       }
+    },
+    toRequestDetail(id) {
+      this.$router.push({ path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id });
     },
     addIssue() {
       this.isEditIssueShow = true;
@@ -112,14 +106,20 @@ export default {
         this.refreshIssueList();
       }
     },
+    changeCatalog(catalog) {
+      if (catalog) {
+        this.currentCatalog = catalog.id;
+      } else {
+        this.currentCatalog = null;
+      }
+    },
     editIssue(issue) {
       this.isEditIssueShow = true;
       this.currentIssueId = issue.id;
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

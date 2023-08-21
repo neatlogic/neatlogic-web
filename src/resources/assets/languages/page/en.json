@@ -934,5 +934,7 @@
   "wee": "week",
   "sum": "total",
   "wechat": "WeCom",
-  "updateuser": "Updated by"
+  "updateuser": "Updated by",
+  "norelevantdocuments": "There are currently no relevant documents available",
+  "viewalldocuments": "View all documents"
 }

@@ -5,11 +5,7 @@
         v-if="oldStatusData"
         :statusData="oldStatusData"
         :actived="targetStatus === oldStatusData.id"
-        @click="
-          status => {
-            targetStatus = status;
-          }
-        "
+        @click="changeTargetStatus(oldStatusData.id)"
       ></IssueStatus>
       <Divider v-if="oldStatusData && statusList.length > 0" type="vertical" />
       <IssueStatus

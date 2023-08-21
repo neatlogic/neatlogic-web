@@ -2198,7 +2198,8 @@
     "exceed": "go beyond",
     "testplan": "test plan",
     "statusreluser": "The system automatically sets the handler during status flow",
-    "innerparam": "Internal variables"
+    "innerparam": "Internal variables",
+    "storywall": "Story Wall"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

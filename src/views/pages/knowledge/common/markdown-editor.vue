@@ -41,7 +41,7 @@
               v-else
               :key="index"
               class="action-item"
-              :class="item.icon"
+              :class="[item.value == 'previewMd' && !isEditMode ? 'text-href tsfont-eye-off' : item.icon]"
               :title="item.title"
               @click.stop="handleClick(item.value)"
             >
@@ -276,7 +276,7 @@ export default {
       display: none;
     }
   }
-    .tooltip-title {
+  .tooltip-title {
     display: flex;
     justify-content: space-between;
   }
