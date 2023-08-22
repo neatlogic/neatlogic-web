@@ -3,9 +3,6 @@
     <TsFormSelect
       ref="select"
       :value="iteration"
-      valueName="id"
-      textName="name"
-      rootName="tbodyList"
       :readonly="readonly"
       transfer
       :search="true"
@@ -13,6 +10,7 @@
       url="/api/rest/rdm/iteration/search"
       :border="border"
       :validateList="validateList"
+      :dealDataByUrl="fixData"
       @change="
         (val, opt) => {
           $emit('setValue', 'iteration', val, opt.text);
@@ -50,6 +48,26 @@ export default {
   methods: {
     valid() {
       return this.$refs['select'].valid();
+    },
+    fixData(dataList) {
+      const finalDataList = [];
+      if (dataList && dataList.tbodyList && dataList.tbodyList.length > 0) {
+        dataList.tbodyList.forEach(data => {
+          if (this.isProcessing(data)) {
+            finalDataList.push({value: data.id, text: '[' + this.$t('page.current') + ']' + data.name });
+          } else {
+            finalDataList.push({value: data.id, text: data.name });
+          }
+        });
+      }
+      return finalDataList;
+    },
+    isProcessing(iteration) {
+      const now = new Date().getTime();
+      if (now >= iteration.startDate && now <= iteration.endDate) {
+        return true;
+      }
+      return false;
     }
   },
   filter: {},
