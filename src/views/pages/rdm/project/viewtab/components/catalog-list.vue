@@ -102,6 +102,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData && historyData['catalogId']) {
+        this.currentCatalogId = historyData['catalogId'];
+      }
+    },
     getProjectById() {
       if (this.projectId) {
         this.$api.rdm.project.getProjectById(this.projectId).then(res => {
@@ -112,6 +117,7 @@ export default {
     clickNode(tree, node) {
       this.$emit('changeCatalog', node);
       this.currentCatalogId = node ? node.id : null;
+      this.$addHistoryData('catalogId', node ? node.id : null);
     },
     addRootCatalog() {
       this.currentCatalog = {};

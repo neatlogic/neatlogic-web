@@ -8,7 +8,7 @@ const status = {
     return axios.post('/api/rest/rdm/status/save', params);
   },
   getStatusByAppId(appId, params) {
-    const p = {appId: appId};
+    const p = { appId: appId };
     if (params) {
       Object.assign(p, params);
     }
@@ -30,10 +30,10 @@ const status = {
     return axios.post('/api/rest/rdm/statusrel/list', { appId: appId });
   },
   updateStatusSort(statusIdList) {
-    return axios.post('/api/rest/rdm/status/updatesort', { statusIdList: statusIdList});
+    return axios.post('/api/rest/rdm/status/updatesort', { statusIdList: statusIdList });
   },
   deleteStatus(id) {
-    return axios.post('/api/rest/rdm/status/delete', {id: id});
+    return axios.post('/api/rest/rdm/status/delete', { id: id });
   }
 };
 export default status;

@@ -20,11 +20,10 @@
                 :isEnd="isEnd"
                 :isFavorite="isFavorite"
                 :projectId="projectId"
-                :mode="displayMode"
                 :displayAttrList="displayAttrList"
                 :canSearch="true"
                 :canAction="true"
-                viewmode="gantt"
+                viewmode="storywall"
                 :isShowEmptyTable="true"
               ></IssueList>
             </div>
@@ -44,10 +43,9 @@
                 :isFavorite="isFavorite"
                 :app="app"
                 :projectId="projectId"
-                :mode="displayMode"
                 :canSearch="true"
                 :canAction="true"
-                viewmode="gantt"
+                viewmode="storywall"
                 :isShowEmptyTable="true"
               ></IssueList>
             </div>
@@ -75,7 +73,6 @@ export default {
     return {
       pageName: this.$t('term.rdm.gantt'),
       isReady: false,
-      displayMode: 'list',
       needAttr: ['_name', '_createuser', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
       attrList: [],
       appList: [],

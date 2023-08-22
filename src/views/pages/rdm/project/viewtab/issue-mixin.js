@@ -4,6 +4,7 @@ export default {
       appData: null,
       appId: null,
       projectId: null,
+      viewMode: 'table',
       isReady: true//刷新issue-list组件
     };
   },
@@ -16,6 +17,12 @@ export default {
     this.getAppById();
   },
   methods: {
+    restoreHistory(historyData) {
+      if (historyData && historyData['viewmode']) {
+        this.viewMode = historyData['viewmode'];
+        console.log('mixin', this.viewMode);
+      }
+    },
     getAppByProjectId() {
       this.$api.rdm.project.getAppByProjectId(this.projectId, {
         isActive: 1
@@ -38,6 +45,21 @@ export default {
       const issueList = this.$refs['issueList'];
       if (issueList) {
         issueList.refresh(currentPage);
+      }
+    },
+    changeViewMode(viewmode) {
+      this.viewMode = viewmode;
+      this.$addHistoryData('viewmode', viewmode);
+    }
+  },
+  computed: {
+    viewModeName() {
+      if (this.viewMode === 'table') {
+        return this.$t('page.list');
+      } else if (this.viewMode === 'storywall') {
+        return this.$t('term.rdm.storywall');
+      } else if (this.viewMode === 'gantt') {
+        return this.$t('term.rdm.gantt');
       }
     }
   }

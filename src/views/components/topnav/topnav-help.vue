@@ -43,7 +43,12 @@
           </div>
         </div>
         <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
-        <NoData v-if="!loadingShow && !list.length" />
+        <template v-if="!loadingShow && !list.length">
+          <NoData :text="$t('page.norelevantdocuments')" />
+          <div class="text-center mt-nm">
+            <span class="text-href" @click="openHelpManage()">{{ $t('page.viewalldocuments') }}</span>
+          </div>
+        </template>
       </div>
       <div v-else>
         <DocumentonlineContent :filePath="filePath" :anchorPoint="anchorPoint"></DocumentonlineContent>

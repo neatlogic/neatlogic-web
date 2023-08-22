@@ -253,7 +253,6 @@
       <div v-if="resizeRow && mode === 'edit'" :style="{ top: resizerPosition.top + 'px', left: resizerPosition.left + 'px' }" class="vertical-resizer"></div>
       <div
         v-if="isContextMenuShow && mode === 'edit'"
-        ref="contextMenu"
         :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }"
         class="tssheet-context-menu padding-sm"
       >
@@ -830,11 +829,7 @@ export default {
     //显示右键菜单
     showContextMenu(event) {
       this.contextMenuPosition.left = event.clientX - this.parentX + this.calculateScroll(this.$refs.tableContainer)[1];
-      const contextMenuHeight = this.$refs.contextMenu?.offsetHeight || 100;
-      let top = event.clientY - this.parentY + this.calculateScroll(this.$refs.tableContainer)[0];
-      event.clientY - this.parentY > 0 ? top -= contextMenuHeight : 10;
-  
-      this.contextMenuPosition.top = top;
+      this.contextMenuPosition.top = event.clientY - this.parentY;
       this.isContextMenuShow = true;
     },
     //多选行
@@ -1174,9 +1169,11 @@ export default {
     //计算实际需要显示的行
     shownLefterList() {
       const lefterList = [];
-      this.tableConfig.lefterList.forEach((left, index) => {
+      this.tableConfig?.lefterList?.forEach((left, index) => {
         const newLeft = this.$utils.deepClone(left);
-        newLeft.index = index;
+        if (typeof newLeft === 'object' && newLeft !== null) {
+          newLeft.index = index; // 修复不是对象，为空报错问题
+        }
         lefterList.push(newLeft);
       });
       if (this.mode !== 'edit') {
