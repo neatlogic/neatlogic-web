@@ -117,32 +117,8 @@ export default {
           label: this.$t('page.lcu')
         },
         {
-          name: '_inspectStatus',
-          label: this.$t('term.autoexec.inspectstatus')
-        },
-        {
-          name: '_inspectTime',
-          label: this.$t('term.cmdb.inspectime')
-        },
-        {
-          name: '_monitorStatus',
-          label: this.$t('term.inspect.monitoringstate')
-        },
-        {
-          name: '_monitorTime',
-          label: this.$t('term.cmdb.monitortime')
-        },
-        {
           name: '_typeId',
-          label: this.$t('page.model') + 'ID'
-        },
-        {
-          name: '_typeName',
-          label: this.$t('term.cmdb.modelkey')
-        },
-        {
-          name: '_typeLabel',
-          label: this.$t('term.cmdb.modelname')
+          label: this.$t('page.type') + 'ID'
         }
       ]
     };

@@ -92,15 +92,15 @@ export default {
         },
         {
           'value': '_typeId',
-          'text': this.$t('page.model') + 'ID'
+          'text': this.$t('page.type') + 'ID'
         },
         {
           'value': '_typeName',
-          'text': this.$t('term.cmdb.modelkey')
+          'text': this.$t('term.codehub.typename')
         },
         {
           'value': '_typeLabel',
-          'text': this.$t('term.cmdb.modelname')
+          'text': this.$t('page.type') + 'Label'
         }
       ]
     };
