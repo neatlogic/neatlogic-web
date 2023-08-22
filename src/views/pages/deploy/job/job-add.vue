@@ -201,7 +201,8 @@ export default {
       disabledBtn: true,
       jobId: null, //作业id
       jobConfig: {},
-      paramValue: {}
+      paramValue: {},
+      isFirst: true //标识初始化模块列表（针对复制作业的情况）
     };
   },
   beforeCreate() {},
@@ -262,25 +263,44 @@ export default {
       this.$api.deploy.job.getJobModuleList(data).then(res => {
         if (res && res.Status == 'OK') {
           let moduleList = res.Return || [];
-          this.appModuleList.forEach(item => {
+          this.appModuleList.forEach(async(item) => {
             let findItem = moduleList.find(m => m.id == item.id);
             if (findItem) {
               this.$set(item, 'canSelectModule', true); //标识可选择的模块
+              this.$set(item, 'disableInstanceFilter', false);
+              //清除版本的三种情况
+              if ((!findItem.isHasBuildTypeTool && !findItem.isHasDeployTypeTool) || item.isHasBuildTypeTool != findItem.isHasBuildTypeTool || (!item.isHasBuildTypeTool && !findItem.isHasBuildTypeTool && item.isHasDeployTypeTool != findItem.isHasDeployTypeTool)) {
+                this.$delete(item, 'version');
+                this.$delete(item, 'buildNo');
+              }
               this.$set(item, 'isHasBuildTypeTool', findItem.isHasBuildTypeTool);
               this.$set(item, 'isHasDeployTypeTool', findItem.isHasDeployTypeTool);
-              this.$set(item, 'disableInstanceFilter', false);
               //模块未配置runner组，需要添加
               this.$set(item, 'isHasRunner', findItem.isHasRunner);
               if (findItem.isHasRunner) {
-                this.$set(item, 'isChecked', true);
-                this.$set(item, 'isSelectInstance', false);
+                if (item.hasOwnProperty('isChecked')) {
+                  this.$set(item, 'isChecked', !!item.isChecked);
+                } else {
+                  this.$set(item, 'isChecked', true);
+                }
+                 
+                this.$set(item, 'isSelectInstance', !!item.isSelectInstance);
+                if (item.isSelectInstance) {
+                  this.$set(item, 'loadingShow', true);
+                  await this.getInstanceList(item);
+                }
                 this.$set(item, 'disabled', false);
-                if (this.jobId) {
+                if (this.jobId && this.isFirst) {
                   let moduleItem = this.jobConfig.moduleList.find(i => i.id == item.id);
                   if (moduleItem) {
+                    moduleItem.hasOwnProperty('version') && this.$set(item, 'version', moduleItem.version);
+                    moduleItem.hasOwnProperty('buildNo') && this.$set(item, 'buildNo', moduleItem.buildNo);
                     this.$set(item, 'isChecked', true);
                     if (!this.$utils.isEmpty(moduleItem.selectNodeList)) {
+                      this.$set(item, 'loadingShow', true);
+                      this.$set(module, 'instanceList', moduleItem.selectNodeList);
                       this.$set(item, 'isSelectInstance', true);
+                      await this.getInstanceList(item);
                     }
                   } else {
                     this.$set(item, 'isChecked', false);
@@ -298,6 +318,7 @@ export default {
           });
           this.updateSelectModuleList(this.appModuleList);
           this.disabledBtn = false;
+          this.isFirst = false;
         }
       }).finally(() => {
         this.appModuleLoading = false;
@@ -473,6 +494,40 @@ export default {
           this.envName = findEnv.name;
         }
       }
+    },
+    getInstanceList(module) {
+      //获取实例列表
+      let data = {
+        needPage: false,
+        appSystemId: this.appSystemId,
+        envId: this.envId,
+        appModuleId: module.id
+      };
+      return this.$api.deploy.env
+        .getInstanceList(data)
+        .then(res => {
+          if (res.Status == 'OK') {
+            if (res.Return && res.Return.tbodyList && res.Return.tbodyList.length) {
+              let instanceList = res.Return.tbodyList;
+              instanceList.forEach(i => {
+                //处理回显数据
+                if (!this.$utils.isEmpty(module.instanceList)) {
+                  if (module.instanceList.find(ins => ins.id === i.id)) {
+                    this.$set(i, 'isChecked', true);
+                  }
+                } else {
+                  this.$set(i, 'isChecked', true);
+                }
+              });
+              this.$set(module, 'instanceList', instanceList);
+            } else {
+              this.$set(module, 'instanceList', []);
+            }
+          }
+        })
+        .finally(() => {
+          this.$set(module, 'loadingShow', false);
+        });
     }
   },
   filter: {},

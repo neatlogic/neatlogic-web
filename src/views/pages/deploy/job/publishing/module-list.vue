@@ -411,14 +411,25 @@ export default {
     appModuleList: {
       handler(val) {
         if (val && val.length && !this.$utils.isSame(val, this.appModuleListLocal)) {
-          this.appModuleListLocal = this.$utils.deepClone(val);
-          if (this.appModuleListLocal && this.appModuleListLocal.length > 0) {
-            this.appModuleListLocal.forEach(module => {
-              if (module.isChecked && module.isSelectInstance) {
-                this.getInstanceList(module);
-              }
-            });
-          }
+          // this.appModuleListLocal = this.$utils.deepClone(val);
+          let list = [];
+          val.forEach(item => {
+            let findItem = this.appModuleListLocal.find(a => a.id === item.id);
+            if (findItem) {
+              let config = {};
+              Object.keys(item).forEach(key => {
+                if (findItem.hasOwnProperty(key)) {
+                  this.$set(config, key, findItem[key]);
+                } else {
+                  this.$set(config, key, item[key]);
+                }
+              });
+              list.push(config);
+            } else {
+              list.push(item);
+            }
+          });
+          this.appModuleListLocal = list;
         }
       },
       deep: true,
