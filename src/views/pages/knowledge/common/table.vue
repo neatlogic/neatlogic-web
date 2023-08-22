@@ -1169,9 +1169,11 @@ export default {
     //计算实际需要显示的行
     shownLefterList() {
       const lefterList = [];
-      this.tableConfig.lefterList.forEach((left, index) => {
+      this.tableConfig?.lefterList?.forEach((left, index) => {
         const newLeft = this.$utils.deepClone(left);
-        newLeft.index = index;
+        if (typeof newLeft === 'object' && newLeft !== null) {
+          newLeft.index = index; // 修复不是对象，为空报错问题
+        }
         lefterList.push(newLeft);
       });
       if (this.mode !== 'edit') {

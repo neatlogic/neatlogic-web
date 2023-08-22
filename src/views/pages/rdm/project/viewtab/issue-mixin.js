@@ -17,6 +17,11 @@ export default {
     this.getAppById();
   },
   methods: {
+    restoreHistory(historyData) {
+      if (historyData && historyData['viewmode']) {
+        this.viewMode = historyData['viewmode'];
+      }
+    },
     getAppByProjectId() {
       this.$api.rdm.project.getAppByProjectId(this.projectId, {
         isActive: 1

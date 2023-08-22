@@ -88,17 +88,11 @@ export default {
       }
     },
     viewDocument(status) {
-      let data = {
-        knowledgeDocumentId: this.documentId,
-        status: status
-      };
-      if (status == 'submit') {
-        this.$set(data, 'knowledgeDocumentVersionId', this.versionId);
-      }
-      this.$router.push({
-        path: '/knowledge-detail',
-        query: data
-      });
+      const url = status == 'submit'
+        ? `/knowledge-detail?knowledgeDocumentId=${this.documentId}&status=${status}&knowledgeDocumentVersionId=${this.versionId}`
+        : `/knowledge-detail?knowledgeDocumentId=${this.documentId}&status=${status}`;
+
+      this.$backTo(url);
     },
     reviewOk() {
       let data = {
