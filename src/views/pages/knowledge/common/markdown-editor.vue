@@ -68,9 +68,10 @@
 </template>
 <script>
 import 'github-markdown-css';
+import {Marked} from 'marked';
+import {markedHighlight} from 'marked-highlight';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
-import {marked} from 'marked';
 import editorMixins from 'pages/knowledge/edit/component/common/mixins.js';
 export default {
   name: '',
@@ -142,7 +143,7 @@ export default {
         {
           icon: 'tsfont-code',
           title: this.$t('page.code'),
-          value: '```js\n\n```'
+          value: '```plaintext\n\n```'
         },
         {
           icon: 'tsfont-chart-table',
@@ -170,10 +171,9 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.$nextTick(() => {
-      hljs.highlightAll();
-      this.markdownPreviewContent = marked(this.value);
-    });
+    if (this.mode != 'edit') {
+      this.markedPreview(this.value);
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -185,12 +185,24 @@ export default {
     handleClick(value) {
       if (value == 'previewMd') {
         this.isEditMode = !this.isEditMode;
-        this.markdownPreviewContent = marked(this.markdownContent);
+        this.markedPreview(this.markdownContent);
       } else if (value == 'uploadImg') {
         this.$refs.uploadDialog?.showDialog();
       } else {
         this.insertContent(value);
       }
+    },
+    markedPreview(markdownContent) {
+      const marked = new Marked(
+        markedHighlight({
+          langPrefix: 'hljs language-',
+          highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+          }
+        })
+      );
+      this.markdownPreviewContent = marked.parse(markdownContent);
     },
     insertContent(newContent) {
       const textarea = this.$refs.textareaHeight;
@@ -255,6 +267,9 @@ export default {
   .editor-editor{
      position: relative;
      padding: 10px;
+     /deep/ .markdown-body table {
+      display: table;
+     }
     /deep/ .markdown-body em {
       font-style: italic; // 修复markdown中的倾斜样式不生效问题
     }
