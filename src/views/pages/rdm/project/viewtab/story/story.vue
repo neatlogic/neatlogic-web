@@ -14,7 +14,14 @@
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem @click.native="changeViewMode('table')">{{ $t('page.list') }}</DropdownItem>
-                <DropdownItem @click.native="changeViewMode('storywall')">{{ $t('term.rdm.storywall') }}</DropdownItem>
+                <DropdownItem
+                  @click.native="
+                    changeViewMode('storywall');
+                    changeDisplayMode('list');
+                  "
+                >
+                  {{ $t('term.rdm.storywall') }}
+                </DropdownItem>
                 <DropdownItem @click.native="changeViewMode('gantt')">{{ $t('term.rdm.gantt') }}</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -22,10 +29,10 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item" @click="displayMode = displayMode === 'level' ? 'list' : 'level'">
-            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list', 'text-grey': displayMode === 'level' }">{{ $t('term.rdm.listview') }}</span>
+          <span class="action-item" :class="{'disable': viewMode === 'storywall'}" @click="changeDisplayMode">
+            <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list' }">{{ $t('term.rdm.listview') }}</span>
             <Divider type="vertical" />
-            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', 'text-grey': displayMode === 'list' }">{{ $t('term.rdm.levelview') }}</span>
+            <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', }">{{ $t('term.rdm.levelview') }}</span>
           </span>
           <span class="action-item" @click="addIssue()">
             <Button type="success">
@@ -81,9 +88,9 @@ export default {
       currentCatalog: null,
       currentIssueId: null,
       isEditIssueShow: false,
-      displayMode: 'level',
       isAttrSettingShow: false,
-      isShowGantt: false
+      isShowGantt: false,
+      displayMode: 'level'
     };
   },
   beforeCreate() {},
@@ -97,6 +104,28 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData) {
+        if (historyData['displayMode']) {
+          this.displayMode = historyData['displayMode'];
+        }
+        if (historyData['viewmode']) {
+          this.viewMode = historyData['viewmode'];
+        }
+      }
+    },
+    changeDisplayMode(displayMode) {
+      if (!displayMode) {
+        if (this.viewMode !== 'storywall') {
+          this.displayMode = this.displayMode === 'level' ? 'list' : 'level';
+        }
+      } else {
+        if (this.displayMode != displayMode) {
+          this.displayMode = displayMode;
+        }
+      }
+      this.$addHistoryData('displayMode', this.displayMode);
+    },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
     },
