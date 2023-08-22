@@ -128,7 +128,7 @@ export default {
                 isValid = false;
               }
             } else if (!valid.validator('', v, this)) {
-              this.$set(this, 'validMesage', valid.message || ' '); // 加一个空格字符串，为了解决[{name: 'required', message: ''}] message为空，校验不通过，边框没有变红，主要原因是边框变红是根据validMesage字符串是否为空来判断，不为空时才添加tsForm-formItem-error类
+              this.$set(this, 'validMesage', valid.message);
               isValid = false;
               break;
             }
@@ -158,6 +158,7 @@ export default {
         isValid = this.currentValidTimeSelect(val || this.currentValue);
         !isValid && this.$set(this, 'validMesage', this.validMesage);
       }
+      this.isValidPass = isValid;
       return isValid;
     },
     canValid(way, validateList) {
@@ -227,6 +228,7 @@ export default {
     validateList() {
       this.currentValidList = this.filterValid(this.validateList) || [];
       this.validMesage = '';
+      this.isValidPass = true;
     }
   }
 };

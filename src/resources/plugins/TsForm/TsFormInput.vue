@@ -152,7 +152,8 @@ export default {
       currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : this.value,
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
-      readonlyTitle: null
+      readonlyTitle: null,
+      isValidPass: true // valid()方法验证是否都通过，默认true
     };
   },
   mounted() {
@@ -189,6 +190,7 @@ export default {
         }
       } else {
         this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     onFocusValue: function() {
@@ -245,12 +247,14 @@ export default {
   },
   computed: {
     getClass() {
-      let resultjson = [];
-      if (typeof this.width == 'string' && ['small', 'large', 'middle'].indexOf(this.width) >= 0) {
-        resultjson.push('input-' + small);
+      let classNameList = [];
+      if (typeof this.width == 'string' && ['small', 'large', 'middle'].includes(this.width)) {
+        classNameList.push('input-' + small);
       }
-      (this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
-      return resultjson;
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      return classNameList;
     },
     getShowWordLimit: function() {
       let _this = this;
@@ -283,6 +287,7 @@ export default {
         }
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
         this.validMesage = '';
+        this.isValidPass = true;
         // this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }
     },
