@@ -1,7 +1,8 @@
 import validtorJson from '@/resources/plugins/TsForm/TsValidtor';
 export default {
   props: {
-    forbidContent: {//禁止输入的字符串，主要用于通过allowCreate来创建选项时，主要是为了防止xss攻击 一般情况下面值为 ['<', '>', '"', "'", '&'] , 生效情况search 时
+    forbidContent: {
+      //禁止输入的字符串，主要用于通过allowCreate来创建选项时，主要是为了防止xss攻击 一般情况下面值为 ['<', '>', '"', "'", '&'] , 生效情况search 时
       type: [String, Array],
       default: ''
     },
@@ -27,9 +28,10 @@ export default {
       type: String
     },
     size: String, // large  small  default   默认为default
-    border: {//控件的样式 none(默认值，只有背景) border(有边框背景) bottom(有下边框无背景) nobg(无背景) nobdbg(无边框背景)
+    border: {
+      //控件的样式 none(默认值，只有背景) border(有边框背景) bottom(有下边框无背景) nobg(无背景) nobdbg(无边框背景)
       type: String
-    }, 
+    },
     width: {
       //small  medium   large  block    输入数值    输入百分比
       type: [String, Number],
@@ -59,20 +61,20 @@ export default {
     broadcast(componentName, eventName, params) {
       broadcast.call(this, componentName, eventName, params);
     },
-    filterValid(validateList) { //预处理validateList，使其格式统一方便统一校验
-      let _this = this;
+    filterValid(validateList) {
+      //预处理validateList，使其格式统一方便统一校验
       this.isRequired = false;
       let resultValidtorJson = [];
       if (validateList && validateList.length > 0) {
         //默认值的初始化
         //表单验证 对required进行特殊处理添加 required: true属性
 
-        validateList.forEach(function(valid, c) {
+        validateList.forEach((valid, c) => {
           if (typeof valid == 'string') {
-            //出入key值，利用默认数据         
+            //出入key值，利用默认数据
             validtorJson[valid] && (valid == 'required' ? resultValidtorJson.push(Object.assign({ required: true }, validtorJson[valid])) : resultValidtorJson.push(validtorJson[valid]));
             if (valid == 'required') {
-              _this.isRequired = true;
+              this.isRequired = true;
             }
           } else if (typeof valid == 'object') {
             if (validtorJson[valid.name] && valid.name == 'regex' && valid.pattern) {
@@ -82,7 +84,7 @@ export default {
               //利用默认key值，但是修改message提示
               valid.name == 'required' ? resultValidtorJson.push(Object.assign({ required: true }, validtorJson[valid.name], valid)) : resultValidtorJson.push(Object.assign({}, validtorJson[valid.name], valid));
               if (valid.name == 'required') {
-                _this.isRequired = true;
+                this.isRequired = true;
               }
             } else if (typeof valid.validator == 'function') {
               resultValidtorJson.push(Object.assign({}, validtorJson[valid.name], valid));
@@ -92,15 +94,14 @@ export default {
       }
       return resultValidtorJson;
     },
-    valid(val, isForm) { //isForm从TsForm最终校验 现阶段主要过滤searchUrl 校验
-      let _this = this;
+    valid(val, isForm) {
+      //isForm从TsForm最终校验 现阶段主要过滤searchUrl 校验
       let isValid = true;
-     
-      if (_this.currentValidList && _this.currentValidList.length > 0 && !this.readonly && !this.disabled) {
-        for (let i = 0; i < _this.currentValidList.length; i++) {
-          let valid = _this.currentValidList[i];
+      if (this.currentValidList && this.currentValidList.length > 0 && !this.readonly && !this.disabled) {
+        for (let i = 0; i < this.currentValidList.length; i++) {
+          let valid = this.currentValidList[i];
           isValid = true;
-          let value = val || _this.currentValue;
+          let value = val || this.currentValue;
           if (Array.isArray(value)) {
             let valueList = [];
             value.forEach(v => {
@@ -109,41 +110,43 @@ export default {
               }
             });
             value = valueList;
-            if ((value.length == 0) && valid.required) {
-              _this.$set(_this, 'validMesage', valid.message);
+            if (value.length == 0 && valid.required) {
+              this.$set(this, 'validMesage', valid.message);
               isValid = false;
             }
           } else {
             value = [value];
           }
-      
+
           for (let cindex = 0; cindex < value.length; cindex++) {
             let v = value[cindex];
-          
-            if (isForm && valid.isSearch) { //isSearch: TsForm校验 判断searchUrl 校验
+
+            if (isForm && valid.isSearch) {
+              //isSearch: TsForm校验 判断searchUrl 校验
               if (valid.isValid === false) {
-                _this.$set(_this, 'validMesage', valid.errorMessage);
+                this.$set(this, 'validMesage', valid.errorMessage);
                 isValid = false;
               }
-            } else if (!valid.validator('', v, _this)) {
-              _this.$set(_this, 'validMesage', valid.message);
+            } else if (!valid.validator('', v, this)) {
+              this.$set(this, 'validMesage', valid.message || ' '); // 加一个空格字符串，为了解决[{name: 'required', message: ''}] message为空，校验不通过，边框没有变红，主要原因是边框变红是根据validMesage字符串是否为空来判断，不为空时才添加tsForm-formItem-error类
               isValid = false;
               break;
             }
           }
           if (isValid && !!this.errorMessage) {
-            _this.$set(_this, 'validMesage', this.errorMessage);
+            this.$set(this, 'validMesage', this.errorMessage);
             isValid = false;
             break;
           }
-          if (isValid && !!_this.validMesage) {
-            _this.$set(_this, 'validMesage', '');
+          if (isValid && !!this.validMesage) {
+            this.$set(this, 'validMesage', '');
           } else if (!isValid) {
             break;
           }
         }
       }
-      if (this.$slots.validMessage) { //校验卡槽存在则为false 移到后面的原因是 this.$slots.validMessage为空的设置需要等下一次render，这个时候validMessage为空导致插件校验显示出错
+      if (this.$slots.validMessage) {
+        //校验卡槽存在则为false 移到后面的原因是 this.$slots.validMessage为空的设置需要等下一次render，这个时候validMessage为空导致插件校验显示出错
         isValid = false;
       }
       if (isValid && this.currentValidDate) {
@@ -157,7 +160,8 @@ export default {
       }
       return isValid;
     },
-    canValid(way, validateList) { //是否可以触发校验 way 触发校验的类型 change blur
+    canValid(way, validateList) {
+      //是否可以触发校验 way 触发校验的类型 change blur
       let canWary = false;
       for (let i = 0; i < validateList.length; i++) {
         if (validateList[i] && validateList[i].trigger.indexOf(way) >= 0) {
@@ -169,7 +173,8 @@ export default {
     }
   },
   computed: {
-    getForbidContent: function() { //获取被禁止字符串的正则表达式
+    getForbidContent() {
+      //获取被禁止字符串的正则表达式
       let list = this.forbidContent || [];
       if (this.forbidContent && typeof this.forbidContent == 'string') {
         list = [];
@@ -186,18 +191,17 @@ export default {
       }
       return regStr;
     },
-    getStyle: function() { //主要计算组件的宽度
-      let _this = this;
+    getStyle() {
+      //主要计算组件的宽度
       let resultJson = {};
-  
-      if (typeof _this.width == 'number') {
-        resultJson.width = _this.width + 'px';
-      } else if (typeof _this.width == 'string') {
-        resultJson.width = _this.width;
+      if (typeof this.width == 'number') {
+        resultJson.width = this.width + 'px';
+      } else if (typeof this.width == 'string') {
+        resultJson.width = this.width;
       }
       return resultJson;
     },
-    borderClass: function() {
+    borderClass() {
       let resultJson = {};
       if (this.border) {
         resultJson['tsForm-border-' + this.border] = true;
@@ -221,9 +225,8 @@ export default {
       this.validMesage = newValue;
     },
     validateList() {
-      let _this = this;
-      _this.currentValidList = _this.filterValid(_this.validateList) || [];
-      _this.validMesage = '';
+      this.currentValidList = this.filterValid(this.validateList) || [];
+      this.validMesage = '';
     }
   }
 };

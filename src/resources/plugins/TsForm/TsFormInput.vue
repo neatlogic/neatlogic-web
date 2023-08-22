@@ -147,12 +147,11 @@ export default {
     },
     theme: Object //主题
   },
-  data: function() {
-    let _this = this;
+  data() {
     return {
-      currentValue: _this.$utils.isEmpty(_this.value) ? (_this.type != 'number' ? '' : null) : _this.value,
-      validMesage: _this.errorMessage || '',
-      currentValidList: _this.filterValid(_this.validateList) || [],
+      currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : this.value,
+      validMesage: this.errorMessage || '',
+      currentValidList: this.filterValid(this.validateList) || [],
       readonlyTitle: null
     };
   },
@@ -161,7 +160,6 @@ export default {
     this.setTextareaHeight();
   },
   beforeDestroy() {},
-
   methods: {
     setThemeColor() {
       if (this.theme) {
@@ -246,13 +244,12 @@ export default {
     }
   },
   computed: {
-    getClass: function() {
-      let _this = this;
+    getClass() {
       let resultjson = [];
-      if (typeof _this.width == 'string' && ['small', 'large', 'middle'].indexOf(_this.width) >= 0) {
+      if (typeof this.width == 'string' && ['small', 'large', 'middle'].indexOf(this.width) >= 0) {
         resultjson.push('input-' + small);
       }
-      (_this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
+      (this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
       return resultjson;
     },
     getShowWordLimit: function() {

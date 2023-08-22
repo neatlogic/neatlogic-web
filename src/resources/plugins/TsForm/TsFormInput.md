@@ -1,15 +1,33 @@
-### 输入框（TsFormInput）  
-
+### 输入框（TsFormInput）
 
 #### 模版使用
-```javascript
+```vue
+<template>
 <TsFormInput v-model="item.value" v-bind="config" @on-change="changeFn"></TsFormInput>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      config: {
+        validateList: [
+          {
+            message: '', // 必填需要边框变红，但是不需要message提示信息
+            name: 'required'
+          }
+        ]
+      }
+    }
+  }
+}
+</script>
 ```
 
 #### 参数、方法说明
 
 
->> 参数
+> 参数
 
 
 参数名|数据类型|默认值|必传|用途|说明
@@ -49,7 +67,7 @@ isEmptyBg|Boolean|false|否|是否清空输入框背景|-
 
 
 
->>  方法(通过@调用方法)
+>  方法(通过@调用方法)
 
 
  方法名|用途|说明
@@ -61,12 +79,11 @@ on-focus|获取焦点时触发|-
 on-search|搜索时触发
 on-clear|清空时触发
 
->>  插槽(slot)
+>  插槽(slot)
+
  名称|slot-scope|用途|说明
 :---:|:---:|:---:|:---
 validMessage|无|普通的校验和属性errorMessage不能满足需求是，可以使用插槽|-
-
-
 
 #### 入参
 

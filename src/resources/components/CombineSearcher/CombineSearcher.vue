@@ -350,14 +350,6 @@ export default {
     handleCancel() {
       // 点击取消
       this.isVisible = false;
-      if (this.searchMode != 'clickBtnSearch') {
-        // 实时搜索时，点击【取消】按钮，清空搜索栏中的值
-        this.keyword = '';
-        this.keywordValue = '';
-        this.searchValue = {};
-        this.totalText = {};
-        this.$refs.form && this.$refs.form.clearFormInput();
-      }
     },
     doSearch(val) {
       this.isVisible = false;
