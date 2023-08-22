@@ -1,77 +1,90 @@
 <template>
   <div>
-    <TsContain :enableCollapse="false">
+    <TsContain>
       <template v-slot:topLeft>
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
       </template>
-      <template v-slot:topRight>
-        <div class="action-group">
-          <span class="action-item">
-          </span>
-          <span class="action-item tsfont-os" @click="editDisplayAttr()">
-            {{ $t('term.rdm.attrsetting') }}
-          </span>
-          <span class="action-item" @click="addStoryWall()">
-            <Button type="success">
-              <span class="tsfont-plus">{{ $t('term.rdm.storywall') }}</span>
-            </Button>
-          </span>
-        </div>
-      </template>
-      <template v-slot:sider>
-        <CatalogList :appId="appId" :projectId="projectId" @changeCatalog="changeCatalog"></CatalogList>
-      </template>
       <template v-slot:content>
-        <IssueList
-          v-if="isReady && appData"
-          ref="issueList"
-          :projectId="projectId"
-          :mode="displayMode"
-          :app="appData"
-          :canSearch="true"
-          :canAction="true"
-          :viewmode="isShowGantt?'gantt':'table'"
-          :catalog="currentCatalog"
-          :isShowEmptyTable="true"
-        ></IssueList>
+        <Tabs
+          v-if="isReady && appList && appList.length > 0"
+          v-model="currentApp"
+          :animated="false"
+          type="card"
+        >
+          <TabPane :label="'所有 ' + allIssueCount" name="#">
+            <div class="bg-op padding-md">
+              <IssueList
+                v-if="isReady && currentApp === '#'"
+                :isMine="isMine"
+                :isMyCreated="isMyCreated"
+                :isEnd="isEnd"
+                :isFavorite="isFavorite"
+                :projectId="projectId"
+                :displayAttrList="displayAttrList"
+                :canSearch="true"
+                :canAction="true"
+                viewmode="storywall"
+                :isShowEmptyTable="true"
+              ></IssueList>
+            </div>
+          </TabPane>
+          <TabPane
+            v-for="app in appList"
+            :key="app.id"
+            :label="app.name + ' ' + app.issueCount"
+            :name="'app' + app.id"
+          >
+            <div class="bg-op padding-md">
+              <IssueList
+                v-if="isReady && currentApp === 'app' + app.id"
+                :isMine="isMine"
+                :isMyCreated="isMyCreated"
+                :isEnd="isEnd"
+                :isFavorite="isFavorite"
+                :app="app"
+                :projectId="projectId"
+                :canSearch="true"
+                :canAction="true"
+                viewmode="storywall"
+                :isShowEmptyTable="true"
+              ></IssueList>
+            </div>
+          </TabPane>
+        </Tabs>
+        <div v-else><NoData></NoData></div>
       </template>
     </TsContain>
-    <EditIssue
-      v-if="isEditIssueShow"
-      :id="currentIssueId"
-      :app="appData"
-      :catalogId="currentCatalog"
-      @close="closeEditIssue"
-    ></EditIssue>
-    <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
   </div>
 </template>
 <script>
 import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
+
 export default {
   name: '',
   components: {
     AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
-    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
+    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
   },
   mixins: [mixins],
-  props: {},
+  props: {
+    type: { type: String }
+  },
   data() {
     return {
-      pageName: this.$t('term.rdm.requestmanage'),
-      currentCatalog: null,
-      currentIssueId: null,
-      isEditIssueShow: false,
-      displayMode: 'level',
-      isAttrSettingShow: false,
-      isShowGantt: false
+      pageName: this.$t('term.rdm.gantt'),
+      isReady: false,
+      needAttr: ['_name', '_createuser', '_createdate', '_status', 'priority', 'startdate', 'enddate'],
+      attrList: [],
+      appList: [],
+      currentApp: '#',
+      allIssueCount: 0
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getAppList();
+    this.getPrivateAttrList();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -81,45 +94,72 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    addStoryWall() {
-
+    getPrivateAttrList() {
+      this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
+        this.attrList = res.Return;
+      });
     },
-    editDisplayAttr() {
-      this.isAttrSettingShow = true;
-    },
-    closeAttrSetting(needRefresh) {
-      this.isAttrSettingShow = false;
-      if (needRefresh) {
-        this.reloadIssueList();
-      }
-    },
-    toRequestDetail(id) {
-      this.$router.push({ path: '/request-detail/' + this.projectId + '/' + this.appId + '/' + id });
-    },
-    addIssue() {
-      this.isEditIssueShow = true;
-      this.currentIssueId = null;
-    },
-    closeEditIssue(needRefresh) {
-      this.isEditIssueShow = false;
-      if (needRefresh) {
-        this.refreshIssueList();
-      }
-    },
-    changeCatalog(catalog) {
-      if (catalog) {
-        this.currentCatalog = catalog.id;
-      } else {
-        this.currentCatalog = null;
-      }
-    },
-    editIssue(issue) {
-      this.isEditIssueShow = true;
-      this.currentIssueId = issue.id;
+    getAppList() {
+      this.isReady = false;
+      this.$api.rdm.project.getAppByProjectId(this.projectId, {
+        isActive: 1,
+        needSystemAttr: 1,
+        needIssueCount: 1,
+        isMine: this.isMine,
+        isMyCreated: this.isMyCreated,
+        isEnd: this.isEnd,
+        isFavorite: this.isFavorite
+      }).then(res => {
+        this.appList = res.Return;
+        this.allIssueCount = 0;
+        if (this.appList && this.appList.length > 0) {
+          this.appList.forEach(app => {
+            this.allIssueCount += app.issueCount;
+          });
+        }
+      });
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     }
   },
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    isMyCreated() {
+      if (this.type === 'mycreated') {
+        return 1;
+      }
+      return null;
+    },
+    isMine() {
+      if (this.type === 'doing' || this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
+    isFavorite() {
+      if (this.type === 'favorite') {
+        return 1;
+      }
+      return null;
+    },
+    isEnd() {
+      if (this.type === 'doing') {
+        return 0;
+      } else if (this.type === 'done') {
+        return 1;
+      }
+      return null;
+    },
+    displayAttrList() {
+      if (this.attrList && this.attrList.length > 0) {
+        return this.attrList.filter(attr => this.needAttr.includes(attr.type));
+      }
+      return [];
+    }
+  },
+  watch: {
+  }
 };
 </script>
+<style lang="less"></style>
