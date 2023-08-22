@@ -20,6 +20,7 @@ export default {
     restoreHistory(historyData) {
       if (historyData && historyData['viewmode']) {
         this.viewMode = historyData['viewmode'];
+        console.log('mixin', this.viewMode);
       }
     },
     getAppByProjectId() {

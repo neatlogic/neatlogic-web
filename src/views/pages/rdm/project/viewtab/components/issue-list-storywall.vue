@@ -2,20 +2,24 @@
   <div
     v-if="finalStatusList.length > 0"
     ref="divMain"
-    :style="{ height: height + 'px' }"
+    :style="{ height: height + 'px', 'user-select': isDragging ? 'none' : 'auto', cursor: isDragging ? 'grabbing' : 'grab' }"
     class="divContainer"
+    @mousedown.stop="startDrag"
+    @mousemove="onDrag"
+    @mouseup="endDrag"
+    @click.stop
   >
     <div
       v-for="(status, index) in finalStatusList"
       :key="index"
-      class="divStatus bg-op radius-md padding"
+      class="divStatus bg-op-linear radius-md"
       :class="{ 'mr-md': index < finalStatusList.length - 1 }"
     >
       <div v-if="draggingStatus && draggingStatus.id != status.id && !allowPutStatus[status.id.toString()]" class="forbidden-mask radius-md padding">
         <h3 class="text-error">{{ $t('term.rdm.forbiddentransfer') }}</h3>
       </div>
-      <h3 class="text-grey">{{ status.label }}</h3>
-      <div class="status-item mt-sm">
+      <h3 class="text-grey ml-md mr-md mt-md mr-md">{{ status.label }}</h3>
+      <div class="status-item mt-sm padding">
         <draggable
           v-bind="dragOptions"
           tag="div"
@@ -49,18 +53,27 @@
             :issue="issue"
             :appId="issue.appId"
             :class="iindex < getIssueByStatus(status).length - 1 ? 'mb-nm' : ''"
-            class="radius-sm border-color-base issue-item padding-md bg-grey"
+            class="cursor click-item radius-sm border-color-base issue-item padding-md bg-grey"
+            @mousedown.stop
             @click="openIssueDetail(issue)"
           >
             <div class="overflow">
-              <span class="tsfont-option-vertical text-grey" style="cursor: move"></span>
+              <span class="tsfont-option-vertical text-grey" style="cursor: move" @mousedown.stop></span>
               <span><AppIcon :appType="issue.appType" size="small" :appColor="issue.appColor"></AppIcon></span>
-              <span>
-                <a @click="toIssueDetail(issue)">{{ issue.name }}</a>
-              </span>
+              <span
+                class="cursor text-href"
+                @mousedown.stop
+                @click.stop="toIssueDetail(issue)"
+              >{{ issue.name }}</span>
             </div>
             <div class="mt-xs mb-xs text-grey fz10">{{ issue.createDate | formatDate('yyyy-mm-dd') }}</div>
-            <div><UserCard v-for="(user, uindex) in issue.userList" :key="uindex" :v-bind="user"></UserCard></div>
+            <div class="flex">
+              <div class="left"><UserCard v-for="(user, uindex) in issue.userList" :key="uindex" :v-bind="user"></UserCard></div>
+              <div class="right">
+                <span :style="{ color: issue.priorityColor }" class="mr-xs">●</span>
+                <span>{{ issue.priorityName }}</span>
+              </div>
+            </div>
           </div>
         </draggable>
       </div>
@@ -75,7 +88,7 @@
       "
     >
       <template v-slot>
-        <div> 
+        <div>
           <TsFormItem
             v-for="(attr, index) in requiredAttrList"
             :key="index"
@@ -110,7 +123,7 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   props: {
-    projectId: {type: Number},
+    projectId: { type: Number },
     app: { type: Object },
     issueData: { type: Object },
     theadList: { type: Array },
@@ -140,6 +153,8 @@ export default {
       draggingStatus: null,
       draggingIssue: null,
       statusRel: null,
+      isDragging: false,
+      oldX: 0,
       requiredAttrList: [],
       isTransferReady: false, //是否可以填写流转表单
       isCalcing: false //是否正在查询关系依赖
@@ -163,6 +178,19 @@ export default {
   },
   destroyed() {},
   methods: {
+    startDrag(e) {
+      this.isDragging = true;
+      this.oldX = e.clientX;
+    },
+    onDrag(e) {
+      if (this.isDragging) {
+        this.$refs['divMain'].scrollLeft += this.oldX - e.clientX;
+        this.oldX = e.clientX;
+      }
+    },
+    endDrag() {
+      this.isDragging = false;
+    },
     valid() {
       let isValid = true;
       if (this.$refs['attrHandler']) {
@@ -176,21 +204,24 @@ export default {
     },
     save() {
       if (this.draggingIssue && this.valid()) {
-        this.$api.rdm.issue.saveIssue(this.draggingIssue).then(async res => {
-          if (this.issueData && this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
-            for (let i = 0; i < this.issueData.tbodyList.length; i++) {
-              if (this.issueData.tbodyList[i].id === this.draggingIssue.id) {
-                this.$set(this.issueData.tbodyList[i], 'status', this.draggingIssue.status);
-                this.$set(this.issueData.tbodyList[i], 'statusName', this.draggingIssue.statusName);
-                this.$set(this.issueData.tbodyList[i], 'statusLabel', this.draggingIssue.statusLabel);
-                this.$set(this.issueData.tbodyList[i], 'statusColor', this.draggingIssue.statusColor);
+        this.$api.rdm.issue
+          .saveIssue(this.draggingIssue)
+          .then(async res => {
+            if (this.issueData && this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
+              for (let i = 0; i < this.issueData.tbodyList.length; i++) {
+                if (this.issueData.tbodyList[i].id === this.draggingIssue.id) {
+                  this.$set(this.issueData.tbodyList[i], 'status', this.draggingIssue.status);
+                  this.$set(this.issueData.tbodyList[i], 'statusName', this.draggingIssue.statusName);
+                  this.$set(this.issueData.tbodyList[i], 'statusLabel', this.draggingIssue.statusLabel);
+                  this.$set(this.issueData.tbodyList[i], 'statusColor', this.draggingIssue.statusColor);
+                }
               }
+              this.$Message.success(this.$t('message.updatesuccess'));
             }
-            this.$Message.success(this.$t('message.updatesuccess'));
-          }
-        }).finally(() => {
-          this.draggingIssue = null;
-        });
+          })
+          .finally(() => {
+            this.draggingIssue = null;
+          });
       }
     },
     init() {
@@ -211,7 +242,7 @@ export default {
       this.isTransferReady = false;
       this.requiredAttrList = [];
       this.$api.rdm.status
-        .getStatusByAppId(this.app.id, { status: status.id })
+        .getStatusByAppId(this.draggingIssue.appId, { status: status.id })
         .then(res => {
           for (let s in this.allowPutStatus) {
             this.$set(this.allowPutStatus, s, false);
@@ -268,7 +299,7 @@ export default {
                   this.requiredAttrList.push(attr);
                 }
               });
-            } 
+            }
           })
           .finally(() => {
             this.isTransferReady = true;
@@ -305,7 +336,7 @@ export default {
     finalStatusList() {
       const statusList = [];
       if (this.app && this.app.statusList) {
-        if (this.getIssueByStatus({ id: 0}).length > 0) {
+        if (this.getIssueByStatus({ id: 0 }).length > 0) {
           statusList.push({ id: 0, name: '', label: this.$t('page.nostatus') });
         }
         statusList.push(...this.app.statusList);
@@ -325,7 +356,6 @@ export default {
         return issueList;
       };
     }
-   
   },
   watch: {}
 };
@@ -339,12 +369,21 @@ html {
     .theme(@dark-mongolia);
   }
 }
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+.left {
+  flex-grow: 1; /* 左边div占用剩余空间 */
+}
+.right {
+  width:auto;
+}
 .theme(@mongolia-color) {
   .forbidden-mask {
     background: @mongolia-color;
   }
 }
-
 .forbidden-mask {
   position: absolute;
   top: 0px;
