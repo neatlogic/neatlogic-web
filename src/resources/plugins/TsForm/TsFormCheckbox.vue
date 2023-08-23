@@ -113,15 +113,14 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
-      currentValue: _this.value || [],
-      validMesage: _this.errorMessage || '',
-      nodeList: _this.url ? [] : _this.dataList,
-      currentValidList: _this.filterValid(_this.validateList) || []
+      currentValue: this.value || [],
+      validMesage: this.errorMessage || '',
+      nodeList: this.url ? [] : this.dataList,
+      currentValidList: this.filterValid(this.validateList) || []
     };
   },
-  created: function() {
+  created() {
     this.setSelectList();
     this.initDataListByUrl();
   },
@@ -169,7 +168,6 @@ export default {
       }
     },
     onChangeValue(val, item) {
-      let _this = this;
       let isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
       let value = JSON.parse(JSON.stringify(this.currentValue));
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
@@ -183,20 +181,20 @@ export default {
           }
         });
       }
-      _this.$emit('update:value', value);
-      _this.$emit('change', value, selectedItem);
+      this.$emit('update:value', value);
+      this.$emit('change', value, selectedItem);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
-        _this.$emit('on-change', value, selectedItem);
-        typeof _this.onChange == 'function' && _this.onChange(value, selectedItem);
+        this.$emit('on-change', value, selectedItem);
+        typeof this.onChange == 'function' && this.onChange(value, selectedItem);
       }
       if (!isSame) {
         //值不相同时，触发校验
-        if (_this.currentValidList.length > 0) {
-          _this.valid(_this.currentValue);
+        if (this.currentValidList.length > 0) {
+          this.valid(this.currentValue);
         }
       } else {
-        _this.validMesage = '';
+        this.validMesage = '';
       }
       this.setSelectList(label);
     },
@@ -242,10 +240,9 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      let _this = this;
-      if (JSON.stringify(newValue) != JSON.stringify(_this.currentValue)) {
-        _this.currentValue = JSON.parse(JSON.stringify(newValue || []));
-        _this.validMesage = '';
+      if (JSON.stringify(newValue) != JSON.stringify(this.currentValue)) {
+        this.currentValue = JSON.parse(JSON.stringify(newValue || []));
+        this.validMesage = '';
         this.setSelectList();
       }
     },

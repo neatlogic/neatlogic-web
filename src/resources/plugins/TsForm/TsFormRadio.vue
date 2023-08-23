@@ -120,12 +120,11 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
-      currentValue: _this.value,
-      validMesage: _this.errorMessage || '',
-      nodeList: _this.url ? [] : _this.dataList,
-      currentValidList: _this.filterValid(_this.validateList) || []
+      currentValue: this.value,
+      validMesage: this.errorMessage || '',
+      nodeList: this.url ? [] : this.dataList,
+      currentValidList: this.filterValid(this.validateList) || []
     };
   },
   created() {

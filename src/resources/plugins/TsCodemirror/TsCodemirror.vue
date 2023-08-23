@@ -1,7 +1,7 @@
 <template>
   <div class="tscodemirror" :class="cmOptions.readOnly ? 'disabled' : ''">
     <Loading v-if="isLoading" :text="loadingText" :loadingShow="isLoading" type="fix"></Loading>
-    <codemirror ref="myCode" :placeholder="placeholder" v-model="currentValue" :options="getOption" class="tscodemirror-code" :class="[classCodeStyle, validMesage ? 'border-color-error' : 'border-color']" :style="setHeight" @blur="onBlur" @focus="onFocus" @cursorActivity="cursorActivity" @scroll="onScroll"></codemirror>
+    <codemirror ref="myCode" :placeholder="placeholder" v-model="currentValue" :options="getOption" class="tscodemirror-code" :class="[classCodeStyle, !isValidPass ? 'border-color-error' : 'border-color']" :style="setHeight" @blur="onBlur" @focus="onFocus" @cursorActivity="cursorActivity" @scroll="onScroll"></codemirror>
     <transition name="fade">
       <slot name="validMessage">
         <span v-if="validMesage != ''" class="form-error-tip" :title="validMesage" v-html="validMesage"></span>
@@ -161,7 +161,8 @@ export default {
         ksh: 'shell',
         vue: 'vue',
         xml: 'xml'
-      }
+      },
+      isValidPass: true
     };
   },
   mounted() {
@@ -238,6 +239,7 @@ export default {
           }
         } else {
           this.validMesage = '';
+          this.isValidPass = true;
         }
       },
       deep: true

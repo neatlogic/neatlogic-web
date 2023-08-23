@@ -147,13 +147,13 @@ export default {
     },
     theme: Object //主题
   },
-  data: function() {
-    let _this = this;
+  data() {
     return {
-      currentValue: _this.$utils.isEmpty(_this.value) ? (_this.type != 'number' ? '' : null) : _this.value,
-      validMesage: _this.errorMessage || '',
-      currentValidList: _this.filterValid(_this.validateList) || [],
-      readonlyTitle: null
+      currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : this.value,
+      validMesage: this.errorMessage || '',
+      currentValidList: this.filterValid(this.validateList) || [],
+      readonlyTitle: null,
+      isValidPass: true // valid()方法验证是否都通过，默认true
     };
   },
   mounted() {
@@ -161,7 +161,6 @@ export default {
     this.setTextareaHeight();
   },
   beforeDestroy() {},
-
   methods: {
     setThemeColor() {
       if (this.theme) {
@@ -191,6 +190,7 @@ export default {
         }
       } else {
         this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     onFocusValue: function() {
@@ -246,14 +246,15 @@ export default {
     }
   },
   computed: {
-    getClass: function() {
-      let _this = this;
-      let resultjson = [];
-      if (typeof _this.width == 'string' && ['small', 'large', 'middle'].indexOf(_this.width) >= 0) {
-        resultjson.push('input-' + small);
+    getClass() {
+      let classNameList = [];
+      if (typeof this.width == 'string' && ['small', 'large', 'middle'].includes(this.width)) {
+        classNameList.push('input-' + small);
       }
-      (_this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
-      return resultjson;
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      return classNameList;
     },
     getShowWordLimit: function() {
       let _this = this;
@@ -286,6 +287,7 @@ export default {
         }
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
         this.validMesage = '';
+        this.isValidPass = true;
         // this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }
     },

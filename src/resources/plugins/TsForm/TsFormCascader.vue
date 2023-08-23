@@ -100,7 +100,7 @@ export default {
     },
     onChange: Function //改变时触发
   },
-  data: function() {
+  data() {
     return {
       currentValue: [],
       validMesage: this.errorMessage || '',
@@ -108,12 +108,12 @@ export default {
       readonlyTitle: null,
       labels: null,
       labeList: [],
-      selectedData: []
+      selectedData: [],
+      isValidPass: true // valid()方法验证是否都通过，默认true
     };
   },
   mounted() {},
   beforeDestroy() {},
-
   methods: {
     onChangeValue(val, selectedData) {
       let value = this.$utils.deepClone(val);
@@ -125,13 +125,13 @@ export default {
         this.$emit('on-change', value, selectedData);
         typeof this.onChange == 'function' && this.onChange(value);
       }
-
       if (!isSame) {
         if (this.currentValidList.length > 0) {
           this.valid(val);
         }
       } else {
         this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     renderFormat(labels, selectedData) {
@@ -168,12 +168,14 @@ export default {
     }
   },
   computed: {
-    getClass: function() {
-      let resultjson = [];
-      this.disabled && resultjson.push('tsform-select-disabled');
-      this.readonly && resultjson.push('tsform-select-readonly');
-      (this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
-      return resultjson;
+    getClass() {
+      let classNameList = [];
+      this.disabled && classNameList.push('tsform-select-disabled');
+      this.readonly && classNameList.push('tsform-select-readonly');
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      return classNameList;
     },
     //将dataList格式转换成所需格式
     actualDataList() {
@@ -187,6 +189,7 @@ export default {
         let isSame = this.$utils.isSame(newValue, this.currentValue);
         if (!isSame) {
           this.validMesage = '';
+          this.isValidPass = true;
           this.$nextTick(() => {
             this.currentValue = this.$utils.isEmpty(newValue) ? [] : [].concat(newValue);
             if (!this.$utils.isEmpty(this.currentValue) && !this.$utils.isEmpty(this.dataList)) {
@@ -202,6 +205,7 @@ export default {
       handler(val) {
         if (val) {
           this.validMesage = '';
+          this.isValidPass = true;
         }
       },
       immediate: true,

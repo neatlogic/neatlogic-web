@@ -127,7 +127,6 @@ export default {
     theme: Object //主题
   },
   data() {
-    let _this = this;
     return {
       prefixCls: prefixCls,
       validateMessage: '',
@@ -135,9 +134,7 @@ export default {
       validator: {}
     };
   },
-  created() {
-    let _this = this;
-  },
+  created() {},
   methods: {
     onFieldBlur() {
       this.validate('blur');
@@ -205,13 +202,12 @@ export default {
       }
       return style;
     },
-    getWidth: function() {
-      let _this = this;
+    getWidth() {
       let resultJson = {};
-      if (typeof _this.itemWidth == 'number') {
-        resultJson.width = _this.itemWidth + 'px';
-      } else if (typeof _this.itemWidth == 'string' && _this.itemWidth.indexOf('%') >= 0) {
-        resultJson.width = _this.itemWidth;
+      if (typeof this.itemWidth == 'number') {
+        resultJson.width = this.itemWidth + 'px';
+      } else if (typeof this.itemWidth == 'string' && this.itemWidth.indexOf('%') >= 0) {
+        resultJson.width = this.itemWidth;
       }
       return resultJson;
     }
