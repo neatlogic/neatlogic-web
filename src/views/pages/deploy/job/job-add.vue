@@ -201,8 +201,7 @@ export default {
       disabledBtn: true,
       jobId: null, //作业id
       jobConfig: {},
-      paramValue: {},
-      isFirst: true //标识初始化模块列表（针对复制作业的情况）
+      paramValue: {}
     };
   },
   beforeCreate() {},
@@ -254,7 +253,7 @@ export default {
           this.loadingShow = false;
         });
     },
-    getJobModuleList() {
+    getJobModuleList(type) {
       let data = {
         appSystemId: this.appSystemId,
         envId: this.envId,
@@ -285,27 +284,11 @@ export default {
                 }
                  
                 this.$set(item, 'isSelectInstance', !!item.isSelectInstance);
-                if (item.isSelectInstance) {
+                if (item.isSelectInstance && type != 'scenario') { //场景改变时，实例不变
                   this.$set(item, 'loadingShow', true);
                   await this.getInstanceList(item);
                 }
                 this.$set(item, 'disabled', false);
-                if (this.jobId && this.isFirst) {
-                  let moduleItem = this.jobConfig.moduleList.find(i => i.id == item.id);
-                  if (moduleItem) {
-                    moduleItem.hasOwnProperty('version') && this.$set(item, 'version', moduleItem.version);
-                    moduleItem.hasOwnProperty('buildNo') && this.$set(item, 'buildNo', moduleItem.buildNo);
-                    this.$set(item, 'isChecked', true);
-                    if (!this.$utils.isEmpty(moduleItem.selectNodeList)) {
-                      this.$set(item, 'loadingShow', true);
-                      this.$set(module, 'instanceList', moduleItem.selectNodeList);
-                      this.$set(item, 'isSelectInstance', true);
-                      await this.getInstanceList(item);
-                    }
-                  } else {
-                    this.$set(item, 'isChecked', false);
-                  }
-                }
               } else {
                 this.$set(item, 'isChecked', false);
                 this.$set(item, 'disabled', true);
@@ -318,7 +301,6 @@ export default {
           });
           this.updateSelectModuleList(this.appModuleList);
           this.disabledBtn = false;
-          this.isFirst = false;
         }
       }).finally(() => {
         this.appModuleLoading = false;
@@ -342,9 +324,16 @@ export default {
       } else if (type == 'env') {
         this.envId = item.id;
         this.envName = item.name;
+        //环境改变时，需要从新查询当前实例
+        this.appModuleList = this.appModuleList.map(item => {
+          if (item.isSelectInstance) {
+            item.loadingShow = true;
+          }
+          return item;
+        });
       }
       this.disabledBtn = true;
-      this.getJobModuleList();
+      this.getJobModuleList(type);
     },
     saveJobData() {
       let data = {
@@ -472,7 +461,17 @@ export default {
       this.appModuleList.forEach(item => {
         let findItem = this.jobConfig.moduleList.find(i => i.id == item.id);
         if (findItem) {
-          item = Object.assign(item, findItem);
+          this.$set(item, 'isChecked', true);
+          findItem.hasOwnProperty('version') && this.$set(item, 'version', findItem.version);
+          findItem.hasOwnProperty('buildNo') && this.$set(item, 'buildNo', findItem.buildNo);
+          if (!this.$utils.isEmpty(findItem.selectNodeList)) {
+            let instanceList = findItem.selectNodeList;
+            instanceList.forEach(i => {
+              this.$set(i, 'isChecked', true);
+            });
+            this.$set(item, 'isSelectInstance', true);
+            this.$set(item, 'instanceList', instanceList);
+          }
         } else {
           this.$set(item, 'isChecked', false);
           this.$set(item, 'disableInstanceFilter', true);
@@ -512,7 +511,10 @@ export default {
               instanceList.forEach(i => {
                 //处理回显数据
                 if (!this.$utils.isEmpty(module.instanceList)) {
-                  if (module.instanceList.find(ins => ins.id === i.id)) {
+                  let findItem = module.instanceList.find(ins => ins.id === i.id);
+                  if (findItem) {
+                    this.$set(i, 'isChecked', !!findItem.isChecked);
+                  } else {
                     this.$set(i, 'isChecked', true);
                   }
                 } else {
