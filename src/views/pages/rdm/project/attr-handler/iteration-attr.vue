@@ -16,7 +16,11 @@
           $emit('setValue', 'iteration', val, opt.text);
         }
       "
-    ></TsFormSelect>
+    >
+      <template v-slot:option="{ item }">
+        <div><span v-if="item.isProcessing" class="text-warning"><strong>{{ $t('page.current') }}</strong>·</span><span>{{ item.text }}</span></div>
+      </template>
+    </TsFormSelect>
   </div>
 </template>
 <script>
@@ -54,9 +58,9 @@ export default {
       if (dataList && dataList.tbodyList && dataList.tbodyList.length > 0) {
         dataList.tbodyList.forEach(data => {
           if (this.isProcessing(data)) {
-            finalDataList.push({value: data.id, text: '[' + this.$t('page.current') + ']' + data.name });
+            finalDataList.push({ value: data.id, text: data.name, isProcessing: true });
           } else {
-            finalDataList.push({value: data.id, text: data.name });
+            finalDataList.push({ value: data.id, text: data.name });
           }
         });
       }

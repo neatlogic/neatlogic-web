@@ -21,8 +21,8 @@ export default {
         seriesField: 'seriesField',
         legend: { visible: true, position: 'bottom' },
         meta: {
-          xField: { alias: this.$t('term.report.axis.xfield') },
-          yField: { alias: this.$t('term.report.axis.yfield') }
+          xField: { alias: this.$t('term.report.axis.xaxistitle') },
+          yField: { alias: this.$t('term.report.axis.yaxistitle') }
         },
         color: this.getChartTheme('chart'),
         statistic: {
