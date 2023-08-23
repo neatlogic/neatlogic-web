@@ -8,12 +8,28 @@
         v-model="resourceEntityData"
         :item-list="formConfig"
       >
-        <template v-slot:xml>
+        <!-- <template v-slot:xml>
           <TsCodemirror
             ref="code"
             v-model="resourceEntityData.xml"
             codeMode="xml"
           ></TsCodemirror>
+        </template> -->
+        <template v-slot:mainCi>
+          <template v-if="resourceEntityData.config">
+            <TsFormTree
+              ref="mainCi"
+              v-model="resourceEntityData.config.mainCi"
+              v-bind="treeConfig"
+            ></TsFormTree>
+            <MappingSetting
+              v-if="!$utils.isEmpty(resourceEntityData)"
+              ref="mappingSetting"
+              :data="resourceEntityData"
+              :mainCi="resourceEntityData.config.mainCi"
+              class="pt-nm"
+            ></MappingSetting>
+          </template>
         </template>
       </TsForm>
     </template>
@@ -28,7 +44,9 @@ export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+    // TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
+    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
+    MappingSetting: resolve => require(['./mapping-setting.vue'], resolve)
   },
   props: {name: {type: String}},
   data() {
@@ -37,31 +55,47 @@ export default {
       dialogConfig: {
         title: this.$t('term.cmdb.viewsetting'),
         isShow: true,
-        width: 'medium'
+        width: 'large',
+        type: 'slider'
       },
       formConfig: [
         {
           name: 'name',
           label: this.$t('term.cmdb.view'),
           type: 'text',
-          isReadonly: true
+          readonly: true
         },
         {
           name: 'label',
           label: this.$t('page.name'),
           type: 'text'
+          // readonly: true
         },
         {
           name: 'description',
           label: this.$t('page.description'),
           type: 'textarea'
         },
+        // {
+        //   name: 'xml',
+        //   label: this.$t('page.config'),
+        //   type: 'slot'
+        // },
         {
-          name: 'xml',
-          label: this.$t('page.config'),
-          type: 'slot'
+          name: 'mainCi',
+          label: this.$t('term.cmdb.mainci'),
+          type: 'slot',
+          validateList: ['required']
         }
-      ]
+      ],
+      treeConfig: {
+        url: 'api/rest/cmdb/ci/listtree',
+        valueName: 'name',
+        textName: 'label',
+        transfer: true,
+        showPath: true,
+        validateList: ['required']
+      }
     };
   },
   beforeCreate() {},
@@ -79,13 +113,31 @@ export default {
     getResourceEntityData() {
       if (this.name) {
         this.$api.cmdb.resourceentity.getResourceEntity(this.name).then(res => {
-          this.resourceEntityData = res.Return;
+          this.resourceEntityData = res.Return || {};
+          if (!this.resourceEntityData.config) {
+            this.$set(this.resourceEntityData, 'config', {});
+            this.$set(this.resourceEntityData.config, 'mainCi', '');
+          }
         });
       }
     },
     save() {
-      console.log(JSON.stringify(this.resourceEntityData, null, 2));
-      
+      // console.log(JSON.stringify(this.resourceEntityData, null, 2));
+      let isValid = true;
+      isValid = this.$refs.mainCi.valid() && isValid;
+      isValid = this.$refs.mappingSetting.valid() && isValid;
+      if (!isValid) {
+        return;
+      }
+      let fieldMappingList = this.$refs.mappingSetting.getData();
+      fieldMappingList.forEach(item => {
+        for (let key in item) {
+          if (this.$utils.isEmpty(item[key])) { //清除多余字段
+            this.$delete(item, key);
+          }
+        }
+      });
+      this.$set(this.resourceEntityData.config, 'fieldMappingList', fieldMappingList);
       this.$api.cmdb.resourceentity.saveResourceEntity(this.resourceEntityData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));

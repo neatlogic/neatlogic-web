@@ -14,10 +14,6 @@
           <template v-slot:name="{ row }">
             <a @click="editEntity(row)">{{ row.name }}</a>
           </template>
-          <template v-slot:type="{ row }">
-            <span v-if="row.type === 'resource'">{{ $t('term.cmdb.resourcetarget') }}</span>
-            <span v-else-if="row.type === 'scene'">{{ $t('term.cmdb.sceneview') }}</span>
-          </template>
           <template v-slot:status="{ row }">
             <span v-if="row.status === 'error'" class="text-error">{{ $t('page.exception') }}</span>
             <span v-if="row.error">
@@ -57,7 +53,6 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
-        { key: 'type', title: this.$t('page.type') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'initTime', title: this.$t('page.inittime'), type: 'time' },
         { key: 'description', title: this.$t('page.description') },
