@@ -411,7 +411,6 @@ export default {
     appModuleList: {
       handler(val) {
         if (val && val.length && !this.$utils.isSame(val, this.appModuleListLocal)) {
-          // this.appModuleListLocal = this.$utils.deepClone(val);
           let list = [];
           val.forEach(item => {
             let findItem = this.appModuleListLocal.find(a => a.id === item.id);

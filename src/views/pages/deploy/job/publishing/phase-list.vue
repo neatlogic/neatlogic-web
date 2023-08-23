@@ -4,7 +4,7 @@
       <span>{{ $t('term.autoexec.pipeline') }}</span>
       <i class="text-tip-active pr-sm" :class="isShowStepList? 'tsfont-up' : 'tsfont-down'" @click="isShowStepList=!isShowStepList"></i>
     </Divider>
-    <div v-show="isShowStepList" class="step-main">
+    <div v-if="isShowStepList" class="step-main">
       <Tabs 
         class="block-tabs2"
         :animated="false"
