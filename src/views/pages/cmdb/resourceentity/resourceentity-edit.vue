@@ -8,13 +8,13 @@
         v-model="resourceEntityData"
         :item-list="formConfig"
       >
-        <template v-slot:xml>
+        <!-- <template v-slot:xml>
           <TsCodemirror
             ref="code"
             v-model="resourceEntityData.xml"
             codeMode="xml"
           ></TsCodemirror>
-        </template>
+        </template> -->
         <template v-slot:mainCi>
           <template v-if="resourceEntityData.config">
             <TsFormTree
@@ -44,7 +44,7 @@ export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
+    // TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
     TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
     MappingSetting: resolve => require(['./mapping-setting.vue'], resolve)
   },
@@ -76,11 +76,11 @@ export default {
           label: this.$t('page.description'),
           type: 'textarea'
         },
-        {
-          name: 'xml',
-          label: this.$t('page.config'),
-          type: 'slot'
-        },
+        // {
+        //   name: 'xml',
+        //   label: this.$t('page.config'),
+        //   type: 'slot'
+        // },
         {
           name: 'mainCi',
           label: this.$t('term.cmdb.mainci'),
