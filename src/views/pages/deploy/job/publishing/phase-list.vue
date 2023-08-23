@@ -18,7 +18,7 @@
           :name="'id_'+tab.id"
           tab="phase"
         >
-          <div class="content">
+          <div v-if="currentStep" class="content">
             <Loading :loadingShow="loadingShow" type="fix"></Loading>
             <div class="step-list dividing-color">
               <StepList
@@ -56,6 +56,9 @@
                 ></StepGroup>
               </div>
             </div>
+          </div>
+          <div v-else>
+            <NoData></NoData>
           </div>
         </TabPane>
       </Tabs>
@@ -134,10 +137,16 @@ export default {
         }
       });
       this.selectStepList = stepList;
-      this.currentStep = this.selectStepList[0].uuid;
-      this.currentConfig = this.selectStepList[0];
-      if (this.combopGroupList.length > 0) {
-        this.currentGroupConfig = this.combopGroupList[0];
+      if (!this.$utils.isEmpty(this.selectStepList)) {
+        this.currentStep = this.selectStepList[0].uuid;
+        this.currentConfig = this.selectStepList[0];
+        if (this.combopGroupList.length > 0) {
+          this.currentGroupConfig = this.combopGroupList[0];
+        }
+      } else {
+        this.currentStep = null;
+        this.currentConfig = null;
+        this.currentGroupConfig = null;
       }
     },
     getExecModeList() {
