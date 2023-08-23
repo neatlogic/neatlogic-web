@@ -1119,7 +1119,12 @@
     "corpid": "Enterprise ID",
     "corpsecret": "Applied credential key",
     "agentid": "Enterprise Application ID",
-    "smptsslenable": "Using SSL"
+    "smptsslenable": "Using SSL",
+    "stopwork": "Shutdown",
+    "host": "server address",
+    "heartbeattime": "Last heartbeat time",
+    "heartbeatrate": "heart rate ",
+    "heartbeatthreshold": "Heartbeat threshold"
   },
   "knowledge": {
     "document": "Document",

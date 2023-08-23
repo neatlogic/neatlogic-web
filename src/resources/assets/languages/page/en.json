@@ -936,5 +936,6 @@
   "wechat": "WeCom",
   "updateuser": "Updated by",
   "norelevantdocuments": "There are currently no relevant documents available",
-  "viewalldocuments": "View all documents"
+  "viewalldocuments": "View all documents",
+  "counter": "frequency"
 }

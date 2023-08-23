@@ -1118,7 +1118,12 @@
     "corpid": "企业ID",
     "corpsecret": "应用的凭证密钥",
     "agentid": "企业应用ID",
-    "smptsslenable": "使用SSL"
+    "smptsslenable": "使用SSL",
+    "stopwork": "停机",
+    "host": "服务器地址",
+    "heartbeattime": "最近一次心跳时间",
+    "heartbeatrate": "心跳频率",
+    "heartbeatthreshold": "心跳阈值"
   },
   "knowledge": {
     "document": "文档",

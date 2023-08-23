@@ -55,6 +55,7 @@ const moduleManage = () => import('./module/module-manage.vue');
 const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // 批量操作
 const databaseViewManage = () => import('./databaseview/databaseview-manage.vue');//重建视图
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue');// 租户配置信息管理
+const serverManage = () => import('./server/server-manage.vue');// 服务器管理
 
 import {$t} from '@/resources/init.js';
 
@@ -624,6 +625,18 @@ export default [
     component: tenantConfigManage,
     meta: {
       title: $t('router.framework.tenantconfigmanage'),
+      ismenu: true,
+      icon: 'tsfont-config',
+      authority: 'ADMIN',
+      type: 'others'
+    }
+  },
+  {
+    path: '/server-manage',
+    name: 'server-manage',
+    component: serverManage,
+    meta: {
+      title: '服务器管理',
       ismenu: true,
       icon: 'tsfont-config',
       authority: 'ADMIN',
