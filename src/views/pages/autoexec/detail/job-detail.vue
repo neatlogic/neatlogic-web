@@ -432,7 +432,7 @@ export default {
       let path = '';
       if (this.jobData.source == 'test') {
         path = '/test-detail';
-      } else if (this.jobData.source == 'deploy') {
+      } else if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') { // deployschedulegeneral 发布定时普通作业
         path = '/job-add';
       } else {
         path = '/runner-detail';
