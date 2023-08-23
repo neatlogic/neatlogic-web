@@ -57,7 +57,7 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
-        { key: 'type', title: this.$t('page.type') },
+        // { key: 'type', title: this.$t('page.type') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'initTime', title: this.$t('page.inittime'), type: 'time' },
         { key: 'description', title: this.$t('page.description') },
