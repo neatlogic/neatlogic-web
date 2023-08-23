@@ -143,7 +143,17 @@
     "addcientity": "新增配置项",
     "resourcetypetreenosettingdesc": "资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图未设置成功，资产清单功能不可用",
     "gotoresourceentitymanagepage": "点击此处设置该视图",
-    "resourcetypetreesettingdesc": "资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是{label}({name})，可以选择该模型或其子模型作为资产清单根目录"
+    "resourcetypetreesettingdesc": "资产清单数据来源于scence_ipobject_detail视图，在视图设置中该视图对应的顶层模型是{label}({name})，可以选择该模型或其子模型作为资产清单根目录",
+    "mainci": "主模型",
+    "inherentfield": "固有字段",
+    "attrci": "字段所在模型",
+    "inspectime": "巡检时间",
+    "monitortime": "监控时间",
+    "modelkey": "模型标识",
+    "modelname": "模型名称",
+    "toattr": "映射属性",
+    "fromci": "上游模型",
+    "toci": "下游模型"
   },
   "process": {
     "workordercenter": "工单中心",
