@@ -8,7 +8,9 @@
       :multiple="true"
       :transfer="true"
       :extendCondition="{ projectId: projectId }"
-      :groupList="projectId?['rdm.project']:['user']"
+      :groupList="groupList"
+      :includeList="['common#loginuser']"
+      :excludeList="['common#alluser']"
       @change="
         (val, opt) => {
           setValue('userIdList', val, opt);
@@ -18,7 +20,7 @@
   </div>
 </template>
 <script>
-import { AttrBase } from './base-privateattr.js';
+import { AttrBase } from '@/views/pages/rdm/project/attr-handler/base-privateattr.js';
 
 export default {
   name: '',
@@ -56,10 +58,13 @@ export default {
         }
       }
       if (val) {
-        if (val instanceof Array) {
-          val = val.map(str => str.substring(str.indexOf('#') + 1));
-        } else {
-          val = val.substring(val.indexOf('#') + 1);
+        //输入模式需要去掉前缀，搜索模式不需要，因为搜索模式多了common这个分组，去掉前缀没法区分
+        if (this.mode === 'input') {
+          if (val instanceof Array) {
+            val = val.map(str => str.substring(str.indexOf('#') + 1));
+          } else {
+            val = val.substring(val.indexOf('#') + 1);
+          }
         }
       }
       this.$emit('setValue', attr, val, text);
@@ -67,6 +72,18 @@ export default {
   },
   filter: {},
   computed: {
+    groupList() {
+      const groupList = [];
+      if (this.projectId) {
+        if (this.mode === 'search') {
+          groupList.push('common');
+        }
+        groupList.push('rdm.project');
+      } else {
+        groupList.push('user');
+      }
+      return groupList;
+    },
     finalUserIdList() {
       let userIdList = [];
       if (this.userIdList && this.userIdList.length > 0) {
