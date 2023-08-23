@@ -62,21 +62,19 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
-      currentValue: _this.value
+      currentValue: this.value
     };
   },
   methods: {
     onChangeValue() {
-      let _this = this;
-      _this.$emit('update:value', _this.currentValue);
-      _this.$emit('change', _this.currentValue);
-      _this.$emit('on-change', _this.currentValue);
-      typeof _this.onChange == 'function' && _this.onChange(_this.currentValue);
+      this.$emit('update:value', this.currentValue);
+      this.$emit('change', this.currentValue);
+      this.$emit('on-change', this.currentValue);
+      typeof this.onChange == 'function' && this.onChange(this.currentValue);
     },
     toogle() {
-      this.$refs.switch.$el.click();
+      this.$refs?.switch.$el?.click();
     },
     handleBeforeChange() {
       let _this = this;

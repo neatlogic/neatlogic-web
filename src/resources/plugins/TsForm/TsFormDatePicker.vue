@@ -174,7 +174,8 @@ export default {
       currentValidList: _this.filterValid(_this.validateList) || [],
       currentValue: value.value,
       readonlyTitle: null,
-      currentValidMesage: ''
+      currentValidMesage: '',
+      isValidPass: true
     };
   },
   mounted() {
@@ -230,6 +231,7 @@ export default {
         }
       } else {
         _this.validMesage = '';
+        _this.isValidPass = true;
       }
     },
     getFormatValue() {
@@ -405,14 +407,15 @@ export default {
         });
       return clearable;
     },
-    getClass: function() {
-      let _this = this;
-      let resultjson = [];
+    getClass() {
+      let classNameList = [];
       // if (typeof _this.width == 'string' && ['small', 'large', 'middle'].indexOf(_this.width) >= 0) {
-      //   resultjson.push("input-" + small);
+      //   classNameList.push("input-" + small);
       // }
-      _this.validMesage && resultjson.push('tsForm-formItem-error');
-      return resultjson;
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      return classNameList;
     },
     getDateOptions() {
       return () => {
@@ -478,19 +481,20 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      let _this = this;
       if (newValue instanceof Array) {
         if (JSON.stringify(newValue) != JSON.stringify(this.getFormatValue())) {
-          let value = _this.getCurrentValue();
-          _this.currentValue = value.value;
-          _this.currentMultiple = value.multiple;
-          _this.validMesage = '';
+          let value = this.getCurrentValue();
+          this.currentValue = value.value;
+          this.currentMultiple = value.multiple;
+          this.validMesage = '';
+          this.isValidPass = true;
         }
       } else if (newValue != this.getFormatValue()) {
-        let value = _this.getCurrentValue();
-        _this.currentValue = value.value;
-        _this.currentMultiple = value.multiple;
-        _this.validMesage = '';
+        let value = this.getCurrentValue();
+        this.currentValue = value.value;
+        this.currentMultiple = value.multiple;
+        this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     format(newValue, oldValue) {
