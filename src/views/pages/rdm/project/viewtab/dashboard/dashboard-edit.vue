@@ -515,6 +515,7 @@ export default {
     },
     presetData() {
       const presetData = {};
+      presetData['projectId'] = this.projectId;
       if (this.appList && this.appList.length > 0) {
         this.appList.forEach(app => {
           if (app.hasIssue) {

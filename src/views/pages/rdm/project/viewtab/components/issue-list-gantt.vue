@@ -458,7 +458,7 @@ html {
   position: relative;
   grid-template-columns: 1fr 1fr;
   .divider {
-    width: 2px;
+    width: 3px;
     border-radius: 2px;
     cursor: ew-resize;
     position: absolute;

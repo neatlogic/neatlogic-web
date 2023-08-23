@@ -699,6 +699,7 @@ export default class Gantt {
   bind_grid_drag() {
     this.isDragging = false;
     $.on(this.$svg, 'mousedown', '.grid', e => {
+      this.layers.grid.classList.add('grabbing');
       this.isDragging = true;
       this.oldX = e.clientX;
       this.oldY = e.clientY;
@@ -725,6 +726,7 @@ export default class Gantt {
     });*/
     $.on(this.$svg, 'mouseup', '.grid', e => {
       if (this.isDragging) {
+        this.layers.grid.classList.remove('grabbing');
         this.isDragging = false;
         this.oldX = null;
         this.oldY = null;
