@@ -24,10 +24,10 @@ export default {
         },
         meta: {
           xField: {
-            alias: this.widget.config.xAxis?.title?.text || this.$t('term.report.axis.xfield')
+            alias: this.widget.config.xAxis?.title?.text || this.$t('term.report.axis.xaxistitle')
           },
           yField: {
-            alias: this.widget.config.yAxis?.title?.text || this.$t('term.report.axis.yfield')
+            alias: this.widget.config.yAxis?.title?.text || this.$t('term.report.axis.yaxistitle')
           }
         },
         color: this.getChartTheme('chart')
