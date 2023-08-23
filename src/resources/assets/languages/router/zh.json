@@ -151,6 +151,7 @@
     "tenantconfigmanage": "配置信息管理",
     "threaddump": "线程快照",
     "sqldump": "SQL监控",
+    "servermanage": "服务器管理",
     "databasefragment": "数据库碎片整理",
     "licensemanage": "查看许可",
     "batchoperation": "批量操作",

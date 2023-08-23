@@ -1119,7 +1119,7 @@
     "corpsecret": "应用的凭证密钥",
     "agentid": "企业应用ID",
     "smptsslenable": "使用SSL",
-    "stopwork": "停机",
+    "shutdown": "停机",
     "host": "服务器地址",
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",

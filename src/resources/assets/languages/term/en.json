@@ -1120,7 +1120,7 @@
     "corpsecret": "Applied credential key",
     "agentid": "Enterprise Application ID",
     "smptsslenable": "Using SSL",
-    "stopwork": "Shutdown",
+    "shutdown": "Shutdown",
     "host": "server address",
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",

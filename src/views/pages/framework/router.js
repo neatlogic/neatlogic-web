@@ -636,7 +636,7 @@ export default [
     name: 'server-manage',
     component: serverManage,
     meta: {
-      title: '服务器管理',
+      title: $t('router.framework.servermanage'),
       ismenu: true,
       icon: 'tsfont-config',
       authority: 'ADMIN',

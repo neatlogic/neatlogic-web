@@ -22,7 +22,7 @@
           </template>
           <template v-slot:status="{ row }">
             <span v-if="row.status == 'startup'" class="text-success">{{ $t('page.normal') }}</span>
-            <span v-else class="text-danger">{{ $t('term.framework.stopwork') }}</span>
+            <span v-else class="text-danger">{{ $t('term.framework.shutdown') }}</span>
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
