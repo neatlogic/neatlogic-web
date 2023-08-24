@@ -49,33 +49,31 @@
           </template>
         </div>
       </div>
-      <textarea
-        v-show="isEditMode"
-        ref="textareaHeight"
+      <mavonEditor
+        ref="markdownEditor"
         v-model="markdownContent"
-        class="border-color padding fz14"
-        style="height: 300px"
+        :toolbarsFlag="false"
+        :subfield="false"
+        :autofocus="false"
+        :defaultOpen="defaultOpen"
+        editorBackground="transparent"
+        previewBackground="transparent"
+        class="markdown-editor"
         @input="changeInput"
-      ></textarea>
-      <div
-        v-show="!isEditMode"
-        class="markdown-body pr-nm pl-nm"
-        v-html="markdownPreviewContent"
-      ></div>
+      ></mavonEditor>
     </div>
     <UploadDialog ref="uploadDialog" v-bind="uploadConfig" @on-success="uploadSuccess" />
   </div>
 </template>
 <script>
-import 'github-markdown-css';
-import {Marked} from 'marked';
-import {markedHighlight} from 'marked-highlight';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
 import editorMixins from 'pages/knowledge/edit/component/common/mixins.js';
+import { mavonEditor } from 'mavon-editor';
+import 'mavon-editor/dist/css/index.css';
+
 export default {
   name: '',
   components: {
+    mavonEditor,
     UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
   },
   mixins: [editorMixins],
@@ -99,7 +97,6 @@ export default {
   data() {
     return {
       markdownContent: this.value,
-      markdownPreviewContent: this.value,
       uploadConfig: {
         //上传图片配置
         actionUrl: BASEURLPREFIX + '/api/binary/file/upload', //导入地址
@@ -164,7 +161,8 @@ export default {
       tableRow: 0,
       tableCol: 0,
       num: 10,
-      isEditMode: this.mode == 'edit'
+      isEditMode: this.mode == 'edit',
+      defaultOpen: 'edit'
     };
   },
   beforeCreate() {},
@@ -172,7 +170,7 @@ export default {
   beforeMount() {},
   mounted() {
     if (this.mode != 'edit') {
-      this.markedPreview(this.value);
+      this.defaultOpen = 'preview';
     }
   },
   beforeUpdate() {},
@@ -185,40 +183,25 @@ export default {
     handleClick(value) {
       if (value == 'previewMd') {
         this.isEditMode = !this.isEditMode;
-        this.markedPreview(this.markdownContent);
+        this.defaultOpen = this.defaultOpen == 'edit' ? 'preview' : 'edit';
       } else if (value == 'uploadImg') {
         this.$refs.uploadDialog?.showDialog();
       } else {
         this.insertContent(value);
       }
     },
-    markedPreview(markdownContent) {
-      const marked = new Marked(
-        markedHighlight({
-          langPrefix: 'hljs language-',
-          highlight(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-          }
-        })
-      );
-      this.markdownPreviewContent = marked.parse(markdownContent);
-    },
-    insertContent(newContent) {
-      const textarea = this.$refs.textareaHeight;
-      const startPos = textarea.selectionStart;
-      const endPos = textarea.selectionEnd;
-
-      // 组合新的textarea值
-      const newValue = textarea.value.substring(0, startPos) + newContent + textarea.value.substring(endPos);
-
-      // 更新绑定的textareaContent数据
-      this.markdownContent = newValue;
-
-      // 新的光标位置（在插入的内容之后）
-      const newCursorPos = startPos + newContent.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos);
-      textarea.focus(); // 使 textarea 获得焦点，以确保光标显现
+    insertContent(text) {
+      // 在指定位置插入指定字符串，并且把光标放到插入新内容后
+      const textarea = this.$refs?.markdownEditor?.$refs?.vNoteTextarea?.$refs?.vTextarea;
+      const startPos = textarea?.selectionStart; // 光标所在位置
+      const endPos = textarea?.selectionEnd; // 光标结束位置
+      this.markdownContent = this.markdownContent.substring(0, startPos) + text + this.markdownContent.substring(endPos);
+      this.$nextTick(() => {
+        // 加$nextTick，可以让光标的位置在插入新内容的后面
+        const newCursorPosition = startPos + text.length; // 新的光标位置
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition); // 设置新的光标位置
+        textarea.focus(); // 获取焦点
+      });
     },
     uploadSuccess(data, file, fileList) {
       const { name = '', url = '' } = data.Return || {};
@@ -264,7 +247,8 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-  .editor-editor{
+@import (reference) '~@/resources/assets/css/variable.less';
+.editor-editor{
      position: relative;
      padding: 10px;
      /deep/ .markdown-body table {
@@ -272,11 +256,6 @@ export default {
      }
     /deep/ .markdown-body em {
       font-style: italic; // 修复markdown中的倾斜样式不生效问题
-    }
-    textarea {
-      resize: none;
-      width: 100%;
-      overflow-y: scroll;
     }
     &:hover{
       .tool{
@@ -309,6 +288,27 @@ export default {
     .cell {
       width: 16px;
       height: 16px;
+    }
+  }
+  /deep/ .hljs {
+    background: transparent;
+  }
+  .markdown-editor {
+    /deep/ textarea {
+    background-color: transparent;
+   }
+  }
+  .theme(@text-color) {
+    .markdown-editor {
+        /deep/ .auto-textarea-wrapper .auto-textarea-input {
+          color: @text-color;
+        }
+      }
+  }
+  html {
+    .theme(@default-text);
+    &.theme-dark {
+      .theme(@dark-text);
     }
   }
 </style>

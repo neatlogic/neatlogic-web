@@ -38,7 +38,6 @@
           v-if="config && config.lineList"
           ref="comparisonContent"
           v-imgViewer
-          style=" white-space: pre-wrap;"
           class="config-item-wrap"
         >
           <div
