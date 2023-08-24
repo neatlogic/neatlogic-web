@@ -103,7 +103,7 @@ export default {
         icon: 'tsfont-chart-table'
       },
       {
-        type: 'mardown',
+        type: 'markdown',
         title: 'markdown',
         icon: 'tsfont-memcached'
       }],
