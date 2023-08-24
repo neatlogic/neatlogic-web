@@ -58,7 +58,7 @@
         :defaultOpen="defaultOpen"
         editorBackground="transparent"
         previewBackground="transparent"
-        class="markdown-editor"
+        class="knowledge-markdown-editor"
         @input="changeInput"
       ></mavonEditor>
     </div>
@@ -293,13 +293,16 @@ export default {
   /deep/ .hljs {
     background: transparent;
   }
-  .markdown-editor {
+  .knowledge-markdown-editor {
     /deep/ textarea {
     background-color: transparent;
    }
+   /deep/ &.v-note-wrapper {
+    z-index: 2; // 修改层级，会导致选择表格行列会被遮挡
+   }
   }
   .theme(@text-color) {
-    .markdown-editor {
+    .knowledge-markdown-editor {
         /deep/ .auto-textarea-wrapper .auto-textarea-input {
           color: @text-color;
         }
