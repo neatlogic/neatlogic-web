@@ -175,8 +175,8 @@ export default {
       let label = [];
       if (this.nodeList && this.nodeList.length && value && value.length) {
         selectedItem = this.nodeList.filter(n => {
-          if (value.includes(n[_this.valueName])) {
-            label.push(n[_this.textName]);
+          if (value.includes(n[this.valueName])) {
+            label.push(n[this.textName]);
             return true;
           }
         });
