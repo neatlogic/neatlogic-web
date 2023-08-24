@@ -37,7 +37,6 @@
     "location": "0.0.1",
     "lodash": "^4.17.20",
     "marked": "^7.0.1",
-    "marked-highlight": "^2.0.4",
     "mavon-editor": "^2.10.4",
     "navigator": "^1.0.1",
     "neatlogic-ui": "^1.0.4",
