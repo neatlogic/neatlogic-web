@@ -221,7 +221,7 @@ export default {
       this.showDialog = true;
     },
     showInstanceList(item) {
-      //赛选实例
+      //筛选实例
       if (item.isSelectInstance) {
         this.$set(item, 'loadingShow', true);
         this.getInstanceList(item);

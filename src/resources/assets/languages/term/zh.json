@@ -1889,7 +1889,8 @@
     "filemodifycount": "文件修改数",
     "filedeletecount": "文件删除数",
     "lineaddcount": "代码行增加数量",
-    "linedeletecount": "代码行减少数量"
+    "linedeletecount": "代码行减少数量",
+    "scenariosteperror": "场景中的所有阶段均为禁用状态。场景至少需存在一个非禁用状态的阶段"
   },
   "inspect": {
     "alarmprompt": "告警提示",

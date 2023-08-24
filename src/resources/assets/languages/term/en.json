@@ -1893,7 +1893,8 @@
     "filemodifycount": "Number of file modifications",
     "filedeletecount": "Number of file deletions",
     "lineaddcount": "Number of code lines added",
-    "linedeletecount": "Number of code lines reduced"
+    "linedeletecount": "Number of code lines reduced",
+    "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
