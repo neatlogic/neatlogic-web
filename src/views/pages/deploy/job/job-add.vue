@@ -464,6 +464,11 @@ export default {
           this.$set(item, 'isChecked', true);
           findItem.hasOwnProperty('version') && this.$set(item, 'version', findItem.version);
           findItem.hasOwnProperty('buildNo') && this.$set(item, 'buildNo', findItem.buildNo);
+          if (item.buildNo) {
+            this.$set(item, 'isHasBuildTypeTool', 1);
+          } else if (item.version) {
+            this.$set(item, 'isHasDeployTypeTool', 1);
+          }
           if (!this.$utils.isEmpty(findItem.selectNodeList)) {
             let instanceList = findItem.selectNodeList;
             instanceList.forEach(i => {
