@@ -719,6 +719,8 @@ export default {
       //至少需要设置一个场景
       if (!this.scenarioList.length) {
         validList.push({ text: this.$t('term.deploy.chooseatleastonescenario'), type: 'error', component: 'scenario' });
+      } else {
+        validList.push(...this.validScenario());
       }
       //执行用户
       if (this.$refs.executeSetting) {
@@ -1011,6 +1013,30 @@ export default {
           }
         }
       });
+    },
+    validScenario() { 
+      //在模块层和环境层需要校验每个场景的中至少存在一个激活的阶段
+      let validList = [];
+      if (this.appModuleId || this.envId) {
+        this.scenarioList.forEach(item => {
+          let isValid = false;
+          for (let i = 0; i < item.combopPhaseNameList.length; i++) {
+            let findItem = this.stepList.find(s => s.name === item.combopPhaseNameList[i]);
+            if (findItem && findItem.isActive) {
+              isValid = true;
+              break;
+            }
+          }
+          if (!isValid) {
+            validList.push({
+              text: item.scenarioName + '：' + this.$t('term.deploy.scenariosteperror'), 
+              type: 'error',
+              component: 'scenario' 
+            });
+          }
+        });
+      }
+      return validList;
     }
   },
   filter: {},
