@@ -56,6 +56,7 @@
         :subfield="false"
         :autofocus="false"
         :defaultOpen="defaultOpen"
+        :placeholder="$t('form.validate.pleaseenterthecontent')"
         editorBackground="transparent"
         previewBackground="transparent"
         class="knowledge-markdown-editor"
