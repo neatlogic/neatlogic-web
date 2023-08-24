@@ -245,7 +245,7 @@ let routerArr = [
     name: 'unknown-manage',
     component: unknownManage,
     meta: {
-      title: $t('router.cmdb.unknownmanage'),
+      title: $t('router.cmdb.unknowsmanage'),
       ismenu: false,
       type: 'discovery',
       authority: 'SYNC_MODIFY'
