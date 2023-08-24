@@ -8,7 +8,7 @@ import ItemTable from '@/views/pages/knowledge/common/table.vue';
 import ItemCode from './code.vue';
 import ItemFormtable from './formtable.vue';
 import ItemEditor from './editor.vue';
-import ItemMardown from './markdown.vue';
+import ItemMarkdown from './markdown.vue';
 export default {
   ItemH1,
   ItemH2,
@@ -20,5 +20,5 @@ export default {
   ItemTable,
   ItemFormtable,
   ItemEditor,
-  ItemMardown
+  ItemMarkdown
 };

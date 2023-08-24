@@ -1,7 +1,7 @@
 <template>
   <section
     :data_id="uuid"
-    type="mardown"
+    type="markdown"
     contenteditable="false"
     class="knowledge-markdown-container"
     @contextmenu.prevent

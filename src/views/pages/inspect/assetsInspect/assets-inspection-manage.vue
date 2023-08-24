@@ -755,7 +755,6 @@ export default {
       }
     },
     openRuleThresholdDialog(row) {
-      console.log(row);
       if (row && row.id) {
         this.ruleRsourceId = row.id;
         this.appSystemId = row.appSystemId;
