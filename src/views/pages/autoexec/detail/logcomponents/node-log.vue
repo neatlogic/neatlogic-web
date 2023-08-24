@@ -19,7 +19,7 @@
           class="content-grid"
         >
           <div class="text-grey">{{ log.time }}</div>
-          <div class="content" :class="getContentClass(log.type)">{{ log.content }}</div>
+          <div class="content" :class="getContentClass(log.type)" v-html="log.content"></div>
         </div>
         <Waitinput
           v-if="nodeData && nodeData.status == 'waitInput' && logData && logData.interact"
