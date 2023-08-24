@@ -500,8 +500,7 @@ export default {
       default: ''
     }
   },
-  data: function() {
-    let _this = this;
+  data() {
     return {
       loadingTip: this.$t('page.loadingtip'),
       reachPage: 0,
@@ -512,25 +511,26 @@ export default {
       focussing: false, //是否处于焦点中
       focusIndex: -1, //通过键盘选中列表
       searchKeyWord: '', //搜索对应可以word
-      currentValue: this.multiple ? (_this.$utils.isEmpty(_this.value) ? [] : [].concat(_this.value)) : _this.value,
+      currentValue: this.multiple ? (this.$utils.isEmpty(this.value) ? [] : [].concat(this.value)) : this.value,
       isVisible: false, //下拉选项显示
       selectedList: [], //选中的集合{text："",value:""}
-      nodeList: _this.url ? [] : JSON.parse(JSON.stringify(this.dataList || [])),
-      loading: !!_this.dynamicUrl,
-      validMesage: _this.errorMessage || '',
+      nodeList: this.url ? [] : JSON.parse(JSON.stringify(this.dataList || [])),
+      loading: !!this.dynamicUrl,
+      validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
-      currentSearch: _this.search || !!_this.dynamicUrl,
+      currentSearch: this.search || !!this.dynamicUrl,
       cancelAxios: null, //实时搜索，取消接口调用
-      liHtml: _this.showName ? _this.showName : _this.textName,
+      liHtml: this.showName ? this.showName : this.textName,
       addItem: null,
       readonlyTitle: null,
       hiddenLength: 0,
       isSingel: false, // 单选，true单选，false否
       moreSearchTip: {
-        [_this.showName ? _this.showName : _this.textName]: _this.$t('page.searchformore'),
-        [_this.valueName]: 'moreSearchFlag',
+        [this.showName ? this.showName : this.textName]: this.$t('page.searchformore'),
+        [this.valueName]: 'moreSearchFlag',
         _disabled: true
-      }
+      },
+      isValidPass: true
     };
   },
   beforeCreate() {},
@@ -988,10 +988,9 @@ export default {
       return nodeList || [];
     },
     onChangeValue() {
-      let _this = this;
       let isSame = false;
       let valueObject = this.selectedList.map(item => {
-        return { value: item[_this.valueName], text: item[_this.textName] };
+        return { value: item[this.valueName], text: item[this.textName] };
       });
       valueObject = this.multiple ? valueObject : valueObject[0] || {};
       let toValue = this.currentValue; //额外赋值主要是为了避免引用数据导致值的联动
@@ -1001,20 +1000,21 @@ export default {
       } else if (this.value == this.currentValue) {
         isSame = true;
       }
-      _this.$emit('change', toValue, valueObject);
+      this.$emit('change', toValue, valueObject);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
         let selectItem = this.multiple ? this.selectedList : this.selectedList[0] || {};
-        _this.$emit('on-change', toValue, valueObject, selectItem);
-        typeof _this.onChange == 'function' && _this.onChange(toValue, valueObject, selectItem);
-        _this.multiple && _this.updatePosition();
+        this.$emit('on-change', toValue, valueObject, selectItem);
+        typeof this.onChange == 'function' && this.onChange(toValue, valueObject, selectItem);
+        this.multiple && this.updatePosition();
       }
       if (!isSame) {
-        if (_this.currentValidList.length > 0) {
-          _this.valid(_this.currentValue);
+        if (this.currentValidList.length > 0) {
+          this.valid(this.currentValue);
         }
       } else {
-        _this.validMesage = '';
+        this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     onSelectFocus: function() {
@@ -1345,15 +1345,16 @@ export default {
 
       return clearable;
     },
-    getClass: function() {
-      let _this = this;
-      let resultjson = [];
-      _this.disabled && resultjson.push('tsform-select-disabled');
-      _this.readonly && resultjson.push('tsform-select-readonly');
-      (_this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
-      _this.isVisible && resultjson.push('ivu-select-visible');
-      _this.focussing && resultjson.push('tsform-select-focus');
-      return resultjson;
+    getClass() {
+      let classNameList = [];
+      this.disabled && classNameList.push('tsform-select-disabled');
+      this.readonly && classNameList.push('tsform-select-readonly');
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      this.isVisible && classNameList.push('ivu-select-visible');
+      this.focussing && classNameList.push('tsform-select-focus');
+      return classNameList;
     },
     setLiClass() {
       return function(node, index) {
@@ -1401,14 +1402,14 @@ export default {
   watch: {
     value: {
       handler(newValue, oldValue) {
-        let _this = this;
         let isSame = this.$utils.isSame(newValue, this.currentValue);
         // if ((this.multiple && JSON.stringify(newValue) == JSON.stringify(this.currentValue)) || (!this.multiple && newValue === this.currentValue)) {
         //   isSame = true;
         // }
         if (!isSame) {
-          _this.currentValue = this.multiple ? (_this.$utils.isEmpty(newValue) ? [] : [].concat(newValue)) : newValue;
+          this.currentValue = this.multiple ? (this.$utils.isEmpty(newValue) ? [] : [].concat(newValue)) : newValue;
           this.validMesage = '';
+          this.isValidPass = true;
           this.watchChange(!!this.url);
         }
       },

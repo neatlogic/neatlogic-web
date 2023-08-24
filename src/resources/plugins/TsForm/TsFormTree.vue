@@ -215,23 +215,22 @@ export default {
     onChangelabel: Function //改变时获取text触发
   },
   data() {
-    let _this = this;
     return {
       isVisible: false, //下拉选项显示
-      currentValue: _this.value,
+      currentValue: this.value,
       showValue: '',
       selectedList: [], //选中的列表，精确匹配
       treeRef: 'trf' + new Date().toString(),
       nodeList: [],
       validMesage: '',
-      currentValidList: _this.filterValid(_this.validateList) || [],
+      currentValidList: this.filterValid(this.validateList) || [],
       readonlyTitle: null,
-      searchKeyWord: ''//回显的值通过nodeList自行匹配 不需要调用接口
+      searchKeyWord: '', //回显的值通过nodeList自行匹配 不需要调用接口
+      isValidPass: true
     };
   },
   created() {
-    var _this = this;
-    _this.initNodeList();
+    this.initNodeList();
   },
   mounted() {
     this.$nextTick(function() {
@@ -453,6 +452,7 @@ export default {
         }
       } else {
         this.validMesage = '';
+        this.isValidPass = true;
       }
     },
     updatePosition() {
@@ -541,18 +541,19 @@ export default {
     }
   },
   computed: {
-    getClass: function() {
-      let _this = this;
-      let resultjson = [];
-      if (typeof _this.width == 'string' && ['small', 'large', 'middle'].indexOf(_this.width) >= 0) {
-        resultjson.push('input-' + small);
+    getClass() {
+      let classNameList = [];
+      if (typeof this.width == 'string' && ['small', 'large', 'middle'].indexOf(this.width) >= 0) {
+        classNameList.push('input-' + small);
       }
-      _this.disabled && resultjson.push('tsform-select-disabled');
-      _this.readonly && resultjson.push('tsform-select-readonly');
-      (_this.validMesage || this.$slots.validMessage) && resultjson.push('tsForm-formItem-error');
-      _this.isVisible && resultjson.push('ivu-select-visible');
-      _this.focussing && resultjson.push('tsform-select-focus');
-      return resultjson;
+      this.disabled && classNameList.push('tsform-select-disabled');
+      this.readonly && classNameList.push('tsform-select-readonly');
+      if (!this.isValidPass) {
+        classNameList.push('tsForm-formItem-error');
+      }
+      this.isVisible && classNameList.push('ivu-select-visible');
+      this.focussing && classNameList.push('tsform-select-focus');
+      return classNameList;
     },
     getClearable: function() {
       let _this = this;
@@ -587,6 +588,7 @@ export default {
         this.nodeList.forEach(item => this.flattenChildren(item)); 
       }
       this.validMesage = '';
+      this.isValidPass = true;
       if (!this.multiple) {
         this.searchKeyWord = this.selectedList[0] ? (this.showPath ? this.selectedList[0]._path : this.selectedList[0][this.textName]) : '';
       } else {
