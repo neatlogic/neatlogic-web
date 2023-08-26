@@ -57,15 +57,15 @@
             </span>
           </template>
           <template v-slot:name="{ row }">
-            <span
-              v-if="row.parentId != -1"
-              class="text-href"
-              :class="{ 'ml-nm': !!row.parentId }"
-              @click="toJobDetail(row)"
-            >{{ row.name }}</span>
-            <span v-else-if="row.parentId == -1" class="text-href" @click="toBatchJobDetail(row)">
+            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
               {{ row.name }}
             </span>
+            <span
+              v-else
+              class="text-href"
+              :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
+              @click="toJobDetail(row)"
+            >{{ row.name }}</span>
             <Tooltip
               v-if="row.warnCount > 0 || row.isHasIgnored > 0"
               transfer
