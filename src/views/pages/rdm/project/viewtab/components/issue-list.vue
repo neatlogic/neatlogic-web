@@ -129,8 +129,10 @@
         :fromId="fromId"
         :toId="toId"
         :mode="mode"
+        :sortData="sortData"
         :projectId="projectId"
         :checkedIdList="checkedIdList"
+        @updateSort="updateSort"
         @selected="getSelected"
         @searchIssue="searchIssue"
         @changePageSize="changePageSize"
@@ -330,6 +332,7 @@ export default {
           }
         ]
       },
+      sortData: [],
       searchValue: {},
       appList: [],
       linkApp: null,
@@ -366,7 +369,17 @@ export default {
         if (historyData['searchIssueData']) {
           this.searchParamHistory = historyData['searchIssueData'];
         }
+        if (historyData['sortData']) {
+          this.sortData = historyData['sortData'];
+        }
       }
+    },
+    updateSort(sort) {
+      console.log(JSON.stringify(sort, null, 2));
+      this.sortData = [];
+      this.sortData.push(sort);
+      this.$addHistoryData('sortData', this.sortData);
+      this.searchIssue(1);
     },
     closeBatchExecute() {
       this.isBatchExecuteShow = false;
@@ -665,6 +678,17 @@ export default {
       }
       //保存查询历史
       this.$addHistoryData('searchValue', this.searchValue);
+      this.searchIssueData.sortList = [];
+      if (this.sortData && this.sortData.length > 0) {
+        this.sortData.forEach(s => {
+          for (let key in s) {
+            const attr = this.getAppByName(key);
+            if (attr) {
+              this.searchIssueData.sortList.push({ attr: key, type: attr.type, sort: s[key] });
+            }
+          }
+        });
+      }
       this.isSearchReady = false;
       this.isLoading = true;
       this.$api.rdm.issue
@@ -701,6 +725,18 @@ export default {
         return this.displayAttrList;
       }
       return [];
+    },
+    getAppByName() {
+      return name => {
+        if (this.app.attrList && this.app.attrList.length > 0) {
+          if (name.startsWith('_')) {
+            return this.app.attrList.find(d => d.type === name);
+          } else {
+            return this.app.attrList.find(d => d.id.toString() === name);
+          }
+        }
+        return null;
+      };
     },
     getAppByType() {
       return type => {
@@ -750,4 +786,5 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: auto 450px;
-}</style>
+}
+</style>

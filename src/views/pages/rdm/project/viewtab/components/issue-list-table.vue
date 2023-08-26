@@ -4,10 +4,13 @@
     ref="mainTable"
     :theadList="theadList"
     v-bind="issueData"
+    :sortOrder="sortData"
+    :sortList="sortList"
     multiple
     @changeCurrent="searchIssue"
     @changePageSize="changePageSize"
     @getSelected="getSelected"
+    @updateSort="updateSort"
   >
     <template v-slot:checked="{ row }">
       <span v-if="checkedIdList && checkedIdList.includes(row.id)" class="text-success">{{ $t('page.iselected') }}</span>
@@ -71,6 +74,7 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    sortData: { type: Array },
     theadList: { type: Array },
     attrList: { type: Array },
     mode: { type: String },
@@ -81,8 +85,7 @@ export default {
     toId: { type: Number } //目标任务id
   },
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},
@@ -95,6 +98,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    updateSort(sort) {
+      this.$emit('updateSort', sort);
+    },
     getSelectedIssueList() {
       const itemList = [];
       if (this.issueData.tbodyList && this.issueData.tbodyList.length > 0) {
@@ -133,7 +139,17 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    sortList() {
+      const sortList = [];
+      if (this.theadList && this.theadList.length > 0) {
+        this.theadList.forEach(thead => {
+          sortList.push(thead.key);
+        });
+      }
+      return sortList;
+    }
+  },
   watch: {}
 };
 </script>
