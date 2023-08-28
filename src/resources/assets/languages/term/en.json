@@ -156,7 +156,8 @@
     "toci": "Downstream model",
     "privatedataview": "Personal Data View",
     "publicsceneview": "Global Topology View",
-    "publicdataview": "Global Data View"
+    "publicdataview": "Global Data View",
+    "changememo": "Reason for change"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2209,7 +2210,9 @@
     "statusreluser": "The system automatically sets the handler during status flow",
     "innerparam": "Internal variables",
     "storywall": "Story Wall",
-    "forbiddentransfer": "Cannot be circulated"
+    "forbiddentransfer": "Cannot be circulated",
+    "importtestcase": "Import test cases",
+    "downloadtemplate": "Click to download and import the template"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
