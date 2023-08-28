@@ -169,31 +169,32 @@ export default {
     handleDefaultSelectedConfig() {
       // 处理选中默认值，为了后续用于对比高亮使用
       let relateConfig = this.$utils.deepClone(this.relateConfig);
+      let defaultSelectedConfig = {};
+      let selectedConfig = {};
+
       relateConfig.typeList.forEach((item) => {
-        if (item.value) {
-          this.$set(this.defaultSelectedConfig, [item.value], []);
-          this.$set(this.selectedConfig, [item.value], []);
-        }
-        item?.optionList?.forEach((optionItem) => {
+        // 处理默认选中值
+        defaultSelectedConfig[item.value] = [];
+        selectedConfig[item.value] = [];
+
+        item.optionList?.forEach((optionItem) => {
           if (optionItem?.value) {
-            this.defaultSelectedConfig[item.value].push(optionItem.value);
+            defaultSelectedConfig[item.value].push(optionItem.value);
           }
-          if (relateConfig.checkedAll) {
-            // 顶层选中
-            this.selectedConfig[item.value].push(optionItem.value);
-          } else if (item.checkedAll) {
-            // 二级选中
-            this.selectedConfig[item.value].push(optionItem.value);
-          } else if (optionItem.checked) {
-            this.selectedConfig[item.value].push(optionItem.value);
+          if (relateConfig.checkedAll || item.checkedAll || optionItem.checked) {
+            selectedConfig[item.value].push(optionItem.value);
           }
         });
       });
-      // 设置完成之后，需要清空默认值，否则保存的时候，会带有原有值
+
+      this.defaultSelectedConfig = defaultSelectedConfig;
+      this.selectedConfig = selectedConfig;
+
+      // 清空默认选中值
       this.relateConfig.checkedAll = false;
-      this.relateConfig?.typeList.forEach((item) => {
+      this.relateConfig.typeList.forEach((item) => {
         item.checkedAll = false;
-        item?.optionList?.forEach((innerItem) => {
+        item.optionList?.forEach((innerItem) => {
           if (innerItem) {
             innerItem.checked = false;
           }
@@ -202,9 +203,7 @@ export default {
     },
     showDialog() {
       // 提供给外部使用，用于打开上传文件的弹窗
-      // this.$refs.uploadDialog?.showDialog();
-      this.configDialog.isShow = true;
-      this.handleDefaultSelectedConfig();
+      this.$refs.uploadDialog?.showDialog();
     },
     okDialog() {
       // 导入处理存储后端的值
@@ -212,18 +211,19 @@ export default {
       relateConfig.checkedAll = this.selectedAll;
       relateConfig.typeList.forEach((item) => {
         item?.optionList?.forEach((innerItem) => {
-          if (this.selectedConfig[item.value]?.includes(innerItem.value)) {
-            innerItem.checked = true;
-          }
+          innerItem.checked = this.selectedConfig[item.value]?.includes(innerItem.value);
         });
-        let isCheckAll = item.optionList?.every((innerItem) => {
+        item.checkedAll = item.optionList?.every((innerItem) => {
           return this.selectedConfig[item.value]?.includes(innerItem.value);
         });
-        if (isCheckAll) {
-          item.checkedAll = isCheckAll;
-        }
       });
       console.log('存储后端的值', JSON.stringify(relateConfig, null, 2));
+      // this.$api.deploy.apppipeline.coverPipeline({dataList: relateConfig}).then(res => {
+      //   if (res.Status == 'OK') {
+      //     this.$Message.success(this.$t('message.savesuccess'));
+      //     this.configDialog.isShow = false;
+      //   }
+      // });
     },
     closeDialog() {
       this.configDialog.isShow = false;
@@ -232,6 +232,8 @@ export default {
     },
     uploadSuccess(data, file, fileList) {
       console.log('导入成功', data);
+      // this.configDialog.isShow = true;
+      // this.handleDefaultSelectedConfig();
     },
     handleCheckedAll() {
       // 顶层选中
@@ -252,15 +254,14 @@ export default {
     handleSecondCheckedAll(currentRow) {
       // 二级选中
       this.selectedConfig[currentRow.value] = [];
-      if (this.secondSelectedAll(currentRow)) {
-        this.relateConfig.checkedAll = false;
-      } else {
+      if (!this.secondSelectedAll(currentRow)) {
         currentRow?.optionList?.forEach((item) => {
           if (item.value) {
             this.selectedConfig[currentRow.value].push(item.value);
           }
         });
       }
+      this.relateConfig.checkedAll = !this.secondSelectedAll(currentRow);
     }
   },
   filter: {},

@@ -26,6 +26,10 @@ const apppipeline = {
   },
   getPipelineParams(params) { //获取流水线作业参数
     return axios.post('/api/rest/deploy/app/pipeline/param/list', params);
+  },
+  coverPipeline(param) {
+    // 覆盖流水线
+    return axios.post('/api/rest/deploy/app/pipeline/param/list', param);
   }
 };
 export default apppipeline;
