@@ -453,6 +453,9 @@ export default {
         if (l.hasOwnProperty('isActive')) {
           this.$set(obj, 'isActive', l.isActive);
         }
+        if (l.hasOwnProperty('parentIsActive')) {
+          this.$set(obj, 'parentIsActive', l.parentIsActive);
+        }
         if (!this.envId && !this.$utils.isEmpty(obj.config)) {
           this.$set(obj.config, 'executeConfig', {}); //应用层和模块层：阶段不需要设置执行目标
         }

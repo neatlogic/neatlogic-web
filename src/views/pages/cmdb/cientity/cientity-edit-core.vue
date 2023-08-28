@@ -152,9 +152,9 @@
                 </div>
               </Panel>
               <Panel name="description">
-                {{ $t('page.memo') }}
+                {{ $t('term.cmdb.changememo') }}
                 <div slot="content" class="pt-lg" style="margin:0 auto;width:80%;">
-                  <TsFormItem :label="$t('page.memo')" labelPosition="left">
+                  <TsFormItem :label="$t('term.cmdb.changememo')" labelPosition="left">
                     <TsFormInput
                       v-if="ciEntityData"
                       v-model="ciEntityData.description"

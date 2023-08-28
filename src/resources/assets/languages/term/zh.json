@@ -156,7 +156,8 @@
     "toci": "下游模型",
     "privatedataview": "个人数据视图",
     "publicsceneview": "全局拓扑视图",
-    "publicdataview": "全局数据视图"
+    "publicdataview": "全局数据视图",
+    "changememo": "变更说明"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -2205,7 +2206,9 @@
     "statusreluser": "状态流转时系统自动设置处理人",
     "innerparam": "内部变量",
     "storywall": "故事墙",
-    "forbiddentransfer": "不可流转"
+    "forbiddentransfer": "不可流转",
+    "importtestcase": "导入测试用例",
+    "downloadtemplate": "点击下载导入模板"
   },
   "plugin": {
     "65535": "0至65535之间的整数",
