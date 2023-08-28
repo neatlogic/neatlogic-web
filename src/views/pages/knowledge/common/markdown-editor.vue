@@ -1,6 +1,6 @@
 <template>
   <div ref="editorEditor" class="editor-editor">
-    <div class="bg-op">
+    <div :class="changeType ? `bg-${changeType}` : 'bg-op'">
       <div v-if="mode == 'edit'" class="tool bg-op shadow">
         <div class="action-group" style="display: flex;">
           <span class="action-item tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span>
@@ -93,6 +93,9 @@ export default {
         return ['edit', 'read'].includes(value); // 只读和编辑模式
       },
       default: 'edit'
+    },
+    changeType: {
+      type: String
     }
   },
   data() {

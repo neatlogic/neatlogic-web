@@ -2,19 +2,19 @@
 .theme(@success-color, @success-bg-color, @warning-bg-color,@error-color,@error-bg-color,@text){
   .compare {
     padding-bottom: 16px;
-    .bg-insert{
+    /deep/ .bg-insert{
       background:  @success-bg-color;
       color: @text;
     }
-    .bg-delete{
+    /deep/ .bg-delete{
       background: @error-bg-color;
       color: @text;
     }
-    .bg-update{
+    /deep/ .bg-update{
       background: @warning-bg-color;
       color: @text;
     }
-    .bg-fillblank{
+    /deep/ .bg-fillblank{
       opacity: 0;
     }
     /deep/ .insert {
