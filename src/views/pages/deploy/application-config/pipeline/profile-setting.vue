@@ -249,10 +249,8 @@ export default {
         this.$set(this.paramoverrideTable, 'loading', false);
       });
     },
-    changeInherit(val) {
-      if (!val) {
-        this.$emit('saveOverrideProfileList', this.profileList);
-      }
+    changeInherit() {
+      this.$emit('saveOverrideProfileList', this.profileList);
     },
     changeParamValue() {
       this.$emit('saveOverrideProfileList', this.profileList);
