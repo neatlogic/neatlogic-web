@@ -153,7 +153,10 @@
     "modelname": "模型名称",
     "toattr": "映射属性",
     "fromci": "上游模型",
-    "toci": "下游模型"
+    "toci": "下游模型",
+    "privatedataview": "个人数据视图",
+    "publicsceneview": "全局拓扑视图",
+    "publicdataview": "全局数据视图"
   },
   "process": {
     "workordercenter": "工单中心",

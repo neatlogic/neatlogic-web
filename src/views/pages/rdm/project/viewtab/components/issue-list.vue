@@ -338,7 +338,6 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
-      searchParamHistory: {},
       isBatchExecuteShow: false //批量执行确认框
     };
   },
@@ -349,7 +348,7 @@ export default {
     this.initTheadList();
     this.initSearchConfig();
     this.initAppList();
-    this.searchIssue(1);
+    this.searchIssue();
     this.getAppStatus();
   },
   beforeMount() {},
@@ -366,11 +365,11 @@ export default {
         if (historyData['searchValue']) {
           Object.assign(this.searchValue, historyData['searchValue']);
         }
-        if (historyData['searchIssueData']) {
-          this.searchParamHistory = historyData['searchIssueData'];
+        if (historyData['pageSize']) {
+          this.pageSize = historyData['pageSize'];
         }
-        if (historyData['sortData']) {
-          this.sortData = historyData['sortData'];
+        if (historyData['currentPage']) {
+          this.currentPage = historyData['currentPage'];
         }
       }
     },
@@ -641,6 +640,7 @@ export default {
     searchIssue(currentPage) {
       if (currentPage) {
         this.currentPage = currentPage;
+        this.$addHistoryData('currentPage', currentPage);
       }
       this.searchIssueData = {};
       this.searchIssueData.projectId = this.projectId;
@@ -658,9 +658,7 @@ export default {
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
-      Object.assign(this.searchIssueData, this.searchParamHistory);
-      //保存查询历史
-      this.$addHistoryData('searchIssueData', this.$utils.deepClone(this.searchIssueData));
+      
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -728,11 +726,11 @@ export default {
     },
     getAppByName() {
       return name => {
-        if (this.app.attrList && this.app.attrList.length > 0) {
+        if (this.attrList && this.attrList.length > 0) {
           if (name.startsWith('_')) {
-            return this.app.attrList.find(d => d.type === name);
+            return this.attrList.find(d => d.type === name);
           } else {
-            return this.app.attrList.find(d => d.id.toString() === name);
+            return this.attrList.find(d => d.id.toString() === name);
           }
         }
         return null;
@@ -762,6 +760,11 @@ export default {
             this.searchIssue(1);
           }
         }
+      }
+    },
+    pageSize: {
+      handler: function(val) {
+        this.$addHistoryData('pageSize', val);
       }
     },
     catalog: {
