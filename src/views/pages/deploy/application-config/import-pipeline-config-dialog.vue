@@ -1,0 +1,320 @@
+<template>
+  <div>
+    <TsDialog
+      v-bind="configDialog"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <Alert show-icon>
+            {{ $t('term.deploy.overrelateobjectdescription') }}
+          </Alert>
+          <div class="common-auth">
+            <div v-if="relateConfig && relateConfig.typeList.length > 0" class="wrapper">
+              <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'ts-check-square-o':'ts-minus-square']" @click.stop="handleCheckedAll()">
+                {{ selectedAll ? $t('page.unselectall') : $t('page.selectall') }}
+              </span>
+              <div v-for="(item, index) in relateConfig.typeList" :key="index" class="item mb-md">
+                <div class="title text-grey">{{ item.text }}</div>
+                <div class="radius-lg bg-op">
+                  <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'ts-check-square-o':'ts-minus-square'" @click.stop="handleSecondCheckedAll(item)">
+                    <span class="text check-all-text-pr">
+                      {{ secondSelectedAll(item) ? $t('page.unselectall') : $t('page.selectall') }}
+                    </span>
+                  </div>
+                  <div class="item-cli pl-nm pr-nm">
+                    <CheckboxGroup v-model="selectedConfig[item.value]">
+                      <Checkbox 
+                        v-for="(citem, cindex) in item.optionList"
+                        :key="cindex"
+                        :label="citem.value"
+                        style="width:20%"
+                      >
+                        <span class="check-all-text-pr">{{ citem.text }}</span>
+                      </Checkbox>
+                    </CheckboxGroup>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </TsDialog>
+    <UploadDialog
+      ref="uploadDialog"
+      v-bind="uploadConfig"
+      @on-success="uploadSuccess"
+      @on-cancel="closeDialog"
+    ></UploadDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+  },
+  props: {
+    isShowCoverDialog: {
+      // 是否显示覆盖弹窗
+      type: Boolean,
+      default: false
+    },
+    appSystemAbbrNameAndName: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      defaultSelectedConfig: {}, // 默认选中的config
+      selectedConfig: {},
+      configDialog: {
+        isShow: false,
+        type: 'slider',
+        width: 'large',
+        title: this.$t('term.deploy.relateobjectcover'),
+        okText: this.$t('page.import')
+      },
+      uploadConfig: {
+        //上传图片配置
+        actionUrl: BASEURLPREFIX + '/api/binary/file/upload', //导入地址
+        dataType: 'knowledge',
+        formatList: ['pkg'],
+        data: {
+          param: 'file'
+        }
+      },
+      relateConfig: {
+        checkedAll: false,
+        typeList: [
+          {
+            value: 'name1',
+            text: '工具库工具',
+            checkedAll: false,
+            optionList: [
+              {
+                value: 'weblogic',
+                text: 'weblogic',
+                checked: ''
+              },
+              {
+                value: 'osbasic/modifyhosts',
+                text: 'osbasic/modifyhosts',
+                checked: true
+              },
+              {
+                value: 'svcinspect/tcpcheck',
+                text: 'svcinspect/tcpcheck',
+                checked: ''
+              }
+            ]
+          },
+          {
+            value: 'name2',
+            text: '自定义工具',
+            checkedAll: false,
+            optionList: [
+              {
+                value: 'nginx_install',
+                text: 'nginx_install',
+                checked: ''
+              },
+              {
+                value: 'was-uninstall',
+                text: 'was-uninstall',
+                checked: ''
+              },
+              {
+                value: 'not-uninstall',
+                text: 'not-uninstall',
+                checked: true
+              }
+            ]
+          }
+        ]
+      }
+    };
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {
+    if (this.isShowCoverDialog) {
+      this.$createDialog({
+        title: this.$t('term.deploy.coverpipeline'),
+        cancelText: this.$t('term.deploy.cancelimport'),
+        okText: this.$t('page.cover'),
+        content: `${this.appSystemAbbrNameAndName}${this.$t('term.deploy.overexistpipelineiscontinue')}`,
+        'on-ok': (vnode) => {
+          vnode.isShow = false;
+          this.configDialog.isShow = true;
+          this.handleDefaultSelectedConfig();
+        },
+        'on-close': () => {
+          this.$emit('closeCoverDialog');
+        }
+      });
+    }
+  },
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    handleDefaultSelectedConfig() {
+      // 处理选中默认值，为了后续用于对比高亮使用
+      let relateConfig = this.$utils.deepClone(this.relateConfig);
+      relateConfig.typeList.forEach((item) => {
+        if (item.value) {
+          this.$set(this.defaultSelectedConfig, [item.value], []);
+          this.$set(this.selectedConfig, [item.value], []);
+        }
+        item?.optionList?.forEach((optionItem) => {
+          if (optionItem?.value) {
+            this.defaultSelectedConfig[item.value].push(optionItem.value);
+          }
+          if (relateConfig.checkedAll) {
+            // 顶层选中
+            this.selectedConfig[item.value].push(optionItem.value);
+          } else if (item.checkedAll) {
+            // 二级选中
+            this.selectedConfig[item.value].push(optionItem.value);
+          } else if (optionItem.checked) {
+            this.selectedConfig[item.value].push(optionItem.value);
+          }
+        });
+      });
+      // 设置完成之后，需要清空默认值，否则保存的时候，会带有原有值
+      this.relateConfig.checkedAll = false;
+      this.relateConfig?.typeList.forEach((item) => {
+        item.checkedAll = false;
+        item?.optionList?.forEach((innerItem) => {
+          if (innerItem) {
+            innerItem.checked = false;
+          }
+        });
+      });
+    },
+    showDialog() {
+      // 提供给外部使用，用于打开上传文件的弹窗
+      // this.$refs.uploadDialog?.showDialog();
+      this.configDialog.isShow = true;
+      this.handleDefaultSelectedConfig();
+    },
+    okDialog() {
+      // 导入处理存储后端的值
+      let relateConfig = this.$utils.deepClone(this.relateConfig);
+      relateConfig.checkedAll = this.selectedAll;
+      relateConfig.typeList.forEach((item) => {
+        item?.optionList?.forEach((innerItem) => {
+          if (this.selectedConfig[item.value]?.includes(innerItem.value)) {
+            innerItem.checked = true;
+          }
+        });
+        let isCheckAll = item.optionList?.every((innerItem) => {
+          return this.selectedConfig[item.value]?.includes(innerItem.value);
+        });
+        if (isCheckAll) {
+          item.checkedAll = isCheckAll;
+        }
+      });
+      console.log('存储后端的值', JSON.stringify(relateConfig, null, 2));
+    },
+    closeDialog() {
+      this.configDialog.isShow = false;
+      this.selectedConfig = {};
+      this.defaultSelectedConfig = {};
+    },
+    uploadSuccess(data, file, fileList) {
+      console.log('导入成功', data);
+    },
+    handleCheckedAll() {
+      // 顶层选中
+      this.relateConfig.typeList.forEach((item) => {
+        if (item.value) {
+          this.$set(this.selectedConfig, [item.value], []);
+        }
+        if (!this.relateConfig.checkedAll) {
+          item.optionList.forEach((optionItem) => {
+            if (optionItem?.value) {
+              this.selectedConfig[item.value].push(optionItem.value);
+            }
+          });
+        }
+      });
+      this.relateConfig.checkedAll = !this.relateConfig.checkedAll;
+    },
+    handleSecondCheckedAll(currentRow) {
+      // 二级选中
+      this.selectedConfig[currentRow.value] = [];
+      if (this.secondSelectedAll(currentRow)) {
+        this.relateConfig.checkedAll = false;
+      } else {
+        currentRow?.optionList?.forEach((item) => {
+          if (item.value) {
+            this.selectedConfig[currentRow.value].push(item.value);
+          }
+        });
+      }
+    }
+  },
+  filter: {},
+  computed: {
+    selectedAll() {
+      // 顶层选中
+      return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig, this.selectedConfig);
+    },
+    secondSelectedAll() {
+      // 二级选中
+      return (currentRow) => {
+        return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
+      };
+    }
+  },
+  watch: {}
+};
+</script>
+<style lang="less" scoped>
+.common-auth {
+  .check-all-text-pr {
+    display: inline-block;
+    padding-left: 4px;
+    cursor: pointer;
+  }
+  .wrapper {
+    width: 100%;
+    .item {
+      .title {
+        margin-bottom: 6px;
+      }
+      .item-cli {
+        width: 100%;
+        border: 1px solid transparent;
+        label {
+          margin-right: 50px;
+          padding: 12px 0;
+          display: inline-flex;
+        }
+      }
+      .title-wrapper {
+         overflow: hidden;
+         border: 1px solid;
+      }
+      .not-allowed {
+        cursor: not-allowed;
+      }
+    }
+  }
+  /deep/ .ivu-checkbox {
+    line-height: revert;
+  }
+  /deep/ .ivu-checkbox-checked .ivu-checkbox-inner:after {
+    top: -1px;
+  }
+}
+</style>

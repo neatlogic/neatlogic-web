@@ -80,7 +80,10 @@
                   {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.apply') }}</span>
                 </div>
                 <div v-else class="flex-center pt-nm">
-                  {{ $t('term.deploy.applynotconfigselect') }}<span class="text-href" @click="toPipeline">{{ $t('term.deploy.pipelinetemplate') }}</span>
+                  {{ $t('term.deploy.applynotconfigselect') }}
+                  <span class="text-href" @click="toPipeline">{{ $t('term.deploy.pipelinetemplate') }}</span>
+                  {{ $t('term.framework.or') }}
+                  <span class="text-href" @click="importPipelineConfig">{{ $t('term.deploy.importpipelineconfig') }}</span>
                 </div>
               </div>
             </template>
@@ -99,6 +102,7 @@
     ></ModuleTreeEdit>
     <EnvTreeEdit v-if="isShowEnvTreeEdit" :params="envParam" @close="closeEnvTreeEdit"></EnvTreeEdit>
     <ClearConfigDialog v-if="isShowClearConfigDialog" :clearConfigParams="{appSystemId, appModuleId, envId, configType}" @close="closeClearConfigDialog"></ClearConfigDialog>
+    <ImportPipelineConfigDialog ref="importPipelineConfig"></ImportPipelineConfigDialog>
   </div>
 </template>
 <script>
@@ -114,7 +118,8 @@ export default {
     AppTreeEdit: resolve => require(['./config/app/components/app-tree-edit'], resolve), // 编辑应用（应用配置树）
     ModuleTreeEdit: resolve => require(['./config/app/components/module-tree-edit'], resolve), // 编辑模块（应用配置树）
     EnvTreeEdit: resolve => require(['./config/app/components/env-tree-edit'], resolve), // 编辑模块（应用配置树）
-    ClearConfigDialog: resolve => require(['./config/clear-config-dialog'], resolve) // 清空配置
+    ClearConfigDialog: resolve => require(['./config/clear-config-dialog'], resolve), // 清空配置
+    ImportPipelineConfigDialog: resolve => require(['pages/deploy/application-config/import-pipeline-config-dialog'], resolve) // 导入流水线配置
   },
   props: {},
   data() {
@@ -443,6 +448,10 @@ export default {
     },
     restoreHistory(historyData) {
       this.appModuleData = historyData['appModuleEnvData'] || {};
+    },
+    importPipelineConfig() {
+      // 导入流水线配置
+      this.$refs.importPipelineConfig?.showDialog();
     }
   },
   filter: {},

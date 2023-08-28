@@ -1899,7 +1899,13 @@
     "filedeletecount": "Number of file deletions",
     "lineaddcount": "Number of code lines added",
     "linedeletecount": "Number of code lines reduced",
-    "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage"
+    "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
+    "importpipelineconfig": "Import assembly line configuration",
+    "coverpipeline": "Coverage assembly line",
+    "cancelimport": "Cancel Import",
+    "relateobjectcover": "Associated Object Overrides",
+    "overrelateobjectdescription": "The following objects associated with the assembly line already exist in the system. To overwrite them, please check the objects that need to be overwritten and click the 'Import' button below to complete the import.",
+    "overexistpipelineiscontinue": "The pipeline has been configured. Importing the pipeline will overwrite the existing pipeline. Do you want to continue?"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

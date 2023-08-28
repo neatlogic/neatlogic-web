@@ -26,6 +26,15 @@
       </template>
       <template v-slot:topRight>
         <div v-if="hasEditAuth" class="action-group no-line">
+          <span class="action-item tsfont-import" @click="importPipeline">{{ $t('page.import') }}</span>
+          <span
+            v-if="!isExportPipeline"
+            v-download="exportPipeline"
+            class="action-item tsfont-export"
+          >{{ $t('page.export') }}</span>
+          <span v-else class="action-item">
+            <Icon type="ios-loading" size="16" class="loading"></Icon>
+          </span>
           <template v-if="!canEdit">
             <div class="action-item">
               <Button type="primary" @click="editProfile()">{{ $t('page.edit') }}</Button>
@@ -211,9 +220,16 @@
       @close="isShowParamList = false"
       @saveParamList="saveParamsList"
     ></RuntimeParamsSetting>
+    <ImportPipelineConfigDialog
+      v-if="isShowImportPipeline"
+      :isShowCoverDialog="isShowImportPipeline"
+      :appSystemAbbrNameAndName="getAppSystemAbbrNameAppSystemName"
+      @closeCoverDialog="isShowImportPipeline = false"
+    ></ImportPipelineConfigDialog>
   </div>
 </template>
 <script>
+import download from '@/resources/directives/download.js';
 export default {
   name: '',
   provide() {
@@ -223,6 +239,7 @@ export default {
       openParamsSetting: this.showRuntimeParamList //添加作业参数
     };
   },
+  directives: { download },
   components: {
     StepList: resolve => require(['./pipeline/step/step-list'], resolve),
     StepGroup: resolve => require(['./pipeline/step-group'], resolve),
@@ -233,7 +250,8 @@ export default {
     AppConfigTree: resolve => require(['./config/app/app-config-tree'], resolve),
     PipelineValid: resolve => require(['./pipeline/pipeline-valid'], resolve),
     ExecuteSetting: resolve => require(['./pipeline/execute-setting'], resolve),
-    AppConfigStatus: resolve => require(['./config/app/app-config-status'], resolve)
+    AppConfigStatus: resolve => require(['./config/app/app-config-status'], resolve),
+    ImportPipelineConfigDialog: resolve => require(['pages/deploy/application-config/import-pipeline-config-dialog'], resolve) // 导入流水线配置
   },
   props: {},
   data() {
@@ -272,7 +290,9 @@ export default {
       },
       defaultScenarioId: null,
       executeConfig: null,
-      hasEditAuth: true // 是否有编辑配置权限
+      hasEditAuth: true, // 是否有编辑配置权限
+      isShowImportPipeline: false,
+      isExportPipeline: false
     };
   },
   beforeCreate() {},
@@ -1037,6 +1057,9 @@ export default {
         });
       }
       return validList;
+    },
+    importPipeline() {
+      this.isShowImportPipeline = true;
     }
   },
   filter: {},
@@ -1048,6 +1071,24 @@ export default {
           isEdit = false;
         }
         return isEdit; 
+      };
+    },
+    getAppSystemAbbrNameAppSystemName() {
+      return `${this.initPipelineData?.appSystemAbbrName}[${this.initPipelineData?.appSystemName}]`;
+    },
+    exportPipeline() {
+      // 导出流水线配置
+      return {
+        url: '/api/binary/autoexec/job/phase/node/sql/file/download',
+        method: 'post',
+        params: {},
+        changeStatus: status => {
+          if (status == 'start') {
+            this.isExportPipeline = true;
+          } else if (status == 'success' || status == 'error') {
+            this.isExportPipeline = false;
+          }
+        }
       };
     }
   },
