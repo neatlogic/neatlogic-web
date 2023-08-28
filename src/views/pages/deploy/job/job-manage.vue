@@ -96,7 +96,7 @@
             @updateSort="updateSort"
           >
             <template v-slot:showChildren="{ row }">
-              <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href">
+              <span v-if="row.parentId == -1" class="text-href">
                 <span v-if="!row.loading" :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
                 <Icon
                   v-else
@@ -118,7 +118,7 @@
               <span
                 v-else
                 class="text-href"
-                :class="{ 'ml-nm': !!row.parentId }"
+                :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
                 @contextmenu="newTab($event, row, 'job-detail')"
                 @click="toJobDetail(row)"
               >{{ row.name }}</span>
