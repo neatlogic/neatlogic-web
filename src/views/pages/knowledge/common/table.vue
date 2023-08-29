@@ -156,7 +156,7 @@
       </table>
       <table
         class="tssheet-main"
-        :class="{ 'bg-op': mode === 'edit' }"
+        :class="[ changeType ? `bg-${changeType}` : '', mode === 'edit' ? 'bg-op' : '']"
         :style="{ width:mode==='edit'?tableSize.width + 'px': containerWidth + 'px', height: tableSize.height + 'px', margin: mode==='edit'? 0 : '0 auto' }"
       >
         <colgroup>
@@ -327,7 +327,8 @@ export default {
      *                    }] 
      *        }
      */
-    config: Object
+    config: Object,
+    changeType: String // 版本对比操作类型：insert/update/delete
   },
   data() {
     return {

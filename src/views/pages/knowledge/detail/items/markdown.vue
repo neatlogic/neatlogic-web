@@ -6,7 +6,7 @@
     z-index="0"
     @paste.stop.prevent
   >
-    <MarkdownEditor v-model="value" mode="read"></MarkdownEditor>
+    <MarkdownEditor v-model="value" mode="read" :changeType="changeType"></MarkdownEditor>
   </section>
 </template>
 <script>

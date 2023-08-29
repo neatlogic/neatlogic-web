@@ -48,7 +48,7 @@
         @on-change="changePolicy"
       ></TsFormSelect>
     </TsFormItem>
-    <div v-if="envId && groupPolicy == 'grayScale'" class="grayscale-detail">
+    <div v-if="envId && groupPolicy == 'grayScale' && !inherit" class="grayscale-detail">
       <div class="item-list">
         <div class="item-label text-title">{{ $t('term.deploy.presettarget') }}</div>
         <div class="item-text">
