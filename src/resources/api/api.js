@@ -13,6 +13,7 @@ import report from './report';
 import rdm from './rdm';
 import codehub from './codehub'; // 代码中心
 import documentonline from './documentonline';
+import dr from './dr';
 
 export default {
   autoexec,
@@ -29,5 +30,6 @@ export default {
   report,
   rdm,
   codehub,
-  documentonline
+  documentonline,
+  dr
 };
