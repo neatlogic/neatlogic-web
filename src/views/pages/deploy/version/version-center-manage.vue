@@ -214,7 +214,6 @@ export default {
       hasEnvsAuth: false, //是否拥有制品管理&版本&环境权限
       selectedApp: null,
       selectedModule: null,
-      versionId: '', // 版本id
       theadList: [],
       defaultTheadList: [
         {
@@ -309,7 +308,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     let query = this.$route.query;
     if (query && !this.$utils.isEmptyObj(query) && query.appSystemId) {
       let {appSystemId, appModuleId, envId} = query;
@@ -322,7 +321,7 @@ export default {
     if (query && !query.appSystemId && !query.isBack) {
       this.$addHistoryData('appModuleEnvData', {}); // 清空上一次内容
     }
-    this.theadList = this.defaultTheadList;
+    await this.getTheadList();
     this.changeCurrent();
   },
   beforeMount() {},
@@ -337,11 +336,6 @@ export default {
     getSelectedApp(app) {
       this.selectedApp = app;
       this.authList = app && app.authActionSet && app.authActionSet.length > 0 ? app.authActionSet : [];
-      if (app?.id) {
-        this.versionId = app.id;
-        this.getTheadList();
-      }
-      console.log('app', app);
     },
     getSelectedModule(module) {
       this.selectedModule = module;
@@ -472,20 +466,16 @@ export default {
     },
     checkshow(headList, isShowColumn) {
       // 拖拽排序行列，显示隐藏列
-      console.log('返回的内容', headList);
+      this.theadList = headList;
       this.$api.deploy.version
         .saveVersionThead({
-          versionId: this.versionId,
           config: { theadList: headList}
         });
     },
     getTheadList() {
       return this.$api.deploy.version
-        .getVersionTheadList({
-          versionId: this.versionId
-        }).then((res) => {
+        .getVersionTheadList().then((res) => {
           if (res?.Status == 'OK') {
-            console.log('res.return', res.Return);
             this.theadList = res?.Return?.config?.theadList ? res.Return.config.theadList : this.defaultTheadList;
           }
         });
