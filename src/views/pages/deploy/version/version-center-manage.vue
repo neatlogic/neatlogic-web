@@ -41,7 +41,6 @@
           v-bind="versionData"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
-          @updateSort="updateSort"
           @checkshow="checkshow"
         >
           <template slot="version" slot-scope="{ row }">
@@ -215,7 +214,9 @@ export default {
       hasEnvsAuth: false, //是否拥有制品管理&版本&环境权限
       selectedApp: null,
       selectedModule: null,
-      theadList: [
+      versionId: '', // 版本id
+      theadList: [],
+      defaultTheadList: [
         {
           title: this.$t('page.versions'),
           key: 'version',
@@ -225,31 +226,31 @@ export default {
         {
           title: this.$t('page.compilecount'),
           key: 'compileCount',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
           title: this.$t('term.deploy.sealplate'),
           key: 'isFreeze',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
           title: 'BuildNo',
           key: 'buildNo',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
           title: this.$t('page.environment'),
           key: 'env',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
           title: this.$t('page.module'),
           key: 'appModuleAbbrName',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
@@ -291,14 +292,14 @@ export default {
         {
           title: this.$t('page.description'),
           key: 'description',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
           title: this.$t('page.createtime'),
           type: 'time',
           key: 'fcd',
-          isDisabled: true,
+          isDisabled: false,
           isShow: 1
         },
         {
@@ -321,6 +322,7 @@ export default {
     if (query && !query.appSystemId && !query.isBack) {
       this.$addHistoryData('appModuleEnvData', {}); // 清空上一次内容
     }
+    this.theadList = this.defaultTheadList;
     this.changeCurrent();
   },
   beforeMount() {},
@@ -335,6 +337,11 @@ export default {
     getSelectedApp(app) {
       this.selectedApp = app;
       this.authList = app && app.authActionSet && app.authActionSet.length > 0 ? app.authActionSet : [];
+      if (app?.id) {
+        this.versionId = app.id;
+        this.getTheadList();
+      }
+      console.log('app', app);
     },
     getSelectedModule(module) {
       this.selectedModule = module;
@@ -463,33 +470,25 @@ export default {
     restoreHistory(historyData) {
       this.appModuleData = historyData['appModuleEnvData'] || {};
     },
-    updateSort(sortConfig) {
-      // 拖拽排序
-      // 暂时注释，TODO后端保存接口未提供
-      // this.$set(this.tableConfig, 'sortConfig', sortConfig);
-      // this.changeCurrent();
-    },
     checkshow(headList, isShowColumn) {
-      // 设置表格列，显示隐藏
-      let theadList = headList
-        .filter(item => !['action'].includes(item.key))
-        .map((d, i) => ({
-          name: d.key,
-          sort: i,
-          isShow: d.isShow,
-          disabled: d.disabled
-        }));
-    // 暂时注释，TODO后端暂未提供保存接口
-    //   this.$api.deploy.version
-    //     .saveVersionCenterTheadList({
-    //       uuid: this.workcenterUuid,
-    //       theadList: theadList
-    //     })
-    //     .then(() => {
-    //       if (isShowColumn === 1) {
-    //         this.changeCurrent();
-    //       }
-    //     });
+      // 拖拽排序行列，显示隐藏列
+      console.log('返回的内容', headList);
+      this.$api.deploy.version
+        .saveVersionThead({
+          versionId: this.versionId,
+          config: { theadList: headList}
+        });
+    },
+    getTheadList() {
+      return this.$api.deploy.version
+        .getVersionTheadList({
+          versionId: this.versionId
+        }).then((res) => {
+          if (res?.Status == 'OK') {
+            console.log('res.return', res.Return);
+            this.theadList = res?.Return?.config?.theadList ? res.Return.config.theadList : this.defaultTheadList;
+          }
+        });
     }
   },
   filter: {},
