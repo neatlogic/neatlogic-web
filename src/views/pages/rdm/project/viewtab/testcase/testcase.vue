@@ -9,6 +9,7 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
+          <span class="action-item tsfont-upload" @click="importTestcase()">{{ $t('term.rdm.importtestcase') }}</span>
           <span class="action-item" @click="addIssue()">
             <Button type="success">
               <span class="tsfont-plus">{{ $t('term.rdm.testcase') }}</span>
@@ -40,9 +41,21 @@
       @close="closeEditIssue"
     ></EditIssue>
     <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
+    <UploadDialog
+      ref="uploadDialog"
+      :actionUrl="actionUrl"
+      :formatList="formatList"
+      :isValid="true"
+      @on-success="searchIssue(1)"
+    >
+      <template slot="desc">
+        <div v-download="downloadUrl" class="tsfont-download text-href" @click.stop>{{ $t('term.rdm.downloadtemplate') }}</div>
+      </template>
+    </UploadDialog>
   </div>
 </template>
 <script>
+import download from '@/resources/directives/download.js';
 import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
@@ -51,8 +64,10 @@ export default {
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
-    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
+    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve),
+    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
   },
+  directives: { download },
   mixins: [mixins],
   props: {},
   data() {
@@ -62,12 +77,13 @@ export default {
       currentIssueId: null,
       isEditIssueShow: false,
       displayMode: 'level',
-      isAttrSettingShow: false
+      actionUrl: BASEURLPREFIX + '/api/binary/integration/import', //导入地址
+      isAttrSettingShow: false,
+      formatList: ['xls', 'xlsx'] //导入文件格式
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -77,6 +93,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    importTestcase() {
+      this.$refs.uploadDialog.showDialog();
+    },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
     },
@@ -112,7 +131,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    downloadUrl() {
+      return {
+        url: 'api/binary/rdm/testcase/template/get',
+        params: { projectId: this.projectId, appId: this.appId }
+      };
+    }
+  },
   watch: {}
 };
 </script>

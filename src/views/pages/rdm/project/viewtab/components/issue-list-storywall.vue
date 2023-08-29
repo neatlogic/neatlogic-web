@@ -1,82 +1,96 @@
 <template>
-  <div
-    v-if="finalStatusList.length > 0"
-    ref="divMain"
-    :style="{ height: height + 'px', 'user-select': isDragging ? 'none' : 'auto', cursor: isDragging ? 'grabbing' : 'grab' }"
-    class="divContainer"
-    @mousedown.stop="startDrag"
-    @mousemove="onDrag"
-    @mouseup="endDrag"
-    @click.stop
-  >
+  <div>
     <div
-      v-for="(status, index) in finalStatusList"
-      :key="index"
-      class="divStatus bg-op-linear radius-md"
-      :class="{ 'mr-md': index < finalStatusList.length - 1 }"
+      v-if="finalStatusList.length > 0"
+      ref="divMain"
+      :style="{ height: height + 'px', 'user-select': isDragging ? 'none' : 'auto', cursor: isDragging ? 'grabbing' : 'grab' }"
+      class="divContainer"
+      @mousedown.stop="startDrag"
+      @mousemove="onDrag"
+      @mouseup="endDrag"
+      @click.stop
     >
-      <div v-if="draggingStatus && draggingStatus.id != status.id && !allowPutStatus[status.id.toString()]" class="forbidden-mask radius-md padding">
-        <h3 class="text-error">{{ $t('term.rdm.forbiddentransfer') }}</h3>
-      </div>
-      <h3 class="text-grey ml-md mr-md mt-md mr-md">{{ status.label }}</h3>
-      <div class="status-item mt-sm padding">
-        <draggable
-          v-bind="dragOptions"
-          tag="div"
-          class="dataSource-ul"
-          :list="getIssueByStatus(status)"
-          :group="{
-            name: 'issue-' + status.id,
-            pull: true,
-            put: () => {
-              return allowPut(status);
-            }
-          }"
-          handle=".tsfont-option-vertical"
-          :forceFallback="false"
-          @start="
-            e => {
-              moveStart(status, e);
-            }
-          "
-          @end="moveEnd"
-          @add="
-            e => {
-              dropIssue(status, e);
-            }
-          "
-        >
-          <div
-            v-for="(issue, iindex) in getIssueByStatus(status)"
-            :key="issue.id"
-            :issueId="issue.id"
-            :issue="issue"
-            :appId="issue.appId"
-            :class="iindex < getIssueByStatus(status).length - 1 ? 'mb-nm' : ''"
-            class="cursor click-item radius-sm border-color-base issue-item padding-md bg-grey"
-            @mousedown.stop
-            @click="openIssueDetail(issue)"
+      <div
+        v-for="(status, index) in finalStatusList"
+        :key="index"
+        class="divStatus bg-op-linear radius-md"
+        :class="{ 'mr-md': index < finalStatusList.length - 1 }"
+      >
+        <div v-if="draggingStatus && draggingStatus.id != status.id && !allowPutStatus[status.id.toString()]" class="forbidden-mask radius-md padding">
+          <h3 class="text-error">{{ $t('term.rdm.forbiddentransfer') }}</h3>
+        </div>
+        <h3 class="text-grey ml-md mr-md mt-md mr-md">{{ status.label }}</h3>
+        <div class="status-item mt-sm padding">
+          <draggable
+            v-bind="dragOptions"
+            tag="div"
+            class="dataSource-ul"
+            :list="getIssueByStatus(status)"
+            :group="{
+              name: 'issue-' + status.id,
+              pull: true,
+              put: () => {
+                return allowPut(status);
+              }
+            }"
+            handle=".tsfont-option-vertical"
+            :forceFallback="false"
+            @start="
+              e => {
+                moveStart(status, e);
+              }
+            "
+            @end="moveEnd"
+            @add="
+              e => {
+                dropIssue(status, e);
+              }
+            "
           >
-            <div class="overflow">
-              <span class="tsfont-option-vertical text-grey" style="cursor: move" @mousedown.stop></span>
-              <span><AppIcon :appType="issue.appType" size="small" :appColor="issue.appColor"></AppIcon></span>
-              <span
-                class="cursor text-href"
-                @mousedown.stop
-                @click.stop="toIssueDetail(issue)"
-              >{{ issue.name }}</span>
-            </div>
-            <div class="mt-xs mb-xs text-grey fz10">{{ issue.createDate | formatDate('yyyy-mm-dd') }}</div>
-            <div class="flex">
-              <div class="left"><UserCard v-for="(user, uindex) in issue.userList" :key="uindex" :v-bind="user"></UserCard></div>
-              <div class="right">
-                <span :style="{ color: issue.priorityColor }" class="mr-xs">●</span>
-                <span>{{ issue.priorityName }}</span>
+            <div
+              v-for="(issue, iindex) in getIssueByStatus(status)"
+              :key="issue.id"
+              :issueId="issue.id"
+              :issue="issue"
+              :appId="issue.appId"
+              :class="iindex < getIssueByStatus(status).length - 1 ? 'mb-nm' : ''"
+              class="cursor click-item radius-sm border-color-base issue-item padding-md bg-grey"
+              @mousedown.stop
+              @click="openIssueDetail(issue)"
+            >
+              <div class="overflow">
+                <span class="tsfont-option-vertical text-grey" style="cursor: move" @mousedown.stop></span>
+                <span><AppIcon :appType="issue.appType" size="small" :appColor="issue.appColor"></AppIcon></span>
+                <span
+                  class="cursor text-href"
+                  @mousedown.stop
+                  @click.stop="toIssueDetail(issue)"
+                >{{ issue.name }}</span>
+              </div>
+              <div class="mt-xs mb-xs text-grey fz10">{{ issue.createDate | formatDate('yyyy-mm-dd') }}</div>
+              <div class="flex">
+                <div class="left"><UserCard v-for="(user, uindex) in issue.userList" :key="uindex" :uuid="user.uuid"></UserCard></div>
+                <div class="right">
+                  <span :style="{ color: issue.priorityColor }" class="mr-xs">●</span>
+                  <span>{{ issue.priorityName }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </draggable>
+          </draggable>
+        </div>
       </div>
+    </div>
+    <div v-if="hasPage" class="pager">
+      <Page
+        size="small"
+        :showTotal="true"
+        :total="issueData.rowNum"
+        :current="issueData.currentPage"
+        :page-size="issueData.pageSize"
+        :transfer="true"
+        @on-change="searchIssue"
+        @on-page-size-change="changePageSize"
+      />
     </div>
     <TsDialog
       v-if="isTransferReady && requiredAttrList.length > 0 && draggingIssue"
@@ -316,6 +330,9 @@ export default {
       const main = this.$refs['divMain'];
       if (main) {
         this.height = window.innerHeight - main.getBoundingClientRect().top - 20;
+        if (this.hasPage) {
+          this.height = this.height - 40;
+        }
       }
     },
     toIssueDetail(row) {
@@ -333,6 +350,9 @@ export default {
   },
   filter: {},
   computed: {
+    hasPage() {
+      return this.issueData && this.issueData.rowNum > 0;
+    },
     finalStatusList() {
       const statusList = [];
       if (this.app && this.app.statusList) {
@@ -415,5 +435,11 @@ html {
   border-style: solid;
   height: 100px;
   width: 100%;
+}
+.pager {
+  height: 40px;
+  line-height: 40px;
+  text-align: right;
+  grid-column: 1 / -1;
 }
 </style>

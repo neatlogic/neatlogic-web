@@ -32,6 +32,7 @@
           >
             <div class="drag-area bg-block">
               <div class="upload-icon"><img src="./upload-icon.png" :alt="$t('page.icon')" /></div>
+              <slot name="desc" class="mt-sm mb-sm"></slot>
               <div class="upload-tip text-default">{{ $t('page.uploadtips') }}</div>
               <div class="upload-limit text-tip">
                 {{ uploadFilelimitTips(multiple, formatList) }}
@@ -80,7 +81,6 @@
                     </div>
                   </slot>
                 </div>
-
               </div>
             </div>
           </template>

@@ -222,7 +222,7 @@
               </template>
             </ol>
           </div>
-          <div v-else-if="pageType === 'number'" class="text-right">
+          <div v-else-if="pageType === 'number'" class="tstable-page text-right">
             <Page
               :total="rowNum"
               size="small"

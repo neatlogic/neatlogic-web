@@ -77,6 +77,7 @@ export default {
     sortData: { type: Array },
     theadList: { type: Array },
     attrList: { type: Array },
+    sortList: { type: Array },
     mode: { type: String },
     checkedIdList: { type: Array },
     canAction: { type: Boolean, default: false },
@@ -140,15 +141,6 @@ export default {
   },
   filter: {},
   computed: {
-    sortList() {
-      const sortList = [];
-      if (this.theadList && this.theadList.length > 0) {
-        this.theadList.forEach(thead => {
-          sortList.push(thead.key);
-        });
-      }
-      return sortList;
-    }
   },
   watch: {}
 };

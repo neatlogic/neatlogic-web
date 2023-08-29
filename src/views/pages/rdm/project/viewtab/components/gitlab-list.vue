@@ -38,22 +38,25 @@
       :lg="24"
       :xl="24"
       :xxl="24"
+      :padding="false"
       pageType="number"
       :showElevator="true"
       @updateSize="changePageSize"
       @updatePage="searchWebhookData"
     >
       <template v-if="!issueId" v-slot:header="{ row }">
-        <div v-if="row.issueId">
-          <span><AppIcon :appType="row.issueAppType" :appColor="row.issueAppColor"></AppIcon></span>
-          <span class="overflow">
-            <a href="javascript:void(0)" @click="toIssueDetail(row)">{{ row.issueName }}</a>
-          </span>
+        <div v-if="row.issueList && row.issueList.length > 0">
+          <div v-for="(issue, iindex) in row.issueList" :key="iindex">
+            <span><AppIcon :appType="issue.appType" :appColor="issue.appColor"></AppIcon></span>
+            <span class="overflow">
+              <a href="javascript:void(0)" @click="toIssueDetail(issue)">{{ issue.name }}</a>
+            </span>
+          </div>
           <Divider style="margin: 10px 0px 0px 0px" />
         </div>
       </template>
       <template slot-scope="{ row }">
-        <div>
+        <div :dataId="row.id" :style="moreFlag[row.id.toString()] != -1 ? 'max-height:300px' : ''" class="container">
           <div v-if="row.event === 'Push Hook' && row.data.commits && row.data.commits.length > 0">
             <div v-for="(commit, cindex) in row.data.commits" :key="cindex">
               <div class="mb-sm">
@@ -92,6 +95,9 @@
             </div>
           </div>
           <div v-else class="text-grey padding">不识别的提交信息，请联系厂商处理，id:{{ row.id }}</div>
+          <div v-if="moreFlag[row.id.toString()] == 1" class="bg-op more">
+            <span class="fz10 text-grey cursor tsfont-down" @click="more(row.id.toString())">{{ $t('page.viewmore') }}</span>
+          </div>
         </div>
       </template>
     </TsCard>
@@ -116,6 +122,8 @@ export default {
       searchParam: {},
       webhookData: {},
       webhookDataList: [],
+      currentPage: 1,
+      pageSize: 10,
       searchConfig: {
         search: false,
         labelPosition: 'left',
@@ -133,7 +141,7 @@ export default {
         ]
       },
       searchValue: {},
-      pageSize: 10
+      moreFlag: {}
     };
   },
   beforeCreate() {},
@@ -143,26 +151,57 @@ export default {
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
-  updated() {},
+  updated() {
+    this.$nextTick(() => {
+      this.checkContentHeight();
+    });
+  },
   activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    more(key) {
+      this.$set(this.moreFlag, key, -1);
+    },
+    checkContentHeight() {
+      const parentDivs = this.$el.querySelectorAll('.container');
+      this.moreFlag = {};
+      parentDivs.forEach(div => {
+        if (div.scrollHeight > div.clientHeight) {
+          this.$set(this.moreFlag, div.getAttribute('dataId').toString(), 1);
+        }
+      });
+    },
+    getContentLength(commit) {
+      return (commit.added || 0) + (commit.modified || 0) + (commit.removed || 0);
+    },
+    restoreHistory(historyData) {
+      if (historyData['pageSize']) {
+        this.pageSize = historyData['pageSize'];
+      }
+      if (historyData['currentPage']) {
+        this.currentPage = historyData['currentPage'];
+      }
+      if (historyData['searchValue']) {
+        this.searchValue = historyData['searchValue'];
+      }
+    },
     changePageSize(pageSize) {
       this.pageSize = pageSize;
+      this.$addHistoryData('pageSize', pageSize);
       this.searchWebhookData(1);
     },
     toIssueDetail(issue) {
-      this.$router.push({ path: '/' + issue.issueAppType + '-detail/' + issue.projectId + '/' + issue.issueAppId + '/' + issue.issueId });
+      this.$router.push({ path: '/' + issue.appType + '-detail/' + issue.projectId + '/' + issue.appId + '/' + issue.id });
     },
     searchWebhookData(currentPage) {
-      this.searchParam = { pageSize: this.pageSize, appId: this.appId, issueId: this.issueId };
       if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      } else {
-        this.searchParam.currentPage = 1;
+        this.currentPage = currentPage;
+        this.$addHistoryData('currentPage', currentPage);
       }
+      this.$addHistoryData('searchValue', this.searchValue);
+      this.searchParam = { currentPage: this.currentPage, pageSize: this.pageSize, appId: this.appId, issueId: this.issueId };
       Object.assign(this.searchParam, this.searchValue);
       this.$api.rdm.webhook.searchWebhookData(this.searchParam).then(res => {
         this.webhookData = res.Return;
@@ -178,5 +217,18 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: 50% 50%;
+}
+.more {
+  position: absolute;
+  bottom: -8px;
+  left: 0px;
+  z-index: 99;
+  width: 100%;
+  height: 28px;
+  line-height: 20px;
+  text-align: center;
+}
+.container {
+  position: relative;
 }
 </style>

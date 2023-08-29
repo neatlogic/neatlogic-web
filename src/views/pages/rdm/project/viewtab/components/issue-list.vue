@@ -122,6 +122,7 @@
       <IssueListTable
         v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
         :theadList="finalTheadList"
+        :sortList="sortList"
         :issueData="issueData"
         :attrList="attrList"
         :canAction="canAction"
@@ -165,6 +166,7 @@
         @deleteIssue="deleteIssue"
         @toggleChildIssue="toggleChildIssue"
       ></IssueListStorywall>
+      <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
     </div>
     <EditIssue
       v-if="isEditIssueShow"
@@ -374,7 +376,6 @@ export default {
       }
     },
     updateSort(sort) {
-      console.log(JSON.stringify(sort, null, 2));
       this.sortData = [];
       this.sortData.push(sort);
       this.$addHistoryData('sortData', this.sortData);
@@ -702,6 +703,21 @@ export default {
   },
   filter: {},
   computed: {
+    sortList() {
+      const sortList = [];
+      if (this.attrList && this.attrList.length > 0) {
+        this.attrList.forEach(attr => {
+          if (attr.id) {
+            if (attr.allowSort) {
+              sortList.push(attr.id.toString());
+            }
+          } else {
+            sortList.push(attr.type);
+          }
+        });
+      }
+      return sortList;
+    },
     finalTheadList() {
       const list = [];
       if (this.canBatch) {
@@ -788,6 +804,6 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: auto 450px;
+  grid-template-columns: 50% 50%;
 }
 </style>
