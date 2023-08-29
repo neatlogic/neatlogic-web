@@ -71,13 +71,17 @@ const version = {
     // 获取cve漏洞列表
     return axios.post('/api/rest/deploy/version/cvelist/get', params);
   },
-  saveVersionCenterTheadList(params) {
-    // 保存版本中心管理页面，表头可拖拽，可隐藏
-    return axios.post('/api/rest/deploy/version/thead/save', params);
-  },
   getRelatedIssuesList(params) {
     // 关联需求列表
     return axios.post('/api/rest/deploy/version/issuelist/get', params);
+  },
+  saveVersionThead(params) {
+    // 保存发布版本表头配置
+    return axios.post('/api/rest/deploy/version/thead/save', params);
+  },
+  getVersionTheadList(params) {
+    // 查询发布版本表头配置
+    return axios.post('/api/rest/deploy/version/thead/get', params);
   }
 };
 export default version;

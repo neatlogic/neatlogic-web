@@ -60,6 +60,7 @@
         editorBackground="transparent"
         previewBackground="transparent"
         class="knowledge-markdown-editor"
+        :imageClick="() => false"
         @input="changeInput"
       ></mavonEditor>
     </div>
