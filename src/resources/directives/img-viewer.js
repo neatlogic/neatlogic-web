@@ -238,7 +238,7 @@ function createImgeDiv(imgList, currentIndex) { //创建轮播的vue对象
       }
     },
     template: `<div v-show="invisible"  ref="caroselImg" class="carosel-img bg-mongolia" style="padding-top: 55px;" :style="{'z-index':zIndex}"  @click="handlerClose">
-                 <div class="text-op img-tool" @click.stop><div class="img-btn" @click="handlerClose"><span class="tsfont-close" ></span></div></div>
+                 <div class="text-title img-tool" @click.stop><div class="img-btn" @click="handlerClose"><span class="tsfont-close" ></span></div></div>
                 <Carousel v-model="currentIndex"  :height="height-55" easing="none" dots="none" @on-change="onChange">
                     <CarouselItem v-for="(img,index) in imgList" :key="index">
                         <div class="demo-carousel">
