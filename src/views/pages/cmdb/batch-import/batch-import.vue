@@ -8,24 +8,25 @@
     >
       
       <template v-slot:topLeft>
-        <span class="text-action" :class="tabName == 'upload'?'text-primary':''" @click="tabName='upload'">{{ $t('page.importaudit') }}</span>
+        <span class="text-action" :class="tabName == 'upload'?'text-primary tsfont-location-o':''" @click="tabName='upload'">{{ $t('page.importaudit') }}</span>
         <Divider type="vertical" />
-        <span class="text-action" :class="tabName == 'download'?'text-primary':''" @click="tabName='download'">{{ $t('term.process.downloadtemp') }}</span>
+        <span class="text-action" :class="tabName == 'download'?'text-primary tsfont-location-o':''" @click="tabName='download'">{{ $t('term.process.downloadtemp') }}</span>
       </template>
-
-      <ul slot="topRight" class="action-group" :style="{'text-align': 'right'}">
-        <li v-auth="['ADMIN']" class="action-item">
-          <AuditConfig auditName="CIENTITY-IMPORT-AUDIT"></AuditConfig>
-        </li>
-        <li v-show="tabName==='upload'" class="tsfont-import text-action action-item" @click.self="openUploadDialog">{{ $t('page.uploadimportfile') }}</li>
-        <li
-          v-show="tabName==='download'"
-          v-download="downloadUrl"
-          v-download:prevent="preventDownload"
-          class="tsfont-download text-action action-item"
-        >{{ $t('term.process.downloadtemp') }}</li>
-        <li class="tsfont-question-o text-action action-item" @click="isHelpHide = !isHelpHide">{{ $t('page.help') }}</li>
-      </ul>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <div v-auth="['ADMIN']" class="action-item"><AuditConfig auditName="CIENTITY-IMPORT-AUDIT"></AuditConfig></div>
+          <div class="action-item tsfont-question-s" @click="isHelpHide = !isHelpHide">{{ $t('page.help') }}</div>
+          <div v-show="tabName==='upload'" class="action-item">
+            <Button type="primary" @click="openUploadDialog">{{ $t('page.uploadimportfile') }}</Button>
+          </div>
+          <div v-show="tabName==='download'" class="action-item">
+            <Button
+              v-download="downloadUrl"
+              v-download:prevent="preventDownload"
+              type="info"
+            >{{ $t('term.process.downloadtemp') }}</Button></div>
+        </div>
+      </template>
 
       <template slot="content">
         <div class="">
