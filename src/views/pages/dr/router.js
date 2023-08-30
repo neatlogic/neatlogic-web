@@ -1,6 +1,7 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
+const configManage = () => import('@/views/pages/dr/base/config-manage.vue');
 
 import { $t } from '@/resources/init.js';
 
@@ -43,6 +44,17 @@ let routerArr = [
     path: '/welcome',
     name: 'welcome',
     component: welcome
+  },
+  {
+    path: '/config-manage',
+    name: 'config-manage',
+    component: configManage,
+    meta: {
+      title: $t('router.dr.basicsetting'),
+      ismenu: true,
+      icon: 'tsfont-setting',
+      type: 'dr'
+    }
   }
 ];
 export default routerArr;
