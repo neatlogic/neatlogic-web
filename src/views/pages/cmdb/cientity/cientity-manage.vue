@@ -217,12 +217,12 @@ export default {
     },
     getIconClass(row) {
       if (row.isVirtual) {
-        return 'text-grey';
+        return 'text-default';
       } else {
         if (!row.isAbstract) {
           return 'text-primary';
         } else {
-          return 'text-default';
+          return 'text-grey';
         }
       }
     },
