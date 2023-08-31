@@ -1,7 +1,7 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
-const baseSettings = () => import('@/views/pages/dr/base/base-settings.vue');
+const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
 
 import { $t } from '@/resources/init.js';
 
