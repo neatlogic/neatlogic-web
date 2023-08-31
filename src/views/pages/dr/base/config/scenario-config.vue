@@ -18,7 +18,7 @@
         <div class="pt-xs overflow">
           {{ row.name }}
         </div>
-        <div class="text-tip">
+        <div class="text-tip overflow">
           <span class="pr-sm">数据中心：</span>
           <template v-if="row.sourceName">
             <span>{{ row.sourceName }}</span>

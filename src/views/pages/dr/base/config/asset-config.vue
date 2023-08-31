@@ -78,8 +78,6 @@ export default {
         if (res && res.Status == 'OK') {
           this.assetList = res.Return || [];
         }
-      }).finally(() => {
-        this.loadingShow = false;
       });
     },
     saveCi(item) {
