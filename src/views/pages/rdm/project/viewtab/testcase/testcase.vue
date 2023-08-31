@@ -9,6 +9,7 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
+          <span class="action-item tsfont-upload" @click="importTestcase()">{{ $t('term.rdm.importtestcase') }}</span>
           <span class="action-item" @click="addIssue()">
             <Button type="success">
               <span class="tsfont-plus">{{ $t('term.rdm.testcase') }}</span>
@@ -40,6 +41,13 @@
       @close="closeEditIssue"
     ></EditIssue>
     <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
+    <UploadDialog
+      v-if="isImportShow"
+      :projectId="projectId"
+      :appId="appId"
+      @close="closeImport"
+    >
+    </UploadDialog>
   </div>
 </template>
 <script>
@@ -51,7 +59,9 @@ export default {
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
-    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
+    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve),
+    UploadDialog: resolve => require(['@/views/pages/rdm/project/viewtab/testcase/testcase-import-dialog.vue'], resolve)
+    
   },
   mixins: [mixins],
   props: {},
@@ -62,12 +72,13 @@ export default {
       currentIssueId: null,
       isEditIssueShow: false,
       displayMode: 'level',
-      isAttrSettingShow: false
+      actionUrl: BASEURLPREFIX + '/api/binary/integration/import', //导入地址
+      isAttrSettingShow: false,
+      isImportShow: false
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -77,6 +88,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeImport(needRefresh) {
+      this.isImportShow = false;
+      if (needRefresh) {
+        this.$refs['issueList'].refresh(1);
+      }
+    },
+    importTestcase() {
+      this.isImportShow = true;
+    },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
     },
@@ -112,7 +132,9 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+   
+  },
   watch: {}
 };
 </script>

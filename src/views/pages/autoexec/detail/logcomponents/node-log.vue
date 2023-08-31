@@ -19,7 +19,12 @@
           class="content-grid"
         >
           <div class="text-grey">{{ log.time }}</div>
-          <div class="content" :class="getContentClass(log.type)" v-html="log.content"></div>
+          <div
+            v-remove-events
+            class="content"
+            :class="getContentClass(log.type)"
+            v-html="log.content"
+          ></div>
         </div>
         <Waitinput
           v-if="nodeData && nodeData.status == 'waitInput' && logData && logData.interact"
@@ -67,10 +72,11 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
+import removeEvents from '@/resources/directives/remove-events.js';
 export default {
   name: '',
   components: { Waitinput: resolve => require(['./waitinput.vue'], resolve) },
-  directives: { download },
+  directives: { download, removeEvents },
   filters: {},
   props: {
     jobData: { type: Object }, //作业信息

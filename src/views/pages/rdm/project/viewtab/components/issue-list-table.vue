@@ -47,7 +47,7 @@
           </span>
         </div>
         <IssueStatus v-else-if="attr.type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
-        <span v-else-if="attr.type === '_createuser'"><UserCard :iconSize="20" :uuid="row.createUser"></UserCard></span>
+        <span v-else-if="attr.type === '_createuser'"><UserCard v-if="row.createUser" :iconSize="20" :uuid="row.createUser"></UserCard></span>
         <span v-else-if="attr.type === '_createdate'">{{ row.createDate | formatDate('yyyy-mm-dd') }}</span>
       </div>
     </template>
@@ -77,6 +77,7 @@ export default {
     sortData: { type: Array },
     theadList: { type: Array },
     attrList: { type: Array },
+    sortList: { type: Array },
     mode: { type: String },
     checkedIdList: { type: Array },
     canAction: { type: Boolean, default: false },
@@ -140,15 +141,6 @@ export default {
   },
   filter: {},
   computed: {
-    sortList() {
-      const sortList = [];
-      if (this.theadList && this.theadList.length > 0) {
-        this.theadList.forEach(thead => {
-          sortList.push(thead.key);
-        });
-      }
-      return sortList;
-    }
   },
   watch: {}
 };
