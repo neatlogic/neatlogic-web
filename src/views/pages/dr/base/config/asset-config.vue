@@ -101,7 +101,7 @@ export default {
 .list {
   position: relative;
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   .ci-tag {
     flex: 1;
   }

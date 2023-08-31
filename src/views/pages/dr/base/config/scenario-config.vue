@@ -15,13 +15,13 @@
         </div>
       </template>
       <template slot-scope="{ row }">
-        <div class="pt-sm pl-sm overflow text-action">
+        <div class="pt-sm pl-sm overflow">
           {{ row.name }}
         </div>
       </template>
       <template v-slot:control="{ row }">
-        <span class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)"></span>
-        <span class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(row)"></span>
+        <span class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</span>
+        <span class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(index)">{{ $t('page.delete') }}</span>
       </template>
     </TsCard>
     <TsDialog
@@ -113,8 +113,16 @@ export default {
     edit(row) {
 
     },
-    del(row) {
-
+    del(index) {
+      this.$createDialog({
+        title: this.$t('page.warning'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.dataList.splice(index, 1);
+          vnode.isShow = false;
+        }
+      });
     }
   },
   filter: {},
@@ -124,7 +132,9 @@ export default {
 </script>
 <style lang="less" scoped>
 .add {
-  text-align: center;
-  transform: translateY(70%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
