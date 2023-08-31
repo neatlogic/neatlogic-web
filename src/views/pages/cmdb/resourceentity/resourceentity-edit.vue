@@ -68,13 +68,14 @@ export default {
         {
           name: 'label',
           label: this.$t('page.name'),
-          type: 'text'
-          // readonly: true
+          type: 'text',
+          readonly: true
         },
         {
           name: 'description',
           label: this.$t('page.description'),
-          type: 'textarea'
+          type: 'textarea',
+          readonly: true
         },
         // {
         //   name: 'xml',
