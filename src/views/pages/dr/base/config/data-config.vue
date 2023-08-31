@@ -6,8 +6,8 @@
       :lg="8"
       :xl="6"
       :xxl="4"
+      :boxShadow="false"
       firstBtn
-      :padding="false"
     >
       <template v-slot:firstBtn>
         <div class="add tsfont-plus text-action" @click.stop="addSetting">
@@ -15,13 +15,13 @@
         </div>
       </template>
       <template slot-scope="{ row }">
-        <div class="pt-sm pl-sm overflow">
+        <div class="pt-xs overflow">
           {{ row.name }}
         </div>
       </template>
       <template v-slot:control="{ row }">
         <div class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</div>
-        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(index)">{{ $t('page.delete') }}</div>
+        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(row)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <TsDialog
@@ -97,13 +97,13 @@ export default {
       this.formData = row;
       this.showDialog = true;
     },
-    del(index) {
+    del(row) {
       this.$createDialog({
         title: this.$t('page.warning'),
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.data')}),
         btnType: 'error',
         'on-ok': vnode => {
-          this.dataList.splice(index, 1);
+          // this.dataList.splice(index, 1);
           vnode.isShow = false;
         }
       });
