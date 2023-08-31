@@ -2470,5 +2470,14 @@
     "noaddauthresource": "There are currently no resources to add permissions to",
     "relcurrclass": "Associate with current classification",
     "unlassifieddoc": "Unclassified documents"
+  },
+  "dr": {
+    "assetconfig": "Asset allocation",
+    "scenarioconfig": "Scenario configuration",
+    "centername": "Center Name",
+    "basicservices": "Basic services",
+    "associationmodel": "Association model",
+    "network": "network",
+    "migrationdirection": "Migration direction"
   }
 }

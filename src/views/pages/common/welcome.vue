@@ -31,7 +31,11 @@ export default {
       return desc || this.$t('page.welcometo') + MODULEID;
     },
     imgSrc() {
-      return require(`@/resources/assets/images/modules/welcome/${MODULEID}.png`);
+      try {
+        return require(`@/resources/assets/images/modules/welcome/${MODULEID}.png`);
+      } catch {
+        return require(`@/resources/assets/images/modules/welcome/framework.png`);
+      }
     }
   }
 };

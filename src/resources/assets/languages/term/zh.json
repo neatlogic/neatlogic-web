@@ -2468,5 +2468,14 @@
     "problemdes": "问题描述",
     "relcurrclass": "关联当前分类",
     "unlassifieddoc": "未分类文档"
+  },
+  "dr": {
+    "assetconfig": "资产配置",
+    "scenarioconfig": "场景配置",
+    "centername": "中心名称",
+    "basicservices": "基础服务",
+    "associationmodel": "关联模型",
+    "network": "网络",
+    "migrationdirection": "迁移方向"
   }
 }

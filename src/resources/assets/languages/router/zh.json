@@ -287,5 +287,9 @@
     "documentdetail": "文档详情",
     "documentsearch": "文档搜索",
     "directorymanage": "文档目录管理"
+  },
+  "dr": {
+    "dr": "灾切",
+    "basicsetting": "基础设置"
   }
 }
