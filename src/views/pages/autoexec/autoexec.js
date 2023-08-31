@@ -29,21 +29,6 @@ Vue.prototype.$api = api;
 Vue.prototype.$tsrouter = router;
 Vue.prototype.$toolCatalogUtils = toolCatalogUtils;
 Vue.prototype.$localStore = new LocalStore('autoexec', router);
-Vue.directive('remove-events', {
-  inserted: function(el) {
-    el.querySelectorAll('*').forEach(function(element) {
-      // 移除所有事件属性
-      for (const attrIndex in element.attributes) {
-        let attrName = element.attributes[attrIndex].name;
-        if (typeof attrName === 'string') {
-          if (attrName.startsWith('on')) {
-            element.removeAttribute(attrName);
-          }
-        }
-      }
-    });
-  }
-});
 
 //注入实例
 new Vue({
