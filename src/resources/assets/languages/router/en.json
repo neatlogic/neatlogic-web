@@ -254,7 +254,7 @@
     "projectdetail": "Project Detail",
     "projectmanage": "Project Management",
     "templatemanage": "Template Management",
-    "projectconfig":"Project Config",
+    "projectconfig": "Project Config",
     "workbench": "Workbench",
     "mydoing": "To-Do List",
     "mycompleted": "Completed List",
@@ -287,5 +287,9 @@
     "documentdetail": "Document Details",
     "documentsearch": "Document Search",
     "directorymanage": "Document directory management"
+  },
+  "dr": {
+    "dr": "Disaster cutting",
+    "basicsetting": "Basic Settings"
   }
 }

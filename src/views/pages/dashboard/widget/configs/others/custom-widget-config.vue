@@ -128,7 +128,7 @@ export default {
       ifFullScreen: false,
       fullScreenType: '',
       isReady: false,
-      configSample: `{\n\t' + 'methods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name${this.$t('term.autoexec.isdataproperties')}\n\t\t}\n\t}\n' + '\n\tcomputed:{\n\t\tdataListSize(){\n\t\t\treturn this.dataList.length;\/\/dataList${this.$t('term.dashboard.isdefaultdata')}\n\t\t}\n\t}\n' + '}`
+      configSample: `{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name${this.$t('term.autoexec.isdataproperties')}\n\t\t}\n\t}\n\n\tcomputed:{\n\t\tdataListSize(){\n\t\t\treturn this.dataList.length;\/\/dataList${this.$t('term.dashboard.isdefaultdata')}\n\t\t}\n\t}\n}`
     };
   },
   beforeCreate() {},

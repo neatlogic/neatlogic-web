@@ -69,7 +69,7 @@
                   </span>
                 </div>
                 <IssueStatus v-else-if="getAttr(th.key).type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
-                <span v-else-if="getAttr(th.key).type === '_createuser'"><UserCard :iconSize="20" :uuid="row.createUser"></UserCard></span>
+                <span v-else-if="getAttr(th.key).type === '_createuser'"><UserCard v-if="row.createUser" :iconSize="20" :uuid="row.createUser"></UserCard></span>
                 <span v-else-if="getAttr(th.key).type === '_createdate'">{{ row.createDate | formatDate('yyyy-mm-dd') }}</span>
               </div>
               <div v-else-if="th.key === 'action' && canAction" class="action-div">

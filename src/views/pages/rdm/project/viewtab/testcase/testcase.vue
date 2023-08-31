@@ -42,20 +42,15 @@
     ></EditIssue>
     <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
     <UploadDialog
-      ref="uploadDialog"
-      :actionUrl="actionUrl"
-      :formatList="formatList"
-      :isValid="true"
-      @on-success="searchIssue(1)"
+      v-if="isImportShow"
+      :projectId="projectId"
+      :appId="appId"
+      @close="closeImport"
     >
-      <template slot="desc">
-        <div v-download="downloadUrl" class="tsfont-download text-href" @click.stop>{{ $t('term.rdm.downloadtemplate') }}</div>
-      </template>
     </UploadDialog>
   </div>
 </template>
 <script>
-import download from '@/resources/directives/download.js';
 import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
@@ -65,9 +60,9 @@ export default {
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
     AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    UploadDialog: resolve => require(['@/views/pages/rdm/project/viewtab/testcase/testcase-import-dialog.vue'], resolve)
+    
   },
-  directives: { download },
   mixins: [mixins],
   props: {},
   data() {
@@ -79,7 +74,7 @@ export default {
       displayMode: 'level',
       actionUrl: BASEURLPREFIX + '/api/binary/integration/import', //导入地址
       isAttrSettingShow: false,
-      formatList: ['xls', 'xlsx'] //导入文件格式
+      isImportShow: false
     };
   },
   beforeCreate() {},
@@ -93,8 +88,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeImport(needRefresh) {
+      this.isImportShow = false;
+      if (needRefresh) {
+        this.$refs['issueList'].refresh(1);
+      }
+    },
     importTestcase() {
-      this.$refs.uploadDialog.showDialog();
+      this.isImportShow = true;
     },
     editDisplayAttr() {
       this.isAttrSettingShow = true;
@@ -132,12 +133,7 @@ export default {
   },
   filter: {},
   computed: {
-    downloadUrl() {
-      return {
-        url: 'api/binary/rdm/testcase/template/get',
-        params: { projectId: this.projectId, appId: this.appId }
-      };
-    }
+   
   },
   watch: {}
 };
