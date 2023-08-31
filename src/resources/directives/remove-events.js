@@ -2,27 +2,25 @@ export default {
   bind(el, binding) {
     el.querySelectorAll('*').forEach((element) => {
       // 移除所有事件属性
-      for (const attrIndex in element.attributes) {
-        let attrName = element.attributes[attrIndex].name;
-        if (typeof attrName === 'string') {
-          if (attrName.startsWith('on')) {
-            element.removeAttribute(attrName);
+      Array.from(element.attributes).forEach(item => {
+        if (typeof item.name === 'string') {
+          if (item.name.startsWith('on')) {
+            element.removeAttribute(item.name);
           }
         }
-      }
+      });
     });
   },
   update(el, binding) {
     el.querySelectorAll('*').forEach((element) => {
       // 移除所有事件属性
-      for (const attrIndex in element.attributes) {
-        let attrName = element.attributes[attrIndex].name;
-        if (typeof attrName === 'string') {
-          if (attrName.startsWith('on')) {
-            element.removeAttribute(attrName);
+      Array.from(element.attributes).forEach(item => {
+        if (typeof item.name === 'string') {
+          if (item.name.startsWith('on')) {
+            element.removeAttribute(item.name);
           }
         }
-      }
+      });
     });
   }
 };

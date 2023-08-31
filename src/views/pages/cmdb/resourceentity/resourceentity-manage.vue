@@ -55,8 +55,7 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'initTime', title: this.$t('page.inittime'), type: 'time' },
-        { key: 'description', title: this.$t('page.description') },
-        { key: 'action' }
+        { key: 'description', title: this.$t('page.description') }
       ],
       tbodyList: []
     };
