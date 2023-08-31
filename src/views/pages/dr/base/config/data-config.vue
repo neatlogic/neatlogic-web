@@ -21,7 +21,12 @@
       </template>
       <template v-slot:control="{ row }">
         <div class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</div>
-        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(row)">{{ $t('page.delete') }}</div>
+        <div
+          class="tsfont-trash-s action-item"
+          :class="{'text-disabled':row.referenceCount}"
+          :title="$t('page.delete')"
+          @click="deleteDatacenter(row)"
+        >{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <TsDialog
@@ -50,7 +55,12 @@ export default {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
-  props: {},
+  props: {
+    drDataCenterList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       dataList: [],
@@ -62,7 +72,7 @@ export default {
           value: '',
           maxlength: 50,
           label: this.$t('term.dr.centername'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '', key: 'name' }]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/dr/datacenter/save', key: 'name', message: this.$t('message.targetisexists', {target: this.$t('page.name')}) }]
         }
       },
       formData: {}
@@ -79,6 +89,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    saveDatacenter(item) {
+      let data = {
+        name: item.name,
+        id: item.id
+      };
+      this.$api.dr.datacenter.saveDatacenter(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('update');
+        }
+      });
+    },
     addSetting() {
       this.showDialog = true;
     },
@@ -86,7 +108,7 @@ export default {
       if (!this.$refs.nameForm.valid()) {
         return;
       }
-      this.dataList.push(this.formData);
+      this.saveDatacenter(this.formData);
       this.closeDialog();
     },
     closeDialog() {
@@ -94,24 +116,40 @@ export default {
       this.showDialog = false;
     },
     edit(row) {
-      this.formData = row;
+      this.formData = this.$utils.deepClone(row);
       this.showDialog = true;
     },
-    del(row) {
+    deleteDatacenter(row) {
+      if (row.referenceCount) {
+        return;
+      }
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.data')}),
+        content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
         'on-ok': vnode => {
-          // this.dataList.splice(index, 1);
-          vnode.isShow = false;
+          this.$api.dr.datacenter.deleteDatacenter({id: row.id}).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$emit('update');
+              vnode.isShow = false;
+            }
+          });
         }
       });
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    drDataCenterList: {
+      handler(val) {
+        this.dataList = val;
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

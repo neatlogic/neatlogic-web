@@ -1,32 +1,18 @@
 <template>
   <div>
-    <div class="bg-op radius-md padding list mb-sm">
+    <div v-for="(item, index) in assetList" :key="index" class="bg-op radius-md padding list mb-sm">
       <div class="pr-nm pt-icon">
-        {{ $t('term.dr.basicservices') }}
+        {{ item.label }}
       </div>
-      <template v-if="!$utils.isEmpty(ciList)">
+      <template v-if="!$utils.isEmpty(item.ciList)">
         <div class="text-tip pr-sm pt-icon">{{ $t('term.dr.associationmodel') }}</div>
         <div class="ci-tag">
-          <Tag v-for="(item, index) in ciList" :key="index">
-            <span>{{ item }}</span>
+          <Tag v-for="(c, cindex) in item.ciList" :key="cindex">
+            <span>{{ c.label }}</span>
           </Tag>
         </div>
       </template>
-      <div class="edit tsfont-edit text-action" @click="edit()">{{ $t('page.edit') }}</div>
-    </div>
-    <div class="bg-op radius-md padding list">
-      <div class="pr-nm pt-icon">
-        {{ $t('term.dr.network') }}
-      </div>
-      <template v-if="!$utils.isEmpty(ciList)">
-        <div class="text-tip pr-sm pt-icon">{{ $t('term.dr.associationmodel') }}</div>
-        <div class="ci-tag">
-          <Tag v-for="(item, index) in ciList" :key="index">
-            <span>{{ item }}</span>
-          </Tag>
-        </div>
-      </template>
-      <div class="edit tsfont-edit text-action" @click="edit()">{{ $t('page.edit') }}</div>
+      <div class="edit tsfont-edit text-action" @click="edit(item)">{{ $t('page.edit') }}</div>
     </div>
     <TsDialog
       :title="$t('dialog.title.edittarget',{'target':$t('term.dr.assetconfig')})"
@@ -39,7 +25,7 @@
         <div>
           <TsFormItem :label="$t('term.cmdb.citype')" labelPosition="top">
             <TsFormTree
-              v-model="ciList"
+              v-model="formData.ciIdList"
               v-bind="treeConfig"
             ></TsFormTree>
           </TsFormItem>
@@ -55,7 +41,12 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
   },
-  props: {},
+  props: {
+    drCiList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       assetList: [],
@@ -68,7 +59,7 @@ export default {
         multiple: true,
         transfer: true
       },
-      ciList: []
+      formData: {}
     };
   },
   beforeCreate() {},
@@ -82,19 +73,59 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    edit() {
+    getCiList() {
+      this.$api.dr.ci.getCiList().then(res => {
+        if (res && res.Status == 'OK') {
+          this.assetList = res.Return || [];
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    saveCi(item) {
+      let data = {
+        name: item.name,
+        ciIdList: item.ciIdList
+      };
+      this.$api.dr.ci.saveCi(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.getCiList();
+        }
+      });
+    },
+    edit(item) {
+      this.$set(this.formData, 'name', item.name);
+      this.$set(this.formData, 'ciIdList', []);
+      if (!this.$utils.isEmpty(item.ciList)) {
+        let ciIdList = [];
+        item.ciList.forEach(c => {
+          ciIdList.push(c.id);
+        });
+        this.$set(this.formData, 'ciIdList', ciIdList);
+      }
       this.showDialog = true;
     },
     okDialog() {
-      this.showDialog = false;
+      this.saveCi(this.formData);
+      this.closeDialog();
     },
     closeDialog() {
+      this.formData = {};
       this.showDialog = false;
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    drCiList: {
+      handler(val) {
+        this.assetList = val;
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

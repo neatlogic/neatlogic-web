@@ -1,19 +1,20 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain hideHeader>
       <template v-slot:content>
         <div class="pt-nm">
           <Divider orientation="start">{{ $t('term.inspect.datacenter') }}</Divider>
           <div class="pt-nm pb-nm">
-            <DataConfig></DataConfig>
+            <DataConfig :drDataCenterList="drDataCenterList" @update="getBaseSettings()"></DataConfig>
           </div>
           <Divider orientation="start">{{ $t('term.dr.scenarioconfig') }}</Divider>
           <div class="pt-nm pb-nm">
-            <ScenarioConfig></ScenarioConfig>
+            <ScenarioConfig :drDataCenterList="drDataCenterList" :drSceneList="drSceneList" @update="getBaseSettings()"></ScenarioConfig>
           </div>
           <Divider orientation="start">{{ $t('term.dr.assetconfig') }}</Divider>
           <div class="pt-nm pb-nm">
-            <AssetConfig></AssetConfig>
+            <AssetConfig :drCiList="drCiList"></AssetConfig>
           </div>
         </div>
       </template>
@@ -32,10 +33,17 @@ export default {
   },
   props: {},
   data() {
-    return {};
+    return {
+      loadingShow: true,
+      drDataCenterList: [],
+      drSceneList: [],
+      drCiList: []
+    };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getBaseSettings();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -45,9 +53,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getBaseData() {
-      this.$api.dr.dr.getBaseData().then(res => {
-        
+    getBaseSettings() {
+      this.$api.dr.baseSettings.getBaseSettings().then(res => {
+        if (res && res.Status == 'OK') {
+          this.drDataCenterList = res.Return.drDataCenterList;
+          this.drSceneList = res.Return.drSceneList;
+          this.drCiList = res.Return.drCiList;
+        }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     }
   },

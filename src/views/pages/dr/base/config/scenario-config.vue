@@ -20,16 +20,17 @@
         </div>
         <div class="text-tip">
           <span class="pr-sm">数据中心：</span>
-          <template v-if="row.from">
-            <span>{{ row.from }}</span>
-            <span>{{ row.to }}</span>
+          <template v-if="row.sourceName">
+            <span>{{ row.sourceName }}</span>
+            <span class="tsfont-arrow-right pl-sm pr-sm"></span>
+            <span>{{ row.targetName }}</span>
           </template>
           <span v-else>-</span>
         </div>
       </template>
       <template v-slot:control="{ row }">
         <div class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</div>
-        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="del(row)">{{ $t('page.delete') }}</div>
+        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="deleteScene(row)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <TsDialog
@@ -49,23 +50,21 @@
             <template v-slot:direction>
               <div class="flex-center">
                 <TsFormSelect
-                  v-model="formData.from"
+                  v-model="formData.sourceId"
+                  :dataList="getDataList(formData.targetId)"
+                  :validateList="formData.targetId?validateList:[]"
                   transfer
                   style="flex: 1;"
                 ></TsFormSelect>
                 <div class="tsfont-arrow-right pl-sm pr-sm"></div>
                 <TsFormSelect
-                  v-model="formData.to"
+                  v-model="formData.targetId"
+                  :dataList="getDataList(formData.sourceId)"
+                  :validateList="formData.sourceId?validateList:[]"
                   transfer
                   style="flex: 1;"
                 ></TsFormSelect>
               </div>
-              <transition name="fade">
-                <span
-                  v-if="directionError"
-                  class="form-error-tip"
-                >{{ directionError }}</span>
-              </transition>
             </template>
           </TsForm>
         </div>
@@ -81,7 +80,16 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
-  props: {},
+  props: {
+    drDataCenterList: {
+      type: Array,
+      default: () => []
+    },
+    drSceneList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       scenarioList: [],
@@ -101,7 +109,7 @@ export default {
       },
       formData: {},
       showDialog: false,
-      directionError: ''
+      validateList: ['required']
     };
   },
   beforeCreate() {},
@@ -115,24 +123,32 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    saveScene(item) {
+      let data = {
+        name: item.name,
+        id: item.id,
+        sourceId: item.sourceId,
+        targetId: item.targetId
+      };
+      this.$api.dr.scene.saveScene(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('update');
+        }
+      });
+    },
     addSetting() {
       this.showDialog = true;
     },
     okDialog() {
       let isValid = this.$refs.nameForm.valid();
-      this.directionError = '';
-      if ((this.formData.form && this.formData.form === this.formData.to) || (this.formData.form && !this.formData.to) || (!this.formData.form && this.formData.to)) {
+      if ((this.formData.sourceId && !this.formData.targetId) || (!this.formData.sourceId && this.formData.targetId)) {
         isValid = false;
-        this.directionError = '迁移方向不能相同且需要成对出现';
       }
       if (!isValid) {
         return;
       }
-      this.scenarioList.push({
-        name: this.formData.name,
-        from: this.formData.from,
-        to: this.formData.to
-      });
+      this.saveScene(this.formData);
       this.closeDialog();
     },
     closeDialog() {
@@ -143,21 +159,50 @@ export default {
       this.formData = this.$utils.deepClone(row);
       this.showDialog = true;
     },
-    del(row) {
+    deleteScene(row) {
       this.$createDialog({
         title: this.$t('page.warning'),
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
         btnType: 'error',
         'on-ok': vnode => {
-          // this.dataList.splice(index, 1);
-          vnode.isShow = false;
+          this.$api.dr.scene.deleteScene({id: row.id}).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$emit('update');
+              vnode.isShow = false;
+            }
+          });
         }
       });
     }
   },
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    getDataList() {
+      return (id) => {
+        let list = [];
+        if (!this.$utils.isEmpty(this.drDataCenterList)) {
+          this.drDataCenterList.forEach(item => {
+            list.push({
+              text: item.name,
+              value: item.id,
+              _disabled: id === item.id
+            });
+          });
+        }
+        return list;
+      };
+    }
+  },
+  watch: {
+    drSceneList: {
+      handler(val) {
+        this.scenarioList = val;
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
