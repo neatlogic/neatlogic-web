@@ -5,7 +5,7 @@
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
+          <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
           <span v-if="resourceIdList.length == 0" class="action-item disable">
             <div v-auth="['RESOURCECENTER_MODIFY']">
               <span>{{ $t('page.batchoperation') }}</span>
@@ -75,8 +75,9 @@
         </div>
       </template>
       <template v-slot:sider>
-        <span v-if="(!treeData || treeData.length == 0) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
-        <Tree
+        <span v-if="$utils.isEmpty(treeData) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
+        <Tree 
+          v-if="!$utils.isEmpty(treeData)"
           :data="treeData"
           :render="renderContent"
           class="ts-tree"
