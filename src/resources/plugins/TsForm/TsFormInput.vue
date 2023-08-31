@@ -288,7 +288,7 @@ export default {
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
         this.validMesage = '';
         this.isValidPass = true;
-        // this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
+        this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }
     },
     height() {

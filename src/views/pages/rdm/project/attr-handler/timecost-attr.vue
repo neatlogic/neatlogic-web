@@ -14,6 +14,7 @@
             $emit('setValue', 'timecost', val, val);
           }
         "
+        @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
       ></TsFormInput>
     </div>
     <div v-if="timecostSum" class="keep">

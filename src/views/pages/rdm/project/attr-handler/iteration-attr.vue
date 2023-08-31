@@ -16,6 +16,7 @@
           $emit('setValue', 'iteration', val, opt.text);
         }
       "
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     >
       <template v-slot:option="{ item }">
         <div><span v-if="item.isProcessing" class="text-warning"><strong>{{ $t('page.current') }}</strong>·</span><span>{{ item.text }}</span></div>

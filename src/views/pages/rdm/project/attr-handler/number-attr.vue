@@ -8,6 +8,7 @@
       :readonly="readonly"
       :validateList="validateList"
       @change="changeValue"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormInput>
   </div>
 </template>
