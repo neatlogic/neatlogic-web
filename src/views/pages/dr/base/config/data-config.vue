@@ -7,6 +7,7 @@
       :xl="6"
       :xxl="4"
       :boxShadow="false"
+      :padding="false"
       firstBtn
     >
       <template v-slot:firstBtn>
@@ -20,11 +21,10 @@
         </div>
       </template>
       <template v-slot:control="{ row }">
-        <div class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</div>
+        <div class="tsfont-edit action-item" @click="edit(row)">{{ $t('page.edit') }}</div>
         <div
           class="tsfont-trash-s action-item"
           :class="{'text-disabled':row.referenceCount}"
-          :title="$t('page.delete')"
           @click="deleteDatacenter(row)"
         >{{ $t('page.delete') }}</div>
       </template>

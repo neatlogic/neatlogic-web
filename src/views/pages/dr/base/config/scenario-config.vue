@@ -7,6 +7,7 @@
       :xl="6"
       :xxl="4"
       :boxShadow="false"
+      :padding="false"
       firstBtn
     >
       <template v-slot:firstBtn>
@@ -29,8 +30,8 @@
         </div>
       </template>
       <template v-slot:control="{ row }">
-        <div class="tsfont-edit action-item" :title="$t('page.edit')" @click="edit(row)">{{ $t('page.edit') }}</div>
-        <div class="tsfont-trash-s action-item" :title="$t('page.delete')" @click="deleteScene(row)">{{ $t('page.delete') }}</div>
+        <div class="tsfont-edit action-item" @click="edit(row)">{{ $t('page.edit') }}</div>
+        <div class="tsfont-trash-s action-item" :class="{'text-disabled':row.referenceCount}" @click="deleteScene(row)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <TsDialog
@@ -160,6 +161,9 @@ export default {
       this.showDialog = true;
     },
     deleteScene(row) {
+      if (row.referenceCount) {
+        return;
+      }
       this.$createDialog({
         title: this.$t('page.warning'),
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
