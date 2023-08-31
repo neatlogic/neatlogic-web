@@ -1,7 +1,7 @@
 import axios from '../../http';
 const scene = {
   getSceneList() {
-    return axios.post('/api/rest/dr/scene/list', {});
+    return axios.post('/api/rest/dr/scene/list');
   },
   getSceneData(params) {
     return axios.post('/api/rest/dr/scene/get', params);
