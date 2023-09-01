@@ -71,11 +71,11 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
-import removeEvents from '@/resources/directives/remove-events.js';
+
 export default {
   name: '',
   components: { Waitinput: resolve => require(['./waitinput.vue'], resolve) },
-  directives: { download, removeEvents },
+  directives: { download },
   filters: {},
   props: {
     jobData: { type: Object }, //作业信息
