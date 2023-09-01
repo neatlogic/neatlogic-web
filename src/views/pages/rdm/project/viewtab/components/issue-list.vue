@@ -21,14 +21,15 @@
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
         <CombineSearcher
-          v-if="canSearch"
+          v-if="canSearch && isShowCombineSearcher"
           v-model="searchValue"
           v-bind="searchConfig"
-          @remove-label="searchIssue(1)"
+          @close="closeCombineSearcher"
           @confirm="searchIssue(1)"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
             <TsFormDatePicker
+              v-model="valueConfig.createDate"
               border="border"
               :transfer="true"
               type="daterange"
@@ -46,31 +47,28 @@
               "
             ></TsFormDatePicker>
           </template>
-          <template v-for="(attr, index) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
-            <div :key="index">
+          <template v-for="(attr) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
+            <div :key="attr.id">
               <AttrHandler
                 v-if="isSearchReady"
                 :projectId="projectId"
                 :attrConfig="attr"
-                :value="attr.isPrivate ? searchValue[attr.name] : searchValue['attr_' + attr.id]"
+                :value="attr.isPrivate ? valueConfig[attr.name] : valueConfig['attr_' + attr.id]"
                 mode="search"
+                @changeLabel="(text, selectedList) => changeLabel(attr, text, selectedList, textConfig)"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
                       if (val != null) {
                         $set(valueConfig, attr.name, val);
-                        $set(textConfig, attr.name, text);
                       } else {
                         $delete(valueConfig, attr.name);
-                        $delete(textConfig, attr.name);
                       }
                     } else {
                       if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
-                        $set(textConfig, 'attr_' + attr.id, text);
                       } else {
                         $delete(valueConfig, 'attr_' + attr.id);
-                        $delete(textConfig, 'attr_' + attr.id);
                       }
                     }
                   }
@@ -303,9 +301,11 @@ export default {
       searchIssueData: {},
       pageSize: null,
       currentPage: 1,
+      isShowCombineSearcher: false,
       searchConfig: {
         search: false,
         labelPosition: 'left',
+        searchMode: 'clickBtnSearch',
         searchList: [
           {
             type: 'text',
@@ -362,6 +362,26 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeLabel(attr, text, selectedList, textConfig) {
+      if (attr.isPrivate) {
+        if (text?.length > 0) {
+          this.$set(textConfig, attr.name, text?.length > 0 ? text : '');
+        } else {
+          this.$delete(textConfig, attr.name);
+        }
+      } else if (text?.length > 0) {
+        this.$set(textConfig, 'attr_' + attr.id, text, text?.length > 0 ? text : '');
+      } else {
+        this.$delete(textConfig, 'attr_' + attr.id);
+      }
+    },
+    closeCombineSearcher() {
+      // 取消关闭弹窗后，刷新自定属性
+      this.isSearchReady = false;
+      this.$nextTick(() => {
+        this.isSearchReady = true;
+      });
+    },
     restoreHistory(historyData) {
       if (historyData) {
         if (historyData['searchValue']) {
@@ -458,6 +478,7 @@ export default {
           });
         }
       }
+      this.isShowCombineSearcher = true;
     },
     async getAppSetting() {
       if (this.app) {

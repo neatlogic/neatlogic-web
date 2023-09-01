@@ -15,6 +15,7 @@
           $emit('setValue', 'priority', val, opt.text);
         }
       "
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormSelect>
   </div>
 </template>

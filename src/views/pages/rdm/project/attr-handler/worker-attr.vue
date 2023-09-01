@@ -16,6 +16,7 @@
           setValue('userIdList', val, opt);
         }
       "
+      @change-label="(label, selectedList) => $emit('changeLabel', label, selectedList)"
     ></UserSelect>
   </div>
 </template>

@@ -13,6 +13,7 @@
           $emit('setValue', 'catalog', val, opt.text);
         }
       "
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormTree>
   </div>
 </template>
@@ -35,12 +36,11 @@ export default {
         textName: 'name',
         showPath: true
       },
-      catalog: (this.issueData && this.issueData.catalog) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
+      catalog: (this.issueData && this.issueData.catalog) || (this.valueList && this.valueList.length > 0 && this.valueList[0]) || []
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

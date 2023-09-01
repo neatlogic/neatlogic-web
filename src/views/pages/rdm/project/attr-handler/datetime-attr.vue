@@ -11,6 +11,7 @@
       valueType="format"
       :validateList="validateList"
       @change="changeValue"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormDatePicker>
   </div>
 </template>
