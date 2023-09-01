@@ -8,13 +8,13 @@
       :isSiderHide="isSiderHide"
       @toggleSiderHide="toggleSiderHide"
     >
-      <template v-slot:navigation>
+      <template v-if="mode == 'page'" v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <IssueTitle :issueData="issueData"></IssueTitle>
       </template>
-      <template v-slot:sider><MyDoingIssueList
+      <template v-if="mode == 'page'" v-slot:sider><MyDoingIssueList
         v-if="projectId && appId && id"
         :projectId="projectId"
         :appId="appId"
