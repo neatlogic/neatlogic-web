@@ -20,10 +20,9 @@
         >
           <div class="text-grey">{{ log.time }}</div>
           <div
-            v-remove-events
+            v-dompurify-html="log.content"
             class="content"
             :class="getContentClass(log.type)"
-            v-html="log.content"
           ></div>
         </div>
         <Waitinput
