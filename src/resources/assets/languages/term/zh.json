@@ -2476,6 +2476,7 @@
     "basicservices": "基础服务",
     "associationmodel": "关联模型",
     "network": "网络",
-    "migrationdirection": "迁移方向"
+    "migrationdirection": "迁移方向",
+    "organizationalstructure": "组织架构"
   }
 }
