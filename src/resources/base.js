@@ -15,6 +15,7 @@ import auth from '@/resources/directives/auth.js'; // 权限指令
 import Particles from 'particles.vue'; //粒子效果
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import AuthUtils from '@/resources/assets/js/authUtil.js'; //权限判断
+import VueDomPurifyHtml from 'vue-dompurify-html'; //防止xss攻击
 
 // common.checkTenant().then(res => {
 //   if (res) {
@@ -48,6 +49,15 @@ Vue.use(Loading);
 Vue.use(TsDialog);
 Vue.use(HistoryUtil);
 Vue.use(Particles);
+Vue.use(VueDomPurifyHtml, { //防止xss攻击，用法v-dompurify-html替代v-html
+  hooks: {
+    afterSanitizeAttributes: (currentNode) => {
+      if ('target' in currentNode) {
+        currentNode.setAttribute('target', '_blank');
+      }
+    }
+  }
+});
 Vue.prototype.$utils = utils;
 Vue.prototype.$AuthUtils = AuthUtils;
 
