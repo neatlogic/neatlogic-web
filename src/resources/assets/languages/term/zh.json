@@ -2477,6 +2477,8 @@
     "associationmodel": "关联模型",
     "network": "网络",
     "migrationdirection": "迁移方向",
-    "organizationalstructure": "组织架构"
+    "organizationalstructure": "组织架构",
+    "affiliatedorganization": "所属组织",
+    "organizationalstructurecitenodelete": "当前组织架构已被引用不可删除"
   }
 }

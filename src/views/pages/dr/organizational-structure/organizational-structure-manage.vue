@@ -4,7 +4,7 @@
       :loadingShow="loadingShow"
       type="fix"
     ></Loading>
-    <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
+    <TsContain :isSiderHide="isSiderHide" :enableCollapse="true" :siderWidth="300">
       <template v-slot:topLeft>
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addUser">{{ $t('page.user') }}</span>
@@ -54,6 +54,12 @@
       </template>
     </TsContain>
     <UserAddDialog v-if="isShowUserAddDialog" @close="closeUserAddDialog"></UserAddDialog>
+    <OrganizationalStructureEditDialog
+      v-if="isShowOrganizationalStructureEditDialog"
+      :id="organizationalStructureTreeId"
+      :organizationalStructureName="organizationalStructureName"
+      @close="closeOrganizationalStructureDialog"
+    ></OrganizationalStructureEditDialog>
   </div>
 </template>
 <script>
@@ -64,17 +70,24 @@ export default {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsZtree: resolve => require(['@/resources/plugins/ztree/TsZtree.vue'], resolve),
-    UserAddDialog: resolve => require(['pages/dr/organizational-structure/user-add-dialog'], resolve)
-    
+    UserAddDialog: resolve => require(['pages/dr/organizational-structure/user-add-dialog'], resolve),
+    OrganizationalStructureEditDialog: resolve => require(['pages/dr/organizational-structure/organizational-structure-edit-dialog.vue'], resolve)
   },
   props: {},
   data() {
     return {
       loadingShow: true,
       isShowUserAddDialog: false,
+      isShowOrganizationalStructureEditDialog: false,
       isSiderHide: false,
       keyword: '',
+      organizationalStructureTreeId: null, // 组织架构tree的id
+      organizationalStructureName: '',
       theadList: [
+        {
+          title: this.$t('term.dr.affiliatedorganization'),
+          key: 'affiliatedOrganization'
+        },
         {
           title: this.$t('page.username'),
           key: 'userName'
@@ -103,13 +116,73 @@ export default {
         tbodyList: []
       },
       TsZtree: {
-        id: 'uuid',
+        id: 'organizational-structure-manage',
         zNodes: [
-          {name: '父节点1', id: 1, children: [
-            {name: '子节点1', id: 2},
-            {name: '子节点2', id: 3}]
+          {name: '总指挥', id: 1,
+            children: [
+              {name: '产线单元总指挥', id: 2},
+              {name: '寿险单元总指挥', id: 3}]
           }
-        ]
+        ],
+        setting: {
+          addDomList: [
+            {
+              icon: 'tsfont-plus',
+              desc: this.$t('term.dr.organizationalstructure'),
+              isAddFn: (treeNode) => {
+                return true;
+              },
+              clickFn: (treeNode) => {
+                this.addTreeChildren(treeNode);
+              }
+            },
+            {
+              icon: 'tsfont-edit',
+              desc: this.$t('dialog.title.edittarget', {'target': this.$t('page.name')}),
+              isAddFn: (treeNode) => {
+                return true;
+              },
+              clickFn: (treeNode) => {
+                this.editTreeChildren(treeNode);
+              }
+            },
+            {
+              icon: 'tsfont-trash-o',
+              desc: this.$t('page.delete'),
+              isAddFn: (treeNode) => {
+                if (treeNode.id == 1) {
+                  return false;
+                } else {
+                  return true;
+                }
+              },
+              initFn: (treeNode, $span) => {
+                if (treeNode.childrenCount == undefined || treeNode.childrenCount == 0) {
+                  // 
+                } else {
+                  $span[0].classList.add('text-disabled');
+                  $span[0].title = this.$t('term.dr.organizationalstructurecitenodelete');
+                }
+              },
+              clickFn: (treeNode) => {
+                this.deleteTree(treeNode);
+              }
+            }
+          ],
+          view: {
+            showIcon: true,
+            nodeClasses: {add: ['overflow']}
+          },
+          data: {
+            simpleData: {
+              idKey: 'id',
+              pIdKey: 'parentId'
+            }
+          },
+          callback: {
+            onClick: this.ztreeClick
+          }
+        }
       }
     };
   },
@@ -126,6 +199,40 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    addTreeChildren(treeNode) {
+      console.log('addTreeChildren', treeNode);
+      this.organizationalStructureTreeId = null;
+      this.organizationalStructureName = '';
+      this.isShowOrganizationalStructureEditDialog = true;
+    },
+    editTreeChildren(treeNode) {
+      this.organizationalStructureTreeId = treeNode.id;
+      this.organizationalStructureName = treeNode.name;
+      this.isShowOrganizationalStructureEditDialog = true;
+    },
+    //服务树点击事件
+    ztreeClick(event, treeId, treeNode) {
+      console.log('测试的数据', event);
+    },
+    deleteTree(treeNode) {
+      // 删除组织架构
+      console.log('删除组织架构', treeNode);
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: treeNode.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          let data = { id: treeNode.id };
+          this.$api.dr.organizationalStructure.deleteOrganizationalStructureById(data).then(res => {
+            if (res.Status == 'OK') {
+              this.searchOrangeStructureData(); // 删除成功，刷新一下列表
+              this.$Message.success(this.$t('message.deletesuccess'));
+            }
+          });
+          vnode.isShow = false;
+        }
+      });
+    },
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
       this.searchOrangeStructureData();
@@ -152,6 +259,12 @@ export default {
     },
     closeUserAddDialog(needRefresh) {
       this.isShowUserAddDialog = false;
+      if (needRefresh) {
+        this.searchOrangeStructureData();
+      }
+    },
+    closeOrganizationalStructureDialog(needRefresh) {
+      this.isShowOrganizationalStructureEditDialog = false;
       if (needRefresh) {
         this.searchOrangeStructureData();
       }

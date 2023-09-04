@@ -2479,6 +2479,8 @@
     "associationmodel": "Association model",
     "network": "network",
     "migrationdirection": "Migration direction",
-    "organizationalstructure": "organizational structure"
+    "organizationalstructure": "organizational structure",
+    "affiliatedorganization": "Affiliated organization",
+    "organizationalstructurecitenodelete": "The current organizational structure has been referenced and cannot be deleted"
   }
 }

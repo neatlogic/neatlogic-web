@@ -2,7 +2,7 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
-const organizationalStructure = () => import('pages/dr/organizational-structure/organizational-structure-manage.vue');
+const organizationalStructureManage = () => import('pages/dr/organizational-structure/organizational-structure-manage.vue');
 
 import { $t } from '@/resources/init.js';
 
@@ -47,9 +47,9 @@ let routerArr = [
     component: welcome
   },
   {
-    path: '/organizational-structure',
-    name: 'organizational-structure',
-    component: organizationalStructure,
+    path: '/organizational-structure-manage',
+    name: 'organizational-structure-manage',
+    component: organizationalStructureManage,
     meta: {
       title: $t('term.dr.organizationalstructure'),
       ismenu: true,

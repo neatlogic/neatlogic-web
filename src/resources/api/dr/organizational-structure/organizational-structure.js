@@ -8,6 +8,15 @@ const organizationalStructure = {
   },
   deleteUserById() {
     return axios.post('/api/rest/dr/basicsettings/get');
+  },
+  saveOrganizationalStructure() {
+    return axios.post('/api/rest/dr/basicsettings/get');
+  },
+  deleteOrganizationalStructureById() {
+    return axios.post('/api/rest/dr/basicsettings/get');
+  },
+  searchOrganizationalStructureData() {
+    return axios.post('/api/rest/dr/basicsettings/get');
   }
 };
 export default organizationalStructure;
