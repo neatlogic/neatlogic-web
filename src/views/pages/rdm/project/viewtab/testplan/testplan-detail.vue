@@ -2,7 +2,7 @@
   <Loading v-if="!isReady || isLoading" :loadingShow="true" type="fix"></Loading>
   <div v-else-if="isReady && issueData">
     <TsContain v-if="issueData.isProjectOwner || issueData.isProjectMember || issueData.isProjectLeader" :rightWidth="250">
-      <template v-slot:navigation>
+      <template v-if="mode == 'page'" v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
