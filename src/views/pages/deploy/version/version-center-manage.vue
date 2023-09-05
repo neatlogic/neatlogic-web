@@ -259,31 +259,31 @@ export default {
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.fileaddcount'),
+          title: this.$t('term.deploy.newfilenumber'),
           key: 'fileAddCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.filemodifycount'),
+          title: this.$t('term.deploy.modifyfilecount'),
           key: 'fileModifyCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.filedeletecount'),
+          title: this.$t('term.deploy.deletefilecount'),
           key: 'fileDeleteCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.lineaddcount'),
+          title: this.$t('term.deploy.addcodeline'),
           key: 'lineAddCount',
           isDisabled: false,
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.linedeletecount'),
+          title: this.$t('term.deploy.deletecodeline'),
           key: 'lineDeleteCount',
           isDisabled: false,
           isShow: 1
