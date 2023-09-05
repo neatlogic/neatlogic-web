@@ -1894,12 +1894,12 @@
     "cveloophole": "cve漏洞",
     "lastsynchronizationtime": "最后同步时间",
     "issuecount": "需求数量",
-    "fileaddcount": "文件增加数",
-    "filemodifycount": "文件修改数",
-    "filedeletecount": "文件删除数",
-    "lineaddcount": "代码行增加数量",
-    "linedeletecount": "代码行减少数量",
-    "scenariosteperror": "场景中的所有阶段均为禁用状态。场景至少需存在一个非禁用状态的阶段"
+    "scenariosteperror": "场景中的所有阶段均为禁用状态。场景至少需存在一个非禁用状态的阶段",
+    "newfilenumber": "新文件数",
+    "deletecodeline": "删除代码行",
+    "addcodeline": "新增代码行",
+    "deletefilecount": "删除文件数",
+    "modifyfilecount": "修改文件数"
   },
   "inspect": {
     "alarmprompt": "告警提示",
