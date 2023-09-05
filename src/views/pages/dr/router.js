@@ -2,7 +2,8 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
-
+const serviceManage = () => import('@/views/pages/dr/service/service-manage.vue');
+const serviceDetail = () => import('@/views/pages/dr/service/service-detail.vue');
 import { $t } from '@/resources/init.js';
 
 let routerArr = [
@@ -44,6 +45,27 @@ let routerArr = [
     path: '/welcome',
     name: 'welcome',
     component: welcome
+  },
+  {
+    path: '/service-manage',
+    name: 'service-manage',
+    component: serviceManage,
+    meta: {
+      title: '服务清单',
+      ismenu: true,
+      icon: 'tsfont-file-single',
+      type: 'dr'
+    }
+  },
+  {
+    path: '/service-detail',
+    name: 'service-detail',
+    component: serviceDetail,
+    meta: {
+      title: '服务清单详情',
+      ismenu: false,
+      type: 'dr'
+    }
   },
   {
     path: '/base-settings',

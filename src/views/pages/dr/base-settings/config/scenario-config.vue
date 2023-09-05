@@ -101,7 +101,7 @@ export default {
           value: '',
           maxlength: 50,
           label: this.$t('page.scenarioname'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '', key: 'name' }]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/dr/scene/save', key: 'name' }]
         },
         direction: {
           type: 'slot',
