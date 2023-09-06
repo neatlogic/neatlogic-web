@@ -7,13 +7,13 @@
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true" :siderWidth="300">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addUser">{{ $t('page.user') }}</span>
+          <span v-if="selectedTreeId" class="action-item tsfont-plus" @click="addUser">{{ $t('page.user') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
         <InputSearcher
           v-model="keyword"
-          @change="() => changeCurrent"
+          @change="() => changeCurrent()"
         ></InputSearcher>
       </template>
       <template v-slot:sider>
@@ -53,7 +53,7 @@
         </TsTable>
       </template>
     </TsContain>
-    <UserAddDialog v-if="isShowUserAddDialog" @close="closeUserAddDialog"></UserAddDialog>
+    <UserAddDialog v-if="isShowUserAddDialog" :treeId="selectedTreeId" @close="closeUserAddDialog"></UserAddDialog>
     <OrganizationalStructureEditDialog
       v-if="isShowOrganizationalStructureEditDialog"
       :id="organizationalStructureTreeId"
@@ -83,6 +83,7 @@ export default {
       keyword: '',
       organizationalStructureTreeId: null, // 组织架构tree的id
       organizationalStructureName: '',
+      selectedTreeId: null,
       theadList: [
         {
           title: this.$t('term.dr.affiliatedorganization'),
@@ -212,11 +213,11 @@ export default {
     },
     //服务树点击事件
     ztreeClick(event, treeId, treeNode) {
-      console.log('测试的数据', event);
+      this.selectedTreeId = treeNode?.id || null;
+      this.searchUserDataByTreeId();
     },
     deleteTree(treeNode) {
       // 删除组织架构
-      console.log('删除组织架构', treeNode);
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: treeNode.name}),
@@ -270,6 +271,19 @@ export default {
       }
     },
     searchOrangeStructureData() {
+      let params = {
+        currentPage: this.tableConfig.currentPage,
+        pageSize: this.tableConfig.pageSize
+      };
+      this.$api.dr.organizationalStructure.getOrganizationalStructure(params).then(res => {
+        if (res.Status == 'OK') {
+          this.TsZtree.zNodes = res.Return;
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    searchUserDataByTreeId() {
       let params = {
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,

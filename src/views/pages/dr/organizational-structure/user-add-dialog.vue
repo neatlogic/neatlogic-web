@@ -23,7 +23,12 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
-  props: {},
+  props: {
+    treeId: {
+      type: Number,
+      default: null
+    }
+  },
   data() {
     return {
       formValue: {},
@@ -35,14 +40,14 @@ export default {
       formConfig: {
         id: {
           type: 'text',
-          label: '输入框组件',
+          label: '#id',
           isHidden: true,
           maxlength: 50,
           validateList: ['required']
         },
         userIdList: {
           type: 'select',
-          label: '用户',
+          label: this.$t('page.user'),
           transfer: true,
           multiple: true,
           dynamicUrl: '/api/rest/user/search',
@@ -66,15 +71,14 @@ export default {
   destroyed() {},
   methods: {
     okDialog() {
-      console.log('拿到的值', this.formValue);
       if (!this.$refs.form?.valid()) {
         return false;
       }
-      // this.$api.dr.organizationalStructure.saveUserInfo(this.formValue).then(res => {
-      //   if (res.Status == 'OK') {
-      //    this.$emit('close', true);
-      //   }
-      // });
+      this.$api.dr.organizationalStructure.saveUserInfo({treeId: this.treeId, ...this.formValue}).then(res => {
+        if (res.Status == 'OK') {
+          this.$emit('close', true);
+        }
+      });
     },
     closeDialog() {
       this.$emit('close');
