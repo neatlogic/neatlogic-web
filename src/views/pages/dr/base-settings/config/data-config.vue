@@ -72,7 +72,7 @@ export default {
           value: '',
           maxlength: 50,
           label: this.$t('term.dr.centername'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/dr/datacenter/save', key: 'name', message: this.$t('message.targetisexists', {target: this.$t('page.name')}) }]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/dr/datacenter/save', key: 'name' }]
         }
       },
       formData: {}

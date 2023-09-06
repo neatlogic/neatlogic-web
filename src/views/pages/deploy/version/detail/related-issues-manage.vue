@@ -11,6 +11,9 @@
       @changeCurrent="changeCurrent"
       @changePageSize="changePageSize"
     >
+      <template slot="no" slot-scope="{row}">
+        <span v-if="row.no" :class="row.browseUrl ? 'text-href' : ''" @click="toIssuePage(row.browseUrl)">{{ row.no }}</span>
+      </template>
       <template slot="description" slot-scope="{row}">
         <Poptip
           v-if="row.description && canBeyondHidden(row.description)"
@@ -142,6 +145,12 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    toIssuePage(browserUrl) {
+      // 跳转到关联需求页面
+      if (browserUrl) {
+        window.open(browserUrl, '_blank');
+      }
     }
   },
   filter: {},
