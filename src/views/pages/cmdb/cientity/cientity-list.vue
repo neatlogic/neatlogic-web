@@ -35,8 +35,12 @@
         </div>
       </div>
       <div v-if="isAdvancedSearch">
+        <Tabs v-model="advencedSearchMode">
+          <TabPane label="综合条件" name="condition"></TabPane>
+          <TabPane label="表达式" name="dsl"></TabPane>
+        </Tabs>
         <Card
-          v-if="(attrList && attrList.length > 0) || (relList && relList.length > 0)"
+          v-if="advencedSearchMode == 'condition' && ((attrList && attrList.length > 0) || (relList && relList.length > 0))"
           dis-hover
           class="radius-md"
           style="margin-bottom: 10px"
@@ -170,6 +174,9 @@
             >{{ $t('page.search') }}</Button>
           </div>
         </Card>
+        <div v-if="advencedSearchMode === 'dsl'" class="pb-md">
+          <DslEditor :suggestList="suggestList" @getSuggestList="getSuggestList" @clearSuggestList="suggestList = []"></DslEditor>
+        </div>
       </div>
     </div>
     <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
@@ -330,7 +337,9 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Checkbox v-if="selectedCiEntityList && selectedCiEntityList.length > 0" v-model="isOnlyExportSelected"><span class="fz10 text-grey">{{ $t('term.cmdb.onlyexportselected') }}</span></Checkbox>
+        <Checkbox v-if="selectedCiEntityList && selectedCiEntityList.length > 0" v-model="isOnlyExportSelected">
+          <span class="fz10 text-grey">{{ $t('term.cmdb.onlyexportselected') }}</span>
+        </Checkbox>
         <Button @click="isExportDialogShow = false">{{ $t('page.cancel') }}</Button>
         <Button type="primary" ghost @click="selectAllExportItem()">{{ $t('page.selectall') }}</Button>
         <Button
@@ -358,6 +367,7 @@ export default {
     RelCiEntityDialog: resolve => require(['./rel-cientity-dialog.vue'], resolve),
     DeleteCiEntityDialog: resolve => require(['./cientity-delete-dialog.vue'], resolve),
     BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve),
+    DslEditor: resolve => require(['@/resources/plugins/DslEditor/dsl-editor.vue'], resolve),
     AccountEditDialog: resolve => require(['@/views/pages/cmdb/asset/components/account-edit-dialog'], resolve) // 帐户管理
   },
   directives: { download },
@@ -391,6 +401,7 @@ export default {
   },
   data() {
     return {
+      advencedSearchMode: 'condition',
       childTheadList: [
         {
           key: 'label',
@@ -449,7 +460,8 @@ export default {
       batchEditCiEntityList: [], //批量修改配置项
       attrRelList: [], //属性和关系列表，用于导出excel时选择
       isShowAddAccountDialog: false, // 账号管理弹窗
-      resourceId: null
+      resourceId: null,
+      suggestList: []//dsl搜索模式的提示词列表
     };
   },
   beforeCreate() {},
@@ -469,6 +481,20 @@ export default {
       this.attrFilterList = historyData['attrFilterList'];
       this.relFilterList = historyData['relFilterList'];
       this.sortConfig = historyData['sortConfig'];
+    },
+    getSuggestList(keywordData) {
+      this.suggestList = [];
+      if (keywordData.value) {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, {keyword: keywordData.value}).then(res => {
+          const attrList = res.Return;
+          if (attrList && attrList.length > 0) {
+            attrList.forEach(attr => {
+              this.suggestList.push(attr.name);
+            });
+            console.log(JSON.stringify(this.suggestList, null, 2));
+          }
+        });
+      }
     },
     updateSort(sort) {
       this.sortConfig = sort;
