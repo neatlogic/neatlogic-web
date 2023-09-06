@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
 const serviceManage = () => import('@/views/pages/dr/service/service-manage.vue');
 const serviceDetail = () => import('@/views/pages/dr/service/service-detail.vue');
+const serviceAdd = () => import('@/views/pages/dr/service/service-add.vue');
 import { $t } from '@/resources/init.js';
 
 let routerArr = [
@@ -63,6 +64,16 @@ let routerArr = [
     component: serviceDetail,
     meta: {
       title: '服务清单详情',
+      ismenu: false,
+      type: 'dr'
+    }
+  },
+  {
+    path: '/service-add',
+    name: 'service-add',
+    component: serviceAdd,
+    meta: {
+      title: '服务清单',
       ismenu: false,
       type: 'dr'
     }

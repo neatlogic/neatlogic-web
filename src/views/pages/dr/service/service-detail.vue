@@ -72,12 +72,14 @@ export default {
         RTO: {
           type: 'text',
           label: 'RTO',
-          transfer: true
+          transfer: true,
+          validateList: ['number']
         },
         RPO: {
           type: 'text',
           label: 'RPO',
-          transfer: true
+          transfer: true,
+          validateList: ['number']
         }
       },
       validateList: ['required'],

@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus">服务</span>
+        <span class="tsfont-plus" @click="addService()">服务</span>
       </template>
       <template v-slot:topRight>
         <TsRow :gutter="10">
@@ -78,6 +78,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    addService() {
+      this.$router.push({
+        path: './service-add'
+      });
+    },
     searchService() {},
     deleteService(row) {},
     toDetail(row) {
