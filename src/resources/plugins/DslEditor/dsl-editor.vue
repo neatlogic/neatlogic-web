@@ -1,32 +1,31 @@
 <template>
   <div style="position: relative">
-    <div style="border-bottom:1px solid #ccc;" class="padding-xs" @click="$refs['input'].focus()">
+    <div class="expression-container pb-xs" @click="$refs['input'].focus()">
       <DslExpression v-if="expressionData" :expressionData="expressionData"></DslExpression>
-      <pre v-else style="display:inline-block">{{ value }}</pre>
-      <div style="display:inline-block"><input
+      <pre v-else class="expression-original text-grey">{{ value }}</pre>
+      <div class="inputer-container"><input
         ref="input"
         v-model="tmpValue"
+        class="inputer"
         type="text"
-        style="width:20px;border:0px;height:100%"
         @keyup="input"
       /></div>
     </div>
-    <div v-if="keyword.value && suggestList && suggestList.length >0">
-      <span class="mr-xs">关键字：</span><span class="mr-xs">{{ keyword.value }}</span>
+    <div v-if="suggestList && suggestList.length > 0">
       <span class="mr-xs">可选属性：</span>
       <Tag
-        v-for="(suggest,index) in suggestList"
+        v-for="(suggest, index) in suggestList"
         :key="index"
         class="cursor"
         @on-click="chooseAttr(suggest)"
       >{{ suggest }}</Tag>
     </div>
-  
+    <div style="text-align:right"></div>
   </div>
 </template>
 <script>
 import antlr4 from 'antlr4';
-import CmdbDSLLexer from './parser/CmdbDSLLexer';
+import CmdbDSLLexer from './parser/ErrorLexer';
 import CmdbDSLParser from './parser/CmdbDSLParser';
 import CmdbDSLVisitor from './parser/CmdbDSLVisitor.js';
 import ErrorListener from './parser/ErrorListener.js';
@@ -36,7 +35,7 @@ export default {
     DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
   },
   props: {
-    suggestList: {type: Array}
+    suggestList: { type: Array }
   },
   data() {
     return {
@@ -45,7 +44,7 @@ export default {
       expressionData: null,
       keyword: {},
       tmpValue: '',
-      timmer: null//延时执行避免一次爆发太多请求
+      timmer: null //延时执行避免一次爆发太多请求
     };
   },
   beforeCreate() {},
@@ -66,6 +65,8 @@ export default {
         }
       } else if (e.key.length === 1) {
         this.value += e.key;
+      } else if (this.tmpValue) {
+        this.value += this.tmpValue;
       }
       this.tmpValue = '';
     },
@@ -79,6 +80,7 @@ export default {
       }
     },
     createAst(input) {
+      console.log('input', input);
       try {
         const inputStream = new antlr4.InputStream(input);
         const lexer = new CmdbDSLLexer(inputStream);
@@ -95,12 +97,48 @@ export default {
         const visitor = new CmdbDSLVisitor(expressionList, attrList);
         visitor.visit(parseTree);
         this.expressionData = visitor.getRootExpression() || null;
+        if (this.expressionData) {
+          this.value = this.rewriteValue(this.expressionData);
+          console.log(this.value);
+        }
       } catch (e) {
         this.expressionData = null;
-        console.error(e);
+        console.error('解释异常', e);
       }
     },
-    createKeyword() {
+    isValid(expressionData) {
+      if (expressionData.type === 'expression') {
+        if (expressionData.attr) {
+          return true;
+        }
+      } else if (expressionData.type === 'join') {
+        if (expressionData.left && expressionData.right) {
+          return true;
+        }
+      } else if (expressionData.type === 'group') {
+        return true;
+      }
+      return false;
+    },
+    //使用合法数据刷新value值
+    rewriteValue(expressionData) {
+      let value = '';
+      if (expressionData) {
+        if (expressionData.type === 'expression' && expressionData.attr) {
+          value += expressionData.attr + ' ' + expressionData.connector + ' ' + expressionData.value;
+        } else if (expressionData.type === 'join' && expressionData.left && expressionData.right && this.isValid(expressionData.left) && this.isValid(expressionData.right)) {
+          value += this.rewriteValue(expressionData.left) + ' ' + expressionData.connector + ' ' + this.rewriteValue(expressionData.right);
+        } else if (expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0) {
+          value += '(';
+          expressionData.children.forEach(child => {
+            value += this.rewriteValue(child);
+          });
+          value += ')';
+        }
+      }
+      return value;
+    }
+    /*createKeyword() {
       const input = this.$refs.input;
       this.keyword = {};
       const stopWords = ['+', '-', '*', '/', '"', '&', '|', "'", ' '];
@@ -115,7 +153,7 @@ export default {
             }
             this.$set(this.keyword, 'start', i);
           }
-         
+
           for (let i = index; i < this.value.length; i++) {
             if (stopWords.includes(this.value[i])) {
               break;
@@ -127,7 +165,7 @@ export default {
             for (let i = this.keyword.start; i < this.keyword.end; i++) {
               str += this.value[i];
             }
-            
+
             const regex = /^[a-zA-Z]+(\.[a-zA-Z]+)*$/;
             if (str && regex.test(str)) {
               this.$set(this.keyword, 'value', str);
@@ -144,19 +182,41 @@ export default {
           }
         }
       }
-    }
+    }*/
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {
     value: {
       handler: function(val) {
         this.createAst(val);
-        this.createKeyword();
+        //this.createKeyword();
       }
     }
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.inputer {
+  outline: none;
+  width: 20px;
+  border: 0px;
+  height: 100%;
+}
+.expression-container {
+  border-bottom: 1px solid #ccc;
+  height: 30px;
+  white-space: norwap;
+}
+.expression-original {
+  margin: 0px;
+  display: inline-block;
+  vertical-align: bottom;
+  letter-spacing: -1px;
+  font-size: 12px;
+}
+.inputer-container {
+  display: inline-block;
+  height: 100%;
+}
+</style>

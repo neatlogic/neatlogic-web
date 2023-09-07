@@ -5,9 +5,7 @@
         <Poptip :transfer="true">
           <a>{{ expressionData.attr }}</a>
           <div slot="title"><i>Custom title</i></div>
-          <div slot="content">
-            asdfasdfasfasfafdas
-          </div>
+          <div slot="content">asdfasdfasfasfafdas</div>
         </Poptip>
       </div>
       <div class="item text-grey expression">
@@ -22,7 +20,7 @@
       </div>
       <DslExpression v-if="expressionData.right" :expressionData="expressionData.right"></DslExpression>
     </div>
-    <div v-else-if="expressionData.type === 'group'" class="item-container">
+    <div v-else-if="expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0" class="item-container">
       <div class="item text-grey expression"><b>(</b></div>
       <DslExpression v-for="(child, index) in expressionData.children" :key="index" :expressionData="child"></DslExpression>
       <div class="item text-grey expression"><b>)</b></div>

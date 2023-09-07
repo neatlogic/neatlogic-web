@@ -35,7 +35,7 @@
         </div>
       </div>
       <div v-if="isAdvancedSearch">
-        <Tabs v-model="advencedSearchMode">
+        <Tabs v-if="COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
           <TabPane label="综合条件" name="condition"></TabPane>
           <TabPane label="表达式" name="dsl"></TabPane>
         </Tabs>
@@ -174,8 +174,8 @@
             >{{ $t('page.search') }}</Button>
           </div>
         </Card>
-        <div v-if="advencedSearchMode === 'dsl'" class="pb-md">
-          <DslEditor :suggestList="suggestList" @getSuggestList="getSuggestList" @clearSuggestList="suggestList = []"></DslEditor>
+        <div v-if="COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
+          <DslEditor :suggestList="suggestList"></DslEditor>
         </div>
       </div>
     </div>
@@ -401,6 +401,7 @@ export default {
   },
   data() {
     return {
+      COMMERCIAL_MODULES: COMMERCIAL_MODULES,
       advencedSearchMode: 'condition',
       childTheadList: [
         {
@@ -729,6 +730,11 @@ export default {
     async getAttrByCiId() {
       await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
         this.attrList = res.Return;
+        if (this.attrList && this.attrList.length > 0) {
+          this.attrList.forEach(attr => {
+            this.suggestList.push(attr.name);
+          });
+        }
       });
     },
     async getRelByCiId() {
