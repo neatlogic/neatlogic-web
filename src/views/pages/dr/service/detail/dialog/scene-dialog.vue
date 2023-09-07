@@ -78,7 +78,8 @@ export default {
           valueName: 'id', 
           textName: 'name', 
           rootName: 'tbodyList',
-          validateList: ['required']
+          validateList: ['required'],
+          transfer: true
         }
       },
       validateList: ['required'],

@@ -2,14 +2,38 @@
   <div class="datacenter">
     <TsCard v-bind="cardData">
       <template v-slot:firstBtn>
-        <div class="add tsfont-plus text-action card-height" @click.stop="addData">
+        <div class="add tsfont-plus text-action" @click.stop="addData">
           数据中心
         </div>
       </template>
       <template slot-scope="{ row }">
-        <div class="padding-sm card-height">
-          <div class="overflow pb-xs text-title">
+        <div class="padding-sm">
+          <div class="overflow pb-xs">
             {{ row.name }}
+          </div>
+          <div class="pb-sm ">
+            <Divider orientation="start"><div class="text-title">实例</div></Divider>
+            <div>
+              <Tag type="border">测试</Tag>
+            </div>
+          </div>
+          <div class="pb-sm">
+            <Divider orientation="start"><div class="text-title">公共服务</div></Divider>
+            <div>
+              <Tag type="border">测试</Tag>
+            </div>
+          </div>
+          <div class="pb-sm">
+            <Divider orientation="start"><div class="text-title">自定义参数</div></Divider>
+            <div>
+              <Tag type="border">测试</Tag>
+            </div>
+          </div>
+          <div>
+            <Divider orientation="start"><div class="text-title">HA场景</div></Divider>
+            <div>
+              <Tag type="border">测试</Tag>
+            </div>
           </div>
         </div>
       </template>
@@ -18,13 +42,27 @@
         <div class="pl-sm tsfont-trash-o" @click="deleteData(row)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
+    <TsDialog
+      title="编辑"
+      type="slider"
+      :isShow.sync="isShowDialog"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <DatacenterEdit></DatacenterEdit>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    DatacenterEdit: resolve => require(['./datacenter-edit.vue'], resolve)
   },
   props: {},
   data() {
@@ -85,8 +123,11 @@ export default {
         }
       });
     },
-    closeData() {
+    closeDialog() {
       this.isShowDialog = false;
+    },
+    okDialog() {
+      this.closeDialog();
     }
   },
   filter: {},
@@ -95,11 +136,13 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.card-height {
-  height: 46px;
-}
-.add {
-  text-align: center;
-  line-height: 46px;
+.datacenter {
+  /deep/.tscard-body {
+    height: 360px !important;
+  }
+  .add {
+    text-align: center;
+    line-height: 360px;
+  }
 }
 </style>

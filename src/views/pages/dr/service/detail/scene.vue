@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div class="scene">
     <TsCard
       v-bind="cardData"
     >
       <template v-slot:firstBtn>
-        <div class="add tsfont-plus text-action card-height" @click.stop="addScene">
+        <div class="add tsfont-plus text-action" @click.stop="addScene">
           {{ $t('page.scene') }}
         </div>
       </template>
       <template slot-scope="{ row }">
-        <div class="padding-sm card-height">
+        <div class="padding-sm">
           <div class="overflow pb-xs">
             {{ row.name }}
           </div>
@@ -40,7 +40,7 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    SceneDialog: resolve => require(['../common/scene-dialog.vue'], resolve)
+    SceneDialog: resolve => require(['./dialog/scene-dialog.vue'], resolve)
   },
   props: {},
   data() {
@@ -109,8 +109,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.card-height {
-  height: 88px;
+.scene {
+  /deep/.tscard-body {
+    height: 100px !important;
+  }
 }
 .add {
   text-align: center;

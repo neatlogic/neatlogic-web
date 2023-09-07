@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus" @click="addService()">服务</span>
+        <span class="tsfont-plus text-action" @click="addService()">{{ $t('term.process.catalog') }}</span>
       </template>
       <template v-slot:topRight>
         <TsRow :gutter="10">

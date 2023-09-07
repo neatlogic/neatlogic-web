@@ -8,7 +8,8 @@
         <div>
           <span>{{ name }}</span>
           <Divider type="vertical" />
-          <span class="pr-xs">时间</span>
+          <span class="pr-sm">RTO <span v-if="formData.RTO" class="pl-xs">{{ formData.RTO }}min</span></span>
+          <span class="pr-sm">RPO <span v-if="formData.RPO" class="pl-xs">{{ formData.RPO }}min</span></span>
           <span class="tsfont-edit text-action" @click="editTime()"></span>
         </div>
       </template>
@@ -34,7 +35,7 @@
       </template>
     </TsContain>
     <TsDialog
-      title="title"
+      title="编辑"
       type="modal"
       :isShow.sync="showTimeDialog"
       @on-ok="okDialog"
@@ -71,13 +72,13 @@ export default {
       formConfig: {
         RTO: {
           type: 'text',
-          label: 'RTO',
+          label: 'RTO（分钟）',
           transfer: true,
           validateList: ['number']
         },
         RPO: {
           type: 'text',
-          label: 'RPO',
+          label: 'RPO（分钟）',
           transfer: true,
           validateList: ['number']
         }

@@ -4,8 +4,8 @@
       v-bind="cardData"
     >
       <template v-slot:firstBtn>
-        <div class="add tsfont-plus text-action card-height" @click.stop="addService">
-          服务
+        <div class="add tsfont-plus text-action" @click.stop="addService">
+          依赖应用
         </div>
       </template>
       <template slot-scope="{ row }">
@@ -34,7 +34,7 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ServiceDialog: resolve => require(['../common/service-dialog.vue'], resolve)
+    ServiceDialog: resolve => require(['./dialog/service-dialog.vue'], resolve)
   },
   props: {
     firstBtn: {
@@ -128,21 +128,24 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.from-name {
-  display: flex;
-  align-items: center;
-  &:not(:last-child){
-    padding-bottom: 10px;
+.service {
+  /deep/.tscard-body {
+    height: 158px !important;
+  }
+  .from-name {
+    display: flex;
+    align-items: center;
+    &:not(:last-child){
+      padding-bottom: 10px;
+    }
+  }
+  .from-icon {
+    flex: 1;
+  }
+  .add {
+    text-align: center;
+    line-height: 146px;
   }
 }
-.from-icon {
-  flex: 1;
-}
-.card-height {
-  height: 146px;
-}
-.add {
-  text-align: center;
-  line-height: 146px;
-}
+
 </style>
