@@ -259,7 +259,7 @@ export default {
           isShow: 1
         },
         {
-          title: this.$t('term.deploy.newfilenumber'),
+          title: this.$t('term.deploy.addfilecount'),
           key: 'fileAddCount',
           isDisabled: false,
           isShow: 1

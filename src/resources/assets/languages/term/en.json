@@ -1897,13 +1897,13 @@
     "codechange": "Code change",
     "cveloophole": "CVE vulnerability",
     "lastsynchronizationtime": "Last synchronization time",
-    "issuecount": "Required quantity",
+    "issuecount": "Number of requirements",
     "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
-    "newfilenumber": "Number of new files",
     "deletecodeline": "Delete Code Line",
     "addcodeline": "Add Code Line",
     "deletefilecount": "Number of deleted files",
-    "modifyfilecount": "Number of modified files"
+    "modifyfilecount": "Number of modified files",
+    "addfilecount": "Number of newly added files"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
