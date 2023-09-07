@@ -19,7 +19,11 @@
           class="content-grid"
         >
           <div class="text-grey">{{ log.time }}</div>
-          <div class="content" :class="getContentClass(log.type)" v-html="log.content"></div>
+          <div
+            v-dompurify-html="log.content"
+            class="content"
+            :class="getContentClass(log.type)"
+          ></div>
         </div>
         <Waitinput
           v-if="nodeData && nodeData.status == 'waitInput' && logData && logData.interact"
@@ -67,6 +71,7 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
+
 export default {
   name: '',
   components: { Waitinput: resolve => require(['./waitinput.vue'], resolve) },

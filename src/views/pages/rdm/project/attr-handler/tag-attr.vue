@@ -16,6 +16,7 @@
       style="display: inline-block;width:auto;"
       @on-change="createTag"
       @on-create="createTag"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormSelect>
     <span v-else-if="!readonly" class="tsfont-plus text-href" @click.stop="addTag()">{{ $t('page.tag') }}</span>
   </div>

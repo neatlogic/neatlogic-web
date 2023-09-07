@@ -11,8 +11,8 @@
               <span class="text-primary">{{ $t('page.new') }}</span>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem @click.native="addCustomView">{{ $t('term.cmdb.dataview') }}</DropdownItem>
-              <DropdownItem v-auth="'GRAPH_MODIFY'" @click.native="addGraphView">{{ $t('term.cmdb.topoview') }}</DropdownItem>
+              <DropdownItem @click.native="addCustomView">{{ $t('term.cmdb.privatedataview') }}</DropdownItem>
+              <DropdownItem v-auth="'GRAPH_MODIFY'" @click.native="addGraphView">{{ $t('term.cmdb.publicsceneview') }}</DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <!-- <a class="tsfont-plus text-primary" @click="addCustomView"><span class="text-primary">自定义视图</span></a>-->

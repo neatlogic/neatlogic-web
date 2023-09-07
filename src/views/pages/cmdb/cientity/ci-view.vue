@@ -46,6 +46,7 @@
                   v-if="currentTab == 'cientity'"
                   ref="CiEntityList"
                   :needCheck="true"
+                  :needDsl="false"
                   class="padding"
                   :ciId="ciData.id"
                   :needExport="true"

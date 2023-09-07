@@ -958,7 +958,8 @@ export default {
     }
     return '';
   },
-  removeHTMLTag(str) { //去除html标签
+  removeHTMLTag(str) {
+    //去除html标签
     if (typeof str != 'string') {
       str = JSON.stringify(str);
     }
@@ -966,7 +967,7 @@ export default {
     str = str.replace(/[ | ]*\n/g, '\n'); //去除行尾空白
     str = str.replace(/\n[\s| | ]*\r/g, '\n'); //去除多余空行
     str = str.replace(/ /gi, '');
-    str = str.replace(/&nbsp;/ig, ' '); //替换HTML空格
+    str = str.replace(/&nbsp;/gi, ' '); //替换HTML空格
     return str;
   },
   getAbbrNameAndName(systemConfig) {
@@ -974,7 +975,7 @@ export default {
     let text = '';
     if (systemConfig && systemConfig.abbrName) {
       if (systemConfig.name) {
-        text = `${systemConfig.abbrName}(${systemConfig.name})`
+        text = `${systemConfig.abbrName}(${systemConfig.name})`;
       } else {
         text = systemConfig.abbrName;
       }
@@ -998,5 +999,22 @@ export default {
       return `image="/${newImagePath}"`;
     });
     return newNodesString;
+  },
+  cleanObject(obj) {
+    let cleaned = {};
+
+    for (let [key, value] of Object.entries(obj)) {
+      if (value === null || value === undefined) {
+        continue;
+      }
+
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        value = cleanObject(value);
+      }
+
+      cleaned[key] = value;
+    }
+
+    return cleaned;
   }
 };

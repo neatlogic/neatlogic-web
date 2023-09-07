@@ -11,6 +11,7 @@
       transfer
       :groupList="['user']"
       @change="changeValue"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></UserSelect>
     <div v-else>
       <div v-if="valueListLocal.length > 0">

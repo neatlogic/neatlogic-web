@@ -63,19 +63,25 @@ const ci = {
   getViewConstList(ciId, showType) {
     return axios.post('/api/rest/cmdb/ciview/listconst', {ciId: ciId, showType: showType});
   },
-  getAttrByCiId(ciId, showType, isSimple, allowEdit) {
+  getAttrByCiId(ciId, params) {
     let param = {
       ciId: ciId
     };
-    if (showType) {
-      param['showType'] = showType;
+    if (params) {
+      Object.assign(param, params);
     }
-    if (isSimple) {
-      param['isSimple'] = isSimple;
+    if (params) {
+      param = Object.assign(param, params);
     }
-    if (allowEdit) {
-      param['allowEdit'] = allowEdit;
-    }
+    // if (showType) {
+    //   param['showType'] = showType;
+    // }
+    // if (isSimple) {
+    //   param['isSimple'] = isSimple;
+    // }
+    // if (allowEdit) {
+    //   param['allowEdit'] = allowEdit;
+    // }
     return axios.post('/api/rest/cmdb/ci/listattr', param);
   },
   getExpressionAttrRelByCiId(ciId) {

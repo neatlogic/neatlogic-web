@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:top>
-        <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject">
+        <Tabs v-if="projectList && projectList.length > 0" v-model="currentProject" @on-click="changeProject">
           <TabPane
             v-for="project in projectList"
             :key="project.id"
@@ -18,6 +18,7 @@
             v-model="currentApp[currentProject]"
             :animated="false"
             type="card"
+            @on-click="changeApp"
           >
             <TabPane :label="'所有 ' + allIssueCount" name="#">
               <div class="bg-op padding-md">
@@ -84,7 +85,9 @@ export default {
       projectList: [],
       currentProject: null,
       currentApp: {},
-      allIssueCount: 0
+      allIssueCount: 0,
+      currentProjectTab: null, //历史当前项目
+      currentAppTab: null//历史当前应用
     };
   },
   beforeCreate() {},
@@ -101,6 +104,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeApp(name) {
+      this.$addHistoryData('appTab', name);
+    },
+    changeProject(name) {
+      this.$addHistoryData('projectTab', name);
+    },
+    restoreHistory(historyData) {
+      if (historyData['projectTab']) {
+        this.currentProjectTab = historyData['projectTab'];
+      }
+      if (historyData['appTab']) {
+        this.currentAppTab = historyData['appTab'];
+      }
+    },
     getPrivateAttrList() {
       this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
         this.attrList = res.Return;
@@ -118,9 +135,11 @@ export default {
         .then(res => {
           this.projectList = res.Return;
           if (this.projectList && this.projectList.length > 0) {
-            this.currentProject = 'p' + this.projectList[0].id;
+            this.currentProject = this.currentProjectTab || 'p' + this.projectList[0].id;
             this.projectList.forEach(p => {
-              this.$set(this.currentApp, 'p' + p.id, '#');
+              if (!this.currentApp['p' + p.id]) {
+                this.$set(this.currentApp, 'p' + p.id, this.currentAppTab || '#');
+              }
             });
           }
         });

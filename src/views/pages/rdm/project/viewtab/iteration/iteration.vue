@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="iteration-container">
     <TsContain :enableCollapse="false" :siderWidth="280">
       <template v-slot:topLeft>
         <AppTab v-if="appId && projectId" :appId="appId" :projectId="projectId"></AppTab>
@@ -202,4 +202,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.iteration-container {
+  /deep/ .ivu-layout-content{
+  overflow-y: hidden !important;
+ }
+}
+</style>

@@ -103,8 +103,8 @@ HistoryUtil.install = function(Vue, options) {
           }
         }
       } else if (this.$vnode && this.$vnode.tag) {
-        //delete Storage[this.$vnode.tag];
-        //sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
+        delete Storage[this.$vnode.tag];
+        sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
       }
     }
   });

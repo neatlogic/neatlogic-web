@@ -1,18 +1,15 @@
 <template>
-  <div
-    class="ivu-poptip-popper"
-    :x-placement="placement"
-    :style="'width:'+width+'px;height:'+height+'px'"
-  >
+  <div class="ivu-poptip-popper" :x-placement="placement" :style="'width:' + width + 'px;height:' + height + 'px'">
     <div class="ivu-poptip-content">
-      <div class="ivu-poptip-arrow"></div> 
+      <div class="ivu-poptip-arrow"></div>
       <div class="ivu-poptip-inner">
         <div class="ivu-poptip-title">
-          <div class="ivu-poptip-title-inner">{{ $t('page.summaryinfo') }}</div></div>
+          <div class="ivu-poptip-title-inner">{{ $t('page.summaryinfo') }}</div>
+        </div>
         <div class="ivu-poptip-body">
           <div class="ivu-poptip-body-content">
-            <div class="scroll" :style="'height:'+(height - 35)+'px'">
-              <table v-if="(attrList && attrList.length > 0) || (constList && constList.length > 0)" style="width:100%" class="attr-main">
+            <div class="scroll" :style="'height:' + (height - 35) + 'px'">
+              <table v-if="(attrList && attrList.length > 0) || (constList && constList.length > 0)" style="width: 100%" class="attr-main">
                 <tr v-for="(attr, index) in attrList" :key="index" class="attr-item">
                   <td class="text-grey fz10">{{ attr.label }}</td>
                   <td class="attr-content fz10">
@@ -47,11 +44,11 @@ export default {
     AttrViewer
   },
   props: {
-    placement: {type: String, default: 'right-start'},
-    width: {type: Number, default: 300},
-    height: {type: Number, default: 200},
-    ciId: {type: Number},
-    ciEntityId: {type: Number}
+    placement: { type: String, default: 'right-start' },
+    width: { type: Number, default: 300 },
+    height: { type: Number, default: 200 },
+    ciId: { type: Number },
+    ciEntityId: { type: Number }
   },
   data() {
     return {
@@ -63,9 +60,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -80,7 +75,7 @@ export default {
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, 'detail').then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
           this.attrList = res.Return;
         });
       }
@@ -113,5 +108,4 @@ export default {
   }
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

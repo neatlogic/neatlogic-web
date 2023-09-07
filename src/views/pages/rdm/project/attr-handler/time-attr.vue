@@ -10,6 +10,7 @@
       format="HH:mm:ss"
       :validateList="validateList"
       @change="changeValue"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormDatePicker>
   </div>
 </template>
@@ -27,8 +28,7 @@ export default {
     return {};
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

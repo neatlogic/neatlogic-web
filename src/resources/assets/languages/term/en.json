@@ -143,7 +143,7 @@
     "addcientity": "Add Configuration Item",
     "resourcetypetreenosettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view was not successfully set in the view settings, and the asset list function is not available",
     "gotoresourceentitymanagepage": "Click here to set this view",
-    "resourcetypetreesettingdesc": "Asset list data sourced from Science_ Ipobject_ The detail view corresponds to the top-level model {label} ({name}) in the view settings. You can select this model or its sub models as the root directory of the asset list",
+    "resourcetypetreesettingdesc": "Select a model as the root directory for the asset manifest classification",
     "mainci": "Main model",
     "inherentfield": "Inherent field",
     "attrci": "Model where the field is located",
@@ -153,7 +153,11 @@
     "modelname": "Model Name",
     "toattr": "Mapping Properties",
     "fromci": "Upstream model",
-    "toci": "Downstream model"
+    "toci": "Downstream model",
+    "privatedataview": "Personal Data View",
+    "publicsceneview": "Global Topology View",
+    "publicdataview": "Global Data View",
+    "changememo": "Reason for change"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1893,19 +1897,24 @@
     "codechange": "Code change",
     "cveloophole": "CVE vulnerability",
     "lastsynchronizationtime": "Last synchronization time",
-    "issuecount": "Required quantity",
     "fileaddcount": "Number of file additions",
     "filemodifycount": "Number of file modifications",
     "filedeletecount": "Number of file deletions",
     "lineaddcount": "Number of code lines added",
     "linedeletecount": "Number of code lines reduced",
-    "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
     "importpipelineconfig": "Import assembly line configuration",
     "coverpipeline": "Coverage assembly line",
     "cancelimport": "Cancel Import",
     "relateobjectcover": "Associated Object Overrides",
     "overrelateobjectdescription": "The following objects associated with the assembly line already exist in the system. To overwrite them, please check the objects that need to be overwritten and click the 'Import' button below to complete the import.",
-    "overexistpipelineiscontinue": "The pipeline has been configured. Importing the pipeline will overwrite the existing pipeline. Do you want to continue?"
+    "overexistpipelineiscontinue": "The pipeline has been configured. Importing the pipeline will overwrite the existing pipeline. Do you want to continue?",
+    "issuecount": "Number of requirements",
+    "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
+    "deletecodeline": "Delete Code Line",
+    "addcodeline": "Add Code Line",
+    "deletefilecount": "Number of deleted files",
+    "modifyfilecount": "Number of modified files",
+    "addfilecount": "Number of newly added files"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2212,7 +2221,9 @@
     "statusreluser": "The system automatically sets the handler during status flow",
     "innerparam": "Internal variables",
     "storywall": "Story Wall",
-    "forbiddentransfer": "Cannot be circulated"
+    "forbiddentransfer": "Cannot be circulated",
+    "importtestcase": "Import test cases",
+    "downloadtemplate": "Click to download and import the template"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
@@ -2470,5 +2481,14 @@
     "noaddauthresource": "There are currently no resources to add permissions to",
     "relcurrclass": "Associate with current classification",
     "unlassifieddoc": "Unclassified documents"
+  },
+  "dr": {
+    "assetconfig": "Asset allocation",
+    "scenarioconfig": "Scenario configuration",
+    "centername": "Center Name",
+    "basicservices": "Basic services",
+    "associationmodel": "Association model",
+    "network": "network",
+    "migrationdirection": "Migration direction"
   }
 }

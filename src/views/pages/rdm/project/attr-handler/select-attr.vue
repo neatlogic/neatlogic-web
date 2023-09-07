@@ -11,6 +11,7 @@
       :border="border"
       :validateList="validateList"
       @change="changeValue"
+      @change-label="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></TsFormSelect>
   </div>
 </template>

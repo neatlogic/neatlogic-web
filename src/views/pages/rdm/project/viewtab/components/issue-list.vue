@@ -21,14 +21,15 @@
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
         <CombineSearcher
-          v-if="canSearch"
+          v-if="canSearch && isShowCombineSearcher"
           v-model="searchValue"
           v-bind="searchConfig"
-          @remove-label="searchIssue(1)"
+          @close="closeCombineSearcher"
           @confirm="searchIssue(1)"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
             <TsFormDatePicker
+              v-model="valueConfig.createDate"
               border="border"
               :transfer="true"
               type="daterange"
@@ -46,31 +47,28 @@
               "
             ></TsFormDatePicker>
           </template>
-          <template v-for="(attr, index) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
-            <div :key="index">
+          <template v-for="(attr) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
+            <div :key="attr.id">
               <AttrHandler
                 v-if="isSearchReady"
                 :projectId="projectId"
                 :attrConfig="attr"
-                :value="attr.isPrivate ? searchValue[attr.name] : searchValue['attr_' + attr.id]"
+                :value="attr.isPrivate ? valueConfig[attr.name] : valueConfig['attr_' + attr.id]"
                 mode="search"
+                @changeLabel="(text, selectedList) => changeLabel(attr, text, selectedList, textConfig)"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
                       if (val != null) {
                         $set(valueConfig, attr.name, val);
-                        $set(textConfig, attr.name, text);
                       } else {
                         $delete(valueConfig, attr.name);
-                        $delete(textConfig, attr.name);
                       }
                     } else {
                       if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
-                        $set(textConfig, 'attr_' + attr.id, text);
                       } else {
                         $delete(valueConfig, 'attr_' + attr.id);
-                        $delete(textConfig, 'attr_' + attr.id);
                       }
                     }
                   }
@@ -122,6 +120,7 @@
       <IssueListTable
         v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
         :theadList="finalTheadList"
+        :sortList="sortList"
         :issueData="issueData"
         :attrList="attrList"
         :canAction="canAction"
@@ -165,6 +164,7 @@
         @deleteIssue="deleteIssue"
         @toggleChildIssue="toggleChildIssue"
       ></IssueListStorywall>
+      <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
     </div>
     <EditIssue
       v-if="isEditIssueShow"
@@ -301,9 +301,11 @@ export default {
       searchIssueData: {},
       pageSize: null,
       currentPage: 1,
+      isShowCombineSearcher: false,
       searchConfig: {
         search: false,
         labelPosition: 'left',
+        searchMode: 'clickBtnSearch',
         searchList: [
           {
             type: 'text',
@@ -338,7 +340,6 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
-      searchParamHistory: {},
       isBatchExecuteShow: false //批量执行确认框
     };
   },
@@ -349,7 +350,7 @@ export default {
     this.initTheadList();
     this.initSearchConfig();
     this.initAppList();
-    this.searchIssue(1);
+    this.searchIssue();
     this.getAppStatus();
   },
   beforeMount() {},
@@ -361,21 +362,40 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeLabel(attr, text, selectedList, textConfig) {
+      if (attr.isPrivate) {
+        if (text?.length > 0) {
+          this.$set(textConfig, attr.name, text?.length > 0 ? text : '');
+        } else {
+          this.$delete(textConfig, attr.name);
+        }
+      } else if (text?.length > 0) {
+        this.$set(textConfig, 'attr_' + attr.id, text, text?.length > 0 ? text : '');
+      } else {
+        this.$delete(textConfig, 'attr_' + attr.id);
+      }
+    },
+    closeCombineSearcher() {
+      // 取消关闭弹窗后，刷新自定属性
+      this.isSearchReady = false;
+      this.$nextTick(() => {
+        this.isSearchReady = true;
+      });
+    },
     restoreHistory(historyData) {
       if (historyData) {
         if (historyData['searchValue']) {
           Object.assign(this.searchValue, historyData['searchValue']);
         }
-        if (historyData['searchIssueData']) {
-          this.searchParamHistory = historyData['searchIssueData'];
+        if (historyData['pageSize']) {
+          this.pageSize = historyData['pageSize'];
         }
-        if (historyData['sortData']) {
-          this.sortData = historyData['sortData'];
+        if (historyData['currentPage']) {
+          this.currentPage = historyData['currentPage'];
         }
       }
     },
     updateSort(sort) {
-      console.log(JSON.stringify(sort, null, 2));
       this.sortData = [];
       this.sortData.push(sort);
       this.$addHistoryData('sortData', this.sortData);
@@ -458,6 +478,7 @@ export default {
           });
         }
       }
+      this.isShowCombineSearcher = true;
     },
     async getAppSetting() {
       if (this.app) {
@@ -641,6 +662,7 @@ export default {
     searchIssue(currentPage) {
       if (currentPage) {
         this.currentPage = currentPage;
+        this.$addHistoryData('currentPage', currentPage);
       }
       this.searchIssueData = {};
       this.searchIssueData.projectId = this.projectId;
@@ -658,9 +680,7 @@ export default {
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
-      Object.assign(this.searchIssueData, this.searchParamHistory);
-      //保存查询历史
-      this.$addHistoryData('searchIssueData', this.$utils.deepClone(this.searchIssueData));
+      
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {
@@ -704,6 +724,21 @@ export default {
   },
   filter: {},
   computed: {
+    sortList() {
+      const sortList = [];
+      if (this.attrList && this.attrList.length > 0) {
+        this.attrList.forEach(attr => {
+          if (attr.id) {
+            if (attr.allowSort) {
+              sortList.push(attr.id.toString());
+            }
+          } else {
+            sortList.push(attr.type);
+          }
+        });
+      }
+      return sortList;
+    },
     finalTheadList() {
       const list = [];
       if (this.canBatch) {
@@ -728,11 +763,11 @@ export default {
     },
     getAppByName() {
       return name => {
-        if (this.app.attrList && this.app.attrList.length > 0) {
+        if (this.attrList && this.attrList.length > 0) {
           if (name.startsWith('_')) {
-            return this.app.attrList.find(d => d.type === name);
+            return this.attrList.find(d => d.type === name);
           } else {
-            return this.app.attrList.find(d => d.id.toString() === name);
+            return this.attrList.find(d => d.id.toString() === name);
           }
         }
         return null;
@@ -764,6 +799,11 @@ export default {
         }
       }
     },
+    pageSize: {
+      handler: function(val) {
+        this.$addHistoryData('pageSize', val);
+      }
+    },
     catalog: {
       handler: function(val) {
         this.searchIssue(1);
@@ -785,6 +825,6 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: auto 450px;
+  grid-template-columns: 50% 50%;
 }
 </style>

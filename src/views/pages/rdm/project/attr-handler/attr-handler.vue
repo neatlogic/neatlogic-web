@@ -11,6 +11,7 @@
       :mode="mode"
       :projectId="projectId"
       @setValue="setValue"
+      @changeLabel="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></component>
     <component
       :is="attrConfig.type + 'attr'"
@@ -24,6 +25,7 @@
       :mode="mode"
       :projectId="projectId"
       @setValue="setPrivateValue"
+      @changeLabel="(text, selectedList) => $emit('changeLabel', text, selectedList)"
     ></component>
   </div>
 </template>

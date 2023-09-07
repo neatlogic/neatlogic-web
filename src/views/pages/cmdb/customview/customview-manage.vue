@@ -8,8 +8,8 @@
             <Icon type="ios-arrow-down"></Icon>
           </a>
           <DropdownMenu slot="list">
-            <DropdownItem @click.native="addCustomView">{{ $t('term.cmdb.dataview') }}</DropdownItem>
-            <DropdownItem @click.native="addGraph">{{ $t('term.cmdb.topoview') }}</DropdownItem>
+            <DropdownItem @click.native="addCustomView">{{ $t('term.cmdb.publicdataview') }}</DropdownItem>
+            <DropdownItem @click.native="addGraph">{{ $t('term.cmdb.publicsceneview') }}</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </template>

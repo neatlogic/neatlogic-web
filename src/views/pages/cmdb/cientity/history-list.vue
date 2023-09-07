@@ -38,7 +38,7 @@
               <span>{{ transaction.recoverUserName }}</span>
               <span class="ml-xs">{{ transaction.recoverTime | formatDate('yyyy-mm-dd hh:mm') }}</span>
             </div>
-            <Divider v-if="transaction.description" style="margin:3px 0px;font-size:12px" orientation="start">{{ $t('page.memo') }}</Divider>
+            <Divider v-if="transaction.description" style="margin:3px 0px;font-size:12px" orientation="start">{{ $t('term.cmdb.changememo') }}</Divider>
             <div v-if="transaction.description" class="text-grey">
               <span v-if="transaction.description.length > 50">
                 <Tooltip max-width="200" :transfer="true" placement="left-start">
