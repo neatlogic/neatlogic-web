@@ -12,7 +12,7 @@
               type="number"
               min="1"
               style="width:60px;"
-              @on-change="getVaildlist()"
+              @on-change="getValidList()"
             />
             <span class="ml-sm">{{ $t('page.strip') }}</span>
           </Col>
@@ -227,7 +227,7 @@ export default {
 
             const filteredList = this.filterValidIssuesList(tbodylist);
             this.tableData.tbodyList = filteredList;
-            this.getVaildlist(filteredList);
+            this.getValidList(filteredList);
           } else {
             this.tableData.tbodyList = [];
           }
@@ -274,7 +274,7 @@ export default {
       this.cancelAxios = CancelToken.source();
 
       this.$api.codehub.merge
-        .getValidList(param, { cancelToken: this.cancelAxios.token })
+        .getVaildlist(param, { cancelToken: this.cancelAxios.token })
         .then((res) => {
           if (res && res.Status === 'OK') {
             let newlist = res.Return.list || [];
@@ -338,11 +338,11 @@ export default {
   watch: {
     srcBranch(val) {
       this.resetList();
-      this.getVaildlist();
+      this.getValidList();
     },
     targetBranch() {
       this.resetList();
-      this.getVaildlist();   
+      this.getValidList();   
     }
   }
 };
