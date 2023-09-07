@@ -1,26 +1,44 @@
 <template>
   <div style="position: relative">
-    <div class="expression-container pb-xs" @click="$refs['input'].focus()">
+    <div class="expression-container pb-xs mb-xs" @click="$refs['input'].focus()">
       <DslExpression v-if="expressionData" :expressionData="expressionData"></DslExpression>
       <pre v-else class="expression-original text-grey">{{ value }}</pre>
       <div class="inputer-container"><input
         ref="input"
-        v-model="tmpValue"
         class="inputer"
         type="text"
-        @keyup="input"
+        @keyup="del"
+        @input="input"
       /></div>
     </div>
+    <div class="text-grey">帮助：输入表达式进行高级搜索，如果需要搜索关系或引用属性字段，可以使用a.b表示，例如env.name == "STG" && (port == 80 || port == 443 )</div>
+    <div>
+      <span class="mr-xs text-grey">{{ $t('page.compareexpression') }}:</span>
+      <Tag
+        v-for="(op, index) in opList"
+        :key="index"
+        class="cursor"
+        @click.native="chooseAttr(op)"
+      >{{ op }}</Tag>
+    </div>
+    <div><span class="mr-xs text-grey">{{ $t('page.logicalexpression') }}:</span>
+      <Tag
+        v-for="(op, index) in joinList"
+        :key="index"
+        class="cursor"
+        @click.native="chooseAttr(op)"
+      >{{ op }}</Tag></div>
     <div v-if="suggestList && suggestList.length > 0">
-      <span class="mr-xs">可选属性：</span>
+      <span class="mr-xs text-grey">{{ $t('term.cmdb.attributelist') }}:</span>
       <Tag
         v-for="(suggest, index) in suggestList"
         :key="index"
         class="cursor"
-        @on-click="chooseAttr(suggest)"
+        @click.native="chooseAttr(suggest)"
       >{{ suggest }}</Tag>
     </div>
-    <div style="text-align:right"></div>
+  
+    <div></div>
   </div>
 </template>
 <script>
@@ -39,7 +57,8 @@ export default {
   },
   data() {
     return {
-      exceptWordList: ['+', '-', '*', '/', '&&', '&', '|', '||', '[', ']', '(', ')', 'like', 'not like', 'exclude', 'include'],
+      opList: ['>', '<', '==', '>=', '<=', 'like', 'not like', 'exclude', 'include'],
+      joinList: ['&&', '||'],
       value: '',
       expressionData: null,
       keyword: {},
@@ -58,25 +77,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    input(e) {
+    del(e) {
       if (e.keyCode == 8 || e.keyCode == 46) {
         if (this.value.length > 0) {
           this.value = this.value.slice(0, -1);
         }
-      } else if (e.key.length === 1) {
-        this.value += e.key;
-      } else if (this.tmpValue) {
-        this.value += this.tmpValue;
       }
-      this.tmpValue = '';
     },
-    chooseAttr(suggest) {
-      if (this.keyword && this.keyword.value && suggest) {
-        const before = str.slice(0, this.keyword.start);
-        const after = str.slice(this.keyword.end);
-        console.log('b', this.value);
-        this.value = before + suggest + after;
-        console.log('a', this.value);
+    input(e) {
+      if (e.data) {
+        this.value += e.data;
+      } else if (e.inputType === 'insertFromPaste') {
+        this.value += e.target.value;
+      }
+      e.target.value = '';
+    },
+    chooseAttr(op) {
+      console.log(op);
+      if (this.value.endsWith(' ')) {
+        this.value += op;
+      } else {
+        this.value += ' ' + op;
       }
     },
     createAst(input) {
@@ -99,11 +120,11 @@ export default {
         this.expressionData = visitor.getRootExpression() || null;
         if (this.expressionData) {
           this.value = this.rewriteValue(this.expressionData);
-          console.log(this.value);
+          //console.log(this.value);
         }
       } catch (e) {
         this.expressionData = null;
-        console.error('解释异常', e);
+        //console.error('解释异常', e);
       }
     },
     isValid(expressionData) {

@@ -35,7 +35,7 @@
         </div>
       </div>
       <div v-if="isAdvancedSearch">
-        <Tabs v-if="COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
+        <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
           <TabPane label="综合条件" name="condition"></TabPane>
           <TabPane label="表达式" name="dsl"></TabPane>
         </Tabs>
@@ -174,8 +174,22 @@
             >{{ $t('page.search') }}</Button>
           </div>
         </Card>
-        <div v-if="COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
+        <div v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
           <DslEditor :suggestList="suggestList"></DslEditor>
+          <div style="text-align: right" class="mt-md">
+            <Button
+              type="primary"
+              :ghost="true"
+              class="mr-md"
+              @click="isExportDialogShow = true"
+            >{{ $t('page.export') }}</Button>
+            <Button
+              type="primary"
+              :disabled="isLoading"
+              :loading="isLoading"
+              @click.native="searchCiEntity(1)"
+            >{{ $t('page.search') }}</Button>
+          </div>
         </div>
       </div>
     </div>
@@ -386,6 +400,7 @@ export default {
     needCheck: { type: Boolean, default: false }, //是否需要复选框
     needCondition: { type: Boolean, default: true }, //是否需要条件
     needPage: { type: Boolean, default: true }, //是否需要分页
+    needDsl: {type: Boolean, default: false}, //是否激活dsl搜索
     selectedData: { type: Array }, //已选中数据，只保存id，例如[123123123,123123123]
     needActionType: { type: Boolean, default: false }, //是否需要操作类型列，用于标记数据的操作类型，一般表单控件中使用
     relCiEntityId: { type: Number }, //关联配置项id
