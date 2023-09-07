@@ -35,8 +35,12 @@
         </div>
       </div>
       <div v-if="isAdvancedSearch">
+        <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
+          <TabPane label="综合条件" name="condition"></TabPane>
+          <TabPane label="表达式" name="dsl"></TabPane>
+        </Tabs>
         <Card
-          v-if="(attrList && attrList.length > 0) || (relList && relList.length > 0)"
+          v-if="advencedSearchMode == 'condition' && ((attrList && attrList.length > 0) || (relList && relList.length > 0))"
           dis-hover
           class="radius-md"
           style="margin-bottom: 10px"
@@ -170,6 +174,23 @@
             >{{ $t('page.search') }}</Button>
           </div>
         </Card>
+        <div v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
+          <DslEditor :suggestList="suggestList"></DslEditor>
+          <div style="text-align: right" class="mt-md">
+            <Button
+              type="primary"
+              :ghost="true"
+              class="mr-md"
+              @click="isExportDialogShow = true"
+            >{{ $t('page.export') }}</Button>
+            <Button
+              type="primary"
+              :disabled="isLoading"
+              :loading="isLoading"
+              @click.native="searchCiEntity(1)"
+            >{{ $t('page.search') }}</Button>
+          </div>
+        </div>
       </div>
     </div>
     <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
@@ -330,7 +351,9 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Checkbox v-if="selectedCiEntityList && selectedCiEntityList.length > 0" v-model="isOnlyExportSelected"><span class="fz10 text-grey">{{ $t('term.cmdb.onlyexportselected') }}</span></Checkbox>
+        <Checkbox v-if="selectedCiEntityList && selectedCiEntityList.length > 0" v-model="isOnlyExportSelected">
+          <span class="fz10 text-grey">{{ $t('term.cmdb.onlyexportselected') }}</span>
+        </Checkbox>
         <Button @click="isExportDialogShow = false">{{ $t('page.cancel') }}</Button>
         <Button type="primary" ghost @click="selectAllExportItem()">{{ $t('page.selectall') }}</Button>
         <Button
@@ -358,6 +381,7 @@ export default {
     RelCiEntityDialog: resolve => require(['./rel-cientity-dialog.vue'], resolve),
     DeleteCiEntityDialog: resolve => require(['./cientity-delete-dialog.vue'], resolve),
     BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve),
+    DslEditor: resolve => require(['@/resources/plugins/DslEditor/dsl-editor.vue'], resolve),
     AccountEditDialog: resolve => require(['@/views/pages/cmdb/asset/components/account-edit-dialog'], resolve) // 帐户管理
   },
   directives: { download },
@@ -376,6 +400,7 @@ export default {
     needCheck: { type: Boolean, default: false }, //是否需要复选框
     needCondition: { type: Boolean, default: true }, //是否需要条件
     needPage: { type: Boolean, default: true }, //是否需要分页
+    needDsl: {type: Boolean, default: false}, //是否激活dsl搜索
     selectedData: { type: Array }, //已选中数据，只保存id，例如[123123123,123123123]
     needActionType: { type: Boolean, default: false }, //是否需要操作类型列，用于标记数据的操作类型，一般表单控件中使用
     relCiEntityId: { type: Number }, //关联配置项id
@@ -391,6 +416,8 @@ export default {
   },
   data() {
     return {
+      COMMERCIAL_MODULES: COMMERCIAL_MODULES,
+      advencedSearchMode: 'condition',
       childTheadList: [
         {
           key: 'label',
@@ -449,7 +476,8 @@ export default {
       batchEditCiEntityList: [], //批量修改配置项
       attrRelList: [], //属性和关系列表，用于导出excel时选择
       isShowAddAccountDialog: false, // 账号管理弹窗
-      resourceId: null
+      resourceId: null,
+      suggestList: []//dsl搜索模式的提示词列表
     };
   },
   beforeCreate() {},
@@ -469,6 +497,20 @@ export default {
       this.attrFilterList = historyData['attrFilterList'];
       this.relFilterList = historyData['relFilterList'];
       this.sortConfig = historyData['sortConfig'];
+    },
+    getSuggestList(keywordData) {
+      this.suggestList = [];
+      if (keywordData.value) {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, {keyword: keywordData.value}).then(res => {
+          const attrList = res.Return;
+          if (attrList && attrList.length > 0) {
+            attrList.forEach(attr => {
+              this.suggestList.push(attr.name);
+            });
+            console.log(JSON.stringify(this.suggestList, null, 2));
+          }
+        });
+      }
     },
     updateSort(sort) {
       this.sortConfig = sort;
@@ -703,6 +745,11 @@ export default {
     async getAttrByCiId() {
       await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
         this.attrList = res.Return;
+        if (this.attrList && this.attrList.length > 0) {
+          this.attrList.forEach(attr => {
+            this.suggestList.push(attr.name);
+          });
+        }
       });
     },
     async getRelByCiId() {

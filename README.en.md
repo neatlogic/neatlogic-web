@@ -19,6 +19,7 @@ npm install
 ```
 
 ## Run the project in the local development environment
+>To modify the "apiconfig.json" configuration file, change the value of "tenantName" to the tenant you are using (if you are using the official sample data, the tenant is "demo"). Change the "urlPrefix" to the HTTP address of the Neatlogic backend Tomcat service, which should be "http://ip:port".
 ```
 npm run serve
 ```

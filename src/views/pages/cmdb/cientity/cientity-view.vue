@@ -28,7 +28,7 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
+        <div class="action-group" style="text-align: right">
           <span v-if="ciEntityData && ciEntityData.authData && ciEntityData.authData.cientityupdate" class="action-item tsfont-edit" @click="toEditCiEntity">{{ $t('page.edit') }}</span>
           <span v-if="ciEntityData && ciEntityData.authData && ciEntityData.authData.cimanage" class="action-item tsfont-ci" @click="editCustomView()">{{ $t('term.cmdb.customview') }}</span>
           <span v-if="unCommitTransactionCount && ciEntityData && ciEntityData.authData && ciEntityData.authData.transactionmanage" class="action-item tsfont-unsend" @click="openTransactionDialog">
@@ -47,7 +47,7 @@
               <span>{{ $t('term.cmdb.basicattribute') }}</span>
             </div>
           </div>
-          <Divider v-if="relGroupList" orientation="start" style="margin:3px 0px;font-size:13px">{{ $t('page.relation') }}</Divider>
+          <Divider v-if="relGroupList" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('page.relation') }}</Divider>
           <div v-for="(group, index) in relGroupList" :key="index" class="margin-sm">
             <div v-if="group.name" class="text-type border-color mb-sm">
               <span class="text-grey">{{ group.name }}</span>
@@ -72,7 +72,7 @@
               </div>
             </div>
           </div>
-          <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin:3px 0px;font-size:13px">{{ $t('term.cmdb.customview') }}</Divider>
+          <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('term.cmdb.customview') }}</Divider>
           <div class="margin-sm">
             <div
               v-for="(customView, index) in customViewList"
@@ -100,7 +100,7 @@
                       <div class="title text-grey">
                         <span :class="ciEntityData.ciIcon" class="mr-md"></span>
                         {{ ciEntityData.name }}
-                        <sup style="font-weight:normal" class="fz10">{{ ciEntityData.ciLabel }}({{ ciEntityData.ciName }})</sup>
+                        <sup style="font-weight: normal" class="fz10">{{ ciEntityData.ciLabel }}({{ ciEntityData.ciName }})</sup>
                       </div>
                     </div>
                     <div>
@@ -109,7 +109,7 @@
                           v-if="attrGroupList && attrGroupList.length > 0"
                           v-model="activedGroup"
                           type="card"
-                          style="margin:0px"
+                          style="margin: 0px"
                           :animated="false"
                         >
                           <TabPane :label="$t('term.cmdb.defaultattribute')" name=""></TabPane>
@@ -205,7 +205,7 @@
               </div>
             </div>
           </div>
-          <div v-if="!hideHistory" v-show="isHistoryShow && !ciEntityData.isVirtual" class="right ">
+          <div v-if="!hideHistory" v-show="isHistoryShow && !ciEntityData.isVirtual" class="right">
             <HistoryList :ciEntityId="ciEntityData.id" :ciId="ciEntityData.ciId" @refresh="refresh"></HistoryList>
           </div>
         </div>
@@ -299,27 +299,27 @@ export default {
           this.customViewId = customView.id;
           this.showContent = 'customview';
         } else {
-          this.$router.push({path: '/view-detail/' + customView.id + '/' + this.ciEntityId});
+          this.$router.push({ path: '/view-detail/' + customView.id + '/' + this.ciEntityId });
         }
       } else if (customView._type === 'topo') {
-        this.$router.push({path: '/graph-data/' + customView.id});
+        this.$router.push({ path: '/graph-data/' + customView.id });
       }
     },
     async getCustomViewList() {
       this.customViewList = [];
       await this.$api.cmdb.customview.searchSceneCustomView({ ciId: this.ciId, needPage: false }).then(res => {
         res.Return.tbodyList.forEach(d => {
-          this.customViewList.push({...d, _type: 'data'});
+          this.customViewList.push({ ...d, _type: 'data' });
         });
       });
       await this.$api.cmdb.customview.searchCustomView({ startCiId: this.ciId, needPage: false }).then(res => {
         res.Return.tbodyList.forEach(d => {
-          this.customViewList.push({...d, _type: 'data'});
+          this.customViewList.push({ ...d, _type: 'data' });
         });
       });
-      await this.$api.cmdb.graph.searchGraph({ciEntityId: this.ciEntityId, needPage: false}).then(res => {
+      await this.$api.cmdb.graph.searchGraph({ ciEntityId: this.ciEntityId, needPage: false }).then(res => {
         res.Return.tbodyList.forEach(d => {
-          this.customViewList.push({...d, _type: 'topo'});
+          this.customViewList.push({ ...d, _type: 'topo' });
         });
       });
     },
@@ -419,7 +419,7 @@ export default {
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, 'detail').then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
           this.attrList = res.Return;
           this.attrGroupList = [];
           if (this.attrList && this.attrList.length > 0) {

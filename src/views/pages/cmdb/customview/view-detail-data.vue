@@ -132,7 +132,7 @@ export default {
       }
     },
     getStartCiAttrList(ciId) {
-      this.$api.cmdb.ci.getAttrByCiId(ciId, 'detail').then(res => {
+      this.$api.cmdb.ci.getAttrByCiId(ciId, { showType: 'detail' }).then(res => {
         this.attrList = res.Return;
         this.attrGroupList = [];
         if (this.attrList && this.attrList.length > 0) {
