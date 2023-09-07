@@ -1,20 +1,18 @@
 <template>
   <div>
-    <Loading
-      :loadingShow="loadingShow"
-      type="fix"
-    ></Loading>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true" :siderWidth="300">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-if="selectedTreeId" class="action-item tsfont-plus" @click="addUser">{{ $t('page.user') }}</span>
+          <span
+            v-if="selectedTreeId == 0 || selectedTreeId"
+            class="action-item tsfont-plus"
+            @click="addUser"
+          >{{ $t('page.user') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
-        <InputSearcher
-          v-model="keyword"
-          @change="() => changeCurrent()"
-        ></InputSearcher>
+        <InputSearcher v-model="keyword" @change="() => changeCurrent()"></InputSearcher>
       </template>
       <template v-slot:sider>
         <TsZtree v-if="TsZtree.zNodes && TsZtree.zNodes.length > 0" ref="ztree" v-bind="TsZtree"></TsZtree>
@@ -28,16 +26,17 @@
         >
           <template slot="userName" slot-scope="{row}">
             <UserCard :uuid="row.uuid" hideName></UserCard>
-            <span class="text-href" @click.stop="trClick(row)">{{ row.userName||'-' }}</span>
+            <span>{{ row.userName||'-' }}</span>
           </template>
           <template slot="teamNameList" slot-scope="{ row }">
             <div @click.stop>
-              <Tag v-for="(t, index) in showTableList(row.teamNameList)" :key="index">{{ t }}</Tag>
+              <Tag v-for="(t, index) in ShowUserTeamNumber(row.teamNameList)" :key="index">{{ t }}</Tag>
               <span v-if="row.teamNameList && row.teamNameList.length > 3" @click.stop>
                 <Dropdown placement="bottom-start" transfer @click.native.stop>
                   <span class="text-action tsfont-option-horizontal"></span>
                   <DropdownMenu slot="list">
-                    <DropdownItem v-for="(item, index) in showRestText(row.teamNameList)" :key="index">{{ item }}</DropdownItem>
+                    <DropdownItem v-for="(item, index) in ShowRestUserTeamNumber(row.teamNameList)" :key="index">
+                      {{ item }}</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </span>
@@ -46,20 +45,22 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-trash-o" @click="deleteRow(row)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-trash-o" @click="deleteUser(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
         </TsTable>
       </template>
     </TsContain>
-    <UserAddDialog v-if="isShowUserAddDialog" :treeId="selectedTreeId" @close="closeUserAddDialog"></UserAddDialog>
+    <UserAddDialog v-if="isShowUserAddDialog" :orgId="selectedTreeId" @close="closeUserAddDialog"></UserAddDialog>
     <OrganizationalStructureEditDialog
       v-if="isShowOrganizationalStructureEditDialog"
       :id="organizationalStructureTreeId"
+      :parentId="organizationalParentId"
       :organizationalStructureName="organizationalStructureName"
       @close="closeOrganizationalStructureDialog"
-    ></OrganizationalStructureEditDialog>
+    >
+    </OrganizationalStructureEditDialog>
   </div>
 </template>
 <script>
@@ -82,6 +83,7 @@ export default {
       isSiderHide: false,
       keyword: '',
       organizationalStructureTreeId: null, // 组织架构tree的id
+      organizationalParentId: null,
       organizationalStructureName: '',
       selectedTreeId: null,
       theadList: [
@@ -118,40 +120,34 @@ export default {
       },
       TsZtree: {
         id: 'organizational-structure-manage',
-        zNodes: [
-          {name: '总指挥', id: 1,
-            children: [
-              {name: '产线单元总指挥', id: 2},
-              {name: '寿险单元总指挥', id: 3}]
-          }
-        ],
+        zNodes: [],
         setting: {
           addDomList: [
             {
               icon: 'tsfont-plus',
               desc: this.$t('term.dr.organizationalstructure'),
-              isAddFn: (treeNode) => {
+              isAddFn: treeNode => {
                 return true;
               },
-              clickFn: (treeNode) => {
+              clickFn: treeNode => {
                 this.addTreeChildren(treeNode);
               }
             },
             {
               icon: 'tsfont-edit',
-              desc: this.$t('dialog.title.edittarget', {'target': this.$t('page.name')}),
-              isAddFn: (treeNode) => {
+              desc: this.$t('dialog.title.edittarget', { target: this.$t('page.name') }),
+              isAddFn: treeNode => {
                 return true;
               },
-              clickFn: (treeNode) => {
+              clickFn: treeNode => {
                 this.editTreeChildren(treeNode);
               }
             },
             {
               icon: 'tsfont-trash-o',
               desc: this.$t('page.delete'),
-              isAddFn: (treeNode) => {
-                if (treeNode.id == 1) {
+              isAddFn: treeNode => {
+                if (treeNode.id == 0) {
                   return false;
                 } else {
                   return true;
@@ -159,20 +155,20 @@ export default {
               },
               initFn: (treeNode, $span) => {
                 if (treeNode.childrenCount == undefined || treeNode.childrenCount == 0) {
-                  // 
+                  //
                 } else {
                   $span[0].classList.add('text-disabled');
                   $span[0].title = this.$t('term.dr.organizationalstructurecitenodelete');
                 }
               },
-              clickFn: (treeNode) => {
+              clickFn: treeNode => {
                 this.deleteTree(treeNode);
               }
             }
           ],
           view: {
             showIcon: true,
-            nodeClasses: {add: ['overflow']}
+            nodeClasses: { add: ['overflow'] }
           },
           data: {
             simpleData: {
@@ -190,6 +186,7 @@ export default {
   beforeCreate() {},
   created() {
     this.searchOrangeStructureData();
+    this.searchUserDataByOrganizationId();
   },
   beforeMount() {},
   mounted() {},
@@ -201,9 +198,9 @@ export default {
   destroyed() {},
   methods: {
     addTreeChildren(treeNode) {
-      console.log('addTreeChildren', treeNode);
       this.organizationalStructureTreeId = null;
       this.organizationalStructureName = '';
+      this.organizationalParentId = treeNode.id == 0 ? treeNode.parentId : treeNode.id;
       this.isShowOrganizationalStructureEditDialog = true;
     },
     editTreeChildren(treeNode) {
@@ -213,14 +210,14 @@ export default {
     },
     //服务树点击事件
     ztreeClick(event, treeId, treeNode) {
-      this.selectedTreeId = treeNode?.id || null;
-      this.searchUserDataByTreeId();
+      this.selectedTreeId = treeNode.id;
+      this.searchUserDataByOrganizationId();
     },
     deleteTree(treeNode) {
       // 删除组织架构
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: treeNode.name}),
+        content: this.$t('dialog.content.deleteconfirm', { target: treeNode.name }),
         btnType: 'error',
         'on-ok': vnode => {
           let data = { id: treeNode.id };
@@ -236,22 +233,23 @@ export default {
     },
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
-      this.searchOrangeStructureData();
+      this.searchUserDataByOrganizationId();
     },
     changePageSize(pageSize) {
       this.tableConfig.currentPage = 1;
       this.tableConfig.pageSize = pageSize;
-      this.searchOrangeStructureData();
+      this.searchUserDataByOrganizationId();
     },
-    deleteRow(row, index) {
-      console.log('121212', row);
+    deleteUser(row, index) {
       let params = {
-        id: row.id
+        orgId: row.orgId,
+        userId: row.userId
       };
-      this.$api.dr.organizationalStructure.deleteUserById(params).then(res => {
+      this.$api.dr.organizationalStructure.deleteOrganizationUserById(params).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t(this.$t('message.deletesuccess')));
           this.tableConfig.tbodyList.splice(index, 1);
+          this.searchUserDataByOrganizationId();
         }
       });
     },
@@ -261,7 +259,7 @@ export default {
     closeUserAddDialog(needRefresh) {
       this.isShowUserAddDialog = false;
       if (needRefresh) {
-        this.searchOrangeStructureData();
+        this.searchUserDataByOrganizationId();
       }
     },
     closeOrganizationalStructureDialog(needRefresh) {
@@ -275,42 +273,48 @@ export default {
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize
       };
-      this.$api.dr.organizationalStructure.getOrganizationalStructure(params).then(res => {
-        if (res.Status == 'OK') {
-          this.TsZtree.zNodes = res.Return;
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.$api.dr.organizationalStructure
+        .searchOrganizationalStructureData(params)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.TsZtree.zNodes = res.Return ? [res.Return] : [];
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
-    searchUserDataByTreeId() {
+    searchUserDataByOrganizationId() {
       let params = {
+        orgId: this.selectedTreeId,
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
         keyword: this.keyword
       };
-      this.$api.dr.organizationalStructure.getOrganizationalStructure(params).then(res => {
-        if (res.Status == 'OK') {
-          Object.assign(this.tableConfig, res.Return);
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
-    },
-    trClick(item) {
-      const { userId = '', uuid = '' } = item || {};
-      this.$router.push({
-        path: 'user-addview',
-        query: { userId, key: 'user', readonly: true, uuid }
-      });
+      this.$api.dr.organizationalStructure
+        .searchOrganizationUser(params)
+        .then(res => {
+          if (res.Status == 'OK') {
+            Object.assign(this.tableConfig, res.Return);
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     }
   },
   filter: {},
   computed: {
-    showRestText() {
-      //剩余
-      return (list) => {
+    ShowRestUserTeamNumber() {
+      //查看更多，用户组
+      return list => {
         list.slice(3);
+      };
+    },
+    ShowUserTeamNumber() {
+      // 显示前两个用户组，后面的省略号，查看更多显示
+      return val => {
+        return val ? val.slice(0, 3) : [];
       };
     }
   },

@@ -1,22 +1,25 @@
 import axios from '@/resources/api/http';
 const organizationalStructure = {
-  saveUserInfo() {
-    return axios.post('/api/rest/dr/organizationalstructure/save');
+  saveOrganizationUser(params) {
+    return axios.post('/api/rest/dr/organization/user/save', params);
   },
-  getOrganizationalStructure() {
-    return axios.post('/api/rest/dr/organizationalstructure/get');
+  searchOrganizationUser(params) {
+    // 查询组织架构下的用户列表
+    return axios.post('/api/rest/dr/organization/user/search', params);
   },
-  deleteUserById() {
-    return axios.post('/api/rest/dr/organizationalstructure/delete');
+  deleteOrganizationUserById(params) {
+    // 删除组织架构下的用户
+    return axios.post('/api/rest/dr/organization/user/delete', params);
   },
-  saveOrganizationalStructure() {
-    return axios.post('/api/rest/dr/organizationalstructure/save');
+  saveOrganizationalStructure(params) {
+    return axios.post('/api/rest/dr/organization/save', params);
   },
-  deleteOrganizationalStructureById() {
-    return axios.post('/api/rest/dr/organizationalstructure/delete');
+  deleteOrganizationalStructureById(params) {
+    return axios.post('/api/rest/dr/organization/delete', params);
   },
-  searchOrganizationalStructureData() {
-    return axios.post('/api/rest/dr/organizationalstructure/get');
+  searchOrganizationalStructureData(params) {
+    // 获取组织架构完整树
+    return axios.post('/api/rest/dr/organization/tree', params);
   }
 };
 export default organizationalStructure;

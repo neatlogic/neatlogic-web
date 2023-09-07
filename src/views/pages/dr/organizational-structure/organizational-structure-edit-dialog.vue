@@ -28,6 +28,10 @@ export default {
       type: Number,
       default: null
     },
+    parentId: {
+      type: Number,
+      default: null
+    },
     organizationalStructureName: {
       type: String,
       default: ''
@@ -36,19 +40,26 @@ export default {
   data() {
     return {
       formValue: {
+        id: this.id,
+        parentId: this.id || this.parentId,
         name: this.organizationalStructureName
       },
       dialogSetting: {
         isShow: true,
         type: 'modal',
-        title: this.id ? '编辑组织架构名称' : '添加组织架构名称'
+        title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.name')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.name')})
       },
       formConfig: {
         name: {
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
-          validateList: ['required']
+          validateList: ['required', { 
+            name: 'searchUrl',
+            url: '/api/rest/dr/organization/save',
+            key: 'name',
+            params: {parentId: this.id || this.parentId}
+          }]
         }
       }
     };
@@ -68,7 +79,7 @@ export default {
       if (this.$refs.form && !this.$refs.form.valid()) {
         return false;
       }
-      this.$api.dr.organizationalStructure.saveOrganizationalStructure({...this.formValue, organizationalStructureId: this.id}).then(res => {
+      this.$api.dr.organizationalStructure.saveOrganizationalStructure(this.formValue).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.$emit('close', true);

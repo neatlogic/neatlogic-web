@@ -24,7 +24,7 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
-    treeId: {
+    orgId: {
       type: Number,
       default: null
     }
@@ -38,13 +38,6 @@ export default {
         isShow: true
       },
       formConfig: {
-        id: {
-          type: 'text',
-          label: '#id',
-          isHidden: true,
-          maxlength: 50,
-          validateList: ['required']
-        },
         userIdList: {
           type: 'select',
           label: this.$t('page.user'),
@@ -53,7 +46,7 @@ export default {
           dynamicUrl: '/api/rest/user/search',
           validateList: ['required'],
           rootName: 'tbodyList',
-          valueName: 'id',
+          valueName: 'userId',
           textName: 'name'
         }
       }
@@ -74,7 +67,7 @@ export default {
       if (!this.$refs.form?.valid()) {
         return false;
       }
-      this.$api.dr.organizationalStructure.saveUserInfo({treeId: this.treeId, ...this.formValue}).then(res => {
+      this.$api.dr.organizationalStructure.saveOrganizationUser({orgId: this.orgId, ...this.formValue}).then(res => {
         if (res.Status == 'OK') {
           this.$emit('close', true);
         }
