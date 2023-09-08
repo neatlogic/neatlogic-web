@@ -224,6 +224,7 @@
       v-if="isShowImportPipeline"
       :isShowCoverDialog="isShowImportPipeline"
       :appSystemAbbrNameAndName="getAppSystemAbbrNameAppSystemName"
+      :appSystemId="appSystemId"
       @closeCoverDialog="isShowImportPipeline = false"
     ></ImportPipelineConfigDialog>
   </div>
@@ -1082,9 +1083,11 @@ export default {
     exportPipeline() {
       // 导出流水线配置
       return {
-        url: '/api/binary/autoexec/job/phase/node/sql/file/download',
+        url: '/api/binary/deploy/app/pipeline/export',
         method: 'post',
-        params: {},
+        params: {
+          appSystemId: this.appSystemId
+        },
         changeStatus: status => {
           if (status == 'start') {
             this.isExportPipeline = true;

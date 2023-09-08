@@ -26,8 +26,8 @@
                   <div class="item-cli pl-nm pr-nm">
                     <CheckboxGroup v-model="selectedConfig[item.value]">
                       <Checkbox 
-                        v-for="(citem, cindex) in item.optionList"
-                        :key="cindex"
+                        v-for="(citem) in item.optionList"
+                        :key="citem.value"
                         :label="citem.value"
                         style="width:20%"
                       >
@@ -65,6 +65,9 @@ export default {
     appSystemAbbrNameAndName: {
       type: String,
       default: ''
+    },
+    appSystemId: {
+      type: Number
     }
   },
   data() {
@@ -81,9 +84,14 @@ export default {
       uploadConfig: {
         //上传图片配置
         actionUrl: BASEURLPREFIX + '/api/binary/deploy/app/pipeline/import', //导入地址
-        formatList: ['pak']
+        formatList: ['pak'],
+        multiple: false,
+        data: {
+          appSystemId: this.appSystemId
+        }
       },
-      relateConfig: {}
+      relateConfig: {},
+      uploadSuccessFile: {}
     };
   },
   beforeCreate() {},
@@ -98,8 +106,6 @@ export default {
         content: `${this.appSystemAbbrNameAndName}${this.$t('term.deploy.overexistpipelineiscontinue')}`,
         'on-ok': (vnode) => {
           vnode.isShow = false;
-          // this.configDialog.isShow = true;
-          // this.handleDefaultSelectedConfig();
           this.showDialog();
         },
         'on-close': () => {
@@ -125,7 +131,9 @@ export default {
         // 处理默认选中值
         defaultSelectedConfig[item.value] = [];
         selectedConfig[item.value] = [];
-
+        if (!item.hasOwnProperty('checkedAll')) {
+          item.checkedAll = false;
+        }
         item.optionList?.forEach((optionItem) => {
           if (optionItem?.value) {
             defaultSelectedConfig[item.value].push(optionItem.value);
@@ -166,13 +174,16 @@ export default {
           return this.selectedConfig[item.value]?.includes(innerItem.value);
         });
       });
-      console.log('存储后端的值', JSON.stringify(relateConfig, null, 2));
-      // this.$api.deploy.apppipeline.coverPipeline({dataList: relateConfig}).then(res => {
-      //   if (res.Status == 'OK') {
-      //     this.$Message.success(this.$t('message.savesuccess'));
-      //     this.configDialog.isShow = false;
-      //   }
-      // });
+      const formData = new FormData();
+      formData.append('appSystemId', this.appSystemId);
+      formData.append('file', this.uploadSuccessFile.file);
+      formData.append('userSelection', JSON.stringify(relateConfig));
+      this.$api.deploy.apppipeline.coverPipeline(formData).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.configDialog.isShow = false;
+        }
+      });
     },
     closeDialog() {
       this.configDialog.isShow = false;
@@ -180,9 +191,11 @@ export default {
       this.defaultSelectedConfig = {};
     },
     uploadSuccess(data, file, fileList) {
-      console.log('导入成功', data, file, fileList);
-      // this.configDialog.isShow = true;
-      // this.handleDefaultSelectedConfig();
+      this.relateConfig = data.Return || {};
+      this.uploadSuccessFile = file;
+      this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
+      this.configDialog.isShow = true;
+      this.handleDefaultSelectedConfig();
     },
     handleCheckedAll() {
       // 顶层选中
@@ -202,15 +215,31 @@ export default {
     },
     handleSecondCheckedAll(currentRow) {
       // 二级选中
+      let checkedAll = !this.secondSelectedAll(currentRow);
       this.selectedConfig[currentRow.value] = [];
-      if (!this.secondSelectedAll(currentRow)) {
+      if (checkedAll) {
         currentRow?.optionList?.forEach((item) => {
           if (item.value) {
             this.selectedConfig[currentRow.value].push(item.value);
           }
         });
       }
-      this.relateConfig.checkedAll = !this.secondSelectedAll(currentRow);
+      this.relateConfig.checkedAll = checkedAll;
+    },
+    arraysAreEqual(arr1, arr2) {
+      const array1 = this.$utils.deepClone(arr1).sort();
+      const array2 = this.$utils.deepClone(arr2).sort();
+      if (array1.length !== array2.length) {
+        return false;
+      }
+
+      for (let i = 0; i < array1.length; i++) {
+        if (array1[i] !== array2[i]) {
+          return false;
+        }
+      }
+
+      return true;
     }
   },
   filter: {},
@@ -222,7 +251,7 @@ export default {
     secondSelectedAll() {
       // 二级选中
       return (currentRow) => {
-        return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
+        return this.$utils.isEmpty(this.selectedConfig) ? false : this.arraysAreEqual(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
       };
     }
   },
