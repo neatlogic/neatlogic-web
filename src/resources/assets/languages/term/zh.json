@@ -157,7 +157,8 @@
     "privatedataview": "个人数据视图",
     "publicsceneview": "全局拓扑视图",
     "publicdataview": "全局数据视图",
-    "changememo": "变更说明"
+    "changememo": "变更说明",
+    "globalattr": "全局属性"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1492,7 +1493,8 @@
       "stackedbarchart": "堆叠条形图",
       "stackedcolumnchart": "堆叠柱状图",
       "wordcloud": "词云图",
-      "rosechart": "玫瑰图"
+      "rosechart": "玫瑰图",
+      "bulletchar": "子弹图"
     },
     "particle": {
       "motion": "粒子运动",
@@ -1558,7 +1560,9 @@
     "barchart": "条形图",
     "editdashboard": "仪表板编辑",
     "getwidgetdatafail": "获取仪表板组件数据失败",
-    "deletewidgetconfirm": "确定删除该组件【{target}】？"
+    "deletewidgetconfirm": "确定删除该组件【{target}】？",
+    "target": "标线",
+    "frontend": "前景"
   },
   "deploy": {
     "triggerstate": "触发状态",

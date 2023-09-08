@@ -12,6 +12,7 @@ export { default as mlineWidgetConfig } from './original/mline-widget-config.vue
 export { default as areaWidgetConfig } from './original/area-widget-config.vue';
 export { default as mareaWidgetConfig } from './original/marea-widget-config.vue';
 export { default as gaugeWidgetConfig } from './original/gauge-widget-config.vue';
+export { default as bulletWidgetConfig } from './original/bullet-widget-config.vue';
 export { default as liquidWidgetConfig } from './original/liquid-widget-config.vue';
 export { default as scatterWidgetConfig } from './original/scatter-widget-config.vue';
 export { default as pscatterWidgetConfig } from './original/pscatter-widget-config.vue';
