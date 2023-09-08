@@ -80,62 +80,10 @@ export default {
       },
       uploadConfig: {
         //上传图片配置
-        actionUrl: BASEURLPREFIX + '/api/binary/file/upload', //导入地址
-        dataType: 'knowledge',
-        formatList: ['pkg'],
-        data: {
-          param: 'file'
-        }
+        actionUrl: BASEURLPREFIX + '/api/binary/deploy/app/pipeline/import', //导入地址
+        formatList: ['pak']
       },
-      relateConfig: {
-        checkedAll: false,
-        typeList: [
-          {
-            value: 'name1',
-            text: '工具库工具',
-            checkedAll: false,
-            optionList: [
-              {
-                value: 'weblogic',
-                text: 'weblogic',
-                checked: ''
-              },
-              {
-                value: 'osbasic/modifyhosts',
-                text: 'osbasic/modifyhosts',
-                checked: true
-              },
-              {
-                value: 'svcinspect/tcpcheck',
-                text: 'svcinspect/tcpcheck',
-                checked: ''
-              }
-            ]
-          },
-          {
-            value: 'name2',
-            text: '自定义工具',
-            checkedAll: false,
-            optionList: [
-              {
-                value: 'nginx_install',
-                text: 'nginx_install',
-                checked: ''
-              },
-              {
-                value: 'was-uninstall',
-                text: 'was-uninstall',
-                checked: ''
-              },
-              {
-                value: 'not-uninstall',
-                text: 'not-uninstall',
-                checked: true
-              }
-            ]
-          }
-        ]
-      }
+      relateConfig: {}
     };
   },
   beforeCreate() {},
@@ -150,8 +98,9 @@ export default {
         content: `${this.appSystemAbbrNameAndName}${this.$t('term.deploy.overexistpipelineiscontinue')}`,
         'on-ok': (vnode) => {
           vnode.isShow = false;
-          this.configDialog.isShow = true;
-          this.handleDefaultSelectedConfig();
+          // this.configDialog.isShow = true;
+          // this.handleDefaultSelectedConfig();
+          this.showDialog();
         },
         'on-close': () => {
           this.$emit('closeCoverDialog');
@@ -231,7 +180,7 @@ export default {
       this.defaultSelectedConfig = {};
     },
     uploadSuccess(data, file, fileList) {
-      console.log('导入成功', data);
+      console.log('导入成功', data, file, fileList);
       // this.configDialog.isShow = true;
       // this.handleDefaultSelectedConfig();
     },
