@@ -38,7 +38,7 @@ export default {
         isShow: true
       },
       formConfig: {
-        userIdList: {
+        userUuidList: {
           type: 'select',
           label: this.$t('page.user'),
           transfer: true,
@@ -46,8 +46,12 @@ export default {
           dynamicUrl: '/api/rest/user/search',
           validateList: ['required'],
           rootName: 'tbodyList',
-          valueName: 'userId',
-          textName: 'name'
+          valueName: 'uuid',
+          textName: 'name',
+          params: {
+            isActive: 1, // 查询激活的用户
+            isDelete: 0 // 查询未删除的用户
+          }
         }
       }
     };

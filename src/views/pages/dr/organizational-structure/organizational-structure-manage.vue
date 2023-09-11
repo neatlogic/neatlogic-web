@@ -24,6 +24,9 @@
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
         >
+          <template slot="orgNameList" slot-scope="{row}">
+            <span>{{ row.orgNameList?.join(' ') || '' }}</span>
+          </template>
           <template slot="userName" slot-scope="{row}">
             <UserCard :uuid="row.uuid" hideName></UserCard>
             <span>{{ row.userName||'-' }}</span>
@@ -42,10 +45,10 @@
               </span>
             </div>
           </template>
-          <template slot="action" slot-scope="{ row }">
+          <template slot="action" slot-scope="{ row , index}">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-trash-o" @click="deleteUser(row)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-trash-o" @click.stop="deleteUser(row, index)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -86,10 +89,11 @@ export default {
       organizationalParentId: null,
       organizationalStructureName: '',
       selectedTreeId: null,
+      rootId: null, // 根节点id
       theadList: [
         {
           title: this.$t('term.dr.affiliatedorganization'),
-          key: 'affiliatedOrganization'
+          key: 'orgNameList'
         },
         {
           title: this.$t('page.username'),
@@ -147,15 +151,15 @@ export default {
               icon: 'tsfont-trash-o',
               desc: this.$t('page.delete'),
               isAddFn: treeNode => {
-                if (treeNode.id == 0) {
-                  return false;
+                if (treeNode.id == 975163435630592) {
+                  return false; // 总指挥不能删除，必须有一个根节点
                 } else {
                   return true;
                 }
               },
               initFn: (treeNode, $span) => {
-                if (treeNode.childrenCount == undefined || treeNode.childrenCount == 0) {
-                  //
+                if (treeNode.childCount == 0 && treeNode.userCount == 0) {
+                  // 该组织下没有子级并且没有绑定用户
                 } else {
                   $span[0].classList.add('text-disabled');
                   $span[0].title = this.$t('term.dr.organizationalstructurecitenodelete');
@@ -184,8 +188,8 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    this.searchOrangeStructureData();
+  async created() {
+    await this.searchOrangeStructureData();
     this.searchUserDataByOrganizationId();
   },
   beforeMount() {},
@@ -243,7 +247,7 @@ export default {
     deleteUser(row, index) {
       let params = {
         orgId: row.orgId,
-        userId: row.userId
+        userUuid: row.uuid
       };
       this.$api.dr.organizationalStructure.deleteOrganizationUserById(params).then(res => {
         if (res.Status == 'OK') {
@@ -273,11 +277,12 @@ export default {
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize
       };
-      this.$api.dr.organizationalStructure
+      return this.$api.dr.organizationalStructure
         .searchOrganizationalStructureData(params)
         .then(res => {
           if (res.Status == 'OK') {
-            this.TsZtree.zNodes = res.Return ? [res.Return] : [];
+            this.TsZtree.zNodes = res.Return ? res.Return : [];
+            this.rootId = res.Return ? res.Return[0]?.id : null;
           }
         })
         .finally(() => {
@@ -286,11 +291,14 @@ export default {
     },
     searchUserDataByOrganizationId() {
       let params = {
-        orgId: this.selectedTreeId,
+        orgId: this.selectedTreeId || this.rootId,
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
         keyword: this.keyword
       };
+      if (!this.selectedTreeId && !this.rootId) {
+        return false;
+      }
       this.$api.dr.organizationalStructure
         .searchOrganizationUser(params)
         .then(res => {
