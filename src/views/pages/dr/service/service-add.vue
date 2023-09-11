@@ -117,7 +117,7 @@ export default {
         },
         jg: {
           type: 'select',
-          label: '应用类型', // 名称
+          label: '恢复机构', // 名称
           validateList: ['required']
         },
         RTO: {
@@ -163,7 +163,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    console.log(this.$utils.isSame({a: [1, 2]}, {a: [2, 1]}));
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},

@@ -49,7 +49,6 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
-  
   },
   props: {
     type: {

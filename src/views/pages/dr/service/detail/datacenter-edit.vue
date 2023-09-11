@@ -9,7 +9,7 @@
       <Tag type="border">测试</Tag>
     </TsFormItem>
     <TsFormItem label="公共服务">
-      <Button type="primary" ghost>
+      <Button type="primary" ghost @click="addPublicService()">
         <span class="tsfont-plus">公共服务</span>
       </Button>
     </TsFormItem>
@@ -47,7 +47,7 @@
         </div>
       </template>
     </TsDialog>
-    <AddServiceDialog v-if="isShowServiceDialog" @close="closeService"></AddServiceDialog>
+    <AddServiceDialog v-if="isShowServiceDialog" :multiple="isMultipleService" @close="closeService"></AddServiceDialog>
   </div>
 </template>
 <script>
@@ -88,7 +88,8 @@ export default {
           transfer: true
         }
       },
-      isShowServiceDialog: false
+      isShowServiceDialog: false,
+      isMultipleService: false
     };
   },
   beforeCreate() {},
@@ -103,6 +104,11 @@ export default {
   destroyed() {},
   methods: {
     addService() {
+      this.isMultipleService = false;
+      this.isShowServiceDialog = true;
+    },
+    addPublicService() {
+      this.isMultipleService = true;
       this.isShowServiceDialog = true;
     },
     closeService() {

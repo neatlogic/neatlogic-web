@@ -84,7 +84,20 @@ export default {
       });
     },
     searchService() {},
-    deleteService(row) {},
+    deleteService(row) {
+      if (row.referenceCount) {
+        return;
+      }
+      this.$createDialog({
+        title: this.$t('page.warning'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$Message.success(this.$t('message.deletesuccess'));
+          vnode.isShow = false;
+        }
+      });
+    },
     toDetail(row) {
       this.$router.push({
         path: '/service-detail'

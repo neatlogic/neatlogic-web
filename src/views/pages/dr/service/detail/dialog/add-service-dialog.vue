@@ -1,16 +1,24 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsDialog
       title="选择节点"
       type="slider"
       :isShow="true"
+      :multiple="multiple"
       width="large"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
       <template v-slot>
         <div>
-          <TsTable v-bind="tableConfig" :theadList="theadList">
+          <TsTable
+            v-bind="tableData"
+            :multiple="multiple"
+            :theadList="theadList"
+            @changeCurrent="getDataList('currentPage',...arguments)"
+            @changePageSize="getDataList('pageSize',...arguments)"
+          >
             <template slot="" slot-scope="{row}">
               {{ row }}
             </template>
@@ -26,11 +34,17 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
-  props: {},
+  props: {
+    multiple: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
+      loadingShow: false,
       theadList: [
-        {key: 'selection'},
+        { key: 'selection' },
         { title: this.$t('page.ip'), key: 'ip'},
         { title: this.$t('page.port'), key: 'port'},
         { title: this.$t('page.name'), key: 'name'},
@@ -46,15 +60,16 @@ export default {
         { title: this.$t('term.autoexec.maintenanceperiod'), key: 'maintenanceWindow'},
         { title: this.$t('page.description'), key: 'description'}
       ],
-      tableConfig: {
-        
-      }
+      tableData: {},
+      searchVal: {}
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.getNodeList();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -62,8 +77,28 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getNodeList() {
+      let data = {};
+      this.$api.common.getNodeList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.tableData = res.Return;
+          this.$set(this.tableData, 'theadList', this.theadList);
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    getDataList(type, value) {
+      type == 'pageSize' && (this.pageSize = value);
+      let param = {
+        currentPage: type == 'currentPage' ? value : this.currentPage,
+        pageSize: type == 'pageSize' ? value : this.pageSize
+      };
+      param = Object.assign(param, this.searchVal);
+      this.searchNodeList(param);
+    },
     okDialog() {
-
+      this.closeDialog();
     },
     closeDialog() {
       this.$emit('close');
