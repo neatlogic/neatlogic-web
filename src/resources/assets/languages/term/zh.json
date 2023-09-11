@@ -2476,6 +2476,7 @@
     "basicservices": "基础服务",
     "associationmodel": "关联模型",
     "network": "网络",
-    "migrationdirection": "迁移方向"
+    "migrationdirection": "迁移方向",
+    "datareferencetip": "当前数据被场景引用，无法删除"
   }
 }

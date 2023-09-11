@@ -2478,6 +2478,7 @@
     "basicservices": "Basic services",
     "associationmodel": "Association model",
     "network": "network",
-    "migrationdirection": "Migration direction"
+    "migrationdirection": "Migration direction",
+    "datareferencetip": "The current data is referenced by the scene and cannot be deleted"
   }
 }
