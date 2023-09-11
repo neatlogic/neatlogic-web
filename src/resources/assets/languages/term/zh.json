@@ -2476,6 +2476,10 @@
     "basicservices": "基础服务",
     "associationmodel": "关联模型",
     "network": "网络",
-    "migrationdirection": "迁移方向"
+    "migrationdirection": "迁移方向",
+    "organizationalstructure": "组织架构",
+    "affiliatedorganization": "所属组织",
+    "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
+    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除"
   }
 }

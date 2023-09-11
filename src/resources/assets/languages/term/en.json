@@ -2478,6 +2478,10 @@
     "basicservices": "Basic services",
     "associationmodel": "Association model",
     "network": "network",
-    "migrationdirection": "Migration direction"
+    "migrationdirection": "Migration direction",
+    "organizationalstructure": "organizational structure",
+    "affiliatedorganization": "Affiliated organization",
+    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
   }
 }
