@@ -26,12 +26,12 @@
                   <div class="item-cli pl-nm pr-nm">
                     <CheckboxGroup v-model="selectedConfig[item.value]">
                       <Checkbox 
-                        v-for="(citem) in item.optionList"
-                        :key="citem.value"
-                        :label="citem.value"
+                        v-for="(innerItem) in item.optionList"
+                        :key="innerItem.value"
+                        :label="innerItem.value"
                         style="width:20%"
                       >
-                        <span class="check-all-text-pr">{{ citem.text }}</span>
+                        <span class="check-all-text-pr">{{ innerItem.text }}</span>
                       </Checkbox>
                     </CheckboxGroup>
                   </div>
@@ -225,21 +225,6 @@ export default {
         });
       }
       this.relateConfig.checkedAll = checkedAll;
-    },
-    arraysAreEqual(arr1, arr2) {
-      const array1 = this.$utils.deepClone(arr1).sort();
-      const array2 = this.$utils.deepClone(arr2).sort();
-      if (array1.length !== array2.length) {
-        return false;
-      }
-
-      for (let i = 0; i < array1.length; i++) {
-        if (array1[i] !== array2[i]) {
-          return false;
-        }
-      }
-
-      return true;
     }
   },
   filter: {},
@@ -251,7 +236,7 @@ export default {
     secondSelectedAll() {
       // 二级选中
       return (currentRow) => {
-        return this.$utils.isEmpty(this.selectedConfig) ? false : this.arraysAreEqual(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
+        return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
       };
     }
   },
