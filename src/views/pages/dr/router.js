@@ -54,7 +54,8 @@ let routerArr = [
       title: $t('term.dr.organizationalstructure'),
       ismenu: true,
       icon: 'tsfont-proxy',
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   },
   {
