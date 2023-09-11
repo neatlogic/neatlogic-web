@@ -5,7 +5,7 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <span
-            v-if="selectedTreeId == 0 || selectedTreeId"
+            v-if="selectedTreeId"
             class="action-item tsfont-plus"
             @click="addUser"
           >{{ $t('page.user') }}</span>
@@ -25,7 +25,7 @@
           @changePageSize="changePageSize"
         >
           <template slot="orgNameList" slot-scope="{row}">
-            <span>{{ row.orgNameList?.join(' ') || '' }}</span>
+            <Tag v-for="(item, index) in row.orgNameList" :key="index">{{ item }}</Tag>
           </template>
           <template slot="userName" slot-scope="{row}">
             <UserCard :uuid="row.uuid" hideName></UserCard>
@@ -161,8 +161,10 @@ export default {
                 if (treeNode.childCount == 0 && treeNode.userCount == 0) {
                   // 该组织下没有子级并且没有绑定用户
                 } else {
+                  const hasChild = treeNode.childCount > 0;
+                  const hasUser = treeNode.userCount > 0;
                   $span[0].classList.add('text-disabled');
-                  $span[0].title = this.$t('term.dr.organizationalstructurecitenodelete');
+                  $span[0].title = hasChild ? this.$t('term.dr.currentoranghaschildnodelete') : (hasUser ? this.$t('term.dr.currentorangbindusernodelete') : '');
                 }
               },
               clickFn: treeNode => {
@@ -204,7 +206,7 @@ export default {
     addTreeChildren(treeNode) {
       this.organizationalStructureTreeId = null;
       this.organizationalStructureName = '';
-      this.organizationalParentId = treeNode.id == 0 ? treeNode.parentId : treeNode.id;
+      this.organizationalParentId = treeNode.id;
       this.isShowOrganizationalStructureEditDialog = true;
     },
     editTreeChildren(treeNode) {
@@ -219,6 +221,9 @@ export default {
     },
     deleteTree(treeNode) {
       // 删除组织架构
+      if (treeNode.childCount != 0 || treeNode.userCount != 0) { 
+        return false;
+      }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', { target: treeNode.name }),
@@ -249,11 +254,19 @@ export default {
         orgId: row.orgId,
         userUuid: row.uuid
       };
-      this.$api.dr.organizationalStructure.deleteOrganizationUserById(params).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t(this.$t('message.deletesuccess')));
-          this.tableConfig.tbodyList.splice(index, 1);
-          this.searchUserDataByOrganizationId();
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.dr.organizationalStructure.deleteOrganizationUserById(params).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t(this.$t('message.deletesuccess')));
+              this.tableConfig.tbodyList.splice(index, 1);
+              this.searchUserDataByOrganizationId();
+            }
+          });
+          vnode.isShow = false;
         }
       });
     },
@@ -299,6 +312,7 @@ export default {
       if (!this.selectedTreeId && !this.rootId) {
         return false;
       }
+      this.loadingShow = true;
       this.$api.dr.organizationalStructure
         .searchOrganizationUser(params)
         .then(res => {

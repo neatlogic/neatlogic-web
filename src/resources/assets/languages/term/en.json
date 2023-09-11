@@ -2481,6 +2481,7 @@
     "migrationdirection": "Migration direction",
     "organizationalstructure": "organizational structure",
     "affiliatedorganization": "Affiliated organization",
-    "organizationalstructurecitenodelete": "The current organizational structure has been referenced and cannot be deleted"
+    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
   }
 }

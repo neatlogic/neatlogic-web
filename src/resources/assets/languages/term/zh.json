@@ -2479,6 +2479,7 @@
     "migrationdirection": "迁移方向",
     "organizationalstructure": "组织架构",
     "affiliatedorganization": "所属组织",
-    "organizationalstructurecitenodelete": "当前组织架构已被引用不可删除"
+    "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
+    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除"
   }
 }
