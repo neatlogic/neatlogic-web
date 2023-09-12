@@ -6,6 +6,23 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
+          <!--<span class="action-item">
+            <Dropdown>
+              <a href="javascript:void(0)" class="tsfont-eye">
+                视图
+                <Icon type="ios-arrow-down"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem
+                  v-for="(view,index) in viewList"
+                  :key="index"
+                >
+                  {{ view.name }}
+                </DropdownItem>
+                <DropdownItem divided @click.native="addView()">{{ $t('dialog.title.addtarget',{'target':$t('term.cmdb.view')}) }}</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </span>-->
           <span class="action-item">
             <Dropdown>
               <a href="javascript:void(0)" class="tsfont-blocks">
@@ -29,7 +46,7 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item" :class="{'disable': viewMode === 'storywall'}" @click="changeDisplayMode">
+          <span class="action-item" :class="{'disable': viewMode === 'storywall'}" @click="changeDisplayMode()">
             <span class="tsfont-flow-children" :class="{ 'text-primary': displayMode === 'list' }">{{ $t('term.rdm.listview') }}</span>
             <Divider type="vertical" />
             <span class="tsfont-formdynamiclist" :class="{ 'text-primary': displayMode === 'level', }">{{ $t('term.rdm.levelview') }}</span>
@@ -67,6 +84,7 @@
       @close="closeEditIssue"
     ></EditIssue>
     <AttrSettingDialog v-if="isAttrSettingShow" :appId="appId" @close="closeAttrSetting"></AttrSettingDialog>
+    <EditViewDialog v-if="isViewShow" :appId="appId" @close="isViewShow=false;"></EditViewDialog>
   </div>
 </template>
 <script>
@@ -78,7 +96,8 @@ export default {
     EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     CatalogList: resolve => require(['@/views/pages/rdm/project/viewtab/components/catalog-list.vue'], resolve),
-    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
+    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve),
+    EditViewDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-view-dialog.vue'], resolve)
   },
   mixins: [mixins],
   props: {},
@@ -90,7 +109,9 @@ export default {
       isEditIssueShow: false,
       isAttrSettingShow: false,
       isShowGantt: false,
-      displayMode: 'level'
+      displayMode: 'level',
+      viewList: [],
+      isViewShow: false
     };
   },
   beforeCreate() {},
@@ -104,6 +125,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    addView() {
+      this.isViewShow = true;
+    },
     restoreHistory(historyData) {
       if (historyData) {
         if (historyData['displayMode']) {

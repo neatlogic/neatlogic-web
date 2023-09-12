@@ -9,6 +9,8 @@
 import jsep from 'jsep';
 jsep.addBinaryOp('include');
 jsep.addBinaryOp('exclude');
+jsep.addBinaryOp('like');
+jsep.addBinaryOp('not like');
 jsep.removeAllUnaryOps();
 export default {
   name: '',

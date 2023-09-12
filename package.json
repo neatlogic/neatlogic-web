@@ -22,6 +22,7 @@
     "@antv/l7plot": "^0.0.10",
     "@antv/util": "^2.0.17",
     "@hpcc-js/wasm": "^1.4.1",
+    "antlr4": "^4.13.0",
     "axios": "^0.21.1",
     "core-js": "^3.8.3",
     "cross-env": "^6.0.3",

@@ -1893,13 +1893,13 @@
     "codechange": "代码变更",
     "cveloophole": "cve漏洞",
     "lastsynchronizationtime": "最后同步时间",
-    "issuecount": "需求数量",
+    "issuecount": "需求数",
     "scenariosteperror": "场景中的所有阶段均为禁用状态。场景至少需存在一个非禁用状态的阶段",
-    "newfilenumber": "新文件数",
     "deletecodeline": "删除代码行",
     "addcodeline": "新增代码行",
     "deletefilecount": "删除文件数",
-    "modifyfilecount": "修改文件数"
+    "modifyfilecount": "修改文件数",
+    "addfilecount": "新增文件数"
   },
   "inspect": {
     "alarmprompt": "告警提示",
@@ -2476,6 +2476,11 @@
     "basicservices": "基础服务",
     "associationmodel": "关联模型",
     "network": "网络",
-    "migrationdirection": "迁移方向"
+    "migrationdirection": "迁移方向",
+    "datareferencetip": "当前数据被场景引用，无法删除",
+    "organizationalstructure": "组织架构",
+    "affiliatedorganization": "所属组织",
+    "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
+    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除"
   }
 }

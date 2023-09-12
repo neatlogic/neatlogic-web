@@ -25,7 +25,7 @@
                 <Radio
                   v-for="(attr, index) in attrTypeList"
                   :key="index"
-                  style="width:23%"
+                  style="width: 23%"
                   :label="attr.name"
                   :disabled="attr.disabled ? true : false"
                 >
@@ -33,7 +33,7 @@
                   <span>{{ attr.label }}</span>
                 </Radio>
               </RadioGroup>
-              <div v-if="isTypeError" class="text-error">{{ $t('form.placeholder.pleaseselect',{target:$t('page.type')}) }}</div>
+              <div v-if="isTypeError" class="text-error">{{ $t('form.placeholder.pleaseselect', { target: $t('page.type') }) }}</div>
             </div>
           </template>
           <template v-slot:attrConfig>
@@ -221,7 +221,7 @@ export default {
     },
     getCiSimpleAttrList: function(ciId) {
       if (ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(ciId, '', true).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(ciId, { isSimple: true }).then(res => {
           this.ciSimpleAttrList = res.Return;
         });
       }

@@ -1897,13 +1897,13 @@
     "codechange": "Code change",
     "cveloophole": "CVE vulnerability",
     "lastsynchronizationtime": "Last synchronization time",
-    "issuecount": "Required quantity",
+    "issuecount": "Number of requirements",
     "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
-    "newfilenumber": "Number of new files",
     "deletecodeline": "Delete Code Line",
     "addcodeline": "Add Code Line",
     "deletefilecount": "Number of deleted files",
-    "modifyfilecount": "Number of modified files"
+    "modifyfilecount": "Number of modified files",
+    "addfilecount": "Number of newly added files"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2478,6 +2478,11 @@
     "basicservices": "Basic services",
     "associationmodel": "Association model",
     "network": "network",
-    "migrationdirection": "Migration direction"
+    "migrationdirection": "Migration direction",
+    "datareferencetip": "The current data is referenced by the scene and cannot be deleted",
+    "organizationalstructure": "organizational structure",
+    "affiliatedorganization": "Affiliated organization",
+    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
   }
 }

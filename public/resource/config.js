@@ -14,6 +14,7 @@ var MENULIST = [];
 var MENUTYPE = {};
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
+const COMMERCIAL_MODULES = []; //已激活的商业模块
 
 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
 var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
@@ -88,6 +89,13 @@ function getDirectUrl() {
           window.open(responseText.DirectUrl, '_self');
         }
       }
+    } else if (xhr.status == 200) {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
+          COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+        }
+      } catch (e) {}
     }
   }
 }
