@@ -2479,6 +2479,10 @@
     "associationmodel": "Association model",
     "network": "network",
     "migrationdirection": "Migration direction",
-    "datareferencetip": "The current data is referenced by the scene and cannot be deleted"
+    "datareferencetip": "The current data is referenced by the scene and cannot be deleted",
+    "organizationalstructure": "organizational structure",
+    "affiliatedorganization": "Affiliated organization",
+    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
   }
 }
