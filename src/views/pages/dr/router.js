@@ -66,7 +66,8 @@ let routerArr = [
       title: $t('router.dr.basicsetting'),
       ismenu: true,
       icon: 'tsfont-setting',
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   }
 ];

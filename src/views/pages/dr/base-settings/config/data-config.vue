@@ -25,6 +25,7 @@
         <div
           class="tsfont-trash-s action-item"
           :class="{'text-disabled':row.referenceCount}"
+          :title="row.referenceCount?$t('term.dr.datareferencetip'):''"
           @click="deleteDatacenter(row)"
         >{{ $t('page.delete') }}</div>
       </template>

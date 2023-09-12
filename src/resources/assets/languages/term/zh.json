@@ -2477,6 +2477,7 @@
     "associationmodel": "关联模型",
     "network": "网络",
     "migrationdirection": "迁移方向",
+    "datareferencetip": "当前数据被场景引用，无法删除",
     "organizationalstructure": "组织架构",
     "affiliatedorganization": "所属组织",
     "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
