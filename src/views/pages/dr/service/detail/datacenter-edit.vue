@@ -17,10 +17,10 @@
       <div v-for="(item,index) in paramList" :key="index" class="pb-sm params">
         <TsRow :gutter="0">
           <Col span="12" class="pr-xs">
-            <TsFormInput border="border"></TsFormInput>
+            <TsFormInput v-model="item.key" border="border"></TsFormInput>
           </Col>
           <Col span="12">
-            <TsFormInput border="border"></TsFormInput>
+            <TsFormInput v-model="item.name" border="border"></TsFormInput>
           </Col>
         </TsRow>
         <div v-if="paramList.length > 0" class="tsfont-trash-o text-tip-active del-icon" @click="delParam(index)"></div>
@@ -64,7 +64,8 @@ export default {
     return {
       paramList: [
         {
-          name: 'oo'
+          name: '',
+          key: ''
         }
       ],
       isShowSceneDialog: false,
@@ -72,7 +73,6 @@ export default {
         name: {
           type: 'text',
           name: 'name',
-          value: '',
           maxlength: 50,
           label: this.$t('page.scenarioname'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: '', key: 'name' }]
@@ -123,10 +123,12 @@ export default {
     },
     addParam() {
       this.paramList.push({
-        name: 'ddd'
+        name: '',
+        key: ''
       });
     },
     delParam(index) {
+      console.log(index, 'index', this.paramList);
       this.paramList.splice(index, 1);
     }
    
