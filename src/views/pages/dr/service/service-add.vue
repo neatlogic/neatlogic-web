@@ -4,7 +4,7 @@
       <template v-slot:topRight>
         <div class="action-group">
           <div class="action-item">
-            <Button type="primary" ghost>{{ $t('page.cancel') }}</Button>
+            <Button>{{ $t('page.cancel') }}</Button>
           </div>
           <div v-if="current > 0" class="action-item">
             <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
@@ -34,36 +34,38 @@
             </Steps>
           </div>
           <!-- 基本信息 -->
-          <div v-if="current === 0">
-            <TsForm ref="settings" :itemList="formConfig">
-              <template v-slot:file>
-                <div v-for="(item,index) in fileList" :key="index" class="file pb-sm">
-                  <TsFormInput v-model="item.filePath"></TsFormInput>
-                  <span class="tsfont-trash-s del-icon text-tip-active"></span>
-                </div>
-                <Button type="primary" ghost @click="addFile()">
-                  <span class="tsfont-plus">{{ $t('page.path') }}</span>
-                </Button>
-              </template>
-            </TsForm>
-          </div>
-          <!-- 数据中心 -->
-          <div v-if="current > 0 && current < datacenterList.length + 1">
-            <DatacenterEdit></DatacenterEdit>
-          </div>
-          <!-- 预案 -->
-          <div v-if="current === (datacenterList.length + 1)">
-            <Scene></Scene>
-          </div>
-          <!-- 服务依赖 -->
-          <div v-if="current === (datacenterList.length + 2)">
-            <Service :firstBtn="true"></Service>
-          </div>
+          <template v-if="!loadingShow">
+            <div v-if="current === 0">
+              <TsForm ref="settings" :itemList="formConfig">
+                <template v-slot:file>
+                  <div v-for="(item,index) in fileList" :key="index" class="file pb-sm">
+                    <TsFormInput v-model="item.filePath"></TsFormInput>
+                    <span class="tsfont-trash-s del-icon text-tip-active" @click="delFilepath(index)"></span>
+                  </div>
+                  <Button type="primary" ghost @click="addFile()">
+                    <span class="tsfont-plus">{{ $t('page.path') }}</span>
+                  </Button>
+                </template>
+              </TsForm>
+            </div>
+            <!-- 数据中心 -->
+            <div v-if="current > 0 && current < datacenterList.length + 1">
+              <DatacenterEdit></DatacenterEdit>
+            </div>
+            <!-- 预案 -->
+            <div v-if="current === (datacenterList.length + 1)">
+              <Scene></Scene>
+            </div>
+            <!-- 服务依赖 -->
+            <div v-if="current === (datacenterList.length + 2)">
+              <Service :firstBtn="true"></Service>
+            </div>
+          </template>
         </div>
         <div class="flex-center pt-nm footer-btn">
           <div class="action-group">
             <div class="action-item">
-              <Button type="primary" ghost>{{ $t('page.cancel') }}</Button>
+              <Button @click="cancel()">{{ $t('page.cancel') }}</Button>
             </div>
             <div v-if="current > 0" class="action-item">
               <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
@@ -81,6 +83,7 @@
   </div>
 </template>
 <script>
+
 export default {
   name: '',
   components: {
@@ -93,6 +96,7 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: false,
       current: 0,
       datacenterList: [],
       formConfig: {
@@ -112,12 +116,35 @@ export default {
         },
         type: {
           type: 'select',
-          label: '应用类型', // 名称
+          label: '应用类型',
+          dataList: [
+            {
+              text: '网络',
+              value: 'network'
+            },
+            {
+              text: '基础服务',
+              value: 'basicservices'
+            },
+            {
+              text: 'DB',
+              value: 'db'
+            },
+            {
+              text: '业务应用',
+              value: 'app'
+            }
+          ],
           validateList: ['required']
         },
         jg: {
-          type: 'select',
-          label: '恢复机构', // 名称
+          type: 'tree',
+          label: '恢复机构',
+          url: '/api/rest/dr/organization/tree',
+          textName: 'name',
+          valueName: 'id',
+          search: true,
+          transfer: true,
           validateList: ['required']
         },
         RTO: {
@@ -154,7 +181,8 @@ export default {
       },
       fileList: [
         {
-          filePath: 'sss'
+          filePath: '',
+          id: ''
         }
       ],
       isShowSteps: false
@@ -163,9 +191,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    console.log(this.$utils.isSame({a: [1, 2]}, {a: [2, 1]}));
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -174,12 +200,20 @@ export default {
   destroyed() {},
   methods: {
     next(current) {
-      // if (this.$refs.settings && !this.$refs.settings.valid()) {
-      //   return;
-      // }
+      if (this.$refs.settings && !this.$refs.settings.valid()) {
+        return;
+      }
+      this.loadingShow = true;
       this.current = current;
+      this.$nextTick(() => {
+        this.loadingShow = false;
+      });
     },
-    save() {},
+    getValid() {},
+    save() {
+      let data = {};
+      return data;
+    },
     changeDataCenter(value, selectedItem) {
       this.isShowSteps = true;
       this.datacenterList = selectedItem;
@@ -189,8 +223,12 @@ export default {
     },
     addFile() {
       this.fileList.push({
-        filePath: 'ss'
+        filePath: '',
+        id: ''
       });
+    },
+    delFilepath(index) {
+      this.fileList.splice(index, 1);
     },
     validDatacenter(el) {
       // 验证协议和账号唯一
@@ -199,6 +237,21 @@ export default {
         isValid = false;
       }
       return isValid;
+    },
+    cancel() {
+      this.$createDialog({
+        title: this.$t('dialog.title.cancelconfirm'),
+        content: this.$t('dialog.content.cancelconfirm'),
+        'on-ok': vnode => {
+          vnode.isShow = false;
+          this.$router.push({
+            path: './service-manage'
+          });
+        },
+        'on-cancel': vnode => {
+          vnode.isShow = false;
+        }
+      });
     }
   },
   filter: {},

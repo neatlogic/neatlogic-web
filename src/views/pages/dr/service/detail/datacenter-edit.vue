@@ -57,7 +57,7 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AddServiceDialog: resolve => require(['./dialog/add-service-dialog.vue'], resolve)
+    AddServiceDialog: resolve => require(['./add-service-dialog.vue'], resolve)
   },
   props: {},
   data() {

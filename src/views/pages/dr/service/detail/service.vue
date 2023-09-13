@@ -23,7 +23,7 @@
       </template>
       <template v-slot:control="{ row }">
         <div class="tsfont-edit" @click="editService(row)">{{ $t('page.edit') }}</div>
-        <div class="pl-sm tsfont-trash-o" @click="deleteService(row)">{{ $t('page.delete') }}</div>
+        <div v-if="firstBtn" class="pl-sm tsfont-trash-o" @click="deleteService(row)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <ServiceDialog v-if="isShowDialog" @close="closeService"></ServiceDialog>
@@ -34,7 +34,7 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ServiceDialog: resolve => require(['./dialog/service-dialog.vue'], resolve)
+    ServiceDialog: resolve => require(['./service-dialog.vue'], resolve)
   },
   props: {
     firstBtn: {

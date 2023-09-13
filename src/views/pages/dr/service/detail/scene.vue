@@ -40,7 +40,7 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    SceneDialog: resolve => require(['./dialog/scene-dialog.vue'], resolve)
+    SceneDialog: resolve => require(['./scene-dialog.vue'], resolve)
   },
   props: {},
   data() {
