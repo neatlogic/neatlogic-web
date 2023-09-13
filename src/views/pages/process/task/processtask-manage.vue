@@ -232,7 +232,6 @@ export default {
         this.cancelAxios.cancel();
         this.cancelAxios = null;
       }
-      this.selectedWorkList = [];
       this.cancelAxios = this.$https.CancelToken.source();
       this.workcenterData.pageSize = this.tableConfig.pageSize;
       this.workcenterData.currentPage = this.tableConfig.currentPage;
@@ -528,6 +527,7 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
               this.refreshProcessTask();
+              this.selectedWorkList = [];
             }
           }).finally(() => {
             this.closeDialog();
@@ -541,6 +541,7 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
               this.refreshProcessTask();
+              this.selectedWorkList = [];
             }
           }).finally(() => {
             this.closeDialog();
@@ -552,6 +553,7 @@ export default {
       this.reasonForm.content.value = '';
       this.okBtnDisable = false;
       this.isShowModal = false;
+      this.selectedWorkList = [];
     },
     filtertheadList(theadList) {
       let list = theadList.filter(item => {
@@ -578,6 +580,7 @@ export default {
           if (res && res.Status == 'OK') {
             this.$Message.success(this.$t('message.executesuccess'));
             this.refreshProcessTask();
+            this.selectedWorkList = [];
           }
         });
       } else if (type === 'batchHide') { 
@@ -586,6 +589,7 @@ export default {
           if (res && res.Status == 'OK') {
             this.$Message.success(this.$t('message.executesuccess'));
             this.refreshProcessTask();
+            this.selectedWorkList = [];
           }
         });
       } else if (type === 'batchPause') { 
@@ -605,6 +609,7 @@ export default {
                 if (res.Status == 'OK') {
                   this.$Message.success(this.$t('message.deletesuccess'));
                   this.refreshProcessTask();
+                  this.selectedWorkList = [];
                   vnode.isShow = false;
                 }
               });
