@@ -33,6 +33,9 @@
       >
         <div class="colorbar" :style="{ backgroundColor: row.status && row.status.color}"></div>
         <div class="name flexw">
+          <span @click.stop>
+            <Checkbox v-model="row.isSelected"></Checkbox>
+          </span>
           <span class="pr-md shrink" :style="{ color: row.channeltype.color }">{{ row.channeltype.text }}</span>
           <span :title="row.title" class="mr-md overflow">{{ row.title }}</span>
           <span class="colorgray shrink">

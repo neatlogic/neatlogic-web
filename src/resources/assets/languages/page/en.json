@@ -939,5 +939,7 @@
   "viewalldocuments": "View all documents",
   "counter": "frequency",
   "compareexpression": "Comparative operation",
-  "logicalexpression": "Logical operation"
+  "logicalexpression": "Logical operation",
+  "batchpause": "Batch pause",
+  "batchabort": "Batch cancellation"
 }
