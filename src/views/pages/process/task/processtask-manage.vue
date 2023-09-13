@@ -605,6 +605,7 @@ export default {
                 if (res.Status == 'OK') {
                   this.$Message.success(this.$t('message.deletesuccess'));
                   this.refreshProcessTask();
+                  vnode.isShow = false;
                 }
               });
           }
