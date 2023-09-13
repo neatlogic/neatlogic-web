@@ -80,6 +80,7 @@ export default {
   props: {},
   data() {
     return {
+      userCount: 0,
       loadingShow: true,
       isShowUserAddDialog: false,
       isShowOrganizationalStructureEditDialog: false,
@@ -216,7 +217,8 @@ export default {
     //服务树点击事件
     ztreeClick(event, treeId, treeNode) {
       this.selectedTreeId = treeNode.id;
-      this.searchUserDataByOrganizationId();
+      this.userCount = treeNode.userCount; // 用户数量，用于添加用户成功后，是否需要刷新组织架构树
+      this.changeCurrent();
     },
     deleteTree(treeNode) {
       // 删除组织架构
@@ -275,6 +277,9 @@ export default {
     closeUserAddDialog(needRefresh) {
       this.isShowUserAddDialog = false;
       if (needRefresh) {
+        if (this.userCount == 0) {
+          this.searchOrangeStructureData();
+        }
         this.searchUserDataByOrganizationId();
       }
     },
