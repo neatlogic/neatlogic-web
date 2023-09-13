@@ -24,8 +24,8 @@
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
         >
-          <template slot="orgNameList" slot-scope="{row}">
-            <Tag v-for="(item, index) in row.orgNameList" :key="index">{{ item }}</Tag>
+          <template slot="orgName" slot-scope="{row}">
+            <Tag v-if="row.orgName">{{ row.orgName }}</Tag>
           </template>
           <template slot="userName" slot-scope="{row}">
             <UserCard :uuid="row.uuid" hideName></UserCard>
@@ -89,11 +89,10 @@ export default {
       organizationalParentId: null,
       organizationalStructureName: '',
       selectedTreeId: null,
-      rootId: null, // 根节点id
       theadList: [
         {
           title: this.$t('term.dr.affiliatedorganization'),
-          key: 'orgNameList'
+          key: 'orgName'
         },
         {
           title: this.$t('page.username'),
@@ -263,7 +262,7 @@ export default {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t(this.$t('message.deletesuccess')));
               this.tableConfig.tbodyList.splice(index, 1);
-              this.searchUserDataByOrganizationId();
+              this.searchUserDataByOrganizationId(true);
             }
           });
           vnode.isShow = false;
@@ -295,29 +294,34 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.TsZtree.zNodes = res.Return ? res.Return : [];
-            this.rootId = res.Return ? res.Return[0]?.id : null;
+            if (this.selectedTreeId) {
+              this.$nextTick(() => {
+                this.$refs.ztree?.selectedNodeById(this.selectedTreeId);
+              });
+            }
           }
         })
         .finally(() => {
           this.loadingShow = false;
         });
     },
-    searchUserDataByOrganizationId() {
+    searchUserDataByOrganizationId(needRefresh = false) {
       let params = {
-        orgId: this.selectedTreeId || this.rootId,
+        orgId: this.selectedTreeId,
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
         keyword: this.keyword
       };
-      if (!this.selectedTreeId && !this.rootId) {
-        return false;
-      }
       this.loadingShow = true;
       this.$api.dr.organizationalStructure
         .searchOrganizationUser(params)
         .then(res => {
           if (res.Status == 'OK') {
             Object.assign(this.tableConfig, res.Return);
+            if (res.Return?.tbodyList && this.$utils.isEmpty(res.Return.tbodyList) && needRefresh) {
+              // 删除全部用户后，刷新树列表
+              this.searchOrangeStructureData();
+            }
           }
         })
         .finally(() => {
