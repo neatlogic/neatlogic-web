@@ -51,7 +51,7 @@
                 @changePageSize="changePageSize"
                 @updateSort="updateSort"
                 @checkshow="checkshow"
-                @getSelected="getSelected"
+                @getSelected="(value,selectList)=>{ getSelected(selectList) }"
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
                   <div :key="tindex">
@@ -98,6 +98,7 @@
               @delete="deleteProcessTask"
               @updateMenu="updateMenu"
               @actionTask="actionTask"
+              @getSelected="getSelected"
             ></CardInfo>
           </div>
         </div>
@@ -558,9 +559,8 @@ export default {
       });
       return list;
     },
-    getSelected(indexList, itemList) {
+    getSelected(itemList) {
       this.selectedWorkList = itemList;
-      console.log(itemList, 'itemList');
     },
     batchAction(type) { //批量操作
       let data = {
