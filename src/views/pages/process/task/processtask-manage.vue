@@ -220,6 +220,7 @@ export default {
       }
     },
     search(workcenterConditionData, currentPage) {
+      this.selectedWorkList = [];
       if (currentPage) {
         this.tableConfig.currentPage = currentPage;
       }
@@ -354,6 +355,14 @@ export default {
         };
         idList.push(item.id);
         this.$set(item, 'isDisabled', !item.isShow);
+        if (!this.$utils.isEmpty(this.selectedWorkList)) {
+          let findItem = this.selectedWorkList.find(s => s.id === item.id);
+          if (findItem) {
+            this.$set(item, 'isSelected', true);
+          } else {
+            this.$set(item, 'isSelected', false);
+          }
+        }
         return {
           ...item,
           ...this.checkExpire(item.expiretime),
