@@ -70,11 +70,20 @@
                       <TsFormItem :label="e.element.label" labelPosition="left">
                         <TsFormRadio
                           v-if="!e.element.isMultiple"
+                          :allowToggle="true"
                           :dataList="e.element.itemList"
                           valueName="id"
                           textName="value"
-                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)"
-                          @change="val => setGlobalAttrData(e.element, val)"
+                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element).length > 0 ? getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)[0] : null"
+                          @change="
+                            (val, opt) => {
+                              if (opt) {
+                                setGlobalAttrData(e.element, [opt]);
+                              } else {
+                                setGlobalAttrData(e.element, []);
+                              }
+                            }
+                          "
                         ></TsFormRadio>
                         <TsFormCheckbox
                           v-if="!!e.element.isMultiple"

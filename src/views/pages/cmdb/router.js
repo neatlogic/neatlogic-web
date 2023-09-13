@@ -2,9 +2,10 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 //const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const ciDetail = () => import('./ci/ci-detail.vue');
-const ciEdit = () => import('./ci/ci-edit.vue');
+//const ciEdit = () => import('./ci/ci-edit.vue');
 const ciView = () => import('./cientity/ci-view.vue');
 const ciManage = () => import('./ci/ci-manage.vue');
+const globalAttrManage = () => import('./globalattr/global-attr-manage.vue');
 const ciEntityEdit = () => import('./cientity/cientity-edit.vue');
 const ciEntityView = () => import('./cientity/cientity-view.vue');
 const ciEntityList = () => import('./cientity/cientity-list.vue');
@@ -271,6 +272,18 @@ let routerArr = [
       ismenu: true,
       type: 'cmdbmanage',
       icon: 'tsfont-module',
+      authority: 'CI_MODIFY'
+    }
+  },
+  {
+    path: '/global-attr-manage',
+    name: 'global-attr-manage',
+    component: globalAttrManage,
+    meta: {
+      title: $t('router.cmdb.globalattrmanage'),
+      ismenu: true,
+      type: 'cmdbmanage',
+      icon: 'tsfont-websphere',
       authority: 'CI_MODIFY'
     }
   },
