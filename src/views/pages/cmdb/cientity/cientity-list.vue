@@ -254,8 +254,8 @@
           </div>
         </template>
         <template v-for="(head, index) in finalHeaderList" :slot="head.key" slot-scope="{ row }">
-          <div v-if="head.key.indexOf('attr_') == 0 && row.attrEntityData" :key="index">
-            <div v-if="row.attrEntityData && row.attrEntityData[head.key]">
+          <div v-if="head.key.startsWith('attr_') && row.attrEntityData" :key="index">
+            <div v-if="row.attrEntityData[head.key]">
               <AttrViewer
                 :ciEntity="row"
                 :handler="row.attrEntityData[head.key].type"
@@ -265,8 +265,15 @@
             </div>
             <div v-else>-</div>
           </div>
-          <div v-else-if="head.key.indexOf('const_') == 0" :key="index" v-html="row[head.key.replace('const_', '')]"></div>
-          <div v-else-if="row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
+          <div v-else-if="head.key.startsWith('global_') && row.globalAttrEntityData" :key="index">
+            <div v-if="row.globalAttrEntityData[head.key]">
+              <Tag v-for="(v, vindex) in row.globalAttrEntityData[head.key].valueList" :key="vindex">
+                {{ v.value }}
+              </Tag>
+            </div>
+          </div>
+          <div v-else-if="head.key.startsWith('const_')" :key="index" v-html="row[head.key.replace('const_', '')]"></div>
+          <div v-else-if="(head.key.startsWith('relto_') || head.key.startsWith('relfrom_')) && row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
             <span v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']" :key="rindex" class="mr-xs">
               <a v-if="row.maxRelEntityCount > rindex" href="javascript:void(0)" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">
                 <span class="tsfont-ci-o"></span>
@@ -400,7 +407,7 @@ export default {
     needCheck: { type: Boolean, default: false }, //是否需要复选框
     needCondition: { type: Boolean, default: true }, //是否需要条件
     needPage: { type: Boolean, default: true }, //是否需要分页
-    needDsl: {type: Boolean, default: false}, //是否激活dsl搜索
+    needDsl: { type: Boolean, default: false }, //是否激活dsl搜索
     selectedData: { type: Array }, //已选中数据，只保存id，例如[123123123,123123123]
     needActionType: { type: Boolean, default: false }, //是否需要操作类型列，用于标记数据的操作类型，一般表单控件中使用
     relCiEntityId: { type: Number }, //关联配置项id
@@ -477,7 +484,7 @@ export default {
       attrRelList: [], //属性和关系列表，用于导出excel时选择
       isShowAddAccountDialog: false, // 账号管理弹窗
       resourceId: null,
-      suggestList: []//dsl搜索模式的提示词列表
+      suggestList: [] //dsl搜索模式的提示词列表
     };
   },
   beforeCreate() {},
@@ -501,7 +508,7 @@ export default {
     getSuggestList(keywordData) {
       this.suggestList = [];
       if (keywordData.value) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, {keyword: keywordData.value}).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { keyword: keywordData.value }).then(res => {
           const attrList = res.Return;
           if (attrList && attrList.length > 0) {
             attrList.forEach(attr => {
@@ -1093,7 +1100,7 @@ export default {
       let finalList = [];
       if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
         this.ciEntityData.theadList.forEach(element => {
-          if (element.key.indexOf('attr_') == 0 || element.key.indexOf('relto_') == 0 || element.key.indexOf('relfrom_') == 0 || element.key.indexOf('const_') == 0) {
+          if (element.key.startsWith('attr_') || element.key.startsWith('global_') || element.key.startsWith('relto_') || element.key.startsWith('relfrom_') || element.key.startsWith('const_')) {
             finalList.push(element);
           }
         });

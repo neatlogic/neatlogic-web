@@ -29,7 +29,7 @@
           :transfer="true"
           placement="right"
           trigger="hover"
-          title="说明"
+          :title="$t('page.explain')"
         >
           <div slot="content">
             {{ row.description }}
@@ -71,7 +71,6 @@ export default {
     TsTable
   },
   props: {
-    ciData: {type: Object},
     attrData: {type: Object}
   },
   data() {

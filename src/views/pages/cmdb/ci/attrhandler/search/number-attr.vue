@@ -3,7 +3,7 @@
     <div>
       <TsFormInput
         ref="handler"
-        type="text"
+        type="number"
         :value="valueB"
         @change="setDataBefore"
         @on-keydown="validInput"
@@ -13,7 +13,7 @@
     <div>
       <TsFormInput
         ref="handler"
-        type="text"
+        type="number"
         :value="valueA"
         @change="setDataAfter"
         @on-keydown="validInput"
