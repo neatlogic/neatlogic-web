@@ -20,6 +20,7 @@ export { default as heatmapwidget } from './original/heatmap-widget.vue';
 export { default as funnelwidget } from './others/funnel-widget.vue';
 export { default as wordcloudwidget } from './others/wordcloud-widget.vue';
 export { default as stackedbarwidget } from './original/stackedbar-widget.vue';
+export { default as bulletwidget } from './original/bullet-widget.vue';
 
 export { default as mapareawidget } from './geography/maparea-widget.vue';
 export { default as districtwidget } from './geography/district-widget.vue';

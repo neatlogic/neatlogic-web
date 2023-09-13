@@ -2,7 +2,7 @@
   <div>
     <TsFormInput
       ref="handler"
-      type="text"
+      type="number"
       :value="value"
       maxlength="20"
       :validateList="validateList"
@@ -48,8 +48,12 @@ export default {
   destroyed() {},
   methods: {
     setData(val) {
-      this.$emit('setData', [val]);
-      this.$emit('setValue', [val]);
+      let valueList = [];
+      if (val !== '') {
+        valueList.push(val);
+      }
+      this.$emit('setData', valueList);
+      this.$emit('setValue', valueList);
     },
     validInput(event, val) {
       if ((val == '' && event.key == '-') || event.key == 'ArrowLeft' || event.key == 'ArrowRight' || event.key == 'Backspace' || (event.keyCode >= 48 && event.keyCode <= 57) || (val.toString().indexOf('.') == -1 && event.key == '.')) {

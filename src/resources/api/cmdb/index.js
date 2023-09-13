@@ -2,6 +2,7 @@
 import ci from './ci/ci.js';
 import validator from './ci/validator.js';
 import group from './ci/group.js';
+import globalattr from './ci/globalattr.js';
 import citype from './citype/citype';
 import transaction from './transaction/transaction';
 import cientity from './cientity/cientity';
@@ -22,6 +23,7 @@ export default {
   ci,
   validator,
   group,
+  globalattr,
   citype,
   transaction,
   cientity,

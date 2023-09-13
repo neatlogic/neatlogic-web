@@ -1,6 +1,11 @@
 <template>
   <div>
-    <TsContain :hideHeader="hideHeader" :enableCollapse="!ciEntityData.isVirtual" border="border">
+    <TsContain
+      :hideHeader="hideHeader"
+      :enableCollapse="!ciEntityData.isVirtual"
+      border="border"
+      :rightWidth="220"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -121,7 +126,7 @@
                             :label="group"
                           ></TabPane>
                         </Tabs>
-                        <div v-if="(attrList && attrList.length > 0) || (constList && constList.length > 0)" class="attr-main mt-md">
+                        <div v-if="(attrList && attrList.length > 0) || (globalAttrList && globalAttrList.length > 0) || (constList && constList.length > 0)" class="attr-main mt-md">
                           <div
                             v-for="(attr, index) in attrListGrouped"
                             :key="index"
@@ -129,12 +134,15 @@
                             :class="attr.type == 'textarea' ? ' attr-item-row' : ''"
                           >
                             <div class="attr-title text-grey overflow">
-                              <Tooltip :content="attr.label" placement="top">
+                              <Tooltip v-if="attr._type === 'attr' || attr._type === 'const'" :content="attr.label" placement="top">
                                 {{ attr.label }}
+                              </Tooltip>
+                              <Tooltip v-else-if="attr._type === 'global'" :content="attr.attrLabel" placement="top">
+                                <span class="tsfont-websphere">{{ attr.attrLabel }}</span>
                               </Tooltip>
                             </div>
                             <div class="attr-content">
-                              <div v-if="attr.ciId" class="content">
+                              <div v-if="attr._type === 'attr'" class="content">
                                 <AttrViewer
                                   v-if="ciEntityData.attrEntityData && ciEntityData.attrEntityData['attr_' + attr.id]"
                                   :handler="ciEntityData.attrEntityData['attr_' + attr.id].type"
@@ -145,7 +153,12 @@
                                 ></AttrViewer>
                                 <div v-else>-</div>
                               </div>
-                              <div v-else class="content" v-html="ciEntityData[attr.name.replace('_', '')] || '-'"></div>
+                              <div v-else-if="attr._type === 'global'">
+                                <div v-if="attr.valueList && attr.valueList.length > 0">
+                                  <Tag v-for="(v, vindex) in attr.valueList" :key="vindex">{{ v.value }}</Tag>
+                                </div>
+                              </div>
+                              <div v-else-if="attr._type === 'const'" class="content" v-html="ciEntityData[attr.name.replace('_', '')] || '-'"></div>
                             </div>
                           </div>
                         </div>
@@ -263,6 +276,7 @@ export default {
       relEntityData: {},
       constList: [],
       attrList: [],
+      globalAttrList: [],
       attrGroupList: [],
       relList: [],
       activedGroup: '',
@@ -282,6 +296,7 @@ export default {
     this.getCiEntityById();
     this.getAttrByCiId();
     this.getRelByCiId();
+    this.getGlobalAttr();
     this.getConstList();
     this.getCustomViewList();
     this.getUnCommitTransactionCount();
@@ -417,6 +432,11 @@ export default {
           });
       }
     },
+    getGlobalAttr() {
+      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId).then(res => {
+        this.globalAttrList = res.Return;
+      });
+    },
     getAttrByCiId() {
       if (this.ciId) {
         this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
@@ -454,10 +474,19 @@ export default {
     attrListGrouped() {
       let finalList = [];
       if (this.attrList && this.attrList.length > 0) {
-        finalList = finalList.concat(this.attrList);
+        this.attrList.forEach(attr => {
+          finalList.push({ _type: 'attr', ...attr });
+        });
+      }
+      if (this.globalAttrList && this.globalAttrList.length > 0) {
+        this.globalAttrList.forEach(attr => {
+          finalList.push({ _type: 'global', ...attr });
+        });
       }
       if (this.constList && this.constList.length > 0) {
-        finalList = finalList.concat(this.constList);
+        this.constList.forEach(attr => {
+          finalList.push({ _type: 'const', ...attr });
+        });
       }
       if (finalList.length > 0) {
         finalList.sort((a, b) => {
@@ -545,14 +574,14 @@ export default {
   padding: @space-sm;
   height: calc(100vh - 116px);
   position: relative;
-  width: 200px;
+  width: 220px;
   float: left;
   overflow: auto;
 }
 .middle {
   position: relative;
   height: calc(100vh - 116px);
-  width: calc(100% - 200px);
+  width: calc(100% - 220px);
   float: left;
   overflow: auto;
   transition: all 200ms;

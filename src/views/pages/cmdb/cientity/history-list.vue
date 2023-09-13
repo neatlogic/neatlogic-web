@@ -1,6 +1,6 @@
 <template>
   <div class="history">
-    <div style="margin-bottom:10px">{{ $t('page.actionaudit') }}</div>
+    <div style="margin-bottom: 10px">{{ $t('page.actionaudit') }}</div>
     <div v-if="transactionData.tbodyList && transactionData.tbodyList.length > 0">
       <Timeline :pending="transactionData.pageCount > transactionData.currentPage">
         <TimelineItem
@@ -9,8 +9,8 @@
           :class="transaction.status == 'recover' ? 'recover' : ''"
           :color="getColor(transaction.ciEntityTransactionVo.action)"
         >
-          <div style="cursor:pointer;font-size:12px" @click="showHistory(transaction.id)">
-            <div style="white-space:nowrap">
+          <div style="cursor: pointer; font-size: 12px" @click="showHistory(transaction.id)">
+            <div style="white-space: nowrap">
               <span>{{ transaction.createUserName }}</span>
               <span class="ml-xs">{{ transaction.commitTime | formatDate('yyyy-mm-dd hh:mm') }}</span>
             </div>
@@ -18,8 +18,12 @@
               <span class="text-grey mr-xs">{{ $t('page.from') }}</span>
               <span>{{ transaction.inputFromText }}</span>
             </div>
-            <div v-if="transaction.ciEntityTransactionVo.updateAttrCount || transaction.ciEntityTransactionVo.updateRelCount">
+            <div v-if="transaction.ciEntityTransactionVo.updateAttrCount || transaction.ciEntityTransactionVo.updateGlobalAttrCount || transaction.ciEntityTransactionVo.updateRelCount">
               <span class="text-grey mr-xs">{{ $t('page.change') }}</span>
+              <span v-if="transaction.ciEntityTransactionVo.updateGlobalAttrCount">{{ $t('term.cmdb.globalattr') }}</span>
+              <span v-if="transaction.ciEntityTransactionVo.updateGlobalAttrCount" class="ml-xs mr-xs text-primary">
+                <b>{{ transaction.ciEntityTransactionVo.updateGlobalAttrCount }}</b>
+              </span>
               <span v-if="transaction.ciEntityTransactionVo.updateAttrCount">{{ $t('page.attribute') }}</span>
               <span v-if="transaction.ciEntityTransactionVo.updateAttrCount" class="ml-xs mr-xs text-primary">
                 <b>{{ transaction.ciEntityTransactionVo.updateAttrCount }}</b>
@@ -29,16 +33,14 @@
                 <b>{{ transaction.ciEntityTransactionVo.updateRelCount }}</b>
               </span>
             </div>
-            <Divider
-              v-if="transaction.status == 'recover'"
-              orientation="start"
-              style="margin:3px 0px;"
-            ><span style="font-size:12px;" class="text-grey">{{ $t('page.recover') }}</span></Divider>
+            <Divider v-if="transaction.status == 'recover'" orientation="start" style="margin: 3px 0px">
+              <span style="font-size: 12px" class="text-grey">{{ $t('page.recover') }}</span>
+            </Divider>
             <div v-if="transaction.status == 'recover'">
               <span>{{ transaction.recoverUserName }}</span>
               <span class="ml-xs">{{ transaction.recoverTime | formatDate('yyyy-mm-dd hh:mm') }}</span>
             </div>
-            <Divider v-if="transaction.description" style="margin:3px 0px;font-size:12px" orientation="start">{{ $t('term.cmdb.changememo') }}</Divider>
+            <Divider v-if="transaction.description" style="margin: 3px 0px; font-size: 12px" orientation="start">{{ $t('term.cmdb.changememo') }}</Divider>
             <div v-if="transaction.description" class="text-grey">
               <span v-if="transaction.description.length > 50">
                 <Tooltip max-width="200" :transfer="true" placement="left-start">
@@ -50,7 +52,9 @@
             </div>
           </div>
         </TimelineItem>
-        <TimelineItem v-if="transactionData.pageCount > transactionData.currentPage" color="grey"><a href="javascript:void(0)" @click="nextPage">{{ $t('page.more') }}</a></TimelineItem>
+        <TimelineItem v-if="transactionData.pageCount > transactionData.currentPage" color="grey">
+          <a href="javascript:void(0)" @click="nextPage">{{ $t('page.more') }}</a>
+        </TimelineItem>
       </Timeline>
     </div>
     <div v-else>

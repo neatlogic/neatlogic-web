@@ -941,5 +941,6 @@
   "compareexpression": "Comparative operation",
   "logicalexpression": "Logical operation",
   "batchpause": "Batch pause",
-  "batchabort": "Batch cancellation"
+  "batchabort": "Batch cancellation",
+  "ismultiple": "Do you want to select multiple options"
 }

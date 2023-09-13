@@ -62,7 +62,7 @@ export default {
       isLoading: false,
       tmpCiEntityData: {}, //临时数据，用于取消修改时还原
       ciEntityId: null,
-      ciEntityData: { attrEntityData: {}, relEntityData: {} },
+      ciEntityData: { attrEntityData: {}, relEntityData: {}, globalAttrEntityData: {} },
       activePanel: ['attr', 'rel'],
       isCiEntityChooseShow: false,
       targetCiId: null,
@@ -146,6 +146,7 @@ export default {
               ciIcon: ci.icon,
               attrEntityData: {},
               relEntityData: {},
+              globalAttrEntityData: {},
               _disableRel: 'rel' + direction + '_' + relId //标记哪个关系不允许添加或选择
             };
             newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
@@ -187,7 +188,8 @@ export default {
                 ciLabel: ci.label,
                 ciIcon: ci.icon,
                 attrEntityData: {},
-                relEntityData: {}
+                relEntityData: {},
+                globalAttrEntityData: {}
               };
               newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
               newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
@@ -331,6 +333,22 @@ export default {
             }
           }
         }
+        if (!cientity.globalAttrEntityData || Object.keys(cientity.globalAttrEntityData).length === 0) {
+          cientity.globalAttrEntityData = this.propCiEntityData.globalAttrEntityData || {};
+        } else {
+          if (this.propCiEntityData.globalAttrEntityData) {
+            for (let key in cientity.globalAttrEntityData) {
+              if (this.propCiEntityData.globalAttrEntityData[key]) {
+                cientity.globalAttrEntityData[key].valueList = this.propCiEntityData.globalAttrEntityData[key].valueList;
+              }
+            }
+            for (let key in this.propCiEntityData.globalAttrEntityData) {
+              if (!cientity.globalAttrEntityData[key]) {
+                cientity.globalAttrEntityData[key] = this.propCiEntityData.globalAttrEntityData[key];
+              }
+            }
+          }
+        }
       }
     },
     async getCiEntityById() {
@@ -359,6 +377,7 @@ export default {
                 ciIcon: ci.icon,
                 attrEntityData: {},
                 relEntityData: {},
+                globalAttrEntityData: {},
                 authData: ci.authData,
                 maxAttrEntityCount: 9999999999, //必须定义，代表不限制引用属性数量，否则会被ciEntityVo中的属性覆盖
                 maxRelEntityCount: 9999999999 //必须定义，代表不限制关系数量，否则会被ciEntityVo中的属性覆盖
@@ -366,6 +385,7 @@ export default {
               cientity['_elementList'] = await this.getElementByCiId(this.ciId);
               cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciId);
               this.mergePropCiEntityData(cientity);
+             
               this.ciEntityQueue = [cientity];
             } else {
               if (ci.isVirtual == 1) {
@@ -399,6 +419,13 @@ export default {
           this.$delete(this.saveCiEntityMap, attrentity.uuid);
         }
       }
+    },
+    async getGlobalAttr() {
+      let globalAttrList;
+      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
+        globalAttrList = res.Return.tbodyList;
+      });
+      return globalAttrList;
     },
     async getAttrByCiId(ciId) {
       if (ciId) {
@@ -442,23 +469,29 @@ export default {
     async getElementByCiId(ciId) {
       const attrList = await this.getAttrByCiId(ciId);
       const relList = await this.getRelByCiId(ciId);
+      const globalAttrList = await this.getGlobalAttr();
       const ciViewList = await this.getCiViewByCiId(ciId);
       const elementList = [];
       ciViewList.forEach((e, index) => {
-        if (e.type == 'attr') {
+        if (e.type === 'attr') {
           const attr = attrList.find(a => a.id == e.itemId);
           if (attr) {
             elementList.push({ type: 'attr', element: attr });
           }
-        } else if (e.type == 'relfrom') {
+        } else if (e.type === 'relfrom') {
           const rel = relList.find(a => a.direction == 'from' && a.id == e.itemId);
           if (rel) {
             elementList.push({ type: 'rel', element: rel });
           }
-        } else if (e.type == 'relto') {
+        } else if (e.type === 'relto') {
           const rel = relList.find(a => a.direction == 'to' && a.id == e.itemId);
           if (rel) {
             elementList.push({ type: 'rel', element: rel });
+          }
+        } else if (e.type === 'global') {
+          const globalattr = globalAttrList.find(a => a.id == e.itemId);
+          if (globalattr) {
+            elementList.push({ type: 'global', element: globalattr });
           }
         }
       });

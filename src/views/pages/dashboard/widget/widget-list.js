@@ -1,4 +1,4 @@
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
@@ -22,6 +22,7 @@ import { default as marea } from './define/marea.js';
 import { default as stackedcolumn } from './define/stackedcolumn.js';
 import { default as groupedcolumn } from './define/groupedcolumn.js';
 import { default as gauge } from './define/gauge.js';
+import { default as bullet } from './define/bullet.js';
 //import { default as maparea } from './define/maparea.js';
 //import { default as district } from './define/district.js';
 //import { default as firework } from './define/firework.js';
@@ -50,6 +51,7 @@ export const WIDGETS = [
   marea,
   stackedcolumn,
   groupedcolumn,
+  bullet,
   //maparea,
   //district,
   //firework,
