@@ -19,15 +19,16 @@
           <div v-for="(row, index) in historyData.tbodyList" :key="index" class="historyTable bg-table-body">
             <div class="cell border-color">{{ row.label }}</div>
             <div class="cell border-color">
-              <span v-if="row.type == 'attr'">{{ $t('page.attribute') }}</span>
-              <span v-else-if="(row.type = 'rel')">{{ $t('page.relation') }}</span>
+              <span v-if="row.type === 'attr'">{{ $t('page.attribute') }}</span>
+              <span v-else-if="(row.type === 'rel')">{{ $t('page.relation') }}</span>
+              <span v-else-if="(row.type === 'globalattr')">{{ $t('term.cmdb.globalattr') }}</span>
             </div>
             <div class="cell diffContent border-color">
               <div>
-                <div v-if="row.type == 'attr' && row.oldValue">
+                <div v-if="row.type === 'attr' && row.oldValue">
                   <AttrViewer :handler="row.oldValue.type" :attrEntity="row.oldValue"></AttrViewer>
                 </div>
-                <div v-else-if="row.type == 'rel'">
+                <div v-else-if="row.type === 'rel'">
                   <Tag
                     v-for="(relentity, rindex) in row.oldValue"
                     :key="rindex"
@@ -37,6 +38,15 @@
                   >
                     <span @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">{{ relentity.ciEntityName }}</span>
                   </Tag>
+                </div>
+                <div v-else-if="row.type === 'globalattr'">
+                  <div v-if="row.oldValue && row.oldValue.length > 0">
+                    <Tag
+                      v-for="(attr, aindex) in row.oldValue"
+                      :key="aindex"
+                    >{{ attr.value }}
+                    </Tag>
+                  </div>
                 </div>
               </div>
               <div>
@@ -58,6 +68,13 @@
                     </Tag>
                   </div>
                   <div v-if="!row.newValue" class="text-grey">-</div>
+                </div>
+                <div v-else-if="row.type==='globalattr'">
+                  <Tag
+                    v-for="(attr, aindex) in row.newValue"
+                    :key="aindex"
+                  >{{ attr.value }}
+                  </Tag>
                 </div>
               </div>
             </div>
@@ -154,7 +171,7 @@ export default {
           brotherTransactionCount = res.Return;
         });
       }
-      let content = this.$t('dialog.content.recoverconfirm', { target: $t('term.cmdb.cientity') });
+      let content = this.$t('dialog.content.recoverconfirm', { target: this.$t('term.cmdb.cientity') });
       if (brotherTransactionCount > 0) {
         content = this.$t('dialog.content.invokerecoverconfirm', {count: brotherTransactionCount});
       }
@@ -216,7 +233,7 @@ export default {
 <style lang="less" scoped>
 .historyTable {
   display: grid;
-  grid-template-columns: 150px 50px auto;
+  grid-template-columns: 150px 80px auto;
   .cell {
     padding: 9px;
     border-bottom: 1px solid;

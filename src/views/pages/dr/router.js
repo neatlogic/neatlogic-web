@@ -2,6 +2,7 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
+const organizationalStructureManage = () => import('pages/dr/organizational-structure/organizational-structure-manage.vue');
 
 import { $t } from '@/resources/init.js';
 
@@ -46,6 +47,18 @@ let routerArr = [
     component: welcome
   },
   {
+    path: '/organizational-structure-manage',
+    name: 'organizational-structure-manage',
+    component: organizationalStructureManage,
+    meta: {
+      title: $t('term.dr.organizationalstructure'),
+      ismenu: true,
+      icon: 'tsfont-proxy',
+      type: 'dr',
+      authority: 'DR_BASE'
+    }
+  },
+  {
     path: '/base-settings',
     name: 'base-settings',
     component: baseSettings,
@@ -53,7 +66,8 @@ let routerArr = [
       title: $t('router.dr.basicsetting'),
       ismenu: true,
       icon: 'tsfont-setting',
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   }
 ];

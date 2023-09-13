@@ -157,7 +157,8 @@
     "privatedataview": "Personal Data View",
     "publicsceneview": "Global Topology View",
     "publicdataview": "Global Data View",
-    "changememo": "Reason for change"
+    "changememo": "Reason for change",
+    "globalattr": "Global Properties"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1496,7 +1497,8 @@
       "stackedbarchart": "Stacked Bar Chart",
       "stackedcolumnchart": "Stacked Column Chart",
       "wordcloud": "word cloud map",
-      "rosechart": "Rose chart"
+      "rosechart": "Rose chart",
+      "bulletchar": "Bullet chart"
     },
     "particle": {
       "motion": "Particle Motion",
@@ -1562,7 +1564,9 @@
     "barchart": "Bar Chart",
     "editdashboard": "Dashboard Editing",
     "getwidgetdatafail": "Failed to obtain dashboard component data",
-    "deletewidgetconfirm": "Are you sure to delete this component [{target}]?"
+    "deletewidgetconfirm": "Are you sure to delete this component [{target}]?",
+    "target": "Marking",
+    "frontend": "prospect"
   },
   "deploy": {
     "triggerstate": "Triggerstate",
@@ -2489,6 +2493,11 @@
     "basicservices": "Basic services",
     "associationmodel": "Association model",
     "network": "network",
-    "migrationdirection": "Migration direction"
+    "migrationdirection": "Migration direction",
+    "datareferencetip": "The current data is referenced by the scene and cannot be deleted",
+    "organizationalstructure": "organizational structure",
+    "affiliatedorganization": "Affiliated organization",
+    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
   }
 }

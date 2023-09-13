@@ -5,7 +5,7 @@
         <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
-        <div v-if="ciData.authData && ciData.authData['cimanage']" class="dashboard-action action-group" style="text-align:right">
+        <div v-if="ciData.authData && ciData.authData['cimanage']" class="dashboard-action action-group" style="text-align: right">
           <span class="action-item tsfont-edit" @click="editCi()">{{ $t('page.basicinfo') }}</span>
           <span v-if="!ciData.isVirtual" class="action-item tsfont-plus" @click="addAttr()">{{ $t('page.attribute') }}</span>
           <span v-if="!ciData.isVirtual" class="action-item tsfont-plus" @click="addRel()">{{ $t('page.relation') }}</span>
@@ -36,7 +36,7 @@
         </div>
       </template>
       <div slot="content" class="ci-content border-color">
-        <div class="right-block" style="position:relative">
+        <div class="right-block" style="position: relative">
           <Loading v-if="isLoading" :loading-show="isLoading" type="fix"></Loading>
           <div class="ci-info">
             <div class="ci-icon" :class="getIconClass()">
@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="mt-nm">
-            <Tabs class="block-tabs">
+            <Tabs class="block-tabs" :animated="false">
               <TabPane :label="$t('page.attribute')" class="padding">
                 <CiDetailAttrList
                   :ciData="ciData"
@@ -73,12 +73,12 @@
                 <TsForm
                   v-if="!ciData.isVirtual && attrList && attrList.length > 0"
                   ref="formCi"
-                  style="margin-top:10px"
+                  style="margin-top: 10px"
                   :item-list="attrFormConfig"
                   labelPosition="top"
                 ></TsForm>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual" :label="$t('page.relation')">
+              <TabPane v-if="!ciData.isVirtual && relData && relData.cardList && relData.cardList.length > 0" :label="$t('page.relation')">
                 <CiDetailRelList
                   class="bg-op"
                   :ciData="ciData"
@@ -86,6 +86,9 @@
                   @edit="editRel"
                   @delete="deleteRel"
                 ></CiDetailRelList>
+              </TabPane>
+              <TabPane v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0" class="padding" :label="$t('term.cmdb.globalattr')">
+                <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
               </TabPane>
             </Tabs>
           </div>
@@ -126,6 +129,7 @@ export default {
   components: {
     CiDetailRelList: resolve => require(['./ci-detail-rellist.vue'], resolve),
     CiDetailAttrList: resolve => require(['./ci-detail-attrlist.vue'], resolve),
+    CiDetailGlobalAttrList: resolve => require(['./ci-detail-globalattrlist.vue'], resolve),
     CiEdit: resolve => require(['./ci-edit.vue'], resolve),
     AttrEdit: resolve => require(['./attr-edit.vue'], resolve),
     RelEdit: resolve => require(['./rel-edit.vue'], resolve),
@@ -181,6 +185,7 @@ export default {
       ciTypeList: [],
       ciData: {},
       attrData: {},
+      globalAttrData: {},
       attrRuleList: [],
       relData: { theadList: [] },
       isLoading: true,
@@ -223,7 +228,7 @@ export default {
       await this.getCiById();
       await this.getAttrByCiId();
       await this.getRelByCiId();
-
+      await this.getGlobalAttr();
       this.getLeftHeight();
     },
     updateCiUniqueRule: function(attrIdList) {
@@ -279,7 +284,7 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteciconfirm'),
         btnType: 'error',
-        'on-ok': (vnode) => {
+        'on-ok': vnode => {
           this.$api.cmdb.ci.deleteCiById(this.ciId).then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
@@ -289,6 +294,11 @@ export default {
             }
           });
         }
+      });
+    },
+    async getGlobalAttr() {
+      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
+        this.globalAttrData = res.Return;
       });
     },
     async getAttrByCiId() {
@@ -342,7 +352,7 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteattributeconfirm', { target: attr.label + '（' + attr.name + '）' }),
         btnType: 'error',
-        'on-ok': (vnode) => {
+        'on-ok': vnode => {
           this.$api.cmdb.ci.deleteAttrById(attr.id).then(res => {
             this.$Message.success(this.$t('message.deletesuccess'));
             this.getAttrByCiId();
@@ -364,7 +374,7 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleterelationconfirm', { target: rel.fromCiLabel + '——' + rel.toCiLabel }),
         btnType: 'error',
-        'on-ok': (vnode) => {
+        'on-ok': vnode => {
           this.$api.cmdb.ci.deleteRelById(rel.id).then(res => {
             this.$Message.success(this.$t('message.deletesuccess'));
             this.getRelByCiId();

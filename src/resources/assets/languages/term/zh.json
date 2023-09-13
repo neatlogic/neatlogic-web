@@ -157,7 +157,8 @@
     "privatedataview": "个人数据视图",
     "publicsceneview": "全局拓扑视图",
     "publicdataview": "全局数据视图",
-    "changememo": "变更说明"
+    "changememo": "变更说明",
+    "globalattr": "全局属性"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1492,7 +1493,8 @@
       "stackedbarchart": "堆叠条形图",
       "stackedcolumnchart": "堆叠柱状图",
       "wordcloud": "词云图",
-      "rosechart": "玫瑰图"
+      "rosechart": "玫瑰图",
+      "bulletchar": "子弹图"
     },
     "particle": {
       "motion": "粒子运动",
@@ -1558,7 +1560,9 @@
     "barchart": "条形图",
     "editdashboard": "仪表板编辑",
     "getwidgetdatafail": "获取仪表板组件数据失败",
-    "deletewidgetconfirm": "确定删除该组件【{target}】？"
+    "deletewidgetconfirm": "确定删除该组件【{target}】？",
+    "target": "标线",
+    "frontend": "前景"
   },
   "deploy": {
     "triggerstate": "触发状态",
@@ -2487,6 +2491,11 @@
     "basicservices": "基础服务",
     "associationmodel": "关联模型",
     "network": "网络",
-    "migrationdirection": "迁移方向"
+    "migrationdirection": "迁移方向",
+    "datareferencetip": "当前数据被场景引用，无法删除",
+    "organizationalstructure": "组织架构",
+    "affiliatedorganization": "所属组织",
+    "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
+    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除"
   }
 }
