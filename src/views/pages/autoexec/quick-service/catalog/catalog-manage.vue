@@ -42,7 +42,7 @@
             <div class="search">
               <TsFormSelect v-bind="tsFormSelectSetting" tranfer @on-change="selectChannel"></TsFormSelect>
             </div>
-            <div class="left_tree">
+            <div>
               <TsZtree v-if="!treeloading" ref="ztree" v-bind="TsZtree"></TsZtree>
             </div>
           </div>
@@ -486,20 +486,6 @@ export default {
     .search {
       width: 100%;
       height: 40px;
-    }
-    .left_tree {
-      .ztree {
-        /deep/ li {
-          overflow: inherit !important;
-          width: 100%;
-          a span {
-            vertical-align: baseline;
-          }
-          span.button {
-            margin-top: initial !important;
-          }
-        }
-      }
     }
     .left_footer {
       text-align: center;
