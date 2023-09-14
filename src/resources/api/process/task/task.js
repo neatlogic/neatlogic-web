@@ -362,6 +362,21 @@ const processtask = {
   },
   getReportingHistoryList(params) { // 工单上报历史
     return axios.post('/api/rest/processtask/list/forowner', params);
+  },
+  batchAbort(params) { // 批量取消工单
+    return axios.post('/api/rest/processtask/batch/abort', params);
+  },
+  batchUrge(params) { // 批量催办工单
+    return axios.post('/api/rest/processtask/batch/urge', params);
+  },
+  batchHide(params) { // 批量隐藏工单
+    return axios.post('/api/rest/processtask/batch/hide', params);
+  },
+  batchPause(params) { // 批量暂停工单
+    return axios.post('/api/rest/processtask/batch/pause', params);
+  },
+  batchDelete(params) { // 批量删除工单
+    return axios.post('/api/rest/processtask/batch/delete', params);
   }
 };
 export default processtask;

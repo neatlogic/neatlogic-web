@@ -480,7 +480,8 @@
     "triggertiming": "Trigger timing",
     "notificationpolicysettings": "Notification Policy Settings",
     "templateparametermapping": "Template parameter mapping",
-    "targetparams": "Target parameters"
+    "targetparams": "Target parameters",
+    "selecttask": "Select Work Order"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
