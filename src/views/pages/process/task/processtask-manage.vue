@@ -7,7 +7,7 @@
             <ProcessTaskSearcher
               v-if="workcenterData"
               :workcenterData="workcenterData"
-              :selectedWorkList="$utils.deepClone(selectedWorkList)"
+              :selectedWorkList="selectedWorkList"
               @search="search"
               @batchAction="batchAction"
             ></ProcessTaskSearcher>
