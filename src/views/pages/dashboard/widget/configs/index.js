@@ -16,6 +16,7 @@ export { default as liquidWidgetConfig } from './original/liquid-widget-config.v
 export { default as scatterWidgetConfig } from './original/scatter-widget-config.vue';
 export { default as pscatterWidgetConfig } from './original/pscatter-widget-config.vue';
 export { default as heatmapWidgetConfig } from './original/heatmap-widget-config.vue';
+export { default as bulletWidgetConfig } from './original/bullet-widget-config.vue';
 export { default as mapareaWidgetConfig } from './geography/maparea-widget-config.vue';
 export { default as groupedcolumnWidgetConfig } from './original/groupedcolumn-widget-config.vue';
 export { default as stackedcolumnWidgetConfig } from './original/stackedcolumn-widget-config.vue';

@@ -14,6 +14,7 @@ export { default as stackedcolumnwidget } from './original/stackedcolumn-widget.
 export { default as areawidget } from './original/area-widget.vue';
 export { default as mareawidget } from './original/marea-widget.vue';
 export { default as gaugewidget } from './original/gauge-widget.vue';
+export { default as bulletwidget } from './original/bullet-widget.vue';
 export { default as liquidwidget } from './original/liquid-widget.vue';
 export { default as pscatterwidget } from './original/pscatter-widget.vue';
 export { default as scatterwidget } from './original/scatter-widget.vue';

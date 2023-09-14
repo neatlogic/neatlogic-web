@@ -28,6 +28,7 @@
     "unknowsmanage": "未知设备管理",
     "discoveryrulemanage": "自动发现规则管理",
     "cimanage": "模型管理",
+    "globalattrmanage": "全局属性管理",
     "groupmanage": "团体管理",
     "validatormanage": "校验规则管理",
     "syncmanage": "采集配置列表",

@@ -35,8 +35,8 @@
           </Tooltip>
         </template>
         <template v-for="(head, index) in finalHeaderList" :slot="head.key" slot-scope="{ row }">
-          <div v-if="head.key.indexOf('attr_') == 0 && row.attrEntityData" :key="index">
-            <div v-if="row.attrEntityData && row.attrEntityData[head.key]">
+          <div v-if="head.key.startsWith('attr_') && row.attrEntityData" :key="index">
+            <div v-if="row.attrEntityData[head.key]">
               <AttrViewer
                 :ciEntity="row"
                 :handler="row.attrEntityData[head.key].type"
@@ -45,7 +45,14 @@
               ></AttrViewer>
             </div>
           </div>
-          <div v-else-if="head.key.indexOf('const_') == 0" :key="index">
+          <div v-else-if="head.key.startsWith('global_') && row.globalAttrEntityData" :key="index">
+            <div v-if="row.globalAttrEntityData[head.key] && row.globalAttrEntityData[head.key].valueList">
+              <Tag v-for="(v,vindex) in row.globalAttrEntityData[head.key].valueList" :key="vindex">
+                {{ v.value }}
+              </Tag>
+            </div>
+          </div>
+          <div v-else-if="head.key.startsWith('const_')" :key="index">
             {{ row[head.key.replace('const_', '')] }}
           </div>
           <div v-else-if="row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
@@ -213,7 +220,7 @@ export default {
       let finalList = [];
       if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
         this.ciEntityData.theadList.forEach(element => {
-          if (element.key.indexOf('attr_') == 0 || element.key.indexOf('relto_') == 0 || element.key.indexOf('relfrom_') == 0 || element.key.indexOf('const_') == 0) {
+          if (element.key.startsWith('attr_') || element.key.startsWith('relto_') || element.key.startsWith('relfrom_') || element.key.startsWith('const_') || element.key.startsWith('global_')) {
             finalList.push(element);
           }
         });

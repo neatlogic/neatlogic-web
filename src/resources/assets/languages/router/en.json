@@ -28,6 +28,7 @@
     "unknowsmanage": "Unknown Device Management",
     "discoveryrulemanage": "Automatic discovery rule management",
     "cimanage": "Models",
+    "globalattrmanage": "Global Attributes",
     "groupmanage": "Groups",
     "validatormanage": "Validators",
     "syncmanage": "collection configuration list",

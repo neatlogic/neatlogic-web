@@ -941,5 +941,8 @@
   "viewalldocuments": "查看全部文档",
   "counter": "次数",
   "compareexpression": "比较运算",
-  "logicalexpression": "逻辑运算"
+  "logicalexpression": "逻辑运算",
+  "batchpause": "批量暂停",
+  "batchabort": "批量取消",
+  "ismultiple": "是否多选"
 }

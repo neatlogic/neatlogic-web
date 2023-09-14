@@ -5,6 +5,7 @@
       :mode="mode"
       :hideHeader="true"
       :hasContentPadding="false"
+      :rightWidth="220"
     >
       <template v-slot:content>
         <Loading
@@ -16,17 +17,17 @@
         <div v-if="ciEntityQueue && ciEntityQueue.length > 1" class="pt-xs pb-lg">
           <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
             <BreadcrumbItem v-for="(entity, index) in ciEntityQueue" :key="index">
-              <span v-if="index == ciEntityQueue.length - 2" style="font-size:15px">
+              <span v-if="index == ciEntityQueue.length - 2" style="font-size: 15px">
                 <a href="javascript:void(0)" class="text-info" @click="back()">
                   <span :class="entity.ciIcon"></span>
                   <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
                 </a>
               </span>
-              <span v-else-if="index == ciEntityQueue.length - 1" style="font-size:15px">
+              <span v-else-if="index == ciEntityQueue.length - 1" style="font-size: 15px">
                 <span :class="entity.ciIcon"></span>
                 <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
               </span>
-              <span v-else class="text-grey" style="font-size:15px">
+              <span v-else class="text-grey" style="font-size: 15px">
                 <span :class="entity.ciIcon"></span>
                 <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
               </span>
@@ -34,18 +35,18 @@
           </Breadcrumb>
         </div>
         <div class="bg-block radius-lg padding">
-          <div class="tsForm tsForm-border-border ivu-form-label-right ">
+          <div class="tsForm tsForm-border-border ivu-form-label-right">
             <Collapse v-model="openPanel" simple>
               <Panel v-for="elementType in elementTypeList" :key="elementType.type" :name="elementType.type">
                 {{ elementType.label }}
                 <div
                   v-if="elementType.elementList.length > 0"
                   slot="content"
-                  style="margin:0 auto;width:80%;"
+                  style="margin: 0 auto; width: 80%"
                   class="pt-lg"
                 >
                   <div v-for="(e, index) in elementType.elementList" :key="index">
-                    <div v-if="e.type == 'attr'">
+                    <div v-if="e.type === 'attr'">
                       <TsFormItem
                         v-if="e.element.canInput"
                         :label="e.element.label"
@@ -65,7 +66,36 @@
                         @select="selectAttrEntity('attr_' + e.element.id, $event)"
                       ></AttrInputer></TsFormItem>
                     </div>
-                    <div v-if="e.type == 'rel'">
+                    <div v-else-if="e.type === 'global'">
+                      <TsFormItem :label="e.element.label" labelPosition="left">
+                        <TsFormRadio
+                          v-if="!e.element.isMultiple"
+                          :allowToggle="true"
+                          :dataList="e.element.itemList"
+                          valueName="id"
+                          textName="value"
+                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element).length > 0 ? getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)[0] : null"
+                          @change="
+                            (val, opt) => {
+                              if (opt) {
+                                setGlobalAttrData(e.element, [opt]);
+                              } else {
+                                setGlobalAttrData(e.element, []);
+                              }
+                            }
+                          "
+                        ></TsFormRadio>
+                        <TsFormCheckbox
+                          v-if="!!e.element.isMultiple"
+                          :dataList="e.element.itemList"
+                          valueName="id"
+                          textName="value"
+                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)"
+                          @change="(val, opt) => setGlobalAttrData(e.element, opt)"
+                        ></TsFormCheckbox>
+                      </TsFormItem>
+                    </div>
+                    <div v-else-if="e.type == 'rel'">
                       <TsFormItem :label="e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel" labelPosition="left" :required="!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))">
                         <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
                           <a href="javascript:void(0)" :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)" @click.stop="addRelEntity(e.element)">
@@ -93,11 +123,11 @@
                                 <div
                                   v-for="relci in relCiList"
                                   :key="relci.id"
-                                  style="text-align:center;margin-right:10px;float:left;cursor:pointer;width:80px;"
+                                  style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
                                   @click="newCiEntity(e.element, relci.id)"
                                 >
                                   <div>
-                                    <a href="javascript:void(0)"><i style="font-size:20px" :class="relci.icon"></i></a>
+                                    <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
                                   </div>
                                   <div class="overflow" :title="relci.label">
                                     <a href="javascript:void(0)">{{ relci.label }}</a>
@@ -153,7 +183,7 @@
               </Panel>
               <Panel name="description">
                 {{ $t('term.cmdb.changememo') }}
-                <div slot="content" class="pt-lg" style="margin:0 auto;width:80%;">
+                <div slot="content" class="pt-lg" style="margin: 0 auto; width: 80%">
                   <TsFormItem :label="$t('term.cmdb.changememo')" labelPosition="left">
                     <TsFormInput
                       v-if="ciEntityData"
@@ -167,23 +197,23 @@
             </Collapse>
           </div>
         </div>
-        <div style="text-align:right;" class="mt-md">
+        <div style="text-align: right" class="mt-md">
           <Button
             v-if="ciEntityQueue && ciEntityQueue.length > 1"
-            style="margin-right:10px"
+            style="margin-right: 10px"
             type="default"
             @click="cancel()"
           >{{ $t('page.cancel') }}</Button>
           <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
           <Button
             v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
-            style="margin-right:10px"
+            style="margin-right: 10px"
             ghost
             type="primary"
             @click="save(false)"
           >{{ $t('page.savetransaction') }}</Button>
           <Button v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right:10px" @click="cancel">{{ $t('page.cancel') }}</Button>
+          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
           <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
         </div>
       </template>
@@ -214,6 +244,8 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     AttrInputer: resolve => require(['./attr-inputer.vue'], resolve),
     HistoryList: resolve => require(['./history-list.vue'], resolve),
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
+    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
     // TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     CiEntityChoose: resolve => require(['./cientity-choose.vue'], resolve)
   },
@@ -230,7 +262,7 @@ export default {
   },
   data() {
     return {
-      openPanel: ['unique', 'manual', 'description'],
+      openPanel: ['global', 'unique', 'manual', 'description'],
       relCiList: [], //关系的所有下游模型列表
       isRelPopShow: {},
       activePanel: ['attr', 'rel'],
@@ -268,6 +300,15 @@ export default {
       } else {
         this.$forceUpdate();
       }
+    },
+    getGlobalValueList(data, attr) {
+      const id = attr.id;
+      if (!data['global_' + id]) {
+        this.$set(data, 'global_' + id, { valueList: [] });
+      } else if (!data['global_' + id]['valueList']) {
+        this.$set(data['global_' + id], 'valueList', []);
+      }
+      return data['global_' + id]['valueList'].map(d => d.id);
     },
     getValueList(data, attr) {
       const id = attr.id;
@@ -512,6 +553,15 @@ export default {
           });
       }
     },
+    setGlobalAttrData(attr, opt) {
+      if (!this.ciEntityData.globalAttrEntityData) {
+        this.ciEntityData.globalAttrEntityData = {};
+      }
+      if (!this.ciEntityData.globalAttrEntityData['global_' + attr.id]) {
+        this.ciEntityData.globalAttrEntityData['global_' + attr.id] = {};
+      }
+      this.$set(this.ciEntityData.globalAttrEntityData['global_' + attr.id], 'valueList', opt);
+    },
     setAttrData(attr, value, actualValue) {
       if (!this.ciEntityData.attrEntityData) {
         this.ciEntityData.attrEntityData = {};
@@ -532,6 +582,11 @@ export default {
       if (this.ciEntityData) {
         const uniqueList = this.ciEntityData['_uniqueAttrList'] || [];
         const elementList = this.ciEntityData['_elementList'];
+        const globalObj = { type: 'global', label: this.$t('term.cmdb.globalattr'), elementList: [], isShow: true };
+        globalObj.elementList = elementList.filter(d => d.type === 'global');
+        if (globalObj.elementList.length > 0) {
+          typeList.push(globalObj);
+        }
         const uniqueObj = { type: 'unique', label: this.$t('term.cmdb.uniquerule'), elementList: [], isShow: true };
         uniqueObj.elementList = elementList.filter(d => d.type === 'attr' && uniqueList.includes(d.element.id));
         if (uniqueObj.elementList.length > 0) {
@@ -579,5 +634,12 @@ export default {
   .tstable-main {
     max-height: initial !important;
   }
+}
+/deep/.ivu-collapse {
+  border-top: 0px;
+  border-bottom: 0px;
+}
+/deep/.ivu-collapse-header {
+  border-bottom: 0px;
 }
 </style>
