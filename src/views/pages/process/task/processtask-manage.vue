@@ -7,7 +7,9 @@
             <ProcessTaskSearcher
               v-if="workcenterData"
               :workcenterData="workcenterData"
+              :selectedWorkList="selectedWorkList"
               @search="search"
+              @batchAction="batchAction"
             ></ProcessTaskSearcher>
           </div>
           <div style="text-align:center">
@@ -43,12 +45,15 @@
                 :sortOrder="tableConfig.sortList"
                 :isBigDataPage="true"
                 :canEdit="true"
+                keyName="id"
+                multiple
                 @changeCurrent="changePage"
                 @changePageSize="changePageSize"
                 @updateSort="updateSort"
                 @checkshow="checkshow"
+                @getSelected="(value,selectList)=>{ getSelected(selectList) }"
               >
-                <template v-for="(tbody, tindex) in tableConfig.theadList" :slot="tbody.key" slot-scope="{ row }">
+                <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
                   <div :key="tindex">
                     <tdjson
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
@@ -93,6 +98,7 @@
               @delete="deleteProcessTask"
               @updateMenu="updateMenu"
               @actionTask="actionTask"
+              @getSelected="getSelected"
             ></CardInfo>
           </div>
         </div>
@@ -167,7 +173,8 @@ export default {
         }
       },
       okBtnDisable: false,
-      processTaskConfig: {}
+      processTaskConfig: {},
+      selectedWorkList: []
     };
   },
   beforeCreate() {},
@@ -213,6 +220,7 @@ export default {
       }
     },
     search(workcenterConditionData, currentPage) {
+      this.selectedWorkList = [];
       if (currentPage) {
         this.tableConfig.currentPage = currentPage;
       }
@@ -346,6 +354,15 @@ export default {
           secondActionList: []
         };
         idList.push(item.id);
+        this.$set(item, 'isDisabled', !item.isShow);
+        if (!this.$utils.isEmpty(this.selectedWorkList)) {
+          let findItem = this.selectedWorkList.find(s => s.id === item.id);
+          if (findItem) {
+            this.$set(item, '_selected', true);
+          } else {
+            this.$set(item, '_selected', false);
+          }
+        }
         return {
           ...item,
           ...this.checkExpire(item.expiretime),
@@ -456,6 +473,13 @@ export default {
               isShow: 1
             });
           }
+          //选择列表
+          let isSelection = this.tableConfig.theadList.find(d => d.key === 'selection');
+          if (!isSelection) {
+            this.tableConfig.theadList.unshift({
+              key: 'selection'
+            });
+          }
         }
       });
     },
@@ -503,6 +527,34 @@ export default {
           }).finally(() => {
             this.closeDialog();
           });
+        } else if (this.processTaskConfig.name === 'batchAbort') { //批量取消工单
+          this.$api.process.processtask.batchAbort({
+            content: reasonForm.getFormValue().content,
+            processTaskIdList: this.$utils.mapArray(this.selectedWorkList, 'id'),
+            source: 'pc'
+          }).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+              this.refreshProcessTask();
+              this.selectedWorkList = [];
+            }
+          }).finally(() => {
+            this.closeDialog();
+          });
+        } else if (this.processTaskConfig.name === 'batchPause') { //批量暂停工单
+          this.$api.process.processtask.batchPause({
+            content: reasonForm.getFormValue().content,
+            processTaskIdList: this.$utils.mapArray(this.selectedWorkList, 'id'),
+            source: 'pc'
+          }).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+              this.refreshProcessTask();
+              this.selectedWorkList = [];
+            }
+          }).finally(() => {
+            this.closeDialog();
+          });
         }
       }
     },
@@ -510,6 +562,69 @@ export default {
       this.reasonForm.content.value = '';
       this.okBtnDisable = false;
       this.isShowModal = false;
+      this.selectedWorkList = [];
+    },
+    filtertheadList(theadList) {
+      let list = theadList.filter(item => {
+        return item.key != 'selection'; 
+      });
+      return list;
+    },
+    getSelected(itemList) {
+      this.selectedWorkList = itemList;
+    },
+    batchAction(type) { //批量操作
+      let data = {
+        processTaskIdList: this.$utils.mapArray(this.selectedWorkList, 'id'),
+        source: 'pc'
+      };
+      if (type === 'batchAbort') { 
+        //取消
+        this.processTaskConfig.name = 'batchAbort';
+        this.processTaskConfig.text = this.$t('page.batchabort');
+        this.isShowModal = true;
+      } else if (type === 'batchUrge') { 
+        //催办
+        this.$api.process.processtask.batchUrge(data).then(res => {
+          if (res && res.Status == 'OK') {
+            this.$Message.success(this.$t('message.executesuccess'));
+            this.refreshProcessTask();
+            this.selectedWorkList = [];
+          }
+        });
+      } else if (type === 'batchHide') { 
+        //隐藏
+        this.$api.process.processtask.batchHide(data).then(res => {
+          if (res && res.Status == 'OK') {
+            this.$Message.success(this.$t('message.executesuccess'));
+            this.refreshProcessTask();
+            this.selectedWorkList = [];
+          }
+        });
+      } else if (type === 'batchPause') { 
+        //暂停
+        this.processTaskConfig.name = 'batchPause';
+        this.processTaskConfig.text = this.$t('page.batchpause');
+        this.isShowModal = true;
+      } else if (type === 'batchDelete') {
+        //删除
+        this.$createDialog({
+          title: this.$t('page.batchdelete'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.process.selecttask')}),
+          btnType: 'error',
+          'on-ok': vnode => {
+            this.$api.process.processtask.batchDelete(data)
+              .then(res => {
+                if (res.Status == 'OK') {
+                  this.$Message.success(this.$t('message.deletesuccess'));
+                  this.refreshProcessTask();
+                  this.selectedWorkList = [];
+                  vnode.isShow = false;
+                }
+              });
+          }
+        });
+      }
     }
   },
   filter: {},

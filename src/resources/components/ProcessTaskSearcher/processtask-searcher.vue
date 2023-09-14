@@ -5,11 +5,26 @@
       <TimeSelect :value="workcenterConditionData.startTimeCondition" v-bind="timeSelectConfig" @change="changeTimeRange"></TimeSelect>
     </div>
     <div style="text-align:right">
+      <Dropdown trigger="click">
+        <Button type="primary" ghost :disabled="$utils.isEmpty(selectedWorkList)">
+          {{ $t('page.batchoperation') }}
+          <span class="tsfont-down"></span>
+        </Button>
+        <DropdownMenu slot="list">
+          <DropdownItem @click.native="batchAction('batchAbort')">{{ $t('page.cancel') }}</DropdownItem>
+          <DropdownItem @click.native="batchAction('batchUrge')">{{ $t('page.urge') }}</DropdownItem>
+          <DropdownItem @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
+          <DropdownItem @click.native="batchAction('batchPause')">{{ $t('page.pause') }}</DropdownItem>
+          <DropdownItem @click.native="batchAction('batchDelete')">{{ $t('page.delete') }}</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
       <!--我的待办-->
-      <Button v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
-        <Badge :text="workcenterData.processingOfMineCount"></Badge>
-        <span>{{ $t('term.process.mytodo') }}</span>
-      </Button>
+      <span v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" class="pl-sm">
+        <Button :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
+          <Badge :text="workcenterData.processingOfMineCount"></Badge>
+          <span>{{ $t('term.process.mytodo') }}</span>
+        </Button>
+      </span>
     </div>
     <div ref="searchContainer" style="position:relative;text-align:right">
       <!--主搜索框-->
@@ -132,7 +147,11 @@ export default {
     WorkcenterTypeEdit: resolve => require(['./workcenter-type-edit.vue'], resolve)
   },
   props: {
-    workcenterData: { type: Object }
+    workcenterData: { type: Object },
+    selectedWorkList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -428,6 +447,9 @@ export default {
         }
       }
       return workcenterConditionData;
+    },
+    batchAction(type) {
+      this.$emit('batchAction', type);
     }
   },
   filter: {},
@@ -467,7 +489,7 @@ export default {
 <style lang="less" scoped>
 .searcher-container {
   display: grid;
-  grid-template-columns: 220px 150px auto;
+  grid-template-columns: 220px 240px auto;
   grid-gap: 10px;
 }
 .searcher-inputer {
