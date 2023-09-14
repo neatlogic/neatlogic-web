@@ -11,7 +11,7 @@
             {{ $t('term.deploy.overrelateobjectdescription') }}
           </Alert>
           <div class="common-auth">
-            <div v-if="relateConfig && relateConfig.typeList.length > 0" class="wrapper">
+            <div v-if="relateConfig && relateConfig?.typeList?.length > 0" class="wrapper">
               <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'ts-check-square-o':'ts-minus-square']" @click.stop="handleCheckedAll()">
                 {{ selectedAll ? $t('page.unselectall') : $t('page.selectall') }}
               </span>
@@ -86,6 +86,7 @@ export default {
         actionUrl: BASEURLPREFIX + '/api/binary/deploy/app/pipeline/import', //导入地址
         formatList: ['pak'],
         multiple: false,
+        showSuccessNotice: false,
         data: {
           appSystemId: this.appSystemId
         }
@@ -127,7 +128,7 @@ export default {
       let defaultSelectedConfig = {};
       let selectedConfig = {};
 
-      relateConfig.typeList.forEach((item) => {
+      relateConfig?.typeList?.forEach((item) => {
         // 处理默认选中值
         defaultSelectedConfig[item.value] = [];
         selectedConfig[item.value] = [];
@@ -149,7 +150,7 @@ export default {
 
       // 清空默认选中值
       this.relateConfig.checkedAll = false;
-      this.relateConfig.typeList.forEach((item) => {
+      this.relateConfig?.typeList?.forEach((item) => {
         item.checkedAll = false;
         item.optionList?.forEach((innerItem) => {
           if (innerItem) {
@@ -179,9 +180,10 @@ export default {
       formData.append('file', this.uploadSuccessFile.file);
       formData.append('userSelection', JSON.stringify(relateConfig));
       this.$api.deploy.apppipeline.coverPipeline(formData).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
+        if (res.statusText == 'OK') {
+          this.$Message.success(this.$t(this.$t('message.importsuccess')));
           this.configDialog.isShow = false;
+          this.$emit('closeCoverDialog');
         }
       });
     },
@@ -189,13 +191,16 @@ export default {
       this.configDialog.isShow = false;
       this.selectedConfig = {};
       this.defaultSelectedConfig = {};
+      this.$emit('closeCoverDialog');
     },
     uploadSuccess(data, file, fileList) {
       this.relateConfig = data.Return || {};
       this.uploadSuccessFile = file;
       this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
-      this.configDialog.isShow = true;
-      this.handleDefaultSelectedConfig();
+      if (!this.$utils.isEmpty(this.relateConfig)) {
+        this.configDialog.isShow = true;
+        this.handleDefaultSelectedConfig();
+      }
     },
     handleCheckedAll() {
       // 顶层选中
@@ -240,7 +245,14 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    appSystemId: {
+      handler() {
+        this.uploadConfig.data.appSystemId = this.appSystemId;
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
