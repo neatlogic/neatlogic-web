@@ -19,8 +19,8 @@
         </DropdownMenu>
       </Dropdown>
       <!--我的待办-->
-      <span class="pl-sm">
-        <Button v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
+      <span v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" class="pl-sm">
+        <Button :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
           <Badge :text="workcenterData.processingOfMineCount"></Badge>
           <span>{{ $t('term.process.mytodo') }}</span>
         </Button>
