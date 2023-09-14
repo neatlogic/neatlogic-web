@@ -181,7 +181,7 @@ export default {
         });
       }
       _this.$emit('update:value', _this.currentValue);
-      _this.$emit('change', _this.currentValue);
+      _this.$emit('change', _this.currentValue, selectedItem || null);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
         _this.$emit('on-change', _this.currentValue, selectedItem || null);
