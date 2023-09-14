@@ -105,6 +105,7 @@
     <ImportPipelineConfigDialog
       ref="importPipelineConfig"
       :appSystemId="appSystemId"
+      @closeCoverDialog="closeImportPipelineConfig"
     ></ImportPipelineConfigDialog>
   </div>
 </template>
@@ -455,7 +456,12 @@ export default {
     importPipelineConfig() {
       // 导入流水线配置
       this.$refs.importPipelineConfig?.showDialog();
-    }
+    },
+    closeImportPipelineConfig(needRefresh) {
+      if (needRefresh) {
+        this.$refs?.appModuleList?.refreshApp(this.appSystemId);
+      }
+    } 
   },
   filter: {},
   computed: {

@@ -46,7 +46,6 @@
       ref="uploadDialog"
       v-bind="uploadConfig"
       @on-success="uploadSuccess"
-      @on-cancel="closeDialog"
     ></UploadDialog>
   </div>
 </template>
@@ -183,7 +182,7 @@ export default {
         if (res.statusText == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
           this.configDialog.isShow = false;
-          this.$emit('closeCoverDialog');
+          this.$emit('closeCoverDialog', true);
         }
       });
     },
