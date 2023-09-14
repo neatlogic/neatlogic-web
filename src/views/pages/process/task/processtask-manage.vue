@@ -358,9 +358,9 @@ export default {
         if (!this.$utils.isEmpty(this.selectedWorkList)) {
           let findItem = this.selectedWorkList.find(s => s.id === item.id);
           if (findItem) {
-            this.$set(item, 'isSelected', true);
+            this.$set(item, '_selected', true);
           } else {
-            this.$set(item, 'isSelected', false);
+            this.$set(item, '_selected', false);
           }
         }
         return {
