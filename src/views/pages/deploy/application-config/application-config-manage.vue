@@ -145,7 +145,6 @@ export default {
       isShowModuleTreeEdit: false,
       isShowAppEdit: false,
       isShowClearConfigDialog: false,
-      isShowImportPipelineConfig: false,
       envParam: {},
       authList: [], // 应用配置所有权限列表
       isHasAppSystemIdList: true //是否有应用列表
