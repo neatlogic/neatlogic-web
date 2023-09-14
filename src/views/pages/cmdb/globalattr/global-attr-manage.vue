@@ -22,18 +22,13 @@
                 {{ item.value }}
               </Tag>
             </div>
+            <div v-else>-</div>
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li
-                  class="tsfont-edit"
-                  @click="editAttr(row)"
-                >{{ $t('page.edit') }}</li>
-                <li
-                  class="tsfont-trash-o"
-                  @click="deleteAttr(row)"
-                >{{ $t('page.delete') }}</li>
+                <li class="tsfont-edit" @click="editAttr(row)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-trash-o" @click="deleteAttr(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -65,6 +60,7 @@ export default {
         { key: 'isActive', title: this.$t('term.report.isactive') },
         { key: 'isMultiple', title: this.$t('page.ismultiple') },
         { key: 'itemList', title: this.$t('page.option') },
+        { key: 'description', title: this.$t('page.description') },
         { key: 'action' }
       ]
     };
@@ -91,11 +87,15 @@ export default {
     deleteAttr(attr) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.attribute')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.attribute') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.globalattr.deleteGlobalAttr(attr.id).then(res => {
-
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              vnode.isShow = false;
+              this.searchGlobalAttr();
+            }
           });
         }
       });
