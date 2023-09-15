@@ -73,6 +73,7 @@ export default {
   data() {
     return {
       isEmit: false, // 二次弹窗，导入数据是不需要分发方法
+      isRefreshTree: false, // 导入配置没有配置信息时，也需要刷新树
       defaultSelectedConfig: {}, // 默认选中的config
       selectedConfig: {},
       configDialog: {
@@ -100,6 +101,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
+    this.isRefreshTree = false;
     if (this.isShowCoverDialog) {
       this.$createDialog({
         title: this.$t('term.deploy.coverpipeline'),
@@ -197,7 +199,7 @@ export default {
     },
     closeUploadDialog() {
       if (!this.isEmit) {
-        this.$emit('close'); // 导入成功之后，不需要分发这个方法，隐藏整个组件
+        this.$emit('close', this.isRefreshTree); // 导入成功之后，不需要分发这个方法，隐藏整个组件
       }
     },
     uploadSuccess(data, file, fileList) {
@@ -206,8 +208,13 @@ export default {
       if (!this.$utils.isEmpty(this.relateConfig)) {
         this.configDialog.isShow = true;
         this.isEmit = true;
+        this.isRefreshTree = false;
         this.handleDefaultSelectedConfig();
+      } else {
+        this.isEmit = false;
+        this.isRefreshTree = true;
       }
+      this.isRefreshTree = true;
       this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
     },
     handleCheckedAll() {
@@ -258,6 +265,7 @@ export default {
       handler() {
         this.uploadConfig.data.appSystemId = this.appSystemId;
         this.isEmit = false;
+        this.isRefreshTree = false;
       },
       deep: true
     }
