@@ -105,7 +105,7 @@
     <ImportPipelineConfigDialog
       ref="importPipelineConfig"
       :appSystemId="appSystemId"
-      @closeCoverDialog="closeImportPipelineConfig"
+      @close="closeImportPipelineConfig"
     ></ImportPipelineConfigDialog>
   </div>
 </template>

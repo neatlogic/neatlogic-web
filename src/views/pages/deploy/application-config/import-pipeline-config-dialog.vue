@@ -46,6 +46,7 @@
       ref="uploadDialog"
       v-bind="uploadConfig"
       @on-success="uploadSuccess"
+      @on-close="closeUploadDialog"
     ></UploadDialog>
   </div>
 </template>
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      isEmit: false, // 二次弹窗，导入数据是不需要分发方法
       defaultSelectedConfig: {}, // 默认选中的config
       selectedConfig: {},
       configDialog: {
@@ -109,9 +111,10 @@ export default {
           this.showDialog();
         },
         'on-close': () => {
-          this.$emit('closeCoverDialog');
+          this.$emit('close');
         }
       });
+      this.isEmit = false;
     }
   },
   beforeUpdate() {},
@@ -126,7 +129,6 @@ export default {
       let relateConfig = this.$utils.deepClone(this.relateConfig);
       let defaultSelectedConfig = {};
       let selectedConfig = {};
-
       relateConfig?.typeList?.forEach((item) => {
         // 处理默认选中值
         defaultSelectedConfig[item.value] = [];
@@ -143,7 +145,6 @@ export default {
           }
         });
       });
-
       this.defaultSelectedConfig = defaultSelectedConfig;
       this.selectedConfig = selectedConfig;
 
@@ -182,24 +183,32 @@ export default {
         if (res.statusText == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
           this.configDialog.isShow = false;
-          this.$emit('closeCoverDialog', true);
+          this.$emit('close', true);
         }
       });
     },
     closeDialog() {
-      this.configDialog.isShow = false;
-      this.selectedConfig = {};
-      this.defaultSelectedConfig = {};
-      this.$emit('closeCoverDialog');
+      if (!this.isShowCoverDialog) {
+        this.configDialog.isShow = false;
+        this.selectedConfig = {};
+        this.defaultSelectedConfig = {};
+      }
+      this.$emit('close');
+    },
+    closeUploadDialog() {
+      if (!this.isEmit) {
+        this.$emit('close'); // 导入成功之后，不需要分发这个方法，隐藏整个组件
+      }
     },
     uploadSuccess(data, file, fileList) {
       this.relateConfig = data.Return || {};
       this.uploadSuccessFile = file;
-      this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
       if (!this.$utils.isEmpty(this.relateConfig)) {
         this.configDialog.isShow = true;
+        this.isEmit = true;
         this.handleDefaultSelectedConfig();
       }
+      this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
     },
     handleCheckedAll() {
       // 顶层选中
@@ -248,6 +257,7 @@ export default {
     appSystemId: {
       handler() {
         this.uploadConfig.data.appSystemId = this.appSystemId;
+        this.isEmit = false;
       },
       deep: true
     }

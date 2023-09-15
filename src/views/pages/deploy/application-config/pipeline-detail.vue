@@ -225,7 +225,7 @@
       :isShowCoverDialog="isShowImportPipeline"
       :appSystemAbbrNameAndName="getAppSystemAbbrNameAppSystemName"
       :appSystemId="appSystemId"
-      @closeCoverDialog="isShowImportPipeline = false"
+      @close="isShowImportPipeline = false"
     ></ImportPipelineConfigDialog>
   </div>
 </template>
