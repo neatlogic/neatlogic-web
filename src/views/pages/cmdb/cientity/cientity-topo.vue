@@ -11,20 +11,16 @@
                 <Icon type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
-                <DropdownItem name="1" :selected="searchParam.level == 1">{{ $t('term.cmdb.levelnumber', { level: 1 }) }}</DropdownItem>
-                <DropdownItem name="2" :selected="searchParam.level == 2">{{ $t('term.cmdb.levelnumber', { level: 2 }) }}</DropdownItem>
-                <DropdownItem name="3" :selected="searchParam.level == 3">{{ $t('term.cmdb.levelnumber', { level: 3 }) }}</DropdownItem>
-                <DropdownItem name="4" :selected="searchParam.level == 4">{{ $t('term.cmdb.levelnumber', { level: 4 }) }}</DropdownItem>
-                <DropdownItem name="5" :selected="searchParam.level == 5">{{ $t('term.cmdb.levelnumber', { level: 5 }) }}</DropdownItem>
-                <DropdownItem name="6" :selected="searchParam.level == 6">{{ $t('term.cmdb.levelnumber', { level: 6 }) }}</DropdownItem>
-                <DropdownItem name="7" :selected="searchParam.level == 7">{{ $t('term.cmdb.levelnumber', { level: 7 }) }}</DropdownItem>
-                <DropdownItem name="8" :selected="searchParam.level == 8">{{ $t('term.cmdb.levelnumber', { level: 8 }) }}</DropdownItem>
-                <DropdownItem name="9" :selected="searchParam.level == 9">{{ $t('term.cmdb.levelnumber', { level: 9 }) }}</DropdownItem>
-                <DropdownItem name="10" :selected="searchParam.level == 10">{{ $t('term.cmdb.levelnumber', { level: 10 }) }}</DropdownItem>
+                <DropdownItem
+                  v-for="i in maxLevel"
+                  :key="i"
+                  :name="i"
+                  :selected="searchParam.level == i"
+                >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
-          <div class="action-item">
+          <div v-if="relTypeList && relTypeList.length > 0" class="action-item">
             <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
               <a href="javascript:void(0)">
                 {{ $t('term.cmdb.showrel') }}
@@ -53,15 +49,25 @@
               </DropdownMenu>
             </Dropdown>
           </div>
-          <div
-            v-for="(layout, index) in layoutList"
-            :key="index"
-            class="action-item"
-            :class="currentLayout == layout.engine ? 'text-primary' : 'text-grey'"
-            style="cursor: pointer"
-            @click="changeLayout(layout.engine)"
-          >
-            {{ layout.name }}
+          <div class="action-item">
+            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeLayout">
+              <a href="javascript:void(0)">
+                <span v-if="currentLayout">{{ layoutList.find(d => d.engine === currentLayout).name }}<Icon type="ios-arrow-down"></Icon></span>
+                <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
+              </a>
+              <DropdownMenu slot="list">
+                <template>
+                  <DropdownItem
+                    v-for="(layout, index) in layoutList"
+                    :key="index"
+                    :name="layout.engine"
+                    :selected="currentLayout === layout.engine"
+                  >
+                    {{ layout.name }}
+                  </DropdownItem>
+                </template>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
         <div>
@@ -69,6 +75,7 @@
             v-model="keyword"
             :search="true"
             :width="250"
+            border="bottom"
             @on-change="findNode"
           ></TsFormInput>
         </div>
@@ -130,6 +137,7 @@ export default {
   data() {
     return {
       keyword: '',
+      maxLevel: 10,
       isloading: false,
       currentLayout: 'dot',
       layoutList: [
@@ -185,7 +193,7 @@ export default {
     toggleAttr(attr, item) {
       if (!this.isAttrActive(attr, item)) {
         if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
-          this.searchParam.globalAttrFilterList.push({attrId: attr.id, expression: 'like', valueList: [item.id]});
+          this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: [item.id] });
         } else {
           this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id).valueList.push(item.id);
         }
