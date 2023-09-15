@@ -40,7 +40,7 @@
           <TabPane label="表达式" name="dsl"></TabPane>
         </Tabs>
         <Card
-          v-if="advencedSearchMode == 'condition' && ((attrList && attrList.length > 0) || (relList && relList.length > 0))"
+          v-if="advencedSearchMode == 'condition'"
           dis-hover
           class="radius-md"
           style="margin-bottom: 10px"
@@ -98,6 +98,39 @@
                 </Col>
               </TsRow>
             </Col>
+            <Col v-for="attr in globalAttrList" :key="attr.id" span="12">
+              <TsRow class="search-item">
+                <Col span="6" class="search-label text-grey"><span class="tsfont-internet">{{ attr.label }}</span></Col>
+                <Col span="6" class="search-expression">
+                  <TsFormSelect
+                    :transfer="true"
+                    :value="globalAttrFilterList['attr_' + attr.id] && globalAttrFilterList['attr_' + attr.id]['expression']"
+                    :dataList="globalAttrExpressionList"
+                    @change="
+                      val => {
+                        setGlobalAttrData(attr, 'expression', val);
+                      }
+                    "
+                  ></TsFormSelect>
+                </Col>
+                <Col v-if="!globalAttrConditionHideData[attr.id]" span="12" class="search-condition">
+                  <TsFormSelect
+                    :value="globalAttrFilterList['attr_' + attr.id] && globalAttrFilterList['attr_' + attr.id]['valueList']"
+                    :dataList="attr.itemList"
+                    valueName="id"
+                    textName="value"
+                    transfer
+                    border="border"
+                    multiple
+                    @change="
+                      val => {
+                        setGlobalAttrData(attr, 'value', val);
+                      }
+                    "
+                  ></TsFormSelect>
+                </Col>
+              </TsRow>
+            </Col>
             <Col v-for="attr in searchAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
                 <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
@@ -107,8 +140,8 @@
                     :value="attrFilterList['attr_' + attr.id] && attrFilterList['attr_' + attr.id]['expression']"
                     :dataList="attr.expressionList"
                     @change="
-                      vals => {
-                        setAttrData(attr, 'expression', vals);
+                      val => {
+                        setAttrData(attr, 'expression', val);
                       }
                     "
                   ></TsFormSelect>
@@ -443,6 +476,15 @@ export default {
           title: this.$t('page.afteredit')
         }
       ],
+      globalAttrExpressionList: [
+        {
+          value: 'like',
+          text: '包含'
+        },
+        { value: 'notlike', text: '不包含' },
+        { value: 'is-null', text: '为空' },
+        { value: 'is-not-null', text: '不为空' }
+      ],
       isOnlyExportSelected: false, //只导出选中数据开关
       // 点击展开
       isExporting: false, //是否导出中
@@ -459,10 +501,12 @@ export default {
       downwardCiList: [],
       groupList: [], //当前用户的团体列表
       attrList: [],
+      globalAttrList: [],
       searchParam: { pageSize: this.pageSize },
       isAdvancedSearch: false,
       relList: [],
       attrFilterList: {},
+      globalAttrFilterList: {},
       relFilterList: {},
       sortConfig: {},
       actionTypeList: [
@@ -471,6 +515,7 @@ export default {
       ], //作为表单组件时，需要选择对配置项的操作类型
       relConditionHideData: {}, //控制关系条件是否隐藏
       attrConditionHideData: {}, //控制属性条件是否隐藏
+      globalAttrConditionHideData: {}, //控制全局属性条件是否隐藏
       selectedCiEntityList: [], //选中数据
       isDeleteDialogShow: false, //删除窗口
       isEditDialogShow: false, //批量修改窗口
@@ -499,11 +544,14 @@ export default {
   destroyed() {},
   methods: {
     restoreHistory(historyData) {
-      this.searchParam = historyData['searchParam'];
+      this.searchParam = historyData['searchParam'] || { pageSize: this.pageSize };
       this.isAdvancedSearch = historyData['isAdvancedSearch'];
-      this.attrFilterList = historyData['attrFilterList'];
-      this.relFilterList = historyData['relFilterList'];
-      this.sortConfig = historyData['sortConfig'];
+      this.attrFilterList = historyData['attrFilterList'] || {};
+      this.globalAttrFilterList = historyData['globalAttrFilterList'] || {};
+      this.attrConditionHideData = historyData['attrConditionHideData'] || {};
+      this.globalAttrConditionHideData = historyData['globalAttrConditionHideData'] || {};
+      this.relFilterList = historyData['relFilterList'] || {};
+      this.sortConfig = historyData['sortConfig'] || {};
     },
     getSuggestList(keywordData) {
       this.suggestList = [];
@@ -621,6 +669,7 @@ export default {
       await this.searchCiEntity();
       this.tabloading = false;
       await this.getAttrByCiId();
+      await this.getGlobalAttrList();
       await this.getRelByCiId();
       await this.getDownwardCiByCiId();
       this.searchGroup();
@@ -654,6 +703,18 @@ export default {
             expression: d.expression
           };
           searchParam.attrFilterList.push(obj);
+        }
+      }
+      searchParam.globalAttrFilterList = [];
+      for (const key in this.globalAttrFilterList) {
+        const d = this.globalAttrFilterList[key];
+        if (d.attrId && d.expression) {
+          const obj = {
+            attrId: d.attrId,
+            valueList: d.valueList,
+            expression: d.expression
+          };
+          searchParam.globalAttrFilterList.push(obj);
         }
       }
       searchParam.relFilterList = [];
@@ -704,6 +765,20 @@ export default {
           this.searchParam.attrFilterList.push(obj);
         }
       }
+      this.searchParam.globalAttrFilterList = [];
+      for (const key in this.globalAttrFilterList) {
+        const d = this.globalAttrFilterList[key];
+        if (d.attrId && d.expression) {
+          if (d.expression === 'is-null' || d.expression === 'is-not-null' || (d.valueList && d.valueList.length > 0)) {
+            const obj = {
+              attrId: d.attrId,
+              valueList: d.valueList,
+              expression: d.expression
+            };
+            this.searchParam.globalAttrFilterList.push(obj);
+          }
+        }
+      }
       this.searchParam.relFilterList = [];
       for (const key in this.relFilterList) {
         const d = this.relFilterList[key];
@@ -721,8 +796,11 @@ export default {
       this.$addHistoryData('searchParam', this.searchParam);
       this.$addHistoryData('isAdvancedSearch', this.isAdvancedSearch);
       this.$addHistoryData('attrFilterList', this.attrFilterList);
+      this.$addHistoryData('globalAttrFilterList', this.globalAttrFilterList);
       this.$addHistoryData('relFilterList', this.relFilterList);
       this.$addHistoryData('sortConfig', this.sortConfig);
+      this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
+      this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
 
       await this.$api.cmdb.cientity.searchCiEntity(this.searchParam).then(res => {
         this.searchParam.currentPage = res.Return.currentPage;
@@ -747,6 +825,11 @@ export default {
         }
         this.isLoading = false;
         this.selectedCiEntityList = [];
+      });
+    },
+    async getGlobalAttrList() {
+      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
+        this.globalAttrList = res.Return.tbodyList;
       });
     },
     async getAttrByCiId() {
@@ -975,14 +1058,35 @@ export default {
         }
       }
     },
+    setGlobalAttrData(attr, type, value) {
+      if (!this.globalAttrFilterList['attr_' + attr.id]) {
+        this.globalAttrFilterList['attr_' + attr.id] = {};
+        this.globalAttrFilterList['attr_' + attr.id].attrId = attr.id;
+      }
+      if (type === 'value') {
+        this.globalAttrFilterList['attr_' + attr.id].valueList = value;
+      } else if (type === 'expression') {
+        this.$set(this.globalAttrFilterList['attr_' + attr.id], 'expression', value);
+        if (value == 'is-null' || value == 'is-not-null') {
+          //先判断值，不一样才修改，避免触发下拉框重复绑定
+          if (!this.globalAttrConditionHideData[attr.id]) {
+            this.$set(this.globalAttrConditionHideData, attr.id, true);
+          }
+        } else {
+          if (this.globalAttrConditionHideData[attr.id]) {
+            this.$set(this.globalAttrConditionHideData, attr.id, false);
+          }
+        }
+      }
+    },
     setAttrData(attr, type, value) {
       if (!this.attrFilterList['attr_' + attr.id]) {
         this.attrFilterList['attr_' + attr.id] = {};
         this.attrFilterList['attr_' + attr.id].attrId = attr.id;
       }
-      if (type == 'value') {
+      if (type === 'value') {
         this.attrFilterList['attr_' + attr.id].valueList = value;
-      } else if (type == 'expression') {
+      } else if (type === 'expression') {
         this.$set(this.attrFilterList['attr_' + attr.id], 'expression', value);
         if (value == 'is-null' || value == 'is-not-null') {
           //先判断值，不一样才修改，避免触发下拉框重复绑定

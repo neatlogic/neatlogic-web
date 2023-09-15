@@ -158,7 +158,8 @@
     "publicsceneview": "Global Topology View",
     "publicdataview": "Global Data View",
     "changememo": "Reason for change",
-    "globalattr": "Global Properties"
+    "globalattr": "Global Properties",
+    "pleaseselectlayout": "Please select a layout"
   },
   "process": {
     "workordercenter": "Work Center",

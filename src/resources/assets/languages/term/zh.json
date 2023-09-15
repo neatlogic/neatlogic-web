@@ -158,7 +158,8 @@
     "publicsceneview": "全局拓扑视图",
     "publicdataview": "全局数据视图",
     "changememo": "变更说明",
-    "globalattr": "全局属性"
+    "globalattr": "全局属性",
+    "pleaseselectlayout": "请选择布局"
   },
   "process": {
     "workordercenter": "工单中心",

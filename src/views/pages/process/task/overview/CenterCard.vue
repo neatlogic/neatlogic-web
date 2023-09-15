@@ -34,7 +34,7 @@
         <div class="colorbar" :style="{ backgroundColor: row.status && row.status.color}"></div>
         <div class="name flexw">
           <span @click.stop>
-            <Checkbox v-model="row.isSelected" @on-change="getSelected()"></Checkbox>
+            <Checkbox v-model="row._selected" @on-change="getSelected()"></Checkbox>
           </span>
           <span class="pr-md shrink" :style="{ color: row.channeltype.color }">{{ row.channeltype.text }}</span>
           <span :title="row.title" class="mr-md overflow">{{ row.title }}</span>
@@ -271,7 +271,7 @@ export default {
     getSelected() {
       let selectList = [];
       this.cardData.cardList.forEach((item) => {
-        if (item.isSelected) {
+        if (item._selected) {
           selectList.push(item);
         }
       });
