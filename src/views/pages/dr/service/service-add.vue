@@ -78,6 +78,8 @@
             </div>
           </div>
         </div>
+        <!-- 校验 -->
+        <ServiceValid v-model="validVisible" :validList="validList" @on-click="jumpToItem"></ServiceValid>
       </template>
     </TsContain>
   </div>
@@ -91,7 +93,8 @@ export default {
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     Scene: resolve => require(['./detail/scene.vue'], resolve),
     Service: resolve => require(['./detail/service.vue'], resolve),
-    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve)
+    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve),
+    ServiceValid: resolve => require(['./detail/service-valid-dialog.vue'], resolve)
   },
   props: {},
   data() {
@@ -119,11 +122,11 @@ export default {
           label: '应用类型',
           dataList: [
             {
-              text: '网络',
+              text: this.$t('term.dr.network'),
               value: 'network'
             },
             {
-              text: '基础服务',
+              text: this.$t('term.dr.basicservices'),
               value: 'basicservices'
             },
             {
@@ -149,12 +152,12 @@ export default {
         },
         RTO: {
           type: 'text',
-          label: 'RTO（分钟）',
+          label: 'RTO（' + this.$t('page.minute') + '）',
           validateList: ['number']
         },
         RPO: {
           type: 'text',
-          label: 'RPO（分钟）',
+          label: 'RPO（' + this.$t('page.minute') + '）',
           validateList: ['number']
         },
         file: {
@@ -185,7 +188,9 @@ export default {
           id: ''
         }
       ],
-      isShowSteps: false
+      isShowSteps: false,
+      validList: [],
+      validVisible: false
     };
   },
   beforeCreate() {},
@@ -209,12 +214,31 @@ export default {
         this.loadingShow = false;
       });
     },
-    getValid() {},
+    getValid() {
+      let validList = [];
+      return validList;
+    },
+    getData() {
+      let settings = this.$refs.settings.getValueData();
+      let data = {
+        datacenterList: this.datacenterList,
+        name: '',
+        dataCenter: [],
+        fileList: []
+
+      };
+    },
     save() {
+      this.validList = this.getValid();
+      if (!this.$utils.isEmpty(validList)) {
+        this.validVisible = true;
+        return;
+      }
       let data = {};
       return data;
     },
     changeDataCenter(value, selectedItem) {
+      //改变关联数据中心需要更新步骤的数据
       this.isShowSteps = true;
       this.datacenterList = selectedItem;
       this.$nextTick(() => {
@@ -231,7 +255,7 @@ export default {
       this.fileList.splice(index, 1);
     },
     validDatacenter(el) {
-      // 验证协议和账号唯一
+      //关联数据中心校验：至少选择两项
       let isValid = true;
       if (el && el.currentValue.length < 2) {
         isValid = false;
@@ -252,6 +276,9 @@ export default {
           vnode.isShow = false;
         }
       });
+    },
+    jumpToItem() {
+
     }
   },
   filter: {},
