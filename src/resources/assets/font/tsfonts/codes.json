@@ -3238,5 +3238,17 @@
     "css": "tsfont-merge",
     "hexCodepoint": "0xea1b",
     "codepoint": 59931
+  },
+  {
+    "name": "table-column",
+    "css": "tsfont-table-column",
+    "hexCodepoint": "0xea1c",
+    "codepoint": 59932
+  },
+  {
+    "name": "table-row",
+    "css": "tsfont-table-row",
+    "hexCodepoint": "0xea1d",
+    "codepoint": 59933
   }
 ]

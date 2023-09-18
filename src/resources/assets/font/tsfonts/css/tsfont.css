@@ -581,3 +581,5 @@
 .tsfont-gitlab:before { content: '\ea19'; } /* '' */
 .tsfont-svn:before { content: '\ea1a'; } /* '' */
 .tsfont-merge:before { content: '\ea1b'; } /* '' */
+.tsfont-table-column:before { content: '\ea1c'; } /* '' */
+.tsfont-table-row:before { content: '\ea1d'; } /* '' */
