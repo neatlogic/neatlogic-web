@@ -552,3 +552,5 @@
 .tsfont-gitlab { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea19;&nbsp;'); }
 .tsfont-svn { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1a;&nbsp;'); }
 .tsfont-merge { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1b;&nbsp;'); }
+.tsfont-table-column { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1c;&nbsp;'); }
+.tsfont-table-row { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1d;&nbsp;'); }
