@@ -236,6 +236,7 @@ export default {
         successCount: 0,
         failureReasonList: []
       };
+      this.$emit('on-close');
     },
     handleBeforeUpload(file) {
       if (this.isValid && this.isImport) {

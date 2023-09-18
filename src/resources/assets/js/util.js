@@ -298,11 +298,15 @@ export default {
   },
   isSame(val1, val2) {
     let _this = this;
+    let differenceArr = _.difference(_.flattenDeep(val1), _.flattenDeep(val2)); // 判断[1,2]和[2,1]不相等的情况
     let isEqual = _.isEqualWith(val1, val2, function (val1, val2) {
       if (_this.isEmpty(val1) && _this.isEmpty(val2)) {
         return true;
       } else if (_this.isEmpty(val1) || _this.isEmpty(val2)) {
         return false;
+      } else if (_.isArray(val1) && _.isArray(val2) && _this.isEmpty(differenceArr)) {
+        // 判断两个数组是否相等
+        return true;
       }
     });
     return isEqual;
