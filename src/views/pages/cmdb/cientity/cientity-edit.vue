@@ -2,7 +2,7 @@
   <div>
     <TsContain :hideHeader="hideHeader" :mode="mode">
       <template v-if="mode != 'dialog'" v-slot:navigation>
-        <span v-if="$hasBack()" class="text-action ts-angle-left" @click="$back('/ci-view/' + ciId)">{{ $getFromPage($t('term.cmdb.cientitylist')) }}</span>
+        <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back('/ci-view/' + ciId)">{{ $getFromPage($t('term.cmdb.cientitylist')) }}</span>
       </template>
       <template v-slot:topLeft>
         <div v-if="ciEntityData && ciEntityData.id" class="action-group">

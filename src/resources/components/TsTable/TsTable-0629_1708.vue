@@ -159,7 +159,7 @@
               @update="updateColSort"
             >
               <li v-for="li in thList.filter(d => d.key != 'action')" :key="li.key" :class="['sort-item', {disabled: li.key == 'selection' || li.disabled}]">
-                <i class="ts-bars sort-handle"></i>
+                <i class="tsfont-bar sort-handle"></i>
                 <span class="text">{{ li.title ? li.title : '_' }}</span>
                 <div class="sort-show">
                   <Checkbox

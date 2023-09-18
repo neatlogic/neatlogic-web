@@ -18,7 +18,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span class="text-action ts-angle-left" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <div>

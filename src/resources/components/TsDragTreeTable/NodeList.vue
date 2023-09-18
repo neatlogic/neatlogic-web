@@ -23,7 +23,7 @@
     >
       <div class="tree-node-content bg-op" :class="[boxShadow===true ? 'block-container' : '' , boxShadow=== false ? 'm-noShadow' : '']" @click.self="showHideSubTree(node)">
         <div class="node-left">
-          <i v-if="draggable" class="handle ts-bars"></i>
+          <i v-if="draggable" class="handle tsfont-bar"></i>
           <i v-if="draggable" class="dividing-line dividing-bg-color"></i>
           <span v-if="nodeDepth < treeDepth" class="status-icon">
             <i v-if="loadingNodeList.includes(node)" class="ivu-icon ivu-icon-ios-loading ivu-load-loop"></i>

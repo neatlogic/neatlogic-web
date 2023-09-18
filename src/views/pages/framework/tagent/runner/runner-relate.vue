@@ -24,7 +24,7 @@
       <template slot="action" slot-scope="{ row, index }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li class="ts-trash-s" @click="delOperation(row, index)">{{ $t('page.delete') }}</li>
+            <li class="tsfont-trash-s" @click="delOperation(row, index)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>

@@ -150,7 +150,7 @@ export default {
         },
         {title: '', key: 'action'}
         // {
-        //   key: 'action', title: '', type: 'action', operations: [{icon: 'ts-trash-s', name: '删除', action: 'del', type: 'text', style: ''}]
+        //   key: 'action', title: '', type: 'action', operations: [{icon: 'tsfont-trash-s', name: '删除', action: 'del', type: 'text', style: ''}]
         // }
       ],
       tabledata: {},

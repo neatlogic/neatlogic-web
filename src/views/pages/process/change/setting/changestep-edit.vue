@@ -55,7 +55,7 @@
         <span class="sub-line"></span>
         <div class="card-item block-container" :class="isSelectId && isSelectId == cd.uuid ? 'bg-primary' : 'bg-block'" :style="{ 'margin-bottom': cd.isShow ? '0px' : '8px' }">
           <!-- <div class="move-icon">
-            <i class="ts-bars move" draggable="true" @dragstart="onDragstartTable($event, cd)"></i>
+            <i class="tsfont-bar move" draggable="true" @dragstart="onDragstartTable($event, cd)"></i>
           </div> -->
           <div class="content-block" @click="lookContent(cd)">
             <div class="title-block overflow">

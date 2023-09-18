@@ -114,7 +114,7 @@ export default {
           operations: [
             {
               name: this.$t('page.delete'),
-              icon: 'ts-trash-s',
+              icon: 'tsfont-trash-s',
               type: 'text',
               action: 'del'
             }

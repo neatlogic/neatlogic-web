@@ -21,7 +21,7 @@
     ></Loading>
     <TsContain>
       <template v-slot:topLeft>
-        <span class="ts-plus text-action" @click="openEditDialog">{{ $t('term.autoexec.directorytool') }}</span>
+        <span class="tsfont-plus text-action" @click="openEditDialog">{{ $t('term.autoexec.directorytool') }}</span>
       </template>
       <template v-slot:topRight>
         <div>

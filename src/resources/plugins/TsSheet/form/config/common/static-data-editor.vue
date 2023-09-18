@@ -11,7 +11,7 @@
       tag="ul"
       class="dataSource-ul"
       :list="dataListLocal"
-      handle=".ts-bars"
+      handle=".tsfont-bar"
       ghost-class="item-selected"
     >
       <div v-for="(item, index) in dataListLocal" :key="index" class="item-grid">
@@ -51,7 +51,7 @@
           ></span>
           <span
             v-if="dataListLocal.length > 1 && !disabled"
-            class="ts-bars"
+            class="tsfont-bar"
             style="cursor:move"
             :title="$t('page.move')"
           ></span>

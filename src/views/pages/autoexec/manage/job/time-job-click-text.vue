@@ -18,7 +18,7 @@
     <template v-if="!isShowList">
       <span
         v-if="!id || isShow"
-        class="ts-plus text-action"
+        class="tsfont-plus text-action"
         :class="{'time-job-disabled': disable}"
         @click="openTimeJobDialog(true, id)"
       >
@@ -33,7 +33,7 @@
         {{ $t('term.autoexec.timingjob') }}
       </div>
       <span
-        class="ts-plus text-action"
+        class="tsfont-plus text-action"
         @click="openTimeJobDialog(true, id)"
       >
         {{ $t('term.autoexec.timingjob') }}

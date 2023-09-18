@@ -15,7 +15,7 @@
           class="user-avatar"
         ></TsAvatar>
         <span>{{ userInfo.userName }}</span>
-        <i class="ts-angle-down" :class="{'arrow-dropdown':isDropdown}"></i>
+        <i class="tsfont-down" :class="{'arrow-dropdown':isDropdown}"></i>
       </div>
       <DropdownMenu slot="list" class="dropdown-menu" style="width:180px;">
         <DropdownItem class="ban-hover">
@@ -162,7 +162,7 @@ export default {
       margin-left: 4px;
     }
 
-    .ts-angle-down {
+    .tsfont-down {
       margin-left: 5px;
       margin-right: 24px;
       .transition(300ms);

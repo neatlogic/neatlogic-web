@@ -15,7 +15,7 @@
       @change-label="changeLabel"
     ></TsFormInput>
     <Input v-else placeholder="请输入" type="textarea" />
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
   </div>
 </template>
 <script>

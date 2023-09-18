@@ -24,7 +24,7 @@
             title="编辑选择集成"
             @click="addDataSource(setting.integrationUuid)"
           ></i>
-          <i class="ts-refresh text-tip-active" title="刷新数据源" @click="getIntegrationUuidList()"></i>
+          <i class="tsfont-refresh text-tip-active" title="刷新数据源" @click="getIntegrationUuidList()"></i>
         </span>
       </label>
       <div class="formsetting-text">

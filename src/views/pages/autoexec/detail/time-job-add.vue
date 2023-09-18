@@ -2,7 +2,7 @@
   <div class="time-job-add">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="text-action ts-angle-left" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ id == null? $t('page.newtarget', {target: $t('term.autoexec.timingjob')}): $t('dialog.title.edittarget', {target: $t('term.autoexec.timingjob')}) }}</span>

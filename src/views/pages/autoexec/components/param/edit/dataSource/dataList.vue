@@ -26,7 +26,7 @@
         tag="ul"
         class="dataSource-ul"
         :list="dataList"
-        handle=".ts-bars"
+        handle=".tsfont-bar"
         ghost-class="li-active"
       >
         <li v-for="(item, index) in dataList" :key="index">
@@ -67,7 +67,7 @@
               :title="$t('page.delete')"
               @click="removeOption(index)"
             ></span>
-            <span v-if="dataList.length > 1" class="ts-bars span-btn btn-move" :title="$t('page.move')"></span>
+            <span v-if="dataList.length > 1" class="tsfont-bar span-btn btn-move" :title="$t('page.move')"></span>
           </div>
         </li>
       </draggable>

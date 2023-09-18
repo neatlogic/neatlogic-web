@@ -2,7 +2,7 @@
   <div class="formEdit" @click.stop>
     <TsContain border="bottom">
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="controller-group" style="--children:2">

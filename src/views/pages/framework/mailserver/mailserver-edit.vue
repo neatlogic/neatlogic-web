@@ -5,10 +5,10 @@
         <span>{{ $t('dialog.title.edittarget',{'target':$t('page.server')}) }}</span>
         <!-- <div class="action-group">
           <template v-if="canBack || !uuid">
-            <span class="action-item ts-angle-left" @click="goback()">邮件服务器管理</span>
+            <span class="action-item tsfont-left" @click="goback()">邮件服务器管理</span>
           </template>
           <template v-else>
-            <span class="action-item disable ts-angle-left">邮件服务器管理</span>
+            <span class="action-item disable tsfont-left">邮件服务器管理</span>
           </template>
           <template v-if="uuid">
             <span class="block-item">

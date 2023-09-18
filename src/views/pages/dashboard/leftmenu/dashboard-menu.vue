@@ -41,7 +41,7 @@
           </div>
         </div>
       </div>
-      <div :class="menushow ? 'toggle-btn ts-angle-left' : 'toggle-btn ts-bars'" @click="menuToggle()"></div>
+      <div :class="menushow ? 'toggle-btn tsfont-left' : 'toggle-btn tsfont-bar'" @click="menuToggle()"></div>
     </div>
   </div>
 </template>

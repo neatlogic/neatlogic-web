@@ -22,7 +22,7 @@
           tag="ul"
           :class="['dataSource-ul', { 'multiple-ul': isMultiple == true }]"
           :list="setting.dataList"
-          handle=".ts-bars"
+          handle=".tsfont-bar"
           ghost-class="bg-primary"
         >
           <li v-for="(item, index) in setting.dataList" :key="index">
@@ -54,7 +54,7 @@
               title="删除"
               @click="removeOption(index)"
             ></span>
-            <span v-if="setting.dataList.length > 1" class="ts-bars span-btn btn-move" title="移动"></span>
+            <span v-if="setting.dataList.length > 1" class="tsfont-bar span-btn btn-move" title="移动"></span>
           </li>
         </draggable>
       </div>
@@ -85,7 +85,7 @@
             title="编辑选中数据源"
             @click="$utils.matrixDataSourceRedirect(matrixJson.matrixUuid.value, dataSourceJson)"
           ></i>
-          <i class="ts-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
+          <i class="tsfont-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
         </div>
       </template>
     </TsForm>

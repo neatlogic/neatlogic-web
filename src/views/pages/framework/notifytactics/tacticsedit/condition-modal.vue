@@ -131,7 +131,7 @@
                             :title="$t('page.edit')"
                             @click="toEditTemplate(item.templateId)"
                           ></span>
-                          <span class="ts-refresh text-tip-active" :title="$t('page.refresh')" @click="getNotifyTemplate('refresh')"></span>
+                          <span class="tsfont-refresh text-tip-active" :title="$t('page.refresh')" @click="getNotifyTemplate('refresh')"></span>
                         </div>
                       </Col>
                     </TsRow>

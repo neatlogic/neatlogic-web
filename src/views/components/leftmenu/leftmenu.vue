@@ -168,9 +168,9 @@ export default {
   computed: {
     ...mapState(['menuActive']),
     setMenushow() {
-      let showclass = 'toggle-btn ts-bars';
+      let showclass = 'toggle-btn tsfont-bar';
       if (this.menushow) {
-        showclass = 'toggle-btn ts-angle-left';
+        showclass = 'toggle-btn tsfont-left';
       }
       return showclass;
     },

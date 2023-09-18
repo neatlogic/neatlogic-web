@@ -9,7 +9,7 @@
       :style="setWidth"
     >{{ setting.config.text || '超链接' }}</a>
     <a v-else class="text-href" href="javascriot:void(0);">超链接</a>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
   </div>
 </template>
 <script>

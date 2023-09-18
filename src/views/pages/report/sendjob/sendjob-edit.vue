@@ -81,7 +81,7 @@
                 <li v-for="(report, index) in jobConfig.reportList" :key="report.id" class="report-item">
                   <div class="flex-between">
                     <div class="flex-start">
-                      <i class="ts-bars handle"></i>
+                      <i class="tsfont-bar handle"></i>
                       <h3 class="report-name">{{ report.name }}</h3>
                     </div>
                     <ul class="action-group">

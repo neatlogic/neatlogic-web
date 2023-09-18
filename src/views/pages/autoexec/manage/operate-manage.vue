@@ -226,7 +226,7 @@ export default {
       display: inline-block;
       margin-right: 4px;
     }
-    .ts-angle-down {
+    .tsfont-down {
       transition: transform 0.25s ease-out;
       &.arrow-rotate {
         transform: rotate(-180deg);

@@ -30,7 +30,7 @@
                     @click="matrixAttributeClick(item)"
                   >
                     <div class="item-move move">
-                      <i class="ts-bars"></i>
+                      <i class="tsfont-bar"></i>
                     </div>
                     <div class="item-content">{{ item.name }}</div>
                     <div v-if="item.isDeletable == 1" class="item-del tsfont-trash-o" @click.stop="removeAttribute(item.uuid)"></div>
@@ -71,7 +71,7 @@
                   tag="ul"
                   class="dataSource-ul"
                   :list="dataList"
-                  handle=".ts-bars"
+                  handle=".tsfont-bar"
                   ghost-class="bg-primary"
                 >
                   <li v-for="(item, index) in dataList" :key="index">
@@ -106,7 +106,7 @@
                       :title="$t('page.delete')"
                       @click="removeOption(index)"
                     ></span>
-                    <span v-if="dataList.length > 1" class="ts-bars span-btn btn-move" :title="$t('page.move')"></span>
+                    <span v-if="dataList.length > 1" class="tsfont-bar span-btn btn-move" :title="$t('page.move')"></span>
                   </li>
                 </vuedraggable>
               </div>

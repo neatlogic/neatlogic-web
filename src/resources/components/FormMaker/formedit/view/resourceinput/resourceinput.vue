@@ -27,7 +27,7 @@
         <span v-if="validMesage != ''" class="form-error-tip">{{ validMesage }}</span>
       </transition>
     </template>
-    <div v-if="setting.config.desc" class="component-tips ts-info">
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">
       {{ setting.config.desc }}
     </div>
   </div>

@@ -19,7 +19,7 @@
       <i v-if="setting.config.isRequired" class="require-tip">*</i>
       <Button icon="tsfont tsfont-plus" @click="addData">执行目标</Button>
     </div>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
     <div v-if="formView && currentValue && currentValue.type" class="view-main">
       <template v-if="currentValue.type=='filter'">
         <FilterSearch :defaultValue="currentValue.filter" :readonly="true" class="detail-text"></FilterSearch>

@@ -61,7 +61,7 @@
                   <div v-if="row.runnerName" class="nodename-item">
                     <span class="text-tip">{{ $t('page.node') }}</span>
                     <span>{{ row.runnerName || '-' }}</span>
-                    <span class="text-action ts-refresh icon-refresh" :title="$t('page.switchnode')" @click.stop="updateNode(row)"></span>
+                    <span class="text-action tsfont-refresh icon-refresh" :title="$t('page.switchnode')" @click.stop="updateNode(row)"></span>
                   </div>
                 </Col>
                 <Col span="8">

@@ -64,7 +64,7 @@
         >
           <i 
             v-if="li.children && li.children.length>0" 
-            class="ts-angle-down btn-toggle"
+            class="tsfont-down btn-toggle"
           ></i>
           
           <span class="diff-name">{{ li.name }}</span>
@@ -126,7 +126,7 @@ export default {
         icon: 'ts-workflow'
       }, {
         name: 'list',
-        icon: 'ts-bars'        
+        icon: 'tsfont-bar'        
       }],
       fileName: '',
       fileNameSelectConfig: {

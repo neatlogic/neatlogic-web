@@ -21,7 +21,7 @@
           <div class="bar-top-left wrapper">
             <div class="action-group">
               <template>
-                <span class="text-action ts-angle-left" @click="goBack()">{{ $t('term.framework.tagentlist') }}</span>
+                <span class="text-action tsfont-left" @click="goBack()">{{ $t('term.framework.tagentlist') }}</span>
               </template>
             </div>
           </div>
