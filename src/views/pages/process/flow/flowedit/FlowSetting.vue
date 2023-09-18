@@ -31,7 +31,7 @@
               :title="$t('page.edit')"
               @click="editForm"
             ></span>
-            <span class="ts-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
+            <span class="tsfont-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
           </div>
         </div>
         <div class="panel-contain input-border">

@@ -12,7 +12,7 @@
           tag="ul"
           class="dataSource-ul"
           :list="dataList"
-          handle=".ts-bars"
+          handle=".tsfont-bar"
           ghost-class="bg-primary"
         >
           <li v-for="(item, index) in dataList" :key="index">
@@ -49,7 +49,7 @@
               title="删除"
               @click="removeOption(index)"
             ></span>
-            <span v-if="dataList.length > 1" class="ts-bars span-btn btn-move" title="移动"></span>
+            <span v-if="dataList.length > 1" class="tsfont-bar span-btn btn-move" title="移动"></span>
           </li>
         </draggable>
       </div>

@@ -84,7 +84,7 @@
       <div 
         v-if="!loading"
         class="btn-toggle-left text-action border-color bg-op" 
-        :class="showTree ?'ts-angle-left':'ts-bars'" 
+        :class="showTree ?'tsfont-left':'tsfont-bar'" 
         :style="{ left: (leftWidth > 0 ? leftWidth - 28 : '-40') + 'px' }"
         @click="toggleshowTree"
       ></div>

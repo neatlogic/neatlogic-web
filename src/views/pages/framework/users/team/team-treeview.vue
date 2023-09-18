@@ -7,7 +7,7 @@
       :list="childrenList"
       :group="{ name: 'item-sub' }"
       :move="checkMove"
-      handle=".ts-bars"
+      handle=".tsfont-bar"
       :forceFallback="false"
       @start="moveStart"
       @end="moveEnd"
@@ -25,7 +25,7 @@
         <span class="sub-line"></span>
         <div class="card-item bg-op block-container">
           <div class="title-block">
-            <i class="ts-bars move"></i>
+            <i class="tsfont-bar move"></i>
             <span v-if="cd.name.length > 28" class="text-title overflow" :title="cd.name">
               {{ cd.name.substr(0, 28) }}...
             </span>
@@ -36,7 +36,7 @@
             <i
               v-if="showOpen(cd)"
               class="text-action"
-              :class="cd.isShow ? 'ts-angle-up' : 'ts-angle-down'"
+              :class="cd.isShow ? 'tsfont-up' : 'tsfont-down'"
               @click="isOpen(cd)"
             ></i>
           </div>

@@ -73,7 +73,7 @@ export default {
       actionIconList: {
         'workcurrentstep': 'ts-long-arrow-right',
         'abortprocessTask': 'tsfont-close',
-        'recoverprocessTask': 'ts-refresh',
+        'recoverprocessTask': 'tsfont-refresh',
         'urge': 'tsfont-reminder',
         'delete': 'tsfont-trash-s',
         'show': 'tsfont-eye',

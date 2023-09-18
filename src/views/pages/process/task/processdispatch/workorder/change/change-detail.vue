@@ -61,7 +61,7 @@
           <span class="sub-line"></span>
           <div class="card-item radius-sm border-base" :class="isSelectId && isSelectId == cd.uuid?'bg-primary':'bg-block'" :style="{ 'margin-bottom':cd.isShow?'0px':'8px' }">
             <!-- <div class="move-icon">
-            <i class="ts-bars move" draggable="true" @dragstart="onDragstartTable($event, cd)"></i>
+            <i class="tsfont-bar move" draggable="true" @dragstart="onDragstartTable($event, cd)"></i>
           </div> -->
             <i class="tsfont-down show-icon text-tip-active" @click="lookContent(cd)"></i>
             <div class="content-block" @click="lookContent(cd)">

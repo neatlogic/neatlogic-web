@@ -79,7 +79,7 @@
                 </TsRow>
                 <div v-else class="text-center">{{ $t('page.nodata') }}</div>
               </div>
-              <div v-if="(initType === 'team' || initType === 'role') && !multiple" class="ts-angle-left text-href userlist-wrap" @click.stop="backtoList">
+              <div v-if="(initType === 'team' || initType === 'role') && !multiple" class="tsfont-left text-href userlist-wrap" @click.stop="backtoList">
                 {{ $t('page.list') }}
               </div>
             </div>

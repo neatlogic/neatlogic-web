@@ -16,13 +16,13 @@
             class="dataSource-ul"
             :list="attrRelList"
             :group="{ name: 'item-sub' }"
-            handle=".ts-bars"
+            handle=".tsfont-bar"
             :forceFallback="false"
             @start="moveStart"
             @end="moveEnd"
           >
             <div v-for="(item, index) in attrRelList" :key="index" class="card-item">
-              <div class="block-handler"><i class="ts-bars move"></i></div>
+              <div class="block-handler"><i class="tsfont-bar move"></i></div>
               <div class="block-name">{{ item.itemLabel }}</div>
               <div class="block-type">{{ item.typeText }}</div>
               <div class="block-showtype">

@@ -6,7 +6,7 @@
       <Button v-if="showRemoveBatch" @click="removeBatch">批量删除</Button>
     </div>
     <div class="tstable-container">
-      <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+      <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
       <div v-if="formView">
         <table v-if="dataList.length > 0 || !isReadonly" class="table-list tstable-body">
           <thead v-if="setting.config.attributeList">

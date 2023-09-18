@@ -178,7 +178,7 @@
                       <div class="block_top">
                         <div class="operation text-grey">
                           <div class="opera_item move">
-                            <i class="ts-bars"></i>
+                            <i class="tsfont-bar"></i>
                           </div>
                           <div class="opera_item">
                             <div class="number">{{ index + 1 }}</div>

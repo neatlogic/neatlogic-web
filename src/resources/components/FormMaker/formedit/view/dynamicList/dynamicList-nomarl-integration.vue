@@ -83,7 +83,7 @@
         <span v-if="validMesage != ''" class="form-error-tip">{{ validMesage }}</span>
       </transition>
     </div>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
   </div>
 </template>
 <script>

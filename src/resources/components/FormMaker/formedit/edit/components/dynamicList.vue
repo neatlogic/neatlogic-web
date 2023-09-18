@@ -39,7 +39,7 @@
               title="编辑选中数据源"
               @click="$utils.matrixDataSourceRedirect(setting.matrixUuid, dataSourceJson)"
             ></i>
-            <i class="ts-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
+            <i class="tsfont-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
           </span>
         </label>
         <div class="formsetting-text">
@@ -180,7 +180,7 @@
                 tag="tbody"
                 class="dataSource-ul"
                 :list="setting.attributeList"
-                handle=".ts-bars"
+                handle=".tsfont-bar"
                 ghost-class="li-active"
               >
                 <tr v-for="(attr, index) in setting.attributeList" :key="index">
@@ -223,7 +223,7 @@
                       title="删除"
                       @click="removeAttr(index)"
                     ></span>
-                    <span v-if="setting.attributeList && setting.attributeList.length > 1" class="ts-bars span-btn" title="拖动"></span>
+                    <span v-if="setting.attributeList && setting.attributeList.length > 1" class="tsfont-bar span-btn" title="拖动"></span>
                   </td>
                 </tr>
               </draggable>

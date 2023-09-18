@@ -20,7 +20,7 @@
       @on-change="updatethis(currentValue)"
     ></TsFormDatePicker>
     <DatePicker v-else type="date" placeholder="选择日期"></DatePicker>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
   </div>
 </template>
 <script>

@@ -9,7 +9,7 @@
       @rightSiderToggle="rightSiderToggle"
     >
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="$back('/merge-overview')">{{ $getFromPage($t('router.codehub.mergerequestlist')) }}</span>
+        <span class="tsfont-left text-action" @click="$back('/merge-overview')">{{ $getFromPage($t('router.codehub.mergerequestlist')) }}</span>
       </template>
       <template v-slot:topLeft>
         <div v-if="mrData" style="display: flex;">
@@ -37,7 +37,7 @@
               max-width="400" 
               transfer
             >
-              <div class="text-error cursor-pointer ts-info"></div>
+              <div class="text-error cursor-pointer tsfont-info-o"></div>
               <div slot="content">
                 <div v-html="errorMessage"></div>
               </div>
@@ -47,7 +47,7 @@
               class="ivu-tooltip"
             >
               <div class="ivu-tooltip-rel">
-                <div class="text-error cursor-pointer ts-info" @click="showError()">
+                <div class="text-error cursor-pointer tsfont-info-o" @click="showError()">
                 </div>
               </div>
             </div>

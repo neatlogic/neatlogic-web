@@ -2,7 +2,7 @@
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
+        <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
         <TsRow>

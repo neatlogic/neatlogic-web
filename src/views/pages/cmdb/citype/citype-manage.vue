@@ -17,14 +17,14 @@
             class="dataSource-ul"
             :list="ciTypeList"
             :group="{ name: 'item-sub' }"
-            handle=".ts-bars"
+            handle=".tsfont-bar"
             :forceFallback="false"
             @start="moveStart"
             @end="moveEnd"
           >
             <div v-for="(item, index) in ciTypeList" :key="index" class="card-item">
               <div class="block-handler">
-                <div v-if="!item.isDeleted"><i class="ts-bars move"></i></div>
+                <div v-if="!item.isDeleted"><i class="tsfont-bar move"></i></div>
               </div>
               <div class="block-name">
                 <div v-if="!item.isDeleted">

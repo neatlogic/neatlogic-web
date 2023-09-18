@@ -121,7 +121,7 @@
                   :percent="item.Status"
                   :size="26"
                 >
-                  <i class="ts-refresh"></i>
+                  <i class="tsfont-refresh"></i>
                 </i-circle>
                 <i-circle
                   v-else-if="!isNaN(item.Status)"
@@ -640,7 +640,7 @@ export default {
           .tsfont-close {
             color: @error-color;
           }
-          .ts-refresh {
+          .tsfont-refresh {
             color: @default-primary-color;
           }
         }

@@ -25,7 +25,7 @@
             <div v-for="item of policyList" :key="item.type" class="move">
               <div v-if="item.type == 'prestepassign'" class="list">
                 <div class="top">
-                  <span class="ts-bars move-btn"></span>
+                  <span class="tsfont-bar move-btn"></span>
                   <span>{{ item.name }}</span>
                   <div class="custom-checkbox">
                     <Checkbox
@@ -92,7 +92,7 @@
               </div>
               <div v-if="item.type == 'copy'" class="list">
                 <div class="top">
-                  <span class="ts-bars move-btn"></span>
+                  <span class="tsfont-bar move-btn"></span>
                   <span>{{ item.name }}</span>
                   <div class="custom-checkbox">
                     <Checkbox
@@ -125,7 +125,7 @@
               </div>
               <div v-if="item.type == 'form'" class="list">
                 <div class="top">
-                  <span class="ts-bars move-btn"></span>
+                  <span class="tsfont-bar move-btn"></span>
                   <span>{{ item.name }}</span>
                   <div class="custom-checkbox">
                     <Checkbox
@@ -258,7 +258,7 @@
               </div>
               <div v-if="item.type == 'assign'" class="list">
                 <div class="top">
-                  <span class="ts-bars move-btn"></span>
+                  <span class="tsfont-bar move-btn"></span>
                   <span>{{ item.name }}</span>
                   <div class="custom-checkbox">
                     <Checkbox

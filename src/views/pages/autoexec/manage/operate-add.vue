@@ -30,7 +30,7 @@
             >
               <div class="color-selected">
                 <div class="color-block radius-sm" :style="{ backgroundColor: selectedColor}"></div>
-                <i class="ts-angle-down" :class="{ 'arrow-rotate': isColorListShow }"></i>
+                <i class="tsfont-down" :class="{ 'arrow-rotate': isColorListShow }"></i>
               </div>
               <div slot="content">
                 <ul class="color-block-list">

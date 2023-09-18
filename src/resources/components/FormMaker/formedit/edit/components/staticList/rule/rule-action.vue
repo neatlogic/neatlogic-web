@@ -30,7 +30,7 @@
       <Col span="5">
         <span
           v-if="showAdd"
-          class="ts-plus-o span-btn"
+          class="tsfont-plus-o span-btn"
           title="添加动作"
           @click="addAction(index)"
         ></span>

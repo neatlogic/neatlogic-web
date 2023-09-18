@@ -34,7 +34,7 @@
           <div slot="content">
             {{ row.description }}
           </div>
-          <i class="ts-info" style="cursor:pointer"></i>
+          <i class="tsfont-info-o" style="cursor:pointer"></i>
         </Poptip>
       </template>
       <template slot="isUnique" slot-scope="{ row }">

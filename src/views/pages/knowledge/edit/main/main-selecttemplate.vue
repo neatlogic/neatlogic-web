@@ -18,7 +18,7 @@
             <div class="top">
               <div class="action-group">
                 <span v-if="hasTemplateAuth" class="action-item tsfont-plus" @click="gotoManage">{{ $t('page.template') }}</span>
-                <span class="action-item ts-refresh" @click="update">{{ $t('page.refresh') }}</span>
+                <span class="action-item tsfont-refresh" @click="update">{{ $t('page.refresh') }}</span>
               </div>
               <TsFormInput
                 v-model="searchParams.keyword"

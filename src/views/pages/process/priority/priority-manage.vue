@@ -63,7 +63,7 @@
               >
                 <div class="color-selected">
                   <div class="color-block" :style="{ backgroundColor: selectedColor }"></div>
-                  <i class="ts-angle-down" :class="{ 'arrow-rotate': isColorListShow }"></i>
+                  <i class="tsfont-down" :class="{ 'arrow-rotate': isColorListShow }"></i>
                 </div>
                 <div slot="content">
                   <ul class="color-block-list">
@@ -392,7 +392,7 @@ export default {
       display: inline-block;
       margin-right: 4px;
     }
-    .ts-angle-down {
+    .tsfont-down {
       transition: transform 0.25s ease-out;
       &.arrow-rotate {
         transform: rotate(-180deg);
