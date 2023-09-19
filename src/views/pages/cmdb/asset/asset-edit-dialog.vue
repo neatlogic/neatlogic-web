@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="true" @on-close="close">
+  <TsDialog v-bind="setting" :isShow="true">
     <div>
       <Loading
         v-if="isLoading"
@@ -16,6 +16,7 @@
         saveMode="emit"
         :hideHeader="true"
         @save="save"
+        @cancel="close"
       ></EditCiEntity>
     </div>
   </TsDialog>
