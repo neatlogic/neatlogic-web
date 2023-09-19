@@ -221,14 +221,14 @@ export default {
       return (value) => {
         if (value) {
           return {
-            dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
+            dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
             params: { 
               matrixUuid: this.config.matrixUuid,
               keywordColumn: value,
-              columnList: [value]
+              valueField: value,
+              textField: value
             },
-            rootName: 'tbodyList',
-            dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, value); },
+            rootName: 'dataList',
             multiple: true,
             sperateText: ',',
             readonly: true,
@@ -252,14 +252,14 @@ export default {
     filterConfig() { //联动来源组件配置信息
       return (value) => {
         let config = {
-          dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
+          dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
           params: { 
             matrixUuid: this.config.matrixUuid,
             keywordColumn: value,
-            columnList: [value]
+            valueField: value,
+            textField: value
           },
-          rootName: 'tbodyList',
-          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, value); },
+          rootName: 'dataList',
           multiple: true,
           sperateText: ',',
           readonly: true,

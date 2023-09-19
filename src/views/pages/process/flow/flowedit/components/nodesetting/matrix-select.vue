@@ -52,9 +52,8 @@ export default {
         params: null,
         dynamicUrl: '',
         url: '',
-        defaultUrl: '/api/rest/matrix/column/data/search/forselect/new',
-        dealDataByUrl: _this.dealDataByUrl || null,
-        rootName: 'tbodyList',
+        defaultUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
         showName: null
       }
     };
@@ -72,55 +71,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    dealDataByUrl(nodeList) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let mapping = {};
-      if (this.expressionConfig && this.expressionConfig.cascaderExpression && this.expressionConfig.cascaderExpression.length > 0) {
-        mapping = this.setting.mapping[this.expressionConfig.cascaderExpression[0]];
-      } else {
-        mapping = this.setting.mapping;
-      }
-      return this.dealDataFilter(nodeList, mapping);
-    },
     setDefaultJson() {
       //当是矩阵数据源时，改变矩阵中的配置时，需要触发改变默认值
       let _this = this;
       if (this.setting.mapping.value && this.setting.mapping.text) {
         let param = { matrixUuid: _this.setting.matrixUuid };
         param.keywordColumn = this.setting.mapping.text;
-        param.columnList = [this.setting.mapping.value, this.setting.mapping.text];
+        param.valueField = this.setting.mapping.value;
+        param.textField = this.setting.mapping.text;
         this.defaultSelfJson.params = param;
         this.defaultSelfJson.dynamicUrl = this.defaultSelfJson.defaultUrl;
       } else {
         this.defaultSelfJson.dynamicUrl = '';
         this.defaultSelfJson.showName = '';
       }
-    },
-    dealDataFilter(nodeList, mapping) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let _this = this;
-      let columlist = [];
-      mapping = mapping || null;
-      if (mapping.value && mapping.text && nodeList) {
-        nodeList.forEach(co => {
-          if (co[mapping.text]) {
-            if (mapping.value != mapping.text) {
-              columlist.push({
-                text: co[mapping.text].text,
-                value: co[mapping.value].value + '&=&' + co[mapping.text].text,
-                html: co[mapping.text].text + "<small class='text-grey'>(" + co[mapping.value].text + ')</small>'
-              });
-            } else {
-              columlist.push({
-                text: co[mapping.text].text,
-                value: co[mapping.value].value + '&=&' + co[mapping.text].text,
-                html: co[mapping.text].text
-              });
-            }
-          }
-        });
-      }
-      return columlist;
     }
   },
   filter: {},

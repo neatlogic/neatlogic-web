@@ -27,9 +27,6 @@ const report = {
   getMatrixAttributeByUuid(params) {
     return axios.post('/api/rest/matrix/attribute/search', params);
   },
-  getMatrixDataByUuid(params) {
-    return axios.post('/api/rest/matrix/column/data/search/forselect/new', params);
-  },
   getReportList() {
     return axios.post('', {});
   },

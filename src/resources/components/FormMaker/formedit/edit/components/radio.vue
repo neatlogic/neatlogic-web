@@ -117,7 +117,9 @@ export default {
         if (this.setting.mapping.value && this.setting.mapping.text) {
           let param = { matrixUuid: _this.setting.matrixUuid };
           param.keywordColumn = this.setting.mapping.text;
-          param.columnList = [this.setting.mapping.value, this.setting.mapping.text];
+          param.valueField = this.setting.mapping.value;
+          param.textField = this.setting.mapping.text;
+          this.defaultSelfJson.rootName = 'dataList';
           this.defaultSelfJson.params = param;
           this.defaultSelfJson.url = this.defaultSelfJson.defaultUrl;
         }
