@@ -7,7 +7,7 @@
       <template v-slot:topLeft><span>{{ reportData.name }}</span></template>
       <template slot="topRight">
         <div class="action-group">
-          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span class="action-item tsfont-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
           <span v-auth="['REPORT_STATEMENT_MODIFY']" class="action-item tsfont-edit" @click="editReport()">{{ $t('page.edit') }}</span>
         </div>
       </template>

@@ -33,7 +33,7 @@
         <div v-if="!loadingShow && inspectDefinitionList.length > 0" class="content-main">
           <div v-for="(item, index) in inspectDefinitionList" :key="index">
             <div v-if="item && item.cardList && item.cardList.length > 0" class="title text-title ci-title-text">
-              <span class="text-grey ts-catalogue">{{ item.collection }}</span>
+              <span class="text-grey tsfont-formstaticlist">{{ item.collection }}</span>
             </div>
             <div>
               <TsCard

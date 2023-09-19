@@ -6,7 +6,7 @@
     transfer
   >
     <div class="cursor-pointer">
-      <span :class="row.type =='person'?'ts-user':'ts-team'" class="icon-right"></span>
+      <span :class="row.type =='person'?'tsfont-userinfo':'ts-team'" class="icon-right"></span>
       <span>
         {{ row.name }}
         <span v-if="row.sid && row.sid != ''" class="text-grey">{{ `(${row.sid})` }}</span>
@@ -21,7 +21,7 @@
         <div v-if="type == 'group'">
           <ul v-if="userList && userList.length" class="clearfix group-ul">
             <li v-for="(u,uindex) in userList" :key="uindex" class="group-li">
-              <span class="ts-user icon-right">{{ u.text }}</span>
+              <span class="tsfont-userinfo icon-right">{{ u.text }}</span>
             </li>
           </ul>
           <div v-else-if="userList" class="text-tip" style="line-height:2">{{ $t('term.codehub.nogroupmembers') }}</div>
@@ -33,7 +33,7 @@
     </div>            
   </Poptip>
   <div v-else>
-    <span class="ts-user icon-right"></span>
+    <span class="tsfont-userinfo icon-right"></span>
     <span>{{ row.name }} {{ row.sid && row.sid != '' ? ' [' + row.sid + ']' : '' }}</span>
   </div>
 </template>

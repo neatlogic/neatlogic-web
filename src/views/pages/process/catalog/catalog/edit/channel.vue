@@ -22,7 +22,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('process')">{{ $t('page.refresh') }}</span>
-              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item ts-eye" @click="viewProcess">{{ $t('page.view') }}</span>
+              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-eye" @click="viewProcess">{{ $t('page.view') }}</span>
               <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-edit" @click="gotoEditFlow">{{ $t('page.edit') }}</span>
             </div>
           </div>

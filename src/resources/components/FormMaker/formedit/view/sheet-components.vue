@@ -13,7 +13,7 @@
       @update="updatethis"
     ></compontent>
     <div v-else class="hide-container">
-      <span class="ts-eye-close"></span>
+      <span class="tsfont-eye-off"></span>
       <span class="compontent-hide">当前组件不可见</span>
     </div>
   </div>
@@ -194,7 +194,7 @@ export default {
 <style lang="less" scoped>
 .hide-container {
   position: relative;
-  .ts-eye-close {
+  .tsfont-eye-off {
     position: absolute;
   }
   .compontent-hide {

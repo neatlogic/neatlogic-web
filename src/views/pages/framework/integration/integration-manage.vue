@@ -58,7 +58,7 @@
                   ></TsFormSwitch>
                 </li>
                 <li v-if="row.hasHelp == 1" class="tsfont-question-o" @click="integrationHelpUuid = row.uuid">{{ $t('page.help') }}</li>
-                <li class="ts-catalogue" @click="integrationAuditUuid = row.uuid">{{ $t('term.process.callrecord') }}</li>
+                <li class="tsfont-formstaticlist" @click="integrationAuditUuid = row.uuid">{{ $t('term.process.callrecord') }}</li>
                 <li class="tsfont-download" @click="exportRow(row)">{{ $t('page.export') }}</li>
                 <li class="tsfont-trash-o" :class="{ 'text-disabled': row.referenceCount > 0 }" @click="delIntegration(row)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-copy" @click="copyIntegration(row.uuid)">{{ $t('page.copy') }}</li>

@@ -44,7 +44,7 @@ export default {
         },
         {
           keyword: 'search 搜索',
-          icon: 'ts-search'
+          icon: 'tsfont-search'
         },
         {
           keyword: 'upload 上传',

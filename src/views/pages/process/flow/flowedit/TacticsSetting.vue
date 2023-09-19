@@ -269,7 +269,7 @@
                                     <i class="tsfont-plus"></i>
                                   </div>
                                   <div v-show="groupItem.conditionList.length > 1" class="delete text-tip" @click="conDelete(groupItem, cindex)">
-                                    <i class="ts-minus"></i>
+                                    <i class="tsfont-minus"></i>
                                   </div>
                                 </Col>
                               </TsRow>
@@ -359,7 +359,7 @@
                                   <i class="tsfont-plus"></i>
                                 </div>
                                 <div v-if="item.priorityList && item.priorityList.length > 1" class="delete text-tip" @click="timeDelete(index, cindex)">
-                                  <i class="ts-minus"></i>
+                                  <i class="tsfont-minus"></i>
                                 </div>
                               </Col>
                             </TsRow>

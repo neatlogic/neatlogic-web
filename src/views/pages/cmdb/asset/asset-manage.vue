@@ -165,7 +165,7 @@
             <div v-auth="'RESOURCECENTER_MODIFY'" class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="ts-tag" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
-                <li class="ts-user" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
+                <li class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
                 <li class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
                 <li class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
               </ul>

@@ -49,7 +49,7 @@
                 <Cell v-for="(item, index) in validList" :key="index" @click.native="validItemClick(item)">
                   <template slot>
                     <div class="cell-item">
-                      <i class="cell-icon" :class="item.type=='error'? 'tsfont-close-o text-error':'ts-complete text-success'"></i>
+                      <i class="cell-icon" :class="item.type=='error'? 'tsfont-close-o text-error':'tsfont-check-o text-success'"></i>
                       <span>{{ item.msg }}</span>
                     </div>
                   </template>

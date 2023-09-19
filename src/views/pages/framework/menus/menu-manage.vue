@@ -169,7 +169,7 @@ export default {
         },
         {
           keyword: 'search ' + this.$t('page.search'),
-          icon: 'ts-search'
+          icon: 'tsfont-search'
         },
         {
           keyword: 'upload ' + this.$t('page.upload'),
