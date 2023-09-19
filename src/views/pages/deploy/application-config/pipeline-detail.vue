@@ -225,7 +225,7 @@
       :isShowCoverDialog="isShowImportPipeline"
       :appSystemAbbrNameAndName="getAppSystemAbbrNameAppSystemName"
       :appSystemId="appSystemId"
-      @close="isShowImportPipeline = false"
+      @close="closeImportPipelineConfigDialog"
     ></ImportPipelineConfigDialog>
   </div>
 </template>
@@ -1064,6 +1064,12 @@ export default {
     },
     importPipeline() {
       this.isShowImportPipeline = true;
+    },
+    closeImportPipelineConfigDialog(needRefresh) {
+      this.isShowImportPipeline = false;
+      if (needRefresh) {
+        this.getAppPipeline();
+      }
     }
   },
   filter: {},
