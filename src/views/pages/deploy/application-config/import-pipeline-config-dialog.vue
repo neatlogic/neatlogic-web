@@ -184,7 +184,9 @@ export default {
       this.$api.deploy.apppipeline.coverPipeline(formData).then(res => {
         if (res.statusText == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
-          this.configDialog.isShow = false;
+          if (!this.isShowCoverDialog) {
+            this.configDialog.isShow = false;
+          }
           this.$emit('close', true);
         }
       });
