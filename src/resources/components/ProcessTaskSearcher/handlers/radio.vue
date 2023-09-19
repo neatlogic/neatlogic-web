@@ -32,7 +32,7 @@ export default {
     return { 
       config: this.condition.config,
       matrixConfig: {
-        url: '/api/rest/matrix/column/data/search/forselect',
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
         rootName: 'dataList',
         dealDataByUrl: this.dealDataByUrl
       }

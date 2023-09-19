@@ -63,7 +63,6 @@ export default {
       if (setting.dataSource == 'matrix') {
         let param = { matrixUuid: setting.matrixUuid };
         param.keywordColumn = setting.mapping.text;
-        param.columnList = [setting.mapping.value, setting.mapping.text];
         param.valueField = this.setting.mapping.value;
         param.textField = this.setting.mapping.text;
         json.rootName = 'dataList';
