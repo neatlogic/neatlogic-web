@@ -290,7 +290,7 @@ const defaultBorderColor = {
   right: { color: '#333' },
   bottom: { color: '#333' }
 };
-// <i class="ts-alert-s celltips" v-if="!config.isValid"></i>
+// <i class="tsfont-danger-s celltips" v-if="!config.isValid"></i>
 const cellComponetVms = {};
 
 function formCellTypes(instance, td, row, col, prop, value, cellProperties) {

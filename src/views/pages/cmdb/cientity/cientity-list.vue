@@ -30,7 +30,7 @@
         <div v-if="attrList && attrList.length > 0" class="senior">
           <span @click="isAdvancedSearch = !isAdvancedSearch">
             {{ $t('page.advancesearch') }}
-            <i :class="isAdvancedSearch ? 'ts-caret-up' : 'ts-caret-down'"></i>
+            <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
           </span>
         </div>
       </div>

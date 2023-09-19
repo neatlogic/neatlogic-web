@@ -36,7 +36,7 @@
             <div v-if="showMode === 'card'">
               <div v-for="(ciType, index) in ciTypeList" :key="index" class="type-main">
                 <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" class="title text-title ci-title-text">
-                  <span class="text-grey" :class="ciType.isMenu == 1 ? 'ts-catalogue' : ''">{{ ciType.name }}</span>
+                  <span class="text-grey" :class="ciType.isMenu == 1 ? 'tsfont-formstaticlist' : ''">{{ ciType.name }}</span>
                 </div>
                 <div>
                   <TsCard

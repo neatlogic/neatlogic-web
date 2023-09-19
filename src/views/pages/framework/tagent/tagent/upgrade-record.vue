@@ -120,7 +120,7 @@ export default {
         // 升级记录搜索
         fcuName: {
           search: true,
-          suffix: 'ts-search',
+          suffix: 'tsfont-search',
           width: '200px',
           value: '',
           placeholder: this.$t('page.user'),

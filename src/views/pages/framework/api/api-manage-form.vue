@@ -31,7 +31,7 @@
                   trigger="hover"
                   transfer
                 >
-                  <i class="ts-m-problem text-href"></i>
+                  <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ authConfig ? authConfig.title : $t('page.nothave') }}</div>
                   <div v-if="authConfig" slot="content">
                     <p v-for="(item,index) in authConfig.detailList" :key="index">
@@ -62,7 +62,7 @@
                   placement="bottom"
                   trigger="hover"
                 >
-                  <i class="ts-m-problem text-href"></i>
+                  <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.timeout') }}</div>
                   <div slot="content">
                     {{ $t('message.framework.timeouttip') }}
@@ -91,7 +91,7 @@
                   placement="bottom"
                   trigger="hover"
                 >
-                  <i class="ts-m-problem text-href"></i>
+                  <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.qps') }}</div>
                   <div slot="content">
                     <span v-html="$t('message.framework.qpstip')"></span>

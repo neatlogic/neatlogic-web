@@ -63,7 +63,7 @@
               :false-value="0"
             ></TsFormSwitch>
           </span>
-          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span class="action-item tsfont-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
           <span class="action-item tsfont-save" @click="saveReport()">{{ $t('page.save') }}</span>
           <span v-if="id" class="action-item"><Button type="error" @click="deleteReport()">{{ $t('page.delete') }}</Button></span>
         </div>

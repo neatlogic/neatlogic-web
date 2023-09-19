@@ -34,7 +34,7 @@
                     placement="bottom-end"
                     @on-visible-change="showTemplateList(arguments, item)"
                   >
-                    <span class="ts-catalogue text-tip-active " :title="$t('page.referencelist')"></span>
+                    <span class="tsfont-formstaticlist text-tip-active " :title="$t('page.referencelist')"></span>
                     <DropdownMenu slot="list" class="dropdown">
                       <DropdownItem v-for="(c,cindex) in item.changeTemplateList" :key="cindex" @click.native="toChangeEdit(c)">
                         <div class="text-action">{{ c.name }}</div>

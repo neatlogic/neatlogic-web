@@ -17,7 +17,7 @@
             <!-- <td>{{ con.handler }}</td> -->
             <td>{{ con.uuid }}</td>
             <!-- <td><div v-html="con.config"></div></td> -->
-            <td><i v-clipboard="con.uuid" class="ts-link text-action" title="复制uuid"></i></td>
+            <td><i v-clipboard="con.uuid" class="tsfont-attachment text-action" title="复制uuid"></i></td>
           </tr>
 
         </tbody>

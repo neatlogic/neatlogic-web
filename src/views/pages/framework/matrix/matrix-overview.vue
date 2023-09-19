@@ -37,7 +37,7 @@
                 <i class="ts-block"></i>
               </div>
               <div class="action-item" :class="modeType == 'list' ? 'active text-href' : ''" @click="changeMode('list')">
-                <i class="ts-list"></i>
+                <i class="tsfont-list"></i>
               </div>
             </div>
           </div>

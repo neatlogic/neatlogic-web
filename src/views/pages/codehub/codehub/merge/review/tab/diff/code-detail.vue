@@ -10,7 +10,7 @@
       >
         <span v-if="diff.modifiedType && diff.modifiedType=='R'">
           {{ diff.fromFileName }}&nbsp;
-          <span class="ts-long-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
+          <span class="tsfont-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
       </span>
       <span 

@@ -6,7 +6,7 @@
 <TsFormSelect v-model="value" v-bind="config" @on-change="changeFn" :selectItemList.sync="selectItemList" :needCallback.sync="needCallback" @searchCallback="refreshSuccess()">
   //下拉列表在顶部添加额外一行
   <template v-slot:first-ul>
-        <li class="ts-plus text-href first-slot" @click="addList()">数据源</li>
+        <li class="tsfont-plus text-href first-slot" @click="addList()">数据源</li>
   </template>
   //重写下拉列表显示
   <template v-slot:option="{item,index}">

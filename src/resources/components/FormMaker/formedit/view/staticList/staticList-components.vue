@@ -142,7 +142,7 @@ export default {
 <style lang="less" scoped>
 .hide-container {
   position: relative;
-  .ts-eye-close {
+  .tsfont-eye-off {
     position: absolute;
   }
   .compontent-hide {

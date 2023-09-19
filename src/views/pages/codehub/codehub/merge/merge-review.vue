@@ -21,7 +21,7 @@
             <span 
               v-clipboard="urlPath" 
               v-clipboard:success="clipboardSuc" 
-              class="ts-link text-href btn-copy ml-sm" 
+              class="tsfont-attachment text-href btn-copy ml-sm" 
               :title="$t('term.codehub.copycurrenturl')"
             ></span>
             <Tag 
@@ -126,7 +126,7 @@
                 {{ mrData.id }}
                 <span 
                   v-clipboard="mrData.id" 
-                  class="ts-link text-href btn-copy" 
+                  class="tsfont-attachment text-href btn-copy" 
                   :title="$t('term.codehub.copycurrentid')"
                 ></span>
               </div>
