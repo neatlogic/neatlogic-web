@@ -28,8 +28,8 @@
               @click.stop="updateNode(reposData)"
             ></span>
           </div>
-          <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
-          <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copySuccess" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
+          <div class="action-item tsfont-attachment" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
+          <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copySuccess" class="action-item tsfont-attachment">{{ $t('term.codehub.copyurladdress') }}</div>
           <div :class="showSync?'':'disable'" class="action-item tsfont-refresh" @click="syncRepository(reposData.id)">{{ $t('page.synchronous') }}</div>
         </div>
       </template>

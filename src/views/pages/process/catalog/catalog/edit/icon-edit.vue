@@ -52,7 +52,7 @@ export default {
         },
         {
           keyword: 'link 链接',
-          icon: 'ts-link'
+          icon: 'tsfont-attachment'
         },
         {
           keyword: '',
@@ -60,7 +60,7 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-m-problem'
+          icon: 'tsfont-question-o'
         },
         {
           keyword: '',
