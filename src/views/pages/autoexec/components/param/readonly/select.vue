@@ -56,9 +56,8 @@ export default {
         valueName: 'uuid' 
       },
       matrixAttributeConfig: {
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new', 
-        rootName: 'tbodyList', 
-        dealDataByUrl: _this.dealDataByUrl,
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect', 
+        rootName: 'dataList', 
         params: null
       }
     };
@@ -74,41 +73,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    dealDataByUrl(nodeList) { //当默认值的引用类型是自定义  处理默认值的数据结构
-      return this.dealDataFilter(nodeList, this.config);
-    },
-    dealDataFilter(nodeList, config) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let columlist = [];
-      config = config || null;
-      if (config.mapping.value && config.mapping.text && nodeList) {
-        if (nodeList && nodeList.length > 0) {
-          nodeList.forEach(co => {
-            if (co[config.mapping.text]) {
-              columlist.push({
-                text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
-                html: co[config.mapping.text].text
-              });
-            }
-          });
-        }
-      }
-      return columlist;
-    }
   },
   computed: {
     getSetting() { //更新默认值设置
       let config = Object.assign({}, this.matrixAttributeConfig);
       let params = null;
       if (this.config.matrixUuid) {
-        let columnList = [];
         let keywordColumn = '';
+        let valueField = null;
+        let textField = null;
         if (this.config.mapping && this.config.mapping.value && this.config.mapping.text) {
-          columnList = [this.config.mapping.value, this.config.mapping.text];
+          valueField = this.config.mapping.value;
+          textField = this.config.mapping.text;
           keywordColumn = this.config.mapping.text;
         }
-        params = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, columnList: columnList };  
+        params = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };  
         if (this.config.defaultValue) {
           if (Array.isArray(this.config.defaultValue)) {
             this.config.defaultValue.length && (params.defaultValue = this.config.defaultValue);

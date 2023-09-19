@@ -107,7 +107,8 @@ export default {
         let param = {
           matrixUuid: config.matrixUuid,
           keywordColumn: config.mapping.text,
-          columnList: [config.mapping.value, config.mapping.text],
+          valueField: setting.mapping.value,
+          textField: config.mapping.text,
           needPage: false
         };
         //过滤条件
@@ -121,6 +122,7 @@ export default {
 
         this.defaultSelfJson.params = this.$utils.deepClone(param);
         this.defaultSelfJson.dynamicUrl = this.defaultSelfJson.defaultUrl;
+        this.defaultSelfJson.rootName = 'dataList';
         this.defaultSelfJson.showName = 'html';
       } else {
         _this.defaultValueDataList = config.dataList ? config.dataList.filter(d => d && d.value.toString().trim() != '') : [];

@@ -64,6 +64,9 @@ export default {
         let param = { matrixUuid: setting.matrixUuid };
         param.keywordColumn = setting.mapping.text;
         param.columnList = [setting.mapping.value, setting.mapping.text];
+        param.valueField = this.setting.mapping.value;
+        param.textField = this.setting.mapping.text;
+        json.rootName = 'dataList';
         json = this.defaultSelfJson;
         json.params = param;
         json.dynamicUrl = json.defaultUrl;

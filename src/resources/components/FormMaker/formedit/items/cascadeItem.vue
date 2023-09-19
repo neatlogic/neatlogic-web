@@ -94,10 +94,11 @@ export default {
       if (setting.dataSource == 'matrix' && this.column && this.level && setting.mapping[this.level - 1] && setting.mapping[this.level - 1].value) { //矩阵获取数据
         let param = { matrixUuid: setting.matrixUuid };
         param.keywordColumn = this.column;
-        param.columnList = [setting.mapping[this.level - 1].value, this.column];
+        param.valueField = setting.mapping[this.level - 1].value;
+        param.textField = this.column;
         json.params = param;
         json.dynamicUrl = this.defaultSelfJson.defaultUrl;
-        json.rootName = 'tbodyList';
+        json.rootName = 'dataList';
         json.dealDataByUrl = this.dealDataByUrl;
         json.showName = 'html';
       } else if (setting.dataList) {

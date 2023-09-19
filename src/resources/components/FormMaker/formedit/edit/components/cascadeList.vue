@@ -255,30 +255,15 @@ export default {
         let param = {
           matrixUuid: _this.setting.matrixUuid,
           keywordColumn: _this.setting.mapping[0].text,
-          columnList: [_this.setting.mapping[0].value, _this.setting.mapping[0].text]
+          valueField: _this.setting.mapping[0].value,
+          textField: _this.setting.mapping[0].text
         };
         this.level1DataList = [];
         let columlist1 = [];
-        this.$api.framework.matrix.getMatrixColumn(param).then(res => {
+        this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
           if (res.Status == 'OK' && !res.Return.isRepeat) {
-            if (res.Return.tbodyList && res.Return.tbodyList.length > 0) {
-              res.Return.tbodyList.forEach(co => {
-                if (co[_this.setting.mapping[0].text]) {
-                  if (_this.setting.mapping[0].value != _this.setting.mapping[0].text) {
-                    columlist1.push({
-                      text: co[_this.setting.mapping[0].text].text,
-                      value: co[_this.setting.mapping[0].value].value + '&=&' + co[_this.setting.mapping[0].text].value,
-                      html: co[_this.setting.mapping[0].text].text + "<small class='text-grey'>(" + co[_this.setting.mapping[0].value].text + ')</small>'
-                    });
-                  } else {
-                    columlist1.push({
-                      text: co[_this.setting.mapping[0].text].text,
-                      value: co[_this.setting.mapping[0].value].value + '&=&' + co[_this.setting.mapping[0].text].value,
-                      html: co[_this.setting.mapping[0].text].text
-                    });
-                  }
-                }
-              });
+            if (res.Return.dataList && res.Return.dataList.length > 0) {
+              columlist1 = res.Return.dataList;
             }
             _this.level1DataList = columlist1 || [];
             _this.$set(_this.setting.mapping[0], 'message', '');
@@ -301,26 +286,10 @@ export default {
           });
         this.level2DataList = [];
         let columlist2 = [];
-        this.$api.framework.matrix.getMatrixColumn(param).then(res => {
+        this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
           if (res.Status == 'OK' && !res.Return.isRepeat) {
-            if (res.Return.tbodyList && res.Return.tbodyList.length > 0) {
-              res.Return.tbodyList.forEach(co => {
-                if (co[_this.setting.mapping[1].text]) {
-                  if (_this.setting.mapping[1].value != _this.setting.mapping[1].text) {
-                    columlist2.push({
-                      text: co[_this.setting.mapping[1].text].text,
-                      value: co[_this.setting.mapping[1].value].value + '&=&' + co[_this.setting.mapping[1].text].value,
-                      html: co[_this.setting.mapping[1].text].text + "<small class='text-grey'>(" + co[_this.setting.mapping[1].value].text + ')</small>'
-                    });
-                  } else {
-                    columlist2.push({
-                      text: co[_this.setting.mapping[1].text].text,
-                      value: co[_this.setting.mapping[1].value].value + '&=&' + co[_this.setting.mapping[1].text].value,
-                      html: co[_this.setting.mapping[1].text].text
-                    });
-                  }
-                }
-              });
+            if (res.Return.dataList && res.Return.dataList.length > 0) {
+              columlist2 = res.Return.dataList;
             }
             _this.level2DataList = this.setting.defaultValueList[0] ? columlist2 : [];
             _this.$set(_this.setting.mapping[1], 'message', '');
@@ -333,7 +302,8 @@ export default {
         let param = {
           matrixUuid: _this.setting.matrixUuid,
           keywordColumn: _this.setting.mapping[2].text,
-          columnList: [_this.setting.mapping[2].value, _this.setting.mapping[2].text],
+          valueField: _this.setting.mapping[2].value,
+          textField: _this.setting.mapping[2].text,
           sourceColumnList: []
         };
 
@@ -347,26 +317,10 @@ export default {
         });
         let columlist3 = [];
         this.level3DataList = [];
-        this.$api.framework.matrix.getMatrixColumn(param).then(res => {
+        this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
           if (res.Status == 'OK' && !res.Return.isRepeat) {
-            if (res.Return.tbodyList && res.Return.tbodyList.length > 0) {
-              res.Return.tbodyList.forEach(co => {
-                if (co[_this.setting.mapping[2].text]) {
-                  if (_this.setting.mapping[2].value != _this.setting.mapping[2].text) {
-                    columlist3.push({
-                      text: co[_this.setting.mapping[2].text].text,
-                      value: co[_this.setting.mapping[2].value].value + '&=&' + co[_this.setting.mapping[2].text].value,
-                      html: co[_this.setting.mapping[2].text].text + "<small class='text-grey'>(" + co[_this.setting.mapping[2].value].text + ')</small>'
-                    });
-                  } else {
-                    columlist3.push({
-                      text: co[_this.setting.mapping[2].text].text,
-                      value: co[_this.setting.mapping[2].value].value + '&=&' + co[_this.setting.mapping[2].text].value,
-                      html: co[_this.setting.mapping[2].text].text
-                    });
-                  }
-                }
-              });
+            if (res.Return.dataList && res.Return.dataList.length > 0) {
+              columlist3 = res.Return.dataList;
             }
             _this.level3DataList = this.setting.defaultValueList[0] && this.setting.defaultValueList[1] ? columlist3 : [];
             _this.$set(_this.setting.mapping[1], 'message', '');
