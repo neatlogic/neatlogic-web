@@ -17,7 +17,7 @@
         @change-label="changeLabel"
       ></TsFormRadio>
       <Radio v-else>Radio</Radio>
-      <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+      <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
     </div>
   </div>
 </template>

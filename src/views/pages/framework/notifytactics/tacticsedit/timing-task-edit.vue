@@ -5,7 +5,7 @@
       <div slot="top">
         <Row>
           <Col span="14">
-            <span class="span-black ts-angle-left" @click="validChangData">{{ $t('page.tasklist') }}</span>
+            <span class="span-black tsfont-left" @click="validChangData">{{ $t('page.tasklist') }}</span>
             <div class="input-contain">
               <TsFormInput
                 ref="formNameInput"
@@ -68,7 +68,7 @@
                 handle=".handle"
               >
                 <li v-for="(item, index) in jobConfig.config.dataColumnList" :key="item.value" class="checked-item bg-grey">
-                  <i class="ts-bars handle"></i>
+                  <i class="tsfont-bar handle"></i>
                   <span>{{ getName(item) }}</span>
                   <i v-if="jobConfig.config.dataColumnList.length > 1" class="tsfont-close close-button text-action" @click="jobConfig.config.dataColumnList.splice(index, 1)"></i>
                 </li>

@@ -19,7 +19,7 @@
               title="数据源"
               @click="addDataSource(setting.matrixUuid)"
             ></i>
-            <i class="ts-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
+            <i class="tsfont-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
           </span> -->
         </label>
         <div class="formsetting-text">

@@ -3,7 +3,7 @@
     <i v-if="setting.config.isRequired" class="require-tip">*</i>
     <div>
       <!-- <div v-if="!isReadonly" class="text-href text-align" @click="isOpen">
-        <i class="ts-plus"></i>
+        <i class="tsfont-plus"></i>
         {{ setting.config.placeholder }}
       </div> -->
 
@@ -14,7 +14,7 @@
         :class="{ cur: isReadonly }"
         @click="isOpen"
       >
-        <i class="ts-plus"></i>
+        <i class="tsfont-plus"></i>
         {{ setting.config.placeholder }}
       </a>
       <div class="tstable-container border bg-grey radius-lg">
@@ -98,7 +98,7 @@
         </template>
       </TsDialog>
     </div>
-    <div v-if="setting.config.desc" class="component-tips ts-info">
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">
       {{ setting.config.desc }}
     </div>
   </div>

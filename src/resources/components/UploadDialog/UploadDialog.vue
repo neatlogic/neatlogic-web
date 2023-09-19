@@ -120,7 +120,7 @@
                 :percent="item.Status"
                 :size="26"
               >
-                <i class="ts-refresh"></i>
+                <i class="tsfont-refresh"></i>
               </i-circle>
               <i-circle
                 v-else-if="!isNaN(item.Status)"
@@ -236,6 +236,7 @@ export default {
         successCount: 0,
         failureReasonList: []
       };
+      this.$emit('on-close');
     },
     handleBeforeUpload(file) {
       if (this.isValid && this.isImport) {
@@ -513,7 +514,7 @@ export default {
           .tsfont-close {
             color: @error-color;
           }
-          .ts-refresh {
+          .tsfont-refresh {
             color: @default-primary-color;
           }
         }

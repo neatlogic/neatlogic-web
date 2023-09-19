@@ -48,10 +48,10 @@
               <div class="toggle-btn ts-angle-double-left"></div>
             </li>
             <li v-if="currentPage > 1" :class="classPrev + 'pageli prev toggle'" @click="updatePage(Math.floor(currentPage) - 1)">
-              <div class="toggle-btn ts-angle-left"></div>
+              <div class="toggle-btn tsfont-left"></div>
             </li>
             <li v-else :class="classPrev + 'pageli prev disabled toggle'">
-              <div class="toggle-btn ts-angle-left"></div>
+              <div class="toggle-btn tsfont-left"></div>
             </li>
           </template>
           <li v-if="min > 1" :class="classPrev + 'more'">...</li>
@@ -69,10 +69,10 @@
           <li v-if="max > pageCount" :class="classPrev + 'more'">...</li>
           <template v-if="pageCount > maxPage">
             <li v-if="currentPage < pageCount" :class="classPrev + 'pageli next toggle'" @click="updatePage(Math.floor(currentPage) + 1)">
-              <div class="toggle-btn ts-angle-right"></div>
+              <div class="toggle-btn tsfont-right"></div>
             </li>
             <li v-else :class="classPrev + 'pageli next disabled toggle'">
-              <div class="toggle-btn ts-angle-right"></div>
+              <div class="toggle-btn tsfont-right"></div>
             </li>
             <li v-if="currentPage < pageCount" :class="classPrev + 'pageli last toggle'" @click="updatePage(pageCount)">
               <div class="toggle-btn ts-angle-double-right"></div>

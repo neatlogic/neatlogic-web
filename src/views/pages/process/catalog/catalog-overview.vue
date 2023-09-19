@@ -439,7 +439,7 @@ export default {
     setTitlearr() {
       return function(tindex) {
         if (tindex > 0 && this.moreTitle.length > 0) {
-          return 'ts-angle-right arr-nextpath';
+          return 'tsfont-right arr-nextpath';
         } else {
           return 'arr-nextpath';
         }

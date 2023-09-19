@@ -1,7 +1,7 @@
 <template>
   <div v-if="diff" class="border-color file-li" :class="showType">
     <h4 class="bg-grey file-title border-color">
-      <span class="btn-toggle text-action" :class="isShow ? 'ts-angle-down' : 'ts-angle-up'" @click="toggleShow()"></span>
+      <span class="btn-toggle text-action" :class="isShow ? 'tsfont-down' : 'tsfont-up'" @click="toggleShow()"></span>
       <span 
         class="ts-file cursor-pointer" 
         :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'"

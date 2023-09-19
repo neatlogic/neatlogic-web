@@ -2,7 +2,7 @@
   <div>
     <TsContain v-if="reposData">
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="$back('/repository-overview')">{{ $getFromPage($t('router.codehub.repository')) }}</span>
+        <span class="tsfont-left text-action" @click="$back('/repository-overview')">{{ $getFromPage($t('router.codehub.repository')) }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ reposData.name ||'-' }}</span>
@@ -23,14 +23,14 @@
         <div v-if="!isLoad" class="action-group">
           <div v-if="reposData.agentName" class="action-item"><span class="text-tip">{{ $t('page.node') }}</span><span>{{ reposData.agentName||'-' }}</span>
             <span
-              class="text-action ts-refresh ml-xs"
+              class="text-action tsfont-refresh ml-xs"
               :title="$t('page.switchnode')"
               @click.stop="updateNode(reposData)"
             ></span>
           </div>
           <div class="action-item ts-link" @click="copyWorkingPath(reposData)">{{ $t('term.codehub.copyworkingcopyroute') }}</div>
           <div v-clipboard="reposData.repositoryServiceVo.address+reposData.address" v-clipboard:success="copySuccess" class="action-item ts-link">{{ $t('term.codehub.copyurladdress') }}</div>
-          <div :class="showSync?'':'disable'" class="action-item ts-refresh" @click="syncRepository(reposData.id)">{{ $t('page.synchronous') }}</div>
+          <div :class="showSync?'':'disable'" class="action-item tsfont-refresh" @click="syncRepository(reposData.id)">{{ $t('page.synchronous') }}</div>
         </div>
       </template>
       <div slot="content">

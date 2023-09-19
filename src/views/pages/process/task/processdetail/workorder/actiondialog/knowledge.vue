@@ -38,7 +38,7 @@
                         @on-change="changeSelect(item)"
                       ></Checkbox>
                       <span>{{ item.title }}</span>
-                      <span class="ts-bars move"></span>
+                      <span class="tsfont-bar move"></span>
                     </div>
                     <div v-if="item.isChecked == 1 && item.list && item.list.length > 0" class="second-nav">
                       <div v-for="(c, cindex) in item.list" :key="cindex" class="nav-li dividing-color">

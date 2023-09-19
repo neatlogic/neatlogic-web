@@ -75,7 +75,7 @@
                     handle=".handle"
                   >
                     <li v-for="(value, index) in table.valueList" :key="value" class="checked-item bg-grey radius-mi">
-                      <i class="ts-bars handle"></i>
+                      <i class="tsfont-bar handle"></i>
                       <span>{{ value }}</span>
                       <i v-if="table.valueList.length > 1" class="tsfont-close close-button text-action" @click="table.valueList.splice(index, 1)"></i>
                     </li>

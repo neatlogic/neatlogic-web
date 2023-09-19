@@ -1,95 +1,121 @@
 <template>
   <div>
-    <div class="action-group padding">
-      <span class="action-item">
-        <Dropdown placement="bottom-start" @on-click="changeLevel">
-          <a href="javascript:void(0)">
-            {{ $t('term.cmdb.extendlevel') }}
-            <b style="margin-left:3px">{{ searchParam.level }}</b>
-            <Icon type="ios-arrow-down"></Icon>
-          </a>
-          <DropdownMenu slot="list">
-            <DropdownItem name="1" :selected="searchParam.level == 1">{{ $t('term.cmdb.levelnumber', { level: 1 }) }}</DropdownItem>
-            <DropdownItem name="2" :selected="searchParam.level == 2">{{ $t('term.cmdb.levelnumber', { level: 2 }) }}</DropdownItem>
-            <DropdownItem name="3" :selected="searchParam.level == 3">{{ $t('term.cmdb.levelnumber', { level: 3 }) }}</DropdownItem>
-            <DropdownItem name="4" :selected="searchParam.level == 4">{{ $t('term.cmdb.levelnumber', { level: 4 }) }}</DropdownItem>
-            <DropdownItem name="5" :selected="searchParam.level == 5">{{ $t('term.cmdb.levelnumber', { level: 5 }) }}</DropdownItem>
-            <DropdownItem name="6" :selected="searchParam.level == 6">{{ $t('term.cmdb.levelnumber', { level: 6 }) }}</DropdownItem>
-            <DropdownItem name="7" :selected="searchParam.level == 7">{{ $t('term.cmdb.levelnumber', { level: 7 }) }}</DropdownItem>
-            <DropdownItem name="8" :selected="searchParam.level == 8">{{ $t('term.cmdb.levelnumber', { level: 8 }) }}</DropdownItem>
-            <DropdownItem name="9" :selected="searchParam.level == 9">{{ $t('term.cmdb.levelnumber', { level: 9 }) }}</DropdownItem>
-            <DropdownItem name="10" :selected="searchParam.level == 10">{{ $t('term.cmdb.levelnumber', { level: 10 }) }}</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </span>
-      <span class="action-item">
-        <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
-          <a href="javascript:void(0)">
-            {{ $t('term.cmdb.showrel') }}
-            <Icon type="ios-arrow-down"></Icon>
-          </a>
-          <DropdownMenu slot="list">
-            <template v-for="relType in relTypeList">
-              <DropdownItem :key="relType.id" :name="'reltype_' + relType.id" :selected="isRelTypeSelected(relType)">
-                <span class="text-grey">{{ relType.name }}</span>
-              </DropdownItem>
-              <DropdownItem
-                v-for="rel in relType.relList"
-                :key="rel.id"
-                :name="'rel_' + rel.id"
-                :selected="!searchParam.disableRelList.includes(rel.id)"
-              >
-                <div>
-                  <span>{{ rel.fromCiLabel }}</span>
-                  <span class="text-grey">({{ rel.fromLabel }})</span>
-                  <span class="fz10 text-grey tsfont-arrow-right"></span>
-                  <span>{{ rel.toCiLabel }}</span>
-                  <span class="text-grey">({{ rel.toLabel }})</span>
-                </div>
-              </DropdownItem>
-            </template>
-          </DropdownMenu>
-        </Dropdown>
-      </span>
-      <span
-        v-for="(layout, index) in layoutList"
-        :key="index"
-        class="action-item"
-        :class="currentLayout == layout.engine ? 'text-primary' : 'text-grey'"
-        style="cursor:pointer"
-        @click="changeLayout(layout.engine)"
-      >
-        {{ layout.name }}
-      </span>
-      <div class="action-item">
-        <TsFormInput
-          v-model="keyword"
-          :search="true"
-          :width="250"
-          placeholder="请输入关键字"
-          @on-change="findNode"
-        ></TsFormInput>
+    <div class="padding">
+      <div class="grid">
+        <div class="action-group">
+          <div class="action-item">
+            <Dropdown placement="bottom-start" @on-click="changeLevel">
+              <a href="javascript:void(0)">
+                {{ $t('term.cmdb.extendlevel') }}
+                <b style="margin-left: 3px">{{ searchParam.level }}</b>
+                <Icon type="ios-arrow-down"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem
+                  v-for="i in maxLevel"
+                  :key="i"
+                  :name="i"
+                  :selected="searchParam.level == i"
+                >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <div v-if="relTypeList && relTypeList.length > 0" class="action-item">
+            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
+              <a href="javascript:void(0)">
+                {{ $t('term.cmdb.showrel') }}
+                <Icon type="ios-arrow-down"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <template v-for="relType in relTypeList">
+                  <DropdownItem :key="relType.id" :name="'reltype_' + relType.id" :selected="isRelTypeSelected(relType)">
+                    <span class="text-grey">{{ relType.name }}</span>
+                  </DropdownItem>
+                  <DropdownItem
+                    v-for="rel in relType.relList"
+                    :key="rel.id"
+                    :name="'rel_' + rel.id"
+                    :selected="!searchParam.disableRelList.includes(rel.id)"
+                  >
+                    <div>
+                      <span>{{ rel.fromCiLabel }}</span>
+                      <span class="text-grey">({{ rel.fromLabel }})</span>
+                      <span class="fz10 text-grey tsfont-arrow-right"></span>
+                      <span>{{ rel.toCiLabel }}</span>
+                      <span class="text-grey">({{ rel.toLabel }})</span>
+                    </div>
+                  </DropdownItem>
+                </template>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <div class="action-item">
+            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeLayout">
+              <a href="javascript:void(0)">
+                <span v-if="currentLayout">{{ layoutList.find(d => d.engine === currentLayout).name }}<Icon type="ios-arrow-down"></Icon></span>
+                <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
+              </a>
+              <DropdownMenu slot="list">
+                <template>
+                  <DropdownItem
+                    v-for="(layout, index) in layoutList"
+                    :key="index"
+                    :name="layout.engine"
+                    :selected="currentLayout === layout.engine"
+                  >
+                    {{ layout.name }}
+                  </DropdownItem>
+                </template>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </div>
+        <div>
+          <TsFormInput
+            v-model="keyword"
+            :search="true"
+            :width="250"
+            border="bottom"
+            @on-change="findNode"
+          ></TsFormInput>
+        </div>
       </div>
-    </div>
-    <div style="position:relative">
-      <div id="graph" class="clearfix home-page"></div>
-      <D3Tooltip
-        v-if="isTooltipShow"
-        :width="tooltipWidth"
-        :height="tooltipHeight"
-        :placement="tooltipPlacement"
-        :ciId="tooltipCiId"
-        :ciEntityId="tooltipCiEntityId"
-        style="position: absolute;opacity:0.9"
-        :style="tooltipPosition"
-        @mouseenter.native="clearTooltipTimer"
-        @mouseleave.native="hideTooltip"
-      ></D3Tooltip>
-      <div v-if="error" class="text-grey" style="padding-top:50px;text-align:center">
-        {{ error }}
+      <div v-if="globalAttrList && globalAttrList.length > 0">
+        <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
+          <span class="mr-md">
+            <b class="text-grey">{{ attr.label }}</b>
+          </span>
+          <Tag
+            v-for="(item, iindex) in attr.itemList"
+            :key="iindex"
+            :color="isAttrActive(attr, item) ? 'primary' : 'default'"
+            class="cursor"
+            @click.native="toggleAttr(attr, item)"
+          >
+            {{ item.value }}
+          </Tag>
+        </span>
       </div>
+      <div style="position: relative">
+        <div id="graph" class="clearfix home-page"></div>
+        <D3Tooltip
+          v-if="isTooltipShow"
+          :width="tooltipWidth"
+          :height="tooltipHeight"
+          :placement="tooltipPlacement"
+          :ciId="tooltipCiId"
+          :ciEntityId="tooltipCiEntityId"
+          style="position: absolute; opacity: 0.9"
+          :style="tooltipPosition"
+          @mouseenter.native="clearTooltipTimer"
+          @mouseleave.native="hideTooltip"
+        ></D3Tooltip>
+        <div v-if="error" class="text-grey" style="padding-top: 50px; text-align: center">
+          {{ error }}
+        </div>
+      </div>
+      <Loading :loadingShow="isloading" type="fix"></Loading>
     </div>
-    <Loading :loadingShow="isloading" type="fix"></Loading>
   </div>
 </template>
 <script>
@@ -111,6 +137,7 @@ export default {
   data() {
     return {
       keyword: '',
+      maxLevel: 10,
       isloading: false,
       currentLayout: 'dot',
       layoutList: [
@@ -125,7 +152,7 @@ export default {
       data: {},
       error: '', //异常信息
       relList: [],
-      searchParam: { ciEntityId: this.ciEntityId, ciId: this.ciId, level: 3, disableRelList: [] },
+      searchParam: { ciEntityId: this.ciEntityId, ciId: this.ciId, level: 3, disableRelList: [], globalAttrFilterList: [] },
       currentZoomLevelId: [],
       tooltipTop: null,
       tooltipLeft: null,
@@ -138,13 +165,15 @@ export default {
       tooltipCiId: null,
       tooltipCiEntityId: null,
       tooltipTimer: null, //关闭计时器
-      nodeNameMap: {}
+      nodeNameMap: {},
+      globalAttrList: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
+    this.searchGlobalAttr();
     this.initGraph();
   },
   beforeUpdate() {},
@@ -154,6 +183,38 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    isAttrActive(attr, item) {
+      if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
+        return false;
+      } else {
+        return this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id).valueList.includes(item.id);
+      }
+    },
+    toggleAttr(attr, item) {
+      if (!this.isAttrActive(attr, item)) {
+        if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
+          this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: [item.id] });
+        } else {
+          this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id).valueList.push(item.id);
+        }
+      } else {
+        const aindex = this.searchParam.globalAttrFilterList.findIndex(d => d.attrId === attr.id);
+        if (aindex > -1) {
+          const index = this.searchParam.globalAttrFilterList[aindex].valueList.findIndex(d => d === item.id);
+          if (index > -1) {
+            this.searchParam.globalAttrFilterList[aindex].valueList.splice(index, 1);
+          }
+          if (this.searchParam.globalAttrFilterList[aindex].valueList.length === 0) {
+            this.searchParam.globalAttrFilterList.splice(aindex, 1);
+          }
+        }
+      }
+    },
+    searchGlobalAttr() {
+      this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
+        this.globalAttrList = res.Return.tbodyList;
+      });
+    },
     isRelTypeSelected(relType) {
       let isAllDisabled = true;
       for (let i = 0; i < relType.relList.length; i++) {
@@ -178,15 +239,7 @@ export default {
                 const cY = pos.y + pos.height / 2;
                 const r = 50;
                 //d3.select(g._this).classed('selectednode', true);
-                d3.select(g._this)
-                  .append('circle')
-                  .classed('selectedcircle', true)
-                  .attr('cx', cX)
-                  .attr('cy', cY)
-                  .attr('r', r)
-                  .attr('fill-opacity', 0.2)
-                  .attr('fill', 'orange')
-                  .attr('stroke-width', 0);
+                d3.select(g._this).append('circle').classed('selectedcircle', true).attr('cx', cX).attr('cy', cY).attr('r', r).attr('fill-opacity', 0.2).attr('fill', 'orange').attr('stroke-width', 0);
               }
             });
           }
@@ -272,10 +325,7 @@ export default {
         const graphEl = document.getElementById('graph');
         let graph = d3.select('#graph');
         const _this = this;
-        graph
-          .on('dblclick.zoom', null)
-          .on('wheel.zoom', null)
-          .on('mousewheel.zoom', null);
+        graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
         this.graph.graphviz = graph
           .graphviz()
           .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
@@ -398,10 +448,7 @@ export default {
         const maxWidth = this.tooltipWidth;
         //由于SVG坐标系和dom的坐标不一致，所以需要使用getBoundingClientRect进行计算
         const parentRect = document.getElementById('graph').getBoundingClientRect();
-        const nodeRect = d3
-          .select(node)
-          .node()
-          .getBoundingClientRect();
+        const nodeRect = d3.select(node).node().getBoundingClientRect();
 
         //console.log(parentRect);
         //console.log(nodeRect);
@@ -513,7 +560,7 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 @import '../public/graphviz.less';
 .header {
   display: grid;
@@ -532,5 +579,9 @@ export default {
       position: absolute;
     }
   }
+}
+.grid {
+  display: grid;
+  grid-template-columns: auto 250px;
 }
 </style>

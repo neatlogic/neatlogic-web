@@ -7,7 +7,7 @@
       <Button v-if="currentValue && Object.keys(currentValue).length > 0" @click="pageTable">刷新</Button>
     </div>
     <small v-if="message" class="text-tip">提示：{{ message }}</small>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
     <div v-if="formView">
       <Loading :loadingShow="loadingShow" type="fix"></Loading>
       <div v-if="(tableData.tbodyList && tableData.tbodyList.length > 0) || !isReadonly" class="tstable-container">

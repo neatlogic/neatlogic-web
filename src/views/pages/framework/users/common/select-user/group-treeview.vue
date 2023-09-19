@@ -16,7 +16,7 @@
           <i
             v-if="cd.childCount && cd.childCount > 0"
             class="text-action"
-            :class="cd._open ? 'ts-angle-up' : 'ts-angle-down'"
+            :class="cd._open ? 'tsfont-up' : 'tsfont-down'"
             @click="changeOpen(cd)"
           ></i>
         </span>

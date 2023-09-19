@@ -15,11 +15,11 @@
           class="dataSource-ul"
           :list="attrList"
           :group="{ name: 'item-sub' }"
-          handle=".ts-bars"
+          handle=".tsfont-bar"
           :forceFallback="false"
         >
           <div v-for="(item, index) in attrList" :key="index" class="grid">
-            <div><i class="ts-bars" style="cursor: move"></i></div>
+            <div><i class="tsfont-bar" style="cursor: move"></i></div>
             <div>{{ item.label }}</div>
             <div>{{ item.typeText }}</div>
             <div>{{ item.description }}</div>

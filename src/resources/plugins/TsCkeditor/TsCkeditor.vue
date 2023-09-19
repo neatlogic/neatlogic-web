@@ -8,7 +8,7 @@
     ></div> 
     <div v-else :class="getClass" :style="getStyle">
       <ckeditor  ref="tsckeditor" @ready="$emit('ready')" v-model="currentValue" :editor="editor" :config="editorConfig" tag-name="textarea" :disabled="disabled" :placeholder="placeholder" @blur="onBlur"></ckeditor>
-      <!-- <i class="ck-expandedbtn ts-angle-up text-action" @click="isHidebar = !isHidebar;"></i> -->
+      <!-- <i class="ck-expandedbtn tsfont-up text-action" @click="isHidebar = !isHidebar;"></i> -->
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
       <transition name="fade">

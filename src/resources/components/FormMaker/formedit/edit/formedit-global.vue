@@ -1,7 +1,7 @@
 <template>
   <div class="formsetting-container bg-grey" style="overflow: visible;">
     <div class="formTop">
-      <!-- <i class="ts-angle-left btn-togglewidth text-action" @click="toggleWidth"></i> -->
+      <!-- <i class="tsfont-left btn-togglewidth text-action" @click="toggleWidth"></i> -->
       表单设置
     </div>
     <div class="btn-closeedit tsfont-close" @click="hideEdit"></div>

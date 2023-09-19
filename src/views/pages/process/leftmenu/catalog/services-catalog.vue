@@ -131,7 +131,7 @@ export default {
       return function(item, tindex) {
         let arr = item.path;
         if (arr.length > 0 && tindex > 0) {
-          return 'ts-angle-right arr-nextpath';
+          return 'tsfont-right arr-nextpath';
         } else {
           return '';
         }

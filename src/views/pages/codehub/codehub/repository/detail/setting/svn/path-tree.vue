@@ -11,7 +11,7 @@
           <span
             v-if="li.type && li.type == 'D'"
             class="btn-shownext"
-            :class="li.showchild?'ts-angle-down':'ts-angle-up'"
+            :class="li.showchild?'tsfont-down':'tsfont-up'"
             @click.stop="getNext(li)"
           ></span>
           <span class="btn-check" :class="selectPath.indexOf(li.fullpath)>-1?'text-href bg-primary active':'text-action'">

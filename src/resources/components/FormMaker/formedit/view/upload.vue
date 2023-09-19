@@ -24,7 +24,7 @@
       </TsUpLoad>
       <div v-if="isRequired" class="text-error">请选择需要上传的附件</div>
     </div>
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div>
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div>
   </div>
 </template>
 <script>

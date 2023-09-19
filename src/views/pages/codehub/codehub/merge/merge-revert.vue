@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="gotoPrev()">{{ $getFromPage($t('term.codehub.backmergerequest')) }}</span>
+        <span class="tsfont-left text-action" @click="gotoPrev()">{{ $getFromPage($t('term.codehub.backmergerequest')) }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ $t('term.codehub.revokerequirement') }}</span>

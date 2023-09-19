@@ -158,7 +158,8 @@
     "publicsceneview": "Global Topology View",
     "publicdataview": "Global Data View",
     "changememo": "Reason for change",
-    "globalattr": "Global Properties"
+    "globalattr": "Global Properties",
+    "pleaseselectlayout": "Please select a layout"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1902,6 +1903,17 @@
     "codechange": "Code change",
     "cveloophole": "CVE vulnerability",
     "lastsynchronizationtime": "Last synchronization time",
+    "fileaddcount": "Number of file additions",
+    "filemodifycount": "Number of file modifications",
+    "filedeletecount": "Number of file deletions",
+    "lineaddcount": "Number of code lines added",
+    "linedeletecount": "Number of code lines reduced",
+    "importpipelineconfig": "Import assembly line configuration",
+    "coverpipeline": "Coverage assembly line",
+    "cancelimport": "Cancel Import",
+    "relateobjectcover": "Associated Object Overrides",
+    "overrelateobjectdescription": "The following objects associated with the assembly line already exist in the system. To overwrite them, please check the objects that need to be overwritten and click the 'Import' button below to complete the import.",
+    "overexistpipelineiscontinue": "The pipeline has been configured. Importing the pipeline will overwrite the existing pipeline. Do you want to continue?",
     "issuecount": "Number of requirements",
     "scenariosteperror": "All stages in the scene are disabled. The scene must have at least one non disabled stage",
     "deletecodeline": "Delete Code Line",

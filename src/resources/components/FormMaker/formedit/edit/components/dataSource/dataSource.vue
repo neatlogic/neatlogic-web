@@ -103,7 +103,7 @@
               title="编辑选中数据源"
               @click="$utils.matrixDataSourceRedirect(setting.matrixUuid, dataSourceJson)"
             ></i>
-            <i class="ts-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
+            <i class="tsfont-refresh text-tip-active" title="刷新数据源" @click="refreshDataSource()"></i>
           </span>
         </label>
         <div class="formsetting-text">
