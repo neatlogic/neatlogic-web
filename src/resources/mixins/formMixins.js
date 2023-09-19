@@ -224,6 +224,12 @@ export default {
   watch: {
     errorMessage(newValue) {
       this.validMesage = newValue;
+      //根据自定义errorMessage改变isValidPass
+      if (this.validMesage) {
+        this.isValidPass = false;
+      } else {      
+        this.isValidPass = true;
+      }
     },
     validateList() {
       this.currentValidList = this.filterValid(this.validateList) || [];
