@@ -129,7 +129,7 @@
           <!--
                 搜索频繁反应慢，导致页面频繁更新切换问题
                 <ul class="dropdown-ul" v-if="isLoading">
-                <li class="ivu-dropdown-item ivu-dropdown-item-disabled"><i class="ts-rotate-right"></i>数据加载中</li>
+                <li class="ivu-dropdown-item ivu-dropdown-item-disabled"><i class="tsfont-rotate-right"></i>数据加载中</li>
           </ul>-->
         </DropdownMenu>
       </Dropdown>

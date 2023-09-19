@@ -285,37 +285,6 @@ export default {
   },
   filter: {},
   computed: {
-    defaultValueSetting() {
-      const setting = {};
-      if (this.config.isMultiple) {
-        setting.multiple = this.config.isMultiple;
-      }
-      if (this.config.dataSource === 'matrix') {
-        setting.showName = 'html';
-        setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect/new';
-        setting.dealDataByUrl = this.dealDataFilter;
-        setting.rootName = 'tbodyList';
-        const params = { matrixUuid: this.config.matrixUuid };
-        if (this.config.mapping) {
-          params.keywordColumn = this.config.mapping.text;
-          params.columnList = [this.config.mapping.value, this.config.mapping.text];
-        }
-        setting.params = params;
-      } else {
-        setting.showName = 'text';
-        setting.dataList = this.config.dataList;
-      }
-      return setting;
-    },
-    componentList() {
-      const componentList = [];
-      this.formItemList.forEach(d => {
-        if (d.uuid != this.formItem.uuid && (d.handler === 'formselect' || d.handler === 'formradio' || d.handler === 'checkbox')) {
-          componentList.push({ value: d.uuid, text: d.label });
-        }
-      });
-      return componentList;
-    }
   },
   watch: {
     'config.matrixUuid': {

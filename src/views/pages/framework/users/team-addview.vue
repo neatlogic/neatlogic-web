@@ -103,7 +103,7 @@
     >
       <div class="submitModelBox">
         <div class="submit-model-title">
-          <Icon type="i-icon ts-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
+          <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
           <Button size="large" type="primary" @click="$back(),saveProfile('backteamlist')">{{ $t('term.framework.backtousergrouplist') }}</Button>

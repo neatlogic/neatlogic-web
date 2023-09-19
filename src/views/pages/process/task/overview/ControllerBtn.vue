@@ -9,7 +9,7 @@
           @click="cardbtnclick(btn, row)"
         >
           <Dropdown v-if="btn.name === 'workcurrentstep'&& btn.handleArray.length > 1" transfer trigger="click">
-            <i class="btnicon ts-long-arrow-right icon">{{ btn.text }}</i>
+            <i class="btnicon tsfont-arrow-right icon">{{ btn.text }}</i>
             <DropdownMenu v-if="btn.isEnable && btn.handleArray.length > 1" slot="list">
               <DropdownItem v-for="(subItem, index) in btn.handleArray" :key="subItem.name + index" @click.native="handlerStep(subItem, row)">{{ subItem.text }}</DropdownItem>
             </DropdownMenu>
@@ -31,7 +31,7 @@
         @click="cardbtnclick(btn, row)"
       >
         <Dropdown v-if="btn.name === 'workcurrentstep'&& btn.handleArray.length > 1" transfer trigger="click">
-          <i class="btnicon ts-long-arrow-right icon">{{ btn.text }}</i>
+          <i class="btnicon tsfont-arrow-right icon">{{ btn.text }}</i>
           <DropdownMenu v-if="btn.isEnable && btn.handleArray.length > 1" slot="list">
             <DropdownItem v-for="(subItem, index) in btn.handleArray" :key="subItem.name + index" @click.native="handlerStep(subItem, row)">{{ subItem.text }}</DropdownItem>
           </DropdownMenu>
@@ -71,7 +71,7 @@ export default {
   data() {
     return {
       actionIconList: {
-        'workcurrentstep': 'ts-long-arrow-right',
+        'workcurrentstep': 'tsfont-arrow-right',
         'abortprocessTask': 'tsfont-close',
         'recoverprocessTask': 'tsfont-refresh',
         'urge': 'tsfont-reminder',

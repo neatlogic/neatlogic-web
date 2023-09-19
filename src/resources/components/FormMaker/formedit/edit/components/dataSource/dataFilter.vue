@@ -123,19 +123,6 @@ export default {
         this.$set(item, 'type', findItem.type);
       }
     },
-    dealDataByUrl(nodeList, value) { 
-      let columlist = [];
-      if (nodeList && nodeList.length > 0) {
-        nodeList.forEach(item => {
-          columlist.push({
-            text: item[value].text,
-            value: item[value].compose,
-            uuid: item[value].value
-          });
-        });
-      }
-      return columlist;
-    },
     changeValue(value, index, type) {
       if (type == 'select') {
         let valueList = [];
@@ -155,14 +142,14 @@ export default {
       return (value) => {
         if (value) {
           return {
-            dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
+            dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
             params: { 
               matrixUuid: this.matrixUuid,
               keywordColumn: value,
-              columnList: [value]
+              valueField: value,
+              textField: value
             },
-            rootName: 'tbodyList',
-            dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, value); },
+            rootName: 'dataList',
             transfer: true,
             search: true,
             multiple: true,

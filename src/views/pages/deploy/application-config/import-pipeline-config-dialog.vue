@@ -182,9 +182,11 @@ export default {
       formData.append('file', this.uploadSuccessFile.file);
       formData.append('userSelection', JSON.stringify(relateConfig));
       this.$api.deploy.apppipeline.coverPipeline(formData).then(res => {
-        if (res.statusText == 'OK') {
+        if (res.Status == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
-          this.configDialog.isShow = false;
+          if (!this.isShowCoverDialog) {
+            this.configDialog.isShow = false;
+          }
           this.$emit('close', true);
         }
       });

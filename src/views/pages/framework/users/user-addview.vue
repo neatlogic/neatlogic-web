@@ -178,7 +178,7 @@
           <Button size="large" @click="editCrrentUser(), saveProfile('edituser')">{{ $t('dialog.title.edittarget', {target: $t('page.user')}) }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="ts-m-problem" :title="$t('term.framework.editinsetting')"></i></Checkbox>
+          <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
         </div>
       </div>
     </TsDialog>

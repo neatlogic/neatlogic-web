@@ -73,7 +73,7 @@
             @click="activeFormVersion(currentVersion.uuid)"
             @mouseenter="haveChangeData"
           >激活</span> -->
-          <span class="action-item ts-eye " @click="previewForm">{{ $t('page.preview') }}</span>
+          <span class="action-item tsfont-eye " @click="previewForm">{{ $t('page.preview') }}</span>
           <!-- <span class="action-item ts-save" @click="handleSaveForm()">{{ $t('page.save') }}</span> -->
           <!-- <span v-if="currentVersion.uuid" class="action-item ts-save" @click="saveForm('saveother')">另存为新版本</span> -->
           <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
@@ -83,10 +83,10 @@
               <span class="tsfont-option-horizontal click-btn action-item last"></span>
               <DropdownMenu slot="list" class="dropdown">
                 <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
-                  <div class="ts-catalogue referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
+                  <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
                 </DropdownItem>
                 <DropdownItem v-else-if="currentVersion.uuid">
-                  <div class="ts-catalogue referenceCount disable">{{ $t('page.referencelist') }}</div>
+                  <div class="tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
                 </DropdownItem>
                 <!-- <DropdownItem @click.native="$refs.uploadDialog.showDialog">
                   <span class="tsfont-import">导入</span>
@@ -99,7 +99,7 @@
                   />
                 </DropdownItem>
                 <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                  <div class="ts-export">导出</div>
+                  <div class="tsfont-export">导出</div>
                 </DropdownItem> -->
               </DropdownMenu>
             </Dropdown>

@@ -6,15 +6,14 @@ export default {
         params: null,
         dynamicUrl: '',
         url: '',
-        defaultUrl: '/api/rest/matrix/column/data/search/forselect/new',
-        dealDataByUrl: _this.dealDataByUrl || null,
-        rootName: 'tbodyList',
+        defaultUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
         showName: null
       }
     };
   },
   methods: {
-    dealDataFilter(nodeList, config) {
+    dealDataFilter(nodeList, config) { //已废弃
       //当默认值的引用类型是自定义  处理默认值的数据结构
       let _this = this;
       let columlist = [];

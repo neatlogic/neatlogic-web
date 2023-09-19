@@ -28,7 +28,7 @@
                 </TsFormSelect>
               </Col>
               <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-edit btn-tointegration text-action" :title="$t('page.edit')" @click="toIntegration(integrationUuid)"></i></Col>
-              <Col v-if="integrationUuid" span="2" class="text-right"><i class="ts-rotate-right btn-tointegration text-action" :title="$t('page.refresh')" @click="refreshIntegration(integrationUuid)"></i></Col>
+              <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-rotate-right btn-tointegration text-action" :title="$t('page.refresh')" @click="refreshIntegration(integrationUuid)"></i></Col>
             </Row>
           </div>
         </template>
@@ -75,7 +75,7 @@
                 </TsFormSelect>
               </Col>
               <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-edit btn-tointegration text-action" title="编辑数据源" @click="toIntegration(integrationUuid)"></i></Col>
-              <Col v-if="integrationUuid" span="2" class="text-right"><i class="ts-rotate-right btn-tointegration text-action" title="刷新数据源" @click="refreshIntegration(integrationUuid)"></i></Col>
+              <Col v-if="integrationUuid" span="2" class="text-right"><i class="tsfont-rotate-right btn-tointegration text-action" title="刷新数据源" @click="refreshIntegration(integrationUuid)"></i></Col>
             </Row>
           </div>
         </div> -->

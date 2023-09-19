@@ -63,7 +63,7 @@ export default {
       return (type) => {
         let classJson = ['icon'];
         if (type == 'success') {
-          classJson.push(['ts-complete', 'text-success']);
+          classJson.push(['tsfont-check-o', 'text-success']);
         } else if (type == 'error') {
           classJson.push(['tsfont-close-o', 'text-danger']);
         }

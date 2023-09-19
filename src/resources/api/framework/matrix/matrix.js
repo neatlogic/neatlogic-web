@@ -11,10 +11,6 @@ const matrix = {
   getMatrixAttributeByUuid(params) {
     return axios.post('/api/rest/matrix/attribute/search', params);
   },
-  //根据属性获取数据
-  getMatrixColumn(params) { //已弃用
-    return axios.post('/api/rest/matrix/column/data/search/forselect/new', params);
-  },
   //获取矩阵数据
   getMatrixDataForSelect(params) {
     return axios.post('/api/rest/matrix/column/data/search/forselect', params);

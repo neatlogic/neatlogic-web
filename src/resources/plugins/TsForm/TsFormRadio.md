@@ -60,7 +60,7 @@ config:{
   textName:"name",
   value:"",
   validateList:[],
-  url:"/api/rest/matrix/column/data/search/forselect/new",
+  url:"/api/rest/matrix/column/data/search/forselect",
   params:{},
   className:"",
   onChange:function(){},

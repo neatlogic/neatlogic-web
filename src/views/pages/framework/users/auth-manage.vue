@@ -84,7 +84,7 @@
                   </Poptip>
                 </Col>
                 <Col span="2">
-                  <li class="ts-user count text-left" :title="$t('term.framework.usercount')">
+                  <li class="tsfont-userinfo count text-left" :title="$t('term.framework.usercount')">
                     <span>{{ item.userCount }}</span>
                   </li>
                 </Col>

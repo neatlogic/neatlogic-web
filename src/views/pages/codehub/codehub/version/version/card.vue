@@ -32,7 +32,7 @@
             <div v-if="row.versionTypeStrategyRelationVo">
               <span class="ts-branch text-tip h3 icon-right mr-sm"></span>
               {{ row.versionTypeStrategyRelationVo.srcBranch }}
-              <span class="ts-long-arrow-right text-tip h2 ml-sm mr-sm"></span>
+              <span class="tsfont-arrow-right text-tip h2 ml-sm mr-sm"></span>
               <span class="ts-branch text-tip h3 icon-right mr-sm"></span>
               {{ row.versionTypeStrategyRelationVo.targetBranch }}
             </div>

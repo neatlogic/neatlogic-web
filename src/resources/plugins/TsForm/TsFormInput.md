@@ -110,6 +110,6 @@ config:{
   errorMessage:'请输入正确数据',
   prepend:'http',
   append:'$',
-  suffix:'ts-search'
+  suffix:'tsfont-search'
 }
 ```

@@ -136,7 +136,7 @@
     >
       <div class="submitModelBox">
         <div class="submit-model-title">
-          <Icon type="i-icon ts-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
+          <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
           <Button size="large" type="primary" @click="$back(),saveProfile('backrolelist')">{{ $t('term.framework.backtorolelist') }}</Button>
@@ -148,7 +148,7 @@
           <Button size="large" @click="editCrrentRole(),saveProfile('editrole')">{{ $t('dialog.title.edittarget', {target: $t('page.role')}) }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="ts-m-problem" :title="$t('term.framework.editinsetting')"></i></Checkbox>
+          <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
         </div>
       </div>
     </TsDialog>

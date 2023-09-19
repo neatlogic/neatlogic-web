@@ -29,7 +29,7 @@
               <span
                 v-if="actionConfig.start"
                 :class="{disable: disabledConfig.starting}"
-                class="action-item ts-play"
+                class="action-item tsfont-play-o"
                 @click="startTaskStep('start')"
               >{{ actionConfig.start }}</span>
               <!-- 开始_end -->
@@ -37,7 +37,7 @@
               <span
                 v-if="actionConfig.accept"
                 :class="{disable: disabledConfig.accepting}"
-                class="action-item ts-play"
+                class="action-item tsfont-play-o"
                 @click="startTaskStep('accept')"
               >{{ actionConfig.accept }}</span>
               <!-- accept_end -->
