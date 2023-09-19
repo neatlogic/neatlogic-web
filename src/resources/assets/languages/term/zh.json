@@ -1130,7 +1130,10 @@
     "host": "服务器地址",
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",
-    "heartbeatthreshold": "心跳阈值"
+    "heartbeatthreshold": "心跳阈值",
+    "updaterecord": "更新记录",
+    "versionupdate": "版本更新",
+    "sqlupdate": "SQL更新"
   },
   "knowledge": {
     "document": "文档",

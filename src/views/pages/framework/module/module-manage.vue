@@ -22,7 +22,7 @@
                 :padding="false"
               >
                 <template slot-scope="{ row }">
-                  <div class="padding">
+                  <div class="padding cursor-pointer" @click.stop="openUpdateRecordDetail">
                     <div>
                       <span :class="{ 'tsfont-plugin': row.hasInitialData }">{{ row.name }}</span>
                       <span class="text-grey ml-xs">({{ row.id }})</span>
@@ -44,6 +44,7 @@
       </template>
     </TsContain>
     <ModuleImportDialog v-if="isImportDialogShow" :moduleId="currentModuleId" @close="closeImportDialog"></ModuleImportDialog>
+    <UpdateRecordDialog v-if="isShowUpdateRecordDialog" @close="closeUpdateRecordDialog"></UpdateRecordDialog>
   </div>
 </template>
 <script>
@@ -52,13 +53,15 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve)
+    ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve),
+    UpdateRecordDialog: resolve => require(['./update-record-dialog'], resolve)
   },
   mixins: [download],
   props: {},
   data() {
     return {
       isImportDialogShow: false,
+      isShowUpdateRecordDialog: true,
       currentModuleId: '',
       moduleGroupList: []
     };
@@ -95,6 +98,13 @@ export default {
         params: { moduleId: row.id }
       };
       this.download(param);
+    },
+    openUpdateRecordDetail() {
+      // 打开更新记录弹窗
+      this.isShowUpdateRecordDialog = true;
+    },
+    closeUpdateRecordDialog() {
+      this.isShowUpdateRecordDialog = false;
     }
   },
   filter: {},
