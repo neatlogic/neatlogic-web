@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="setting" :isShow="true">
+  <TsDialog v-bind="setting" :isShow="true" @on-close="close">
     <div>
       <Loading
         v-if="isLoading"
@@ -12,7 +12,6 @@
         mode="dialog"
         :propCiId="ciId"
         :propCiEntityId="ciEntityId"
-        :isForm="isForm"
         saveMode="emit"
         :hideHeader="true"
         @save="save"
@@ -40,7 +39,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isForm: true,
       setting: {
         title: this.$t('dialog.title.edittarget', {'target': this.$t('page.assets')}),
         maskClose: false,
