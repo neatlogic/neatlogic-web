@@ -198,7 +198,6 @@ export default {
         this.defaultSelectedConfig = {};
       }
       this.$emit('close');
-      console.log('closeDialog', this.isShowCoverDialog);
     },
     closeUploadDialog() {
       if (!this.isEmit) {
