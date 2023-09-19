@@ -59,7 +59,12 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     AddServiceDialog: resolve => require(['./add-service-dialog.vue'], resolve)
   },
-  props: {},
+  props: {
+    applicationType: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       paramList: [
@@ -104,7 +109,10 @@ export default {
   destroyed() {},
   methods: {
     addService() {
-      this.isMultipleService = false;
+      if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
+        this.isMultipleService = false;
+      }
+      
       this.isShowServiceDialog = true;
     },
     addPublicService() {

@@ -29,7 +29,7 @@
                   :title="item.name"
                 ></Step>
               </template>
-              <Step title="预案"></Step>
+              <Step title="场景"></Step>
               <Step title="服务依赖"></Step>
             </Steps>
           </div>
@@ -38,7 +38,7 @@
             <div v-if="current === 0">
               <TsForm ref="settings" :itemList="formConfig">
                 <template v-slot:file>
-                  <div v-for="(item,index) in fileList" :key="index" class="file pb-sm">
+                  <div v-for="(item,index) in filePathList" :key="index" class="file pb-sm">
                     <TsFormInput v-model="item.filePath"></TsFormInput>
                     <span class="tsfont-trash-s del-icon text-tip-active" @click="delFilepath(index)"></span>
                   </div>
@@ -50,15 +50,15 @@
             </div>
             <!-- 数据中心 -->
             <div v-if="current > 0 && current < datacenterList.length + 1">
-              <DatacenterEdit></DatacenterEdit>
+              <DatacenterEdit :applicationType="applicationType"></DatacenterEdit>
             </div>
             <!-- 预案 -->
             <div v-if="current === (datacenterList.length + 1)">
-              <Scene></Scene>
+              <Scene :prePlanList="prePlanList" @update="updateScene"></Scene>
             </div>
             <!-- 服务依赖 -->
             <div v-if="current === (datacenterList.length + 2)">
-              <Service :firstBtn="true"></Service>
+              <Service :firstBtn="true" @update="updateService"></Service>
             </div>
           </template>
         </div>
@@ -101,7 +101,10 @@ export default {
     return {
       loadingShow: false,
       current: 0,
+      baseSettings: {},
       datacenterList: [],
+      prePlanList: [],
+      applicationDependencyList: [],
       formConfig: {
         name: {
           type: 'text',
@@ -117,30 +120,17 @@ export default {
             }
           ]
         },
-        type: {
+        applicationType: {
           type: 'select',
           label: '应用类型',
-          dataList: [
-            {
-              text: this.$t('term.dr.network'),
-              value: 'network'
-            },
-            {
-              text: this.$t('term.dr.basicservices'),
-              value: 'basicservices'
-            },
-            {
-              text: 'DB',
-              value: 'db'
-            },
-            {
-              text: '业务应用',
-              value: 'app'
-            }
-          ],
-          validateList: ['required']
+          url: '/api/rest/universal/enum/get',
+          params: { enumClass: 'DrAppType' },
+          validateList: ['required'],
+          onChange: (val) => {
+            this.changeApplicationType(val);
+          }
         },
-        jg: {
+        organizationId: {
           type: 'tree',
           label: '恢复机构',
           url: '/api/rest/dr/organization/tree',
@@ -150,15 +140,13 @@ export default {
           transfer: true,
           validateList: ['required']
         },
-        RTO: {
-          type: 'text',
-          label: 'RTO（' + this.$t('page.minute') + '）',
-          validateList: ['number']
+        recoveryTimeObjective: {
+          type: 'number',
+          label: 'RTO（' + this.$t('page.minute') + '）'
         },
-        RPO: {
-          type: 'text',
-          label: 'RPO（' + this.$t('page.minute') + '）',
-          validateList: ['number']
+        recoveryPointObjective: {
+          type: 'number',
+          label: 'RPO（' + this.$t('page.minute') + '）'
         },
         file: {
           type: 'slot',
@@ -182,19 +170,18 @@ export default {
           onChange: this.changeDataCenter
         }
       },
-      fileList: [
-        {
-          filePath: '',
-          id: ''
-        }
-      ],
+      filePathList: [],
       isShowSteps: false,
       validList: [],
-      validVisible: false
+      validVisible: false,
+      basicservicesTypeIdList: [], //基础服务选的配置
+      networkTypeIdList: [] ///网络选的配置
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getCiList();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -204,38 +191,68 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async changeApplicationType(val) {
+      this.applicationType = val;
+    },
+    getCiList() {
+      this.$api.dr.ci.getCiList().then(res => {
+        if (res && res.Status == 'OK') {
+          let basicservicesConfig = res.Return.find(item => item.name === 'basicservices');
+          let networkConfig = res.Return.find(item => item.name === 'network');
+          this.basicservicesTypeIdList = basicservicesConfig.ciIdList;
+          this.networkTypeIdList = networkConfig.ciIdList;
+        }
+      });
+    },
     next(current) {
-      if (this.$refs.settings && !this.$refs.settings.valid()) {
-        return;
+      if (this.$refs.settings) {
+        if (!this.$refs.settings.valid()) {
+          return;
+        } else {
+          this.baseSettings = this.$refs.settings.getFormValue() || {};
+        }
       }
       this.loadingShow = true;
       this.current = current;
+      if (current > 0) {
+        //
+      }
       this.$nextTick(() => {
         this.loadingShow = false;
       });
+    },
+    updateScene(list) {
+      this.prePlanList = list;
+    },
+    updateService(list) {
+      this.applicationDependencyList = list;
     },
     getValid() {
       let validList = [];
       return validList;
     },
     getData() {
-      let settings = this.$refs.settings.getValueData();
       let data = {
+        name: this.baseSettings.name || '',
+        applicationType: this.baseSettings.applicationType || '',
+        organizationId: this.baseSettings.organizationId || '',
+        recoveryTimeObjective: this.baseSettings.recoveryTimeObjective || null,
+        recoveryPointObjective: this.baseSettings.recoveryPointObjective || null,
+        configFilePathList: this.$utils.mapArray(this.filePathList, 'filePath'),
         datacenterList: this.datacenterList,
-        name: '',
-        dataCenter: [],
-        fileList: []
-
+        prePlanList: [],
+        applicationDependencyList: []
       };
+      return data;
     },
     save() {
       this.validList = this.getValid();
-      if (!this.$utils.isEmpty(validList)) {
+      if (!this.$utils.isEmpty(this.validList)) {
         this.validVisible = true;
         return;
       }
-      let data = {};
-      return data;
+      let data = this.getData();
+      console.log(data);
     },
     changeDataCenter(value, selectedItem) {
       //改变关联数据中心需要更新步骤的数据
@@ -246,13 +263,12 @@ export default {
       });
     },
     addFile() {
-      this.fileList.push({
-        filePath: '',
-        id: ''
+      this.filePathList.push({
+        filePath: ''
       });
     },
     delFilepath(index) {
-      this.fileList.splice(index, 1);
+      this.filePathList.splice(index, 1);
     },
     validDatacenter(el) {
       //关联数据中心校验：至少选择两项

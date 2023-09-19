@@ -4,8 +4,8 @@
       type="modal"
       :isShow="true"
       :title="type==='add'?$t('page.add'):$t('page.edit') +'依赖服务'"
-      @on-ok="okDialog"
-      @on-close="closeDialog"
+      @on-ok="okDialog()"
+      @on-close="closeDialog()"
     >
       <template v-slot>
         <div>
@@ -97,10 +97,10 @@ export default {
   destroyed() {},
   methods: {
     okDialog() {
-      this.closeDialog();
+      this.closeDialog(true);
     },
-    closeDialog() {
-      this.$emit('close');
+    closeDialog(isUpdate) {
+      this.$emit('close', isUpdate);
     },
     add() {
       this.sceneList.push({

@@ -17,15 +17,15 @@
         <div class="pt-nm">
           <Divider orientation="start">场景预案</Divider>
           <div class="pt-nm pb-nm">
-            <Scene></Scene>
+            <Scene @update="getServiceData()"></Scene>
           </div>
           <Divider orientation="start">{{ $t('term.inspect.datacenter') }}</Divider>
           <div class="pt-nm pb-nm">
-            <Datacenter></Datacenter>
+            <Datacenter @update="getServiceData()"></Datacenter>
           </div>
           <Divider orientation="start">我依赖的服务</Divider>
           <div class="pt-nm pb-nm">
-            <Service :firstBtn="true"></Service>
+            <Service :firstBtn="true" @update="getServiceData()"></Service>
           </div>
           <Divider orientation="start">依赖我的服务</Divider>
           <div class="pt-nm pb-nm">
@@ -68,17 +68,18 @@ export default {
   data() {
     return {
       name: '服务名称',
+      serviceData: {},
       showTimeDialog: false,
       formConfig: {
         RTO: {
           type: 'text',
-          label: 'RTO（分钟）',
+          label: 'RTO（' + this.$t('page.minute') + '）',
           transfer: true,
           validateList: ['number']
         },
         RPO: {
           type: 'text',
-          label: 'RPO（分钟）',
+          label: 'RPO（' + this.$t('page.minute') + '）',
           transfer: true,
           validateList: ['number']
         }
@@ -98,6 +99,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getServiceData() {
+      let data = {};
+      this.$api.dr.getServiceData(data).then((res) => {
+        if (res.Status === 'OK') {
+          //console.log(res);
+          this.serviceData = res.Return;
+        }
+      });
+    },
     editTime() {
       this.showTimeDialog = true;
     },

@@ -11,7 +11,7 @@
       <template slot-scope="{ row }">
         <div class="padding-sm">
           <div class="overflow pb-xs">
-            {{ row.name }}
+            {{ row.sceneName }}
           </div>
           <div class="text-tip overflow pb-xs">
             <span class="pr-sm">数据中心：</span>
@@ -23,16 +23,16 @@
             <span v-else>-</span>
           </div>
           <div class="text-tip overflow">
-            <span class="pr-sm">自动化编排：</span>
+            <span class="pr-sm">自动化编排：{{ row.combopName }}</span>
           </div>
         </div>
       </template>
-      <template v-slot:control="{ row }">
-        <div class="tsfont-edit" @click="editScene(row)">{{ $t('page.edit') }}</div>
-        <div class="pl-sm tsfont-trash-o" @click="deleteScene(row)">{{ $t('page.delete') }}</div>
+      <template v-slot:control="{ row,index }">
+        <div class="tsfont-edit" @click="editScene(row, index)">{{ $t('page.edit') }}</div>
+        <div class="pl-sm tsfont-trash-o" @click="deleteScene(row,index)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
-    <SceneDialog v-if="isShowDialog" @close="closeScene"></SceneDialog>
+    <SceneDialog v-if="isShowDialog" :defaultSceneData="sceneConfig" @close="closeScene"></SceneDialog>
   </div>
 </template>
 <script>
@@ -54,12 +54,11 @@ export default {
         padding: false,
         boxShadow: false,
         firstBtn: true,
-        tbodyList: [
-          {name: 's'}
-        ]
+        tbodyList: []
       },
       sceneConfig: {},
-      isShowDialog: false
+      isShowDialog: false,
+      editIndex: 0
     };
   },
   beforeCreate() {},
@@ -74,13 +73,16 @@ export default {
   destroyed() {},
   methods: {
     addScene() {
+      this.type = 'add';
       this.isShowDialog = true;
     },
-    editScene(row) {
+    editScene(row, index) {
+      this.type = 'edit';
+      this.editIndex = index;
       this.sceneConfig = row;
       this.isShowDialog = true;
     },
-    deleteScene(row) {
+    deleteScene(row, index) {
       if (row.referenceCount) {
         return;
       }
@@ -89,17 +91,23 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
         btnType: 'error',
         'on-ok': vnode => {
-          // this.$api.dr.scene.deleteScene({id: row.id}).then(res => {
-          //   if (res && res.Status == 'OK') {
+          this.cardData.tbodyList.splice(index, 1);
           this.$Message.success(this.$t('message.deletesuccess'));
-          this.$emit('update');
-          //     vnode.isShow = false;
-          //   }
-          // });
+          vnode.isShow = false;
+          this.$emit('update', this.cardData.tbodyList);
         }
       });
     },
-    closeScene() {
+    closeScene(isUpdate, data) {
+      this.sceneConfig = {};
+      if (isUpdate) {
+        if (this.type === 'add') {
+          this.cardData.tbodyList.push(data);
+        } else { 
+          this.cardData.tbodyList.splice(this.editIndex, 1, data);
+        }
+        this.$emit('update', this.cardData.tbodyList);
+      }
       this.isShowDialog = false;
     }
   },

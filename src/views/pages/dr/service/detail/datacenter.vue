@@ -64,7 +64,9 @@ export default {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     DatacenterEdit: resolve => require(['./datacenter-edit.vue'], resolve)
   },
-  props: {},
+  props: {
+    
+  },
   data() {
     return {
       cardData: {

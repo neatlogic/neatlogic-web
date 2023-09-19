@@ -105,7 +105,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
+        content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           // this.$api.dr.scene.deleteService({id: row.id}).then(res => {

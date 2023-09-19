@@ -4,8 +4,8 @@
       type="modal"
       :isShow="true"
       :title="type==='add'?$t('page.add'):$t('page.edit') + $t('page.scene')"
-      @on-ok="okDialog"
-      @on-close="closeDialog"
+      @on-ok="okDialog()"
+      @on-close="closeDialog()"
     >
       <template v-slot>
         <div>
@@ -14,25 +14,6 @@
             v-model="formData"
             :item-list="formConfig"
           >
-            <template v-slot:direction>
-              <div class="flex-center">
-                <TsFormSelect
-                  v-model="formData.sourceId"
-                  :dataList="getDataList(formData.targetId)"
-                  :validateList="formData.targetId?validateList:[]"
-                  transfer
-                  style="flex: 1;"
-                ></TsFormSelect>
-                <div class="tsfont-arrow-right pl-sm pr-sm"></div>
-                <TsFormSelect
-                  v-model="formData.targetId"
-                  :dataList="getDataList(formData.sourceId)"
-                  :validateList="formData.sourceId?validateList:[]"
-                  transfer
-                  style="flex: 1;"
-                ></TsFormSelect>
-              </div>
-            </template>
           </TsForm>
         </div>
       </template>
@@ -43,35 +24,34 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
     type: {
       type: String,
       default: 'add'
     },
-    drDataCenterList: {
-      type: Array,
-      default: () => []
+    defaultSceneData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
       formConfig: {
-        name: {
-          type: 'text',
-          name: 'name',
-          value: '',
-          maxlength: 50,
+        sceneId: {
+          type: 'select',
+          url: '/api/rest/dr/scene/list',
+          valueName: 'id', 
+          textName: 'name', 
           label: this.$t('page.scenarioname'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '', key: 'name' }]
+          validateList: ['required'],
+          transfer: true,
+          onChange: (val, valueObject, selectItem) => {
+            this.changeSceneId(val, selectItem);
+          }
         },
-        direction: {
-          type: 'slot',
-          label: this.$t('term.dr.migrationdirection')
-        },
-        actionId: {
+        combopId: {
           type: 'select',
           label: this.$t('term.autoexec.relatecombinationtool'),
           dynamicUrl: '/api/rest/autoexec/combop/executable/list',
@@ -79,7 +59,10 @@ export default {
           textName: 'name', 
           rootName: 'tbodyList',
           validateList: ['required'],
-          transfer: true
+          transfer: true,
+          onChange: (val, valueObject, selectItem) => {
+            this.changeCombopId(val, selectItem);
+          }
         }
       },
       validateList: ['required'],
@@ -98,31 +81,47 @@ export default {
   destroyed() {},
   methods: {
     okDialog() {
-      this.closeDialog();
+      this.closeDialog(true);
     },
-    closeDialog() {
-      this.$emit('close');
+    closeDialog(isUpdate = false) {
+      this.$emit('close', isUpdate, this.formData);
+    },
+    changeSceneId(val, selectItem) {
+      if (val) {
+        this.$set(this.formData, 'sceneId', val);
+        this.$set(this.formData, 'sceneName', selectItem.name);
+        this.$set(this.formData, 'sourceName', selectItem.sourceName);
+        this.$set(this.formData, 'targetName', selectItem.targetName);
+      } else {
+        this.$set(this.formData, 'sceneId', null);
+        this.$set(this.formData, 'sceneName', null);
+        this.$set(this.formData, 'sourceName', null);
+        this.$set(this.formData, 'targetName', null);
+      }
+    },
+    changeCombopId(val, selectItem) {
+      if (val) {
+        this.$set(this.formData, 'combopId', val);
+        this.$set(this.formData, 'combopName', selectItem.name);
+      } else {
+        this.$set(this.formData, 'combopId', null);
+        this.$set(this.formData, 'combopName', null);
+      }
     }
   },
   filter: {},
-  computed: {
-    getDataList() {
-      return (id) => {
-        let list = [];
-        if (!this.$utils.isEmpty(this.drDataCenterList)) {
-          this.drDataCenterList.forEach(item => {
-            list.push({
-              text: item.name,
-              value: item.id,
-              _disabled: id === item.id
-            });
-          });
+  computed: {},
+  watch: {
+    defaultSceneData: {
+      handler(val) {
+        if (val) {
+          this.formData = this.$utils.deepClone(val);
         }
-        return list;
-      };
+      },
+      deep: true,
+      immediate: true
     }
-  },
-  watch: {}
+  }
 };
 </script>
 <style lang="less">
