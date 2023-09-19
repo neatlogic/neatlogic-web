@@ -37,8 +37,13 @@
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0" v-auth="['RESOURCECENTER_MODIFY']" class="action-item">
-            <Button type="primary" @click="addAsset">{{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}</Button>
+          <span
+            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0"
+            v-auth="['RESOURCECENTER_MODIFY']"
+            class="action-item tsfont-plus"
+            @click="addAsset"
+          >
+            {{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}
           </span>
           <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
         </div>
