@@ -543,3 +543,8 @@
 .tsfont-merge { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1b;&nbsp;'); }
 .tsfont-table-column { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1c;&nbsp;'); }
 .tsfont-table-row { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1d;&nbsp;'); }
+.tsfont-check-square-o { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1e;&nbsp;'); }
+.tsfont-double-arrow-left { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea1f;&nbsp;'); }
+.tsfont-double-arrow-right { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea20;&nbsp;'); }
+.tsfont-double-arrow-up { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea21;&nbsp;'); }
+.tsfont-heart-o { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea22;&nbsp;'); }
