@@ -3250,5 +3250,35 @@
     "css": "tsfont-table-row",
     "hexCodepoint": "0xea1d",
     "codepoint": 59933
+  },
+  {
+    "name": "check-square-o",
+    "css": "tsfont-check-square-o",
+    "hexCodepoint": "0xea1e",
+    "codepoint": 59934
+  },
+  {
+    "name": "double-arrow-left",
+    "css": "tsfont-double-arrow-left",
+    "hexCodepoint": "0xea1f",
+    "codepoint": 59935
+  },
+  {
+    "name": "double-arrow-right",
+    "css": "tsfont-double-arrow-right",
+    "hexCodepoint": "0xea20",
+    "codepoint": 59936
+  },
+  {
+    "name": "double-arrow-up",
+    "css": "tsfont-double-arrow-up",
+    "hexCodepoint": "0xea21",
+    "codepoint": 59937
+  },
+  {
+    "name": "heart-o",
+    "css": "tsfont-heart-o",
+    "hexCodepoint": "0xea22",
+    "codepoint": 59938
   }
 ]
