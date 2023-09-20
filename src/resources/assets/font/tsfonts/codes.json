@@ -3280,5 +3280,17 @@
     "css": "tsfont-heart-o",
     "hexCodepoint": "0xea22",
     "codepoint": 59938
+  },
+  {
+    "name": "folder-open",
+    "css": "tsfont-folder-open",
+    "hexCodepoint": "0xea23",
+    "codepoint": 59939
+  },
+  {
+    "name": "solid-circle",
+    "css": "tsfont-solid-circle",
+    "hexCodepoint": "0xea24",
+    "codepoint": 59940
   }
 ]

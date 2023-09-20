@@ -559,3 +559,5 @@
 .tsfont-double-arrow-right { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea20;&nbsp;'); }
 .tsfont-double-arrow-up { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea21;&nbsp;'); }
 .tsfont-heart-o { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea22;&nbsp;'); }
+.tsfont-folder-open { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea23;&nbsp;'); }
+.tsfont-solid-circle { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea24;&nbsp;'); }

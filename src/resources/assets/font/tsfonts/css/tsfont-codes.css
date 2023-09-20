@@ -548,3 +548,5 @@
 .tsfont-double-arrow-right:before { content: '\ea20'; } /* '' */
 .tsfont-double-arrow-up:before { content: '\ea21'; } /* '' */
 .tsfont-heart-o:before { content: '\ea22'; } /* '' */
+.tsfont-folder-open:before { content: '\ea23'; } /* '' */
+.tsfont-solid-circle:before { content: '\ea24'; } /* '' */
