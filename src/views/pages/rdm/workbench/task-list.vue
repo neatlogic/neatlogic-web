@@ -130,7 +130,8 @@ export default {
           isMine: this.isMine,
           isMyCreated: this.isMyCreated,
           isEnd: this.isEnd,
-          isFavorite: this.isFavorite
+          isFavorite: this.isFavorite,
+          isProcessed: this.isProcessed
         })
         .then(res => {
           this.projectList = res.Return;
@@ -154,7 +155,13 @@ export default {
       return null;
     },
     isMine() {
-      if (this.type === 'doing' || this.type === 'done') {
+      if (this.type === 'doing') {
+        return 1;
+      }
+      return null;
+    },
+    isProcessed() {
+      if (this.type === 'done') {
         return 1;
       }
       return null;
@@ -168,9 +175,7 @@ export default {
     isEnd() {
       if (this.type === 'doing') {
         return 0;
-      } else if (this.type === 'done') {
-        return 1;
-      }
+      } 
       return null;
     },
     currentProjectId() {
