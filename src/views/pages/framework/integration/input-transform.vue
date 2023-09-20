@@ -27,7 +27,7 @@
         ></Table>
       </Col>
       <Col v-if="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0)" :span="1">
-        <i class="ts-angle-double-right"></i>
+        <i class="tsfont-double-arrow-right"></i>
       </Col>
       <Col :span="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0) ? 13 : 24">
         <TsCodemirror :value.sync="content" height="300px"></TsCodemirror>

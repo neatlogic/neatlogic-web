@@ -123,7 +123,7 @@ export default {
       showType: 'tree', //树图显示的模式
       typeList: [{
         name: 'tree',
-        icon: 'ts-workflow'
+        icon: 'tsfont-tree'
       }, {
         name: 'list',
         icon: 'tsfont-bar'        
@@ -232,7 +232,7 @@ export default {
           }
         } else {
           if (li.showChild) {
-            str += 'ts-folder-open';
+            str += 'tsfont-folder-open';
           } else {
             str += 'tsfont-folder-o';
           }

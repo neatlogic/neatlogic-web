@@ -23,7 +23,7 @@
       <template v-slot:topRight>
         <TsRow>
           <Col :span="6">
-            <TsFormSelect v-model="tableData.autoexecCombopId" className="time-job-ts-form-select" v-bind="handlerSelectSetting"></TsFormSelect>
+            <TsFormSelect v-model="tableData.autoexecCombopId" v-bind="handlerSelectSetting"></TsFormSelect>
           </Col>
           <Col :span="18">
             <InputSearcher

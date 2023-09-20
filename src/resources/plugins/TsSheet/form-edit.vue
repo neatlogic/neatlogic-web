@@ -114,7 +114,7 @@
                 <DropdownItem>
                   <div
                     :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
-                    class="action-item ts-check-square-o"
+                    class="action-item tsfont-check-square-o"
                     :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
                     @click="activeFormVersion(currentVersion.uuid)"
                     @mouseenter="haveChangeData"

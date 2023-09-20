@@ -65,10 +65,10 @@
             {{ $t('page.react') }}
             <Badge :count="account"></Badge>
           </span>
-          <!-- <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item ts-check-square-o disable">激活</span>
+          <!-- <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-check-square-o disable">激活</span>
           <span
             v-else-if="currentVersion.uuid"
-            :class="['action-item', 'ts-check-square-o', { disable: showActiveTooltip }]"
+            :class="['action-item', 'tsfont-check-square-o', { disable: showActiveTooltip }]"
             :title="showActiveTooltip ? '版本已经被修改，需保存之后再激活' : ''"
             @click="activeFormVersion(currentVersion.uuid)"
             @mouseenter="haveChangeData"

@@ -102,7 +102,7 @@
                   <i :class="['text-danger', 'tsfont-heart-s']"></i>
                 </Tooltip>
                 <Tooltip v-else :content="$t('term.process.focustask')" theme="light">
-                  <i :class="['text-danger', 'ts-heart']"></i>
+                  <i :class="['text-danger', 'tsfont-heart-o']"></i>
                 </Tooltip>
               </span>
               <!-- 更多操作 -->

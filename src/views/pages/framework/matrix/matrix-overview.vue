@@ -34,7 +34,7 @@
           <div style="text-align:right">
             <div class="action-group">
               <div class="action-item" :class="modeType == 'block' ? 'active text-href' : ''" @click="changeMode('block')">
-                <i class="ts-block"></i>
+                <i class="tsfont-blocklist"></i>
               </div>
               <div class="action-item" :class="modeType == 'list' ? 'active text-href' : ''" @click="changeMode('list')">
                 <i class="tsfont-list"></i>

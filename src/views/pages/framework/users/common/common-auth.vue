@@ -5,7 +5,7 @@
       <div v-for="(item, index) in authList" :key="index" class="item mb-md">
         <div class="title text-grey">{{ item.displayName }}</div>
         <div class="radius-lg" :class="readOnly || readOnly == 'true' ? 'title-wrapper not-allowed border-color' : 'bg-op'">
-          <div class="pl-nm pt-nm h2 flex-start" :class="isCheckAll(item) ? 'ts-check-square-o':'tsfont-minus-square'" @click.stop="handleCheckAll(item)">
+          <div class="pl-nm pt-nm h2 flex-start" :class="isCheckAll(item) ? 'tsfont-check-square-o':'tsfont-minus-square'" @click.stop="handleCheckAll(item)">
             <span class="text check-all-text-pr" :class="isReadOnly() ? 'not-allowed' : ''">
               {{ isCheckAll(item) ? $t('page.unselectall') : $t('page.selectall') }}
             </span>
