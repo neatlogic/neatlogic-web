@@ -9,7 +9,7 @@
       <div class="notice flex-between" @click="showUnreadNotices(index)">
         <div class="left">
           <div class="title-container flex-start">
-            <i class="ts-bell-s"></i>
+            <i class="tsfont-bell-on"></i>
             <span class="text-title overflow title" :class="{'with-img': notice.imgList.length > 0}">{{ notice.title }}</span>
           </div>
           <div class="content line-2 ml-22">{{ notice.content }}</div>
@@ -199,7 +199,7 @@ export default {
         max-width: 220px;
       }
     }
-    .ts-bell-s {
+    .tsfont-bell-on {
       margin: 0 6px 0 2px;
     }
     .content {

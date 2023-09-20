@@ -24,7 +24,7 @@
                 <Col span="6">
                   <div class="list pl-lg pr-lg radius-md mb-nm overflow bg-op">
                     <div class="logo pr-sm">
-                      <i class="logo-icon text-primary" :class="[seritem.icon ? seritem.icon : 'ts-m-playbook', item.color ? '' : 'text-primary']"></i>
+                      <i class="logo-icon text-primary" :class="[seritem.icon ? seritem.icon : 'tsfont-ip-list', item.color ? '' : 'text-primary']"></i>
                     </div>
                     <div class="overflow">
                       <div class="overflow pb-xs" :title="seritem.name">{{ seritem.name }}</div>

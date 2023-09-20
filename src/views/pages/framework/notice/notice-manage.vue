@@ -72,7 +72,7 @@
               <ul class="action-list">
                 <li
                   v-if="notice.status === 'issued'"
-                  class="action-item text-action ts-stop"
+                  class="action-item text-action tsfont-forbid"
                   :title="$t('message.framework.stopusetip')"
                   @click="stop(notice)"
                 >{{ $t('page.stopuse') }}</li>
@@ -225,7 +225,7 @@ export default {
         height: 14px;
         margin: 0 13px;
       }
-      .ts-stop::before {
+      .tsfont-forbid::before {
         font-size: 10px;
         position: relative;
         top: -1px;

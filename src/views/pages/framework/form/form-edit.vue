@@ -65,17 +65,17 @@
             {{ $t('page.react') }}
             <Badge :count="account"></Badge>
           </span>
-          <!-- <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item ts-check-square-o disable">激活</span>
+          <!-- <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-check-square-o disable">激活</span>
           <span
             v-else-if="currentVersion.uuid"
-            :class="['action-item', 'ts-check-square-o', { disable: showActiveTooltip }]"
+            :class="['action-item', 'tsfont-check-square-o', { disable: showActiveTooltip }]"
             :title="showActiveTooltip ? '版本已经被修改，需保存之后再激活' : ''"
             @click="activeFormVersion(currentVersion.uuid)"
             @mouseenter="haveChangeData"
           >激活</span> -->
           <span class="action-item tsfont-eye " @click="previewForm">{{ $t('page.preview') }}</span>
-          <!-- <span class="action-item ts-save" @click="handleSaveForm()">{{ $t('page.save') }}</span> -->
-          <!-- <span v-if="currentVersion.uuid" class="action-item ts-save" @click="saveForm('saveother')">另存为新版本</span> -->
+          <!-- <span class="action-item tsfont-save" @click="handleSaveForm()">{{ $t('page.save') }}</span> -->
+          <!-- <span v-if="currentVersion.uuid" class="action-item tsfont-save" @click="saveForm('saveother')">另存为新版本</span> -->
           <span v-if="activeVersionUuid == currentVersion.uuid && currentVersion.uuid" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
           <span v-else-if="currentVersion.uuid" class="action-item tsfont-trash-o" @click="delVersionModal(currentVersion.uuid, currentVersion.version)">{{ $t('page.delete') }}</span>
           <span class="action-item" style="padding:0px;">

@@ -81,7 +81,7 @@
                   </div>
                 </td>
                 <td v-if="!disabled">
-                  <span class="ts-setting text-action" @click="openAttrConfigDialog(data)"></span>
+                  <span class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
                   <span v-if="data.isExtra" class="ml-xs tsfont-close-o text-action" @click="removeExtraProperty(data)"></span>
                 </td>
               </tr>

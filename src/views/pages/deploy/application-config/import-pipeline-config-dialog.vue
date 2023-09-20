@@ -12,13 +12,13 @@
           </Alert>
           <div class="common-auth">
             <div v-if="relateConfig && relateConfig?.typeList?.length > 0" class="wrapper">
-              <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'ts-check-square-o':'ts-minus-square']" @click.stop="handleCheckedAll()">
+              <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'tsfont-check-square-o':'tsfont-minus-square']" @click.stop="handleCheckedAll()">
                 {{ selectedAll ? $t('page.unselectall') : $t('page.selectall') }}
               </span>
               <div v-for="(item, index) in relateConfig.typeList" :key="index" class="item mb-md">
                 <div class="title text-grey">{{ item.text }}</div>
                 <div class="radius-lg bg-op">
-                  <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'ts-check-square-o':'ts-minus-square'" @click.stop="handleSecondCheckedAll(item)">
+                  <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'tsfont-check-square-o':'tsfont-minus-square'" @click.stop="handleSecondCheckedAll(item)">
                     <span class="text check-all-text-pr">
                       {{ secondSelectedAll(item) ? $t('page.unselectall') : $t('page.selectall') }}
                     </span>

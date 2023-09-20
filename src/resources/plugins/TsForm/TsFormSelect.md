@@ -145,7 +145,7 @@ config:{
   size:"default",
   width:"100%",
   search:false,
-  preIcon:"ts-edit",
+  preIcon:"tsfont-edit",
   keyword:"keyword",
   idListName:"valueList",
   placeholder:"请输入",

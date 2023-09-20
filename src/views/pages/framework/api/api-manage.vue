@@ -69,9 +69,9 @@
               <ul class="tstable-action-ul">
                 <li class="tsfont-test" @click="testApi(row)">{{ $t('page.test') }}</li>
                 <li class="tsfont-question-o" @click="showApiHelp(row)">{{ $t('page.help') }}</li>
-                <li v-if="row.needAudit" class="ts-page" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
+                <li v-if="row.needAudit" class="tsfont-putongjigui" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
                 <!-- <li class="tsfont-edit icon" @click="">{{ $t('page.edit') }}</li> -->
-                <li v-if="!row.isPrivate" class="ts-chain icon" @click="showApiForm(row, 'copy')">
+                <li v-if="!row.isPrivate" class="tsfont-copy icon" @click="showApiForm(row, 'copy')">
                   {{ $t('page.copy') }}
                 </li>
                 <li v-if="row.isDeletable == 1" class="tsfont-trash-o icon" @click="showApiForm(row, 'delete')">{{ $t('page.delete') }}</li>

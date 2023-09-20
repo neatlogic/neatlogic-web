@@ -48,7 +48,7 @@
             class="cursor-pointer text-left h4"
             :title="$t('term.codehub.backparent')"
             @click="gotoPrev()"
-          ><span class="text-tip ml-sm ts-option-horizontal"></span></div>
+          ><span class="text-tip ml-sm tsfont-option-horizontal"></span></div>
           <div class="tstable-container border bg-grey radius-lg">
             <div ref="mainBody" style="overflow:auto;" :style="'max-height:'+remainHeight+'px;'">
               <table v-if="!currentfilePath && list && list.length" class="tstable-body">
@@ -66,7 +66,7 @@
                     @click="toNext(li)"
                   >
                     <td>
-                      <span :class="li.type == 'D' ? 'ts-folder text-warning':'ts-file'" class="mr-xs"></span>{{ li.path }}
+                      <span :class="li.type == 'D' ? 'tsfont-folder-o text-warning':'tsfont-file-single'" class="mr-xs"></span>{{ li.path }}
                     </td>
                     <td>{{ li.lastAuthor }}</td>
                     <td>{{ li.lastCommitMessage }}</td>

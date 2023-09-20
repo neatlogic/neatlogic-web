@@ -20,7 +20,7 @@
               <span :title="getTargetStepList(item.targetStepList)">{{ getTargetStepList(item.targetStepList) }}</span>”
             </div>
             <div class="edit-icon">
-              <i class="ts-cog-s click-tag text-action" @click="editRule(item,index)"></i>
+              <i class="tsfont-setting click-tag text-action" @click="editRule(item,index)"></i>
               <span class="tsfont-close click-tag text-action del-inrule" @click="delRule(index)"></span>
             </div>
           </div>

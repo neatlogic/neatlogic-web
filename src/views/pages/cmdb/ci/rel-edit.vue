@@ -64,7 +64,7 @@
                       :title="$t('page.positiontransfer')"
                       @click="switchRel"
                     >
-                      <i class="ts-exchange"></i>
+                      <i class="tsfont-change"></i>
                     </div>
                     <div class="reledit-line border-color"></div>
                     <div class="item-right">

@@ -24,7 +24,7 @@
                     @click="collectionClick(item)"
                   >
                     <div class="logo pr-sm">
-                      <i class="logo-icon text-primary" :class="[item.icon ? item.icon : 'ts-m-playbook', item.color ? '' : 'text-primary']"></i>
+                      <i class="logo-icon text-primary" :class="[item.icon ? item.icon : 'tsfont-ip-list', item.color ? '' : 'text-primary']"></i>
                     </div>
                     <div class="overflow">
                       <div class="overflow pb-xs">{{ item.name }}</div>

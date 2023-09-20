@@ -12,7 +12,7 @@
       ></LeftNav>
       <div v-if="config && config.fileList && config.fileList.length > 0" class="li-div text-action" @click="togoItem('file')">{{ $t('page.accessory') }}</div>
     </div>
-    <div class="right-sider bg-op ts-border" :style="{'left':navWidth}">
+    <div class="right-sider bg-op radius-lg" :style="{'left':navWidth}">
       <div v-if="config" class="main">
         <div class="main-top">
           <div v-if="config && config.path" class="document-path text-tip overflow" :title="getpath(config.path)">{{ getpath(config.path) }}</div>

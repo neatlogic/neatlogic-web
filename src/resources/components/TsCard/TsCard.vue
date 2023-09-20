@@ -181,10 +181,10 @@
             <ol v-if="pageCount && pageCount > 1" :class="cardPrev + 'pageul clearfix'">
               <template v-if="pageCount > maxPage">
                 <li v-if="currentPage > 1" :class="cardPrev + 'pageli first toggle'" @click="updatePage(1)">
-                  <div class="toggle-btn ts-angle-double-left"></div>
+                  <div class="toggle-btn tsfont-double-arrow-left"></div>
                 </li>
                 <li v-else :class="cardPrev + 'pageli first disabled toggle'">
-                  <div class="toggle-btn ts-angle-double-left"></div>
+                  <div class="toggle-btn tsfont-double-arrow-left"></div>
                 </li>
                 <li v-if="currentPage > 1" :class="cardPrev + 'pageli prev toggle'" @click="updatePage(Math.floor(currentPage) - 1)">
                   <div class="toggle-btn tsfont-left"></div>
@@ -214,10 +214,10 @@
                   <div class="toggle-btn tsfont-right"></div>
                 </li>
                 <li v-if="currentPage < pageCount" :class="cardPrev + 'pageli last toggle'" @click="updatePage(pageCount)">
-                  <div class="toggle-btn ts-angle-double-right"></div>
+                  <div class="toggle-btn tsfont-double-arrow-right"></div>
                 </li>
                 <li v-else :class="cardPrev + 'pageli last disabled toggle'">
-                  <div class="toggle-btn ts-angle-double-right"></div>
+                  <div class="toggle-btn tsfont-double-arrow-right"></div>
                 </li>
               </template>
             </ol>

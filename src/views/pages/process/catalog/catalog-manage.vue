@@ -14,7 +14,7 @@
       <template v-slot:topRight>
         <div class="div-btn-contain action-group">
           <span v-if="catalogData.uuid !== '' || channelData.uuid !== ''" :class="[!(childrenCount == undefined || childrenCount == 0) || disabledConfig.saving ? 'disable' : '', 'action-item tsfont-trash-o']" @click="del()">{{ $t('page.delete') }}</span>
-          <span :class="{ disable: disabledConfig.saving }" class="action-item ts-save" @click="saveCurrent()">{{ $t('page.save') }}</span>
+          <span :class="{ disable: disabledConfig.saving }" class="action-item tsfont-save" @click="saveCurrent()">{{ $t('page.save') }}</span>
         </div>
       </template>
       <template v-slot:sider>
@@ -31,7 +31,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="content bg-op pt-md ts-border" :class="!isSiderHide ? 'ml-md' : ''">
+        <div class="content bg-op pt-md radius-lg" :class="!isSiderHide ? 'ml-md' : ''">
           <div v-if="selectedUuid" class="right_content input-border">
             <item
               :is="formType"
@@ -106,7 +106,7 @@ export default {
               }
             },
             {
-              icon: 'ts-page',
+              icon: 'tsfont-putongjigui',
               desc: this.$t('dialog.title.addtarget', { target: this.$t('term.process.catalog') }),
               isAddFn: function(treeNode) {
                 if (treeNode.type == 'catalog') {

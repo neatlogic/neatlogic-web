@@ -59,7 +59,7 @@
         <template slot="action" slot-scope="{row}">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-pages" @click="showDetail(row)">{{ $t('page.detail') }}</li>
+              <li class="tsfont-file-single" @click="showDetail(row)">{{ $t('page.detail') }}</li>
             </ul>
           </div>
         </template>

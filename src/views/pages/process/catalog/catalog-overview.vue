@@ -49,7 +49,7 @@
                             <i class="tsfont-star"></i>
                           </div>
                           <div class="logo">
-                            <i class="logo-icon" :class="[item.icon ? item.icon : 'ts-m-playbook', item.color ? '' : 'text-primary']" :style="item.color ? `color:${item.color}` : ''"></i>
+                            <i class="logo-icon" :class="[item.icon ? item.icon : 'tsfont-ip-list', item.color ? '' : 'text-primary']" :style="item.color ? `color:${item.color}` : ''"></i>
                           </div>
                           <div class="content">
                             <div class="title">{{ item.name }}</div>
@@ -122,7 +122,7 @@
             :class="all_item.isFavorite == '1' ? 'like' : ''"
             @click="goWorkOrder(all_item)"
           >
-            <i :class="all_item.icon ? all_item.icon : 'ts-m-playbook'"></i>
+            <i :class="all_item.icon ? all_item.icon : 'tsfont-ip-list'"></i>
             <span class="text">{{ all_item.name }}</span>
             <i class="right text-primary" :class="all_item.isFavorite ? 'tsfont-star' : 'tsfont-star-border'" @click.stop="changeLike(all_item.parentUuid, all_item)"></i>
           </div>

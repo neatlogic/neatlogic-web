@@ -44,7 +44,7 @@ export default {
             'uuid': '8bC9Kgj4cdY9hEUQcC5NH2ddSCznWiEq',
             'x': 200,
             'y': 360,
-            'icon': '#ts-circle-fill',
+            'icon': '#tsfont-solid-circle',
             'fill': 'RGBA(129, 213, 83, .1)',
             'stroke': 'RGBA(129, 213, 83, .1)',
             'class': '',
@@ -54,7 +54,7 @@ export default {
             'uuid': '2R9QcQYjn4kXbYURTfRIC3TpiBOc9CJG',
             'x': 1062.0000610351562,
             'y': 360,
-            'icon': '#ts-circle-fill',
+            'icon': '#tsfont-solid-circle',
             'fill': 'RGBA(255, 98, 90, .1)',
             'stroke': 'RGBA(255, 98, 90, .1)',
             'class': '',
@@ -843,7 +843,7 @@ export default {
       this.topo.addNode({
         'x': 400,
         'y': 460,
-        'icon': '#ts-circle-fill',
+        'icon': '#tsfont-solid-circle',
         'fill': 'RGBA(129, 213, 83, .1)',
         'stroke': 'RGBA(129, 213, 83, .1)',
         'type': 'Process'

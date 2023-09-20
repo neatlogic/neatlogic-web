@@ -52,7 +52,7 @@
                   @on-change="changeType(index)"
                 ></TsFormSelect>
                 <i
-                  class="ts-setting span-btn"
+                  class="tsfont-setting span-btn"
                   :class="{ 'form-error-tip': !!attr.valid_o }"
                   title="数据源设置"
                   @click="setAttrConfig(index)"

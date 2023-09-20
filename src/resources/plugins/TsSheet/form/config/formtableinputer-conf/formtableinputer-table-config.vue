@@ -31,7 +31,7 @@
               <Checkbox v-model="data.config.isRequired"></Checkbox>
             </td>
             <td>
-              <span v-if="data.isExtra" class="ts-setting text-action" @click="openAttrConfigDialog(data)"></span>
+              <span v-if="data.isExtra" class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
               <span v-if="data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
               <span v-if="dataConfig.length > 1 && data.isExtra" class="ml-xs tsfont-close-o text-action" @click="removeExtraProperty(data)"></span>
             </td>
