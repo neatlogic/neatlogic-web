@@ -34,7 +34,7 @@
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
             {{ $t('term.inspect.exporttargetrule') }}
           </span>
-          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="ts-setting text-action icon-right mr-md action-item" @click="openTargetFilter">{{ $t('term.inspect.targetfilter') }}</span>
+          <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="tsfont-setting text-action icon-right mr-md action-item" @click="openTargetFilter">{{ $t('term.inspect.targetfilter') }}</span>
           <span v-if="$AuthUtils.hasRole('INSPECT_MODIFY')" class="action-item"><Button type="primary" @click="saveRule">{{ $t('page.save') }}</Button></span>
         </div>
       </template>

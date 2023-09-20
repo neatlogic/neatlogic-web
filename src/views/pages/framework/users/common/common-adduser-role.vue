@@ -13,7 +13,7 @@
     <template slot="topCenter">            
       <div class="div-btn-contain action-group text-right pr-nm">
         <template v-if="userListData.cardList.length > 0">
-          <span class="action-item" :class="isSelectAll?'ts-check-square-o':'ts-minus-square'" @click="allSelect">{{ isSelectAll ? $t('page.selectall') : $t('page.unselectall') }}</span>
+          <span class="action-item" :class="isSelectAll?'ts-check-square-o':'tsfont-minus-square'" @click="allSelect">{{ isSelectAll ? $t('page.selectall') : $t('page.unselectall') }}</span>
           <span class="action-item tsfont-trash-o" @click="batchDel">{{ $t('page.batchdelete') }}</span>
         </template>
       </div>

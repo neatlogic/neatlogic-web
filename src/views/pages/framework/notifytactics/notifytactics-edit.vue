@@ -521,10 +521,10 @@ export default {
             break;
           case 'neatlogic.module.process.notify.handler.RemindNotifyHandler':
           case 'MessageNotifyHandler':
-            icon_class = 'text-success ts-chat';
+            icon_class = 'text-success tsfont-message-o';
             break;
           default:
-            icon_class = 'text-success ts-chat';
+            icon_class = 'text-success tsfont-message-o';
         }
         return icon_class;
       };

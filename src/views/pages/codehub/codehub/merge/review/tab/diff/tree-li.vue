@@ -234,7 +234,7 @@ export default {
           if (li.showChild) {
             str += 'ts-folder-open';
           } else {
-            str += 'ts-folder';
+            str += 'tsfont-folder-o';
           }
         }
         if (selectedFile && selectedFile == li.filepathUuid && li.type != 'file') {

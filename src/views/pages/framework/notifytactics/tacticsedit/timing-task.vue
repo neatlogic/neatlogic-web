@@ -76,7 +76,7 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-page" @click.stop="viewRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
+              <li class="tsfont-putongjigui" @click.stop="viewRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
               <li class="tsfont-edit icon" @click="editRow(row)">{{ $t('page.edit') }}</li>
               <li class="tsfont-trash-o icon" @click="deleteRow(row)">{{ $t('page.delete') }}</li>
             </ul>

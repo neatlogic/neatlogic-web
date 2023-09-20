@@ -10,7 +10,7 @@
               <Col span="6">
                 <div class="list block-container" :class="seritem.isFavorite ? 'collection' : ''" @click="goWorkOrder(seritem)">
                   <div class="logo">
-                    <i class="logo-icon text-primary" :class="seritem.icon ? seritem.icon : 'ts-m-playbook'"></i>
+                    <i class="logo-icon text-primary" :class="seritem.icon ? seritem.icon : 'tsfont-ip-list'"></i>
                   </div>
                   <div class="content">
                     <div class="title overflow">{{ seritem.name }}</div>

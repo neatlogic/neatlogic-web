@@ -6,7 +6,7 @@
     transfer
   >
     <div class="cursor-pointer">
-      <span :class="row.type =='person'?'tsfont-userinfo':'ts-team'" class="icon-right"></span>
+      <span :class="row.type =='person'?'tsfont-userinfo':'tsfont-team'" class="icon-right"></span>
       <span>
         {{ row.name }}
         <span v-if="row.sid && row.sid != ''" class="text-grey">{{ `(${row.sid})` }}</span>

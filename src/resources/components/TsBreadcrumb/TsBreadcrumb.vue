@@ -20,10 +20,6 @@ export default {
       //{type , path, text , icon, beforeGoto}  type(router | href | blank)
       type: Array,
       default() {
-        // return [{ type: "router", path: "/menu-manage", text: "router", icon: "ts-setting", beforeGoto: function(vnode){return false} },
-        // { type: "href", path: "/process.html#/worktime-manage", text: "href", icon: "", beforeGoto: null },
-        // { type: "blank", path: "/process.html#/jobclass-manage", text: "blank", icon: "", beforeGoto: null }
-        // ];
         return [];
       }
     },

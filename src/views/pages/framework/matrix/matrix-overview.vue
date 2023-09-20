@@ -116,7 +116,7 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li v-if="row.type === 'custom'" class="ts-intersect icon" @click.stop="copyMatrix(row)">{{ $t('page.copy') }}</li>
+                  <li v-if="row.type === 'custom'" class="tsfont-copy icon" @click.stop="copyMatrix(row)">{{ $t('page.copy') }}</li>
                   <li
                     class="tsfont-trash-o icon"
                     :class="{ disable: row.referenceCount > 0 || row.type==='private' }"

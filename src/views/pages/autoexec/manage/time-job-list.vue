@@ -109,7 +109,7 @@
                 </li>
                 <li
                   v-if="row.execCount > 0"
-                  class="ts-page"
+                  class="tsfont-putongjigui"
                   :title="$t('term.autoexec.executionrecord')"
                   @click="showAudit(row.uuid)"
                 >

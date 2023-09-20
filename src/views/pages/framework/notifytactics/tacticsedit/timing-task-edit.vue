@@ -21,7 +21,7 @@
           <Col span="10">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-eye" @click="getPreviewConfig('notify')">{{ $t('page.preview') }}</span>
-              <span class="action-item ts-save" @click="saveFormJob()">{{ $t('page.save') }}</span>
+              <span class="action-item tsfont-save" @click="saveFormJob()">{{ $t('page.save') }}</span>
               <span class="action-item tsfont-trash-o" :class="{ 'text-grey text-disabled': !jobConfig.id }" @click="delJop">{{ $t('page.delete') }}</span>
             </div>
           </Col>

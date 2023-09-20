@@ -31,7 +31,7 @@
               class="more-item li-hover"
               @click="gotoWorkOrder(item)"
             >
-              <i :class="item.icon ? item.icon : 'ts-m-playbook'"></i>
+              <i :class="item.icon ? item.icon : 'tsfont-ip-list'"></i>
               <span class="text">{{ item.name }}</span>
             </div>
           </div>

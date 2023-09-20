@@ -23,7 +23,7 @@
         :style="{cursor: 'pointer'}"
         @click.stop="updateFocus(row)"
       >
-        <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'ts-heart-s']" :title="$t('term.process.notfocustask')"></i>
+        <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'tsfont-heart-s']" :title="$t('term.process.notfocustask')"></i>
         <i v-else :class="['text-danger', 'ts-heart', 'not-focus']" :title="$t('term.process.focustask')"></i>
       </div>
       <div

@@ -30,7 +30,7 @@
           </template>
           <template slot="workingHoursSet" slot-scope="{ row }">
             <div v-for="(item, index) in row.workingHoursSet" :key="index">
-              <div class="ts-timer text-left">{{ item }}</div>
+              <div class="tsfont-formtime text-left">{{ item }}</div>
             </div>
           </template>
           <template slot="referenceCount" slot-scope="{ row }">

@@ -82,8 +82,8 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-page" @click="showAudit(row.uuid)">{{ $t('term.autoexec.executionrecord') }}</li>
-                <li class="ts-chain icon" @click="copyRow(row.uuid)">{{ $t('page.copy') }}</li>
+                <li class="tsfont-putongjigui" @click="showAudit(row.uuid)">{{ $t('term.autoexec.executionrecord') }}</li>
+                <li class="tsfont-copy icon" @click="copyRow(row.uuid)">{{ $t('page.copy') }}</li>
                 <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
                 <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('page.delete') }}</li>
               </ul>

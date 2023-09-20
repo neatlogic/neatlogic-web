@@ -35,7 +35,7 @@
                 <!-- 收起时 -->
                 <div v-if="!message.expand" class="fold flex-between">
                   <header class="title-container overflow flex-start">
-                    <i :class="message.isRead ? 'ts-chat text-pending' : 'ts-chat text-success'"></i>
+                    <i :class="message.isRead ? 'tsfont-message-o text-pending' : 'tsfont-message-o text-success'"></i>
                     <div class="title overflow" v-html="message.title"></div>
                   </header>
                   <article class="content overflow" v-html="message.content"></article>
@@ -45,7 +45,7 @@
                 <div v-else class="expand">
                   <div class="flex-between align-start">
                     <header class="title-container overflow flex-start align-start">
-                      <i :class="message.isRead ? 'ts-chat text-pending' : 'ts-chat text-success'"></i>
+                      <i :class="message.isRead ? 'tsfont-message-o text-pending' : 'tsfont-message-o text-success'"></i>
                       <div class="title overflow" v-html="message.title"></div>
                     </header>
                     <time class="time text-grey">{{ message.fcd | formatDate }}</time>

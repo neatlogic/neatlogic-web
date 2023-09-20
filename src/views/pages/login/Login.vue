@@ -29,7 +29,7 @@
           <div>
             <Input
               v-model.trim="loginForm.password"
-              prefix="i-icon ts-lock"
+              prefix="i-icon tsfont-lock"
               password
               type="password"
               placeholder="Password"

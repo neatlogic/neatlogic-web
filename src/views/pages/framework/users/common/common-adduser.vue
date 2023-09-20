@@ -13,7 +13,7 @@
         <div class="bar-top-right">
           <div class="div-btn-contain action-group">
             <template v-if="roleUuidList.length > 0 || userUuidList.length > 0">
-              <span class="action-item" :class="isSelectAll?'ts-check-square-o':'ts-minus-square'" @click="allSelect">
+              <span class="action-item" :class="isSelectAll?'ts-check-square-o':'tsfont-minus-square'" @click="allSelect">
                 {{ isSelectAll ? $t('page.selectall') : $t('page.unselectall') }}
               </span>
               <span class="action-item tsfont-trash-o" @click="batchDel">{{ $t('page.batchdelete') }}</span>

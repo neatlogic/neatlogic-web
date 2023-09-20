@@ -35,7 +35,7 @@
                   <li class="tsfont-edit text-action" @click="editRole(row, 'role')">{{ $t('page.edit') }}</li>
                   <li class="tsfont-plus text-action" @click="editRole(row, 'adduser')">{{ $t('page.member') }}</li>
                   <li class="tsfont-plus text-action" @click="editRole(row, 'addgroup')">{{ $t('page.group') }}</li>
-                  <li class="ts-permission text-action" @click="editRole(row, 'auth')">{{ $t('page.auth') }}</li>
+                  <li class="tsfont-permission text-action" @click="editRole(row, 'auth')">{{ $t('page.auth') }}</li>
                   <li class="tsfont-trash-o text-action" @click="deleteList(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>

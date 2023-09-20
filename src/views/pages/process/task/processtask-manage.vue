@@ -29,7 +29,7 @@
               v-download="downloadUrl"
               ghost
               type="default"
-            ><span class="ts-import"></span>
+            ><span class="tsfont-import"></span>
             </Button>
           </div>
         </div>

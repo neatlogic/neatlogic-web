@@ -42,7 +42,7 @@
                     </DropdownMenu>
                   </Dropdown>
                 </span>
-                <span class="ts-intersect text-tip-active padding-lf" :title="$t('page.copy')" @click="editTemplate(item, true)"></span>
+                <span class="tsfont-copy text-tip-active padding-lf" :title="$t('page.copy')" @click="editTemplate(item, true)"></span>
                 <span class="tsfont-edit text-tip-active padding-lf" :title="$t('page.edit')" @click="editTemplate(item)"></span>
                 <span
                   class="tsfont-trash-s padding-lf"
