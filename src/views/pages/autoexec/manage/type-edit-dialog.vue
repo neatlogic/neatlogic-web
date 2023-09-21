@@ -47,7 +47,6 @@ export default {
       formItemConfig: {
         name: {
           type: 'text',
-          name: 'name',
           maxlength: 50,
           width: '100%',
           label: this.$t('page.name'),
@@ -66,7 +65,6 @@ export default {
         },
         description: {
           type: 'textarea',
-          name: 'description',
           width: '100%',
           maxlength: 500,
           label: this.$t('page.description')
@@ -123,7 +121,7 @@ export default {
         return;
       }
       let data = {
-        ...this.formValue,
+        ...this.$refs?.form?.getFormValue() || {},
         id: this.id
       };
       this.$api.autoexec.action.saveType(data).then(res => {
