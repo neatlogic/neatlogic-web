@@ -11,6 +11,11 @@
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
+          <span 
+            v-if="searchParams.apiType === 'system'"
+            class="action-item tsfont-download "
+            @click="exportHelp()"
+          >{{ $t('page.export') }}</span>
           <span v-if="searchParams.apiType === 'custom'" class="create-api action-item" @click="showApiForm({}, 'create')">
             <i class="tsfont-plus">{{ $t('page.customapi') }}</i>
           </span>
@@ -105,6 +110,7 @@
 </template>
 
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiManage',
   components: {
@@ -129,6 +135,7 @@ export default {
       return value in config ? config[value] : value;
     }
   },
+  mixins: [download], 
   data() {
     return {
       isLoading: true, //页面加载中
@@ -370,6 +377,17 @@ export default {
     },
     t(arg) { //国际化翻译时，过滤器filter中拿不到this, 需要转化
       return this.$t(arg);
+    },
+    exportHelp() {
+      let param = {
+        url: 'api/binary/api/help/export',
+        params: {
+          moduleGroup: this.searchParams.moduleGroup,
+          funcId: this.searchParams.funcId,
+          keyword: this.searchParams.keyword
+        }
+      };
+      this.download(param);
     }
   },
   computed: {
