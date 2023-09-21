@@ -148,7 +148,7 @@ var data2 = {
   nodes: [
     {
       remark: '11',
-      icon: '#ts-dev-app',
+      icon: '#tsfont-app',
       uuid: '0fa77dfbebe7f1fb2f19dfe3112e88fc',
       shape: 'rect',
       root: 'true',
@@ -163,7 +163,7 @@ var data2 = {
     },
     {
       remark: null,
-      icon: '#ts-dev-bars',
+      icon: '#tsfont-chart-bar',
       uuid: '00e4dc4429c33ce59b9c066b95b5df15',
       shape: 'rect',
       ciName: '动态文本框',
@@ -176,7 +176,7 @@ var data2 = {
     },
     {
       remark: '移动设备管理平台1613121239',
-      icon: '#ts-dev-app',
+      icon: '#tsfont-app',
       uuid: 'da95d3480225e346b8500c0f399dda16',
       shape: 'rect',
       ciName: '信息系统',
@@ -189,7 +189,7 @@ var data2 = {
     },
     {
       remark: '移动设备管理平台1613121239',
-      icon: '#ts-dev-app',
+      icon: '#tsfont-app',
       uuid: 'bc0a9db3891d4486d96da90cbfa0ebb1',
       shape: 'rect',
       ciName: '信息系统',
@@ -202,7 +202,7 @@ var data2 = {
     },
     {
       remark: '产品组合管理平台61161111213',
-      icon: '#ts-dev-app',
+      icon: '#tsfont-app',
       uuid: '54e830a5095f0e2e3a35b67a53a46a59',
       shape: 'rect',
       ciName: '信息系统',
@@ -215,7 +215,7 @@ var data2 = {
     },
     {
       remark: '去微軟',
-      icon: '#ts-dev-dell',
+      icon: '#tsfont-dell',
       uuid: '155b4090e5c212696488a4d2cea275b4',
       shape: 'rect',
       ciName: '事务审计',
@@ -229,7 +229,7 @@ var data2 = {
     },
     {
       remark: '搬迁项目15',
-      icon: '#ts-dev-network',
+      icon: '#tsfont-internet',
       uuid: 'a54df28f50e78ad378ce4f7887dd8ab1',
       shape: 'rect',
       ciName: '安全设备',
@@ -242,7 +242,7 @@ var data2 = {
     },
     {
       remark: '搬迁项目3',
-      icon: '#ts-dev-network',
+      icon: '#tsfont-internet',
       uuid: '4167c045867df1480d6ea9cd89b2f99f',
       shape: 'rect',
       ciName: '安全设备',
@@ -255,7 +255,7 @@ var data2 = {
     },
     {
       remark: '搬迁项目6',
-      icon: '#ts-dev-network',
+      icon: '#tsfont-internet',
       uuid: '5f952f9912ff5a6eeae2af28af015449',
       shape: 'rect',
       ciName: '安全设备',
@@ -268,7 +268,7 @@ var data2 = {
     },
     {
       remark: '192.168.0.33-hostname2',
-      icon: '#ts-dev-os',
+      icon: '#tsfont-os',
       uuid: 'f8572798074324965d260fdb3be386b5',
       shape: 'rect',
       ciName: '操作系统',
@@ -281,7 +281,7 @@ var data2 = {
     },
     {
       remark: '10.5.101.950-qwerqwe',
-      icon: '#ts-dev-os',
+      icon: '#tsfont-os',
       uuid: '4b3a94b00fa290a12cad542bb73d1510',
       shape: 'rect',
       ciName: '操作系统',
