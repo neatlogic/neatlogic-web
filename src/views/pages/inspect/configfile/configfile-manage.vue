@@ -510,6 +510,7 @@ export default {
         this.timmer = null;
       }
       if (!this.searchParam.typeId) {
+        this.loadingShow = false;
         return;
       }
       this.$api.inspect.configfile.getConfigFileList({
