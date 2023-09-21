@@ -942,7 +942,5 @@
   "logicalexpression": "Logical operation",
   "batchpause": "Batch pause",
   "batchabort": "Batch cancellation",
-  "ismultiple": "Do you want to select multiple options",
-  "descendingorder": "Descending order",
-  "ascendingorder": "Ascending order"
+  "ismultiple": "Do you want to select multiple options"
 }
