@@ -4,7 +4,7 @@
       <span class="label">
         <span>{{ $t('term.cmdb.cientityattribute') }}</span>
       </span>
-      <span class="control-btn ts-setting text-href" @click="editExtend()"></span>
+      <span class="control-btn tsfont-setting text-href" @click="editExtend()"></span>
     </div>
     <EditExtend
       v-if="isEdit"

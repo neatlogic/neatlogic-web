@@ -25,7 +25,7 @@
         </tr>
         <tr v-if="!isEnd && !loading" class="cursor-pointer line-tr" @click="searchFile()">
           <td class="code-lineno border-color bg-grey">
-            <div class="ts-option-horizontal text-action"></div>
+            <div class="tsfont-option-horizontal text-action"></div>
           </td>
           <td class="code-content bg-op">
             <div class="text-center h4 text-href">{{ $t('page.loadmore') }}</div>

@@ -70,7 +70,7 @@
             transfer
             word-wrap
           >
-            <i class="ts-m-problem text-href" style="padding-left:3px;"></i>
+            <i class="tsfont-question-o text-href" style="padding-left:3px;"></i>
           </Poptip>
         </label>
         <div class="formsetting-text tstable-container bg-block">
@@ -92,7 +92,7 @@
                     transfer
                     word-wrap
                   >
-                    <i class="ts-m-problem text-href" style="padding-left:3px;"></i>
+                    <i class="tsfont-question-o text-href" style="padding-left:3px;"></i>
                   </Poptip>
                 </th>
                 <th v-show="carouselNumber == 2">类型</th>
@@ -145,7 +145,7 @@
                   ></TsFormSelect>
                   <span v-else>-</span>
                 </td>
-                <td><i class="ts-setting text-action" @click="openAttrSetting(data)"></i></td>
+                <td><i class="tsfont-setting text-action" @click="openAttrSetting(data)"></i></td>
                 <td><i class="tsfont-bar" title="拖动排序"></i></td>
               </tr>
             </draggable>
@@ -206,7 +206,7 @@
                       @on-change="changeType(index)"
                     ></TsFormSelect>
                     <i
-                      class="ts-setting span-btn"
+                      class="tsfont-setting span-btn"
                       :class="{ 'form-error-tip': !!attr.valid_o }"
                       title="数据源设置"
                       @click="setAttrConfig(index)"

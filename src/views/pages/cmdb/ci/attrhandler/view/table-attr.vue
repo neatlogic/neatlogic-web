@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--<div v-if="attrEntity.valueList.length > 0"><b class="text-primary" style="margin:0px 3px">{{ attrEntity.valueList.length }}</b>条数据 <i class="ts-tablechart" style="cursor:pointer" @click="showTableData"></i></div>-->
     <div v-if="valueList.length > 0" class="clearfix">
       <span
         v-for="(value, index) in valueList"

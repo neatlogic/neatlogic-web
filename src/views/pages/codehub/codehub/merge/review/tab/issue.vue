@@ -42,7 +42,7 @@
           :disabled="duringAction"
           size="small"
           @click="revertMr()"
-        ><i class="ts-rotate-left"></i>{{ $t('page.revocation') }}</Button>
+        ><i class="tsfont-undo"></i>{{ $t('page.revocation') }}</Button>
       </div>
     </template>
     <div v-if="!isLoading" ref="maindiv" :class="'merge-' + mrData.status">
@@ -65,7 +65,7 @@
         <template slot="action" slot-scope="{ row }">
           <div v-if="row.issueMrStatus == 'merged' && mrData.versionTypeStrategyRelationVo.versionStrategyType == 'issue' && mrData.status == 'finish'" class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-rotate-left" @click="revertIssue(row)">{{ $t('page.revocation') }}</li>
+              <li class="tsfont-undo" @click="revertIssue(row)">{{ $t('page.revocation') }}</li>
             </ul>
           </div>
         </template>

@@ -57,7 +57,7 @@
               <widget-overview v-if="row.widgetList.length > 0" :widgetList="row.widgetList"></widget-overview>
               <div class="slider-container text-op">
                 <div>{{ row.description }}</div>
-                <div class="icon-enter ts-search"></div>
+                <div class="icon-enter tsfont-search"></div>
               </div>
             </div>
           </template>

@@ -31,7 +31,7 @@
         <div class="submit-btn-list pb-sm">
           <Checkbox v-model="submitMessage">
             {{ $t('term.framework.notips') }}
-            <i class="ts-m-problem" :title="$t('term.framework.editinsetting')"></i>
+            <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i>
           </Checkbox>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <!--仪表板组件 -->
 <template>
-  <div class="dashboard-li ts-border" :style="!widget.name ? 'padding-top:0px' : ''" :class="{ selected: widget._selected, 'bg-op': !widget.isOpacity }">
+  <div class="dashboard-li radius-lg" :style="!widget.name ? 'padding-top:0px' : ''" :class="{ selected: widget._selected, 'bg-op': !widget.isOpacity }">
     <div class="dashboard-title">
       <div v-if="widget.name" style="white-space: nowrap; font-size: 15px" class="padding-sm overflow">
         <span>{{ widget.name }}</span>

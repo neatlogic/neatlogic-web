@@ -18,7 +18,6 @@
         </li>
       </DropdownMenu>
     </Dropdown>
-    <!-- <span class="icon-select ts-icon" @click="selectRow(rowList)"></span> -->
     <!-- start_选择行的弹窗 -->
     <TsDialog
       :isShow.sync="showSelectrow"

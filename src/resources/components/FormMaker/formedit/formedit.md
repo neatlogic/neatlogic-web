@@ -75,7 +75,7 @@ export default {
     <!-- 配置数据没有或则组件显示在编辑布局里面，展示简单组件即可，主要是为了性能考虑 -->
     <Select v-else placeholder="请选择"></Select>
     <!-- 组件描述显示区域 -->
-    <div v-if="setting.config.desc" class="component-tips ts-info">{{ setting.config.desc }}</div> 
+    <div v-if="setting.config.desc" class="component-tips tsfont-info-o">{{ setting.config.desc }}</div> 
   </div>
 </template>
 <script>

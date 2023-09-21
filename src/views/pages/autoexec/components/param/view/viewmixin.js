@@ -41,30 +41,6 @@ export default {
       }
     },
     getDatalist() {
-    },
-    dealDataByUrl(nodeList) { //当默认值的引用类型是自定义  处理默认值的数据结构
-      if (this.config.matrixUuid) {
-        return this.dealDataFilter(nodeList, this.config);
-      }
-    },
-    dealDataFilter(nodeList, config) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let columlist = [];
-      config = config || null;
-      if (config.mapping.value && config.mapping.text && nodeList) {
-        if (nodeList && nodeList.length > 0) {
-          nodeList.forEach(co => {
-            if (co[config.mapping.text]) {
-              columlist.push({
-                text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
-                html: co[config.mapping.text].text
-              });
-            }
-          });
-        }
-      }
-      return columlist;
     }
   },
   computed: {
@@ -72,21 +48,22 @@ export default {
       let setting = Object.assign({}, this.config);
       if (this.config && this.config.dataSource == 'matrix') {
         if (this.config && this.config.matrixUuid && this.config.mapping) {
-          let columnList = [];
           let keywordColumn = '';
+          let valueField = null;
+          let textField = null;
           if (this.config.mapping.value && this.config.mapping.text) {
-            columnList = [this.config.mapping.value, this.config.mapping.text];
+            valueField = this.config.mapping.value;
+            textField = this.config.mapping.text;
             keywordColumn = this.config.mapping.text;
           }
-          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, columnList: columnList };
+          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };
           setting.params = param;
           if (setting.type == 'radio' || setting.type == 'checkbox') {
-            setting.url = '/api/rest/matrix/column/data/search/forselect/new';
+            setting.url = '/api/rest/matrix/column/data/search/forselect';
           } else {
-            setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect/new';
+            setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
           }
-          setting.rootName = 'tbodyList';
-          setting.dealDataByUrl = this.dealDataByUrl || null;
+          setting.rootName = 'dataList';
         }
       }
       setting.validateList = setting.validateList || [];

@@ -15,7 +15,7 @@
             :class="{ 'tsfont-warning-o': !isAlertListShow, 'tsfont-close': !!isAlertListShow }"
             @click="showAlertList"
           >{{ $t('page.alertlist') }}</span>
-          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span class="action-item tsfont-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
           <span class="action-item tsfont-edit" @click="editGraph()">{{ $t('dialog.title.edittarget', { target: $t('term.cmdb.view') }) }}</span>
         </div>
       </template>

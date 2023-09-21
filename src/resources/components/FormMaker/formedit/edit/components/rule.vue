@@ -213,19 +213,13 @@ export default {
       let param = {
         matrixUuid: _this.setting.matrixUuid,
         keywordColumn: item.type,
-        columnList: [item.type, _this.setting.mapping.value]
+        valueField: item.type,
+        textField: _this.setting.mapping.value
       };
       //this.$set(item, "value", "");
-      this.$api.framework.matrix.getMatrixColumn(param).then(res => {
+      this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
         if (res.Status == 'OK' && !res.Return.isRepeat) {
-          let columlist = [];
-          res.Return.tbodyList.forEach(co => {
-            columlist.push({
-              text: co[item.type].text,
-              value: co[_this.setting.mapping.value].value + '&=&' + co[item.type].text,
-              html: co[item.type].text + "<small class='text-grey'>(" + co[_this.setting.mapping.value].text + ')</small>'
-            });
-          });
+          let columlist = res.Return.dataList || [];
           rule.matrixList = columlist;
         } else if (res.Return.isRepeat) {
           _this.$Notice.error({

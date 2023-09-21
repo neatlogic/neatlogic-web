@@ -5,14 +5,8 @@
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
-          <span v-if="resourceIdList.length == 0" class="action-item disable">
-            <div v-auth="['RESOURCECENTER_MODIFY']">
-              <span>{{ $t('page.batchoperation') }}</span>
-              <span class="tsfont-down"></span>
-            </div>
-          </span>
-          <span v-else class="action-item">
+          <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
+          <span v-if="resourceIdList.length > 0" class="action-item">
             <Dropdown v-auth="['RESOURCECENTER_MODIFY']" trigger="click" placement="bottom-start">
               <div>
                 <span>{{ $t('page.batchoperation') }}</span>
@@ -25,20 +19,25 @@
                 <DropdownItem>
                   <div class="more-action" @click="delTag">{{ $t('dialog.title.deletetarget', { target: $t('page.tag') }) }}</div>
                 </DropdownItem>
-                <DropdownItem>
+                <DropdownItem divided>
                   <div class="more-action" @click="addAccount">{{ $t('dialog.title.addtarget', { target: $t('page.account') }) }}</div>
                 </DropdownItem>
                 <DropdownItem>
                   <div class="more-action" @click="delAccount">{{ $t('dialog.title.deletetarget', { target: $t('page.account') }) }}</div>
                 </DropdownItem>
-                <DropdownItem>
+                <DropdownItem divided>
                   <div class="more-action" @click="delSelectedAsset">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</div>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0" v-auth="['RESOURCECENTER_MODIFY']" class="action-item">
-            <Button type="primary" @click="addAsset">{{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}</Button>
+          <span
+            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0"
+            v-auth="['RESOURCECENTER_MODIFY']"
+            class="action-item tsfont-plus"
+            @click="addAsset"
+          >
+            {{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}
           </span>
           <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
         </div>
@@ -164,8 +163,8 @@
             <!-- 是否是巡检页面 -->
             <div v-auth="'RESOURCECENTER_MODIFY'" class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-tag" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
-                <li class="ts-user" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
+                <li class="tsfont-label" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
+                <li class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
                 <li class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
                 <li class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
               </ul>

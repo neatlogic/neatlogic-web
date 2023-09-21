@@ -7,15 +7,15 @@
 <TsContain>
        //头部布局，完全自定义，不推荐使用
       <template v-slot:top>
-        <span class="ts-plus text-action" @click="edit({})">系统公告</span>
+        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
       </template>
        //头部左边布局
       <template v-slot:topLeft>
-        <span class="ts-plus text-action" @click="edit({})">系统公告</span>
+        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
       </template>
       //头部中间的布局
        <template v-slot:topCenter>
-        <span class="ts-plus text-action" @click="edit({})">系统公告</span>
+        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
       </template>
        //头部右侧布局，一般为搜索框
       <template v-slot:topRight>

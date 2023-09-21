@@ -231,8 +231,8 @@ export default {
     changeMapping() {
       let _this = this;
       if (this.matrixJson.matrixUuid.value && this.matrixJson.textName.value && this.matrixJson.valueName.value) {
-        let params = { matrixUuid: _this.matrixJson.matrixUuid.value, text: _this.matrixJson.textName.value, value: _this.matrixJson.valueName.value };
-        this.$api.framework.matrix.getMatrixColumn(params).then(res => {
+        let params = { matrixUuid: _this.matrixJson.matrixUuid.value, textField: _this.matrixJson.textName.value, valueField: _this.matrixJson.valueName.value };
+        this.$api.framework.matrix.getMatrixDataForSelect(params).then(res => {
           if (res.Status == 'OK' && !res.Return.isRepeat) {
             _this.$set(_this.matrixJson.valueName, 'errorMessage', '');
           } else if (res.Status == 'OK' && res.Return.isRepeat) {

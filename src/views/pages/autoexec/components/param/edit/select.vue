@@ -106,9 +106,8 @@ export default {
       sourcConfig: {}, //当前展示数据源
       validMesage: '',
       defaultValueConfig: { //矩阵默认值设置
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new', 
-        rootName: 'tbodyList', 
-        dealDataByUrl: _this.dealDataByUrl,
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect', 
+        rootName: 'dataList', 
         param: null
       },
       sourcDefaultValue: '', //数据源默认值
@@ -180,43 +179,22 @@ export default {
     close() {
       this.isShow = false;
     },
-    dealDataByUrl(nodeList) { //当默认值的引用类型是自定义  处理默认值的数据结构
-      return this.dealDataFilter(nodeList, this.config);
-    },
-    dealDataFilter(nodeList, config) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let columlist = [];
-      config = config || null;
-      if (config.mapping.value && config.mapping.text && nodeList) {
-        if (nodeList && nodeList.length > 0) {
-          nodeList.forEach(co => {
-            if (co[config.mapping.text]) {
-              columlist.push({
-                text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
-                html: co[config.mapping.text].text
-              });
-            }
-          });
-        }
-      }
-      return columlist;
-    },
     uptateSetting() { //更新默认值设置
       if (this.dataSource == 'static') {
         this.defaultValueConfig.dataList = this.sourcConfig.dataList || [];
-        this.defaultValueConfig.dealDataByUrl = null;
         this.defaultValueConfig.params = null;
         this.defaultValueConfig.dynamicUrl = null;
       } else {
         if (this.sourcConfig.matrixUuid) {
-          let columnList = [];
           let keywordColumn = '';
+          let valueField = null;
+          let textField = null;
           if (this.sourcConfig.mapping && this.sourcConfig.mapping.value && this.sourcConfig.mapping.text) {
-            columnList = [this.sourcConfig.mapping.value, this.sourcConfig.mapping.text];
+            valueField = this.sourcConfig.mapping.value;
+            textField = this.sourcConfig.mapping.text;
             keywordColumn = this.sourcConfig.mapping.text;
           }
-          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, columnList: columnList };  
+          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };  
           if (this.sourcDefaultValue) {
             if (Array.isArray(this.sourcDefaultValue)) {
               this.sourcDefaultValue.length && (param.defaultValue = this.sourcDefaultValue);
@@ -227,8 +205,7 @@ export default {
             this.$set(param, 'defaultValue', []);
           }
           this.defaultValueConfig.params = param;
-          this.defaultValueConfig.dynamicUrl = '/api/rest/matrix/column/data/search/forselect/new';
-          this.defaultValueConfig.dealDataByUrl = this.dealDataByUrl || null;
+          this.defaultValueConfig.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         }
       }
     }

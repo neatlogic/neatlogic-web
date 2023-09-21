@@ -5,7 +5,7 @@
         <i :class="like ? 'tsfont-star' : 'tsfont-star-border'"></i>
       </div>
       <div class="logo">
-        <i class="logo-icon" :class="seritem.icon ? seritem.icon : 'ts-m-playbook'" :style="{'color': item.color}"></i>
+        <i class="logo-icon" :class="seritem.icon ? seritem.icon : 'tsfont-ip-list'" :style="{'color': item.color}"></i>
       </div>
       <div class="content">
         <div class="title">{{ seritem.name }}</div>

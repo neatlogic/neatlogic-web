@@ -12,7 +12,12 @@ export default {
       }
       let _this = this;
       let filterList = [];
-      let param = { matrixUuid: com.config.matrixUuid, keywordColumn: com.config.mapping.text, columnList: [com.config.mapping.value, com.config.mapping.text] };
+      let param = { 
+        matrixUuid: com.config.matrixUuid, 
+        keywordColumn: com.config.mapping.text, 
+        valueField: com.config.mapping.value,
+        textField: com.config.mapping.text
+      };
       if (com.config.filterList && com.config.filterList.length > 0) {
         filterList = com.config.filterList.filter(filt => {
           return filt.uuid && !_this.$utils.isEmpty(filt.valueList);
@@ -24,13 +29,13 @@ export default {
       if (_this.$utils.isEmpty(filterList)) {
         return;
       }
-      axios.post('/api/rest/matrix/column/data/search/forselect/new', param).then(function(res) {
+      axios.post('/api/rest/matrix/column/data/search/forselect', param).then(function(res) {
         let messageConfig = {
           content: '',
           duration: 8,
           top: 50
         };
-        let dataList = res.Return.tbodyList;
+        let dataList = res.Return.dataList;
         if (!dataList || dataList.length == 0) { //优先级不存在时提示
           messageConfig.content = '表单联动规则匹配的优先级不存在，请修改表单或联系管理员';
           ViewUI.Message.error(messageConfig);

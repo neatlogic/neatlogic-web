@@ -13,7 +13,7 @@
         <TransformTest :content="content"></TransformTest>
       </Col>
       <Col v-if="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0)" :span="1">
-        <i class="ts-angle-double-right"></i>
+        <i class="tsfont-double-arrow-right"></i>
       </Col>
       <Col v-if="allowEditParam == 0 && handlerPattern && handlerPattern.length > 0" :span="10">
         <Table

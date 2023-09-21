@@ -141,7 +141,7 @@
         @on-popper-hide="toggleDrop(false)"
       >
         <div v-if="isshowdrop" class="tsfont-close icon-setting"></div>
-        <div v-else class="ts-list icon-setting"></div>
+        <div v-else class="tsfont-list icon-setting"></div>
         <div slot="content">
           <div class="sort-container">
             <div class="sort-thead">

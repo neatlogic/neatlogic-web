@@ -30,7 +30,7 @@
           </template>
           <template slot="workingHoursSet" slot-scope="{ row }">
             <div v-for="(item, index) in row.workingHoursSet" :key="index">
-              <div class="ts-timer text-left">{{ item }}</div>
+              <div class="tsfont-formtime text-left">{{ item }}</div>
             </div>
           </template>
           <template slot="referenceCount" slot-scope="{ row }">
@@ -45,7 +45,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
-                <li class="ts-calendar icon" @click="editCalendar(row.uuid, row.name)">{{ $t('term.framework.calendar') }}</li>
+                <li class="tsfont-calendar icon" @click="editCalendar(row.uuid, row.name)">{{ $t('term.framework.calendar') }}</li>
                 <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -72,7 +72,7 @@
               <div class="editFormTable input-border">
                 <span :title="$t('dialog.title.addtarget',{target:$t('page.timequantum')})" class="addBtn tsfont-plus text-action" @click="addConfigRow('monday')">
                 </span>
-                <span :title="$t('page.copy')" class="copyBtn text-action ts-pages" @click="copyConfigGroup">
+                <span :title="$t('page.copy')" class="copyBtn text-action tsfont-copy" @click="copyConfigGroup">
                 </span>
                 <Table
                   ref="editFormTable"

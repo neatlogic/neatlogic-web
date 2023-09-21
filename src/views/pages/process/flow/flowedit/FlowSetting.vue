@@ -21,7 +21,7 @@
           <div class="title-btn-contain action-group">
             <span
               v-if="relateList.uuid"
-              class="ts-eye text-tip-active action-item"
+              class="tsfont-eye text-tip-active action-item"
               :title="$t('page.preview')"
               @click="previewForm"
             ></span>

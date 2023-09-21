@@ -19,7 +19,7 @@
           <div class="user-input">
             <Input
               v-model.trim="loginForm.username"
-              prefix="i-icon ts-user"
+              prefix="i-icon tsfont-userinfo"
               clearable
               type="text"
               placeholder="Username"
@@ -29,7 +29,7 @@
           <div>
             <Input
               v-model.trim="loginForm.password"
-              prefix="i-icon ts-lock"
+              prefix="i-icon tsfont-lock"
               password
               type="password"
               placeholder="Password"

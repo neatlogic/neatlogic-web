@@ -47,7 +47,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.id)">{{ $t('page.detail') }}</li>
+                <li class="tsfont-list" @click="viewIssue(row.id)">{{ $t('page.detail') }}</li>
               </ul>
             </div>
           </template>
@@ -84,7 +84,7 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="ts-trash" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
+              <li class="tsfont-trash-o" @click="deleteIssue(row.no)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>        

@@ -543,3 +543,10 @@
 .tsfont-merge:before { content: '\ea1b'; } /* '' */
 .tsfont-table-column:before { content: '\ea1c'; } /* '' */
 .tsfont-table-row:before { content: '\ea1d'; } /* '' */
+.tsfont-check-square-o:before { content: '\ea1e'; } /* '' */
+.tsfont-double-arrow-left:before { content: '\ea1f'; } /* '' */
+.tsfont-double-arrow-right:before { content: '\ea20'; } /* '' */
+.tsfont-double-arrow-up:before { content: '\ea21'; } /* '' */
+.tsfont-heart-o:before { content: '\ea22'; } /* '' */
+.tsfont-folder-open:before { content: '\ea23'; } /* '' */
+.tsfont-solid-circle:before { content: '\ea24'; } /* '' */

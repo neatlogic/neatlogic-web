@@ -34,7 +34,7 @@
                     placement="bottom-end"
                     @on-visible-change="showTemplateList(arguments, item)"
                   >
-                    <span class="ts-catalogue text-tip-active " :title="$t('page.referencelist')"></span>
+                    <span class="tsfont-formstaticlist text-tip-active " :title="$t('page.referencelist')"></span>
                     <DropdownMenu slot="list" class="dropdown">
                       <DropdownItem v-for="(c,cindex) in item.changeTemplateList" :key="cindex" @click.native="toChangeEdit(c)">
                         <div class="text-action">{{ c.name }}</div>
@@ -42,7 +42,7 @@
                     </DropdownMenu>
                   </Dropdown>
                 </span>
-                <span class="ts-intersect text-tip-active padding-lf" :title="$t('page.copy')" @click="editTemplate(item, true)"></span>
+                <span class="tsfont-copy text-tip-active padding-lf" :title="$t('page.copy')" @click="editTemplate(item, true)"></span>
                 <span class="tsfont-edit text-tip-active padding-lf" :title="$t('page.edit')" @click="editTemplate(item)"></span>
                 <span
                   class="tsfont-trash-s padding-lf"

@@ -87,7 +87,7 @@ export default {
       let config = this.setting.config || null;
       let _this = this;
       if (config && config.dataSource == 'matrix' && config.matrixUuid && config.mapping.value && config.mapping.text) {
-        let param = { matrixUuid: config.matrixUuid, keywordColumn: config.mapping.text, columnList: [config.mapping.value, config.mapping.text], needPage: false };
+        let param = { matrixUuid: config.matrixUuid, keywordColumn: config.mapping.text, valueField: config.mapping.value, textField: config.mapping.text, needPage: false };
         //过滤条件
         Object.assign(param, this.getFilterCondition(config));  
         //联动过滤
@@ -98,6 +98,7 @@ export default {
         }
          
         this.defaultSelfJson.params = param;
+        this.defaultSelfJson.rootName = 'dataList';
         this.defaultSelfJson.url = this.defaultSelfJson.defaultUrl;
       } else {
         _this.defaultValueDataList = config.dataList || [];

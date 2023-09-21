@@ -52,7 +52,7 @@
                       <Col span="2">
                         <div class="btn-group">
                           <span class="tsfont-plus" style="padding-right:8px;" @click="addCondition(item)"></span>
-                          <span class="ts-minus" @click="delCondition(item, conIdex, groupIndex)"></span>
+                          <span class="tsfont-minus" @click="delCondition(item, conIdex, groupIndex)"></span>
                         </div>
                       </Col>
                     </TsRow>

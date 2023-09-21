@@ -10,11 +10,11 @@
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align:right">
           <span class="action-item tsfont-rotate-right" @click="reset">{{ $t('page.reset') }}</span>
-          <span class="action-item ts-dev-security" @click.prevent="flowDataValid">{{ $t('page.validate') }}</span>
-          <span class="action-item ts-save" @click="flowSave(false)">{{ $t('page.save') }}</span>
+          <span class="action-item tsfont-xitongpeizhi" @click.prevent="flowDataValid">{{ $t('page.validate') }}</span>
+          <span class="action-item tsfont-save" @click="flowSave(false)">{{ $t('page.save') }}</span>
           <span v-if="referenceCount > 0 || isNew == true" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
           <span v-else-if="referenceCount == 0 && isNew == false" class="action-item tsfont-trash-o" @click="deleteFlow">{{ $t('page.delete') }}</span>
-          <span class="action-item ts-chain" @click="relevanceList">
+          <span class="action-item tsfont-tool" @click="relevanceList">
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
           </span>
@@ -49,7 +49,7 @@
                 <Cell v-for="(item, index) in validList" :key="index" @click.native="validItemClick(item)">
                   <template slot>
                     <div class="cell-item">
-                      <i class="cell-icon" :class="item.type=='error'? 'tsfont-close-o text-error':'ts-complete text-success'"></i>
+                      <i class="cell-icon" :class="item.type=='error'? 'tsfont-close-o text-error':'tsfont-check-o text-success'"></i>
                       <span>{{ item.msg }}</span>
                     </div>
                   </template>
@@ -218,7 +218,7 @@ let startEndNode = [
   {
     type: 'start',
     handler: 'start',
-    icon: '#ts-circle-fill',
+    icon: '#tsfont-solid-circle',
     iconColor: 'RGBA(129, 213, 83, 1)',
     x: 200,
     y: 360,
@@ -229,7 +229,7 @@ let startEndNode = [
   {
     type: 'end',
     handler: 'end',
-    icon: '#ts-circle-fill',
+    icon: '#tsfont-solid-circle',
     iconColor: 'RGBA(255, 98, 90, 1)',
     x: 600,
     y: 360,

@@ -15,7 +15,7 @@
  */
 <template>
   <div class="upgrade-record-wrap">
-    <span class="text-action ts-timer upgrade-record-margin-right" @click="handleUpgradeRecord">{{ $t('term.framework.upgrecord') }}</span>
+    <span class="text-action tsfont-formtime upgrade-record-margin-right" @click="handleUpgradeRecord">{{ $t('term.framework.upgrecord') }}</span>
     <TsDialog
       type="modal"
       :isShow="isShowDialog"
@@ -120,7 +120,7 @@ export default {
         // 升级记录搜索
         fcuName: {
           search: true,
-          suffix: 'ts-search',
+          suffix: 'tsfont-search',
           width: '200px',
           value: '',
           placeholder: this.$t('page.user'),

@@ -60,7 +60,7 @@
       >
       <span class="search-btn text-btn bg-grey" :disabled="!searchNum" @click="replaceFn">{{ $t('page.replace') }}</span>
       <span class="search-btn text-btn bg-grey" :disabled="!searchNum" @click="replaceFn('all')">{{ $t('page.globalReplacement') }}</span>
-      <span class="ts-remove text-tip" :title="$t('term.knowledge.tooltip.search')" @mousedown="searchFn()"></span>
+      <span class="tsfont-close text-tip" :title="$t('term.knowledge.tooltip.search')" @mousedown="searchFn()"></span>
     </div>
     <aDialog
       :showDialog.sync="showDialog"

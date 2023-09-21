@@ -60,7 +60,7 @@
                   >{{ $t('page.delete') }}</div>
                   <div
                     v-else
-                    class="ts-rotate-right"
+                    class="tsfont-rotate-right"
                     style="cursor:pointer"
                     @click="recoverCiType(item)"
                   >{{ $t('page.recover') }}</div>

@@ -136,7 +136,7 @@
         <!-- <Row :gutter="16">
           <Col span="24">
             <div class="line-2 item-read">
-              <span class="ts-m-works item-key">{{ l.name }}</span>
+              <span class="tsfont-formstaticlist item-key">{{ l.name }}</span>
               <span class="text-tip">({{ getTypeName(configParamList[lindex].mappingMode) }}):</span>
               <span class="item-value">{{ configParamList[lindex].value }}</span>
             </div>

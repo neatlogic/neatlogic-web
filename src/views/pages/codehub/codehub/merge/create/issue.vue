@@ -48,7 +48,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-list" @click="viewIssue(row.id)"> {{ $t('page.detail') }} </li>
+                <li class="tsfont-list" @click="viewIssue(row.id)"> {{ $t('page.detail') }} </li>
               </ul>
             </div>
           </template>
