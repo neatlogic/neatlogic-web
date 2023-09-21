@@ -4,31 +4,29 @@
       :loadingShow="loadingShow"
       type="fix"
     ></Loading>
-    <div class="flex-start mb-nm">
+    <div class="flex-end mb-nm">
       <TsFormSelect
         v-bind="dateConfig"
         @on-change="() => searchVersionUpdateData"
       ></TsFormSelect>
-      <span
-        v-for="(item, index) in sortList"
-        :key="index"
-        class="ml-nm cursor-pointer"
-        :class="[item.value == sortValue ? 'text-href' : '', getOrderIcon(item.value)]"
-        @click.stop="selectedOrder(item)"
-      >{{ item.text }}</span>
     </div>
     <NoData v-if="$utils.isEmpty(timeLineList)"></NoData>
-    <Timeline v-else style="margin-left: 100px;margin-top: 30px;">
+    <Timeline v-else style="margin-top: 30px;">
       <TimelineItem v-for="(item, index) of timeLineList" :key="index">
         <span slot="dot" :class="index == isActive ? 'tsfont-check-s text-success' : 'tsfont-circle'"></span>
         <div>
-          <span class="timeline-left-text">{{ item.text }}</span>
           <div class="bg-grey padding ml-nm" style="margin-top: -16px;">
-            <div class="flex-between cursor-pointer" @click.stop="expandContent(index)">
+            <div class="flex-between cursor-pointer" @click.stop="expandContent(item, index)">
               <span>{{ item.text }}</span>
               <span :class="index == isActive ? 'tsfont-up' : 'tsfont-down'"></span>
             </div>
+            <Loading
+              v-if="item.loadingShow"
+              :loadingShow="item.loadingShow"
+              type="fix"
+            ></Loading>
             <div v-if="index == isActive" class="mt-nm">{{ item.value }}</div>
+            <NoData v-else-if="!item.value"></NoData>
           </div>
         </div>
       </TimelineItem>
@@ -45,7 +43,6 @@ export default {
   data() {
     return {
       isActive: -1,
-      sortValue: 'descendingOrder',
       loadingShow: false,
       timeLineList: [],
       dateConfig: {
@@ -70,17 +67,7 @@ export default {
             value: 'all'
           }
         ]
-      },
-      sortList: [
-        {
-          text: this.$t('page.descendingorder'),
-          value: 'descendingOrder'
-        },
-        {
-          text: this.$t('page.ascendingorder'),
-          value: 'ascendingOrder'
-        }
-      ]
+      }
     };
   },
   beforeCreate() {},
@@ -98,7 +85,7 @@ export default {
   methods: {
     searchVersionUpdateData() {
       this.loadingShow = true;
-      this.$api.framework.module.searchVersionUpdateData({sort: this.sortValue, timeValue: this.dateConfig.value}).then(res => {
+      this.$api.framework.module.searchVersionUpdateData({timeValue: this.dateConfig.value}).then(res => {
         if (res.Status == 'OK') {
           this.timeLineList = res.Return;
         }
@@ -106,36 +93,27 @@ export default {
         this.loadingShow = false;
       });
     },
-    selectedOrder(item) {
-      this.sortValue = item.value;
-    },
-    expandContent(index) {
+    expandContent(row, index) {
       this.isActive = index == this.isActive ? -1 : index;
+      if (this.isActive != -1 && !this.$utils.isEmpty(row)) {
+        row.loadingShow = true;
+        this.$api.framework.module.searchVersionUpdateData({id: row.id}).then(res => {
+          if (res.Status == 'OK') {
+            row.value = res.Return;
+          }
+        }).finally(() => {
+          row.loadingShow = false;
+        });
+      }
     }
   },
   filter: {},
-  computed: {
-    getOrderIcon() {
-      return (value) => {
-        const obj = {
-          ascendingOrder: 'tsfont-arrow-up',
-          descendingOrder: 'tsfont-arrow-down'
-        };
-        return obj[value];
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
 <style lang="less" scoped>
 /deep/ .ivu-timeline-item-head-custom {
   font-size: 22px;
-}
-.timeline-left-text {
-  position: absolute;
-  top: 0;
-  left: -100px;
-  width: 80px;
 }
 </style>

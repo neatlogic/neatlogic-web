@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       isImportDialogShow: false,
-      isShowUpdateRecordDialog: true,
+      isShowUpdateRecordDialog: false,
       currentModuleId: '',
       moduleGroupList: []
     };
