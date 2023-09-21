@@ -28,6 +28,7 @@
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
                   :isFavorite="isFavorite"
+                  :isProcessed="isProcessed"
                   :projectId="currentProjectId"
                   :mode="displayMode"
                   :displayAttrList="displayAttrList"
@@ -50,6 +51,7 @@
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
                   :isFavorite="isFavorite"
+                  :isProcessed="isProcessed"
                   :app="app"
                   :projectId="currentProjectId"
                   :mode="displayMode"
@@ -202,6 +204,7 @@ export default {
             needIssueCount: 1,
             isMine: this.isMine,
             isMyCreated: this.isMyCreated,
+            isProcessed: this.isProcessed,
             isEnd: this.isEnd,
             isFavorite: this.isFavorite
           }).then(res => {

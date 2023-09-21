@@ -265,6 +265,7 @@ export default {
     isEnd: { type: Number }, //是否结束
     isExpired: { type: Number }, //是否过期
     isFavorite: { type: Number }, //是否关注
+    isProcessed: { type: Number }, //是否处理过
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     relType: {
@@ -680,6 +681,7 @@ export default {
       this.searchIssueData.isEnd = this.isEnd;
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
+      this.searchIssueData.isProcessed = this.isProcessed;
       
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
