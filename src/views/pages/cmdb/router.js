@@ -63,9 +63,6 @@ let routerArr = [
       } else {
         next({ path: defaultPage, replace: true });
       }
-    },
-    meta: {
-      icon: 'ts-file'
     }
   },
   {
@@ -158,7 +155,7 @@ let routerArr = [
       type: 'resourceCenter',
       title: $t('router.cmdb.tagmanage'),
       ismenu: true,
-      icon: 'ts-tag',
+      icon: 'tsfont-label',
       authority: 'RESOURCECENTER_TAG_MODIFY'
     }
   },

@@ -158,7 +158,7 @@ const actions = {
     const reportInstanceList = res.Return.tbodyList.map(item => ({
       name: item.name,
       path: '/reportinstance-show/' + item.id,
-      icon: 'ts-report'
+      icon: 'tsfont-report'
     }));
     const newMenuGroup = [{
       menuTypeName: '报表',

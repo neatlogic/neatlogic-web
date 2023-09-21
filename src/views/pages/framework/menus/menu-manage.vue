@@ -245,7 +245,7 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-report'
+          icon: 'tsfont-report'
         },
         {
           keyword: '',
