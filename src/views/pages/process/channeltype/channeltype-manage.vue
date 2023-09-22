@@ -95,26 +95,9 @@
         </div>
       </template>
     </TsDialog>
-    <TsDialog
-      v-bind="iconTsDialog"
-      :isShow.sync="iconTsDialog.isShow"
-      class="iconTsDialog"
-      @on-ok="iconTsDialog.isShow = false"
-      @on-close="iconTsDialog.isShow = false"
-    >
-      <!-- <template v-slot>
-        <div class="select-icon tsscroll-container">
-          <div class="iconclass-item" v-for="(item,index) in iconList" :key="index" @click="selecticon(item)" :class="{actived:item.icon===selectedIcon}">
-            <i :class="item.icon" style="font-size:25px" aria-hidden="true"></i>
-            <div class="text-lighten">{{item.icon}}</div>
-          </div>
-        </div>
-      </template> -->
-    </TsDialog>
   </div>
 </template>
 <script>
-import iconList from '../priority/iconList.js';
 export default {
   name: 'ChanneltypeManage',
   components: {
@@ -132,7 +115,6 @@ export default {
       colorList: ['#D18CBD', '#FFBA5A', '#78D8DE', '#A78375', '#B9D582', '#898DDD', '#F3E67B', '#527CA6', '#50BFF2', '#FF6666', '#15BF81', '#90A4AE'],
       selectedColor: '#50BFF2',
       isColorListShow: false,
-      selectedIcon: null,
       tableheight: 0,
       policyList: [],
       theadList: [
@@ -150,13 +132,6 @@ export default {
         maskClose: false,
         isShow: false,
         width: '700px'
-      },
-      iconTsDialog: {
-        type: 'modal',
-        title: this.$t('term.framework.iconselect'),
-        maskClose: false,
-        isShow: false
-        //width: "700px"
       },
       oldformSetting: [
         {
@@ -265,7 +240,6 @@ export default {
           _this.getTableDataSearch(1);
         }
       },
-      iconList: iconList,
       disabledConfig: { //禁止按钮连续调用接口
         deleting: false,
         saving: false
@@ -314,7 +288,6 @@ export default {
     },
     addRow() {
       let _this = this;
-      _this.selectedIcon = null;
       _this.selectedColor = '#62BCFA';
       _this.formSetting.forEach(item => {
         item.value = item.defaultValue;
@@ -332,7 +305,6 @@ export default {
           if (res.Status == 'OK') {
             this.handlerSelect(res.Return['handler']);
             _this.editTsDialog.isShow = true;
-            _this.selectedIcon = res.Return['icon'];
             _this.selectedColor = res.Return['color'];
             _this.formSetting.forEach(item => {
               item.value = res.Return[item.name];
@@ -380,7 +352,6 @@ export default {
         if (form.valid()) {
           this.disabledConfig.saving = true;
           let data = form.getFormValue();
-          data.icon = this.selectedIcon;
           data.color = this.selectedColor;
           this.$api.process.channeltype
             .save(data)
@@ -405,10 +376,6 @@ export default {
     },
     cancelEditRow() {
       this.editTsDialog.isShow = false;
-    },
-    //选择图标
-    selecticon: function(item) {
-      this.selectedIcon = item.icon;
     },
     settableheight() {
       let tableheight = window.innerHeight - this.$refs.maintable.getBoundingClientRect().top - 80;
@@ -475,39 +442,6 @@ export default {
   }
   tr {
     cursor: default;
-  }
-}
-.iconTsDialog {
-  button {
-    margin-right: 10px;
-  }
-  .select-icon {
-    width: 100%;
-    height: 100%;
-    .iconclass-item {
-      cursor: pointer;
-      border-radius: 4px;
-      padding: 5px;
-      text-align: center;
-      display: inline-block;
-      margin: 5px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      width: 200px;
-      text-align: center;
-      border: 0px solid #eee;
-      &:hover {
-        color: @primary-color;
-      }
-      .text-lighten {
-        color: @text-color;
-      }
-    }
-    .actived {
-      background-color: #e9eefb;
-      border-color: #e9eefb !important;
-    }
   }
 }
 </style>

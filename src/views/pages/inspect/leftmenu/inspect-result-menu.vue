@@ -234,7 +234,7 @@ export default {
   .navlist-ul {
     .navlist-li {
       position: relative;
-      &:hover .item-icon.ts-typelist {
+      &:hover .item-icon.tsfont-type {
         display: none;
       }
       .item-icon.tsfont-drag {

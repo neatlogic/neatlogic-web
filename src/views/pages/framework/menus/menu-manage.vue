@@ -165,7 +165,7 @@ export default {
       menuicon: [
         {
           keyword: 'setting ' + this.$t('page.setting') + ' ' + this.$t('page.config'),
-          icon: 'ts-setting'
+          icon: 'tsfont-setting'
         },
         {
           keyword: 'search ' + this.$t('page.search'),
@@ -173,7 +173,7 @@ export default {
         },
         {
           keyword: 'upload ' + this.$t('page.upload'),
-          icon: 'ts-upload'
+          icon: 'tsfont-batch-upload'
         },
         {
           keyword: 'link ' + this.$t('page.link'),
@@ -181,7 +181,7 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-notice'
+          icon: 'tsfont-bell'
         },
         {
           keyword: '',
@@ -189,59 +189,27 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-alert'
+          icon: 'tsfont-chart-lines'
         },
         {
           keyword: '',
-          icon: 'ts-linechart'
+          icon: 'tsfont-type'
         },
         {
           keyword: '',
-          icon: 'ts-m-request'
+          icon: 'tsfont-putongjigui'
         },
         {
           keyword: '',
-          icon: 'ts-typelist'
+          icon: 'tsfont-xitongpeizhi'
         },
         {
           keyword: '',
-          icon: 'ts-m-works'
+          icon: 'tsfont-mail-o'
         },
         {
           keyword: '',
-          icon: 'ts-dev-security'
-        },
-        {
-          keyword: '',
-          icon: 'ts-email'
-        },
-        {
-          keyword: '',
-          icon: 'ts-tags'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-playbook'
-        },
-        {
-          keyword: '',
-          icon: 'ts-batch-ops'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-batchdeploy'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-stack'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-signature'
-        },
-        {
-          keyword: '',
-          icon: 'ts-dictionary'
+          icon: 'tsfont-dictionary'
         },
         {
           keyword: '',
@@ -249,75 +217,47 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-m-auth'
+          icon: 'tsfont-auth'
         },
         {
           keyword: '',
-          icon: 'ts-cloud'
+          icon: 'tsfont-cloud'
         },
         {
           keyword: '',
-          icon: 'ts-pulse'
+          icon: 'tsfont-pulse'
         },
         {
           keyword: '',
-          icon: 'ts-m-dashboard'
+          icon: 'tsfont-auth'
         },
         {
           keyword: '',
-          icon: 'ts-m-dashboard-job'
+          icon: 'tsfont-browser'
         },
         {
           keyword: '',
-          icon: 'ts-m-auth'
+          icon: 'tsfont-certificate'
         },
         {
           keyword: '',
-          icon: 'ts-m-browser'
+          icon: 'tsfont-callcenter'
         },
         {
           keyword: '',
-          icon: 'ts-m-certificate'
+          icon: 'tsfont-cientityselect'
         },
         {
           keyword: '',
-          icon: 'ts-m-callcenter'
+          icon: 'tsfont-home'
         },
         {
           keyword: '',
-          icon: 'ts-m-cmdb'
+          icon: 'tsfont-report'
         },
         {
           keyword: '',
-          icon: 'ts-m-ip'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-home'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-monitor'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-plugin'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-octopus'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-apm'
-        },
-        {
-          keyword: '',
-          icon: 'ts-m-deployment'
-        },
-        {
-          keyword: '',
-          icon: 'ts-sitemap'
+          icon: 'tsfont-plugin'
         }
       ],
       formItem: {

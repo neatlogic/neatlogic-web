@@ -96,7 +96,7 @@ let routerArr = [
       ismenu: true,
       type: 'cientitymanage',
       authority: 'CMDB_BASE',
-      icon: 'ts-listsetting'
+      icon: 'tsfont-listsetting'
     }
   },
   {
