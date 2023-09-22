@@ -87,7 +87,9 @@
       </template>
       <template v-slot:sider>
         <div>
+          <span v-if="$utils.isEmpty(treeData)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
           <Tree
+            v-else
             :data="treeData"
             :render="renderContent"
             class="ts-tree"
@@ -690,6 +692,7 @@ export default {
     getTableData(currentPage, pageSize, isFirst = true) {
       //获取表格数据
       if (!this.selectType.typeId) {
+        this.loadingShow = false;
         return;
       }
       let params = { ...this.searchVal, ...this.selectType };
@@ -815,6 +818,9 @@ export default {
       if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
         this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
       }
+    },
+    gotoAssetManagePage() {
+      window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
     }
   },
   computed: {
