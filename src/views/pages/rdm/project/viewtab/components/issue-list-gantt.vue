@@ -114,8 +114,8 @@
 </template>
 <script>
 import Gantt from '@/resources/plugins/TsGantt/gantt.js';
-import '@/resources/assets/font/tsfont/font/tsfont.js';
-import '@/resources/assets/font/tsfonts/iconfont.js';
+import '@/resources/assets/font/tsfont.js';
+import '@/resources/assets/font/iconfont.js';
 export default {
   name: '',
   components: {

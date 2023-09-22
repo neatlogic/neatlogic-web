@@ -106,7 +106,7 @@ export default [
   //   meta: {
   //     title: "菜单管理",
   //     ismenu: true,
-  //     icon: "ts-listsetting",
+  //     icon: "tsfont-listsetting",
   //     authority: "MENU_MODIFY",
   //     type: ""
   //   },
@@ -192,7 +192,7 @@ export default [
     meta: {
       title: $t('router.framework.usersetting'),
       ismenu: false,
-      icon: 'ts-dev-userinfo',
+      icon: 'tsfont-user-setting',
       authority: '',
       type: 'user'
     }
@@ -386,7 +386,7 @@ export default [
     meta: {
       title: $t('router.framework.noticemanage'),
       ismenu: true,
-      icon: 'ts-bell',
+      icon: 'tsfont-bell',
       authority: 'SYSTEM_NOTICE_MODIFY',
       type: 'message'
     }

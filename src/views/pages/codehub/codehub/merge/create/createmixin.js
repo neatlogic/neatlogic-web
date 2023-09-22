@@ -172,7 +172,7 @@ export default {
         } else if (isValid == 0) {
           return 'text-warning';
         } else if (isValid == null) {
-          return 'ts-spinner loading text-primary';
+          return 'tsfont-spinner loading text-primary';
         }
       };
     },
