@@ -19,7 +19,7 @@
         <div class="padding-md">
           <div class="right-block bg-block radius-lg ">
             <div v-if="!isTopoShow">
-              <ViewDetailData :viewId="viewId" :ciEntityId="ciEntityId"></ViewDetailData>
+              <ViewDetailData mode="particular" :viewId="viewId" :ciEntityId="ciEntityId"></ViewDetailData>
             </div>
             <div v-else>
               <CustomViewTopo
