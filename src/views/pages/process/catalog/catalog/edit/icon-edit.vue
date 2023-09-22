@@ -12,7 +12,6 @@
           <div>{{ item.icon }}</div>
         </Radio>
       </RadioGroup>
-
     </div>
   </TsDialog>
 </template>
@@ -33,6 +32,7 @@ export default {
     return {
       dialogConfig: {
         type: 'slider',
+        width: 'large',
         className: 'serviceDilogMana',
         title: this.$t('term.framework.iconselect')
       },
@@ -40,7 +40,7 @@ export default {
       menuicon: [
         {
           keyword: 'setting 设置 配置',
-          icon: 'ts-setting'
+          icon: 'tsfont-setting'
         },
         {
           keyword: 'search 搜索',
@@ -48,7 +48,7 @@ export default {
         },
         {
           keyword: 'upload 上传',
-          icon: 'ts-upload'
+          icon: 'tsfont-batch-upload'
         },
         {
           keyword: 'link 链接',
@@ -56,7 +56,7 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-notice'
+          icon: 'tsfont-bell'
         },
         {
           keyword: '',
@@ -64,59 +64,59 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-alert'
+          icon: 'tsfont-alert'
         },
         {
           keyword: '',
-          icon: 'ts-linechart'
+          icon: 'tsfont-chart-lines'
         },
         {
           keyword: '',
-          icon: 'ts-m-request'
+          icon: 'tsfont-m-request'
         },
         {
           keyword: '',
-          icon: 'ts-typelist'
+          icon: 'tsfont-type'
         },
         {
           keyword: '',
-          icon: 'ts-m-works'
+          icon: 'tsfont-putongjigui'
         },
         {
           keyword: '',
-          icon: 'ts-dev-security'
+          icon: 'tsfont-xitongpeizhi'
         },
         {
           keyword: '',
-          icon: 'ts-email'
+          icon: 'tsfont-mail-o'
         },
         {
           keyword: '',
-          icon: 'ts-tags'
+          icon: 'tsfont-tags'
         },
         {
           keyword: '',
-          icon: 'ts-m-playbook'
+          icon: 'tsfont-ip-list'
         },
         {
           keyword: '',
-          icon: 'ts-batch-ops'
+          icon: 'tsfont-batch-ops'
         },
         {
           keyword: '',
-          icon: 'ts-m-batchdeploy'
+          icon: 'tsfont-m-batchdeploy'
         },
         {
           keyword: '',
-          icon: 'ts-m-stack'
+          icon: 'tsfont-m-stack'
         },
         {
           keyword: '',
-          icon: 'ts-m-signature'
+          icon: 'tsfont-m-signature'
         },
         {
           keyword: '',
-          icon: 'ts-dictionary'
+          icon: 'tsfont-dictionary'
         },
         {
           keyword: '',
@@ -124,71 +124,71 @@ export default {
         },
         {
           keyword: '',
-          icon: 'ts-cloud'
+          icon: 'tsfont-cloud'
         },
         {
           keyword: '',
-          icon: 'ts-pulse'
+          icon: 'tsfont-pulse'
         },
         {
           keyword: '',
-          icon: 'ts-m-dashboard'
+          icon: 'tsfont-m-dashboard'
         },
         {
           keyword: '',
-          icon: 'ts-m-dashboard-job'
+          icon: 'tsfont-m-dashboard-job'
         },
         {
           keyword: '',
-          icon: 'ts-m-auth'
+          icon: 'tsfont-auth'
         },
         {
           keyword: '',
-          icon: 'ts-m-browser'
+          icon: 'tsfont-browser'
         },
         {
           keyword: '',
-          icon: 'ts-m-certificate'
+          icon: 'tsfont-certificate'
         },
         {
           keyword: '',
-          icon: 'ts-m-callcenter'
+          icon: 'tsfont-callcenter'
         },
         {
           keyword: '',
-          icon: 'ts-m-cmdb'
+          icon: 'tsfont-cientityselect'
         },
         {
           keyword: '',
-          icon: 'ts-m-ip'
+          icon: 'tsfont-m-ip'
         },
         {
           keyword: '',
-          icon: 'ts-m-home'
+          icon: 'tsfont-home'
         },
         {
           keyword: '',
-          icon: 'ts-m-monitor'
+          icon: 'tsfont-report'
         },
         {
           keyword: '',
-          icon: 'ts-m-plugin'
+          icon: 'tsfont-plugin'
         },
         {
           keyword: '',
-          icon: 'ts-m-octopus'
+          icon: 'tsfont-m-octopus'
         },
         {
           keyword: '',
-          icon: 'ts-m-apm'
+          icon: 'tsfont-m-apm'
         },
         {
           keyword: '',
-          icon: 'ts-m-deployment'
+          icon: 'tsfont-m-deployment'
         },
         {
           keyword: '',
-          icon: 'ts-sitemap'
+          icon: 'tsfont-topo'
         }
       ]
     };
@@ -218,7 +218,7 @@ export default {
         });
       }
     },
-    selecticon: function(item) { //选择图标
+    selecticon(item) { //选择图标
       this.selectedIcon = item.icon || '';
     }
   },
