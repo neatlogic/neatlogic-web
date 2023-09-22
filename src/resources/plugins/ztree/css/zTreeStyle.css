@@ -328,8 +328,8 @@ ul.ztree.zTreeDragUL>li a {
 .ztree li span.button.center_open:before,
 .ztree li span.button.bottom_open:before,
 .ztree li span.button.noline_open:before {
-	content: "\e835";
-	/* tsfont-blocklist 类名*/
+	content: "\e897";
+	/* tsfont-drop-down 类名*/
 }
 
 .ztree li span.button.root_close:before,
@@ -397,7 +397,8 @@ ul.ztree.zTreeDragUL>li a {
 }
 
 .ztree li span.button.ico_close:before {
-	content: "\e893";
+	content: "\e8b5";
+	/* tsfont-folder-o类名 */
 }
 
 .ztree li span.button.ico_docu:before {
