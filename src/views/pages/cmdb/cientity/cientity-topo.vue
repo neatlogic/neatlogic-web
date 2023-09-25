@@ -120,8 +120,8 @@
 </template>
 <script>
 import d3 from '../asset/d3';
-import '@/resources/assets/font/tsfont/font/tsfont.js';
-import '@/resources/assets/font/tsfonts/iconfont.js';
+import '@/resources/assets/font/tsfont.js';
+import '@/resources/assets/font/iconfont.js';
 import { graphviz } from 'd3-graphviz';
 import { addEvent } from './util/event.js';
 export default {

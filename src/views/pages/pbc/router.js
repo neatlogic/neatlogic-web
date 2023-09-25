@@ -31,9 +31,6 @@ export default [
       } else {
         next({ path: defaultPage, replace: true });
       }
-    },
-    meta: {
-      icon: 'ts-file'
     }
   },
   {

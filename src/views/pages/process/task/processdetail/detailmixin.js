@@ -110,12 +110,12 @@ export default {
       validList: [], //校验列表展示
       valieTypeStyle: [
         {
-          icon: 'ts-remove-o',
+          icon: 'tsfont-close-o',
           iconColor: '#FF625A',
           type: 'error'
         },
         {
-          icon: 'ts-complete',
+          icon: 'tsfont-check-o',
           iconColor: '#81D655',
           type: 'success'
         }

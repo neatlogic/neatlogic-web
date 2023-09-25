@@ -3292,5 +3292,95 @@
     "css": "tsfont-solid-circle",
     "hexCodepoint": "0xea24",
     "codepoint": 59940
+  },
+  {
+    "name": "alert",
+    "css": "tsfont-alert",
+    "hexCodepoint": "0xea25",
+    "codepoint": 59941
+  },
+  {
+    "name": "batch-ops",
+    "css": "tsfont-batch-ops",
+    "hexCodepoint": "0xea26",
+    "codepoint": 59942
+  },
+  {
+    "name": "listsetting",
+    "css": "tsfont-listsetting",
+    "hexCodepoint": "0xea27",
+    "codepoint": 59943
+  },
+  {
+    "name": "m-apm",
+    "css": "tsfont-m-apm",
+    "hexCodepoint": "0xea28",
+    "codepoint": 59944
+  },
+  {
+    "name": "m-batchdeploy",
+    "css": "tsfont-m-batchdeploy",
+    "hexCodepoint": "0xea29",
+    "codepoint": 59945
+  },
+  {
+    "name": "m-dashboard-job",
+    "css": "tsfont-m-dashboard-job",
+    "hexCodepoint": "0xea2a",
+    "codepoint": 59946
+  },
+  {
+    "name": "m-dashboard",
+    "css": "tsfont-m-dashboard",
+    "hexCodepoint": "0xea2b",
+    "codepoint": 59947
+  },
+  {
+    "name": "m-deployment",
+    "css": "tsfont-m-deployment",
+    "hexCodepoint": "0xea2c",
+    "codepoint": 59948
+  },
+  {
+    "name": "m-ip",
+    "css": "tsfont-m-ip",
+    "hexCodepoint": "0xea2d",
+    "codepoint": 59949
+  },
+  {
+    "name": "m-octopus",
+    "css": "tsfont-m-octopus",
+    "hexCodepoint": "0xea2e",
+    "codepoint": 59950
+  },
+  {
+    "name": "m-request",
+    "css": "tsfont-m-request",
+    "hexCodepoint": "0xea2f",
+    "codepoint": 59951
+  },
+  {
+    "name": "m-signature",
+    "css": "tsfont-m-signature",
+    "hexCodepoint": "0xea30",
+    "codepoint": 59952
+  },
+  {
+    "name": "m-stack",
+    "css": "tsfont-m-stack",
+    "hexCodepoint": "0xea31",
+    "codepoint": 59953
+  },
+  {
+    "name": "spinner",
+    "css": "tsfont-spinner",
+    "hexCodepoint": "0xea32",
+    "codepoint": 59954
+  },
+  {
+    "name": "tags",
+    "css": "tsfont-tags",
+    "hexCodepoint": "0xea33",
+    "codepoint": 59955
   }
 ]

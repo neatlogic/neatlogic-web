@@ -89,7 +89,6 @@
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import TsForm from '@/resources/plugins/TsForm/TsForm';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
-import iconList from './iconList.js';
 export default {
   name: '',
   components: {
@@ -101,7 +100,6 @@ export default {
   filters: {},
   props: [],
   data() {
-    let _this = this;
     return {
       loadingShow: true,
       tableheight: 0,
@@ -110,7 +108,6 @@ export default {
         { title: this.$t('page.name'), key: 'name', minWidth: 300, resizable: true },
         { title: this.$t('page.status'), key: 'isActive', minWidth: 300, resizable: true },
         { title: this.$t('page.description'), key: 'desc', minWidth: 300, resizable: true },
-        // { title: ' ', key: 'action', align: 'right', width: 10 }
         { key: 'action', title: '', type: 'action', operations: [{ icon: 'tsfont-trash-o', name: this.$t('page.delete'), action: 'del', type: 'text', style: '' }] }
       ],
       tableData: null,
@@ -189,14 +186,13 @@ export default {
           { value: 1, text: this.$t('page.enable') },
           { value: 0, text: this.$t('page.disable') }
         ],
-        onChange: function(value) {
-          Object.assign(_this.searchParam, {
+        onChange: (value) => {
+          Object.assign(this.searchParam, {
             isActive: value === '' ? null : value
           });
-          _this.getTableDataSearch(1);
+          this.getTableDataSearch(1);
         }
       },
-      iconList: iconList,
       colorList: ['#D18CBD', '#FFBA5A', '#78D8DE', '#A78375', '#B9D582', '#898DDD', '#F3E67B', '#527CA6', '#50BFF2', '#FF6666', '#15BF81', '#90A4AE'],
       selectedColor: '#50BFF2',
       isColorListShow: false,
@@ -207,7 +203,6 @@ export default {
   },
   created() {},
   mounted() {
-    let _this = this;
     this.getTableDataSearch(1);
     this.settableheight();
     let isCatalogManage = this.$route.query.isCatalogManage;
@@ -221,24 +216,23 @@ export default {
   },
   methods: {
     getTableDataSearch(currentPage, pageSize) {
-      let _this = this;
       if (currentPage) {
-        _this.searchParam.currentPage = currentPage;
+        this.searchParam.currentPage = currentPage;
       }
       if (pageSize) {
-        _this.searchParam.pageSize = pageSize;
+        this.searchParam.pageSize = pageSize;
       } else {
-        _this.searchParam.pageSize = this.pageSize;
+        this.searchParam.pageSize = this.pageSize;
       }
-      _this.searchParam.timestamp = new Date().getTime();
-      _this.$api.process.priority
-        .search(_this.searchParam)
+      this.searchParam.timestamp = new Date().getTime();
+      this.$api.process.priority
+        .search(this.searchParam)
         .then(res => {
           if (res.Status == 'OK') {
-            _this.tableData = res.Return;
-            _this.tableData.theadList = _this.theadList;
+            this.tableData = res.Return;
+            this.tableData.theadList = this.theadList;
             this.loadingShow = false;
-            _this.oldList = res.Return.tbodyList;
+            this.oldList = res.Return.tbodyList;
           }
         });
     },
@@ -256,25 +250,23 @@ export default {
       this.getTableDataSearch(currentPage);
     },
     addRow() {
-      let _this = this;
-      _this.formSetting.forEach(item => {
+      this.formSetting.forEach(item => {
         item.value = item.defaultValue;
       });
       this.editTsDialog.title = this.$t('page.add');
       this.editTsDialog.isShow = true;
     },
     getRowData(uuid) {
-      let _this = this;
       let params = { uuid: uuid, timestamp: new Date().getTime() };
-      _this.$api.process.priority
+      this.$api.process.priority
         .get(params)
         .then(res => {
           if (res.Status == 'OK') {
-            _this.selectedColor = res.Return['color'];
-            _this.formSetting.forEach(item => {
+            this.selectedColor = res.Return['color'];
+            this.formSetting.forEach(item => {
               item.value = res.Return[item.name];
             });
-            _this.editTsDialog.isShow = true;
+            this.editTsDialog.isShow = true;
           }
         });
     },
@@ -329,7 +321,6 @@ export default {
       }
     },
     cancelEditRow() {
-      // this.$router.push({});
       this.editTsDialog.isShow = false;
     },
     settableheight() {

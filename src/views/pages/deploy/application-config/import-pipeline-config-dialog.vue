@@ -247,6 +247,21 @@ export default {
         });
       }
       this.relateConfig.checkedAll = checkedAll;
+    },
+    arraysAreEqual(arr1, arr2) {
+      const array1 = this.$utils.deepClone(arr1).sort();
+      const array2 = this.$utils.deepClone(arr2).sort();
+      if (array1.length !== array2.length) {
+        return false;
+      }
+
+      for (let i = 0; i < array1.length; i++) {
+        if (array1[i] !== array2[i]) {
+          return false;
+        }
+      }
+
+      return true;
     }
   },
   filter: {},
@@ -258,7 +273,7 @@ export default {
     secondSelectedAll() {
       // 二级选中
       return (currentRow) => {
-        return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
+        return this.$utils.isEmpty(this.selectedConfig) ? false : this.arraysAreEqual(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
       };
     }
   },

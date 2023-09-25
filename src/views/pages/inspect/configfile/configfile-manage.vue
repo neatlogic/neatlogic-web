@@ -47,7 +47,9 @@
       </template>
       <template v-slot:sider>
         <div>
+          <span v-if="$utils.isEmpty(resourceList)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
           <Tree
+            v-else
             :data="resourceList"
             :render="renderTree"
             :multiple="false"
@@ -461,6 +463,10 @@ export default {
       }
     },
     searchConfigFileList(currentPage) {
+      if (!this.searchParam.typeId) {
+        this.loadingShow = false;
+        return;
+      }
       this.loadingShow = true;
       if (currentPage) {
         this.$set(this.searchParam, 'currentPage', currentPage);
@@ -502,6 +508,10 @@ export default {
       if (this.timmer) {
         clearTimeout(this.timmer);
         this.timmer = null;
+      }
+      if (!this.searchParam.typeId) {
+        this.loadingShow = false;
+        return;
       }
       this.$api.inspect.configfile.getConfigFileList({
         needPage: false,
@@ -603,6 +613,9 @@ export default {
         this.$set(this.searchValue, 'searchField', 'ip');
       }
       this.searchConfigFileList(1);
+    },
+    gotoAssetManagePage() {
+      window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
     }
   },
   filter: {},

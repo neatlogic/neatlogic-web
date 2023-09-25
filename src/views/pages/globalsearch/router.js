@@ -22,9 +22,6 @@ export default [
       } else {
         next({ path: defaultPage, replace: true });
       }
-    },
-    meta: {
-      icon: 'ts-file'
     }
   },
   {
@@ -45,7 +42,7 @@ export default [
       title: $t('router.globalsearch.searchcenter'),
       istitle: true,
       authority: 'GLOBALSEARCH_BASE',
-      icon: 'ts-listsetting'
+      icon: 'tsfont-listsetting'
     }
   }
 ];

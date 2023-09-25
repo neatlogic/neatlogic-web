@@ -101,6 +101,8 @@ export default {
       this.onChangeMenu(this.menuActive);
       setTimeout(function() {
         _this.isSlider = true;
+        //手动触发窗口变化事件
+        window.dispatchEvent(new Event('resize'));
       }, 100);
     },
     ...mapMutations({

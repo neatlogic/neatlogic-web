@@ -129,7 +129,7 @@ let routerArr = [
     meta: {
       title: $t('router.process.taskdispatch'),
       ismenu: false,
-      icon: 'ts-m-signature',
+      icon: 'tsfont-m-signature',
       authority: '',
       type: 'task'
     }
@@ -141,7 +141,7 @@ let routerArr = [
     meta: {
       title: $t('router.process.taskdetail'),
       ismenu: false,
-      icon: 'ts-m-signature',
+      icon: 'tsfont-m-signature',
       authority: '',
       type: 'task'
     }
@@ -272,7 +272,7 @@ let routerArr = [
     meta: {
       title: $t('router.process.channeltypemanage'),
       ismenu: true,
-      icon: 'ts-m-urgency',
+      icon: 'tsfont-urgency',
       authority: 'CHANNELTYPE_MODIFY',
       type: 'catalog'
     }
@@ -284,7 +284,7 @@ let routerArr = [
     meta: {
       title: $t('router.process.taskbatchdispatch'),
       ismenu: true,
-      icon: 'ts-m-signature',
+      icon: 'tsfont-m-signature',
       authority: 'BATCH_REPORT_PROCESS_TASK',
       type: 'catalog'
     }

@@ -100,7 +100,7 @@ export default {
     setTitleToString() {
       return (titleList, tindex) => {
         if (tindex > 0 && titleList && titleList.length > 0) {
-          return 'ts-angle-right arr-nextpath';
+          return 'tsfont-right arr-nextpath';
         } else {
           return 'arr-nextpath';
         }
