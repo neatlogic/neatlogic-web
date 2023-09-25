@@ -148,9 +148,9 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    if (this.mode === 'edit') {
-      this.$emit('resize');
-    }
+    // if (this.mode === 'edit') {
+    this.$emit('resize');
+    // }
   },
   beforeUpdate() {},
   updated() {},

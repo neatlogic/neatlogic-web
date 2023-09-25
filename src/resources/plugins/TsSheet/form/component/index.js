@@ -26,3 +26,5 @@ export { default as formtable } from './formtable.vue';
 
 export * from '@/views/pages/cmdb/form/component';
 export * from '@/views/pages/autoexec/form/component';
+
+export { default as formsubassembly } from './formsubassembly.vue';

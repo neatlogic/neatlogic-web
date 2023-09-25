@@ -3,6 +3,7 @@
     <TsContain :enableCollapse="true" :siderWidth="260">
       <template v-slot:navigation>
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
+        <!-- <span v-else class="tsfont-left text-action" @click="backPre()">{{ $t('page.back') }}</span> -->
       </template>
       <template v-slot:topLeft>
         <TsRow>
@@ -221,11 +222,31 @@
       <template v-slot:content>
         <div v-if="isFormLoaded" style="position:relative">
           <TsSheet
+            v-if="!isSubForm"
             ref="sheet"
             v-model="formData.formConfig"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
+            @updateResize="updateResize"
           ></TsSheet>
+          <div v-else>
+            <div class="pb-sm">
+              <span class="text-href" @click="clickNav()">{{ formData.name }}</span>
+              <span
+                v-for="(item,index) in pathList"
+                :key="index"
+                class="tsfont-right"
+                :class="{'text-href':index<pathList.length - 1}"
+                @click="clickNav(item,index)"
+              >{{ item.label }}</span>
+            </div>
+            <SubFormSheet
+              ref="sheet"
+              :formData="subFormData"
+              @selectCell="selectCell"
+              @removeComponent="removeComponent"
+            ></SubFormSheet>
+          </div>
           <FormItemConfig
             v-if="currentFormItem"
             :formItem="currentFormItem"
@@ -233,6 +254,7 @@
             :error="currentFormItemError"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
+            @editSubForm="editSubForm"
           ></FormItemConfig>
           <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
         </div>
@@ -280,6 +302,7 @@
 </template>
 <script>
 let needToChangeVersion = {};
+import subformconfig from './subformconfig.vue';
 import $frameworkUtils from '@/views/pages/framework/matrix/utils/utils';
 import download from '@/resources/mixins/download.js';
 import { FORMITEMS, FORMITEM_CATEGORY } from './form/formitem-list.js';
@@ -296,8 +319,10 @@ export default {
     FormReferenceDialog: resolve => require(['./form-reference-dialog.vue'], resolve),
     UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
     FormWidthDialog: resolve => require(['./form-width-dialog.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve)
+    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
+    SubFormSheet: resolve => require(['./sub-form-sheet.vue'], resolve)
   },
+  extends: subformconfig,
   mixins: [download],
   props: {},
   data() {
@@ -942,6 +967,12 @@ export default {
       if (findIndex > -1) {
         this.$delete(this.initFormConfig.sceneList, findIndex);
       }
+    },
+    updateResize() {
+      this.isFormLoaded = false;
+      this.$nextTick(() => {
+        this.isFormLoaded = true;
+      });
     }
   },
   filter: {},

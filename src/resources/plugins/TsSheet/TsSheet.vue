@@ -401,7 +401,7 @@ export default {
       type: String, //edit编辑模式|read使用模式
       default: 'edit',
       validator(value) {
-        return ['edit', 'read'].includes(value);
+        return ['edit', 'read', 'subform'].includes(value);
       }
     },
     value: { type: Object }, //表单配置，通过v-model双向绑定
@@ -797,6 +797,10 @@ export default {
             header.width = hrect.width;
           }
         }
+        //针对子表单
+        this.$nextTick(() => {
+          this.calcContainerHeight();
+        });
       });
     },
     //获取真正的rowspan，排除隐藏行
@@ -1328,6 +1332,8 @@ export default {
         } else {
           ok();
         }
+        //表单编辑：针对子表单
+        this.$emit('updateResize');
       }
     },
     //分拆单元格
@@ -1965,13 +1971,14 @@ export default {
       },
       deep: true,
       immediate: true
-    }
-    /*formData: {
+    },
+    formData: {
       handler: function(newVal, oldVal) {
-        console.log(JSON.stringify(newVal, null, 2));
+        this.$emit('setValue', newVal);
+        // console.log(JSON.stringify(newVal, null, 2));
       },
       deep: true
-    }*/
+    }
   }
 };
 </script>

@@ -29,6 +29,7 @@
             :disabled="!!formItem.inherit || disabled"
             :initFormItemList="initFormItemList"
             class="mb-sm"
+            @editSubForm="editSubForm"
           ></component>
           <FormCustomItemConfig
             v-else-if="formItem.type === 'custom'"
@@ -369,6 +370,10 @@ export default {
       if (val) {
         this.$emit('inheritFormItem', this.formItem.uuid);
       }
+    },
+    editSubForm() {
+      this.$emit('editSubForm');
+      console.log('lll');
     }
   },
   filter: {},
