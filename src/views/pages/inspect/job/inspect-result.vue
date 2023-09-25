@@ -44,7 +44,7 @@
         ></CombineSearcher>
       </template>
       <template v-slot:sider>
-        <div style="margin-top: -6px;">
+        <div>
           <span v-if="$utils.isEmpty(treeData)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
           <Tree
             v-else
