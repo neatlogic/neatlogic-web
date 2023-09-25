@@ -1,10 +1,12 @@
-import { $t } from '@/resources/init.js';
+import $utils from '@/resources/assets/js/util.js';
 
-export const WIDGET_TYPES = [
-  { name: 'UML', label: 'UML' }
-];
-import { default as Class } from './class.js';
+export const WIDGET_TYPES = [{ name: 'UML', label: 'UML' }];
+import { default as Class } from './Class.js';
+import { default as SystemGroup } from './SystemGroup.js';
+import { default as System } from './System.js';
 
-export const WIDGETS = [
-  Class
-];
+function WIDGETS() {
+  return $utils.deepClone([Class, SystemGroup, System]);
+}
+
+export { WIDGETS };

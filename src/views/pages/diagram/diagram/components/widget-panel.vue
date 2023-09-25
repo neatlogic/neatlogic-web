@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      widgetList: WIDGETS
+      widgetList: WIDGETS()
     };
   },
   beforeCreate() {},
@@ -42,8 +42,15 @@ export default {
     drag(event, widget) {
       const node = this.graph.createNode({
         shape: widget.name,
-        label: widget.label
+        label: widget.label,
+        width: widget.width,
+        height: widget.height
       });
+      if (widget.prop) {
+        for (let key in widget.prop) {
+          node.setProp(key, widget.prop[key]);
+        }
+      }
       node.setData(widget.data);
       this.dnd.start(node, event);
     },

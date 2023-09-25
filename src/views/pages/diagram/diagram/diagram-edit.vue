@@ -43,7 +43,7 @@ export default {
       dnd: null,
       currentWidget: null,
       currentWidgetId: null,
-      widgetList: WIDGETS
+      widgetList: WIDGETS()
     };
   },
   beforeCreate() {},

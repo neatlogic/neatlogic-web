@@ -30,6 +30,36 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    createNode(nn) {
+      const widget = WIDGETS().find(d => d.name === nn.shape);
+      if (widget) {
+        const nodeConfig = {
+          id: this.$utils.setUuid(),
+          shape: widget.name,
+          label: widget.label,
+          data: widget.data
+        };
+        if (widget.prop) {
+          for (let key in widget.prop) {
+            nodeConfig[key] = widget.prop[key];
+          }
+        }
+        const node = this.graph.createNode(nodeConfig);
+        //需要重复设置data，否则取不到值
+        node.setData(widget.data);
+        if (widget.event) {
+          for (let e in widget.event) {
+            node.on(e, ({cell, current}) => {
+              if (widget.event[e]) {
+                widget.event[e](cell, current, widget.data);
+              }
+            });
+          }
+        }
+        return node;
+      }
+      return null;
+    },
     init: function() {
       if (!this.graph) {
         this.graph = new Graph({
@@ -57,12 +87,14 @@ export default {
               // 获取移动节点的包围盒
               const bbox = node.getBBox();
               const parentList = [];
-              if (node.getProp('isChild')) {
-                const parents = this.graph.getNodes().filter(d => d.getProp('isParent'));
-                if (parents.length > 0) {
-                  parents.forEach(p => {
+              let parentTypeList = node.getData() && node.getData()['parent'] || [];
+              if (parentTypeList.length > 0) {
+                const parentNodeList = this.graph.getNodes().filter(d => parentTypeList.includes(d.shape) && d.getData() && d.getData()['children'] && d.getData()['children'].length > 0 && d.getData()['children'].includes(node.shape));
+                if (parentNodeList.length > 0) {
+                  parentNodeList.forEach(p => {
                     const targetBBox = p.getBBox();
                     if (bbox.isIntersectWithRect(targetBBox)) {
+                      p.toBack();
                       parentList.push(p);
                       node.setProp('parentId', p.id);
                     }
@@ -78,6 +110,7 @@ export default {
                 }
                 return false;
               });*/
+              
               return parentList;
             }
           },
@@ -117,30 +150,11 @@ export default {
         );
         this.dnd = new Dnd({
           target: this.graph,
-          //拖的时候复制一次，放的时候又复制一次，真墨迹
-          getDragNode: node => {
-            //x6没有处理业务数据，还得自己处理，SB设计师
-            const nn = node.clone({ keepId: true });
-            nn.setData(node.getData());
-            return nn;
+          getDragNode: nn => {
+            return this.createNode(nn);
           },
-          getDropNode: node => {
-            //x6没有处理业务数据，还得自己处理，SB设计师
-            const nn = node.clone({ keepId: true });
-            nn.setData(node.getData());
-            const widget = WIDGETS.find(d => d.name === nn.shape);
-            if (widget) {
-              if (widget.event) {
-                for (let e in widget.event) {
-                  nn.on(e, ({cell, current}) => {
-                    if (widget.event[e]) {
-                      widget.event[e](cell, current);
-                    }
-                  });
-                }
-              }
-            }
-            return nn;
+          getDropNode: nn => {
+            return this.createNode(nn);
           }
         });
         //绑定选中事件

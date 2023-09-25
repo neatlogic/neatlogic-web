@@ -44,17 +44,14 @@ export default {
         stroke: '#fff'
       },
       'name-rect': {
-        fill: '#5f95ff',
         stroke: '#fff',
         strokeWidth: 0.5
       },
       'attrs-rect': {
-        fill: '#eff4ff',
         stroke: '#fff',
         strokeWidth: 0.5
       },
       'methods-rect': {
-        fill: '#eff4ff',
         stroke: '#fff',
         strokeWidth: 0.5
       },
@@ -88,12 +85,19 @@ export default {
       const { data, ...others } = meta;
       if (!data) {
         return meta;
-      } else {
-        //this.render(data);
       }
       const name = data.name;
       const attributes = data.attributes;
       const methods = data.methods;
+      const titleBgColor = data.titleBgColor;
+      const bgColor = data.bgColor;
+      if (titleBgColor) {
+        ObjectExt.setByPath(others, `attrs/name-rect/fill`, titleBgColor);
+      }
+      if (bgColor) {
+        ObjectExt.setByPath(others, `attrs/attrs-rect/fill`, bgColor);
+        ObjectExt.setByPath(others, `attrs/methods-rect/fill`, bgColor);
+      }
       const rects = [
         { type: 'name', text: name },
         { type: 'attrs', text: attributes },
@@ -111,19 +115,109 @@ export default {
 
       others.size = { width: 160, height: offsetY };
       return others;
+    },
+    ports: {
+      groups: {
+        top: {
+          markup: {
+            tagName: 'circle'
+          },
+          attrs: {
+            circle: {
+              r: 6,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff'
+            }
+          },
+          zIndex: 99,
+          position: 'top'
+        },
+        right: {
+          markup: {
+            tagName: 'circle'
+          },
+          attrs: {
+            circle: {
+              r: 6,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff'
+            }
+          },
+          zIndex: 99,
+          position: 'right'
+        },
+        bottom: {
+          markup: {
+            tagName: 'circle'
+          },
+          attrs: {
+            circle: {
+              r: 6,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff'
+            }
+          },
+          zIndex: 99,
+          position: 'bottom'
+        },
+        left: {
+          markup: {
+            tagName: 'circle'
+          },
+          attrs: {
+            circle: {
+              r: 6,
+              magnet: true,
+              stroke: '#31d0c6',
+              strokeWidth: 2,
+              fill: '#fff'
+            }
+          },
+          zIndex: 99,
+          position: 'left'
+        }
+      },
+      items: [
+        { id: 'top', group: 'top' },
+        { id: 'right', group: 'right' },
+        { id: 'bottom', group: 'bottom' },
+        { id: 'left', group: 'left' }
+      ]
     }
   },
   data: {
+    titleBgColor: '#5f95ff',
+    bgColor: '#eff4ff',
     name: ['类名'],
     attributes: ['属性1', '属性2'],
     methods: ['方法1', '方法2'],
     test: 'a'
   },
   event: {
-    'change:data': (cell, data) => {
+    'change:data': (cell, data, defaultData) => {
       const name = data.name;
       const attributes = data.attributes;
       const methods = data.methods;
+      const titleBgColor = data.titleBgColor;
+      const bgColor = data.bgColor;
+      if (titleBgColor) {
+        cell.setAttrByPath(`name-rect/fill`, titleBgColor);
+      } else {
+        cell.setAttrByPath(`name-rect/fill`, defaultData.titleBgColor);
+      }
+      if (bgColor) {
+        cell.setAttrByPath(`attrs-rect/fill`, bgColor);
+        cell.setAttrByPath(`methods-rect/fill`, bgColor);
+      } else {
+        cell.setAttrByPath(`attrs-rect/fill`, defaultData.bgColor);
+        cell.setAttrByPath(`methods-rect/fill`, defaultData.bgColor);
+      }
       const rects = [
         { type: 'name', text: name },
         { type: 'attrs', text: attributes },
@@ -141,10 +235,18 @@ export default {
       cell.resize(160, offsetY);
     }
   },
-  setting: {
-
-  },
+  setting: {},
   form: [
+    {
+      name: 'titleBgColor',
+      label: '标题背景颜色',
+      type: 'slot'
+    },
+    {
+      name: 'bgColor',
+      label: '背景颜色',
+      type: 'slot'
+    },
     {
       name: 'name',
       label: '名称',

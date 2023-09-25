@@ -3,7 +3,7 @@
     <component
       :is="widget.name + 'Widget'"
       :form="widget.form"
-      :data="localData"
+      :formData="widget.data"
       @data:update="updateData"
     ></component>
   </div>
@@ -22,13 +22,11 @@ export default {
   },
   data() {
     return {
-      widgetConfig: components,
-      localData: null
+      widgetConfig: components
     };
   },
   beforeCreate() {},
   created() {
-    this.localData = this.$utils.deepClone(this.widget.data) || {};
   },
   beforeMount() {},
   mounted() {},
@@ -40,6 +38,7 @@ export default {
   destroyed() {},
   methods: {
     updateData(val) {
+      //必须重新复制数据，否则不能触发x6的change:data事件
       const data = val ? this.$utils.deepClone(val) : {};
       this.$emit('data:update', this.id, data);
     }
