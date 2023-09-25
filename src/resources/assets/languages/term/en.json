@@ -1133,9 +1133,7 @@
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",
     "heartbeatthreshold": "Heartbeat threshold",
-    "updaterecord": "Update Records",
-    "versionupdate": "Version update",
-    "sqlupdate": "SQL update"
+    "versionlog": "Version Log"
   },
   "knowledge": {
     "document": "Document",

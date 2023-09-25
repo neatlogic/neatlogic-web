@@ -22,7 +22,7 @@
                 :padding="false"
               >
                 <template slot-scope="{ row }">
-                  <div class="padding cursor-pointer" @click.stop="openUpdateRecordDetail">
+                  <div class="padding cursor-pointer" @click.stop="openVersionLogDialog(row)">
                     <div>
                       <span :class="{ 'tsfont-plugin': row.hasInitialData }">{{ row.name }}</span>
                       <span class="text-grey ml-xs">({{ row.id }})</span>
@@ -44,7 +44,7 @@
       </template>
     </TsContain>
     <ModuleImportDialog v-if="isImportDialogShow" :moduleId="currentModuleId" @close="closeImportDialog"></ModuleImportDialog>
-    <UpdateRecordDialog v-if="isShowUpdateRecordDialog" @close="closeUpdateRecordDialog"></UpdateRecordDialog>
+    <VersionLogDialog v-if="isShowVersionLogDialog" :moduleId="currentModuleId" @close="closeVersionLogDialog"></VersionLogDialog>
   </div>
 </template>
 <script>
@@ -54,14 +54,14 @@ export default {
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve),
-    UpdateRecordDialog: resolve => require(['./update-record-dialog'], resolve)
+    VersionLogDialog: resolve => require(['./version-log-dialog'], resolve)
   },
   mixins: [download],
   props: {},
   data() {
     return {
       isImportDialogShow: false,
-      isShowUpdateRecordDialog: false,
+      isShowVersionLogDialog: false,
       currentModuleId: '',
       moduleGroupList: []
     };
@@ -99,12 +99,13 @@ export default {
       };
       this.download(param);
     },
-    openUpdateRecordDetail() {
-      // 打开更新记录弹窗
-      this.isShowUpdateRecordDialog = true;
+    openVersionLogDialog(row) {
+      this.currentModuleId = row.id;
+      this.isShowVersionLogDialog = true;
     },
-    closeUpdateRecordDialog() {
-      this.isShowUpdateRecordDialog = false;
+    closeVersionLogDialog() {
+      this.currentModuleId = '';
+      this.isShowVersionLogDialog = false;
     }
   },
   filter: {},

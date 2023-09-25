@@ -4,13 +4,13 @@ const module = {
   searchModule() {
     return axios.get('/api/rest/module/search', {});
   },
-  searchVersionUpdateData(params) {
-    // 查询版本更新数据
-    return axios.get('/api/rest/module/version/search', params);
+  searchVersionLogList(params) {
+    // 查询变更版本日志列表接口
+    return axios.post('/api/rest/module/changelog/search', params);
   },
-  searchSqlUpdateData(params) {
-    // 查询SQL更新数据
-    return axios.get('/api/rest/module/sql/search', params);
+  searchVersionLogDetail(params) {
+    // 查询变更版本日志详情
+    return axios.post('/api/rest/module/changelog/get', params);
   }
 };
 export default module;
