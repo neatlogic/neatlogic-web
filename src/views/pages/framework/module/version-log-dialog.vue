@@ -40,6 +40,9 @@
                     v-if="item.loadingShow"
                     :loadingShow="item.loadingShow"
                   ></Loading>
+                  <template v-else-if="index == isActive && isEmptyObj(item.value)">
+                    <NoData></NoData>
+                  </template>
                   <div v-else-if="index == isActive && !$utils.isEmpty(item.value)" class="mt-nm">
                     <template v-for="(valueItem, valueName, valueIndex) in item.value">
                       <div :key="valueIndex">
@@ -71,7 +74,6 @@
                       </div>
                     </template>
                   </div>
-                
                 </div>
               </div>
             </TimelineItem>
@@ -196,6 +198,19 @@ export default {
             this.donwloadLoading = false;
           }
         }
+      };
+    },
+    isEmptyObj() {
+      return (obj) => {
+        let isEmpty = false;
+        let {dll = [], dml = [], version = {}} = obj || {};
+
+        if (this.$utils.isEmpty(dll) && this.$utils.isEmpty(dml) && this.$utils.isEmpty(version)) {
+          isEmpty = true;
+        } else if (this.$utils.isEmpty(dll) && this.$utils.isEmpty(dml) && !this.$utils.isEmpty(version?.content)) {
+          isEmpty = this.$utils.isEmpty(version.content);
+        }
+        return isEmpty;
       };
     }
   },
