@@ -1132,7 +1132,8 @@
     "host": "server address",
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",
-    "heartbeatthreshold": "Heartbeat threshold"
+    "heartbeatthreshold": "Heartbeat threshold",
+    "versionlog": "Version Log"
   },
   "knowledge": {
     "document": "Document",
