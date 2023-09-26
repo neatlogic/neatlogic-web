@@ -57,7 +57,8 @@ let routerArr = [
       title: '服务清单',
       ismenu: true,
       icon: 'tsfont-file-single',
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   },
   {
@@ -67,7 +68,8 @@ let routerArr = [
     meta: {
       title: '服务清单详情',
       ismenu: false,
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   },
   {
@@ -77,7 +79,8 @@ let routerArr = [
     meta: {
       title: '服务清单',
       ismenu: false,
-      type: 'dr'
+      type: 'dr',
+      authority: 'DR_BASE'
     }
   },
   {

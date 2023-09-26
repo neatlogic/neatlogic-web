@@ -10,7 +10,7 @@
       <template v-slot>
         <div>
           <TsForm
-            ref="nameForm"
+            ref="form"
             v-model="formData"
             :item-list="formConfig"
           >
@@ -18,16 +18,20 @@
               <div style="width: 90%">
                 <div v-for="(item,index) in sceneList" :key="index" class="flex-center list pb-sm">
                   <TsFormSelect
-                    v-model="item.targetId"
-                    :dataList="[]"
+                    ref="item"
+                    v-model="item.sourceSceneId"
+                    :dataList="getList(dataList)"
                     :validateList="validateList"
                     transfer
                     style="flex: 1;"
                   ></TsFormSelect>
                   <div class="tsfont-arrow-right pl-sm pr-sm"></div>
                   <TsFormSelect
-                    v-model="item.sourceId"
-                    :dataList="[]"
+                    ref="item"
+                    v-model="item.targetSceneId"
+                    :dataList="currSceneList"
+                    textName="sceneName"
+                    valueName="sceneId"
                     :validateList="validateList"
                     transfer
                     style="flex: 1;"
@@ -36,6 +40,7 @@
                 </div>
                 <Button type="primary" ghost @click="add()"><span class="tsfont-plus">依赖</span></Button>
               </div>
+              <div v-if="$utils.isEmpty(sceneList)" class="form-error-tip">{{ $t('form.validate.required', {target: ''}) }}</div>
             </template>
           </TsForm>
         </div>
@@ -54,35 +59,47 @@ export default {
     type: {
       type: String,
       default: 'add'
+    },
+    serviceId: {
+      type: Number,
+      default: null
+    },
+    currSceneList: { //当前服务场景列表
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       formConfig: {
-        name: {
-          type: 'text',
-          name: 'name',
-          value: '',
-          maxlength: 50,
-          label: this.$t('page.scenarioname'),
-          validateList: ['required', 'name-special', { name: 'searchUrl', url: '', key: 'name' }],
-          width: '90%'
+        dependencyServiceId: {
+          type: 'select',
+          dynamicUrl: 'api/rest/dr/service/list/forselect',
+          dealDataByUrl: this.dealDataByUrl,
+          rootName: 'tbodyList',
+          valueName: 'id',
+          textName: 'name',
+          label: '依赖服务',
+          validateList: ['required'],
+          width: '90%',
+          onChange: this.changeServceSelect
         },
         sceneList: {
           type: 'slot',
-          label: this.$t('term.dr.migrationdirection'),
+          label: '场景依赖',
           validateList: ['required'],
           width: '90%'
         }
       },
       validateList: ['required'],
       formData: {},
-      sceneList: [
+      sceneList: [ //依赖服务场景列表
         {
-          sourceId: '1',
-          targetId: '2'
+          sourceSceneId: null,
+          targetSceneId: null
         }
-      ]
+      ],
+      dataList: [] 
     };
   },
   beforeCreate() {},
@@ -96,16 +113,46 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    okDialog() {
-      this.closeDialog(true);
+    dealDataByUrl(nodeList) {
+      let list = [];
+      nodeList.forEach(item => {
+        if (item.id != this.serviceId) {
+          list.push(item);
+        }
+      });
+      return list;
     },
-    closeDialog(isUpdate) {
-      this.$emit('close', isUpdate);
+    changeServceSelect(val, item, selectList) {
+      this.sceneList = [{
+        sourceSceneId: null,
+        targetSceneId: null
+      }];
+      if (val) {
+        this.dataList = selectList.sceneList;
+      }
+    },
+    okDialog() {
+      let isValid = this.$refs.form.valid();
+      if (!isValid) {
+        return;
+      }
+      let formData = this.$refs.form.getFormValue();
+      let data = {
+        serviceId: this.serviceId,
+        dependencyServiceId: formData.dependencyServiceId,
+        config: {
+          sceneList: this.sceneList
+        }
+      };
+      this.closeDialog(true, data);
+    },
+    closeDialog(isUpdate = false, data) {
+      this.$emit('close', isUpdate, data);
     },
     add() {
       this.sceneList.push({
-        sourceId: null,
-        targetId: null
+        sourceSceneId: null,
+        targetSceneId: null
       });
     },
     delitem(index) {
@@ -113,7 +160,29 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getList() {
+      return (dataList) => {
+        let selectList = this.$utils.mapArray(this.sceneList, 'targetSceneId');
+        let list = [];
+        if (!this.$utils.isEmpty(dataList)) {
+          list.push({
+            text: this.$t('page.default'),
+            value: -1,
+            _disabled: !!selectList.includes(-1)
+          });
+          dataList.forEach(item => {
+            list.push({
+              text: item.sceneName,
+              value: item.sceneId,
+              _disabled: !!selectList.includes(item.id)
+            });
+          });
+        }
+        return list;
+      };
+    }
+  },
   watch: {}
 };
 </script>

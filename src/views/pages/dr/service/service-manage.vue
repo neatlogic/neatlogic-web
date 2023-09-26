@@ -7,7 +7,7 @@
       <template v-slot:topRight>
         <TsRow :gutter="10">
           <Col span="12">
-            <TsFormSelect border="border"></TsFormSelect>
+            <!-- <TsFormSelect border="border"></TsFormSelect> -->
           </Col>
           <Col span="12">
             <div class="flex-start">
@@ -23,7 +23,10 @@
       </template>
       <template v-slot:content>
         <TsTable
-          v-bind="tableConfig"
+          v-bind="serviceData"
+          :theadList="theadList"
+          @changeCurrent="changeCurrent"
+          @changePageSize="changePageSize"
         >
           <template v-slot:name="{row}">
             <div class="text-action" @click="toDetail(row)">{{ row.name }}</div>
@@ -44,7 +47,7 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    // TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
@@ -52,23 +55,21 @@ export default {
   data() {
     return {
       keyword: '',
-      tableConfig: {
-        theadList: [
-          { title: this.$t('page.name'), key: 'name'},
-          { title: this.$t('page.type'), key: 'type'},
-          { title: 'RTO', key: 'RTO'},
-          { title: 'RPO', key: 'RPO'},
-          { title: this.$t('page.status'), key: 'status'},
-          {key: 'action'}
-        ],
-        tbodyList: [
-          {name: '测试'}
-        ]
-      }
+      serviceData: {},
+      theadList: [
+        { title: this.$t('page.name'), key: 'name'},
+        { title: this.$t('page.type'), key: 'type'},
+        { title: 'RTO', key: 'recoveryTimeObjective'},
+        { title: 'RPO', key: 'recoveryPointObjective'},
+        { title: this.$t('page.status'), key: 'status'},
+        {key: 'action'}
+      ]
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.searchService();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -78,12 +79,31 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    searchService() {
+      let data = {
+        keyword: this.keyword,
+        currentPage: this.serviceData.currentPage,
+        pageSize: this.serviceData.pageSize
+      };
+      this.$api.dr.service.searchService(data).then((res) => {
+        if (res.Status === 'OK') {
+          this.serviceData = res.Return;
+        }
+      });
+    },
+    changeCurrent(currentPage) {
+      this.serviceData.currentPage = currentPage;
+      this.searchService(); 
+    },
+    changePageSize(pageSize) {
+      this.serviceData.pageSize = pageSize;
+      this.searchService(); 
+    },
     addService() {
       this.$router.push({
         path: './service-add'
       });
     },
-    searchService() {},
     deleteService(row) {
       if (row.referenceCount) {
         return;
@@ -93,14 +113,22 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$Message.success(this.$t('message.deletesuccess'));
-          vnode.isShow = false;
+          this.$api.dr.service.deleteService({
+            id: row.id
+          }).then((res) => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              vnode.isShow = false;
+              this.searchService();
+            }
+          });
         }
       });
     },
     toDetail(row) {
       this.$router.push({
-        path: '/service-detail'
+        path: '/service-detail',
+        query: { id: row.id }
       });
     }
   },

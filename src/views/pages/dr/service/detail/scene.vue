@@ -42,7 +42,12 @@ export default {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
     SceneDialog: resolve => require(['./scene-dialog.vue'], resolve)
   },
-  props: {},
+  props: {
+    sceneList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       cardData: {
@@ -64,7 +69,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -72,6 +79,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      if (!this.$utils.isEmpty(this.sceneList)) {
+        this.cardData.tbodyList = this.sceneList;
+      }
+    },
     addScene() {
       this.type = 'add';
       this.isShowDialog = true;
@@ -91,10 +103,10 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
         btnType: 'error',
         'on-ok': vnode => {
+          this.$emit('deleteScene', row);
           this.cardData.tbodyList.splice(index, 1);
-          this.$Message.success(this.$t('message.deletesuccess'));
           vnode.isShow = false;
-          this.$emit('update', this.cardData.tbodyList);
+          this.$emit('updateSceneList', this.cardData.tbodyList);
         }
       });
     },
@@ -106,9 +118,13 @@ export default {
         } else { 
           this.cardData.tbodyList.splice(this.editIndex, 1, data);
         }
-        this.$emit('update', this.cardData.tbodyList);
+        this.$emit('updateSceneList', this.cardData.tbodyList);
+        this.$emit('editScene', data);
       }
       this.isShowDialog = false;
+    },
+    getData() {
+      return this.cardData.tbodyList;
     }
   },
   filter: {},

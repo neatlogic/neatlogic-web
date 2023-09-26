@@ -9,7 +9,7 @@
       <template slot-scope="{ row }">
         <div class="padding-sm">
           <div class="overflow pb-xs">
-            {{ row.name }}
+            {{ row.dataCenterName }}
           </div>
           <div class="pb-sm ">
             <Divider orientation="start"><div class="text-title">实例</div></Divider>
@@ -51,7 +51,7 @@
     >
       <template v-slot>
         <div>
-          <DatacenterEdit></DatacenterEdit>
+          <DatacenterEdit ref="datacenter"></DatacenterEdit>
         </div>
       </template>
     </TsDialog>
@@ -65,7 +65,7 @@ export default {
     DatacenterEdit: resolve => require(['./datacenter-edit.vue'], resolve)
   },
   props: {
-    
+    list: Array
   },
   data() {
     return {
@@ -78,11 +78,7 @@ export default {
         padding: false,
         boxShadow: false,
         firstBtn: true,
-        tbodyList: [
-          {
-            name: '主中心'
-          }
-        ]
+        tbodyList: []
       },
       sceneConfig: {},
       isShowDialog: false
@@ -91,7 +87,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -99,6 +97,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      if (!this.$utils.isEmpty(this.list)) {
+        this.cardData.tbodyList = this.list;
+      }
+    },
     addData() {
       this.isShowDialog = true;
     },

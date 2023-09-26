@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsDialog
       title="选择节点"
       type="slider"
@@ -17,6 +16,8 @@
               v-model="searchVal"
               v-bind="searchConfig"
               :disabledList="disabledList"
+              :clearable="!disabledList.length"
+              @change="searchNodeList()"
             ></CombineSearcher>
           </div>
           <TsTable
@@ -48,11 +49,11 @@ export default {
     multiple: {
       type: Boolean,
       default: false
-    }
+    },
+    typeIdList: Array
   },
   data() {
     return {
-      loadingShow: false,
       theadList: [
         { key: 'selection' },
         { title: this.$t('page.ip'), key: 'ip'},
@@ -71,7 +72,9 @@ export default {
         { title: this.$t('page.description'), key: 'description'}
       ],
       tableData: {},
-      searchVal: {},
+      searchVal: {
+        typeIdList: this.typeIdList
+      },
       selectedRowId: null,
       selectedRowData: null,
       searchConfig: {
@@ -87,7 +90,8 @@ export default {
             textName: 'label',
             valueName: 'id',
             search: true,
-            transfer: true
+            transfer: true,
+            disabled: true
           },
           {
             type: 'select',
@@ -182,15 +186,13 @@ export default {
           }
         ]
       },
-      disabledList: [] //不可更改的搜索条件
+      disabledList: ['typeIdList'] //不可更改的搜索条件
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.getNodeList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -198,15 +200,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getNodeList() {
-      let data = {};
+    searchNodeList(params) {
+      if (this.$utils.isEmpty(this.searchVal.typeIdList)) {
+        return;
+      }
+      let data = this.searchVal;
+      if (params) {
+        Object.assign(data, params);
+      }
       this.$api.common.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
-          this.$set(this.tableData, 'theadList', this.theadList);
         }
-      }).finally(() => {
-        this.loadingShow = false;
       });
     },
     getDataList(type, value) {
@@ -215,14 +220,13 @@ export default {
         currentPage: type == 'currentPage' ? value : this.currentPage,
         pageSize: type == 'pageSize' ? value : this.pageSize
       };
-      param = Object.assign(param, this.searchVal);
       this.searchNodeList(param);
     },
     okDialog() {
-      this.closeDialog();
+      this.closeDialog(this.selectedRowData);
     },
-    closeDialog() {
-      this.$emit('close');
+    closeDialog(list) {
+      this.$emit('close', list);
     },
     getSelected(id, row) {
       let selectedArr = this.tableData.tbodyList.filter(val => {
@@ -234,7 +238,18 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    typeIdList: {
+      handler(val) {
+        if (val) {
+          this.$set(this.searchVal, 'typeIdList', val);
+          this.searchNodeList(this.searchVal);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less">

@@ -10,23 +10,30 @@
       </template>
       <template slot-scope="{ row }">
         <div class="padding-sm">
-          <div class="overflow pb-xs">
-            {{ row.name }}
+          <div class="overflow pb-xs from-name flex-between">
+            <span>{{ row.dependencyServiceName }}</span>
+            <span>{{ row.serviceName }}</span>
           </div>
-          <div v-for="(item,index) in row.list" :key="index" class="from-name text-tip overflow">
-            <span class="pr-sm">{{ item.sourceName }}</span>
+          <div v-for="(item,index) in row.config.sceneList" :key="index" class="from-name text-tip overflow">
+            <span class="pr-sm">{{ item.sourceSceneId==-1?'默认':item.sourceSceneName }}</span>
             <span class="pl-sm pr-sm from-icon border-dashed"></span>
             <span class="tsfont-right text-dividing"></span>
-            <span>{{ item.targetName }}</span>
+            <span>{{ item.targetSceneName }}</span>
           </div>
         </div>
       </template>
-      <template v-slot:control="{ row }">
-        <div class="tsfont-edit" @click="editService(row)">{{ $t('page.edit') }}</div>
-        <div v-if="firstBtn" class="pl-sm tsfont-trash-o" @click="deleteService(row)">{{ $t('page.delete') }}</div>
+      <template v-if="!readonly" v-slot:control="{ row,index }">
+        <div class="tsfont-edit" @click="editService(row,index)">{{ $t('page.edit') }}</div>
+        <div class="pl-sm tsfont-trash-o" @click="deleteServiceRelationship(row,index)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
-    <ServiceDialog v-if="isShowDialog" @close="closeService"></ServiceDialog>
+    <ServiceDialog
+      v-if="isShowDialog"
+      :serviceId="serviceId"
+      :currService="currService"
+      :currSceneList="sceneList"
+      @close="closeService"
+    ></ServiceDialog>
   </div>
 </template>
 <script>
@@ -37,9 +44,20 @@ export default {
     ServiceDialog: resolve => require(['./service-dialog.vue'], resolve)
   },
   props: {
-    firstBtn: {
+    readonly: {
       type: Boolean,
       default: false
+    },
+    serviceId: {
+      type: Number
+    },
+    list: {
+      type: Array,
+      default: () => []
+    },
+    sceneList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -52,32 +70,10 @@ export default {
         headerPosition: 'right',
         padding: false,
         boxShadow: false,
-        firstBtn: this.firstBtn,
-        tbodyList: [
-          {
-            name: 's',
-            list: [
-              {
-                sourceName: '主中心',
-                targetName: '同城中心'
-              },
-              {
-                sourceName: '主中心',
-                targetName: '同城中心'
-              },
-              {
-                sourceName: '主中心',
-                targetName: '同城中心'
-              },
-              {
-                sourceName: '主中心',
-                targetName: '同城中心'
-              }
-            ]
-          }
-        ]
+        firstBtn: !this.readonly,
+        tbodyList: []
       },
-      sceneConfig: {},
+      currService: {},
       isShowDialog: false
     };
   },
@@ -93,13 +89,16 @@ export default {
   destroyed() {},
   methods: {
     addService() {
+      this.type = 'add';
       this.isShowDialog = true;
     },
-    editService(row) {
-      this.sceneConfig = row;
+    editService(row, index) {
+      this.type = 'edit';
+      this.editIndex = index;
+      this.currService = row;
       this.isShowDialog = true;
     },
-    deleteService(row) {
+    deleteServiceRelationship(row, index) {
       if (row.referenceCount) {
         return;
       }
@@ -108,23 +107,45 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
         'on-ok': vnode => {
-          // this.$api.dr.scene.deleteService({id: row.id}).then(res => {
-          //   if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.deletesuccess'));
-          this.$emit('update');
-          //     vnode.isShow = false;
-          //   }
-          // });
+          this.$api.dr.service.deleteServiceRelationship({
+            serviceId: row.serviceId,
+            dependencyServiceId: row.id
+          }).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.cardData.tbodyList.splice(index, 1);
+              this.$emit('update');
+              vnode.isShow = false;
+            }
+          });
         }
       });
     },
-    closeService() {
+    closeService(isUpdate, data) {
+      this.currService = {};
+      if (isUpdate) {
+        if (this.type === 'add') {
+          this.cardData.tbodyList.push(data);
+        } else { 
+          this.cardData.tbodyList.splice(this.editIndex, 1, data);
+        }
+        this.$emit('updateServiceList', this.cardData.tbodyList);
+        this.$emit('editService', data);
+      }
       this.isShowDialog = false;
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    list: {
+      handler(val) {
+        this.cardData.tbodyList = this.$utils.deepClone(val) || [];
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
