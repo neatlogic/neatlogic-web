@@ -93,10 +93,10 @@
               <span class="tsfont-option-horizontal click-btn"></span>
               <DropdownMenu slot="list" class="dropdown">
                 <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
-                  <div class="ts-catalogue referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
+                  <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
                 </DropdownItem>
                 <DropdownItem v-else-if="currentVersion.uuid">
-                  <div class="action-item ts-catalogue referenceCount disable">{{ $t('page.referencelist') }}</div>
+                  <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="$refs.uploadDialog.showDialog">
                   <span class="tsfont-import">{{ $t('page.import') }}</span>
@@ -109,12 +109,12 @@
                   />
                 </DropdownItem>
                 <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                  <div class="ts-export">{{ $t('page.export') }}</div>
+                  <div class="tsfont-export">{{ $t('page.export') }}</div>
                 </DropdownItem>
                 <DropdownItem>
                   <div
                     :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
-                    class="action-item ts-check-square-o"
+                    class="action-item tsfont-check-square-o"
                     :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
                     @click="activeFormVersion(currentVersion.uuid)"
                     @mouseenter="haveChangeData"

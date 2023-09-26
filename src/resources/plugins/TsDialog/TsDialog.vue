@@ -12,10 +12,10 @@
             <div v-if="titleDes" class="text-tip title-des overflow">{{ titleDes }}</div>
             <div class="btn-dialog-contain">
               <!-- 非全屏状态下面的按钮 -->
-              <div v-if="isFull == false && fullscreen == true" class="ts-fullpage btn-dialog-header" @click="onFull()"></div>
+              <div v-if="isFull == false && fullscreen == true" class="tsfont-fullscreen btn-dialog-header" @click="onFull()"></div>
 
               <!-- 全屏状态下面的按钮 -->
-              <div v-else-if="isFull == true && fullscreen == true" class="ts-normalsize btn-dialog-header" @click="onFull()"></div>
+              <div v-else-if="isFull == true && fullscreen == true" class="tsfont-off-fullscreen btn-dialog-header" @click="onFull()"></div>
               <div v-if="showCloseIcon" class="tsfont-close btn-dialog-header" @click="onRemove"></div>
             </div>
             <!-- <div class="tsfont-close btn-close" @click="onRemove" v-if="isFull == false"></div> -->

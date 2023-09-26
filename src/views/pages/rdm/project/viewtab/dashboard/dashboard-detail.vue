@@ -13,8 +13,8 @@
       <template v-slot:topRight>
         <div v-if="dashboard" class="action-group" style="text-align: right">
           <span v-if="dashboard.type == 'custom' && dashboard.fcu == $AuthUtils.getCurrentUser().uuid" class="action-item tsfont-trash-o" @click="delDashboard">{{ $t('page.delete') }}</span>
-          <span v-if="(dashboard.type == 'system' && $AuthUtils.hasRole('DASHBOARD_MODIFY')) || (dashboard.type == 'custom' && dashboard.fcu == $AuthUtils.getCurrentUser().uuid)" class="action-item ts-setting" @click="editDashboard">{{ $t('page.edit') }}</span>
-          <span class="action-item ts-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
+          <span v-if="(dashboard.type == 'system' && $AuthUtils.hasRole('DASHBOARD_MODIFY')) || (dashboard.type == 'custom' && dashboard.fcu == $AuthUtils.getCurrentUser().uuid)" class="action-item tsfont-setting" @click="editDashboard">{{ $t('page.edit') }}</span>
+          <span class="action-item tsfont-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
         </div>
       </template>
       <div slot="content" style="width: 100%; height: 100%; padding: 0px" class="canvas">

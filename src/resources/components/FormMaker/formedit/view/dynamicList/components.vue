@@ -87,13 +87,13 @@ export default {
       let _this = this;
       _this.currentValue = setting.value || null;
       if (setting && setting.dataSource == 'matrix' && setting.matrixUuid && setting.mapping.value && setting.mapping.text && (this.setting.type == 'selects' || this.setting.type == 'select')) {
-        let param = { matrixUuid: setting.matrixUuid, keywordColumn: setting.mapping.text, columnList: [setting.mapping.value, setting.mapping.text]};
+        let param = { matrixUuid: setting.matrixUuid, keywordColumn: setting.mapping.text, valueField: setting.mapping.value, textField: setting.mapping.text};
         config.params = param;
         config.dynamicUrl = config.defaultUrl;
         config.url = '';
         config.showName = 'html';
       } else if (setting && setting.dataSource == 'matrix' && setting.matrixUuid && setting.mapping.value && setting.mapping.text && (this.setting.type == 'radio' || this.setting.type == 'checkbox')) {
-        let param = { matrixUuid: setting.matrixUuid, keywordColumn: setting.mapping.text, columnList: [setting.mapping.value, setting.mapping.text]};
+        let param = { matrixUuid: setting.matrixUuid, keywordColumn: setting.mapping.text, valueField: setting.mapping.value, textField: setting.mapping.text};
         config.params = param;
         config.url = config.defaultUrl;
         config.dynamicUrl = '';
@@ -130,7 +130,7 @@ export default {
 <style lang="less" scoped>
 .hide-container {
   position: relative;
-  .ts-eye-close {
+  .tsfont-eye-off {
     position: absolute;
   }
   .compontent-hide {

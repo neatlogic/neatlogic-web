@@ -28,6 +28,7 @@
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
                   :isFavorite="isFavorite"
+                  :isProcessed="isProcessed"
                   :projectId="currentProjectId"
                   :mode="displayMode"
                   :displayAttrList="displayAttrList"
@@ -50,6 +51,7 @@
                   :isMyCreated="isMyCreated"
                   :isEnd="isEnd"
                   :isFavorite="isFavorite"
+                  :isProcessed="isProcessed"
                   :app="app"
                   :projectId="currentProjectId"
                   :mode="displayMode"
@@ -130,7 +132,8 @@ export default {
           isMine: this.isMine,
           isMyCreated: this.isMyCreated,
           isEnd: this.isEnd,
-          isFavorite: this.isFavorite
+          isFavorite: this.isFavorite,
+          isProcessed: this.isProcessed
         })
         .then(res => {
           this.projectList = res.Return;
@@ -154,7 +157,13 @@ export default {
       return null;
     },
     isMine() {
-      if (this.type === 'doing' || this.type === 'done') {
+      if (this.type === 'doing') {
+        return 1;
+      }
+      return null;
+    },
+    isProcessed() {
+      if (this.type === 'done') {
         return 1;
       }
       return null;
@@ -168,9 +177,7 @@ export default {
     isEnd() {
       if (this.type === 'doing') {
         return 0;
-      } else if (this.type === 'done') {
-        return 1;
-      }
+      } 
       return null;
     },
     currentProjectId() {
@@ -197,6 +204,7 @@ export default {
             needIssueCount: 1,
             isMine: this.isMine,
             isMyCreated: this.isMyCreated,
+            isProcessed: this.isProcessed,
             isEnd: this.isEnd,
             isFavorite: this.isFavorite
           }).then(res => {

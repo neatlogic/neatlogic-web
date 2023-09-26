@@ -121,7 +121,7 @@ export default [
     meta: {
       title: $t('router.codehub.createmergerequest'),
       ismenu: false,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-ip-list',
       authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
@@ -133,7 +133,7 @@ export default [
     meta: {
       title: $t('router.codehub.codereview'),
       ismenu: false,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-ip-list',
       authority: 'CODEHUB_BASE',
       type: 'codehub'
     }
@@ -169,7 +169,7 @@ export default [
     meta: {
       title: $t('router.codehub.repositorydetail'),
       ismenu: false,
-      icon: 'ts-dev-iplist',
+      icon: 'tsfont-ip-list',
       authority: 'CODEHUB_BASE',
       type: 'codehub'
     }

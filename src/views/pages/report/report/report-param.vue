@@ -74,7 +74,7 @@
             </td>
             <td class="text-right">
               <a v-if="param.type" href="javascript:void(0)" @click="configParam(param)">
-                <i class="ts-setting"></i>
+                <i class="tsfont-setting"></i>
               </a>
               <a class="pl-xs" href="javascript:void(0)" @click="delParam(index)">
                 <i class="tsfont-minus-o"></i>

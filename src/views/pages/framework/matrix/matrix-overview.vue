@@ -34,10 +34,10 @@
           <div style="text-align:right">
             <div class="action-group">
               <div class="action-item" :class="modeType == 'block' ? 'active text-href' : ''" @click="changeMode('block')">
-                <i class="ts-block"></i>
+                <i class="tsfont-blocklist"></i>
               </div>
               <div class="action-item" :class="modeType == 'list' ? 'active text-href' : ''" @click="changeMode('list')">
-                <i class="ts-list"></i>
+                <i class="tsfont-list"></i>
               </div>
             </div>
           </div>
@@ -116,7 +116,7 @@
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li v-if="row.type === 'custom'" class="ts-intersect icon" @click.stop="copyMatrix(row)">{{ $t('page.copy') }}</li>
+                  <li v-if="row.type === 'custom'" class="tsfont-copy icon" @click.stop="copyMatrix(row)">{{ $t('page.copy') }}</li>
                   <li
                     class="tsfont-trash-o icon"
                     :class="{ disable: row.referenceCount > 0 || row.type==='private' }"

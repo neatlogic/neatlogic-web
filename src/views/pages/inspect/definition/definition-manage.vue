@@ -19,7 +19,7 @@
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="ts-setting text-action icon-right action-item" @click="openInspectToolSettingDialog">{{ $t('term.inspect.inspecttoolsetting') }}</span>
+          <span class="tsfont-setting text-action icon-right action-item" @click="openInspectToolSettingDialog">{{ $t('term.inspect.inspecttoolsetting') }}</span>
           <span v-if="!downloadLoading" v-download="exportExcel" class="tsfont-export action-item">{{ $t('term.inspect.exporttargetrule') }}</span>
           <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
@@ -40,7 +40,7 @@
         <div v-if="!loadingShow && inspectDefinitionList.length > 0" class="content-main">
           <div v-for="(item, index) in inspectDefinitionList" :key="index">
             <div v-if="item && item.cardList && item.cardList.length > 0" class="title text-title ci-title-text">
-              <span class="text-grey ts-catalogue">{{ item.collection }}</span>
+              <span class="text-grey tsfont-formstaticlist">{{ item.collection }}</span>
             </div>
             <div>
               <TsCard

@@ -316,7 +316,7 @@
                   .attr('y', -iconSize / 2)
                   .attr('width', iconSize)
                   .attr('height', iconSize)
-                  .attr('xlink:href', '#ts-remove-s')
+                  .attr('xlink:href', '#tsfont-close-s')
                   .style('cursor', 'pointer');
 
                 d.removeEl.on('click.removebtn', function() {

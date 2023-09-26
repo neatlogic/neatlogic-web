@@ -159,7 +159,8 @@
     "publicdataview": "Global Data View",
     "changememo": "Reason for change",
     "globalattr": "Global Properties",
-    "pleaseselectlayout": "Please select a layout"
+    "pleaseselectlayout": "Please select a layout",
+    "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1131,7 +1132,8 @@
     "host": "server address",
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",
-    "heartbeatthreshold": "Heartbeat threshold"
+    "heartbeatthreshold": "Heartbeat threshold",
+    "versionlog": "Version Log"
   },
   "knowledge": {
     "document": "Document",

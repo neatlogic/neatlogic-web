@@ -54,7 +54,9 @@
       </template>
       <template v-slot:sider>
         <div>
+          <span v-if="$utils.isEmpty(resourceList)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
           <Tree
+            v-else
             :data="resourceList"
             :render="renderTree"
             :multiple="false"
@@ -179,7 +181,9 @@ export default {
       searchValue: {
         searchField: 'ip'
       },
-      reportData: null,
+      reportData: {
+        tbodyList: []
+      },
       theadList: [
         {
           title: this.$t('page.ipaddress'),
@@ -254,7 +258,7 @@ export default {
       currentCiEntityId: null,
       timmer: null,
       //old
-      loadingShow: true,
+      loadingShow: false,
       selectList: [],
       isScriptEdit: false, // 是否是脚本编辑
       ciEntityId: '',
@@ -763,6 +767,9 @@ export default {
     },
     closeRuleOfThresholdDialog() {
       this.isShowRuleThresholdDialog = false;
+    },
+    gotoAssetManagePage() {
+      window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
     }
   },
   computed: {

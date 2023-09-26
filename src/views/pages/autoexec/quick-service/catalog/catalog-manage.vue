@@ -158,7 +158,7 @@ export default {
               }
             },
             {
-              icon: 'ts-page',
+              icon: 'tsfont-putongjigui',
               desc: this.$t('term.autoexec.addservice'),
               isAddFn: function(treeNode) {
                 if (treeNode.type == 'catalog') {

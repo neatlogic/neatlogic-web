@@ -53,7 +53,7 @@
           <template v-slot:action="{row}">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="ts-page" @click="viewRecord(row)">{{ $t('term.report.sendrecord') }}</li>
+                <li class="tsfont-putongjigui" @click="viewRecord(row)">{{ $t('term.report.sendrecord') }}</li>
                 <!-- <li class="tsfont-edit" @click="toEditPage('edit',row)">编辑</li> -->
                 <li class="tsfont-copy" @click="toEditPage('copy',row)">{{ $t('page.copy') }}</li>
               </ul>

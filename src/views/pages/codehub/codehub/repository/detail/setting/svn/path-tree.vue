@@ -15,7 +15,7 @@
             @click.stop="getNext(li)"
           ></span>
           <span class="btn-check" :class="selectPath.indexOf(li.fullpath)>-1?'text-href bg-primary active':'text-action'">
-            <span v-if="selectPath.indexOf(li.fullpath)>-1" class="ts-check text-op selected-check-icon"></span>
+            <span v-if="selectPath.indexOf(li.fullpath)>-1" class="tsfont-check text-op selected-check-icon"></span>
           </span>
           {{ li.path }}
         </div>

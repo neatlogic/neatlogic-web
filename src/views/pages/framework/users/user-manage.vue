@@ -71,7 +71,7 @@
                   </li>
                   <!-- <li class="tsfont-edit" @click="authDialog(row);getAuthSelect(row)">{{ $t('page.auth') }}</li> -->
                   <li class="tsfont-edit icon" @click.stop="editUser(row, 'user')">{{ $t('page.edit') }}</li>
-                  <li class="ts-permission icon" @click.stop="editUser(row, 'auth')">{{ $t('page.auth') }}</li>
+                  <li class="tsfont-permission icon" @click.stop="editUser(row, 'auth')">{{ $t('page.auth') }}</li>
                   <li class="tsfont-trash-o icon" @click.stop="deleteData(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>

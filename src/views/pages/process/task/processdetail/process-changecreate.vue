@@ -29,7 +29,7 @@
               <span
                 v-if="actionConfig.start"
                 :class="{disable: disabledConfig.starting}"
-                class="action-item ts-play"
+                class="action-item tsfont-play-o"
                 @click="startTaskStep('start')"
               >{{ actionConfig.start }}</span>
               <!-- 开始_end -->
@@ -37,7 +37,7 @@
               <span
                 v-if="actionConfig.accept"
                 :class="{disable: disabledConfig.accepting}"
-                class="action-item ts-play"
+                class="action-item tsfont-play-o"
                 @click="startTaskStep('accept')"
               >{{ actionConfig.accept }}</span>
               <!-- accept_end -->
@@ -74,7 +74,7 @@
               <!-- 查看流程图_start -->
               <span v-if="!pocesstaskview" class="action-item" @click="lookSitemap">
                 <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
-                  <i class="ts-sitemap"></i>
+                  <i class="tsfont-topo"></i>
                 </Tooltip>
               </span>
               <!-- 工单关注 -->
@@ -84,16 +84,16 @@
                 @click="updateFocus"
               >
                 <Tooltip v-if="processTaskConfig.isFocus" :content="$t('term.process.notfocustask')" theme="light">
-                  <i :class="['text-danger', 'ts-heart-s']"></i>
+                  <i :class="['text-danger', 'tsfont-heart-s']"></i>
                 </Tooltip>
                 <Tooltip v-else :content="$t('term.process.focustask')" theme="light">
-                  <i :class="['text-danger', 'ts-heart']"></i>
+                  <i :class="['text-danger', 'tsfont-heart-o']"></i>
                 </Tooltip>
               </span>
               <!-- 更多操作 -->
               <span v-if="isMoreAction" class="action-item">
                 <Dropdown trigger="click" placement="bottom-end">
-                  <span class="ts-option-vertical"></span>
+                  <span class="tsfont-option-vertical"></span>
                   <DropdownMenu slot="list">
                     <!-- 撤回_start -->
                     <DropdownItem v-if="actionConfig.retreat" :disabled="disabledConfig.retreating" @click.native="retreatTaskStep">
@@ -493,7 +493,7 @@ export default {
       handler: 'changecreate', //节点类型
       validTypeList: [
         {
-          icon: 'ts-complete',
+          icon: 'tsfont-check-o',
           iconColor: '#81D655',
           type: 'success'
         },

@@ -155,19 +155,6 @@ export default {
         this.$set(item, 'type', findItem.type);
       }
     },
-    dealDataByUrl(nodeList, value) { 
-      let columlist = [];
-      if (nodeList && nodeList.length > 0) {
-        nodeList.forEach(item => {
-          columlist.push({
-            text: item[value].text,
-            value: item[value].compose,
-            uuid: item[value].value
-          });
-        });
-      }
-      return columlist;
-    },
     changeExpression(item) {
       this.$set(item, 'defaultValue', []);
       this.$set(item, 'valueList', []);
@@ -195,14 +182,14 @@ export default {
       return (value) => {
         if (value) {
           return {
-            dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
-            params: { 
+            dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+            rootName: 'dataList',
+            params: {
               matrixUuid: this.matrixUuid,
               keywordColumn: value,
-              columnList: [value]
+              valueField: value,
+              textField: value
             },
-            rootName: 'tbodyList',
-            dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, value); },
             transfer: true,
             search: true,
             multiple: true,

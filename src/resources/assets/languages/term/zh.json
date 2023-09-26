@@ -159,7 +159,8 @@
     "publicdataview": "全局数据视图",
     "changememo": "变更说明",
     "globalattr": "全局属性",
-    "pleaseselectlayout": "请选择布局"
+    "pleaseselectlayout": "请选择布局",
+    "gotoresourcetypetreesetting": "请到配置管理-资产清单中设置根目录"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1130,7 +1131,8 @@
     "host": "服务器地址",
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",
-    "heartbeatthreshold": "心跳阈值"
+    "heartbeatthreshold": "心跳阈值",
+    "versionlog": "版本日志"
   },
   "knowledge": {
     "document": "文档",

@@ -7,7 +7,7 @@
   <template slot="action" slot-scope="{ row }">
     <div class="tstable-action">
       <ul class="tstable-action-ul">
-        <li class="ts-list" @click="viewIssue(row.uuid)">详情</li>
+        <li class="tsfont-list" @click="viewIssue(row.uuid)">详情</li>
       </ul>
     </div>
   </template>
@@ -110,7 +110,7 @@ theadList: [
   { key: 'appSystemName', title: '应用'},
   { key: 'isActive', title: '是否激活', type: 'states', stateArr: [{name: '是', value: 1, textStyle: 'text-success'}, {name: '否', value: 2, textStyle: 'text-grey'}]},
   { key: 'action', title: '', type: 'action', operations: 
-  [{icon: 'ts-trash-s', name: '删除', action: 'del', type: 'text|switch', style: '', key: 'del', value: 'referenceCount', disabled: true|false, readonly:true|false|function,isShow:true|false|function}, 
+  [{icon: 'tsfont-trash-s', name: '删除', action: 'del', type: 'text|switch', style: '', key: 'del', value: 'referenceCount', disabled: true|false, readonly:true|false|function,isShow:true|false|function}, 
   {icon: '', name: '复制', type: 'copy', key: 'name', type: 'switch', style: ''}]},
   {key: 'status', title: '状态', headerIcon: 'tsfont-refresh'}
 ]

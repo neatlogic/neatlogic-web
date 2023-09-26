@@ -6,7 +6,7 @@
 <TsFormSelect v-model="value" v-bind="config" @on-change="changeFn" :selectItemList.sync="selectItemList" :needCallback.sync="needCallback" @searchCallback="refreshSuccess()">
   //下拉列表在顶部添加额外一行
   <template v-slot:first-ul>
-        <li class="ts-plus text-href first-slot" @click="addList()">数据源</li>
+        <li class="tsfont-plus text-href first-slot" @click="addList()">数据源</li>
   </template>
   //重写下拉列表显示
   <template v-slot:option="{item,index}">
@@ -145,17 +145,17 @@ config:{
   size:"default",
   width:"100%",
   search:false,
-  preIcon:"ts-edit",
+  preIcon:"tsfont-edit",
   keyword:"keyword",
   idListName:"valueList",
   placeholder:"请输入",
   multiple:true,
   allowCreate:false,
   readonly:false,
-  url:"/api/rest/matrix/column/data/search/forselect/new",
+  url:"/api/rest/matrix/column/data/search/forselect",
   params:{test:"test"},
   defaultValueIsFirst:false,
-  dynamicUrl:"/api/rest/matrix/column/data/search/forselect/new",
+  dynamicUrl:"/api/rest/matrix/column/data/search/forselect",
   rootName:"tbodyList",
   dataList:[{text:"text",value:"value"}],
   valueName:"id",

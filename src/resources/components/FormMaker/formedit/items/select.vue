@@ -65,10 +65,12 @@ export default {
       if (setting.dataSource == 'matrix') {
         let param = { matrixUuid: setting.matrixUuid };
         param.keywordColumn = setting.mapping.text;
-        param.columnList = [setting.mapping.value, setting.mapping.text];
+        param.valueField = setting.mapping.value;
+        param.textField = setting.mapping.text;
         json = this.defaultSelfJson;
         json.params = param;
         json.dynamicUrl = json.defaultUrl;
+        json.rootName = 'dataList';
         json.showName = 'html';
         json.readonlyClass = setting.readonlyClass;
         json.sperateText = setting.sperateText;

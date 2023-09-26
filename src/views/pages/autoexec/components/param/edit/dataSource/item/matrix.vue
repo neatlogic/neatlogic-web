@@ -100,10 +100,9 @@ export default {
       defaultValue: null,
       config: null,
       defaultSelfJson: {
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
-        rootName: 'tbodyList',
-        params: null,
-        dealDataByUrl: _this.dealDataByUrl
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
+        params: null
       }
     };
   },
@@ -148,41 +147,17 @@ export default {
       };
       this.$emit('update', data);
     },
-    dealDataByUrl(nodeList) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      return this.dealDataFilter(nodeList, this.config);
-    },
-    dealDataFilter(nodeList, config) {
-      //当默认值的引用类型是自定义  处理默认值的数据结构
-      let columlist = [];
-      config = config || null;
-      if (config.mapping.value && config.mapping.text && nodeList) {
-        if (nodeList && nodeList.length > 0) {
-          nodeList.forEach(co => {
-            if (co[config.mapping.text]) {
-              columlist.push({
-                text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
-                html: co[config.mapping.text].text
-              });
-            }
-          });
-        }
-      }
-      return columlist;
-    },
     updateMapping() {
       if (this.matrixUuid && this.mapping.value && this.mapping.text) {
-        this.defaultSelfJson.dynamicUrl = '/api/rest/matrix/column/data/search/forselect/new';
-        this.defaultSelfJson.dealDataByUrl = this.dealDataByUrl;
+        this.defaultSelfJson.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         this.config.mapping = this.mapping;
         let param = { matrixUuid: this.matrixUuid };
         param.keywordColumn = this.mapping.text;
-        param.columnList = [this.mapping.value, this.mapping.text];
+        param.valueField = this.mapping.value;
+        param.textField = this.mapping.text;
         this.defaultSelfJson.params = param;
       } else {
         this.defaultSelfJson.dynamicUrl = '';
-        this.defaultSelfJson.dealDataByUrl = null;
       }
     },
     getData() {

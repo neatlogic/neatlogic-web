@@ -63,8 +63,8 @@
                   <li class="tsfont-copy" @click="copyProfile(row.id)">{{ $t('page.copy') }}</li>
                   <li
                     class="icon tsfont-trash-o"
-                    :title="row.ciEntityList && row.ciEntityList.length > 0 ? $t('page.nodeletetarget', {name: 'profile', target: $t('term.autoexec.combinationtool')}) : ''"
-                    :class="{ disable: row.ciEntityList && row.ciEntityList.length > 0 }"
+                    :title="row.referredCount > 0 ? $t('page.nodeletetarget', {name: 'profile', target: $t('term.autoexec.combinationtool')}) : ''"
+                    :class="{ disable: row.referredCount > 0 }"
                     @click.stop="deleteProfile(row)"
                   >{{ $t('page.delete') }}</li>
                 </ul>
@@ -205,7 +205,7 @@ export default {
       }
     },
     deleteProfile(row) {
-      if (row && row.ciEntityList && row.ciEntityList.length > 0) {
+      if (row && row.referredCount > 0) {
         return false;
       }
       this.$createDialog({

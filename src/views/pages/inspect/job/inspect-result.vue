@@ -44,8 +44,10 @@
         ></CombineSearcher>
       </template>
       <template v-slot:sider>
-        <div style="margin-top: -6px;">
+        <div>
+          <span v-if="$utils.isEmpty(treeData)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
           <Tree
+            v-else
             :data="treeData"
             :render="renderContent"
             class="ts-tree"
@@ -424,6 +426,7 @@ export default {
     getTableData(currentPage, pageSize) {
       //获取表格数据
       if (!this.selectType.typeId) {
+        this.loadingShow = false;
         return;
       }
       let _this = this;
@@ -496,6 +499,9 @@ export default {
       this.tableConfig.pageSize = historyData['pageSize'];
       this.topNavTextObj = historyData['topNavTextObj'];
       this.jobId = historyData['jobId'];
+    },
+    gotoAssetManagePage() {
+      window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
     }
   },
   computed: {},

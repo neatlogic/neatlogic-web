@@ -12,10 +12,10 @@
         mode="dialog"
         :propCiId="ciId"
         :propCiEntityId="ciEntityId"
-        :isForm="isForm"
         saveMode="emit"
         :hideHeader="true"
         @save="save"
+        @cancel="close"
       ></EditCiEntity>
     </div>
   </TsDialog>
@@ -39,7 +39,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isForm: true,
       setting: {
         title: this.$t('dialog.title.edittarget', {'target': this.$t('page.assets')}),
         maskClose: false,

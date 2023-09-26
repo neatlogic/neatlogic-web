@@ -14,27 +14,27 @@
             <div>
               <Tag>
                 <strong>&lt;</strong>
-                <i class="text-grey ts-long-arrow-right"></i>
+                <i class="text-grey tsfont-arrow-right"></i>
                 <strong>&amp;lt;</strong>
               </Tag>
               <Tag>
                 <strong>&gt;</strong>
-                <i class="text-grey ts-long-arrow-right"></i>
+                <i class="text-grey tsfont-arrow-right"></i>
                 <strong>&amp;gt;</strong>
               </Tag>
               <Tag>
                 <strong>&</strong>
-                <i class="text-grey ts-long-arrow-right"></i>
+                <i class="text-grey tsfont-arrow-right"></i>
                 <strong>&amp;amp;</strong>
               </Tag>
               <Tag>
                 <strong>"</strong>
-                <i class="text-grey ts-long-arrow-right"></i>
+                <i class="text-grey tsfont-arrow-right"></i>
                 <strong>&amp;quot;</strong>
               </Tag>
               <Tag>
                 <strong>'</strong>
-                <i class="text-grey ts-long-arrow-right"></i>
+                <i class="text-grey tsfont-arrow-right"></i>
                 <strong>&amp;apos;</strong>
               </Tag>
             </div>

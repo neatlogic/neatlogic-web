@@ -57,7 +57,7 @@
               ></span>
               <span
                 v-if="requestConfig.integrationUuid"
-                class="ts-rotate-right text-tip-active"
+                class="tsfont-rotate-right text-tip-active"
                 :title="$t('page.refresh')"
                 style="padding-left:8px"
                 @click="reloadIntegration(requestConfig.integrationUuid)"
@@ -274,7 +274,7 @@
                   ></span>
                   <span
                     v-if="callbackConfig.config.integrationUuid"
-                    class="ts-rotate-right text-tip-active"
+                    class="tsfont-rotate-right text-tip-active"
                     :title="$t('page.refresh')"
                     style="padding-left:8px"
                     @click="reloadIntegration(callbackConfig.config.integrationUuid)"

@@ -87,7 +87,7 @@
                       ></CommitDiff>
                       <div
                         v-if="row.commitdiffInfo"
-                        class="text-action text-center ts-angle-double-up"
+                        class="text-action text-center tsfont-double-arrow-up"
                         @click="row.showcommitdiffInfo = false"
                       >{{ $t('term.codehub.packupcontent') }}</div>
                       <Loading v-else loadingShow></Loading>

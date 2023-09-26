@@ -22,7 +22,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('process')">{{ $t('page.refresh') }}</span>
-              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item ts-eye" @click="viewProcess">{{ $t('page.view') }}</span>
+              <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-eye" @click="viewProcess">{{ $t('page.view') }}</span>
               <span v-if="channelValue.processUuid && channelValue.processUuid != ''" class="action-item tsfont-edit" @click="gotoEditFlow">{{ $t('page.edit') }}</span>
             </div>
           </div>
@@ -46,7 +46,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('priority')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddPiority()">{{ $t('page.setting') }}</span>
+              <span class="action-item tsfont-setting" @click="gotoAddPiority()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('worktime')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddWorktime()">{{ $t('page.setting') }}</span>
+              <span class="action-item tsfont-setting" @click="gotoAddWorktime()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="refresh('channelType')">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoAddpChannelTyp()">{{ $t('page.setting') }}</span>
+              <span class="action-item tsfont-setting" @click="gotoAddpChannelTyp()">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
           <div class="view">
             <div class="div-btn-contain action-group">
               <span class="action-item tsfont-rotate-right" @click="getRelarelation">{{ $t('page.refresh') }}</span>
-              <span class="action-item ts-setting" @click="gotoRotationManage">{{ $t('page.setting') }}</span>
+              <span class="action-item tsfont-setting" @click="gotoRotationManage">{{ $t('page.setting') }}</span>
             </div>
           </div>
         </div>

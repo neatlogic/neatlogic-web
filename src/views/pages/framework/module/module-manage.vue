@@ -22,7 +22,7 @@
                 :padding="false"
               >
                 <template slot-scope="{ row }">
-                  <div class="padding">
+                  <div class="padding cursor-pointer" @click.stop="openVersionLogDialog(row)">
                     <div>
                       <span :class="{ 'tsfont-plugin': row.hasInitialData }">{{ row.name }}</span>
                       <span class="text-grey ml-xs">({{ row.id }})</span>
@@ -44,6 +44,7 @@
       </template>
     </TsContain>
     <ModuleImportDialog v-if="isImportDialogShow" :moduleId="currentModuleId" @close="closeImportDialog"></ModuleImportDialog>
+    <VersionLogDialog v-if="isShowVersionLogDialog" :moduleId="currentModuleId" @close="closeVersionLogDialog"></VersionLogDialog>
   </div>
 </template>
 <script>
@@ -52,13 +53,15 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve)
+    ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve),
+    VersionLogDialog: resolve => require(['./version-log-dialog'], resolve)
   },
   mixins: [download],
   props: {},
   data() {
     return {
       isImportDialogShow: false,
+      isShowVersionLogDialog: false,
       currentModuleId: '',
       moduleGroupList: []
     };
@@ -95,6 +98,14 @@ export default {
         params: { moduleId: row.id }
       };
       this.download(param);
+    },
+    openVersionLogDialog(row) {
+      this.currentModuleId = row.id;
+      this.isShowVersionLogDialog = true;
+    },
+    closeVersionLogDialog() {
+      this.currentModuleId = '';
+      this.isShowVersionLogDialog = false;
     }
   },
   filter: {},

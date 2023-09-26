@@ -4,7 +4,6 @@
       <div class="title text-grey">{{ $t('term.report.report') }}</div>
       <ul>
         <li v-for="(report, index) in reportList" :key="index" :class="$route.fullPath.indexOf(report.id)>-1 ? 'active link' : 'link'">
-          <!--<router-link :to="'/reportinstance-show/'+report.id" class="ts-report">{{ report.name }}</router-link>-->
           <a class="cursor tsfont-report" @click="goTo('/reportinstance-show/'+report.id)">{{ report.name }}</a>
         </li>
       </ul>

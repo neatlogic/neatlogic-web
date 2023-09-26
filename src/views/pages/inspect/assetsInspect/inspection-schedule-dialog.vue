@@ -88,7 +88,7 @@
                   </li>
                   <li
                     v-if="row.execCount > 0"
-                    class="ts-page"
+                    class="tsfont-putongjigui"
                     @click="showAudit(row.uuid)"
                   >
                     <!-- 执行记录 -->

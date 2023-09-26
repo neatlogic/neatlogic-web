@@ -12,7 +12,7 @@
   <template v-slot:name2>
     <TsFormSelect v-model="itemList.name2.value" v-bind="itemList.name2" :selectItemList.sync="dataSourceJson" @on-change="changeFn()">
       <template v-slot:first-ul>
-        <li class="ts-plus text-href first-slot" @click="addList()">数据源</li>
+        <li class="tsfont-plus text-href first-slot" @click="addList()">数据源</li>
       </template>
     </TsFormSelect>
   </template>

@@ -14,8 +14,9 @@ import VueI18n from 'vue-i18n';
 import 'assets/index.js';
 import md5 from 'js-md5';
 
-import '@/resources/assets/font/tsfont/css/ts-code.less';
-import { initI18n } from '@/resources/init.js';
+//公共的全局组件、样式等
+import '@/resources/base.js';
+import {initRouter, initI18n} from '@/resources/init.js';
 
 Vue.use(ViewUI);
 Vue.use(VueI18n);
@@ -56,5 +57,6 @@ Vue.prototype.$api = api;
 
 new Vue({
   router,
+  i18n,
   render: h => h(License)
 }).$mount('#index');

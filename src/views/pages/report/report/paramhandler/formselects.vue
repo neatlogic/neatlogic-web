@@ -34,10 +34,12 @@ export default {
   data() {
     return {
       myConfig: {
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new',
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
         params: {
-          matrixUuid: this.config.matrix, 
-          columnList: [this.config.valueKey, this.config.textKey],
+          matrixUuid: this.config.matrix,
+          valueField: this.config.valueKey,
+          textField: this.config.textKey,
           keywordColumn: this.config.textKey
         }
       },

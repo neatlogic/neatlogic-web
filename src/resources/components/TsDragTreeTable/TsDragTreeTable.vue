@@ -1,5 +1,5 @@
 <template>
-  <div class="ts-drag-tree-table-wrap">
+  <div class="drag-tree-table-wrap">
     <div class="dividing-color">
       <div class="card-wrapper">
         <div v-if="tbodyList.length > 0">
@@ -113,7 +113,7 @@ export default {
 </script>
 
 <style lang="less">
-.ts-drag-tree-table-wrap {
+.drag-tree-table-wrap {
   .card-wrapper {
     position: relative;
      .card-top {

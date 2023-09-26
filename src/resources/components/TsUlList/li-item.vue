@@ -8,7 +8,7 @@
             <div class="ivu-cell-title" :class="{ 'text-href': liData._isSelected }">{{ liData[textName] }}</div>
           </div>
         </slot>
-        <!--<div v-if="liData._isSelected" class="ivu-cell-footer"><span class="ivu-cell-extra ts-check text-href"></span></div>-->
+        <!--<div v-if="liData._isSelected" class="ivu-cell-footer"><span class="ivu-cell-extra tsfont-check text-href"></span></div>-->
       </div>
     </div>
     <div v-if="(liData[childName] && liData[childName].length > 0) || isGroup" class="ive-cell-child">

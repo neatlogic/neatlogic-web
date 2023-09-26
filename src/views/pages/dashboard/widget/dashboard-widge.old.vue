@@ -1,6 +1,6 @@
 <!--仪表板组件 -->
 <template>
-  <div class="dashboard-li bg-op ts-border" :class="[{'padTop54': myChartType !=='numberchart'}, {'heightNumberChart': myChartType ==='numberchart'}]">
+  <div class="dashboard-li bg-op radius-lg" :class="[{'padTop54': myChartType !=='numberchart'}, {'heightNumberChart': myChartType ==='numberchart'}]">
     <div class="dashboard-title">
       <span v-for="(history, i) in historyList" :key="history.widgetUuid">
         <a href="javascript:void(0)" @click="resumeComponent(i)">{{ history.widgetName }}</a>

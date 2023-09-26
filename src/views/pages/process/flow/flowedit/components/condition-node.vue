@@ -20,7 +20,7 @@
               <span :title="getTargetStepList(item.targetStepList)">{{ getTargetStepList(item.targetStepList) }}</span>”
             </div>
             <div class="edit-icon">
-              <i class="ts-cog-s click-tag text-action" @click="editRule(item,index)"></i>
+              <i class="tsfont-setting click-tag text-action" @click="editRule(item,index)"></i>
               <span class="tsfont-close click-tag text-action del-inrule" @click="delRule(index)"></span>
             </div>
           </div>
@@ -131,7 +131,7 @@
                     <Col span="2">
                       <div class="btn-group text-tip">
                         <span class="tsfont-plus" style="padding-right:8px;" @click="addCondition(item)"></span>
-                        <span v-if="item.conditionList.length>1" class="ts-minus" @click="delCondition(item,conIdex)"></span>
+                        <span v-if="item.conditionList.length>1" class="tsfont-minus" @click="delCondition(item,conIdex)"></span>
                       </div>
                     </Col>
                   </TsRow>

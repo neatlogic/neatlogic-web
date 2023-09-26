@@ -61,7 +61,7 @@
                   </div>
                   <div class="text-title overflow">{{ row.actionUser }} {{ row.actionTime | formatDate }}{{ row.actionName }}</div>
                   <div class="operation text-tip" :class="row.isDel?'block':''">
-                    <i class="ts-intersect" :title="$t('page.copy')" @click="editSetting(row, true)"></i>
+                    <i class="tsfont-copy" :title="$t('page.copy')" @click="editSetting(row, true)"></i>
                     <i class="tsfont-edit" :title="$t('page.edit')" @click="editSetting(row, false)"></i>
                     <i class="tsfont-trash-s" :title="$t('page.delete')" @click="delSetting(row)"></i>
                   </div>
@@ -642,10 +642,10 @@ export default {
             icon_class = 'text-success tsfont-mail-s';
             break;
           case 'MessageNotifyHandler':
-            icon_class = 'text-primary ts-chat';
+            icon_class = 'text-primary tsfont-message-o';
             break;
           default:
-            icon_class = 'text-primary ts-chat';
+            icon_class = 'text-primary tsfont-message-o';
         }
         return icon_class;
       };

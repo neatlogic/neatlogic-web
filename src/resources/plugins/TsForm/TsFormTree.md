@@ -59,7 +59,7 @@ config:{
   value:"",
   transfer:false,
   multiple:false,
-  url:"/api/rest/matrix/column/data/search/forselect/new",
+  url:"/api/rest/matrix/column/data/search/forselect",
   params:{},
   search:false,
   rootName:"children",

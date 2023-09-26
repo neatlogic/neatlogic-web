@@ -12,13 +12,13 @@
           </Alert>
           <div class="common-auth">
             <div v-if="relateConfig && relateConfig?.typeList?.length > 0" class="wrapper">
-              <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'ts-check-square-o':'ts-minus-square']" @click.stop="handleCheckedAll()">
+              <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'tsfont-check-square-o':'tsfont-minus-square']" @click.stop="handleCheckedAll()">
                 {{ selectedAll ? $t('page.unselectall') : $t('page.selectall') }}
               </span>
               <div v-for="(item, index) in relateConfig.typeList" :key="index" class="item mb-md">
                 <div class="title text-grey">{{ item.text }}</div>
                 <div class="radius-lg bg-op">
-                  <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'ts-check-square-o':'ts-minus-square'" @click.stop="handleSecondCheckedAll(item)">
+                  <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'tsfont-check-square-o':'tsfont-minus-square'" @click.stop="handleSecondCheckedAll(item)">
                     <span class="text check-all-text-pr">
                       {{ secondSelectedAll(item) ? $t('page.unselectall') : $t('page.selectall') }}
                     </span>
@@ -182,9 +182,11 @@ export default {
       formData.append('file', this.uploadSuccessFile.file);
       formData.append('userSelection', JSON.stringify(relateConfig));
       this.$api.deploy.apppipeline.coverPipeline(formData).then(res => {
-        if (res.statusText == 'OK') {
+        if (res.Status == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
-          this.configDialog.isShow = false;
+          if (!this.isShowCoverDialog) {
+            this.configDialog.isShow = false;
+          }
           this.$emit('close', true);
         }
       });
@@ -245,6 +247,21 @@ export default {
         });
       }
       this.relateConfig.checkedAll = checkedAll;
+    },
+    arraysAreEqual(arr1, arr2) {
+      const array1 = this.$utils.deepClone(arr1).sort();
+      const array2 = this.$utils.deepClone(arr2).sort();
+      if (array1.length !== array2.length) {
+        return false;
+      }
+
+      for (let i = 0; i < array1.length; i++) {
+        if (array1[i] !== array2[i]) {
+          return false;
+        }
+      }
+
+      return true;
     }
   },
   filter: {},
@@ -256,7 +273,7 @@ export default {
     secondSelectedAll() {
       // 二级选中
       return (currentRow) => {
-        return this.$utils.isEmpty(this.selectedConfig) ? false : this.$utils.isSame(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
+        return this.$utils.isEmpty(this.selectedConfig) ? false : this.arraysAreEqual(this.defaultSelectedConfig[currentRow.value], this.selectedConfig[currentRow.value]);
       };
     }
   },

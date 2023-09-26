@@ -3,14 +3,14 @@
     <h4 class="bg-grey file-title border-color">
       <span class="btn-toggle text-action" :class="isShow ? 'tsfont-down' : 'tsfont-up'" @click="toggleShow()"></span>
       <span 
-        class="ts-file cursor-pointer" 
-        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'"
+        class="tsfont-file-single cursor-pointer" 
+        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'tsfont-folder-o'"
         :title="diff.modifiedType && diff.modifiedType =='R' ? $t('term.codehub.filenameadjustto', {fromfileName: diff.fromFileName}, {tofileName: diff.toFileName}) : getName(diff)"
         @dblclick.stop="goToTree(diff)"
       >
         <span v-if="diff.modifiedType && diff.modifiedType=='R'">
           {{ diff.fromFileName }}&nbsp;
-          <span class="ts-long-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
+          <span class="tsfont-arrow-right text-primary small"></span>{{ diff.toFileName }}</span>
         {{ diff.modifiedType && diff.modifiedType=='R'?'':getName(diff) }}
       </span>
       <span 
@@ -23,7 +23,7 @@
         v-clipboard="getName(diff,true)" 
         v-clipboard:success="clipboardSuc"
         class="text-action"
-        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'ts-folder'" 
+        :class="type != 'file' ? (supportTypeList.includes(type) ? 'tsfont-mm-' + type : 'tsfont-mm-txt') : 'tsfont-folder-o'" 
         :title="$t('term.codehub.copyfilename')"
       ></span>
     </h4>
@@ -48,7 +48,7 @@
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
                     >
-                      <div class="ts-option-horizontal text-action icon-more"></div>
+                      <div class="tsfont-option-horizontal text-action icon-more"></div>
                     </td>
                     <td v-if="showType == 'separate'" class="code-content"></td>
                     <td 
@@ -56,7 +56,7 @@
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('prev',hunk.fromFileRange.lineStart-1,hunk.toFileRange.lineStart-1,hunk)"
                     >
-                      <div class="ts-option-horizontal text-action icon-more"></div>
+                      <div class="tsfont-option-horizontal text-action icon-more"></div>
                     </td>
                     <td class="code-content"></td>
                   </tr>
@@ -152,7 +152,7 @@
                       class="from-lineno code-lineno cursor-pointer next" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('next',setNumtext('from', hunk,hunk.lines.length-1,true),setNumtext('to', hunk,hunk.lines.length-1),hunk,diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)"
-                    ><div class="ts-option-horizontal text-action icon-more"></div>
+                    ><div class="tsfont-option-horizontal text-action icon-more"></div>
                     </td>
                     <td v-if="!hunk.getMoreLine && showType=='separate'" class="code-content"></td>
                     <td 
@@ -160,7 +160,7 @@
                       class="to-lineno code-lineno cursor-pointer" 
                       :title="$t('term.codehub.clicktoexpandmore')" 
                       @click.stop="getMoreline('next',setNumtext('from', hunk,hunk.lines.length-1,true),setNumtext('to', hunk,hunk.lines.length-1),hunk,diff.hunks[hindex+1]?diff.hunks[hindex+1].fromFileRange.lineStart:null)"
-                    ><div class="ts-option-horizontal text-action icon-more"></div></td>
+                    ><div class="tsfont-option-horizontal text-action icon-more"></div></td>
                     <td v-if="!hunk.getMoreLine" class="code-content"></td>
                   </tr>
                   <!-- 最后一行_end -->

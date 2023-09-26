@@ -32,9 +32,8 @@ export default {
     return { 
       config: this.condition.config,
       matrixConfig: {
-        url: '/api/rest/matrix/column/data/search/forselect/new',
-        rootName: 'tbodyList',
-        dealDataByUrl: this.dealDataByUrl
+        url: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList'
       }
     };
   },
@@ -80,7 +79,8 @@ export default {
         this.config.params = {
           matrixUuid: this.config.matrixUuid,
           keywordColumn: this.config.mapping.text,
-          columnList: [this.config.mapping.value, this.config.mapping.text]
+          valueField: this.config.mapping.value,
+          textField: this.config.mapping.text
         };
         Object.assign(this.config, this.matrixConfig);
       }

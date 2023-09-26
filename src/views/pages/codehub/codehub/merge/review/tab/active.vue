@@ -56,7 +56,7 @@
         </div>
       </TimelineItem>
       <TimelineItem v-if="pageCount>currentPage" class="active-li">
-        <Icon slot="dot" custom="ts-round-s"></Icon>
+        <Icon slot="dot" custom="tsfont-circle-o"></Icon>
         <div class="time"></div>
         <div class="content">
           <span class="text-href" @click="getNext">{{ $t('page.viewmore') }}</span>

@@ -11,6 +11,11 @@
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
+          <span 
+            v-if="searchParams.apiType === 'system'"
+            class="action-item tsfont-download "
+            @click="exportHelp()"
+          >{{ $t('page.export') }}</span>
           <span v-if="searchParams.apiType === 'custom'" class="create-api action-item" @click="showApiForm({}, 'create')">
             <i class="tsfont-plus">{{ $t('page.customapi') }}</i>
           </span>
@@ -69,9 +74,9 @@
               <ul class="tstable-action-ul">
                 <li class="tsfont-test" @click="testApi(row)">{{ $t('page.test') }}</li>
                 <li class="tsfont-question-o" @click="showApiHelp(row)">{{ $t('page.help') }}</li>
-                <li v-if="row.needAudit" class="ts-page" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
+                <li v-if="row.needAudit" class="tsfont-putongjigui" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
                 <!-- <li class="tsfont-edit icon" @click="">{{ $t('page.edit') }}</li> -->
-                <li v-if="!row.isPrivate" class="ts-chain icon" @click="showApiForm(row, 'copy')">
+                <li v-if="!row.isPrivate" class="tsfont-copy icon" @click="showApiForm(row, 'copy')">
                   {{ $t('page.copy') }}
                 </li>
                 <li v-if="row.isDeletable == 1" class="tsfont-trash-o icon" @click="showApiForm(row, 'delete')">{{ $t('page.delete') }}</li>
@@ -105,6 +110,7 @@
 </template>
 
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiManage',
   components: {
@@ -129,6 +135,7 @@ export default {
       return value in config ? config[value] : value;
     }
   },
+  mixins: [download], 
   data() {
     return {
       isLoading: true, //页面加载中
@@ -370,6 +377,17 @@ export default {
     },
     t(arg) { //国际化翻译时，过滤器filter中拿不到this, 需要转化
       return this.$t(arg);
+    },
+    exportHelp() {
+      let param = {
+        url: 'api/binary/api/help/export',
+        params: {
+          moduleGroup: this.searchParams.moduleGroup,
+          funcId: this.searchParams.funcId,
+          keyword: this.searchParams.keyword
+        }
+      };
+      this.download(param);
     }
   },
   computed: {

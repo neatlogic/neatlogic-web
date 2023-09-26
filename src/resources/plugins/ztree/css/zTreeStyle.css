@@ -115,8 +115,9 @@
 .ztree li a.tmpTargetNode_prev::before,
 .ztree li a.tmpTargetNode_next::before,
 .ztree li a.tmpTargetNode_inner::before {
-	content: "\e723";
-	font-family: 'ts';
+	/* tsfont-arrow-right 类名 */
+	content: "\e81d";
+	font-family: 'tsfont';
 	position: absolute;
 	left: 4px;
 	font-size: 18px;
@@ -145,7 +146,8 @@ ul.tmpTargetzTree {
 }
 
 span.tmpzTreeMove_arrow:before {
-	content: "\ea65";
+	/* tsfont-right 类名 */
+	content: "\e986";
 }
 
 span.tmpzTreeMove_arrow {
@@ -157,7 +159,7 @@ span.tmpzTreeMove_arrow {
 	border: 0 none;
 	position: absolute;
 	background-attachment: scroll;
-	font-family: 'ts';
+	font-family: 'tsfont';
 	font-style: normal;
 	font-weight: normal;
 	text-rendering: auto;
@@ -260,7 +262,7 @@ ul.ztree.zTreeDragUL>li a {
 .ztree li a span.button,
 .ztree li span.button[class$="Page"] {
 	display: inline-block;
-	font-family: ts;
+	font-family: "tsfont";
 	font-style: normal;
 	font-weight: normal;
 	font-size: inherit;
@@ -326,7 +328,8 @@ ul.ztree.zTreeDragUL>li a {
 .ztree li span.button.center_open:before,
 .ztree li span.button.bottom_open:before,
 .ztree li span.button.noline_open:before {
-	content: "\e810";
+	content: "\e897";
+	/* tsfont-drop-down 类名*/
 }
 
 .ztree li span.button.root_close:before,
@@ -334,109 +337,130 @@ ul.ztree.zTreeDragUL>li a {
 .ztree li span.button.center_close:before,
 .ztree li span.button.bottom_close:before,
 .ztree li span.button.noline_close:before {
-	content: "\e811";
+	content: "\e899";
+	/* tsfont-drop-right 类名 */
 }
 
 .ztree li span.button.chk.checkbox_true_full:before,
 .ztree li span.button.chk.checkbox_true_disable:before,
 .ztree li span.button.chk.checkbox_true_full_focus:before {
-	content: "\e719";
+	content: "\ea1e";
 	color: #295bd6;
+	/* tsfont-check-square-o */
 }
 
 .ztree li span.button.chk.checkbox_false_full:before,
 .ztree li span.button.chk.checkbox_false_disable:before,
 .ztree li span.button.chk.checkbox_false_full_focus:before {
-	content: "\e71d";
+	content: "\e9a7";
 	color: #295bd6;
+	/* tsfont-square类名 */
 }
 
 .ztree li span.button.chk.checkbox_false_part:before,
 .ztree li span.button.chk.checkbox_false_part_focus:before {
-	content: "\e718";
+	content: "\e861";
 	color: #295bd6;
+	/* tsfont-check-some 类名 */
 }
 
 .ztree li span.button.chk.checkbox_true_part:before,
 .ztree li span.button.chk.checkbox_true_part_focus:before {
-	content: "\e71b";
+	content: "\e862";
 	color: #295bd6;
+	/* tsfont-check-square 类名 */
 }
 
 .ztree li span.button.chk.radio_true_full:before,
 .ztree li span.button.chk.radio_true_disable:before,
 .ztree li span.button.chk.radio_true_full_focus:before {
-	content: "\e825";
+	content: "\e85f";
 	color: #295bd6;
+	/* tsfont-check-o 类名 */
 }
 
 .ztree li span.button.chk.radio_false_full:before,
 .ztree li span.button.chk.radio_false_disable:before,
 .ztree li span.button.chk.radio_false_full_focus:before {
-	content: "\e899";
+	content: "\e86b";
 	color: #295bd6;
+	/* tsfont-circle */
 }
 
 .ztree li span.button.chk.radio_true_part:before,
 .ztree li span.button.chk.radio_true_part_focus:before,
 .ztree li span.button.chk.radio_false_part:before,
 .ztree li span.button.chk.radio_false_part_focus:before {
-	content: "\e71c";
+	content: "\e86a";
 	color: #295bd6;
+	/* tsfont-circle-o 类名 */
 }
 
 .ztree li span.button.ico_open:before {
-	content: "\e6cc";
+	content: "\ea23";
+	/* tsfont-folder-open 类名 */
 }
 
 .ztree li span.button.ico_close:before {
-	content: "\e893";
+	content: "\e8b5";
+	/* tsfont-folder-o类名 */
 }
 
 .ztree li span.button.ico_docu:before {
-	content: "\e896";
+	content: "\e8ac";
+	/* tsfont-file-single的类名 */
 }
 
 .ztree li span.button.add:before {
-	content: "\e84c";
+	content: "\e96f";
+	/* tsfont-plus 类名 */
 }
 
 .ztree li span.button.edit:before {
-	content: "\e8bf";
+	content: "\e89d";
+	/* tsfont-edit 类名 */
 }
 
 .ztree li span.button.remove:before {
-	content: "\ea96";
+	content: "\e9ca";
+	/* tsfont-trash-o 类名 */
 }
 
 .ztree li span.button.adduser:before {
-	content: "\e716";
+	content: "\e80a";
+	/* tsfont-adduser 类名 */
 }
 
 .ztree li span.button.firstPage:before {
-	content: "\e863";
+	content: "\ea1f";
+	/* tsfont-double-arrow-left 类名 */
 }
 
 .ztree li span.button.prevPage:before {
-	content: "\ea64";
+	content: "\e900";
+	/* tsfont-left 类名 */
 }
 
 .ztree li span.button.nextPage:before {
-	content: "\ea65";
+	/* tsfont-right 类名 */
+	content: "\e986";
 }
 
 .ztree li span.button.lastPage:before {
-	content: "\e864";
+	content: "\ea20";
+	/* tsfont-double-arrow-right 类名 */
 }
 
 .ztree li span.button.up:before {
-	font-family: "ts";
-	content: '\e82a';
+	font-family: "tsfont";
+	content: '\e81e';
+	/* tsfont-arrow-up 类名 */
 }
 
 .ztree li span.button.down:before {
-	font-family: "ts";
-	content: '\e82c';
+	font-family: "tsfont";
+	content: '\e81b';
+	/* tsfont-arrow-down 类名 */
 }
 
 .ztree li span.button.chk[class$="focus"]:before {

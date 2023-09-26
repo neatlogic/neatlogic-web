@@ -84,18 +84,18 @@
                   </Poptip>
                 </Col>
                 <Col span="2">
-                  <li class="ts-user count text-left" :title="$t('term.framework.usercount')">
+                  <li class="tsfont-userinfo count text-left" :title="$t('term.framework.usercount')">
                     <span>{{ item.userCount }}</span>
                   </li>
                 </Col>
                 <Col span="2">
-                  <li class="ts-team count text-left" :title="$t('term.framework.rolecount')">
+                  <li class="tsfont-team count text-left" :title="$t('term.framework.rolecount')">
                     <span>{{ item.roleCount }}</span>
                   </li>
                 </Col>
                 <Col span="2" class="action">
                   <ul class="tstable-action-ul">
-                    <li class="ts-permission text-action" @click="adduser(item.name)">{{ $t('page.auth') }}</li>
+                    <li class="tsfont-permission text-action" @click="adduser(item.name)">{{ $t('page.auth') }}</li>
                   </ul>
                 </Col>
               </TsRow>

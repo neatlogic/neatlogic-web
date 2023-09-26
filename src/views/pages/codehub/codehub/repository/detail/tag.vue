@@ -37,7 +37,7 @@
             <tbody>
               <tr>
                 <td>
-                  <span class="ts-tag text-primary icon-right">
+                  <span class="tsfont-label text-primary icon-right">
                     {{ row.name }}
                   </span>
                 </td>

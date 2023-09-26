@@ -32,9 +32,6 @@ export default [
       } else {
         next({ path: defaultPage, replace: true});
       }
-    },
-    meta: {
-      icon: 'ts-file'
     }
   },
   {
@@ -55,7 +52,7 @@ export default [
       title: $t('router.report.reportmanage'),
       ismenu: true,
       type: 'reportmanage',
-      icon: 'ts-layout',
+      icon: 'tsfont-module',
       authority: ['REPORT_MODIFY']
     }
   },
@@ -66,7 +63,7 @@ export default [
     meta: {
       title: $t('router.report.reportdetail'),
       ismenu: false,
-      icon: 'ts-m-metrics',
+      icon: 'tsfont-baobiao',
       authority: ['REPORT_BASE']
     }
   },
@@ -78,7 +75,7 @@ export default [
       title: $t('router.report.reporttemplatemanage'),
       ismenu: true,
       type: 'reporttemplate',
-      icon: 'ts-layout',
+      icon: 'tsfont-module',
       authority: ['REPORT_TEMPLATE_MODIFY']
     }
   },
@@ -89,7 +86,7 @@ export default [
     meta: {
       title: $t('router.report.reportdetail'),
       ismenu: false,
-      icon: 'ts-m-metrics',
+      icon: 'tsfont-baobiao',
       authority: ['REPORT_BASE'],
       istitle: true
     }
@@ -101,7 +98,7 @@ export default [
     meta: {
       title: $t('router.report.sendplan'),
       ismenu: true,
-      icon: 'ts-m-metrics',
+      icon: 'tsfont-baobiao',
       type: 'reportmanage',
       authority: ['REPORT_MODIFY']
     }

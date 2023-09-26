@@ -1,5 +1,4 @@
 //字体图标
-import tscode from './font/tsfont/css/ts-code.less';
 import tsfontcode from './font/tsfonts/css/tsfont.css';
 // 全局样式
 import common from './css/common.less';

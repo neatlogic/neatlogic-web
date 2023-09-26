@@ -18,8 +18,7 @@
           search
           :dynamicUrl="setting.config.dataSource == 'matrix'?dynamicUrl:''"
           :params="setting.config.dataSource == 'matrix'?getParams(0):null"
-          :dealDataByUrl="dealDataByUrl"
-          rootName="tbodyList"
+          rootName="dataList"
           @on-change="changeDefault(currentValue[0], 1)"
         >
         </TsFormSelect>
@@ -39,8 +38,7 @@
           :placeholder="setting.config.placeholder ? setting.config.placeholder[1] : ''" 
           :dynamicUrl="setting.config.dataSource == 'matrix'?dynamicUrl:''"
           :params="setting.config.dataSource == 'matrix'?getParams(1):null"
-          :dealDataByUrl="val=>{return dealDataByUrl(val,1)}"
-          rootName="tbodyList"
+          rootName="dataList"
           @on-change="changeDefault(currentValue[1], 2)"
         ></TsFormSelect>
       </div>
@@ -59,8 +57,7 @@
           :placeholder="setting.config.placeholder ? setting.config.placeholder[2] : ''" 
           :dynamicUrl="setting.config.dataSource == 'matrix'?dynamicUrl:''"
           :params="setting.config.dataSource == 'matrix'?getParams(2):null"
-          :dealDataByUrl="val=>{return dealDataByUrl(val,2)}"
-          rootName="tbodyList"
+          rootName="dataList"
           @on-change="changeDefault(currentValue[2], 3)"
         ></TsFormSelect>
       </div>
@@ -90,7 +87,7 @@ export default {
       level2DataList: [],
       level3DataList: [],
       validJson: ['required'],
-      dynamicUrl: '/api/rest/matrix/column/data/search/forselect/new'
+      dynamicUrl: '/api/rest/matrix/column/data/search/forselect'
     };
   },
   beforeCreate() {},
@@ -253,7 +250,8 @@ export default {
         let param = {
           matrixUuid: config.matrixUuid,
           keywordColumn: config.mapping[val].text,
-          columnList: [config.mapping[val].value, config.mapping[val].text],
+          valueField: config.mapping[val].value,
+          textField: config.mapping[val].text,
           sourceColumnList: []
         };
         if (val == 1) {
