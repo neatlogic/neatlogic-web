@@ -200,7 +200,7 @@ export default {
     test: 'a'
   },
   event: {
-    'change:data': (cell, data, defaultData) => {
+    'change:data': ({cell, current: data }, widget) => {
       const name = data.name;
       const attributes = data.attributes;
       const methods = data.methods;
@@ -209,14 +209,14 @@ export default {
       if (titleBgColor) {
         cell.setAttrByPath(`name-rect/fill`, titleBgColor);
       } else {
-        cell.setAttrByPath(`name-rect/fill`, defaultData.titleBgColor);
+        cell.setAttrByPath(`name-rect/fill`, widget.data.titleBgColor);
       }
       if (bgColor) {
         cell.setAttrByPath(`attrs-rect/fill`, bgColor);
         cell.setAttrByPath(`methods-rect/fill`, bgColor);
       } else {
-        cell.setAttrByPath(`attrs-rect/fill`, defaultData.bgColor);
-        cell.setAttrByPath(`methods-rect/fill`, defaultData.bgColor);
+        cell.setAttrByPath(`attrs-rect/fill`, widget.data.bgColor);
+        cell.setAttrByPath(`methods-rect/fill`, widget.data.bgColor);
       }
       const rects = [
         { type: 'name', text: name },

@@ -28,14 +28,19 @@
         "
       />
     </template>
+    <template v-slot:width>
+      <Slider v-model="data.width" :max="1000" :min="50"></Slider>
+    </template>
+    <template v-slot:height>
+      <Slider v-model="data.height" :max="1000" :min="50"></Slider>
+    </template>
   </TsForm>
 </template>
 <script>
 import { ConfigBase } from '@/views/pages/diagram/diagram/widget-config/config-base.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   extends: ConfigBase,
   props: {},
   data() {
@@ -64,5 +69,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

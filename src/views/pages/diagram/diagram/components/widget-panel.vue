@@ -12,7 +12,8 @@
 </template>
 <script>
 import { Graph } from '@antv/x6';
-import { WIDGETS } from '@/views/pages/diagram/diagram/widgets/widget-list.js';
+import { WIDGETS } from '@/views/pages/diagram/diagram/core/WidgetFactory.js';
+import { NodeFactory } from '@/views/pages/diagram/diagram/core/NodeFactory.js';
 
 export default {
   name: '',
@@ -40,18 +41,7 @@ export default {
   destroyed() {},
   methods: {
     drag(event, widget) {
-      const node = this.graph.createNode({
-        shape: widget.name,
-        label: widget.label,
-        width: widget.width,
-        height: widget.height
-      });
-      if (widget.prop) {
-        for (let key in widget.prop) {
-          node.setProp(key, widget.prop[key]);
-        }
-      }
-      node.setData(widget.data);
+      const node = NodeFactory.createNode(this.graph, widget.name);
       this.dnd.start(node, event);
     },
     registerWidget() {

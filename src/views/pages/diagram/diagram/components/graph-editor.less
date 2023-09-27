@@ -1,0 +1,26 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@bg-color,@title-bg-color,@bg-grey,@text-color) {
+  .graph-main {
+    .bg {
+      fill: @bg-color;
+    }
+    .bg-grey {
+      fill: @bg-grey;
+    }
+    .title-bg {
+      fill: @title-bg-color;
+    }
+    text {
+      fill: @text-color;
+    }
+  }
+}
+
+html {
+  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text);
+
+  &.theme-dark {
+    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text);
+  }
+}

@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { WIDGETS } from '@/views/pages/diagram/diagram/widgets/widget-list.js';
+import { WIDGETS } from '@/views/pages/diagram/diagram/core/WidgetFactory.js';
 
 export default {
   name: '',

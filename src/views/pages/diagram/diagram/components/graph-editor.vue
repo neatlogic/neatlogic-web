@@ -1,13 +1,13 @@
 <template>
-  <div id="container"></div>
+  <div id="container" class="graph-main"></div>
 </template>
 <script>
 import { Graph, ObjectExt } from '@antv/x6';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Dnd } from '@antv/x6-plugin-dnd';
-import { WIDGETS } from '@/views/pages/diagram/diagram/widgets/widget-list.js';
-
+import { WidgetFactory } from '@/views/pages/diagram/diagram/core/WidgetFactory.js';
+import { NodeFactory } from '@/views/pages/diagram/diagram/core/NodeFactory.js';
 export default {
   name: '',
   components: {},
@@ -31,38 +31,12 @@ export default {
   destroyed() {},
   methods: {
     createNode(nn) {
-      const widget = WIDGETS().find(d => d.name === nn.shape);
-      if (widget) {
-        const nodeConfig = {
-          id: this.$utils.setUuid(),
-          shape: widget.name,
-          label: widget.label,
-          data: widget.data
-        };
-        if (widget.prop) {
-          for (let key in widget.prop) {
-            nodeConfig[key] = widget.prop[key];
-          }
-        }
-        const node = this.graph.createNode(nodeConfig);
-        //需要重复设置data，否则取不到值
-        node.setData(widget.data);
-        if (widget.event) {
-          for (let e in widget.event) {
-            node.on(e, ({cell, current}) => {
-              if (widget.event[e]) {
-                widget.event[e](cell, current, widget.data);
-              }
-            });
-          }
-        }
-        return node;
-      }
-      return null;
+      return NodeFactory.createNode(this.graph, nn.shape);
     },
     init: function() {
       if (!this.graph) {
         this.graph = new Graph({
+          container: document.getElementById('container'),
           autoResize: true, //自动延伸画布
           panning: true, //拖拽平移
           mousewheel: {
@@ -87,7 +61,7 @@ export default {
               // 获取移动节点的包围盒
               const bbox = node.getBBox();
               const parentList = [];
-              let parentTypeList = node.getData() && node.getData()['parent'] || [];
+              let parentTypeList = (node.getData() && node.getData()['parent']) || [];
               if (parentTypeList.length > 0) {
                 const parentNodeList = this.graph.getNodes().filter(d => parentTypeList.includes(d.shape) && d.getData() && d.getData()['children'] && d.getData()['children'].length > 0 && d.getData()['children'].includes(node.shape));
                 if (parentNodeList.length > 0) {
@@ -110,27 +84,22 @@ export default {
                 }
                 return false;
               });*/
-              
+
               return parentList;
             }
           },
-          container: document.getElementById('container'),
           translating: {
             restrict: cellView => {
               const cell = cellView.cell;
               const parentId = cell.getProp('parentId');
               if (parentId) {
                 const parentNode = this.graph.getCellById(parentId);
-                if (parentNode) {
-                  return parentNode.getBBox().moveAndExpand({
-                    x: 0,
-                    y: 30,
-                    width: 0,
-                    height: -30
-                  });
+                const widget = WidgetFactory.getWidget(parentNode.shape);
+                if (widget && widget.restrict) {
+                  return widget.restrict(parentNode);
                 }
               }
-              return true;
+              return false;
             }
           },
           width: 800,
@@ -138,7 +107,14 @@ export default {
         });
         this.graph.use(
           /*new Transform({
-            resizing: { enabled: true }
+            resizing: {
+              enabled: (node) => {
+                if (node.getData() && node.getData()['isResizable']) {
+                  return true;
+                }
+                return false;
+              }
+            }
           }),*/
           new Selection({
             enabled: true,
@@ -157,7 +133,19 @@ export default {
             return this.createNode(nn);
           }
         });
-        //绑定选中事件
+        this.graph.on('node:mouseenter', ({ node }) => {
+          node.addTools({
+            name: 'button-remove',
+            args: {
+              x: '100%',
+              y: 0,
+              offset: { x: 0, y: 0 }
+            }
+          });
+        });
+        this.graph.on('node:mouseleave', ({ node }) => {
+          node.removeTools();
+        });
         this.graph.on('node:selected', ({ node }) => {
           this.$emit('node:selected', { id: node.id, name: node.shape, data: node.getData() });
         });
@@ -173,4 +161,6 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+@import './graph-editor.less';
+</style>

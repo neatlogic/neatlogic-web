@@ -1,15 +1,25 @@
 import { ObjectExt } from '@antv/x6';
-
 export default {
   name: 'system',
   type: 'GLOBAL',
   label: '系统',
   config: {
     inherit: 'rect',
+    /*tools: [
+      {
+        name: 'button-remove',
+        args: {
+          x: '100%',
+          y: 0,
+          offset: { x: 10, y: -10 }
+        }
+      }
+    ],*/
     markup: [
       {
         tagName: 'rect',
-        selector: 'body'
+        selector: 'body',
+        className: 'bg-grey'
       },
       {
         tagName: 'text',
@@ -18,7 +28,9 @@ export default {
     ],
     attrs: {
       body: {
-        stroke: 'none'
+        stroke: 'none',
+        rx: 5,
+        ry: 5
       },
       'name-text': {
         ref: 'body',
@@ -35,32 +47,31 @@ export default {
         return meta;
       }
       const name = data.name;
-      const bgColor = data.bgColor;
-      if (bgColor) {
-        ObjectExt.setByPath(others, `attrs/body/fill`, bgColor);
-      }
       ObjectExt.setByPath(others, `attrs/name-text/text`, name);
       return others;
     }
   },
   data: {
-    bgColor: '#eff4ff',
-    name: '系统群',
+    bgColor: null,
+    name: '系统',
     parent: ['systemGroup']
   },
   prop: {
     width: 100,
-    height: 80
+    height: 30
   },
   event: {
-    'change:data': (cell, data, defaultData) => {
+    'change:data': ({ cell, current: data }, widget) => {
       const name = data.name;
       const bgColor = data.bgColor;
+      const markup = cell.markup;
+      const markup_body = markup.find(d => d.selector === 'body');
       if (bgColor) {
-        cell.setAttrByPath(`body/fill`, bgColor);
+        markup_body.style = { fill: bgColor };
       } else {
-        cell.setAttrByPath(`body/fill`, defaultData.bgColor);
+        markup_body.style = {};
       }
+      cell.markup = markup;
       cell.setAttrByPath(`name-text/text`, name);
     }
   },

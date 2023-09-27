@@ -9,11 +9,13 @@ export default {
     markup: [
       {
         tagName: 'rect',
-        selector: 'body'
+        selector: 'body',
+        className: 'bg'
       },
       {
         tagName: 'rect',
-        selector: 'name-rect'
+        selector: 'name-rect',
+        className: 'title-bg'
       },
       {
         tagName: 'text',
@@ -25,18 +27,25 @@ export default {
         width: 160
       },
       body: {
-        stroke: 'none'
+        stroke: 'none',
+        rx: 4,
+        ry: 4,
+        fill: null
       },
       'name-rect': {
         stroke: 'none',
         height: 30,
-        y: -30
+        y: 0,
+        x: 0,
+        rx: 4,
+        ry: 4
       },
       'name-text': {
         ref: 'name-rect',
         refY: 0.5,
-        refX: 0.5,
-        textAnchor: 'middle',
+        refX: 10,
+        xAlign: 'left',
+        textAnchor: 'start',
         fontWeight: 'bold',
         fill: '#fff',
         fontSize: 12
@@ -48,52 +57,61 @@ export default {
         return meta;
       }
       const name = data.name;
-      const titleBgColor = data.titleBgColor;
-      const bgColor = data.bgColor;
       const width = data.width;
       const height = data.height;
-      if (titleBgColor) {
-        ObjectExt.setByPath(others, `attrs/name-rect/fill`, titleBgColor);
-      }
-      if (bgColor) {
-        ObjectExt.setByPath(others, `attrs/body/fill`, bgColor);
-      }
       ObjectExt.setByPath(others, `attrs/name-text/text`, name);
+      ObjectExt.setByPath(others, `attrs/name-rect/width`, width);
       others.size = { width: width, height: height };
       return others;
     }
   },
   data: {
-    titleBgColor: '#5f95ff',
-    bgColor: '#fff',
+    titleBgColor: null,
+    bgColor: null,
     name: '系统群',
     children: ['system'],
+    isResizable: true,
     width: 200,
     height: 200
   },
-  prop: {
-    
-  },
+  prop: {},
   event: {
-    'change:data': (cell, data, defaultData) => {
+    'change:data': ({ cell, current: data }, widget) => {
       const name = data.name;
       const titleBgColor = data.titleBgColor;
       const bgColor = data.bgColor;
-      const width = data.width || defaultData.width;
-      const height = data.height || defaultData.height;
+      const width = data.width || widget.data.width;
+      const height = data.height || widget.data.height;
+      const markup = cell.markup;
+      const markup_body = markup.find(d => d.selector === 'body');
+      const markup_rectname = markup.find(d => d.selector === 'name-rect');
       if (titleBgColor) {
-        cell.setAttrByPath(`name-rect/fill`, titleBgColor);
+        markup_rectname.style = { fill: titleBgColor };
       } else {
-        cell.setAttrByPath(`name-rect/fill`, defaultData.titleBgColor);
+        markup_rectname.style = {};
       }
       if (bgColor) {
-        cell.setAttrByPath(`body/fill`, bgColor);
+        markup_body.style = { fill: bgColor };
       } else {
-        cell.setAttrByPath(`body/fill`, defaultData.bgColor);
+        markup_body.style = {};
       }
+      cell.markup = markup;
       cell.setAttrByPath(`name-text/text`, name);
+      cell.setAttrByPath(`name-rect/width`, width);
       cell.resize(width, height);
     }
+  },
+  restrict(node) {
+    //返回子节点可移动空间
+    const data = node.getData();
+    const width = data['width'];
+    const height = data['height'];
+    return node.getBBox().moveAndExpand({
+      x: 0,
+      y: 30,
+      width: 0,
+      height: -30
+    });
   },
   setting: {},
   form: [
@@ -116,14 +134,12 @@ export default {
     {
       name: 'width',
       label: '宽度',
-      type: 'number',
-      min: 30
+      type: 'slot'
     },
     {
       name: 'height',
       label: '高度',
-      type: 'number',
-      min: 30
+      type: 'slot'
     }
   ]
 };
