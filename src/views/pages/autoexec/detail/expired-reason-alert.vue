@@ -12,7 +12,8 @@
           {{ item.description }}
         </div>
         <div 
-          class="mt-sm text-href"
+          class="mt-sm"
+          :class="{'text-href': type == 'openNewWindow'}"
           @click.stop="gotoCombopDetailPage()"
         >{{ $t('term.autoexec.pleasereedit') }}</div>
       </div>
@@ -55,9 +56,7 @@ export default {
   methods: {
     gotoCombopDetailPage() {
       if (this.type == 'openNewWindow') {
-        window.open(HOME + '/autoexec.html#/action-detail?id=' + this.combopId, '_blank');
-      } else {
-        window.open(HOME + '/autoexec.html#/action-detail?id=' + this.combopId, '_self');
+        window.open(HOME + '/autoexec.html#/action-detail?id=' + this.combopId + '&versionStatus=passed', '_blank');
       }
     }
   },

@@ -134,7 +134,12 @@
         ></StepList>
       </template>
       <template v-slot:content>
-        <ExpiredReasonAlert v-if="configExpired == 1" :configExpiredReason="configExpiredReason" :combopId="id"></ExpiredReasonAlert>
+        <ExpiredReasonAlert
+          v-if="configExpired == 1"
+          :configExpiredReason="configExpiredReason"
+          :combopId="id"
+          type="self"
+        ></ExpiredReasonAlert>
         <!--校验 -->
         <ActionValid v-model="validVisible" :validList="validList" @on-click="selectValidItem"></ActionValid>
         <div class="padding-md" style="padding-top:0;padding-bottom:0;">

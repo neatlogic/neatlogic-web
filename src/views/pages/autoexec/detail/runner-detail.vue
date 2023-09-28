@@ -34,7 +34,7 @@
         </div>
       </template>
       <div slot="content" class="contain pl-nm pr-nm" :class="{'pt-xs':!id}">
-        <ExpiredReasonAlert v-if="configExpired == 1" :configExpiredReason="configExpiredReason" :combopId="id"></ExpiredReasonAlert>
+        <ExpiredReasonAlert v-if="configExpired == 1" :configExpiredReason="configExpiredReason" :combopId="dataConfig.id"></ExpiredReasonAlert>
         <div v-if="!id" class="box-block">
           <Divider orientation="start">{{ $t('term.autoexec.jobname') }}</Divider>
           <div>
