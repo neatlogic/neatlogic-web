@@ -19,6 +19,7 @@
               type="primary"
               ghost
               icon="tsfont tsfont-save"
+              :disabled="(!dataConfig.isActive || !dataConfig.executable) && source == 'combop'"
               @click="openSavesetting"
             >{{ $t('page.save') }}</Button>
           </span>
@@ -33,6 +34,7 @@
         </div>
       </template>
       <div slot="content" class="contain pl-nm pr-nm" :class="{'pt-xs':!id}">
+        <ExpiredReasonAlert v-if="configExpired == 1" :configExpiredReason="configExpiredReason"></ExpiredReasonAlert>
         <div v-if="!id" class="box-block">
           <Divider orientation="start">{{ $t('term.autoexec.jobname') }}</Divider>
           <div>
@@ -199,6 +201,7 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
     ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
   },
   filters: {},
@@ -312,7 +315,9 @@ export default {
       executeConfig: {},
       jobId: null, //作业id,用于复制作业
       jobConfig: {},
-      filterSearchValue: {}
+      filterSearchValue: {},
+      configExpired: 0,
+      configExpiredReason: {}
     };
   },
   beforeCreate() {},
@@ -380,6 +385,10 @@ export default {
           this.loading = false;
           if (res.Status == 'OK') {
             this.dataConfig = res.Return;
+            if (this.dataConfig.configExpired == 1) {
+              this.configExpired = this.dataConfig.configExpired;
+              this.configExpiredReason = this.dataConfig.configExpiredReason;
+            }
             this.nameForm.itemList.name.value = this.dataConfig.name;
             this.stepList = this.dataConfig.config.combopPhaseList;
             this.runtimeParamList = this.dataConfig.config.runtimeParamList || [];
