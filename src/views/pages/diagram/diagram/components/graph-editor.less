@@ -1,6 +1,6 @@
 @import (reference) '~@/resources/assets/css/variable.less';
 
-.theme(@bg-color,@title-bg-color,@bg-grey,@text-color) {
+.theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color) {
   .graph-main {
     .bg {
       fill: @bg-color;
@@ -14,13 +14,24 @@
     text {
       fill: @text-color;
     }
+    .line {
+      stroke: @border-color;
+    }
+    .marker {
+      stroke: @border-color;
+      fill: @border-color;
+    }
+    .vertice {
+      fill: @border-color;
+      stroke: @bg-color;
+    }
   }
 }
 
 html {
-  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text);
+  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text,@default-icon);
 
   &.theme-dark {
-    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text);
+    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text,@dark-icon);
   }
 }

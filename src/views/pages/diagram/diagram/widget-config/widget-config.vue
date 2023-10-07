@@ -1,5 +1,5 @@
 <template>
-  <div v-if="widgetConfig[widget.name + 'Widget']">
+  <div v-if="widget && widgetConfig[widget.name + 'Widget']">
     <component
       :is="widget.name + 'Widget'"
       :form="widget.form"
@@ -17,8 +17,8 @@ export default {
     ...components
   },
   props: {
-    id: {type: String},
-    widget: {type: Object}
+    id: { type: String },
+    widget: { type: Object }
   },
   data() {
     return {
@@ -26,8 +26,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -44,8 +43,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

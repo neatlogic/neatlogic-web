@@ -30,7 +30,7 @@ import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-export default {
+const methods =  {
   getCookie: function (name) {
     if (name) {
       let cookies = document.cookie.split(';');
@@ -1016,5 +1016,53 @@ export default {
     }
 
     return cleaned;
+  },
+  getTextWidth({ text, fontSize = 12, isBold = false }) {
+    // 创建一个隐藏的SVG元素
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', 0);
+    svg.setAttribute('height', 0);
+    svg.style.position = 'absolute';
+    svg.style.visibility = 'hidden';
+
+    // 创建text元素并设置属性
+    const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    svgText.setAttribute('x', 0);
+    svgText.setAttribute('y', 0);
+    svgText.setAttribute('font-size', fontSize);
+    if (isBold) {
+      svgText.setAttribute('font-weight', 'bold');
+    }
+    svgText.textContent = text;
+
+    // 将text元素添加到SVG，并将SVG添加到文档
+    svg.appendChild(svgText);
+    document.body.appendChild(svg);
+
+    // 获取文本宽度
+    const textWidth = Math.ceil(svgText.getBBox().width);
+
+    // 从文档中移除SVG
+    document.body.removeChild(svg);
+
+    return textWidth;
+  },
+  merge(obj1, obj2) {
+    const result = { ...obj1 }; // 初始时，result 是 obj1 的浅拷贝
+    for (const key in obj2) {
+      console.log(key);
+      if (obj2.hasOwnProperty(key)) {
+        if (typeof obj2[key] === 'object' && obj2[key] !== null && !Array.isArray(obj2[key])) {
+          // 如果 obj2[key] 是一个对象，并且 obj1[key] 也是一个对象，递归合并
+          result[key] = methods.merge(result[key] || {}, obj2[key]);
+        } else {
+          // 否则，直接将 obj2[key] 的值赋给 result[key]
+          console.log(key, obj2[key]);
+          result[key] = obj2[key];
+        }
+      }
+    }
+    return result;
   }
 };
+export default methods;

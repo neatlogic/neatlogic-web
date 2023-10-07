@@ -2,7 +2,7 @@
   <div id="container" class="graph-main"></div>
 </template>
 <script>
-import { Graph, ObjectExt } from '@antv/x6';
+import { Graph, Shape } from '@antv/x6';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Dnd } from '@antv/x6-plugin-dnd';
@@ -12,7 +12,7 @@ export default {
   name: '',
   components: {},
   props: {
-    panning: { type: Boolean, default: true }
+    graphData: { type: Object, default: {} }
   },
   data() {
     return {};
@@ -35,8 +35,9 @@ export default {
     },
     init: function() {
       if (!this.graph) {
-        this.graph = new Graph({
+        let graphConfig = {
           container: document.getElementById('container'),
+          background: this.graphData.background,
           autoResize: true, //自动延伸画布
           panning: true, //拖拽平移
           mousewheel: {
@@ -46,12 +47,54 @@ export default {
           grid: true,
           connecting: {
             // 配置全局的连线规则
-            snap: true, // 是否自动吸附
             allowMulti: false, // 是否允许在相同的起始节点和终止之间创建多条边
             allowNode: false, // 是否允许边链接到节点（非节点上的链接桩）
             allowBlank: false, // 是否允许连接到空白点
             allowLoop: false, // 是否允许创建循环连线，即边的起始节点和终止节点为同一节点，
-            allowEdge: false
+            allowEdge: false,
+            connector: {
+              name: 'rounded',
+              args: {
+                radius: 8
+              }
+            },
+            anchor: 'center',
+            connectionPoint: 'anchor',
+            snap: {
+              radius: 20
+            },
+            createEdge: () => {
+              const edge = new Shape.Edge({
+                router: {
+                  name: this.graphData?.connecting?.router || 'manhattan'
+                },
+                attrs: {
+                  line: {
+                    class: 'line',
+                    strokeWidth: 2,
+                    targetMarker: {
+                      class: 'marker',
+                      name: 'block',
+                      width: 12,
+                      height: 8
+                    }
+                  }
+                },
+                zIndex: 0
+              });
+              edge.addTools([
+                {
+                  name: 'vertices',
+                  args: {
+                    attrs: { class: 'vertice' }
+                  }
+                }
+              ]);
+              return edge;
+            },
+            validateConnection({ targetMagnet }) {
+              return !!targetMagnet;
+            }
           },
           //组合设置
           embedding: {
@@ -104,7 +147,10 @@ export default {
           },
           width: 800,
           height: 600
-        });
+        };
+        //graphConfig = this.$utils.merge(graphConfig, this.graphData);
+        //console.log(graphConfig);
+        this.graph = new Graph(graphConfig);
         this.graph.use(
           /*new Transform({
             resizing: {
@@ -133,7 +179,10 @@ export default {
             return this.createNode(nn);
           }
         });
-        this.graph.on('node:mouseenter', ({ node }) => {
+        this.graph.on('node:mouseenter', ({ node }) => {});
+        this.graph.on('node:mouseleave', ({ node }) => {});
+        this.graph.on('node:selected', ({ node }) => {
+          this.$emit('node:selected', { id: node.id, name: node.shape, data: node.getData() });
           node.addTools({
             name: 'button-remove',
             args: {
@@ -143,14 +192,23 @@ export default {
             }
           });
         });
-        this.graph.on('node:mouseleave', ({ node }) => {
-          node.removeTools();
-        });
-        this.graph.on('node:selected', ({ node }) => {
-          this.$emit('node:selected', { id: node.id, name: node.shape, data: node.getData() });
-        });
         this.graph.on('node:unselected', ({ node }) => {
           this.$emit('node:unselected');
+          node.removeTools();
+        });
+        this.graph.on('edge:mouseenter', ({ cell }) => {
+          cell.addTools([
+            {
+              name: 'button-remove',
+              args: { distance: '50%' }
+            }
+          ]);
+        });
+
+        this.graph.on('edge:mouseleave', ({ cell }) => {
+          if (cell.hasTool('button-remove')) {
+            cell.removeTool('button-remove');
+          }
         });
         this.$emit('ready', this.graph, this.dnd);
       }
