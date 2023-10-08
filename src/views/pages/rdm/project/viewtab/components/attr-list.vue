@@ -192,6 +192,7 @@ export default {
       await this.$api.rdm.issue.saveIssue(this.issueDataLocal).then(res => {
         this.isEditing = false;
         this.editingField = null;
+        this.$emit('save', this.issueDataLocal);
         if (field && field.startsWith('attr_')) {
           const attrId = parseInt(field.replace('attr_', ''));
           this.refreshAttr(attrId);

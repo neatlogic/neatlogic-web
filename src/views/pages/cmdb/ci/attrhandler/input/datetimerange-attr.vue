@@ -67,7 +67,7 @@ export default {
       if (this.valueList && this.valueList.length > 0) {
         if (this.type == 'time' || this.type == 'datetime') {
           return this.valueList[0];
-        } else if (this.type == 'datetimerange' || this.type == 'timerange') {
+        } else if (this.type == 'daterange' || this.type == 'datetimerange' || this.type == 'timerange') {
           try {
             const v = this.valueList[0].split(',');
             if (v.length == 2) {

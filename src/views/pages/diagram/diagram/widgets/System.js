@@ -1,20 +1,11 @@
 import { ObjectExt } from '@antv/x6';
+import utils from '@/resources/assets/js/util.js';
 export default {
   name: 'system',
   type: 'GLOBAL',
   label: '系统',
   config: {
     inherit: 'rect',
-    /*tools: [
-      {
-        name: 'button-remove',
-        args: {
-          x: '100%',
-          y: 0,
-          offset: { x: 10, y: -10 }
-        }
-      }
-    ],*/
     markup: [
       {
         tagName: 'rect',
@@ -72,6 +63,8 @@ export default {
         markup_body.style = {};
       }
       cell.markup = markup;
+      const width = utils.getTextWidth({ text: name, isBold: true });
+      cell.resize(Math.max(100, width), 30);
       cell.setAttrByPath(`name-text/text`, name);
     }
   },
