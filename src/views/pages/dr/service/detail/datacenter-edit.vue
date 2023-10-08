@@ -1,29 +1,40 @@
 <template>
   <div class="datacenter-edit">
     <TsFormItem :label="$t('term.process.catalog')" required>
-      <template v-if="applicationType === 'basicservices' || applicationType === 'network'">
+      <template v-if="!$utils.isEmpty(baseServiceConfig)">
         {{ baseServiceConfig.resourceName }}
-        <Button type="primary" ghost @click="addService()">
-          <span class="tsfont-plus">服务</span>
-        </Button>
       </template>
-      <template v-else>
-        <Button type="primary" ghost @click="addService()">
-          <span class="tsfont-plus">服务</span>
-        </Button>
+      <template v-else-if="!$utils.isEmpty(appServiceConfig)">
+        {{ appServiceConfig.appSystemName }}/{{ appServiceConfig.appModuleName }}/{{ appServiceConfig.envName }}
       </template>
+      <Button
+        v-if="$utils.isEmpty(baseServiceConfig) && $utils.isEmpty(appServiceConfig)"
+        type="primary"
+        ghost
+        @click="addService()"
+      >
+        <span class="tsfont-plus">服务</span>
+      </Button>
+      <span v-else class="tsfont-edit text-href pl-xs" @click="addService()"></span>
     </TsFormItem>
     <TsFormItem :label="$t('page.node')">
-      <div v-if="applicationType === 'basicservices' || applicationType === 'network'">
-        <Tag v-if="!$utils.isEmpty(baseServiceConfig)">
-          <span>{{ baseServiceConfig.typeLabel }}({{ baseServiceConfig.typeName }})[{{ baseServiceConfig.ip }}{{ baseServiceConfig.port?':'+baseServiceConfig.port:'' }}]</span>
+      <div v-if="!$utils.isEmpty(nodeList)">
+        <Tag v-for="(item, index) in nodeList" :key="index">
+          <span>{{ item.typeLabel }}
+            <span v-if="item.typeName">({{ item.typeName }})</span>
+            <span v-if="item.ip">[{{ item.ip }}{{ item.port?':'+item.port:'' }}]</span>
+          </span>
         </Tag>
       </div>
+      <div v-else>-</div>
     </TsFormItem>
     <TsFormItem label="公共服务">
       <div v-for="(item, i) in publicApplicationList" :key="i" class="pb-sm">
         <Tag closable @on-close="delpublicApp(item,i )">
-          <span>{{ item.typeLabel }}({{ item.typeName }})[{{ item.ip }}{{ item.port?':'+item.port:'' }}]</span>
+          <span>{{ item.typeLabel }}
+            <span v-if="item.typeName">({{ item.typeName }})</span>
+            <span v-if="item.ip">[{{ item.ip }}{{ item.port?':'+item.port:'' }}]</span>
+          </span>
         </Tag>
       </div>
       <Button type="primary" ghost @click="addPublicService()">
@@ -67,8 +78,10 @@
       v-if="isShowServiceDialog"
       :typeIdList="typeIdList"
       :multiple="isMultipleService"
+      :selectNodeList="selectNodeList"
       @close="closeService"
     ></AddServiceDialog>
+    <AppServiceDialog v-if="isShowAppServiceDialog" :data="appServiceConfig" @close="closeAppService"></AppServiceDialog>
   </div>
 </template>
 <script>
@@ -78,20 +91,19 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     AddServiceDialog: resolve => require(['./add-service-dialog.vue'], resolve),
-    HaSceneDialog: resolve => require(['./ha-scene-dialog.vue'], resolve)
+    HaSceneDialog: resolve => require(['./ha-scene-dialog.vue'], resolve),
+    AppServiceDialog: resolve => require(['./app-service-dialog.vue'], resolve)
   },
   props: {
-    data: {
-      type: Object,
-      default: () => {}
-    },
     applicationType: {
       type: String,
       default: ''
     },
-    basicservicesTypeIdList: Array,
-    networkTypeIdList: Array,
-    allBaseTypeIdList: {
+    data: {
+      type: Object,
+      default: () => {}
+    },
+    ciList: {
       type: Array,
       default: () => []
     }
@@ -113,13 +125,21 @@ export default {
       isMultipleService: false,
       typeIdList: [], //模型类型
       baseServiceConfig: {},
-      appServiceConfig: {}
+      appServiceConfig: {},
+      allBaseTypeIdList: [],
+      nodeList: [], //选中的节点
+      selectNodeList: [],
+      isShowAppServiceDialog: false,
+      basicservicesTypeIdList: [],
+      networkTypeIdList: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -127,19 +147,41 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    addService() {
-      if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
-        this.isMultipleService = false;
-        if (this.applicationType === 'basicservices') {
-          this.typeIdList = this.basicservicesTypeIdList || [];
-        } else {
-          this.typeIdList = this.networkTypeIdList || [];
-        }
+    init() {
+      let findItem = this.ciList.find(item => item.name === this.applicationType);
+      if (findItem) {
+        this.typeIdList = findItem.ciIdList;
       }
-      this.isShowServiceDialog = true;
+      let basicservicesConfig = this.ciList.find(item => item.name === 'basicservices');
+      let networkConfig = this.ciList.find(item => item.name === 'network');
+      this.basicservicesTypeIdList = basicservicesConfig.ciIdList || [];
+      this.networkTypeIdList = networkConfig.ciIdList || [];
+      let allList = this.basicservicesTypeIdList.concat(this.networkTypeIdList);
+      this.allBaseTypeIdList = this.$utils.uniqueArr(allList);
+    },
+    addService() {
+      this.selectNodeList = [];
+      this.typeIdList = [];
+      if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
+        if (this.applicationType === 'basicservices') {
+          this.typeIdList = this.basicservicesTypeIdList;
+        } else {
+          this.typeIdList = this.networkTypeIdList;
+        }
+        if (!this.$utils.isEmpty(this.baseServiceConfig)) {
+          this.selectNodeList.push({
+            id: this.baseServiceConfig.resourceId
+          });
+        }
+        this.isMultipleService = false;
+        this.isShowServiceDialog = true;
+      } else {
+        this.isShowAppServiceDialog = true;
+      }
     },
     addPublicService() {
       this.typeIdList = this.allBaseTypeIdList;
+      this.selectNodeList = this.publicApplicationList;
       this.isMultipleService = true;
       this.isShowServiceDialog = true;
     },
@@ -148,6 +190,7 @@ export default {
         list && (this.publicApplicationList = list);
       } else {
         if (list && list[0]) {
+          this.nodeList = list;
           this.baseServiceConfig = {
             resourceId: list[0].id,
             resourceName: list[0].name,
@@ -183,19 +226,19 @@ export default {
       });
     },
     delParam(index) {
-      console.log(index, 'index', this.customParamList);
       this.customParamList.splice(index, 1);
     },
     getData() {
       let data = {
-        datacenterId: this.data.id,
-        datacenterName: this.data.name,
+        datacenterId: this.data.datacenterId,
+        datacenterName: this.data.datacenterName,
         config: {
           filter: {},
           publicApplicationIdList: this.$utils.mapArray(this.publicApplicationList, 'id'),
           publicApplicationList: this.publicApplicationList,
           customParamList: this.customParamList,
-          highAvailabilitySceneList: this.highAvailabilitySceneList
+          highAvailabilitySceneList: this.highAvailabilitySceneList,
+          nodeList: this.nodeList
         }
       };
       if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
@@ -204,19 +247,43 @@ export default {
         this.$set(data.config, 'filter', this.appServiceConfig);
       }
       return data;
+    },
+    valid() {
+      let isValid = true;
+      if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
+        if (!this.baseServiceConfig.resourceId) {
+          isValid = false;
+        }
+      } else {
+        if (this.$utils.isEmpty(this.appServiceConfig.typeIdList)) {
+          isValid = false;
+        }
+      }
+      return isValid;
+    },
+    closeAppService(data, nodeList) {
+      data && (this.appServiceConfig = data);
+      nodeList && (this.nodeList = nodeList);
+      this.isShowAppServiceDialog = false;
     }
-   
   },
   filter: {},
   computed: {},
   watch: {
     data: {
       handler(val) {
-        if (!this.$utils.isEmpty(val)) {
-          this.publicApplicationIdList = val.publicApplicationIdList || [];
-          this.customParamList = val.customParamList || [];
-          this.highAvailabilitySceneList = val.highAvailabilitySceneList || [];
-          this.filter = val.filter || {};
+        if (val && val.config) {
+          this.publicApplicationIdList = val.config.publicApplicationIdList || [];
+          this.publicApplicationList = val.config.publicApplicationList || [];
+          this.customParamList = val.config.customParamList || [];
+          this.highAvailabilitySceneList = val.config.highAvailabilitySceneList || [];
+          this.filter = val.config.filter || {};
+          if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
+            this.baseServiceConfig = this.filter;
+          } else {
+            this.appServiceConfig = this.filter;
+          }
+          this.nodeList = val.config.nodeList || [];
         }
       },
       deep: true,

@@ -34,6 +34,10 @@ export default {
     defaultSceneData: {
       type: Object,
       default: () => {}
+    },
+    sceneList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -42,6 +46,7 @@ export default {
         sceneId: {
           type: 'select',
           url: '/api/rest/dr/scene/list',
+          dealDataByUrl: this.dealDataByUrl,
           valueName: 'id', 
           textName: 'name', 
           label: this.$t('page.scenarioname'),
@@ -80,6 +85,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    dealDataByUrl(nodeList) {
+      let list = [];
+      nodeList.forEach(item => {
+        let findItem = this.sceneList.find(d => d.sceneId === item.id);
+        if (findItem && this.defaultSceneData.sceneId != item.id) {
+          this.$set(item, '_disabled', true);
+        }
+        list.push(item);
+      });
+      return list;
+    },
     okDialog() {
       this.closeDialog(true);
     },

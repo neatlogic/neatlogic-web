@@ -22,9 +22,12 @@
           </div>
           <TsTable
             v-bind="tableData"
+            v-model="selectIdList"
             :multiple="multiple"
             :theadList="theadList"
-            :keyName="'id'"
+            keyName="id"
+            :loading="loadingShow"
+            selectedRemain
             @changeCurrent="getDataList('currentPage',...arguments)"
             @changePageSize="getDataList('pageSize',...arguments)"
             @getSelected="getSelected"
@@ -50,10 +53,12 @@ export default {
       type: Boolean,
       default: false
     },
-    typeIdList: Array
+    typeIdList: Array,
+    selectNodeList: Array
   },
   data() {
     return {
+      loadingShow: true,
       theadList: [
         { key: 'selection' },
         { title: this.$t('page.ip'), key: 'ip'},
@@ -186,7 +191,8 @@ export default {
           }
         ]
       },
-      disabledList: ['typeIdList'] //不可更改的搜索条件
+      disabledList: ['typeIdList'], //不可更改的搜索条件
+      selectIdList: []
     };
   },
   beforeCreate() {},
@@ -202,6 +208,7 @@ export default {
   methods: {
     searchNodeList(params) {
       if (this.$utils.isEmpty(this.searchVal.typeIdList)) {
+        this.loadingShow = false;
         return;
       }
       let data = this.searchVal;
@@ -212,6 +219,8 @@ export default {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
         }
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     getDataList(type, value) {
@@ -244,6 +253,15 @@ export default {
         if (val) {
           this.$set(this.searchVal, 'typeIdList', val);
           this.searchNodeList(this.searchVal);
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    selectNodeList: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.selectIdList = this.$utils.mapArray(val, 'id');
         }
       },
       deep: true,

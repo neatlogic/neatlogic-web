@@ -48,20 +48,24 @@
             <div v-if="current > 0 && current < dataCenterList.length + 1">
               <DatacenterEdit
                 ref="datacenter"
-                :basicservicesTypeIdList="basicservicesTypeIdList"
-                :networkTypeIdList="networkTypeIdList"
                 :data="currentDataCenter"
-                :allBaseTypeIdList="allBaseTypeIdList"
                 :applicationType="applicationType"
+                :ciList="ciList"
               ></DatacenterEdit>
             </div>
             <!-- 场景 -->
             <div v-if="current === (dataCenterList.length + 1)">
-              <Scene ref="scene" :sceneList="sceneList" @updateSceneList="updateSceneList"></Scene>
+              <Scene ref="scene" :sceneList="sceneList" @deleteScene="deleteScene"></Scene>
             </div>
             <!-- 服务依赖 -->
             <div v-if="current === (dataCenterList.length + 2)">
-              <Service :firstBtn="true" @update="updateService"></Service>
+              <Service
+                :baseSettings="baseSettings"
+                :firstBtn="true"
+                :sceneList="sceneList"
+                @update="updateServiceList"
+                @delete="deleteServiceRelationship"
+              ></Service>
             </div>
           </template>
         </div>
@@ -131,12 +135,11 @@ export default {
     getCiList() {
       this.$api.dr.ci.getCiList().then(res => {
         if (res && res.Status == 'OK') {
+          this.ciList = res.Return || [];
           let basicservicesConfig = res.Return.find(item => item.name === 'basicservices');
           let networkConfig = res.Return.find(item => item.name === 'network');
           this.basicservicesTypeIdList = basicservicesConfig.ciIdList;
           this.networkTypeIdList = networkConfig.ciIdList;
-          let allList = this.basicservicesTypeIdList.concat(this.networkTypeIdList);
-          this.allBaseTypeIdList = this.$utils.uniqueArr(allList);
         }
       });
     },
@@ -148,13 +151,26 @@ export default {
           this.baseSettings = this.$refs.baseinfo.getData() || {};
         }
       }
-      //场景必须添加一个
-      if (this.$refs.scene && this.$utils.isEmpty(this.sceneList)) {
-        this.$Notice.error({
-          title: '错误信息',
-          desc: '场景列表不能为空'
-        });
-        return;
+      if (this.$refs.scene) {
+        this.sceneList = this.$refs.scene.getData();
+      }
+      if (current < this.current) {
+        //校验资源中心
+        if (this.$refs.datacenter && !this.$refs.datacenter.valid()) {
+          this.$Notice.error({
+            title: '错误信息',
+            desc: '请选择服务'
+          });
+          return;
+        }
+        //场景必须添加一个
+        if (this.$refs.scene && this.$utils.isEmpty(this.sceneList)) {
+          this.$Notice.error({
+            title: '错误信息',
+            desc: '场景列表不能为空'
+          });
+          return;
+        }
       }
       if (current > 0) {
         if (this.$refs.datacenter) {
@@ -169,6 +185,9 @@ export default {
       this.$nextTick(() => {
         this.loadingShow = false;
       });
+    },
+    deleteScene(item, index) {
+      this.sceneList.splice(index, 1);
     },
     updateApplicationType(val) {
       this.applicationType = val;
@@ -194,11 +213,11 @@ export default {
         });
       }
     },
-    updateSceneList(list) {
-      this.sceneList = list;
-    },
-    updateService(list) {
+    updateServiceList(list) {
       this.applicationDependencyList = list;
+    },
+    deleteServiceRelationship(item, index) {
+      this.applicationDependencyList.splice(index, 1);
     },
     getValid() {
       let validList = [];
@@ -220,7 +239,6 @@ export default {
         return;
       }
       let data = this.getData();
-      console.log(data);
       this.$api.dr.service.saveService(data).then((res) => {
         if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));

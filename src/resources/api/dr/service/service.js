@@ -32,6 +32,9 @@ const service = {
   },
   saveServiceRelationship(params) {
     return axios.post('/api/rest/dr/service/relationship/save', params);
+  },
+  checkServiceRelationship(params) { //校验服务关系是否成环
+    return axios.post('/api/rest/dr/service/relationship/check', params);
   }
 };
 export default service;

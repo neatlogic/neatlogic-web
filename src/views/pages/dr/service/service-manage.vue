@@ -58,7 +58,7 @@ export default {
       serviceData: {},
       theadList: [
         { title: this.$t('page.name'), key: 'name'},
-        { title: this.$t('page.type'), key: 'type'},
+        { title: this.$t('page.type'), key: 'applicationTypeName'},
         { title: 'RTO', key: 'recoveryTimeObjective'},
         { title: 'RPO', key: 'recoveryPointObjective'},
         { title: this.$t('page.status'), key: 'status'},

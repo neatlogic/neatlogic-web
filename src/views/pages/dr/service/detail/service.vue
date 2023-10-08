@@ -1,5 +1,5 @@
 <template>
-  <div class="service">
+  <div class="service clearfix">
     <TsCard
       v-bind="cardData"
     >
@@ -30,8 +30,10 @@
     <ServiceDialog
       v-if="isShowDialog"
       :serviceId="serviceId"
+      :baseSettings="baseSettings"
       :currService="currService"
       :currSceneList="sceneList"
+      :serviceList="cardData.tbodyList"
       @close="closeService"
     ></ServiceDialog>
   </div>
@@ -58,7 +60,8 @@ export default {
     sceneList: {
       type: Array,
       default: () => []
-    }
+    },
+    baseSettings: Object
   },
   data() {
     return {
@@ -107,17 +110,8 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.dr.service.deleteServiceRelationship({
-            serviceId: row.serviceId,
-            dependencyServiceId: row.id
-          }).then(res => {
-            if (res && res.Status == 'OK') {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              this.cardData.tbodyList.splice(index, 1);
-              this.$emit('update');
-              vnode.isShow = false;
-            }
-          });
+          this.$emit('delete', row, index);
+          vnode.isShow = false;
         }
       });
     },
@@ -129,8 +123,8 @@ export default {
         } else { 
           this.cardData.tbodyList.splice(this.editIndex, 1, data);
         }
-        this.$emit('updateServiceList', this.cardData.tbodyList);
-        this.$emit('editService', data);
+        this.$emit('update', this.cardData.tbodyList);
+        this.$emit('editService', data, this.type);
       }
       this.isShowDialog = false;
     }

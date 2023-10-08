@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain v-if="!loadingShow" enableDivider>
       <template v-slot:navigation>
-        <span class="ts-angle-left text-action" @click="$back('/service-manage')">{{ $getFromPage('服务清单') }}</span>
+        <span class="tsfont-left text-action" @click="$back('/service-manage')">{{ $getFromPage('服务清单') }}</span>
       </template>
       <template v-slot:top>
         <div>
@@ -22,7 +22,13 @@
           </div>
           <Divider orientation="start">{{ $t('term.inspect.datacenter') }}</Divider>
           <div class="pt-nm pb-nm">
-            <Datacenter :list="serviceData.dataCenterList" @update="getServiceData()"></Datacenter>
+            <Datacenter
+              :serviceId="serviceData.id"
+              :list="serviceData.dataCenterList"
+              :ciList="ciList"
+              :applicationType="serviceData.applicationType"
+              @update="getServiceData()"
+            ></Datacenter>
           </div>
           <Divider orientation="start">我依赖的服务</Divider>
           <div class="pt-nm pb-nm">
@@ -31,7 +37,7 @@
               :list="serviceData.dependencyOnServiceList"
               :sceneList="serviceData.sceneList"
               @editService="editService"
-              @update="getServiceData()"
+              @delete="deleteServiceRelationship"
             ></Service>
           </div>
           <Divider orientation="start">依赖我的服务</Divider>
@@ -71,13 +77,15 @@ export default {
     return {
       loadingShow: true,
       serviceData: {},
-      isShowBaseInfo: false
+      isShowBaseInfo: false,
+      ciList: []
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     if (this.$route.query && this.$route.query.id) {
       this.id = parseInt(this.$route.query.id);
+      await this.getCiList();
       this.getServiceData();
     }
   },
@@ -91,15 +99,22 @@ export default {
   destroyed() {},
   methods: {
     getServiceData() {
+      this.loadingShow = true;
       this.$api.dr.service.getService({
         id: this.id
       }).then((res) => {
         if (res.Status === 'OK') {
-          console.log(res); 
           this.serviceData = res.Return || {};
         }
       }).finally(() => {
         this.loadingShow = false;
+      });
+    },
+    getCiList() {
+      return this.$api.dr.ci.getCiList().then(res => {
+        if (res && res.Status == 'OK') {
+          this.ciList = res.Return || [];
+        }
       });
     },
     editBaseInfo() {
@@ -156,7 +171,11 @@ export default {
         });
       }
     },
-    editService(item) {
+    editService(item, type) {
+      if (type === 'add') {
+        this.checkServiceRelationship(item);
+        return;
+      }
       if (item) {
         this.$api.dr.service.saveServiceRelationship(item).then((res) => {
           if (res.Status === 'OK') {
@@ -164,6 +183,27 @@ export default {
           }
         });
       }
+    },
+    checkServiceRelationship(item) {
+      this.$api.dr.service.checkServiceRelationship({
+        serviceId: this.id,
+        dependencyServiceId: item.dependencyServiceId
+      }).then((res) => {
+        if (res.Status === 'OK') {
+          console.log(res);
+        }
+      });
+    },
+    deleteServiceRelationship(row) {
+      this.$api.dr.service.deleteServiceRelationship({
+        serviceId: row.serviceId,
+        dependencyServiceId: row.dependencyServiceId
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.deletesuccess'));
+          this.getServiceData();
+        }
+      });
     }
   },
   filter: {},

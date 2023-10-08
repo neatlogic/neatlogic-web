@@ -1,5 +1,5 @@
 <template>
-  <div class="scene">
+  <div class="scene clearfix">
     <TsCard
       v-bind="cardData"
     >
@@ -32,7 +32,12 @@
         <div class="pl-sm tsfont-trash-o" @click="deleteScene(row,index)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
-    <SceneDialog v-if="isShowDialog" :defaultSceneData="sceneConfig" @close="closeScene"></SceneDialog>
+    <SceneDialog
+      v-if="isShowDialog"
+      :defaultSceneData="sceneConfig"
+      :sceneList="cardData.tbodyList"
+      @close="closeScene"
+    ></SceneDialog>
   </div>
 </template>
 <script>
@@ -103,14 +108,13 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$emit('deleteScene', row);
-          this.cardData.tbodyList.splice(index, 1);
+          this.$emit('deleteScene', row, index);
           vnode.isShow = false;
-          this.$emit('updateSceneList', this.cardData.tbodyList);
         }
       });
     },
     closeScene(isUpdate, data) {
+      this.isShowDialog = false;
       this.sceneConfig = {};
       if (isUpdate) {
         if (this.type === 'add') {
@@ -118,10 +122,8 @@ export default {
         } else { 
           this.cardData.tbodyList.splice(this.editIndex, 1, data);
         }
-        this.$emit('updateSceneList', this.cardData.tbodyList);
         this.$emit('editScene', data);
       }
-      this.isShowDialog = false;
     },
     getData() {
       return this.cardData.tbodyList;
