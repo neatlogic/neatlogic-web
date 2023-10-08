@@ -77,6 +77,11 @@ export default {
   },
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData['currentIterationId']) {
+        this.currentIterationId = historyData['currentIterationId'];
+      }
+    },
     toInterationDetail(id) {
       this.$router.push({ path: '/iteration-detail/' + this.projectId + '/' + this.appId + '/' + id });
     },
@@ -88,6 +93,7 @@ export default {
     selectIteration(iteration) {
       if (this.currentIterationId !== iteration.id) {
         this.currentIterationId = iteration.id;
+        this.$addHistoryData('currentIterationId', this.currentIterationId);
         this.$emit('change', iteration);
       } else {
         //创新迭代
@@ -100,20 +106,26 @@ export default {
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {
         const iterationList = res.Return.tbodyList;
-        if (!this.currentIterationId && iterationList && iterationList.length > 0) {
-          for (let i = 0; i < iterationList.length; i++) {
-            const iteration = iterationList[i];
-            if (this.isProcessing(iteration)) {
-              this.selectIteration(iteration);
-              break;
+        const pageSize = res.Return.pageSize;
+        if (iterationList && iterationList.length > 0) {
+          if (!this.currentIterationId) {
+            for (let i = 0; i < iterationList.length; i++) {
+              const iteration = iterationList[i];
+              if (this.isProcessing(iteration)) {
+                this.selectIteration(iteration);
+                break;
+              }
+            }
+            if (!this.currentIterationId) {
+              this.selectIteration(iterationList[0]);
+            }
+          } else {
+            const iteration = iterationList.find(d => d.id === this.currentIterationId);
+            if (iteration) {
+              this.$emit('change', iteration);
             }
           }
-          if (!this.currentIterationId) {
-            this.selectIteration(iterationList[0]);
-          }
-        }
-        const pageSize = res.Return.pageSize;
-        if (iterationList && iterationList.length) {
+
           if (iterationList.length > pageSize) {
             this.hasMore = true;
           } else {
