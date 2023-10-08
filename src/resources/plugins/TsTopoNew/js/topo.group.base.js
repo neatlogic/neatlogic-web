@@ -455,18 +455,19 @@
           .append('rect')
           .attr('fill', 'none')
           .attr('class', 'select')
-          .attr('width', this.getWidth() + this.getStrokewidth() || 0)
-          .attr('height', this.getHeight() + this.getStrokewidth() || 0)
-          .attr('x', -this.getStrokewidth() || 0 / 2)
-          .attr('y', -this.getStrokewidth() || 0 / 2)
+          .attr('width', box.width)
+          .attr('height', box.height)
+          .attr('x', 0)
+          .attr('y', 0)
           .attr('stroke-width', 1);
         this.canvas.watcher.add(this, ['width', 'height', 'strokewidth'], () => {
           if (this.selectEl) {
+            const box = this.shapeEl.node().getBBox();
             this.selectEl
-              .attr('x', -this.getStrokewidth() || 0 / 2)
-              .attr('y', -this.getStrokewidth() || 0 / 2)
-              .attr('width', this.getWidth() + this.getStrokewidth() || 0)
-              .attr('height', this.getHeight() + this.getStrokewidth() || 0);
+              .attr('x', 0)
+              .attr('y', 0)
+              .attr('width', box.width)
+              .attr('height', box.height);
           }
         });
       }

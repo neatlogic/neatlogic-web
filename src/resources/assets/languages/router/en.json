@@ -292,5 +292,8 @@
   "dr": {
     "dr": "Disaster cutting",
     "basicsetting": "Basic Settings"
+  },
+  "diagram": {
+    "diagrammanage": "System Management"
   }
 }

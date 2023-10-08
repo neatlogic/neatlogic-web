@@ -292,5 +292,8 @@
   "dr": {
     "dr": "灾切",
     "basicsetting": "基础设置"
+  },
+  "diagram": {
+    "diagrammanage": "系统管理"
   }
 }

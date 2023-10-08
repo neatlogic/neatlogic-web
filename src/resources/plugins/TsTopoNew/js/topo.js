@@ -1,6 +1,6 @@
-(function(global, factory) {
+(function (global, factory) {
   factory((global.TsTopo = global.TsTopo || {}), global);
-})(window, function(exports, global) {
+})(window, function (exports, global) {
   'use strict';
   class Topo {
     //两下划线开头的属性，代表需要在tojson中序列化，单下划线只是代表私有属性，需要通过getXX()方法获取，但不需要序列化，没有下划线代表公共属性
@@ -37,10 +37,10 @@
         if (k.startsWith('__')) {
           let pname = k.substr(2);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
           };
         } else if (k.startsWith('_')) {
@@ -48,10 +48,10 @@
           pname = pname.replace(pname[0], pname[0].toUpperCase());
           this['get' + pname] =
             this['get' + pname] ||
-            function() {
+            function () {
               return this[k];
             };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
           };
         }
@@ -240,17 +240,25 @@
       if (this.config['node.selectable'] !== false) {
         //可以选中节点时,进行键盘事件监听主要用来多选节点的操作
         let _this = this;
-        _this.handlerKeydown = function(event) {
+        _this.handlerKeydown = function (event) {
           _this.isShiftKey = event.shiftKey || false;
           _this.isCtrlKey = event.ctrlKey || false;
         };
-        _this.handlerKeyup = function(event) {
+        _this.handlerKeyup = function (event) {
           _this.isShiftKey = false;
           _this.isCtrlKey = false;
         };
         window.addEventListener('keydown', _this.handlerKeydown); //监听键盘事件，主要是为了监听是否按住ctrl键
         window.addEventListener('keyup', _this.handlerKeyup); //监听键盘事件，清楚ctrl标志
       }
+    }
+    getMouseX() {
+      const [x, y] = d3.mouse(this.el.node());
+      return x;
+    }
+    getMouseY() {
+      const [x, y] = d3.mouse(this.el.node());
+      return y;
     }
     draw() {
       if (this.el) {
@@ -259,10 +267,7 @@
       //生成画布
       this.el = d3.select(this.getContainer()).append('svg');
       this.el.datum(this);
-      this.el
-        .classed('topo', true)
-        .classed(this.getClassname(), true)
-        .attr('cursor', 'pointer');
+      this.el.classed('topo', true).classed(this.getClassname(), true).attr('cursor', 'pointer');
 
       //添加缩放层
       this.drawZoom();
@@ -296,7 +301,7 @@
           const section = d3.event.selection;
           // 获取被框选中的节点
           if (section && this.getAllowBrushSelect()) {
-            const selectSection = section.map(function(d) {
+            const selectSection = section.map(function (d) {
               return zoomIdentity.invert(d);
             });
             // FIXME
@@ -395,11 +400,7 @@
       return 0;
     }
     drawDefs() {
-      let defs = this.el
-        .selectAll('defs')
-        .data(['defs'])
-        .enter()
-        .append('defs');
+      let defs = this.el.selectAll('defs').data(['defs']).enter().append('defs');
       this.defs = defs;
       // marker剪切
       this.defs
@@ -414,13 +415,13 @@
       this.defs
         .append('filter')
         .attr('id', 'goo-' + this.getUuid())
-        .html(function() {
+        .html(function () {
           return `<feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo"></feColorMatrix><feGaussianBlur in="goo" stdDeviation="2" result="shadow"></feGaussianBlur><feColorMatrix in="shadow" mode="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 0" result="shadow"></feColorMatrix><feOffset in="shadow" dx="1" dy="1" result="shadow"></feOffset><feComposite in2="shadow" in="goo" result="goo"></feComposite><feComposite in2="goo" in="SourceGraphic" result="mix"></feComposite>`;
         });
       this.defs
         .append('filter')
         .attr('id', 'goo-shadow-' + this.getUuid())
-        .html(function() {
+        .html(function () {
           return `<feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
 			      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -7" result="goo" />
 			      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>`;
@@ -433,7 +434,7 @@
         .attr('y', '-0.5')
         .attr('width', '200%')
         .attr('height', '200%')
-        .html(function() {
+        .html(function () {
           return `
                        <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
                        <feColorMatrix result="matrixOut" in="offOut" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" />
@@ -448,7 +449,7 @@
         .attr('y', '-0.5')
         .attr('width', '200%')
         .attr('height', '200%')
-        .html(function() {
+        .html(function () {
           return `
                        <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
                        <!--<feColorMatrix result="matrixOut" in="offOut" type="matrix"  />-->
@@ -463,7 +464,7 @@
         .attr('y', '-0.5')
         .attr('width', '200%')
         .attr('height', '200%')
-        .html(function() {
+        .html(function () {
           return `
                        <feOffset result="offOut" in="SourceGraphic" dx="0.5" dy="0.5" />
                        <feColorMatrix result="matrixOut" in="offOut" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0" />
@@ -478,7 +479,7 @@
         .attr('y', '-0.5')
         .attr('width', '200%')
         .attr('height', '200%')
-        .html(function() {
+        .html(function () {
           return `<feOffset result="offOut" in="SourceGraphic" dx="0.2" dy="0.2" />
                   <feColorMatrix result="matrixOut" in="offOut" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0" />
                   <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="0.4" />
@@ -532,23 +533,11 @@
         .attr('cx', 3)
         .attr('cy', 6);*/
 
-      let circleTextFilter = this.defs
-        .append('filter')
-        .attr('id', `linktextbg${this.getUuid()}`)
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', 1)
-        .attr('height', 1);
+      let circleTextFilter = this.defs.append('filter').attr('id', `linktextbg${this.getUuid()}`).attr('x', 0).attr('y', 0).attr('width', 1).attr('height', 1);
 
-      circleTextFilter
-        .append('feFlood')
-        .attr('class', 'linktextbackground')
-        .attr('flood-opacity', 1);
+      circleTextFilter.append('feFlood').attr('class', 'linktextbackground').attr('flood-opacity', 1);
 
-      circleTextFilter
-        .append('feComposite')
-        .attr('in', 'SourceGraphic')
-        .attr('operator', 'over');
+      circleTextFilter.append('feComposite').attr('in', 'SourceGraphic').attr('operator', 'over');
       // 水波
       /*let symbol = this.defs.append('symbol').attr('id', 'ware-' + this.getUuid());
       symbol.append('path').attr('d', 'M 420 20 c 21.5 -0.4 38.8 -2.5 51.1 -4.5 c 13.4 -2.2 26.5 -5.2 27.3 -5.4 C 514 6.5 518 4.7 528.5 2.7 c 7.1 -1.3 17.9 -2.8 31.5 -2.7 c 0 0 0 0 0 0 v 20 H 420 Z');
@@ -564,10 +553,10 @@
         this.getSetConfig[k] = this.config[k];
         const that = this;
         bindConfigSetting[k] = {
-          get: function() {
+          get: function () {
             return that.getSetConfig[k];
           },
-          set: function(value) {
+          set: function (value) {
             if (that.getSetConfig[k] !== value) {
               that['_' + k] = value; //topo属性是单下划线开头
               that.getSetConfig[k] = value;
@@ -584,10 +573,10 @@
           this.getSet[k] = this[k];
           const that = this;
           bindSetting[k] = {
-            get: function() {
+            get: function () {
               return that.getSet[k];
             },
-            set: function(value) {
+            set: function (value) {
               if (that.getSet[k] !== value) {
                 that.getSet[k] = value;
               }
@@ -686,7 +675,7 @@
       return this.links;
     }
     static generateUuid() {
-      return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0;
         var v = c == 'x' ? r : (r & 0x3) | 0x8;
         return v.toString(16);
@@ -741,7 +730,7 @@
       if (!transform) return false;
       time = time !== undefined ? time : 700;
       !this.zoomed
-        ? (this.zoomed = d3.zoom().on('zoom', function() {
+        ? (this.zoomed = d3.zoom().on('zoom', function () {
             _this.zoomG.attr('transform', d3.event.transform);
           }))
         : '';

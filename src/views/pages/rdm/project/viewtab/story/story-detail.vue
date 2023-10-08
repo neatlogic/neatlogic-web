@@ -29,6 +29,11 @@
             :projectId="projectId"
             :appId="appId"
             :issueData="issueData"
+            @save="
+              val => {
+                issueData = val;
+              }
+            "
           ></AttrList>
         </div>
       </template>
