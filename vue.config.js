@@ -5,11 +5,11 @@ let src = './src';
 let rootSrc = './src';
 let baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
 let baseImg = './public/resource';
+let closedSource = src + '/closed_module';
 
 let pageTitle = 'neatlogic'; //页面标题名称
 let currentModuleName = '';
 let projectName = ''; //引入项目配置信息
-// process.env.VUE_APP_CUSTOMPAGES = 'neatlogic';
 process.env.VUE_APP_LOGINTITLE = 'welcome';
 try {
   custommodule_home = require('../neatlogic-web-config/config.json'); //查找是否有配置信息
@@ -28,28 +28,41 @@ try {
     if (projectName.tableStyle) {
       process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
     }
+    if (projectName.closedsource) {
+      closedSource = projectName.closedsource;
+    }
     process.env.VUE_APP_CUSTOMPAGES = projectName.home; //自定义项目文件夹名称
     process.env.VUE_APP_CUSTOMMODULE = true;
     pageTitle = projectName.title;
   }
 } catch (e) {
-  // localStorage.titleLogin = 'neatlogic';
-  // window.localStorage.setItem('titleLogin', 'neatlogic');
+  //
+  console.log('neatlogic-web-config', e);
 }
-//注意：urlPrefix需为包含端口号的完整的访问路径，比如：http://192.168.0.25:8282
-
-// console.log('--------------------全局变量----------',)
-
+console.log('最后返回的值', baseConfiglUrl);
 let localUrl = '../neatlogic-web/src/resources';
-// let configUrl = '../neatlogic-web-config';
-
 const { tenantName, urlPrefix } = require('./apiconfig.json');
 process.env.VUE_APP_TENANT = tenantName; // 租户名称
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {
     const pagePath = glob.sync(rootSrc + '/views/pages/*/router.js');
-    pagePath.forEach(p => {
+    let pagePathList = [...pagePath];
+    // let CUSTOMMODULEList = process.env.VUE_APP_NODE_ENV == 'business' && typeof process.env.VUE_APP_MODULE_LIST == 'string' ? JSON.parse(process.env.VUE_APP_MODULE_LIST) : [];
+    // let customPagePath = [];
+    // let arr;
+    // if (process.env.VUE_APP_NODE_ENV == 'business' && CUSTOMMODULEList && CUSTOMMODULEList.length > 0) {
+    //   CUSTOMMODULEList.forEach(item => {
+    //     if (item) {
+    //       arr = glob.sync(`../${item}/src/views/pages/*/router.js`);
+    //       if (arr && arr.length > 0) {
+    //         customPagePath.push(...arr);
+    //       }
+    //     }
+    //   });
+    //   pagePathList.push(...customPagePath);
+    // }
+    pagePathList.forEach(p => {
       const filename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
       const newpage = {};
       let pageLogin = `${pageTitle}-${filename[1]}`;
@@ -57,6 +70,7 @@ function getPages(pageList) {
         pageLogin = `${pageTitle}`;
       }
       newpage[filename[1]] = {
+        // entry: CUSTOMMODULEList.includes(filename[1]) ? `../${filename[1]}/src/views/pages/${filename[1]}/${filename[1]}.js` : `${src}/views/pages/${filename[1]}/${filename[1]}.js`,
         entry: `${src}/views/pages/${filename[1]}/${filename[1]}.js`,
         template: `public/index.html`,
         filename: `${filename[1]}.html`,
@@ -72,6 +86,7 @@ function getPages(pageList) {
     list.forEach(p => {
       const newpage = {};
       newpage[p] = {
+        // entry: CUSTOMMODULEList.includes(p) ? `../${p}/src/views/pages/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
         entry: `${src}/views/pages/${p}/${p}.js`,
         template: `public/index.html`,
         filename: `${p}.html`,
@@ -121,7 +136,7 @@ module.exports = {
     config.resolve.alias.set('custom-module', resolve(baseConfiglUrl));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-
+    config.resolve.alias.set('closed-source-module', resolve(closedSource));
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));
