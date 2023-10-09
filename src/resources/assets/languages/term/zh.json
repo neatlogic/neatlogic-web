@@ -2500,6 +2500,21 @@
     "organizationalstructure": "组织架构",
     "affiliatedorganization": "所属组织",
     "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
-    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除"
+    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除",
+    "selectatleastmodel": "至少选择一个模型",
+    "applicationtypename": "应用类型",
+    "org": "恢复机构",
+    "fileconfigpath": "配置文件路径",
+    "datacenterrel": "关联数据中心",
+    "selectdatacenter": "至少选择两个数据中心",
+    "publicapplication": "公共服务",
+    "combopname": "自动化编排",
+    "dependency": "依赖",
+    "dependencyservice": "依赖服务",
+    "scencedependency": "场景依赖",
+    "servicedependency": "服务依赖",
+    "scenarioplan": "场景预案",
+    "relyonmyservices": "依赖我的服务",
+    "servicerelyon": "我依赖的服务"
   }
 }

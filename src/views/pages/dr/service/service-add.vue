@@ -18,7 +18,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="service-add">
+        <div v-if="!loadingShow" class="service-add">
           <div v-if="!isShowSteps" class="pb-nm">
             <Steps :current="current">
               <Step :title="$t('page.basicinfo')"></Step>
@@ -29,8 +29,8 @@
                   :title="item.datacenterName"
                 ></Step>
               </template>
-              <Step title="场景"></Step>
-              <Step title="服务依赖"></Step>
+              <Step :title="$t('page.scene')"></Step>
+              <Step :title="$t('term.dr.servicedependency')"></Step>
             </Steps>
           </div>
           <!-- 基本信息 -->
@@ -59,13 +59,12 @@
             </div>
             <!-- 服务依赖 -->
             <div v-if="current === (dataCenterList.length + 2)">
-              <Service
+              <ServiceRelationship
                 :baseSettings="baseSettings"
                 :firstBtn="true"
                 :sceneList="sceneList"
                 @update="updateServiceList"
-                @delete="deleteServiceRelationship"
-              ></Service>
+              ></ServiceRelationship>
             </div>
           </template>
         </div>
@@ -85,8 +84,6 @@
             </div>
           </div>
         </div>
-        <!-- 校验 -->
-        <ServiceValid v-model="validVisible" :validList="validList" @on-click="jumpToItem"></ServiceValid>
       </template>
     </TsContain>
   </div>
@@ -97,9 +94,8 @@ export default {
   components: {
     Baseinfo: resolve => require(['./detail/baseinfo.vue'], resolve),
     Scene: resolve => require(['./detail/scene.vue'], resolve),
-    Service: resolve => require(['./detail/service.vue'], resolve),
-    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve),
-    ServiceValid: resolve => require(['./detail/service-valid-dialog.vue'], resolve)
+    ServiceRelationship: resolve => require(['./detail/service-relationship.vue'], resolve),
+    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve)
   },
   props: {},
   data() {
@@ -111,8 +107,6 @@ export default {
       sceneList: [],
       applicationDependencyList: [], //服务依赖
       isShowSteps: false,
-      validList: [],
-      validVisible: false,
       basicservicesTypeIdList: [], //基础服务选的配置
       networkTypeIdList: [], ///网络选的配置
       applicationType: '',
@@ -154,28 +148,33 @@ export default {
       if (this.$refs.scene) {
         this.sceneList = this.$refs.scene.getData();
       }
-      if (current < this.current) {
+      if (this.$refs.datacenter) {
+        let datacenterConfig = this.$refs.datacenter.getData();
+        this.dataCenterList.forEach(d => {
+          if (d.datacenterId === datacenterConfig.datacenterId) {
+            this.$set(d, 'config', datacenterConfig.config || {});
+          }
+        });
+      }
+      if (current > this.current) {
         //校验资源中心
         if (this.$refs.datacenter && !this.$refs.datacenter.valid()) {
           this.$Notice.error({
-            title: '错误信息',
-            desc: '请选择服务'
+            title: this.$t('term.framework.errorinfo'),
+            desc: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.process.catalog')})
           });
           return;
         }
         //场景必须添加一个
         if (this.$refs.scene && this.$utils.isEmpty(this.sceneList)) {
           this.$Notice.error({
-            title: '错误信息',
-            desc: '场景列表不能为空'
+            title: this.$t('term.framework.errorinfo'),
+            desc: this.$t('form.validate.required', {'target': this.$t('page.scene')})
           });
           return;
         }
       }
       if (current > 0) {
-        if (this.$refs.datacenter) {
-          this.dataCenterList[current - 2] = this.$refs.datacenter.getData();
-        }
         if (current <= this.dataCenterList.length) {
           this.currentDataCenter = this.dataCenterList[current - 1];
         }
@@ -216,13 +215,6 @@ export default {
     updateServiceList(list) {
       this.applicationDependencyList = list;
     },
-    deleteServiceRelationship(item, index) {
-      this.applicationDependencyList.splice(index, 1);
-    },
-    getValid() {
-      let validList = [];
-      return validList;
-    },
     getData() {
       let data = {
         ...this.baseSettings,
@@ -233,11 +225,6 @@ export default {
       return data;
     },
     save() {
-      this.validList = this.getValid();
-      if (!this.$utils.isEmpty(this.validList)) {
-        this.validVisible = true;
-        return;
-      }
       let data = this.getData();
       this.$api.dr.service.saveService(data).then((res) => {
         if (res.Status === 'OK') {
@@ -251,14 +238,20 @@ export default {
     changeDataCenter(selectedItem) {
       //改变关联数据中心需要更新步骤的数据
       this.isShowSteps = true;
-      this.dataCenterList = [];
+      let list = [];
       selectedItem.forEach(item => {
-        this.dataCenterList.push({
-          datacenterId: item.id,
-          datacenterName: item.name,
-          config: {}
-        });
+        let findItem = this.dataCenterList.find(d => d.datacenterId === item.id);
+        if (findItem) {
+          list.push(findItem);
+        } else {
+          list.push({
+            datacenterId: item.id,
+            datacenterName: item.name,
+            config: {}
+          });
+        }
       });
+      this.dataCenterList = list;
       this.$nextTick(() => {
         this.isShowSteps = false;
       });
@@ -277,9 +270,6 @@ export default {
           vnode.isShow = false;
         }
       });
-    },
-    jumpToItem() {
-
     }
   },
   filter: {},

@@ -8,12 +8,12 @@
         {{ appServiceConfig.appSystemName }}/{{ appServiceConfig.appModuleName }}/{{ appServiceConfig.envName }}
       </template>
       <Button
-        v-if="$utils.isEmpty(baseServiceConfig) && $utils.isEmpty(appServiceConfig)"
+        v-if="isAddService()"
         type="primary"
         ghost
         @click="addService()"
       >
-        <span class="tsfont-plus">服务</span>
+        <span class="tsfont-plus">{{ $t('term.process.catalog') }}</span>
       </Button>
       <span v-else class="tsfont-edit text-href pl-xs" @click="addService()"></span>
     </TsFormItem>
@@ -28,7 +28,7 @@
       </div>
       <div v-else>-</div>
     </TsFormItem>
-    <TsFormItem label="公共服务">
+    <TsFormItem :label="$t('term.dr.publicapplication')">
       <div v-for="(item, i) in publicApplicationList" :key="i" class="pb-sm">
         <Tag closable @on-close="delpublicApp(item,i )">
           <span>{{ item.typeLabel }}
@@ -38,7 +38,7 @@
         </Tag>
       </div>
       <Button type="primary" ghost @click="addPublicService()">
-        <span class="tsfont-plus">公共服务</span>
+        <span class="tsfont-plus">{{ $t('term.dr.publicapplication') }}</span>
       </Button>
     </TsFormItem>
     <TsFormItem :label="$t('term.deploy.customparameter')">
@@ -57,7 +57,7 @@
         <span class="tsfont-plus" @click="addParam()">{{ $t('page.param') }}</span>
       </Button>
     </TsFormItem>
-    <TsFormItem label="HA场景">
+    <TsFormItem :label="'HA'+$t('page.scene')">
       <div v-if="highAvailabilitySceneList.length">
         <Tag
           v-for="(item, i) in highAvailabilitySceneList"
@@ -268,7 +268,17 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isAddService() {
+      return () => {
+        let isAdd = true;
+        if ((!this.$utils.isEmpty(this.baseServiceConfig) && this.baseServiceConfig.resourceId) || (!this.$utils.isEmpty(this.appServiceConfig) && !this.$utils.isEmpty(this.appServiceConfig.typeIdList))) {
+          isAdd = false;
+        }
+        return isAdd;
+      };
+    }
+  },
   watch: {
     data: {
       handler(val) {

@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow="true"
-      :title="type==='add'?$t('page.add'):$t('page.edit') + $t('page.scene')"
+      :title="$t('page.scene')"
       @on-ok="okDialog()"
       @on-close="closeDialog()"
     >
@@ -27,11 +27,7 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
-    type: {
-      type: String,
-      default: 'add'
-    },
-    defaultSceneData: {
+    sceneConfig: {
       type: Object,
       default: () => {}
     },
@@ -128,7 +124,7 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    defaultSceneData: {
+    sceneConfig: {
       handler(val) {
         if (val) {
           this.formData = this.$utils.deepClone(val);

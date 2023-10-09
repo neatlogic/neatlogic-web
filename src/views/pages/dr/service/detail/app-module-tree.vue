@@ -65,7 +65,7 @@
           </div>
         </div>
       </div>
-      <div v-if="currentPage < pageCount" class="text-href pl-lg" @click="searchAppSystem(searchParam.currentPage + 1)">加载更多</div>
+      <div v-if="currentPage < pageCount" class="text-href pl-lg" @click="searchAppSystem(searchParam.currentPage + 1)">{{ $t('term.codehub.loadmore') }}</div>
     </div>
   </div>
 </template>
@@ -211,7 +211,6 @@ export default {
           this.$set(this.returnValue, 'appModuleName', module.name);
           this.$set(this.returnValue, 'envId', env.id);
           this.$set(this.returnValue, 'envName', env.name);
-          // this.$set(this.returnValue, 'typeIdList', env.name);
         }
         this.$emit('update', this.returnValue);
       }

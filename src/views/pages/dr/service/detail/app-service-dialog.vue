@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="服务"
+      :title="$t('term.process.catalog')"
       type="slider"
       :isShow="true"
       width="large"
@@ -225,8 +225,8 @@ export default {
       }
       if (this.$utils.isEmpty(selectList)) {
         this.$Notice.error({
-          title: '错误信息',
-          desc: '请选择至少一个模型'
+          title: this.$t('term.framework.errorinfo'),
+          desc: this.$t('term.dr.selectatleastmodel')
         });
         return;
       }

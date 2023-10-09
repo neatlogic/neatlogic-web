@@ -40,7 +40,7 @@ export default {
         name: {
           type: 'text',
           maxlength: 50,
-          label: '服务名称', // 名称
+          label: this.$t('page.name'),
           validateList: [
             'required',
             'name-special',
@@ -53,7 +53,7 @@ export default {
         },
         applicationType: {
           type: 'select',
-          label: '应用类型',
+          label: this.$t('term.dr.applicationtypename'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'DrAppType' },
           validateList: ['required'],
@@ -64,7 +64,7 @@ export default {
         },
         orgId: {
           type: 'tree',
-          label: '恢复机构',
+          label: this.$t('term.dr.org'),
           url: '/api/rest/dr/organization/tree',
           textName: 'name',
           valueName: 'id',
@@ -82,11 +82,11 @@ export default {
         },
         file: {
           type: 'slot',
-          label: '配置文件路径'
+          label: this.$t('term.dr.fileconfigpath')
         },
         dataCenter: {
           type: 'checkbox',
-          label: '关联数据中心',
+          label: this.$t('term.dr.datacenterrel'),
           url: '/api/rest/dr/datacenter/list',
           valueName: 'id',
           textName: 'name',
@@ -94,7 +94,7 @@ export default {
           validateList: ['required', {
             name: 'custom',
             trigger: 'change',
-            message: '至少选择两个',
+            message: this.$t('term.dr.selectdatacenter'),
             validator: (rule, val, el) => {
               return this.validDatacenter(el);
             }

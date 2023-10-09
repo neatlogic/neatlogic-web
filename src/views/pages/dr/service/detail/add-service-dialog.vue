@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="选择节点"
+      :title="$t('term.autoexec.selectnode')"
       type="slider"
       :isShow="true"
       :multiple="multiple"
@@ -32,9 +32,6 @@
             @changePageSize="getDataList('pageSize',...arguments)"
             @getSelected="getSelected"
           >
-            <template slot="" slot-scope="{row}">
-              {{ row }}
-            </template>
           </TsTable>
         </div>
       </template>
@@ -89,7 +86,7 @@ export default {
           {
             type: 'tree',
             name: 'typeIdList',
-            label: '模型类型',
+            label: this.$t('term.cmdb.citype'),
             multiple: true,
             url: '/api/rest/resourcecenter/resourcetype/tree',
             textName: 'label',
@@ -101,7 +98,7 @@ export default {
           {
             type: 'select',
             name: 'appSystemIdList',
-            label: '应用',
+            label: this.$t('page.apply'),
             multiple: true,
             value: null,
             dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
@@ -130,7 +127,7 @@ export default {
           {
             type: 'select',
             name: 'appModuleIdList',
-            label: '模块',
+            label: this.$t('page.module'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
             params: {appSystemIdList: null},
@@ -142,7 +139,7 @@ export default {
           {
             type: 'checkbox',
             name: 'envIdList',
-            label: '环境',
+            label: this.$t('page.environment'),
             multiple: true,
             url: '/api/rest/resourcecenter/appenv/list/forselect',
             params: {needPage: false},
@@ -155,7 +152,7 @@ export default {
           {
             type: 'select',
             name: 'protocolIdList',
-            label: '连接协议',
+            label: this.$t('term.inspect.connectionagreement'),
             dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
             rootName: 'tbodyList',
             dealDataByUrl: this.$utils.getProtocolDataList,
@@ -167,7 +164,7 @@ export default {
           {
             type: 'select',
             name: 'tagIdList',
-            label: '标签',
+            label: this.$t('page.tag'),
             multiple: true,
             dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
             rootName: 'tbodyList',
@@ -179,7 +176,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: '状态',
+            label: this.$t('page.status'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false},

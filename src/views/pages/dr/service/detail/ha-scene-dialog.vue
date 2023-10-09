@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="添加HA场景"
+      :title="$t('page.add')"
       type="modal"
       :isShow="true"
       @on-ok="okSceneDialog()"
@@ -70,7 +70,7 @@ export default {
     checkExist(val) {
       let findSamename = this.list.find(item => item.sceneName == val);
       if (findSamename) {
-        this.sceneConfig.sceneName.errorMessage = '名称重复';
+        this.sceneConfig.sceneName.errorMessage = this.$t('message.cannotrepeat', {'target': this.$t('page.name')});
       } else {
         this.sceneConfig.sceneName.errorMessage = '';
       }

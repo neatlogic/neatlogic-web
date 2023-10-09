@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow="true"
-      :title="type==='add'?$t('page.add'):$t('page.edit') +'依赖服务'"
+      :title="type==='add'?$t('page.add'):$t('page.edit')"
       @on-ok="okDialog()"
       @on-close="closeDialog()"
     >
@@ -42,7 +42,7 @@
                   ></TsFormSelect>
                   <div v-if="index>0" class="tsfont-trash-o text-tip-active del-icon" @click="delitem(index)"></div>
                 </div>
-                <Button type="primary" ghost @click="add()"><span class="tsfont-plus">依赖</span></Button>
+                <Button type="primary" ghost @click="add()"><span class="tsfont-plus">{{ $t('term.dr.dependency') }}</span></Button>
               </div>
               <div v-if="$utils.isEmpty(sceneList)" class="form-error-tip">{{ $t('form.validate.required', {target: ''}) }}</div>
             </template>
@@ -95,15 +95,15 @@ export default {
           rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
-          label: '依赖服务',
+          label: this.$t('term.dr.dependencyservice'),
           validateList: ['required'],
           width: '90%',
           firstSelect: false,
-          onChange: this.changeServceSelect
+          onChange: this.changeServiceSelect
         },
         sceneList: {
           type: 'slot',
-          label: '场景依赖',
+          label: this.$t('term.dr.scencedependency'),
           validateList: ['required'],
           width: '90%'
         }
@@ -147,7 +147,7 @@ export default {
       }
       return list;
     },
-    changeServceSelect(val, item, selectList) {
+    changeServiceSelect(val, item, selectList) {
       this.dependencyServiceConfig = {};
       this.sceneList = [{
         sourceSceneId: null,

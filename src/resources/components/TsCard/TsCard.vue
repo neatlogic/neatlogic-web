@@ -33,10 +33,10 @@
                 </div>
               </div>
               <div :class="cardPrev + 'footer'">
-                <slot name="footer" :row="card"></slot>
+                <slot name="footer" :row="card" :index="cindex"></slot>
               </div>
               <div v-if="$scopedSlots.control" class="bg-op control-box pt-sm">
-                <slot name="control" :row="card"></slot>
+                <slot name="control" :row="card" :index="cindex"></slot>
               </div>
               <div v-if="card.btnList" class="bg-op testLinksBox action-group pt-sm">
                 <div v-for="(n, i) in card.btnList" :key="i" class="itemLinks btn-list action-item border-color">

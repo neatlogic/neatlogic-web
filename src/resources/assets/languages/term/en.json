@@ -2502,6 +2502,21 @@
     "organizationalstructure": "organizational structure",
     "affiliatedorganization": "Affiliated organization",
     "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
-    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted"
+    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted",
+    "selectatleastmodel": "Select at least one model",
+    "applicationtypename": "Application Type",
+    "org": "Recovery institutions",
+    "fileconfigpath": "Configuration file path",
+    "datacenterrel": "Associate Data Centers",
+    "selectdatacenter": "Select at least two data centers",
+    "publicapplication": "public service",
+    "combopname": "Automated orchestration",
+    "dependency": "rely on",
+    "dependencyservice": "dependent service",
+    "scencedependency": "Scenario Dependency",
+    "servicedependency": "Service Dependency",
+    "scenarioplan": "Scenario Plan",
+    "relyonmyservices": "Rely on my services",
+    "servicerelyon": "The service I rely on"
   }
 }

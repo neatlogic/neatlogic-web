@@ -14,7 +14,7 @@
             {{ row.sceneName }}
           </div>
           <div class="text-tip overflow pb-xs">
-            <span class="pr-sm">数据中心：</span>
+            <span class="pr-sm">{{ $t('term.inspect.datacenter') }}：</span>
             <template v-if="row.sourceName">
               <span>{{ row.sourceName }}</span>
               <span class="tsfont-arrow-right pl-sm pr-sm"></span>
@@ -23,18 +23,18 @@
             <span v-else>-</span>
           </div>
           <div class="text-tip overflow">
-            <span class="pr-sm">自动化编排：{{ row.combopName }}</span>
+            <span class="pr-sm">{{ $t('term.dr.combopname') }}：{{ row.combopName }}</span>
           </div>
         </div>
       </template>
-      <template v-slot:control="{ row,index }">
+      <template v-slot:control="{ row, index }">
         <div class="tsfont-edit" @click="editScene(row, index)">{{ $t('page.edit') }}</div>
         <div class="pl-sm tsfont-trash-o" @click="deleteScene(row,index)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
     <SceneDialog
       v-if="isShowDialog"
-      :defaultSceneData="sceneConfig"
+      :sceneConfig="sceneConfig"
       :sceneList="cardData.tbodyList"
       @close="closeScene"
     ></SceneDialog>
@@ -48,6 +48,10 @@ export default {
     SceneDialog: resolve => require(['./scene-dialog.vue'], resolve)
   },
   props: {
+    serviceId: {
+      type: Number,
+      default: null
+    },
     sceneList: {
       type: Array,
       default: () => []
@@ -91,6 +95,7 @@ export default {
     },
     addScene() {
       this.type = 'add';
+      this.sceneConfig = {};
       this.isShowDialog = true;
     },
     editScene(row, index) {
@@ -105,28 +110,59 @@ export default {
       }
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
+        content: this.$t('dialog.content.deleteconfirm', {'target': row.sceneName}),
         btnType: 'error',
-        'on-ok': vnode => {
-          this.$emit('deleteScene', row, index);
+        'on-ok': async(vnode) => {
           vnode.isShow = false;
+          if (this.serviceId) {
+            await this.okDeleteScene(row);
+          }
+          this.cardData.tbodyList.splice(index, 1);
+          this.$emit('update', this.cardData.tbodyList);
         }
       });
     },
-    closeScene(isUpdate, data) {
+    okDeleteScene(item) {
+      return this.$api.dr.service.deleteServiceScene({
+        serviceId: this.serviceId,
+        sceneId: item.sceneId,
+        combopId: item.combopId
+      }).then((res) => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.deletesuccess'));
+        }
+      });
+    },
+    async closeScene(isUpdate, data) {
       this.isShowDialog = false;
       this.sceneConfig = {};
       if (isUpdate) {
+        if (this.serviceId) {
+          await this.saveScene(data);
+        }
         if (this.type === 'add') {
           this.cardData.tbodyList.push(data);
         } else { 
           this.cardData.tbodyList.splice(this.editIndex, 1, data);
         }
-        this.$emit('editScene', data);
+        this.$emit('update', this.cardData.tbodyList);
+      }
+    },
+    saveScene(item) {
+      if (item) {
+        return this.$api.dr.service.saveServiceScene({
+          serviceId: this.serviceId,
+          sceneId: item.sceneId,
+          combopId: item.combopId
+        }).then((res) => {
+          if (res.Status === 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }
+        });
       }
     },
     getData() {
-      return this.cardData.tbodyList;
+      return this.cardData.tbodyList || [];
     }
   },
   filter: {},
@@ -136,6 +172,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .scene {
+  position: relative;
   /deep/.tscard-body {
     height: 100px !important;
   }

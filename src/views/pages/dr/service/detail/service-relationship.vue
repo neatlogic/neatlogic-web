@@ -27,7 +27,7 @@
         <div class="pl-sm tsfont-trash-o" @click="deleteServiceRelationship(row,index)">{{ $t('page.delete') }}</div>
       </template>
     </TsCard>
-    <ServiceDialog
+    <ServiceRelationshipDialog
       v-if="isShowDialog"
       :serviceId="serviceId"
       :baseSettings="baseSettings"
@@ -35,7 +35,13 @@
       :currSceneList="sceneList"
       :serviceList="cardData.tbodyList"
       @close="closeService"
-    ></ServiceDialog>
+    ></ServiceRelationshipDialog>
+    <CheckServiceRelationshipDialog
+      v-if="isShowCheckDialog"
+      :validData="validData"
+      @delete="checkDelete"
+      @close="closeCheckDialog"
+    ></CheckServiceRelationshipDialog>
   </div>
 </template>
 <script>
@@ -43,14 +49,15 @@ export default {
   name: '',
   components: {
     TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ServiceDialog: resolve => require(['./service-dialog.vue'], resolve)
+    ServiceRelationshipDialog: resolve => require(['./service-relationship-dialog.vue'], resolve),
+    CheckServiceRelationshipDialog: resolve => require(['./check-service-relationship-dialog.vue'], resolve)
   },
   props: {
     readonly: {
       type: Boolean,
       default: false
     },
-    serviceId: {
+    serviceId: { //服务清单id
       type: Number
     },
     list: {
@@ -77,7 +84,9 @@ export default {
         tbodyList: []
       },
       currService: {},
-      isShowDialog: false
+      isShowDialog: false,
+      isShowCheckDialog: false,
+      validData: {}
     };
   },
   beforeCreate() {},
@@ -109,24 +118,89 @@ export default {
         title: this.$t('page.warning'),
         content: this.$t('dialog.content.deleteconfirm', {'target': row.name}),
         btnType: 'error',
-        'on-ok': vnode => {
+        'on-ok': async(vnode) => {
           this.$emit('delete', row, index);
           vnode.isShow = false;
+          if (this.serviceId) {
+            await this.okDeleteServiceRelationship(row);
+          }
+          this.cardData.tbodyList.splice(index, 1);
+          this.$emit('update', this.cardData.tbodyList);
         }
       });
     },
-    closeService(isUpdate, data) {
+    okDeleteServiceRelationship(row) {
+      return this.$api.dr.service.deleteServiceRelationship({
+        serviceId: row.serviceId,
+        dependencyServiceId: row.dependencyServiceId
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.deletesuccess'));
+        }
+      });
+    },
+    async closeService(isUpdate, data) {
       this.currService = {};
       if (isUpdate) {
-        if (this.type === 'add') {
-          this.cardData.tbodyList.push(data);
-        } else { 
-          this.cardData.tbodyList.splice(this.editIndex, 1, data);
+        if (this.serviceId) {
+          //编辑服务清单
+          await this.checkServiceRelationship(data);
+          if (!this.$utils.isEmpty(this.validData)) {
+            this.isShowCheckDialog = true;
+            return;
+          }
+          this.saveService(data);
+        } else {
+          //新建服务清单
+          if (this.type === 'add') {
+            this.cardData.tbodyList.push(data);
+          } else { 
+            this.cardData.tbodyList.splice(this.editIndex, 1, data);
+          }
+          this.$emit('update', this.cardData.tbodyList);
+          this.isShowDialog = false;
         }
-        this.$emit('update', this.cardData.tbodyList);
-        this.$emit('editService', data, this.type);
+      } else {
+        if (!this.$utils.isEmpty(this.validData)) {
+          this.$emit('update');
+        }
+        this.isShowDialog = false;
       }
-      this.isShowDialog = false;
+    },
+    checkServiceRelationship(data) { //校验依赖服务是否成环
+      this.validData = {};
+      return this.$api.dr.service.checkServiceRelationship({
+        serviceId: this.serviceId,
+        dependencyServiceId: data.dependencyServiceId
+      }).then((res) => {
+        if (res.Status === 'OK') {
+          this.validData = res.Return || {};
+        }
+      });
+    },
+    checkDelete(data) {
+      this.$api.dr.service.deleteServiceRelationship({
+        serviceId: data.serviceId,
+        dependencyServiceId: data.dependencyServiceId
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.deletesuccess'));
+          this.isShowCheckDialog = false;
+        }
+      });
+    },
+    closeCheckDialog() {
+      this.isShowCheckDialog = false;
+    },
+    saveService(item) {
+      if (item) {
+        this.$api.dr.service.saveServiceRelationship(item).then((res) => {
+          if (res.Status === 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.$emit('update');
+          }
+        });
+      }
     }
   },
   filter: {},

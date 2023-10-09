@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain v-if="!loadingShow" enableDivider>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/service-manage')">{{ $getFromPage('服务清单') }}</span>
+        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:top>
         <div>
@@ -16,50 +16,46 @@
       </template>
       <template v-slot:content>
         <div class="pt-nm">
-          <Divider orientation="start">场景预案</Divider>
+          <Divider orientation="start">{{ $t('term.dr.scenarioplan') }}</Divider>
           <div class="pt-nm pb-nm">
-            <Scene :sceneList="serviceData.sceneList" @editScene="editScene" @deleteScene="deleteScene"></Scene>
+            <Scene
+              :sceneList="serviceData.sceneList"
+              :serviceId="serviceId"
+              @update="updateSceneList"
+            ></Scene>
           </div>
           <Divider orientation="start">{{ $t('term.inspect.datacenter') }}</Divider>
           <div class="pt-nm pb-nm">
             <Datacenter
-              :serviceId="serviceData.id"
+              :serviceId="serviceId"
               :list="serviceData.dataCenterList"
               :ciList="ciList"
               :applicationType="serviceData.applicationType"
               @update="getServiceData()"
             ></Datacenter>
           </div>
-          <Divider orientation="start">我依赖的服务</Divider>
+          <Divider orientation="start">{{ $t('term.dr.servicerelyon') }}</Divider>
           <div class="pt-nm pb-nm">
-            <Service
-              :serviceId="id"
+            <ServiceRelationship
+              :serviceId="serviceId"
               :list="serviceData.dependencyOnServiceList"
               :sceneList="serviceData.sceneList"
-              @editService="editService"
-              @delete="deleteServiceRelationship"
-            ></Service>
+              @update="getServiceData()"
+            ></ServiceRelationship>
           </div>
-          <Divider orientation="start">依赖我的服务</Divider>
+          <Divider orientation="start">{{ $t('term.dr.relyonmyservices') }}</Divider>
           <div class="pt-nm pb-nm">
-            <Service :list="serviceData.dependencyOnMeServiceList" readonly></Service>
+            <ServiceRelationship :list="serviceData.dependencyOnMeServiceList" readonly></ServiceRelationship>
           </div>
         </div>
       </template>
     </TsContain>
-    <TsDialog
-      title="编辑"
-      type="modal"
-      :isShow.sync="isShowBaseInfo"
-      @on-ok="okDialog"
-      @on-close="closeDialog"
-    >
-      <template v-slot>
-        <div v-if="isShowBaseInfo">
-          <Baseinfo ref="baseinfo" type="edit" :config="$utils.deepClone(serviceData)"></Baseinfo>
-        </div>
-      </template>
-    </TsDialog>
+    <BaseinfoDialog
+      v-if="isShowBaseInfo"
+      :serviceData="serviceData"
+      @saveBaseInfo="saveBaseInfo()"
+      @close="closeBaseInfoDialog()"
+    ></BaseinfoDialog>
   </div>
 </template>
 <script>
@@ -67,14 +63,14 @@ export default {
   name: '',
   components: {
     Scene: resolve => require(['./detail/scene.vue'], resolve),
-    Service: resolve => require(['./detail/service.vue'], resolve),
+    ServiceRelationship: resolve => require(['./detail/service-relationship.vue'], resolve),
     Datacenter: resolve => require(['./detail/datacenter.vue'], resolve),
-    Baseinfo: resolve => require(['./detail/baseinfo.vue'], resolve)
-    
+    BaseinfoDialog: resolve => require(['./detail/baseinfo-dialog.vue'], resolve)
   },
   props: {},
   data() {
     return {
+      serviceId: null,
       loadingShow: true,
       serviceData: {},
       isShowBaseInfo: false,
@@ -84,7 +80,7 @@ export default {
   beforeCreate() {},
   async created() {
     if (this.$route.query && this.$route.query.id) {
-      this.id = parseInt(this.$route.query.id);
+      this.serviceId = parseInt(this.$route.query.id);
       await this.getCiList();
       this.getServiceData();
     }
@@ -101,7 +97,7 @@ export default {
     getServiceData() {
       this.loadingShow = true;
       this.$api.dr.service.getService({
-        id: this.id
+        id: this.serviceId
       }).then((res) => {
         if (res.Status === 'OK') {
           this.serviceData = res.Return || {};
@@ -120,90 +116,15 @@ export default {
     editBaseInfo() {
       this.isShowBaseInfo = true;
     },
-    saveServiceBaseinfo() {
-      let baseSettings = this.$refs.baseinfo.getData();
-      let data = {
-        id: this.serviceData.id,
-        name: baseSettings.name || '',
-        orgId: baseSettings.orgId || '',
-        recoveryTimeObjective: baseSettings.recoveryTimeObjective || null,
-        recoveryPointObjective: baseSettings.recoveryPointObjective || null,
-        configFilePathList: baseSettings.configFilePathList
-      };
-      this.$api.dr.service.saveServiceBaseinfo(data).then((res) => {
-        if (res.Status === 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.getServiceData();
-        }
-      });
+    saveBaseInfo() {
+      this.isShowBaseInfo = false;
+      this.getServiceData();
     },
-    okDialog() {
-      this.saveServiceBaseinfo();
-      this.closeDialog();
-    },
-    closeDialog() {
+    closeBaseInfoDialog() {
       this.isShowBaseInfo = false;
     },
-    editScene(item) {
-      if (item) {
-        this.$api.dr.service.saveServiceScene({
-          serviceId: this.id,
-          sceneId: item.sceneId,
-          combopId: item.combopId
-        }).then((res) => {
-          if (res.Status === 'OK') {
-            this.getServiceData();
-          }
-        });
-      }
-    },
-    deleteScene(item) {
-      if (item) {
-        this.$api.dr.service.deleteServiceScene({
-          serviceId: this.id,
-          sceneId: item.sceneId,
-          combopId: item.combopId
-        }).then((res) => {
-          if (res.Status === 'OK') {
-            this.$Message.success(this.$t('message.deletesuccess'));
-            this.getServiceData();
-          }
-        });
-      }
-    },
-    editService(item, type) {
-      if (type === 'add') {
-        this.checkServiceRelationship(item);
-        return;
-      }
-      if (item) {
-        this.$api.dr.service.saveServiceRelationship(item).then((res) => {
-          if (res.Status === 'OK') {
-            this.getServiceData();
-          }
-        });
-      }
-    },
-    checkServiceRelationship(item) {
-      this.$api.dr.service.checkServiceRelationship({
-        serviceId: this.id,
-        dependencyServiceId: item.dependencyServiceId
-      }).then((res) => {
-        if (res.Status === 'OK') {
-          console.log(res);
-        }
-      });
-    },
-    deleteServiceRelationship(row) {
-      this.$api.dr.service.deleteServiceRelationship({
-        serviceId: row.serviceId,
-        dependencyServiceId: row.dependencyServiceId
-      }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.deletesuccess'));
-          this.getServiceData();
-        }
-      });
+    updateSceneList(list) {
+      this.serviceData.sceneList = list;
     }
   },
   filter: {},

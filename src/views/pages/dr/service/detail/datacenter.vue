@@ -3,7 +3,7 @@
     <TsCard v-bind="cardData">
       <template v-slot:firstBtn>
         <div class="add tsfont-plus text-action" @click.stop="addData">
-          数据中心
+          {{ $t('term.inspect.datacenter') }}
         </div>
       </template>
       <template slot-scope="{ row }">
@@ -20,7 +20,7 @@
             </span>
           </div>
           <div class="pb-sm">
-            <Divider orientation="start"><div class="text-title">实例</div></Divider>
+            <Divider orientation="start"><div class="text-title">{{ $t('page.node') }}</div></Divider>
             <div class="tag-style" :class="{'pr-lg':!$utils.isEmpty(row.config.nodeList) && row.config.nodeList.length > 1}">
               <div v-if="!$utils.isEmpty(row.config.nodeList)" class="overflow border-base radius-mi pl-xs pr-xs text-center">
                 {{ row.config.nodeList[0].typeLabel }}
@@ -41,7 +41,7 @@
             </div>
           </div>
           <div class="pb-sm">
-            <Divider orientation="start"><div class="text-title">公共服务</div></Divider>
+            <Divider orientation="start"><div class="text-title">{{ $t('term.dr.publicapplication') }}</div></Divider>
             <div class="tag-style" :class="{'pr-lg':!$utils.isEmpty(row.config.publicApplicationList) && row.config.publicApplicationList.length > 1}">
               <div v-if="!$utils.isEmpty(row.config.publicApplicationList)" class="overflow border-base radius-mi pl-xs pr-xs text-center">
                 {{ row.config.publicApplicationList[0].typeLabel }}
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div class="pb-sm">
-            <Divider orientation="start"><div class="text-title">自定义参数</div></Divider>
+            <Divider orientation="start"><div class="text-title">{{ $t('term.deploy.customparameter') }}</div></Divider>
             <div class="tag-style">
               <div v-if="!$utils.isEmpty(row.config.customParamList)" class="tag-text overflow border-base radius-mi pl-xs pr-xs">
                 <span v-if="row.config.customParamList[0].key">  {{ row.config.customParamList[0].key }}:{{ row.config.customParamList[0].value }}</span>
@@ -83,7 +83,7 @@
             </div>
           </div>
           <div>
-            <Divider orientation="start"><div class="text-title">HA场景</div></Divider>
+            <Divider orientation="start"><div class="text-title">HA{{ $t('page.scene') }}</div></Divider>
             <div class="tag-style">
               <div v-if="!$utils.isEmpty(row.config.highAvailabilitySceneList)" class="tag-text overflow border-base radius-mi pl-xs pr-xs">
                 {{ row.config.highAvailabilitySceneList[0].sceneName }}
@@ -110,7 +110,7 @@
     </TsCard>
     <TsDialog
       v-if="isShowDialog"
-      title="编辑"
+      :title="$t('page.edit')"
       type="slider"
       :isShow.sync="isShowDialog"
       @on-ok="okDialog"
@@ -118,7 +118,7 @@
     >
       <template v-slot>
         <div>
-          <TsFormItem v-if="type==='add'" label="关联数据中心" required>
+          <TsFormItem v-if="type==='add'" :label="$t('term.dr.datacenterrel')" required>
             <TsFormSelect ref="dataCenterForm" v-model="dataCenterId" v-bind="dataCenterForm"></TsFormSelect>
           </TsFormItem>
           <DatacenterEdit
@@ -151,11 +151,7 @@ export default {
       type: Array,
       default: () => []
     },
-    serviceId: Number,
-    isShowDataCenter: {
-      type: Boolean,
-      default: false
-    }
+    serviceId: Number
   },
   data() {
     return {
@@ -232,6 +228,7 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
         btnType: 'error',
         'on-ok': vnode => {
+          vnode.isShow = false;
           this.$api.dr.service.deleteServiceDatacenter({
             serviceId: row.serviceId,
             dataCenterId: row.dataCenterId
@@ -239,7 +236,6 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.$emit('update');
-              vnode.isShow = false;
             }
           });
         }
@@ -254,8 +250,8 @@ export default {
         return;
       } else if (!this.$refs.datacenter.valid()) {
         this.$Notice.error({
-          title: '错误信息',
-          desc: '请选择服务'
+          title: this.$t('term.framework.errorinfo'),
+          desc: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.process.catalog')})
         });
         return;
       }
