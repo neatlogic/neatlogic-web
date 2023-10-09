@@ -36,10 +36,8 @@ try {
     pageTitle = projectName.title;
   }
 } catch (e) {
-  //
   console.log('neatlogic-web-config', e);
 }
-console.log('最后返回的值', baseConfiglUrl);
 let localUrl = '../neatlogic-web/src/resources';
 const { tenantName, urlPrefix } = require('./apiconfig.json');
 process.env.VUE_APP_TENANT = tenantName; // 租户名称
@@ -48,34 +46,44 @@ function getPages(pageList) {
   if (!pageList) {
     const pagePath = glob.sync(rootSrc + '/views/pages/*/router.js');
     let pagePathList = [...pagePath];
-    // let CUSTOMMODULEList = process.env.VUE_APP_NODE_ENV == 'business' && typeof process.env.VUE_APP_MODULE_LIST == 'string' ? JSON.parse(process.env.VUE_APP_MODULE_LIST) : [];
-    // let customPagePath = [];
-    // let arr;
-    // if (process.env.VUE_APP_NODE_ENV == 'business' && CUSTOMMODULEList && CUSTOMMODULEList.length > 0) {
-    //   CUSTOMMODULEList.forEach(item => {
-    //     if (item) {
-    //       arr = glob.sync(`../${item}/src/views/pages/*/router.js`);
-    //       if (arr && arr.length > 0) {
-    //         customPagePath.push(...arr);
-    //       }
-    //     }
-    //   });
-    //   pagePathList.push(...customPagePath);
-    // }
+    let CUSTOMMODULEList = process.env.VUE_APP_NODE_ENV == 'business' && typeof process.env.VUE_APP_MODULE_LIST == 'string' ? JSON.parse(process.env.VUE_APP_MODULE_LIST) : [];
+    let customPagePath = [];
+    let arr;
+    if (process.env.VUE_APP_NODE_ENV == 'business' && CUSTOMMODULEList && CUSTOMMODULEList.length > 0) {
+      CUSTOMMODULEList.forEach(item => {
+        if (item) {
+          arr = glob.sync(`${closedSource}/closedsource/*/router.js`);
+          if (arr && arr.length > 0) {
+            customPagePath.push(...arr);
+          }
+        }
+      });
+      pagePathList.push(...customPagePath);
+    }
     pagePathList.forEach(p => {
-      const filename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
+      const projectFilename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
+      const outFileName = p.match(/closedsource\/[^\/]+\/router\.js$/);
+      let filename = '';
+      let customImportModuleName = ''; // 自定义导入模块名称
+      if (projectFilename) {
+        filename = projectFilename[1];
+      } else if (outFileName) {
+        customImportModuleName = outFileName[0].match(/closedsource\/([^\/]+)\/router\.js$/);
+        if (customImportModuleName) {
+          filename = customImportModuleName[1];
+        }
+      }
       const newpage = {};
-      let pageLogin = `${pageTitle}-${filename[1]}`;
-      if (`${filename[1]}` == 'login') {
+      let pageLogin = `${pageTitle}-${filename}`;
+      if (`${filename}` == 'login') {
         pageLogin = `${pageTitle}`;
       }
-      newpage[filename[1]] = {
-        // entry: CUSTOMMODULEList.includes(filename[1]) ? `../${filename[1]}/src/views/pages/${filename[1]}/${filename[1]}.js` : `${src}/views/pages/${filename[1]}/${filename[1]}.js`,
-        entry: `${src}/views/pages/${filename[1]}/${filename[1]}.js`,
+      newpage[filename] = {
+        entry: CUSTOMMODULEList.includes(filename) ? `${closedSource}/closedsource/${filename}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
         template: `public/index.html`,
-        filename: `${filename[1]}.html`,
+        filename: `${filename}.html`,
         title: pageLogin, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, `${filename[1]}`]
+        chunks: [`chunk-vendors`, `chunk-common`, `${filename}`]
       };
 
       Object.assign(pages, newpage);
@@ -86,8 +94,7 @@ function getPages(pageList) {
     list.forEach(p => {
       const newpage = {};
       newpage[p] = {
-        // entry: CUSTOMMODULEList.includes(p) ? `../${p}/src/views/pages/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
-        entry: `${src}/views/pages/${p}/${p}.js`,
+        entry: CUSTOMMODULEList.includes(p) ? `${closedSource}/closedsource/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
         template: `public/index.html`,
         filename: `${p}.html`,
         title: `${pageTitle}-${p}`, // 标题名称+参数
