@@ -134,6 +134,12 @@
         ></StepList>
       </template>
       <template v-slot:content>
+        <ExpiredReasonAlert
+          v-if="configExpired == 1"
+          :configExpiredReason="configExpiredReason"
+          :combopId="id"
+          type="self"
+        ></ExpiredReasonAlert>
         <!--校验 -->
         <ActionValid v-model="validVisible" :validList="validList" @on-click="selectValidItem"></ActionValid>
         <div class="padding-md" style="padding-top:0;padding-bottom:0;">
@@ -315,6 +321,7 @@ export default {
     StepGroup: resolve => require(['./actionDetail/step-group.vue'], resolve),
     ScenarioSetting: resolve => require(['./actionDetail/scenario-setting.vue'], resolve),
     ProfileSetting: resolve => require(['./actionDetail/profile-setting.vue'], resolve),
+    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
     TestDialog: resolve => require(['./actionDetail/test-dialog.vue'], resolve)
   },
   filters: {},
@@ -473,7 +480,9 @@ export default {
       profileList: [], //预置参数列表
       defaultScenarioId: null, //默认场景
       loading: true,
-      isShowTestDialog: false
+      isShowTestDialog: false,
+      configExpired: 0,
+      configExpiredReason: {}
     };
   },
   beforeCreate() {},
@@ -567,6 +576,11 @@ export default {
         this.$api.autoexec.action.getActionVersion({id: this.versionId}).then(res => {
           if (res.Status == 'OK') {
             const result = res.Return;
+            if (result.configExpired == 1) {
+              this.isActive = 0;
+              this.configExpired = result.configExpired;
+              this.configExpiredReason = result.configExpiredReason;
+            }
             this.versionName = result.name;
             this.version = result.version;
             this.versionIsActive = result.isActive;

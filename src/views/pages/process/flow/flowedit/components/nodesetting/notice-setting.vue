@@ -281,10 +281,12 @@ export default {
     changePolicyId(policyId, valueObject) {
       if (policyId == this.defaultDeepCloneConfig.policyId) {
         // 默认值有，就使用默认值
+        this.$set(this.notifyPolicyConfig, 'policyId', policyId);
         this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
         this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
       } else {
         // 清空个性化设置值
+        this.$set(this.notifyPolicyConfig, 'policyId', null);
         this.notifyPolicyConfig.paramMappingList = [];
         this.notifyPolicyConfig.excludeTriggerList = [];
         this.notifyPolicyConfig.policyName = (!this.$utils.isEmpty(valueObject) && valueObject.text) || ''; // 用于组合工具，编辑基本信息，值回显
