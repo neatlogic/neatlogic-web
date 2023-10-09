@@ -184,6 +184,9 @@ export default {
         this.policyName = '';
       }
       this.notifyPolicyConfig.isCustom = this.isActive;
+      if (!isActive) {
+        this.saveDefaultNoticePolicy({});
+      }
     },
     openNoticePolicyDialog() {
       this.isEditNoticePolicy = true;
