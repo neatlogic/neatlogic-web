@@ -1,5 +1,4 @@
 //api接口的出口
-import common from '../common/common'; //全局通用接口
 import template from './template/template'; //知识库模板
 import circle from './circle/circle'; //知识圈
 import overview from './overview/overview'; //知识文档概览
@@ -11,10 +10,6 @@ const knowledge = {
   overview,
   knowledge: knowledgeKnowledge
 };
-/*export default {
-  common,
-  knowledge
-};*/
 export default {
   template,
   circle,

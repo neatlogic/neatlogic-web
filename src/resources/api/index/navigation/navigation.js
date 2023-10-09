@@ -1,4 +1,4 @@
-import utils from '@/resources/assets/js/util.js';
+import axios from '@/resources/api/http';
 const navigation = {
   //首页导航接口
   getModuleList() {

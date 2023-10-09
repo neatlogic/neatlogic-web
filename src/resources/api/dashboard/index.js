@@ -1,5 +1,4 @@
 //api接口的出口
-import common from '../common/common'; //全局通用接口
 import { default as dashboardDashboard } from './dashboard/dashboard'; //仪表板
 import { default as processProcess } from '../process/process/process'; //流程
 import datawarehouse from '../framework/datawarehouse/datawarehouse';//数据仓库
