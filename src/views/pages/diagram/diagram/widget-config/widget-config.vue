@@ -7,6 +7,13 @@
       @data:update="updateData"
     ></component>
   </div>
+  <div v-else>
+    <TsForm
+      v-model="data"
+      labelPosition="top"
+      :item-list="widget.form"
+    ></TsForm>
+  </div>
 </template>
 <script>
 import * as components from '@/views/pages/diagram/diagram/widget-config/components/index.js';
@@ -14,7 +21,8 @@ import * as components from '@/views/pages/diagram/diagram/widget-config/compone
 export default {
   name: '',
   components: {
-    ...components
+    ...components,
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
     id: { type: String },
@@ -22,11 +30,14 @@ export default {
   },
   data() {
     return {
+      data: {},
       widgetConfig: components
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.data = this.$utils.deepClone(this.widget.data) || {};
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -44,7 +55,14 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    data: {
+      handler(val) {
+        this.updateData(val);
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less"></style>
