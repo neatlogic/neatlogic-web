@@ -113,8 +113,8 @@ export default {
         },
         {
           type: 'text',
-          name: 'domain',
-          label: this.$t('page.domain'),
+          name: 'homeUrl',
+          label: this.$t('page.homeurl'),
           value: '',
           defaultValue: ''
         }

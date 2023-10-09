@@ -942,5 +942,6 @@
   "logicalexpression": "Logical operation",
   "batchpause": "Batch pause",
   "batchabort": "Batch cancellation",
-  "ismultiple": "Do you want to select multiple options"
+  "ismultiple": "Do you want to select multiple options",
+  "homeurl": "Application Service Address"
 }
