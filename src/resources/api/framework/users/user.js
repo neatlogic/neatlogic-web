@@ -87,7 +87,10 @@ export default {
   updateProcesstask() {
     return axios.post('/api/rest/processtask/agent/isactive/update');
   },
-  resetToken() {
-    return axios.post('/api/rest/user/token/reset', {});
+  resetCurrentUserToken() {
+    return axios.post('/api/rest/user/current/token/reset', {});
+  },
+  resetUserToken(data) {
+    return axios.post('/api/rest/user/token/reset', data);
   }
 };

@@ -17,8 +17,13 @@ const common = {
   getUser(data) {
     return axios.post('/api/rest/user/get', data);
   },
-  getUserToken() {
-    return axios.get('/api/rest/user/token/get', {});
+  //获取当前用户令牌
+  getCurrentUserToken() {
+    return axios.get('/api/rest/user/current/token/get', {});
+  },
+  //获取用户令牌
+  getUserToken(data) {
+    return axios.post('/api/rest/user/token/get', data);
   },
   //用户权限保存
   saveAuth(data) {

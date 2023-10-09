@@ -40,7 +40,7 @@
                     <span><Button
                       size="small"
                       type="default"
-                      @click="resetToken()"
+                      @click="resetCurrentUserToken()"
                     >{{ $t('term.framework.recreate') }}</Button></span>
                   </div>
                 </template>
@@ -80,7 +80,7 @@
                         @on-change="changeProfileList(row.moduleId, row, mitem)"
                       >{{ mitem.text }}</Checkbox>
                     </template>
-                  </TsTable> 
+                  </TsTable>
                   <!-- <div class="setting-wrapper">
                     <div class="setting-top">
                       <TsRow>
@@ -341,15 +341,16 @@ export default {
   created() {
     this.initForm();
     this.getProfileList();
-    this.getUserToken();
+    this.getCurrentUserToken();
     this.getUserInfo();
   },
 
   methods: {
-    resetToken() {
-      this.$api.framework.user.resetToken().then(res => {
+    resetCurrentUserToken() {
+      this.$api.framework.user.resetCurrentUserToken().then(res => {
         if (res.Status == 'OK') {
           this.userToken = res.Return;
+          this.$Message.success(this.$t('message.executesuccess'));
         }
       });
     },
@@ -361,8 +362,8 @@ export default {
         }
       });
     },
-    getUserToken() {
-      this.$api.common.getUserToken().then(res => {
+    getCurrentUserToken() {
+      this.$api.common.getCurrentUserToken().then(res => {
         this.userToken = res.Return;
       });
     },
