@@ -64,7 +64,7 @@
                     <img :src="getVipIconByLevel(vipLevel)" class="vip-icon">
                   </Radio>
                 </RadioGroup>
-              </template>              
+              </template>
             </TsForm>
             <Button v-show="current != 1" type="primary" @click="next()">{{ $t('page.thenextstep') }}</Button>
           </div>
@@ -113,6 +113,18 @@
                         </div>
                       </Poptip>
                     </span>
+                  </template>
+                  <template v-if="uuid" v-slot:token>
+                    <div>
+                      <span class="mr-md">{{ userToken }}</span>
+                      <span><Button
+                        v-show="!readonly"
+                        class="reCreate"
+                        size="small"
+                        type="default"
+                        @click="resetUserToken(uuid)"
+                      >{{ $t('term.framework.recreate') }}</Button></span>
+                    </div>
                   </template>
                 </TsForm>
                 <Button
@@ -340,6 +352,12 @@ export default {
           isHidden: true,
           label: this.$t('term.framework.grouprole'),
           name: 'teamRoleList'
+        },
+        {
+          type: 'slot',
+          isHidden: true,
+          label: this.$t('term.framework.token'),
+          name: 'token'
         }
       ],
       teamRoleList: [],
@@ -357,6 +375,7 @@ export default {
       formShow: false,
       path: '', //跳转路径
       userData: null, //用户所有初始化数据
+      userToken: '', //用户令牌
       userTabsDataList: null, //用户基本信息数据
       userTabsAuthList: null, //用户授权信息数据
       submitModel: false, //提交成功模态框
@@ -390,15 +409,15 @@ export default {
       }
     }
     let query = this.$route.query;
-    
+
     this.uuid = query.uuid || null;
     this.userId = query.userId || null;
     this.tabsName = query.key || null;
     this.readonly = query.readonly || false;
-    if (this.readonly && this.uuid) {   
+    if (this.readonly && this.uuid) {
       let newConfig = this.formData.find(v => v.name === 'teamRoleList');
       if (newConfig) {
-        newConfig.isHidden = false;   
+        newConfig.isHidden = false;
       }
     }
     this.label1 = this.getLabel(this.$t('page.basicinfo'), 'user');
@@ -507,6 +526,7 @@ export default {
       let userData = this.$refs.userForm.getFormValue();
       userData.password = '{MD5}' + this.$md5(userData.password);
       delete userData.confirmpwd;
+      delete userData.token;
       let authList = this.$refs.commonAuth.authSelectList;
       userData.userAuthList = authList;
       await this.$api.framework.user
@@ -563,6 +583,7 @@ export default {
           data.password = '{MD5}' + this.$md5(data.password);
         }
         delete data.confirmpwd;
+        delete data.token;
         this.isLoading = true;
         this.$api.framework.user
           .saveUser(data)
@@ -818,6 +839,31 @@ export default {
     },
     getVipIconByLevel(vipLevel) {
       return this.$store.getters.getVipIconByLevel(vipLevel, true);
+    },
+    getUserToken(uuid) {
+      let data = {
+        userUuid: uuid
+      };
+      this.$api.common.getUserToken(data).then(res => {
+        if (res.Status == 'OK') {
+          this.userToken = res.Return;
+        }
+        let token = this.formData.find(d => d.name === 'token');
+        if (token) {
+          token.isHidden = false;
+        }
+      });
+    },
+    resetUserToken(uuid) {
+      let data = {
+        userUuid: uuid
+      };
+      this.$api.framework.user.resetUserToken(data).then(res => {
+        if (res.Status == 'OK') {
+          this.userToken = res.Return;
+          this.$Message.success(this.$t('message.executesuccess'));
+        }
+      });
     }
   },
 
@@ -831,6 +877,7 @@ export default {
         let uuid = this.uuid;
         this.getUserDetail(uuid);
         this.getAuthSelect(uuid);
+        this.getUserToken(uuid);
       }
     },
     // userId: function () {
@@ -922,6 +969,9 @@ export default {
       margin: 0 auto;
       button {
         margin-left: 120px;
+      }
+      .reCreate {
+        margin-left: 0px;
       }
     }
     .btn {
