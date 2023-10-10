@@ -1,4 +1,4 @@
-import commonApi from '@/resources/api/common/common';
+import commonApi from '@/resources/api/common/index.js';
 // action提交的是mutation，而不是直接变更state。
 // action可以包含任意异步操作，同步操作宜放在mutaion中。
 // action函数的返回值会自动包裹在promise.resolve()里。

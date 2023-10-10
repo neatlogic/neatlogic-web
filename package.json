@@ -33,6 +33,7 @@
     "@antv/x6-plugin-snapline": "^2.1.7",
     "@antv/x6-plugin-stencil": "^2.1.4",
     "@antv/x6-plugin-transform": "^2.1.7",
+    "@antv/x6-vue-shape": "^2.1.1",
     "@hpcc-js/wasm": "^1.4.1",
     "antlr4": "^4.13.0",
     "axios": "^0.21.1",
