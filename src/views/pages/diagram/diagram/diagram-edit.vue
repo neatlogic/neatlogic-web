@@ -72,6 +72,7 @@ export default {
     ready(graph, dnd) {
       this.graph = graph;
       this.dnd = dnd;
+      //this.graph.fromJSON();
     },
     nodeUnSelected() {
       this.currentWidgetId == null;

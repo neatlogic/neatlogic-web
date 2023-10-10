@@ -7,7 +7,6 @@ import worktime from './worktime/worktime'; //工作时间窗口
 import notice from './notice/notice'; //通知接口
 import processtask from './task/task'; //工单接口
 import user from '../framework/users/user'; //个人设置
-import common from '../common/common'; //全局通用接口
 import channeltype from './channeltype/channeltype'; //服务类型
 import matrix from '../framework/matrix/matrix'; //矩阵数据源
 import tactics from '../framework/notify/tactics'; //策略

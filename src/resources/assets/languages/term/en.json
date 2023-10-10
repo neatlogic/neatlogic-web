@@ -742,7 +742,9 @@
     "deletefailedcombinatetoolpresetcitetips": "Deletion failed. Please check if it has been referenced by the combination tool or preset parameter set",
     "usedtooldesc": "The current type has been referenced by a tool and cannot be deleted",
     "targetjoberror": "{target} Failed to create job",
-    "toolparamstooltip": "Tool parameters are a set of parameters for associated tools. Parameters from custom tool libraries can be added, deleted, and modified, while parameters from tool libraries cannot be added, deleted, or modified."
+    "toolparamstooltip": "Tool parameters are a set of parameters for associated tools. Parameters from custom tool libraries can be added, deleted, and modified, while parameters from tool libraries cannot be added, deleted, or modified.",
+    "combophasexpired": "The combination tool has expired",
+    "pleasereedit": "Please re edit and submit for review"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",

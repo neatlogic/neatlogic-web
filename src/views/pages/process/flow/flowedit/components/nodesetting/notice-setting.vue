@@ -51,12 +51,12 @@
         <div class="operation-btn-box text-center">
           <span
             class="tsfont-rotate-right text-tip-active"
-            :class="notifyPolicyConfig.policyId ? 'pr-sm' : ''"
+            :class="canEdit ? 'pr-sm' : ''"
             :title="$t('page.refresh')"
             @click="refreshNotify(notifyPolicyConfig.policyId,notifyPolicyConfig.paramMappingList) "
           ></span>
           <span
-            v-if="notifyPolicyConfig.policyId"
+            v-if="canEdit"
             class="tsfont-edit text-tip-active"
             :title="$t('page.edit')"
             @click="gotoAddNotify(notifyPolicyConfig.policyId)"
@@ -122,7 +122,9 @@ export default {
   data() {
     return {
       isActive: 0,
-      notifyPolicyConfig: {},
+      notifyPolicyConfig: {
+        policyId: null
+      },
       conditionNodeList: [], //右边下拉框数据
       paramList: [], //参数列表
       firstText: this.$t('term.process.policy'),
@@ -281,10 +283,12 @@ export default {
     changePolicyId(policyId, valueObject) {
       if (policyId == this.defaultDeepCloneConfig.policyId) {
         // 默认值有，就使用默认值
+        this.$set(this.notifyPolicyConfig, 'policyId', policyId);
         this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
         this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
       } else {
         // 清空个性化设置值
+        this.$set(this.notifyPolicyConfig, 'policyId', policyId || null);
         this.notifyPolicyConfig.paramMappingList = [];
         this.notifyPolicyConfig.excludeTriggerList = [];
         this.notifyPolicyConfig.policyName = (!this.$utils.isEmpty(valueObject) && valueObject.text) || ''; // 用于组合工具，编辑基本信息，值回显
@@ -292,7 +296,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canEdit() {
+      return !!this.notifyPolicyConfig.policyId;
+    }
+  },
   watch: {
     config: {
       handler(config) {

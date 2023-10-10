@@ -4,13 +4,18 @@
       <!--日期范围-->
       <TimeSelect :value="workcenterConditionData.startTimeCondition" v-bind="timeSelectConfig" @change="changeTimeRange"></TimeSelect>
     </div>
-    <div style="text-align:right">
-      <Dropdown trigger="click">
-        <Button type="primary" ghost :disabled="$utils.isEmpty(selectedWorkList)">
+    <div class="text-right">
+      <Dropdown trigger="custom" :visible="visible">
+        <Button
+          type="primary"
+          ghost
+          :disabled="$utils.isEmpty(selectedWorkList)"
+          @click.native="handleOpen"
+        >
           {{ $t('page.batchoperation') }}
           <span class="tsfont-down"></span>
         </Button>
-        <DropdownMenu slot="list">
+        <DropdownMenu v-if="visible" slot="list">
           <DropdownItem @click.native="batchAction('batchAbort')">{{ $t('page.cancel') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchUrge')">{{ $t('page.urge') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
@@ -162,6 +167,7 @@ export default {
       doneOfMineProcessTask（我的已办）
       draftProcessTask（我的草稿）
       */
+      visible: false,
       systemTypeList: ['allProcessTask', 'processingOfMineProcessTask', 'doneOfMineProcessTask', 'draftProcessTask'],
       searchWidth: 0, //搜索栏宽度，完成计算后再显示搜索栏
       searchMode: this.workcenterData?.conditionConfig?.handlerType || 'simple',
@@ -207,6 +213,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleOpen() {
+      this.visible = true;
+    },
     closeTypeEditDialog(needRefresh) {
       this.isTypeDialogShow = false;
       if (needRefresh) {
@@ -450,6 +459,7 @@ export default {
     },
     batchAction(type) {
       this.$emit('batchAction', type);
+      this.visible = false;
     }
   },
   filter: {},
@@ -480,6 +490,15 @@ export default {
       handler: function(val) {
         this.workcenterConditionData = val.conditionConfig;
         this.searchMode = val?.conditionConfig?.handlerType || 'simple';
+      },
+      deep: true
+    },
+    selectedWorkList: {
+      handler: function(val) {
+        if (this.$utils.isEmpty(this.selectedWorkList)) {
+          // 没有选中复选框，批量下拉列表隐藏
+          this.visible = false;
+        }
       },
       deep: true
     }

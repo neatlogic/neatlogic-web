@@ -944,5 +944,6 @@
   "logicalexpression": "逻辑运算",
   "batchpause": "批量暂停",
   "batchabort": "批量取消",
-  "ismultiple": "是否多选"
+  "ismultiple": "是否多选",
+  "homeurl": "应用服务地址"
 }

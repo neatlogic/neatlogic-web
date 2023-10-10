@@ -37,6 +37,7 @@ export default {
       if (!this.graph) {
         let graphConfig = {
           container: document.getElementById('container'),
+          snapline: true,
           background: this.graphData.background,
           autoResize: true, //自动延伸画布
           panning: true, //拖拽平移
@@ -179,8 +180,22 @@ export default {
             return this.createNode(nn);
           }
         });
-        this.graph.on('node:mouseenter', ({ node }) => {});
-        this.graph.on('node:mouseleave', ({ node }) => {});
+        this.graph.on('node:mouseenter', ({ node }) => {
+          const ports = node.getPorts() || [];
+          ports.forEach((port) => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port'
+            });
+          });
+        });
+        this.graph.on('node:mouseleave', ({ node }) => {
+          const ports = node.getPorts() || [];
+          ports.forEach((port) => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port hidden'
+            });
+          });
+        });
         this.graph.on('node:selected', ({ node }) => {
           this.$emit('node:selected', { id: node.id, name: node.shape, data: node.getData() });
           node.addTools({

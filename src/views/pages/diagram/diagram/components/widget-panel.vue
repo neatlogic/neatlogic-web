@@ -11,10 +11,10 @@
   </div>
 </template>
 <script>
-import { Graph } from '@antv/x6';
+import { register } from '@antv/x6-vue-shape';
+import { Graph, Node } from '@antv/x6';
 import { WIDGETS } from '@/views/pages/diagram/diagram/core/WidgetFactory.js';
 import { NodeFactory } from '@/views/pages/diagram/diagram/core/NodeFactory.js';
-
 export default {
   name: '',
   components: {},
@@ -46,8 +46,10 @@ export default {
     },
     registerWidget() {
       this.widgetList.forEach(widget => {
-        if (widget.config) {
+        if (!widget.isVue && widget.config) {
           Graph.registerNode(widget.name, widget.config, true);
+        } else {
+          register(widget.config);
         }
       });
     },
@@ -80,4 +82,5 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+</style>
