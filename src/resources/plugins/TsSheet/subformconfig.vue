@@ -6,13 +6,12 @@ export default {
   props: {},
   data() {
     return {
-      pathList: [],
-      pathUuidList: [],
-      isSubForm: false,
-      subFormData: { 
-        pathUuidList: [],
+      currentFormData: {
         formConfig: {}
-      }
+      },
+      pathList: [], //表单列队
+      isSubForm: false,
+      currentFormUuid: null
     };
   },
   beforeCreate() {},
@@ -33,18 +32,18 @@ export default {
         return;
       }
       this.isFormLoaded = false;
+      this.currentFormUuid = this.currentFormItem.uuid;
       //保存子组件导航
-      if (!this.pathUuidList || !this.pathUuidList.includes(this.currentFormItem.uuid)) {
-        this.pathUuidList.push(this.currentFormItem.uuid);
-        this.pathList.push(this.currentFormItem);
-      }
+      this.pathList.push({
+        ...this.currentFormItem.formData,
+        label: this.currentFormItem.label,
+        uuid: this.currentFormItem.uuid
+      });
       if (!this.currentFormItem.formData) {
-        this.$set(this.currentFormItem, 'formData', {
-          pathUuidList: this.pathUuidList,
-          formConfig: {}
-        });
+        this.$set(this.currentFormData, 'formConfig', {});
+      } else {
+        this.currentFormData = this.currentFormItem.formData;
       }
-      this.subFormData = this.currentFormItem.formData;
       this.currentFormItem = null;
       this.isSubForm = true;
       this.$nextTick(() => {
@@ -52,24 +51,29 @@ export default {
       });
     },
     clickNav(item, index) {
+      if (index != this.pathList.length - 2) {
+        return;
+      }
       this.errorData = this.$refs.sheet.validConfig();
       if (!this.$utils.isEmpty(this.errorData)) {
         return;
       }
+      let formConfig = this.$refs.sheet.getFormConfig();
       this.isFormLoaded = false;
-      if (item) {
-        if (index < this.pathList.length - 1) {
-          this.subFormData = this.pathList[index].formData;
-          this.pathList = this.pathList.slice(0, index + 1);
-          this.pathUuidList = this.pathUuidList.slice(0, index + 1);
+      this.pathList.pop();
+      console.log(this.currentFormData, 'llll', this.pathList);
+      this.currentFormData = this.pathList[this.pathList.length - 1];
+      this.currentFormData.formConfig.tableList.forEach(item => {
+        if (item.component && item.component.uuid === this.currentFormUuid) {
+          this.$set(item.component, 'formData', {});
+          this.$set(item.component.formData, 'formConfig', formConfig);
+          this.$set(item.component.formData, 'uuid', item.uuid);
         }
-      } else {
-        this.pathList = [];
-        this.pathUuidList = [];
-        this.isSubForm = false;
+      });
+      if (item.uuid) {
+        this.currentFormUuid = item.uuid;
       }
-      this.currentFormItem = null;
-      this.clearSelectedComponent(this.formData.formConfig.tableList);
+      // this.clearSelectedComponent(this.formData.formConfig.tableList);
       this.$nextTick(() => {
         this.isFormLoaded = true;
       });
@@ -113,13 +117,6 @@ export default {
     backPre() {
       this.isSubForm = false;
       this.isFormLoaded = false;
-      this.updateFormData(this.formData.formConfig.tableList, this.subFormData.pathUuidList);
-      // if (this.pathUuidList.length > 0) {
-      // this.subFormData = this.formDataList[this.pathUuidList.length - 1].formData;
-      // this.pathUuidList.splice(this.pathUuidList.length - 1, 1);
-      // this.formDataList.splice(this.formDataList.length - 1, 1);
-      // this.isSubForm = true;
-      // }
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.isFormLoaded = true;

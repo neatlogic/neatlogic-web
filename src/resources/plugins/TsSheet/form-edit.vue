@@ -221,32 +221,25 @@
       </template>
       <template v-slot:content>
         <div v-if="isFormLoaded" style="position:relative">
+          <div v-if="pathList && pathList.length > 1" class="pb-sm">
+            <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
+              <BreadcrumbItem
+                v-for="(item,index) in pathList"
+                :key="index"
+              ><span
+                :class="index == pathList.length - 2?'text-href':index != pathList.length - 1?'text-tip':''"
+                @click="clickNav(item,index)"
+              >{{ item.label }}</span>
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </div>
           <TsSheet
-            v-if="!isSubForm"
             ref="sheet"
-            v-model="formData.formConfig"
+            :value="currentFormData.formConfig"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateResize="updateResize"
           ></TsSheet>
-          <div v-else>
-            <div class="pb-sm">
-              <span class="text-href" @click="clickNav()">{{ formData.name }}</span>
-              <span
-                v-for="(item,index) in pathList"
-                :key="index"
-                class="tsfont-right"
-                :class="{'text-href':index<pathList.length - 1}"
-                @click="clickNav(item,index)"
-              >{{ item.label }}</span>
-            </div>
-            <SubFormSheet
-              ref="sheet"
-              :formData="subFormData"
-              @selectCell="selectCell"
-              @removeComponent="removeComponent"
-            ></SubFormSheet>
-          </div>
           <FormItemConfig
             v-if="currentFormItem"
             :formItem="currentFormItem"
@@ -319,8 +312,7 @@ export default {
     FormReferenceDialog: resolve => require(['./form-reference-dialog.vue'], resolve),
     UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
     FormWidthDialog: resolve => require(['./form-width-dialog.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
-    SubFormSheet: resolve => require(['./sub-form-sheet.vue'], resolve)
+    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve)
   },
   extends: subformconfig,
   mixins: [download],
@@ -683,6 +675,13 @@ export default {
 
             this.$set(this.formData, 'formConfig', formConfig);
             this.initFormConfig = this.$utils.deepClone(formConfig);
+            this.pathList = [{
+              ...this.formData,
+              label: this.formData.name
+            }];
+            this.currentFormData = {
+              ...this.formData
+            };
             this.$addWatchData(this.initFormConfig);
           }
         })
