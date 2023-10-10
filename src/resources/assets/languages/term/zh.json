@@ -741,7 +741,9 @@
     "deletefailedcombinatetoolpresetcitetips": "删除失败，请检查是否已被组合工具或预置参数集引用",
     "usedtooldesc": "当前类型已被工具引用，无法删除",
     "targetjoberror": "{target}创建作业失败",
-    "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。"
+    "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。",
+    "combophasexpired": "组合工具已失效",
+    "pleasereedit": "请重新编辑后，提交审核"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -1131,7 +1133,8 @@
     "host": "服务器地址",
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",
-    "heartbeatthreshold": "心跳阈值"
+    "heartbeatthreshold": "心跳阈值",
+    "versionlog": "版本日志"
   },
   "knowledge": {
     "document": "文档",

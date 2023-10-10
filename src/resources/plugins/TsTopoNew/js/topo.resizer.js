@@ -1,7 +1,7 @@
 /**节点连接点类，一个类实例表示一个连接点**/
-(function(global, factory) {
+(function (global, factory) {
   factory((global.Resizer = global.Resizer || {}), global);
-})(window, function(exports, global) {
+})(window, function (exports, global) {
   'use strict';
   class Resizer {
     constructor(canvas, node) {
@@ -31,10 +31,10 @@
         if (k.startsWith('_')) {
           let pname = k.substring(1);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
             return this;
           };
@@ -53,10 +53,10 @@
           this.getSet[k] = this[k];
           const that = this;
           bindSetting[k] = {
-            get: function() {
+            get: function () {
               return that.getSet[k];
             },
-            set: function(value) {
+            set: function (value) {
               const oldValue = that.getSet[k];
               if (oldValue !== value) {
                 that.getSet[k] = value;
@@ -112,11 +112,7 @@
         handlers.forEach(handler => {
           const handlerEl = this.handlerEls[handler.position];
           if (handlerEl) {
-            handlerEl
-              .attr('x', handler.x)
-              .attr('y', handler.y)
-              .attr('width', this.getSize())
-              .attr('height', this.getSize());
+            handlerEl.attr('x', handler.x).attr('y', handler.y).attr('width', this.getSize()).attr('height', this.getSize());
           }
         });
       }
@@ -126,16 +122,10 @@
         const el = this.handlerEls[k];
         el.on('mouseenter', d => {
           el.interrupt();
-          el.transition()
-            .duration(100)
-            .attr('stroke-width', d.getSize())
-            .attr('stroke-opacity', '0.3');
+          el.transition().duration(100).attr('stroke-width', d.getSize()).attr('stroke-opacity', '0.3');
         }).on('mouseleave', d => {
           el.interrupt();
-          el.transition()
-            .duration(100)
-            .attr('stroke-width', '1.5')
-            .attr('stroke-opacity', '1');
+          el.transition().duration(100).attr('stroke-width', '1.5').attr('stroke-opacity', '1');
         });
         //绑定拖拽
         el.call(
@@ -143,58 +133,70 @@
             .drag()
             .on('start', d => {
               this.resizeDir = k;
+              this.initData = { x: this.canvas.getMouseX(), y: this.canvas.getMouseY(), width: this.node.getWidth(), height: this.node.getHeight() };
               this.node.setIsResizing(true);
             })
             .on('drag', d => {
-              if (this.resizeDir) {
-                let dx = d3.event.dx;
-                let dy = d3.event.dy;
+              if (this.resizeDir && this.initData) {
+                let newX = this.canvas.getMouseX();
+                let newY = this.canvas.getMouseY();
+                let dx = newX - this.initData.x;
+                let dy = newY - this.initData.y;
                 if (this.resizeDir === 'LT') {
-                  if (this.node.getWidth() - dx < this.node.getMinWidth()) {
-                    dx = this.node.getWidth() - this.node.getMinWidth();
+                  if (this.initData.width - dx < this.node.getMinWidth()) {
+                    dx = this.initData.width - this.node.getMinWidth();
+                    newX = dx + this.initData.x;
                   }
-                  if (this.node.getHeight() - dy < this.node.getMinHeight()) {
-                    dy = this.node.getHeight() - this.node.getMinHeight();
+                  if (this.initData.height - dy < this.node.getMinHeight()) {
+                    dy = this.initData.height - this.node.getMinHeight();
+                    newY = dy + this.initData.y;
                   }
-                  this.node.setDx(dx);
-                  this.node.setWidth(this.node.getWidth() - dx);
-                  this.node.setDy(dy);
-                  this.node.setHeight(this.node.getHeight() - dy);
+                  this.node.setX(newX);
+                  this.node.setWidth(this.initData.width - dx);
+                  this.node.setY(newY);
+                  this.node.setHeight(this.initData.height - dy);
                 } else if (this.resizeDir === 'RT') {
-                  if (this.node.getWidth() + dx < this.node.getMinWidth()) {
-                    dx = this.node.getMinWidth() - this.node.getWidth();
+                  if (this.initData.width + dx < this.node.getMinWidth()) {
+                    dx = this.node.getMinWidth() - this.initData.width;
+                    newX = dx + this.initData.x;
                   }
-                  if (this.node.getHeight() - dy < this.node.getMinHeight()) {
-                    dy = this.node.getHeight() - this.node.getMinHeight();
+                  if (this.initData.height - dy < this.node.getMinHeight()) {
+                    dy = this.initData.height - this.node.getMinHeight();
+                    newY = dy + this.initData.y;
                   }
-                  this.node.setWidth(this.node.getWidth() + dx);
-                  this.node.setDy(dy);
-                  this.node.setHeight(this.node.getHeight() - dy);
+                  this.node.setWidth(this.initData.width + dx);
+                  this.node.setY(newY);
+                  this.node.setHeight(this.initData.height - dy);
                 } else if (this.resizeDir === 'LB') {
-                  if (this.node.getWidth() - dx < this.node.getMinWidth()) {
-                    dx = this.node.getWidth() - this.node.getMinWidth();
+                  if (this.initData.width - dx < this.node.getMinWidth()) {
+                    dx = this.initData.width - this.node.getMinWidth();
+                    newX = dx + this.initData.x;
                   }
-                  if (this.node.getHeight() + dy < this.node.getMinHeight()) {
-                    dy = this.node.getMinHeight() - this.node.getHeight();
+                  if (this.initData.height + dy < this.node.getMinHeight()) {
+                    dy = this.node.getMinHeight() - this.initData.height;
+                    newY = dy + this.initData.y;
                   }
-                  this.node.setDx(dx);
-                  this.node.setWidth(this.node.getWidth() - dx);
-                  this.node.setHeight(this.node.getHeight() + dy);
+                  this.node.setX(newX);
+                  this.node.setWidth(this.initData.width - dx);
+                  this.node.setHeight(this.initData.height + dy);
                 } else if (this.resizeDir === 'RB') {
-                  if (this.node.getWidth() + dx < this.node.getMinWidth()) {
-                    dx = this.node.getMinWidth() - this.node.getWidth();
+                  if (this.initData.width + dx < this.node.getMinWidth()) {
+                    dx = this.node.getMinWidth() - this.initData.width;
+                    newX = dx + this.initData.x;
                   }
-                  if (this.node.getHeight() + dy < this.node.getMinHeight()) {
-                    dy = this.node.getMinHeight() - this.node.getHeight();
+                  if (this.initData.height + dy < this.node.getMinHeight()) {
+                    dy = this.node.getMinHeight() - this.initData.height;
+                    newY = dy + this.initData.y;
                   }
-                  this.node.setWidth(this.node.getWidth() + dx);
-                  this.node.setHeight(this.node.getHeight() + dy);
+                  this.node.setWidth(this.initData.width + dx);
+                  this.node.setHeight(this.initData.height + dy);
                 }
                 this.adjustPosition();
               }
             })
             .on('end', d => {
               this.resizeDir = null;
+              this.initData = null;
               this.node.setIsResizing(false);
             })
         );

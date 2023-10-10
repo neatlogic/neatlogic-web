@@ -14,6 +14,7 @@ import rdm from './rdm';
 import codehub from './codehub'; // 代码中心
 import documentonline from './documentonline';
 import dr from './dr';
+import diagram from './diagram';
 
 export default {
   autoexec,
@@ -31,5 +32,6 @@ export default {
   rdm,
   codehub,
   documentonline,
-  dr
+  dr,
+  diagram
 };

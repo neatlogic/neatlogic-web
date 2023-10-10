@@ -218,7 +218,7 @@ let startEndNode = [
   {
     type: 'start',
     handler: 'start',
-    icon: '#tsfont-solid-circle',
+    icon: '#ts-circle-fill', // 字体图标取的是 tsfont.js
     iconColor: 'RGBA(129, 213, 83, 1)',
     x: 200,
     y: 360,
@@ -229,7 +229,7 @@ let startEndNode = [
   {
     type: 'end',
     handler: 'end',
-    icon: '#tsfont-solid-circle',
+    icon: '#ts-circle-fill', // 字体图标取的是 tsfont.js
     iconColor: 'RGBA(255, 98, 90, 1)',
     x: 600,
     y: 360,
