@@ -54,7 +54,7 @@ let routerArr = [
     name: 'service-manage',
     component: serviceManage,
     meta: {
-      title: '服务清单',
+      title: $t('router.dr.servicemanage'),
       ismenu: true,
       icon: 'tsfont-file-single',
       type: 'dr',
@@ -66,7 +66,7 @@ let routerArr = [
     name: 'service-detail',
     component: serviceDetail,
     meta: {
-      title: '服务清单详情',
+      title: $t('router.dr.servicedetail'),
       ismenu: false,
       type: 'dr',
       authority: 'DR_BASE'
@@ -77,7 +77,7 @@ let routerArr = [
     name: 'service-add',
     component: serviceAdd,
     meta: {
-      title: '服务清单',
+      title: $t('router.dr.servicemanage'),
       ismenu: false,
       type: 'dr',
       authority: 'DR_BASE'

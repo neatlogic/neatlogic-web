@@ -246,38 +246,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-@import (reference) '~@/resources/assets/css/variable.less';
-  .theme(@text-color){
-   #app-module-list-tree-wrap {
-    a {
-      vertical-align: middle; // 解决右键菜单打开新连接，会有动一下的问题
-    }
-    a:hover {
-      color: @text-color;
-    }
-    }
-  }
-  html {
-    .theme(@default-text);
-
-    &.theme-dark {
-      .theme(@dark-text);
-    }
-  }
-</style>
 <style lang="less" scoped>
 .app-item {
   position: relative;
   display: flex;
-}
-.app-item .favorite-icon {
-  position: absolute;
-  right: 0px;
-  visibility: hidden;
-}
-.app-item:hover .favorite-icon {
-  visibility: visible;
 }
 .name-pl {
   display: inline-block;
