@@ -140,7 +140,9 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.$route.meta.fromPageList = []; // 点击到编辑页面，去掉当前仪表盘管理页面高亮
+  },
   destroyed() {},
   methods: {
     isCanEdit(dashboard) {

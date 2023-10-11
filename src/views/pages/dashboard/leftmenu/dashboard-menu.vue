@@ -90,9 +90,13 @@ export default {
             }
             if (menugroup.topvisit && menugroup.topvisit.length > 0 && (operationType == 'add' || operationType == 'del')) {
               this.$route.meta.fromPageList = [];
-              this.$router.replace({
-                path: menugroup.topvisit[0].url // 新增删除才选第一个
-              });
+              if (operationType == 'del' && this.$route.name == 'dashboard-manage') { // 仪表盘管理删除某个仪表盘后，不需要高亮第一个仪表盘
+              //  
+              } else {
+                this.$router.replace({
+                  path: menugroup.topvisit[0].url // 新增删除才选第一个
+                });
+              }
             }
             if (!this.$utils.isEmpty(this.moduleList) && this.$route.fullPath && operationType == 'del') {
               let module = this.moduleList.find((v) => v.moduleId == 'dashboard' && v.isDefault == 1 && v.defaultPage == this.$route.fullPath);
