@@ -1,0 +1,271 @@
+<template>
+  <div>
+    <TsDialog
+      :title="$t('term.autoexec.selectnode')"
+      type="slider"
+      :isShow="true"
+      :multiple="multiple"
+      width="large"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <div class="pb-nm">
+            <CombineSearcher
+              v-model="searchVal"
+              v-bind="searchConfig"
+              :disabledList="disabledList"
+              :clearable="!disabledList.length"
+              @change="searchNodeList()"
+            ></CombineSearcher>
+          </div>
+          <TsTable
+            v-bind="tableData"
+            v-model="selectIdList"
+            :multiple="multiple"
+            :theadList="theadList"
+            keyName="id"
+            :loading="loadingShow"
+            selectedRemain
+            @changeCurrent="getDataList('currentPage',...arguments)"
+            @changePageSize="getDataList('pageSize',...arguments)"
+            @getSelected="getSelected"
+          >
+          </TsTable>
+        </div>
+      </template>
+    </TsDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: '',
+  components: {
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+  },
+  props: {
+    multiple: {
+      type: Boolean,
+      default: false
+    },
+    typeIdList: Array,
+    selectNodeList: Array
+  },
+  data() {
+    return {
+      loadingShow: true,
+      theadList: [
+        { key: 'selection' },
+        { title: this.$t('page.ip'), key: 'ip'},
+        { title: this.$t('page.port'), key: 'port'},
+        { title: this.$t('page.name'), key: 'name'},
+        { title: this.$t('page.tag'), key: 'tagList', type: 'tag'},
+        { title: this.$t('page.environment'), key: 'envName'},
+        { title: this.$t('term.cmdb.citype'), key: 'typeLabel'},
+        { title: this.$t('page.module'), key: 'appModuleName'},
+        { title: this.$t('page.apply'), key: 'appSystemName'},
+        { title: this.$t('term.autoexec.assetstatus'), key: 'stateName'},
+        { title: this.$t('page.networkarea'), key: 'networkArea'},
+        { title: this.$t('term.autoexec.subordinatedepartment'), key: 'bgList', type: 'usercards'},
+        { title: this.$t('page.owner'), key: 'ownerList', type: 'usercards'},
+        { title: this.$t('term.autoexec.maintenanceperiod'), key: 'maintenanceWindow'},
+        { title: this.$t('page.description'), key: 'description'}
+      ],
+      tableData: {},
+      searchVal: {
+        typeIdList: this.typeIdList
+      },
+      selectedRowId: null,
+      selectedRowData: null,
+      searchConfig: {
+        labelWidth: 100,
+        // placeholder: '请输入节点ip、端口、名称',
+        searchList: [
+          {
+            type: 'tree',
+            name: 'typeIdList',
+            label: this.$t('term.cmdb.citype'),
+            multiple: true,
+            url: '/api/rest/resourcecenter/resourcetype/tree',
+            textName: 'label',
+            valueName: 'id',
+            search: true,
+            transfer: true,
+            disabled: true
+          },
+          {
+            type: 'select',
+            name: 'appSystemIdList',
+            label: this.$t('page.apply'),
+            multiple: true,
+            value: null,
+            dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
+            rootName: 'tbodyList',
+            dealDataByUrl: this.$utils.getAppForselect,
+            search: true,
+            transfer: true,
+            onChange: (val) => {
+              let appSystemIdList = [];
+              appSystemIdList = this.searchConfig.searchList.filter((item) => {
+                return item.name == 'appModuleIdList';
+              });
+              if (!this.$utils.isEmpty(appSystemIdList)) {
+                appSystemIdList[0].params.appSystemIdList = val;
+              }
+              if (val) {
+                this.$nextTick(() => {
+                  if (this.searchVal && this.searchVal.appModuleIdList) {
+                    this.$delete(this.searchVal, 'appModuleIdList');
+                    // this.changeValue();
+                  }
+                });
+              }
+            }
+          },
+          {
+            type: 'select',
+            name: 'appModuleIdList',
+            label: this.$t('page.module'),
+            multiple: true,
+            dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
+            params: {appSystemIdList: null},
+            rootName: 'tbodyList',
+            dealDataByUrl: this.$utils.getAppForselect,
+            search: true,
+            transfer: true
+          },
+          {
+            type: 'checkbox',
+            name: 'envIdList',
+            label: this.$t('page.environment'),
+            multiple: true,
+            url: '/api/rest/resourcecenter/appenv/list/forselect',
+            params: {needPage: false},
+            rootName: 'tbodyList',
+            textName: 'name',
+            valueName: 'id',
+            transfer: true,
+            className: 'block-span'
+          },
+          {
+            type: 'select',
+            name: 'protocolIdList',
+            label: this.$t('term.inspect.connectionagreement'),
+            dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
+            rootName: 'tbodyList',
+            dealDataByUrl: this.$utils.getProtocolDataList,
+            multiple: true,
+            search: true,
+            clearable: true,
+            transfer: true
+          },
+          {
+            type: 'select',
+            name: 'tagIdList',
+            label: this.$t('page.tag'),
+            multiple: true,
+            dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
+            rootName: 'tbodyList',
+            textName: 'name',
+            valueName: 'id',
+            search: true,
+            transfer: true
+          },
+          {
+            type: 'checkbox',
+            name: 'stateIdList',
+            label: this.$t('page.status'),
+            multiple: true,
+            url: '/api/rest/resourcecenter/state/list/forselect',
+            params: { needPage: false},
+            rootName: 'tbodyList',
+            textName: 'description',
+            valueName: 'id',
+            transfer: true,
+            className: 'block-span'
+          }
+        ]
+      },
+      disabledList: ['typeIdList'], //不可更改的搜索条件
+      selectIdList: []
+    };
+  },
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  activated() {},
+  deactivated() {},
+  beforeDestroy() {},
+  destroyed() {},
+  methods: {
+    searchNodeList(params) {
+      if (this.$utils.isEmpty(this.searchVal.typeIdList)) {
+        this.loadingShow = false;
+        return;
+      }
+      let data = this.searchVal;
+      if (params) {
+        Object.assign(data, params);
+      }
+      this.$api.common.getNodeList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.tableData = res.Return;
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    getDataList(type, value) {
+      type == 'pageSize' && (this.pageSize = value);
+      let param = {
+        currentPage: type == 'currentPage' ? value : this.currentPage,
+        pageSize: type == 'pageSize' ? value : this.pageSize
+      };
+      this.searchNodeList(param);
+    },
+    okDialog() {
+      this.closeDialog(this.selectedRowData);
+    },
+    closeDialog(list) {
+      this.$emit('close', list);
+    },
+    getSelected(id, row) {
+      let selectedArr = this.tableData.tbodyList.filter(val => {
+        return id.includes(val.id); // 获取所有选中列表
+      });
+      this.selectedRowId = id;
+      this.selectedRowData = selectedArr;
+    }
+  },
+  filter: {},
+  computed: {},
+  watch: {
+    typeIdList: {
+      handler(val) {
+        if (val) {
+          this.$set(this.searchVal, 'typeIdList', val);
+          this.searchNodeList(this.searchVal);
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    selectNodeList: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.selectIdList = this.$utils.mapArray(val, 'id');
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
+};
+</script>
+<style lang="less">
+</style>

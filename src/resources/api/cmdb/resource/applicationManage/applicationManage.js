@@ -28,6 +28,10 @@ const applicationManage = {
     // 获取资源中心，应用模块列表
     return axios.post('api/rest/resourcecenter/appmodule/list/fortree', params);
   },
+  getAppenvListTree(params) {
+    // 查询资源中心数据列表
+    return axios.post('api/rest/resourcecenter/appenv/list', params);
+  },
   getAppsystemById(params) {
     // 根据应用id，获取应用信息
     return axios.post('api/rest/resourcecenter/appsystem/get', params);

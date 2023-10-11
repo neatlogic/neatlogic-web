@@ -291,7 +291,9 @@
   },
   "dr": {
     "dr": "灾切",
-    "basicsetting": "基础设置"
+    "basicsetting": "基础设置",
+    "servicemanage": "服务清单",
+    "servicedetail": "服务清单详情"
   },
   "diagram": {
     "diagrammanage": "系统管理"

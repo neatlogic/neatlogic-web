@@ -52,7 +52,7 @@ export default {
       assetList: [],
       showDialog: false,
       treeConfig: {
-        url: 'api/rest/cmdb/ci/listtree',
+        url: '/api/rest/resourcecenter/resourcetype/tree',
         valueName: 'id',
         textName: 'label',
         border: 'border',
