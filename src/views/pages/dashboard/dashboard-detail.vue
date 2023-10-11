@@ -90,6 +90,7 @@ export default {
   beforeMount() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.resizeWindow);
+    this.$route.meta.fromPageList = [];
   },
   mounted() {
     this.getDashboardById();
