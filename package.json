@@ -12,9 +12,9 @@
     "serve:wxbank": "vue-cli-service serve --mode wxbank",
     "build:wxbank": "vue-cli-service build --mode wxbank",
     "serve:community": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode community",
-    "serve:commcial": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode commcial",
+    "serve:commercial": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode commercial",
     "build:community": "node version.js && vue-cli-service build --mode community",
-    "build:commcial": "node version.js && vue-cli-service build --mode commcial"
+    "build:commercial": "node version.js && vue-cli-service build --mode commercial"
   },
   "dependencies": {
     "@antv/data-set": "^0.11.8",
