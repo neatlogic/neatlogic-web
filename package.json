@@ -10,7 +10,11 @@
     "test:unit": "vue-cli-service test:unit",
     "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit",
     "serve:wxbank": "vue-cli-service serve --mode wxbank",
-    "build:wxbank": "vue-cli-service build --mode wxbank"
+    "build:wxbank": "vue-cli-service build --mode wxbank",
+    "serve:community": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode community",
+    "serve:commcial": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode commcial",
+    "build:community": "node version.js && vue-cli-service build --mode community",
+    "build:commcial": "node version.js && vue-cli-service build --mode commcial"
   },
   "dependencies": {
     "@antv/data-set": "^0.11.8",
