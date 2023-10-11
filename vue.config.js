@@ -2,14 +2,15 @@ const path = require('path');
 const glob = require('glob');
 let custommodule_home;
 let src = './src';
-let rootSrc = './src';
-let baseConfiglUrl = src + '/dummy_custom_module'; // 如果不引用的话，就引用本地的空文件夹
 let baseImg = './public/resource';
-let closedSource = src + '/closed_module';
-
+let importModuleUrl = process.env.VUE_APP_IMPORT_MODULE_URL || './src/dummy-module';
+let baseConfiglUrl = './src/dummy-module'; // 如果不引用的话，就引用本地的空文件夹
+let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 let currentModuleName = '';
 let projectName = ''; //引入项目配置信息
+const { tenantName, urlPrefix } = require('./apiconfig.json');
+process.env.VUE_APP_TENANT = tenantName; // 租户名称
 process.env.VUE_APP_LOGINTITLE = 'welcome';
 try {
   custommodule_home = require('../neatlogic-web-config/config.json'); //查找是否有配置信息
@@ -28,9 +29,6 @@ try {
     if (projectName.tableStyle) {
       process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
     }
-    if (projectName.closedsource) {
-      closedSource = projectName.closedsource;
-    }
     process.env.VUE_APP_CUSTOMPAGES = projectName.home; //自定义项目文件夹名称
     process.env.VUE_APP_CUSTOMMODULE = true;
     pageTitle = projectName.title;
@@ -38,39 +36,31 @@ try {
 } catch (e) {
   console.log('neatlogic-web-config', e);
 }
-let localUrl = '../neatlogic-web/src/resources';
-const { tenantName, urlPrefix } = require('./apiconfig.json');
-process.env.VUE_APP_TENANT = tenantName; // 租户名称
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {
-    const pagePath = glob.sync(rootSrc + '/views/pages/*/router.js');
+    const pagePath = glob.sync(src + '/views/pages/*/router.js');
     let pagePathList = [...pagePath];
-    let CUSTOMMODULEList = process.env.VUE_APP_NODE_ENV == 'business' && typeof process.env.VUE_APP_MODULE_LIST == 'string' ? JSON.parse(process.env.VUE_APP_MODULE_LIST) : [];
+    let importModuleList = [];
     let customPagePath = [];
-    let arr;
-    if (process.env.VUE_APP_NODE_ENV == 'business' && CUSTOMMODULEList && CUSTOMMODULEList.length > 0) {
-      CUSTOMMODULEList.forEach(item => {
-        if (item) {
-          arr = glob.sync(`${closedSource}/closedsource/*/router.js`);
-          if (arr && arr.length > 0) {
-            customPagePath.push(...arr);
-          }
-        }
-      });
-      pagePathList.push(...customPagePath);
+    let importModulePathList;
+    importModulePathList = glob.sync(`${importModuleUrl}/**/router.js`);
+    if (importModulePathList && importModulePathList.length > 0) {
+      customPagePath.push(...importModulePathList);
     }
+    pagePathList.push(...customPagePath);
     pagePathList.forEach(p => {
-      const projectFilename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
-      const outFileName = p.match(/closedsource\/[^\/]+\/router\.js$/);
       let filename = '';
       let customImportModuleName = ''; // 自定义导入模块名称
+      const projectFilename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
+      const importFilename = p.match(/\/[^\/]+\/router\.js$/);
       if (projectFilename) {
         filename = projectFilename[1];
-      } else if (outFileName) {
-        customImportModuleName = outFileName[0].match(/closedsource\/([^\/]+)\/router\.js$/);
+      } else if (importFilename) {
+        customImportModuleName = importFilename[0].match(/\/([^\/]+)\/router\.js$/);
         if (customImportModuleName) {
           filename = customImportModuleName[1];
+          importModuleList.push(filename);
         }
       }
       const newpage = {};
@@ -79,13 +69,12 @@ function getPages(pageList) {
         pageLogin = `${pageTitle}`;
       }
       newpage[filename] = {
-        entry: CUSTOMMODULEList.includes(filename) ? `${closedSource}/closedsource/${filename}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
+        entry: importModuleList.includes(filename) ? `${importModuleUrl}/${filename}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
         template: `public/index.html`,
         filename: `${filename}.html`,
         title: pageLogin, // 标题名称+参数
         chunks: [`chunk-vendors`, `chunk-common`, `${filename}`]
       };
-
       Object.assign(pages, newpage);
     });
   } else {
@@ -94,7 +83,7 @@ function getPages(pageList) {
     list.forEach(p => {
       const newpage = {};
       newpage[p] = {
-        entry: CUSTOMMODULEList.includes(p) ? `${closedSource}/closedsource/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
+        entry: importModuleList.includes(p) ? `${importModuleUrl}/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
         template: `public/index.html`,
         filename: `${p}.html`,
         title: `${pageTitle}-${p}`, // 标题名称+参数
@@ -140,10 +129,10 @@ module.exports = {
   chainWebpack: config => {
     config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
     config.resolve.alias.set('@', resolve(src));
-    config.resolve.alias.set('custom-module', resolve(baseConfiglUrl));
+    config.resolve.alias.set('dummy-module', resolve(baseConfiglUrl));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-    config.resolve.alias.set('closed-source-module', resolve(closedSource));
+    config.resolve.alias.set('import-module-url', path.resolve(__dirname, importModuleUrl)); // path.resolve 解析相对路径为绝对路径，解决require.context 获取router.js/config.js 文件，路径找不到问题
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));

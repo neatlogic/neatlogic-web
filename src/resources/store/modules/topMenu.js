@@ -219,7 +219,7 @@ const actions = {
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('inspect')) return;
     const res = await menuApi.updateInspectMenu();
     let recentIssuesRouteList = []; // 最新问题路由列表
-    if (res.Return && (res.Return.length > 0)) {
+    if (res.Return && res.Return.length > 0) {
       recentIssuesRouteList = res.Return.map(type => ({
         name: type.name,
         path: `/recent-issues-${type.id}`,
@@ -269,35 +269,38 @@ const actions = {
 };
 
 function getRouterConfig() {
-  const requireRouter = require.context('@/views/pages', true, /router.js$/);
-  const routerConfig = {};
-  const requireRouterKeys = requireRouter.keys();
-  requireRouterKeys.forEach(routerPath => {
-    const moduleId = routerPath.split('/')[1];
-    const routeList = requireRouter(routerPath).default || [];
-    routerConfig[moduleId] = routeList;
+  let routerConfig = {};
+  let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+  try {
+    routerPathList.push(require.context('import-module-url', true, /router.js$/));
+  } catch (error) {
+    // 模块找不到
+  }
+  routerPathList.forEach(item => {
+    if (item && item.keys()) {
+      item.keys().forEach(routerPath => {
+        const moduleName = routerPath.split('/')[1];
+        const routeList = item(routerPath).default || [];
+        routerConfig[moduleName] = routeList;
+      });
+    }
   });
-  let moduleConfig = {};
-  const moduleRouter = require.context('closed-source-module/closedsource/', true, /router.js$/);
-  const moduleRouterKeys = moduleRouter.keys();
-  moduleRouterKeys.forEach(routerPath => {
-    const moduleIds = routerPath.split('/')[1];
-    const routeLists = moduleRouter(routerPath).default || [];
-    moduleConfig[moduleIds] = routeLists;
-  });
-  console.log('routerConfig', routerConfig);
-  console.log('moduleconfig', moduleConfig);
-  return { ...routerConfig, ...moduleConfig };
+  return routerConfig;
 }
 function getAllMenuTypeList() {
   // 获取菜单分类名称
-  const requireContexList = [require.context('@/views/pages', true, /config.js$/), require.context('closed-source-module/closedsource/', true, /config.js$/)];
-  const menuTypeList = [];
-  requireContexList.forEach(context => {
-    context.keys().forEach(config => {
-      const configObj = context(config);
-      if (configObj && configObj.config) {
-        menuTypeList.push(configObj.config);
+  let menuTypeList = [];
+  const configPathList = [require.context('@/views/pages', true, /config.js$/)];
+  try {
+    configPathList.push(require.context('import-module-url', true, /config.js$/));
+  } catch (error) {
+    //
+  }
+  configPathList.forEach(configItem => {
+    configItem.keys().forEach(pathItem => {
+      const pathConfig = configItem(pathItem);
+      if (pathConfig && pathConfig.config) {
+        menuTypeList.push(pathConfig.config);
       }
     });
   });
