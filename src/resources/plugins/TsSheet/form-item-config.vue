@@ -373,7 +373,6 @@ export default {
     },
     editSubForm() {
       this.$emit('editSubForm');
-      console.log('lll');
     }
   },
   filter: {},

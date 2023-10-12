@@ -2,11 +2,12 @@
   <div v-if="subFormData">
     <TsSheet
       ref="sheet"
-      mode="subform"
+      :mode="mode==='edit'?'editSubform':'read'"
       :value="subFormData"
       :data="actualValue"
-      :disabled="mode==='edit'?true:disabled"
+      :disabled="disabled"
       :readonly="readonly"
+      isFormSubassembly
       @setValue="updateValue"
     ></TsSheet>
   </div>

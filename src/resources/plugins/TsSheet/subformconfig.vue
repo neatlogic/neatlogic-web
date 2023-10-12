@@ -10,7 +10,6 @@ export default {
         formConfig: {}
       },
       pathList: [], //表单列队
-      isSubForm: false,
       currentFormUuid: null
     };
   },
@@ -44,14 +43,15 @@ export default {
       } else {
         this.currentFormData = this.currentFormItem.formData;
       }
+      this.formData = this.currentFormData;
+
       this.currentFormItem = null;
-      this.isSubForm = true;
       this.$nextTick(() => {
         this.isFormLoaded = true;
       });
     },
-    clickNav(item, index) {
-      if (index != this.pathList.length - 2) {
+    backPreFormData(item, index) {
+      if (index && index != this.pathList.length - 2) {
         return;
       }
       this.errorData = this.$refs.sheet.validConfig();
@@ -61,25 +61,28 @@ export default {
       let formConfig = this.$refs.sheet.getFormConfig();
       this.isFormLoaded = false;
       this.pathList.pop();
-      console.log(this.currentFormData, 'llll', this.pathList);
       this.currentFormData = this.pathList[this.pathList.length - 1];
-      this.currentFormData.formConfig.tableList.forEach(item => {
-        if (item.component && item.component.uuid === this.currentFormUuid) {
-          this.$set(item.component, 'formData', {});
-          this.$set(item.component.formData, 'formConfig', formConfig);
-          this.$set(item.component.formData, 'uuid', item.uuid);
-        }
-      });
+      if (this.currentFormData.formConfig.tableList) {
+        this.currentFormData.formConfig.tableList.forEach(t => {
+          if (t.component && t.component.uuid === this.currentFormUuid) {
+            this.$set(t.component, 'formData', {});
+            this.$set(t.component.formData, 'formConfig', formConfig);
+            // this.$set(t.component.formData, 'uuid', item.uuid);
+          }
+        });
+      }
+      this.formData = this.currentFormData;
       if (item.uuid) {
         this.currentFormUuid = item.uuid;
       }
-      // this.clearSelectedComponent(this.formData.formConfig.tableList);
+      this.clearSelectedComponent(this.formData.formConfig.tableList);
       this.$nextTick(() => {
         this.isFormLoaded = true;
+        this.currentFormItem = null;
       });
     },
     clearSelectedComponent(tableList) {
-      tableList.forEach(item => {
+      tableList && tableList.forEach(item => {
         if (item._isHandler) {
           this.$delete(item, '_isHandler');
         }
@@ -112,14 +115,6 @@ export default {
             this.$set(item.component, 'formData', formData);
           }
         }
-      });
-    },
-    backPre() {
-      this.isSubForm = false;
-      this.isFormLoaded = false;
-      this.currentFormItem = null;
-      this.$nextTick(() => {
-        this.isFormLoaded = true;
       });
     }
   },

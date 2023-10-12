@@ -1,12 +1,11 @@
 <template>
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
-      <template v-slot:navigation>
+      <template v-if="pathList.length <=1" v-slot:navigation>
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
-        <!-- <span v-else class="tsfont-left text-action" @click="backPre()">{{ $t('page.back') }}</span> -->
       </template>
       <template v-slot:topLeft>
-        <TsRow>
+        <TsRow v-if="pathList.length <=1">
           <Col span="12">
             <TsFormInput
               ref="formName"
@@ -60,7 +59,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <div class="action-item">
+          <div v-if="pathList.length <=1" class="action-item">
             <Poptip
               v-model="isShowValidList"
               word-wrap
@@ -86,53 +85,60 @@
             </Poptip>
           </div>
           <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
-          <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
-          <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
-          <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
-          <div class="action-item">
-            <Dropdown trigger="click">
-              <span class="tsfont-option-horizontal click-btn"></span>
-              <DropdownMenu slot="list" class="dropdown">
-                <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
-                  <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
-                </DropdownItem>
-                <DropdownItem v-else-if="currentVersion.uuid">
-                  <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
-                </DropdownItem>
-                <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                  <span class="tsfont-import">{{ $t('page.import') }}</span>
-                  <UploadDialog
-                    ref="uploadDialog"
-                    :beforeUpload="beforeUpload"
-                    :actionUrl="importUrl + (formUuid || null)"
-                    :formatList="formatList"
-                    @on-success="uploadSuccess"
-                  />
-                </DropdownItem>
-                <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                  <div class="tsfont-export">{{ $t('page.export') }}</div>
-                </DropdownItem>
-                <DropdownItem>
-                  <div
-                    :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
-                    class="action-item tsfont-check-square-o"
-                    :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
-                    @click="activeFormVersion(currentVersion.uuid)"
-                    @mouseenter="haveChangeData"
-                  >{{ $t('page.enable') }}</div>
-                </DropdownItem>
-                <DropdownItem>
-                  <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-          <div class="action-item">
-            <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
-          </div>
-          <div class="action-item last">
-            <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
-          </div>
+          <template v-if="pathList.length <=1">
+            <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
+            <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
+            <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
+            <div class="action-item">
+              <Dropdown trigger="click">
+                <span class="tsfont-option-horizontal click-btn"></span>
+                <DropdownMenu slot="list" class="dropdown">
+                  <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
+                    <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
+                  </DropdownItem>
+                  <DropdownItem v-else-if="currentVersion.uuid">
+                    <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
+                  </DropdownItem>
+                  <DropdownItem @click.native="$refs.uploadDialog.showDialog">
+                    <span class="tsfont-import">{{ $t('page.import') }}</span>
+                    <UploadDialog
+                      ref="uploadDialog"
+                      :beforeUpload="beforeUpload"
+                      :actionUrl="importUrl + (formUuid || null)"
+                      :formatList="formatList"
+                      @on-success="uploadSuccess"
+                    />
+                  </DropdownItem>
+                  <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
+                    <div class="tsfont-export">{{ $t('page.export') }}</div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div
+                      :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
+                      class="action-item tsfont-check-square-o"
+                      :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
+                      @click="activeFormVersion(currentVersion.uuid)"
+                      @mouseenter="haveChangeData"
+                    >{{ $t('page.enable') }}</div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <div class="action-item">
+              <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
+            </div>
+            <div class="action-item last">
+              <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
+            </div>
+          </template>
+          <template v-else>
+            <div class="action-item last">
+              <Button type="primary" @click="backPreFormData(pathList[pathList.length-2])">确认</Button>
+            </div>
+          </template>
         </div>
       </template>
       <template v-slot:sider>
@@ -228,14 +234,14 @@
                 :key="index"
               ><span
                 :class="index == pathList.length - 2?'text-href':index != pathList.length - 1?'text-tip':''"
-                @click="clickNav(item,index)"
+                @click="backPreFormData(item,index)"
               >{{ item.label }}</span>
               </BreadcrumbItem>
             </Breadcrumb>
           </div>
           <TsSheet
             ref="sheet"
-            :value="currentFormData.formConfig"
+            v-model="formData.formConfig"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateResize="updateResize"
@@ -407,17 +413,13 @@ export default {
       let newLefterList = newData.lefterList;
       let oldHeaderList = oldData.headerList;
       let newHeaderList = oldData.headerList;
-      this.$delete(oldData, 'lefterList');
-      this.$delete(oldData, 'headerList');
-      this.$delete(oldData, 'lcd');
-      this.$delete(oldData, 'lcu');
-      this.$delete(newData, 'lefterList');
-      this.$delete(newData, 'headerList');
-      this.$delete(newData, 'lcd');
-      this.$delete(newData, 'lcu');
-      isSame = this.$utils.isSame(oldData, newData);
       if (this.initFormName != this.formData.name) {
         isSame = false;
+      }
+      if (isSame) {
+        this.filterFormData(oldData);
+        this.filterFormData(newData);
+        isSame = this.$utils.isSame(oldData, newData);
       }
       if (isSame) {
         isSame = this.contrastError(oldLefterList, newLefterList, 'height');
@@ -427,9 +429,20 @@ export default {
       }
       return isSame;
     },
+    filterFormData(data) { //删除不需要对比的数据
+      this.$delete(data, 'lefterList');
+      this.$delete(data, 'headerList');
+      this.$delete(data, 'lcd');
+      this.$delete(data, 'lcu');
+      data.tableList.forEach(item => {
+        if (item.component && item.component.formData && item.component.formData.formConfig) {
+          this.filterFormData(item.component.formData.formConfig); 
+        }
+      });
+    },
     contrastError(oldData, newData, type) {
       let isSame = true;
-      let num = 2;//对比：误差高度在2px内可忽略
+      let num = 5;//对比：误差高度在5px内可忽略
       if (oldData && newData) {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;
@@ -639,6 +652,10 @@ export default {
         //缺少版本uuid或者新建过来的，不带任何数据
         this.currentFormItem = null;
         this.$set(this.formData, 'formConfig', {});
+        this.pathList = [{
+          ...this.formData,
+          label: this.formData.name
+        }];
         this.isFormLoaded = true;
         return false;
       }
