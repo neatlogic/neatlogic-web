@@ -1626,7 +1626,15 @@
   .border-color-base {
     border-color: @border-color-base;
   }
-
+  .border-dashed {
+    height: 2px;
+    background-image: linear-gradient(to right, @dividing-color 0%, @dividing-color 50%, transparent 50%);
+    background-size: 10px 1px;
+    background-repeat: repeat-x;
+  }
+  .text-dividing {
+    color: @dividing-color
+  }
   .text-warning,
   .text-WARN {
     color: @warning-color;
@@ -3105,10 +3113,12 @@
     .@{iv-prev}icon-ios-close {
       color: @icon-color;
     }
-
     &-dot {
       border-color: var(--border-color, @border-color-base) !important;
       background-color: var(--dividing-color, @dividing-color) !important;
+    }
+    &-border {
+      border: 1px solid var(--border-color, @border-color-base) !important;
     }
   }
 

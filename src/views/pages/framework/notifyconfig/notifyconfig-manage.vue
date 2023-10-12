@@ -3,19 +3,14 @@
     <TsContain hideHeader>
       <template v-slot:content>
         <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-          <TabPane 
-            v-for="tab in tabList" 
-            :key="tab.value" 
-            :label="tab.text"
-            :name="tab.value"
-          >
-            <div class="padding">
-              <div v-if="currentTab == 'mail'">
-                <MailServerEdit></MailServerEdit>
-              </div>
-              <div v-if="currentTab == 'wechat'">
-                <WechatEdit></WechatEdit>
-              </div>
+          <TabPane :label="$t('page.mail')" name="mail">
+            <div v-if="currentTab == 'mail'" class="padding">
+              <MailServerEdit></MailServerEdit>
+            </div>
+          </TabPane>
+          <TabPane :label="$t('page.wechat')" name="wechat">
+            <div v-if="currentTab == 'wechat'" class="padding">
+              <WechatEdit></WechatEdit>
             </div>
           </TabPane>
         </Tabs>
@@ -34,17 +29,7 @@ export default {
   props: {},
   data() {
     return {
-      currentTab: 'mail',
-      tabList: [
-        {
-          value: 'mail',
-          text: this.$t('page.mail')
-        },
-        {
-          value: 'wechat',
-          text: this.$t('page.wechat')
-        }
-      ]
+      currentTab: 'mail'
     };
   },
   beforeCreate() {},

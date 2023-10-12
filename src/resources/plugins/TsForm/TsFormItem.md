@@ -3,7 +3,7 @@
 
 #### 模版使用
 ```javascript
-<TsFormItem label="config" :isRequired="true">
+<TsFormItem label="config" :required="true">
   <TsFormInput v-model="item.value" v-bind="config" @on-change="changeFn"></TsFormInput>
 </TsFormItem>
 ```

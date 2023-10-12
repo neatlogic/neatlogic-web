@@ -2,6 +2,7 @@ var _pathname = window.location.pathname;
 var TENANT = _pathname.split('/')[1];
 var BASEURLPREFIX = '';
 var HOME = '/' + TENANT;
+
 if (TENANT.indexOf('.') <= -1) {
   BASEURLPREFIX += '/' + TENANT;
 } else {
