@@ -1,6 +1,8 @@
 <template>
   <div>
+    <!-- 场景编辑暂不支持子组件编辑 -->
     <Button
+      v-if="!formItem.hasOwnProperty('inherit')"
       :disabled="!!formItem.inherit || disabled"
       type="primary"
       style="width:100%"
