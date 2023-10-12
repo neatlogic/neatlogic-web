@@ -7,7 +7,7 @@
             <Button @click="cancel()">{{ $t('page.cancel') }}</Button>
           </div>
           <div v-if="current > 0" class="action-item">
-            <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
+            <Button type="primary" ghost @click="next(current - 1)">{{ $t('page.previousstep') }}</Button>
           </div>
           <div v-if="current === dataCenterList.length + 2" class="action-item">
             <Button type="primary" @click="save()">{{ $t('page.save') }}</Button>
@@ -74,7 +74,7 @@
               <Button @click="cancel()">{{ $t('page.cancel') }}</Button>
             </div>
             <div v-if="current > 0" class="action-item">
-              <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
+              <Button type="primary" ghost @click="next(current - 1)">{{ $t('page.previousstep') }}</Button>
             </div>
             <div v-if="current === dataCenterList.length + 2" class="action-item">
               <Button type="primary" @click="save()">{{ $t('page.save') }}</Button>
@@ -138,48 +138,50 @@ export default {
       });
     },
     next(current) {
+      let isValid = true;
       if (this.$refs.baseinfo) {
         if (!this.$refs.baseinfo.valid()) {
-          return;
+          isValid = false;
         } else {
           this.baseSettings = this.$refs.baseinfo.getData() || {};
         }
       }
+      //校验资源中心
+      if (this.$refs.datacenter) {
+        if (!this.$refs.datacenter.valid()) {
+          isValid = false;
+        } else {
+          let datacenterConfig = this.$refs.datacenter.getData();
+          this.dataCenterList.forEach(d => {
+            if (d.datacenterId === datacenterConfig.datacenterId) {
+              this.$set(d, 'config', datacenterConfig.config || {});
+            }
+          });
+        }
+      }
+      //场景必须添加一个
       if (this.$refs.scene) {
         this.sceneList = this.$refs.scene.getData();
-      }
-      if (this.$refs.datacenter) {
-        let datacenterConfig = this.$refs.datacenter.getData();
-        this.dataCenterList.forEach(d => {
-          if (d.datacenterId === datacenterConfig.datacenterId) {
-            this.$set(d, 'config', datacenterConfig.config || {});
-          }
-        });
-      }
-      if (current > this.current) {
-        //校验资源中心
-        if (this.$refs.datacenter && !this.$refs.datacenter.valid()) {
-          return;
-        }
-        //场景必须添加一个
-        if (this.$refs.scene && this.$utils.isEmpty(this.sceneList)) {
+        if (this.$utils.isEmpty(this.sceneList)) {
           this.$Notice.error({
             title: this.$t('term.framework.errorinfo'),
             desc: this.$t('form.validate.required', {'target': this.$t('page.scene')})
           });
-          return;
+          isValid = false;
         }
       }
-      if (current > 0) {
-        if (current <= this.dataCenterList.length) {
-          this.currentDataCenter = this.dataCenterList[current - 1];
+      if (isValid) {
+        this.loadingShow = true;
+        if (current > 0) {
+          if (current <= this.dataCenterList.length) {
+            this.currentDataCenter = this.dataCenterList[current - 1];
+          }
         }
+        this.current = current;
+        this.$nextTick(() => {
+          this.loadingShow = false;
+        });
       }
-      this.loadingShow = true;
-      this.current = current;
-      this.$nextTick(() => {
-        this.loadingShow = false;
-      });
     },
     deleteScene(item, index) {
       this.sceneList.splice(index, 1);
