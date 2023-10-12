@@ -2,9 +2,9 @@ import menuApi from '@/resources/api/common/menu';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
-  gettingModuleList: new Promise(() => { }), //模块列表获取状态
+  gettingModuleList: new Promise(() => {}), //模块列表获取状态
   dynamicMenu: {},
-  gettingCmdbMenu: new Promise(() => { })
+  gettingCmdbMenu: new Promise(() => {})
 };
 
 const getters = {
@@ -26,7 +26,7 @@ const mutations = {
   },
   updateMenu(state, { module, newMenuGroup, startIndex }) {
     const oldMenuGroup = state.dynamicMenu[module.moduleId] || [];
-    const index = (startIndex < 0) ? module.menuGroupList.length + startIndex : startIndex;
+    const index = startIndex < 0 ? module.menuGroupList.length + startIndex : startIndex;
     module.menuGroupList.splice(index, oldMenuGroup.length, ...newMenuGroup);
     state.moduleList = [...state.moduleList];
     state.dynamicMenu = {
@@ -44,7 +44,7 @@ const actions = {
     let moduleList = [];
     state.gettingModuleList = menuApi.getModuleList();
     const res = await state.gettingModuleList;
-    let showModuleList = null;//可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
+    let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
     if (process.env.VUE_APP_PAGE_LIST && JSON.parse(process.env.VUE_APP_PAGE_LIST)) {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
       showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
@@ -52,12 +52,14 @@ const actions = {
     res.Return.forEach(moduleGroup => {
       try {
         let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
-        if (!description || !description.trim()) { description = `${moduleName}平台`; }
+        if (!description || !description.trim()) {
+          description = `${moduleName}平台`;
+        }
         const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
         const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
         if (routerConfig[moduleId]) {
-          const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && (route.meta.istitle && authList.length > 0));
-          if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1) && authList.length > 0) {
+          const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0);
+          if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
             //有权限菜单的模块才让显示
             moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
           }
@@ -94,10 +96,12 @@ const actions = {
       url: `/task-overview-${type.uuid}`,
       icon: 'tsfont-task'
     }));
-    const newMenuGroup = [{
-      menuTypeName: '工单中心',
-      menuList: processType
-    }];
+    const newMenuGroup = [
+      {
+        menuTypeName: '工单中心',
+        menuList: processType
+      }
+    ];
     commit('updateMenu', { module: processModule, startIndex: 0, newMenuGroup });
     return res;
   },
@@ -114,10 +118,12 @@ const actions = {
       path: `/knowledge-overview-${type.value}`,
       icon: 'tsfont-book'
     }));
-    const newMenuGroup = [{
-      menuTypeName: '知识分类',
-      menuList: knowledgeType
-    }];
+    const newMenuGroup = [
+      {
+        menuTypeName: '知识分类',
+        menuList: knowledgeType
+      }
+    ];
     commit('updateMenu', { module: knowledgeModule, startIndex: 0, newMenuGroup });
     return res;
   },
@@ -139,10 +145,12 @@ const actions = {
       path: '/dashboard-detail/' + item.id,
       icon: 'tsfont-type'
     }));
-    const newMenuGroup = [{
-      menuTypeName: '仪表板列表',
-      menuList: topVisit
-    }];
+    const newMenuGroup = [
+      {
+        menuTypeName: '仪表板列表',
+        menuList: topVisit
+      }
+    ];
     commit('updateMenu', { module: dashboardModule, startIndex: -1, newMenuGroup });
     return res;
   },
@@ -160,10 +168,12 @@ const actions = {
       path: '/reportinstance-show/' + item.id,
       icon: 'tsfont-report'
     }));
-    const newMenuGroup = [{
-      menuTypeName: '报表',
-      menuList: reportInstanceList
-    }];
+    const newMenuGroup = [
+      {
+        menuTypeName: '报表',
+        menuList: reportInstanceList
+      }
+    ];
     commit('updateMenu', { module: reportModule, startIndex: 0, newMenuGroup });
     return res;
   },
@@ -209,7 +219,7 @@ const actions = {
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('inspect')) return;
     const res = await menuApi.updateInspectMenu();
     let recentIssuesRouteList = []; // 最新问题路由列表
-    if (res.Return && (res.Return.length > 0)) {
+    if (res.Return && res.Return.length > 0) {
       recentIssuesRouteList = res.Return.map(type => ({
         name: type.name,
         path: `/recent-issues-${type.id}`,
@@ -222,10 +232,10 @@ const actions = {
     const routerConfig = getRouterConfig();
     const inspectRouterList = routerConfig['inspect'];
     if (inspectRouterList && inspectRouterList.length > 0) {
-      inspectRouterList.forEach((item) => {
+      inspectRouterList.forEach(item => {
         if (item && item.hasOwnProperty('meta')) {
           if (item.meta && item.meta.type == 'inspectResult') {
-            if (item.meta.sort && (item.meta.sort == 1)) {
+            if (item.meta.sort && item.meta.sort == 1) {
               // 排在第一个
               let recentIssuesPath = item.path ? (item.path.split(':') ? item.path.split(':')[0] : '/') : '/'; // 处理特殊
               firstRouteList.push({
@@ -247,30 +257,52 @@ const actions = {
         }
       });
     }
-    const newMenuGroup = [{
-      menuTypeName: '巡检结果',
-      menuList: [...firstRouteList, ...recentIssuesRouteList, ...otherRouteList]
-    }];
+    const newMenuGroup = [
+      {
+        menuTypeName: '巡检结果',
+        menuList: [...firstRouteList, ...recentIssuesRouteList, ...otherRouteList]
+      }
+    ];
     commit('updateMenu', { module: inspectModule, startIndex: 0, newMenuGroup });
     return res;
   }
 };
 
 function getRouterConfig() {
-  const requireRouter = require.context('@/views/pages', true, /router.js$/);
-  return requireRouter.keys().reduce((routerConfig, routerPath) => {
-    const moduleId = routerPath.split('/')[1];
-    const routeList = requireRouter(routerPath).default || [];
-    routerConfig[moduleId] = routeList;
-    return routerConfig;
-  }, {});
+  let routerConfig = {};
+  let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+  try {
+    routerPathList.push(require.context('import-module-url', true, /router.js$/));
+  } catch (error) {
+    // 模块找不到
+  }
+  routerPathList.forEach(item => {
+    if (item && item.keys()) {
+      item.keys().forEach(routerPath => {
+        const moduleName = routerPath.split('/')[1];
+        const routeList = item(routerPath).default || [];
+        routerConfig[moduleName] = routeList;
+      });
+    }
+  });
+  return routerConfig;
 }
 function getAllMenuTypeList() {
   // 获取菜单分类名称
-  const menuTypeConfig = require.context('@/views/pages', true, /config.js$/);
-  const menuTypeList = [];
-  menuTypeConfig.keys().forEach((config) => {
-    menuTypeConfig(config) && menuTypeConfig(config).config && menuTypeList.push(menuTypeConfig(config).config);
+  let menuTypeList = [];
+  const configPathList = [require.context('@/views/pages', true, /config.js$/)];
+  try {
+    configPathList.push(require.context('import-module-url', true, /config.js$/));
+  } catch (error) {
+    //
+  }
+  configPathList.forEach(configItem => {
+    configItem.keys().forEach(pathItem => {
+      const pathConfig = configItem(pathItem);
+      if (pathConfig && pathConfig.config) {
+        menuTypeList.push(pathConfig.config);
+      }
+    });
   });
   return menuTypeList;
 }
@@ -288,7 +320,12 @@ function isAuthMenu(route, authList = []) {
   if (route.meta && route.meta.ismenu) {
     if (!route.meta.authority || !route.meta.authority.length) {
       return true;
-    } else if (typeof route.meta.authority == 'string' && authList.some(auth => { return route.meta.authority === auth.name; })) {
+    } else if (
+      typeof route.meta.authority == 'string' &&
+      authList.some(auth => {
+        return route.meta.authority === auth.name;
+      })
+    ) {
       return true;
     } else if (typeof route.meta.authority == 'object') {
       let isSame = authList.filter(a => {
@@ -305,7 +342,13 @@ function isAuthMenu(route, authList = []) {
 
 function hasAuthNoMenu(route, authList = []) {
   // 有权限自定义详情页菜单
-  if (route.meta && (typeof route.meta.authority == 'string') && authList.some(auth => { return route.meta.authority === auth.name; })) {
+  if (
+    route.meta &&
+    typeof route.meta.authority == 'string' &&
+    authList.some(auth => {
+      return route.meta.authority === auth.name;
+    })
+  ) {
     return true;
   } else if (route.meta && typeof route.meta.authority == 'object') {
     let isSame = authList.filter(a => {

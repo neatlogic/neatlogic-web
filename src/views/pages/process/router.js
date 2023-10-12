@@ -350,11 +350,7 @@ let routerArr = [
 ];
 
 try {
-  let pageArr = require.context('custom-module/configPage', false, /\index\.js$/);
-  // pageArr.keys().forEach(item => {
-  //   console.log(pageArr(item).default, '----5555-', item);
-  // });
-  // console.log(pageArr('./index.js').default, '---++++---');
+  let pageArr = require.context('dummy-module/configPage', false, /\index\.js$/);
   routerArr = pageArr('./index.js').default.routerModule(routerArr);
   // 找到指定的index.js 文件,然后调用里面的方法
 } catch (e) {

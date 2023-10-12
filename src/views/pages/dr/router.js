@@ -2,6 +2,9 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const page404 = () => import('@/views/pages/common/404.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const baseSettings = () => import('@/views/pages/dr/base-settings/base-settings.vue');
+const serviceManage = () => import('@/views/pages/dr/service/service-manage.vue');
+const serviceDetail = () => import('@/views/pages/dr/service/service-detail.vue');
+const serviceAdd = () => import('@/views/pages/dr/service/service-add.vue');
 const organizationalStructureManage = () => import('pages/dr/organizational-structure/organizational-structure-manage.vue');
 
 import { $t } from '@/resources/init.js';
@@ -45,6 +48,40 @@ let routerArr = [
     path: '/welcome',
     name: 'welcome',
     component: welcome
+  },
+  {
+    path: '/service-manage',
+    name: 'service-manage',
+    component: serviceManage,
+    meta: {
+      title: $t('router.dr.servicemanage'),
+      ismenu: true,
+      icon: 'tsfont-file-single',
+      type: 'dr',
+      authority: 'DR_BASE'
+    }
+  },
+  {
+    path: '/service-detail',
+    name: 'service-detail',
+    component: serviceDetail,
+    meta: {
+      title: $t('router.dr.servicedetail'),
+      ismenu: false,
+      type: 'dr',
+      authority: 'DR_BASE'
+    }
+  },
+  {
+    path: '/service-add',
+    name: 'service-add',
+    component: serviceAdd,
+    meta: {
+      title: $t('router.dr.servicemanage'),
+      ismenu: false,
+      type: 'dr',
+      authority: 'DR_BASE'
+    }
   },
   {
     path: '/organizational-structure-manage',
