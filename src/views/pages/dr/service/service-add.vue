@@ -4,7 +4,7 @@
       <template v-slot:topRight>
         <div class="action-group">
           <div class="action-item">
-            <Button>{{ $t('page.cancel') }}</Button>
+            <Button @click="cancel()">{{ $t('page.cancel') }}</Button>
           </div>
           <div v-if="current > 0" class="action-item">
             <Button type="primary" ghost @click="next((current -= 1), true)">{{ $t('page.previousstep') }}</Button>
@@ -159,10 +159,6 @@ export default {
       if (current > this.current) {
         //校验资源中心
         if (this.$refs.datacenter && !this.$refs.datacenter.valid()) {
-          this.$Notice.error({
-            title: this.$t('term.framework.errorinfo'),
-            desc: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.process.catalog')})
-          });
           return;
         }
         //场景必须添加一个
