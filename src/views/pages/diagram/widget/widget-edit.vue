@@ -64,7 +64,7 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    GraphEditor: resolve => require(['@/views/pages/diagram/diagram/components/graph-editor.vue'], resolve)
+    GraphEditor: resolve => require(['@/views/pages/diagram/graph/components/graph-editor.vue'], resolve)
   },
   props: {},
   data() {

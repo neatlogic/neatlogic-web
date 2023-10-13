@@ -1,8 +1,9 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
-const diagramEdit = () => import('./diagram/diagram-edit.vue');
+const graphEdit = () => import('./graph/graph-edit.vue');
 const widgetManage = () => import('./widget/widget-manage.vue');
 const widgetEdit = () => import('./widget/widget-edit.vue');
+const templateEdit = () => import('@/views/pages/diagram/template/template-edit.vue');
 
 import { $t } from '@/resources/init.js';
 let routerArr = [
@@ -40,15 +41,25 @@ let routerArr = [
     component: refresh
   },
   {
-    path: '/diagram-edit',
-    name: 'diagram-edit',
-    component: diagramEdit,
+    path: '/graph-edit',
+    name: 'graph-edit',
+    component: graphEdit,
     meta: {
       title: $t('router.diagram.diagrammanage'),
       ismenu: true,
       icon: 'tsfont-component',
       type: 'diagrammanage',
       authority: 'DIAGRAM_BASE'
+    }
+  },
+  {
+    path: '/template-edit',
+    name: 'template-edit',
+    component: templateEdit,
+    meta: {
+      title: '编辑模板',
+      ismenu: false,
+      authority: 'DIAGRAM_TEMPLATE_MODIFY'
     }
   },
   {

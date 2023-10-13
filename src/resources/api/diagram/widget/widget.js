@@ -1,8 +1,8 @@
 import axios from '../../http';
 
 const widget = {
-  listWidgetList(params) {
-    return axios.post('/api/rest/diagram/widget/list', params || {});
+  searchWidget(params) {
+    return axios.post('/api/rest/diagram/widget/search', params || {});
   }
 };
 
