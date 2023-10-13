@@ -1,4 +1,4 @@
-import menuApi from '@/resources/api/common/menu';
+import menuApi from '@/resources/api/common';
 
 const state = {
   isTaskoverview: false,

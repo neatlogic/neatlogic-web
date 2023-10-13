@@ -50,7 +50,7 @@ export default {
       'titleType': 'topbg',
       'label': $t('term.framework.theme.headbghover'),
       'param': '--top-active',
-      'value': '#333547',
+      'value': '#3b495f',
       'type': 'common',
       'input': 'colorpicker'
     },
