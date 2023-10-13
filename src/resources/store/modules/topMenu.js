@@ -1,4 +1,4 @@
-import menuApi from '@/resources/api/common/menu';
+import menuApi from '@/resources/api/common';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等

@@ -1,5 +1,4 @@
 import axios from '../http';
-
 const common = {
   getModule(data) {
     return axios.post('/api/rest/module/list', data);
@@ -133,7 +132,7 @@ const common = {
   },
   // 消息中心：获取某条系统公告的详细内容
   getNotice(id) {
-    return axios.post('/api/rest/systemnotice/popupnotice/get', {id});
+    return axios.post('/api/rest/systemnotice/popupnotice/get', { id });
   },
   // 消息中心：设置系统公告为已读
   readNotice(params) {
