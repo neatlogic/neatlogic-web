@@ -16,6 +16,7 @@
         <span class="tsfont-plus">{{ $t('term.process.catalog') }}</span>
       </Button>
       <span v-else class="tsfont-edit text-href pl-xs" @click="addService()"></span>
+      <div v-if="isShowValidMessage" class="form-error-tip">{{ validMesage }}</div>
     </TsFormItem>
     <TsFormItem :label="$t('page.node')">
       <div v-if="!$utils.isEmpty(nodeList)">
@@ -45,16 +46,26 @@
       <div v-for="(item,index) in customParamList" :key="index" class="pb-sm params">
         <TsRow :gutter="0">
           <Col span="12" class="pr-xs">
-            <TsFormInput v-model="item.key" border="border"></TsFormInput>
+            <TsFormInput
+              ref="paramInput"
+              v-model="item.key"
+              border="border"
+              :validateList="item.value?validateList:[]"
+            ></TsFormInput>
           </Col>
           <Col span="12">
-            <TsFormInput v-model="item.value" border="border"></TsFormInput>
+            <TsFormInput
+              ref="paramInput"
+              v-model="item.value"
+              border="border"
+              :validateList="item.key?validateList:[]"
+            ></TsFormInput>
           </Col>
         </TsRow>
         <div v-if="customParamList.length > 0" class="tsfont-trash-o text-tip-active del-icon" @click="delParam(index)"></div>
       </div>
-      <Button type="primary" ghost>
-        <span class="tsfont-plus" @click="addParam()">{{ $t('page.param') }}</span>
+      <Button type="primary" ghost @click="addParam()">
+        <span class="tsfont-plus">{{ $t('page.param') }}</span>
       </Button>
     </TsFormItem>
     <TsFormItem :label="'HA'+$t('page.scene')">
@@ -131,7 +142,10 @@ export default {
       selectNodeList: [],
       isShowAppServiceDialog: false,
       basicservicesTypeIdList: [],
-      networkTypeIdList: []
+      networkTypeIdList: [],
+      validateList: ['required'],
+      isShowValidMessage: false,
+      validMesage: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.process.catalog')})
     };
   },
   beforeCreate() {},
@@ -199,6 +213,7 @@ export default {
             typeLabel: list[0].typeLabel,
             typeName: list[0].typeName
           };
+          this.isShowValidMessage = false;
         }
       }
       this.isShowServiceDialog = false;
@@ -236,11 +251,17 @@ export default {
           filter: {},
           publicApplicationIdList: this.$utils.mapArray(this.publicApplicationList, 'id'),
           publicApplicationList: this.publicApplicationList,
-          customParamList: this.customParamList,
+          customParamList: [],
           highAvailabilitySceneList: this.highAvailabilitySceneList,
           nodeList: this.nodeList
         }
       };
+      let customParamList = this.customParamList.filter(item => {
+        return !this.$utils.isEmpty(item.key) && !this.$utils.isEmpty(item.value);
+      });
+      if (!this.$utils.isEmpty(customParamList)) {
+        this.$set(data.config, 'customParamList', customParamList);
+      }
       if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
         this.$set(data.config, 'filter', this.baseServiceConfig);
       } else {
@@ -250,19 +271,33 @@ export default {
     },
     valid() {
       let isValid = true;
+      this.isShowValidMessage = false;
       if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
         if (!this.baseServiceConfig.resourceId) {
           isValid = false;
+          this.isShowValidMessage = true;
         }
       } else {
         if (this.$utils.isEmpty(this.appServiceConfig.typeIdList)) {
           isValid = false;
+          this.isShowValidMessage = true;
         }
+      }
+      let paramInputList = this.$refs.paramInput;
+      if (!this.$utils.isEmpty(paramInputList)) {
+        Array.from(paramInputList).forEach((item) => {
+          if (!item.valid()) {
+            isValid = false;
+          }
+        });
       }
       return isValid;
     },
     closeAppService(data, nodeList) {
-      data && (this.appServiceConfig = data);
+      if (data) {
+        this.appServiceConfig = data;
+        this.isShowValidMessage = false;
+      }
       nodeList && (this.nodeList = nodeList);
       this.isShowAppServiceDialog = false;
     }
@@ -283,17 +318,18 @@ export default {
     data: {
       handler(val) {
         if (val && val.config) {
-          this.publicApplicationIdList = val.config.publicApplicationIdList || [];
-          this.publicApplicationList = val.config.publicApplicationList || [];
-          this.customParamList = val.config.customParamList || [];
-          this.highAvailabilitySceneList = val.config.highAvailabilitySceneList || [];
-          this.filter = val.config.filter || {};
+          let datacenterData = this.$utils.deepClone(val);
+          this.publicApplicationIdList = datacenterData.config.publicApplicationIdList || [];
+          this.publicApplicationList = datacenterData.config.publicApplicationList || [];
+          this.customParamList = datacenterData.config.customParamList || [];
+          this.highAvailabilitySceneList = datacenterData.config.highAvailabilitySceneList || [];
+          this.filter = datacenterData.config.filter || {};
           if (this.applicationType === 'basicservices' || this.applicationType === 'network') {
             this.baseServiceConfig = this.filter;
           } else {
             this.appServiceConfig = this.filter;
           }
-          this.nodeList = val.config.nodeList || [];
+          this.nodeList = datacenterData.config.nodeList || [];
         }
       },
       deep: true,
