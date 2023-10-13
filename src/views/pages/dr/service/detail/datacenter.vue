@@ -243,16 +243,13 @@ export default {
     },
     closeDialog() {
       this.isShowDialog = false;
+      this.dataCenterId = null;
       this.datacenterConfig = {};
     },
     okDialog() {
       if (this.$refs.dataCenterForm && !this.$refs.dataCenterForm.valid()) {
         return;
       } else if (!this.$refs.datacenter.valid()) {
-        this.$Notice.error({
-          title: this.$t('term.framework.errorinfo'),
-          desc: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.process.catalog')})
-        });
         return;
       }
       let data = this.$refs.datacenter.getData();
