@@ -92,8 +92,8 @@ export default {
     UnitTestOverview: resolve => require(['./detail/unit-test-overview'], resolve), // 单元测试
     CodeScanOverview: resolve => require(['./detail/code-scan-overview'], resolve), // 代码扫描
     CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve), // cve漏洞
-    RelatedIssuesManage: resolve => require(['./detail/related-issues-manage'], resolve), // 关联需求
-    CodeDiff: resolve => require(['./detail/code-diff/diff'], resolve) // 代码变更
+    RelatedIssuesManage: resolve => require(['./detail/related-issues-manage'], resolve) // 关联需求
+    // CodeDiff: resolve => require(['../../../../../../close-resource-project/src/views/pages/codehub/codehub/merge/review/tab/diff.vue'], resolve) // 代码变更
   },
   mixins: [versionCenterMixin],
   props: {},
