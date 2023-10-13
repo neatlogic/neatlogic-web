@@ -287,7 +287,7 @@
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>
               </div>
-              <div v-else :style="{ width: mode==='edit'? getCellWidth(cell) + 'px':isFormSubassembly?'inherit':tdWidth(null,cell), overflow: 'auto' }">
+              <div v-else :style="{ width: mode==='edit' || mode==='editSubform'? getCellWidth(cell) + 'px':isFormSubassembly?'inherit':tdWidth(null,cell), overflow: 'auto' }">
                 <FormItem
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
@@ -401,7 +401,7 @@ export default {
       type: String, //edit编辑模式|read使用模式
       default: 'edit',
       validator(value) {
-        return ['edit', 'read', 'editSubform'].includes(value);
+        return ['edit', 'read', 'editSubform', 'readSubform'].includes(value);
       }
     },
     value: { type: Object }, //表单配置，通过v-model双向绑定
