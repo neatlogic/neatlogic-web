@@ -12,30 +12,7 @@ let projectName = ''; //引入项目配置信息
 const { tenantName, urlPrefix } = require('./apiconfig.json');
 process.env.VUE_APP_TENANT = tenantName; // 租户名称
 process.env.VUE_APP_LOGINTITLE = 'welcome';
-try {
-  custommodule_home = require('../neatlogic-web-config/config.json'); //查找是否有配置信息
-  currentModuleName = custommodule_home.currentModuleName; //项目信息
-  projectName = custommodule_home[currentModuleName];
-  if (projectName) {
-    if (projectName.baseConfiglUrl) {
-      baseConfiglUrl = projectName.baseConfiglUrl; //自定义页面引入路径
-    }
-    if (projectName.baseImg) {
-      baseImg = projectName.baseImg; //图片引入路径
-    }
-    if (projectName.loginTitle) {
-      process.env.VUE_APP_LOGINTITLE = projectName.loginTitle; // 登陆页标题
-    }
-    if (projectName.tableStyle) {
-      process.env.VUE_APP_TABLESTRYLE = projectName.tableStyle; //table显示的间隔是边框，之所以在这里定义table的显示样式，因为模块需要所有的table都是颜色间隔显示，然而产品的显示样式为边框间隔
-    }
-    process.env.VUE_APP_CUSTOMPAGES = projectName.home; //自定义项目文件夹名称
-    process.env.VUE_APP_CUSTOMMODULE = true;
-    pageTitle = projectName.title;
-  }
-} catch (e) {
-  // 
-}
+
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {
