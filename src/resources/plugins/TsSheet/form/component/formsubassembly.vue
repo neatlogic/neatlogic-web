@@ -2,7 +2,7 @@
   <div v-if="subFormData">
     <Button v-if="mode ==='read'" @click="addFormData">添加</Button>
     <div>
-      <div v-for="(item,index) in formDataList" :key="index">
+      <div v-for="(item,index) in formDataList" :key="index" class="sheet-list">
         <TsSheet
           ref="sheet"
           :mode="mode==='edit'||mode==='editSubform'?'editSubform':'readSubform'"
@@ -13,6 +13,7 @@
           isFormSubassembly
           @setValue="(val)=>{updateValue(val, item, index)}"
         ></TsSheet>
+        <div v-if="mode ==='read' && formDataList.length>1" class="tsfont-close-o text-action del-icon" @click="delSheet(index)"></div>
       </div>
     </div>
   </div>
@@ -85,6 +86,9 @@ export default {
     },
     addFormData() {
       this.formDataList.push({});
+    },
+    delSheet(index) {
+      this.formDataList.splice(index, 1);
     }
   },
   filter: {},
@@ -102,5 +106,19 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.sheet-list {
+  position: relative;
+  &:hover {
+    .del-icon {
+      display: block;
+    }
+  }
+  .del-icon {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
 </style>
