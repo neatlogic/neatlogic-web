@@ -34,7 +34,7 @@ try {
     pageTitle = projectName.title;
   }
 } catch (e) {
-  console.log('neatlogic-web-config', e);
+  // 
 }
 function getPages(pageList) {
   const pages = {};
