@@ -85,7 +85,7 @@ export default {
       let list = [];
       nodeList.forEach(item => {
         let findItem = this.sceneList.find(d => d.sceneId === item.id);
-        if (findItem && this.defaultSceneData.sceneId != item.id) {
+        if (findItem && this.sceneConfig.sceneId != item.id) {
           this.$set(item, '_disabled', true);
         }
         list.push(item);
