@@ -9,8 +9,6 @@
     "lint": "vue-cli-service lint --fix",
     "test:unit": "vue-cli-service test:unit",
     "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit",
-    "serve:wxbank": "vue-cli-service serve --mode wxbank",
-    "build:wxbank": "vue-cli-service build --mode wxbank",
     "serve:community": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode community",
     "serve:commercial": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode commercial",
     "build:community": "node version.js && vue-cli-service build --mode community",
