@@ -1,7 +1,5 @@
 import axios from '../http';
-import merge from './codehub/merge';
 const common = {
-  ...merge,
   getModule(data) {
     return axios.post('/api/rest/module/list', data);
   },
