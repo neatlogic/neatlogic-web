@@ -27,7 +27,21 @@
             >
 
               <template v-slot:name="{ row }">
-                {{ row.description }}
+                <span class="trigger-name">
+                  {{ row.description }}
+                </span>
+                <span v-if="row.required" class="require-label"></span>
+                <Tooltip
+                  placement="bottom"
+                  max-width="300"
+                  theme="light"
+                  transfer
+                >
+                  <i class="tsfont-info-o cursor-pointer text-href"></i>
+                  <div slot="content">
+                    <p>{{ row.help }}</p>
+                  </div>
+                </Tooltip>
               </template>
 
               <template v-slot:value="{ row }">
@@ -221,9 +235,10 @@ export default {
         this.propList = [];
         await this.$api.framework.schedule.classGet(params).then(res => {
           if (res.Status == 'OK') {
-            res.Return.inputList.forEach(item => {
-              this.propList.push(this.$utils.deepClone(item));
-            });
+            this.propList = res.Return.propList;
+            // res.Return.inputList.forEach(item => {
+            //   this.propList.push(this.$utils.deepClone(item));
+            // });
           }
         });
       }
@@ -239,8 +254,7 @@ export default {
           }
         });
         this.isSaving = true;
-        this.$api.framework.schedule
-          .save(data)
+        this.$api.framework.schedule.save(data)
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.savesuccess'));
@@ -255,20 +269,23 @@ export default {
     closeDialog(needRefresh) {
       this.$emit('close', needRefresh);
     },
-    MergeData: function(rsPropList) {
-      let mergePropList = [];
-      let propList = this.propList;
-      propList.forEach(function(defineProp) {
-        rsPropList.forEach(function(rsProp) {
-          if (defineProp.name === rsProp.name) {
-            defineProp['value'] = rsProp.value;
-            defineProp['id'] = rsProp.id;
-            mergePropList.push(defineProp);
-          }
-        });
-      });
-      this.propList = mergePropList;
-    },
+    // MergeData: function(rsPropList) {
+    //   console.log(rsPropList, 'rsPropList');
+    //   console.log(this.propList, 'this.propList');
+    //   let mergePropList = [];
+    //   let propList = this.propList;
+    //   propList.forEach(function(defineProp) {
+    //     rsPropList.forEach(function(rsProp) {
+    //       if (defineProp.name === rsProp.name) {
+    //         defineProp['value'] = rsProp.value;
+    //         defineProp['id'] = rsProp.id;
+    //         mergePropList.push(defineProp);
+    //       }
+    //     });
+    //   });
+    //   this.propList = mergePropList;
+    //   console.log(this.propList, 'this.propList2');
+    // },
     getJobByUuid: function() {
       if (this.jobUuid) {
         let params = {
@@ -278,9 +295,13 @@ export default {
           .get(params)
           .then(async res => {
             if (res.Status == 'OK') {
-              let rsPropList = res.Return.propList || [];
-              await this.changeJobClass(res.Return.handler);
-              this.MergeData(rsPropList);
+              // let rsPropList = res.Return.propList || [];
+              // console.log('a');
+              // await this.changeJobClass(res.Return.handler);
+              // console.log('b');
+              // this.MergeData(rsPropList);
+              // console.log('c');
+              this.propList = res.Return.propList || [];
               for (let key in this.formSetting) {
                 this.formSetting[key].value = res.Return[key];
               }
@@ -292,18 +313,18 @@ export default {
             }
           });
       }
-    },
-    addProp: function() {
-      //添加属性
-      let objProp = {
-        name: '',
-        value: ''
-      };
-      this.propList.push(objProp);
-    },
-    deleteProp: function(index) {
-      this.propList.splice(index, 1);
-    }
+    }//,
+    // addProp: function() {
+    //   //添加属性
+    //   let objProp = {
+    //     name: '',
+    //     value: ''
+    //   };
+    //   this.propList.push(objProp);
+    // },
+    // deleteProp: function(index) {
+    //   this.propList.splice(index, 1);
+    // }
   },
   filter: {},
   computed: {},
