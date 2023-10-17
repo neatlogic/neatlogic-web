@@ -242,17 +242,17 @@ export default {
         data.dataCenterList.forEach((d, index) => {
           let isValid = true;
           if (data.applicationType === 'basicservices' || data.applicationType === 'network') {
-            if (!d.config.resourceId) {
+            if (!d.config.filter || (d.config.filter && !d.config.filter.resourceId)) {
               isValid = false;
             }
           } else {
-            if (this.$utils.isEmpty(d.config.typeIdList)) {
+            if (!d.config.filter || (d.config.filter && this.$utils.isEmpty(d.config.filter.typeIdList))) {
               isValid = false;
             }
           }
           if (!isValid) {
             this.validList.push({
-              text: d.datacenterName + this.$t('form.validate.validatefailed'),
+              text: d.datacenterName + '：' + this.$t('form.validate.required', {'target': this.$t('term.process.catalog')}),
               type: 'error',
               current: index + 1
             });
