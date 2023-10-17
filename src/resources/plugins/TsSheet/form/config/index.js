@@ -25,3 +25,5 @@ export { default as formcollapse } from './formcollapse-conf.vue';
 
 export * from '@/views/pages/cmdb/form/config';
 export * from '@/views/pages/autoexec/form/config';
+
+export { default as formsubassembly } from './formsubassembly-conf.vue';
