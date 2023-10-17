@@ -21,16 +21,17 @@
         <div v-if="!loadingShow" class="service-add">
           <div v-if="!isShowSteps" class="pb-nm">
             <Steps :current="current">
-              <Step :title="$t('page.basicinfo')"></Step>
+              <Step :title="$t('page.basicinfo')" @click.native="next(0)"></Step>
               <template v-if="!$utils.isEmpty(dataCenterList)">
                 <Step
                   v-for="(item, index) in dataCenterList"
                   :key="index"
                   :title="item.datacenterName"
+                  @click.native="next(index+1)"
                 ></Step>
               </template>
-              <Step :title="$t('page.scene')"></Step>
-              <Step :title="$t('term.dr.servicedependency')"></Step>
+              <Step :title="$t('page.scene')" @click.native="next(dataCenterList.length+1)"></Step>
+              <Step :title="$t('term.dr.servicedependency')" @click.native="next(dataCenterList.length+2)"></Step>
             </Steps>
           </div>
           <!-- 基本信息 -->
@@ -84,6 +85,13 @@
             </div>
           </div>
         </div>
+        <!--校验 -->
+        <ServiceValidDialog
+          v-model="isShowValid"
+          :validList="validList"
+          @jumpToItem="next"
+          @close="isShowValid=false"
+        ></ServiceValidDialog>
       </template>
     </TsContain>
   </div>
@@ -95,7 +103,8 @@ export default {
     Baseinfo: resolve => require(['./detail/baseinfo.vue'], resolve),
     Scene: resolve => require(['./detail/scene.vue'], resolve),
     ServiceRelationship: resolve => require(['./detail/service-relationship.vue'], resolve),
-    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve)
+    DatacenterEdit: resolve => require(['./detail/datacenter-edit.vue'], resolve),
+    ServiceValidDialog: resolve => require(['./detail/service-valid-dialog.vue'], resolve)
   },
   props: {},
   data() {
@@ -110,7 +119,9 @@ export default {
       basicservicesTypeIdList: [], //基础服务选的配置
       networkTypeIdList: [], ///网络选的配置
       applicationType: '',
-      currentDataCenter: {} //当前编辑的数据中心
+      currentDataCenter: {}, //当前编辑的数据中心
+      isShowValid: false,
+      validList: []
     };
   },
   beforeCreate() {},
@@ -138,6 +149,9 @@ export default {
       });
     },
     next(current) {
+      if (current === this.current) {
+        return;
+      }
       let isValid = true;
       if (this.$refs.baseinfo) {
         if (!this.$refs.baseinfo.valid()) {
@@ -222,8 +236,44 @@ export default {
       };
       return data;
     },
+    validData(data) {
+      this.validList = [];
+      if (data.dataCenterList.length) {
+        data.dataCenterList.forEach((d, index) => {
+          let isValid = true;
+          if (data.applicationType === 'basicservices' || data.applicationType === 'network') {
+            if (!d.config.resourceId) {
+              isValid = false;
+            }
+          } else {
+            if (this.$utils.isEmpty(d.config.typeIdList)) {
+              isValid = false;
+            }
+          }
+          if (!isValid) {
+            this.validList.push({
+              text: d.datacenterName + this.$t('form.validate.validatefailed'),
+              type: 'error',
+              current: index + 1
+            });
+          }
+        });
+      }
+      if (!data.sceneList.length) {
+        this.validList.push({
+          text: this.$t('form.validate.required', {'target': this.$t('page.scene')}),
+          type: 'error',
+          current: data.dataCenterList.length + 1
+        });
+      }
+    },
     save() {
       let data = this.getData();
+      this.validData(data);
+      if (this.validList.length > 0) {
+        this.isShowValid = true;
+        return;
+      }
       this.$api.dr.service.saveService(data).then((res) => {
         if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
