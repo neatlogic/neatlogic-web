@@ -1,8 +1,11 @@
 <template>
   <div v-if="subFormData">
-    <Button v-if="mode ==='read'" @click="addFormData">添加</Button>
+    <div v-if="!disabled && !readonly && config.isCanAdd">
+      <Button v-if="mode ==='read' || mode==='readSubform'" @click="addFormData">添加</Button>
+    </div>
     <div>
       <div v-for="(item,index) in formDataList" :key="index" class="sheet-list">
+        <Divider v-if="formDataList.length > 1" orientation="start" class="subForm-label"><div class="text-title">{{ label }}</div></Divider>
         <TsSheet
           ref="sheet"
           :mode="mode==='edit'||mode==='editSubform'?'editSubform':'readSubform'"
@@ -13,7 +16,9 @@
           isFormSubassembly
           @setValue="(val)=>{updateValue(val, item, index)}"
         ></TsSheet>
-        <div v-if="mode ==='read' && formDataList.length>1" class="tsfont-close-o text-action del-icon" @click="delSheet(index)"></div>
+        <div v-if="!disabled && !readonly && config.isCanAdd">
+          <div v-if="(mode ==='read'|| mode==='readSubform') && formDataList.length>1" class="tsfont-close-o text-action del-icon" @click="delSheet(index)"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -32,7 +37,8 @@ export default {
   data() {
     return {
       formDataList: [],
-      subFormData: null
+      subFormData: null,
+      label: ''
     };
   },
   beforeCreate() {},
@@ -49,18 +55,19 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      if (this.value && this.value instanceof Array && this.value.length > 0) {
-        const value = this.$utils.deepClone(this.value);
-        if (value.length > 0) {
+      this.formDataList = [];
+      if (this.value) {
+        let value = this.$utils.deepClone(this.value);
+        if (typeof value === 'string') {
+          value = JSON.parse(value);
+        }
+        if (value instanceof Array && value.length > 0) {
           this.formDataList.push(...value);
-          if (!this.$utils.isSame(this.value, value)) {
-            //如果值发生变化，则重新设置值
-            this.setValue(value);
-          }
         }
       } else { 
-        //默认展示行
-        this.addFormData();
+        if (!this.formDataList.length) {
+          this.addFormData();
+        }
       }
     },
     updateValue(val, item, index) {
@@ -86,9 +93,11 @@ export default {
     },
     addFormData() {
       this.formDataList.push({});
+      this.setValue(this.formDataList); 
     },
     delSheet(index) {
       this.formDataList.splice(index, 1);
+      this.setValue(this.formDataList); 
     }
   },
   filter: {},
@@ -98,6 +107,7 @@ export default {
       handler(val) {
         if (val && val.formData) {
           this.subFormData = val.formData.formConfig;
+          this.label = val.label;
         }
       },
       deep: true,
@@ -109,6 +119,9 @@ export default {
 <style lang="less" scoped>
 .sheet-list {
   position: relative;
+  .subForm-label {
+    border-collapse: separate;
+  }
   &:hover {
     .del-icon {
       display: block;

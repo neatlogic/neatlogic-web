@@ -409,10 +409,10 @@ export default {
     },
     compareData(oldData, newData) { //对比数据
       let isSame = true;
-      let oldLefterList = oldData.lefterList;
-      let newLefterList = newData.lefterList;
-      let oldHeaderList = oldData.headerList;
-      let newHeaderList = oldData.headerList;
+      let oldLefterList = this.$utils.deepClone(oldData.lefterList);
+      let newLefterList = this.$utils.deepClone(newData.lefterList);
+      let oldHeaderList = this.$utils.deepClone(oldData.headerList);
+      let newHeaderList = this.$utils.deepClone(newData.headerList);
       if (this.initFormName != this.formData.name) {
         isSame = false;
       }
@@ -442,7 +442,7 @@ export default {
     },
     contrastError(oldData, newData, type) {
       let isSame = true;
-      let num = 5;//对比：误差高度在5px内可忽略
+      let num = 10;//对比：误差高度在5px内可忽略
       if (oldData && newData) {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;

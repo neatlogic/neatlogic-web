@@ -287,7 +287,7 @@
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>
               </div>
-              <div v-else :style="{ width: mode==='edit' || mode==='editSubform'? getCellWidth(cell) + 'px':isFormSubassembly?'inherit':tdWidth(null,cell), overflow: 'auto' }">
+              <div v-else :style="{ width: mode==='edit' || isFormSubassembly? getCellWidth(cell) + 'px':tdWidth(null,cell), overflow: 'auto' }">
                 <FormItem
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"

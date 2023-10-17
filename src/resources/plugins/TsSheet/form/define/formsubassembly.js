@@ -13,7 +13,8 @@ export default {
   'config': {
     'width': '100%',
     'isMask': false,
-    'isHide': false
+    'isHide': false,
+    'isCanAdd': false
   },
   'reaction': { 'mask': {}, 'hide': {}, 'display': {} }
 };
