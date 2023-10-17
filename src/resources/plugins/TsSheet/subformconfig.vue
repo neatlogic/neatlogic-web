@@ -30,6 +30,8 @@ export default {
       if (!this.$utils.isEmpty(this.errorData)) {
         return;
       }
+      let formConfig = this.$refs.sheet.getFormConfig();
+      this.$set(this.formDataQueue[this.formDataQueue.length - 1], 'formConfig', formConfig);
       this.isFormLoaded = false;
       this.currentFormUuid = this.currentFormItem.uuid;
       //保存子组件导航
@@ -62,7 +64,7 @@ export default {
       this.isFormLoaded = false;
       this.formDataQueue.pop();
       this.currentFormData = this.formDataQueue[this.formDataQueue.length - 1];
-      if (this.currentFormData.formConfig.tableList) {
+      if (this.currentFormData.formConfig && this.currentFormData.formConfig.tableList) {
         this.currentFormData.formConfig.tableList.forEach(t => {
           if (t.component && t.component.uuid === this.currentFormUuid) {
             this.$set(t.component, 'formData', {});
