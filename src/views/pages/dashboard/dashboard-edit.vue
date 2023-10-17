@@ -3,7 +3,7 @@
   <div class="dashboard-edit-container">
     <TsContain :enableCollapse="true" :siderWidth="260" :rightWidth="300">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="tsfont-left text-action" @click="$back('/dashboard-manage')">{{ $getFromPage('router.dashboard.dashboardmanage') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
