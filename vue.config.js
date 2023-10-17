@@ -1,6 +1,5 @@
 const path = require('path');
 const glob = require('glob');
-let custommodule_home;
 let src = './src';
 let baseImg = './public/resource';
 let importModuleUrl = process.env.VUE_APP_IMPORT_MODULE_URL || './src/dummy-module';

@@ -3,7 +3,7 @@
   <div>
     <TsContain border="border" :hasContentPadding="false">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="tsfont-left text-action" @click="$back('/dashboard-manage')">{{ $getFromPage('router.dashboard.dashboardmanage') }}</span>
       </template>
       <template v-slot:topLeft>
         <div>
