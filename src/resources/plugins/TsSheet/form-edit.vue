@@ -1,11 +1,11 @@
 <template>
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
-      <template v-if="pathList.length <=1" v-slot:navigation>
+      <template v-if="formDataQueue.length <=1" v-slot:navigation>
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
-        <TsRow v-if="pathList.length <=1">
+        <TsRow v-if="formDataQueue.length <=1">
           <Col span="12">
             <TsFormInput
               ref="formName"
@@ -59,7 +59,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <div v-if="pathList.length <=1" class="action-item">
+          <div v-if="formDataQueue.length <=1" class="action-item">
             <Poptip
               v-model="isShowValidList"
               word-wrap
@@ -85,7 +85,7 @@
             </Poptip>
           </div>
           <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
-          <template v-if="pathList.length <=1">
+          <template v-if="formDataQueue.length <=1">
             <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
             <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
             <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
@@ -136,7 +136,7 @@
           </template>
           <template v-else>
             <div class="action-item last">
-              <Button type="primary" @click="backPreFormData(pathList[pathList.length-2])">确认</Button>
+              <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length-2])">确认</Button>
             </div>
           </template>
         </div>
@@ -227,13 +227,13 @@
       </template>
       <template v-slot:content>
         <div v-if="isFormLoaded" style="position:relative">
-          <div v-if="pathList && pathList.length > 1" class="pb-sm">
+          <div v-if="formDataQueue && formDataQueue.length > 1" class="pb-sm">
             <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
               <BreadcrumbItem
-                v-for="(item,index) in pathList"
+                v-for="(item,index) in formDataQueue"
                 :key="index"
               ><span
-                :class="index == pathList.length - 2?'text-href':index != pathList.length - 1?'text-tip':''"
+                :class="index == formDataQueue.length - 2?'text-href':index != formDataQueue.length - 1?'text-tip':''"
                 @click="backPreFormData(item,index)"
               >{{ item.label }}</span>
               </BreadcrumbItem>
@@ -652,7 +652,7 @@ export default {
         //缺少版本uuid或者新建过来的，不带任何数据
         this.currentFormItem = null;
         this.$set(this.formData, 'formConfig', {});
-        this.pathList = [{
+        this.formDataQueue = [{
           ...this.formData,
           label: this.formData.name
         }];
@@ -692,7 +692,7 @@ export default {
 
             this.$set(this.formData, 'formConfig', formConfig);
             this.initFormConfig = this.$utils.deepClone(formConfig);
-            this.pathList = [{
+            this.formDataQueue = [{
               ...this.formData,
               label: this.formData.name
             }];
