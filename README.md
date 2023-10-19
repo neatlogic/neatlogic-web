@@ -141,6 +141,6 @@ EsLint、vetur、Prettier - Code formatter、i18nhelper(自动进行i18n键值�
     "typescript.disableAutomaticTypeAcquisition": true,
     "editor.suggest.snippetsPreventQuickSuggestions": false,
     "eslint.codeActionsOnSave.rules": null
-}
+} 
 
 ```
