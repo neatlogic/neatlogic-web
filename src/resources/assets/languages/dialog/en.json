@@ -45,7 +45,7 @@
     "clearconfirm": "Are you sure to clear the current {target}?",
     "tipconfirm": "Are you sure that {target} is currently {name}?",
     "deleteciconfirm": "The current operation will delete the configuration items of the current model and cannot be restored. Are you sure to continue the current operation?",
-    "deletattributeconfirm": "Are you sure to delete attribute <b>{target}</b>?",
+    "deleteattributeconfirm": "Are you sure to delete attribute <b>{target}</b>?",
     "deleterelationconfirm": "Are you sure to delete the relationship <b>{target}</b>? <br>If there are a large number of configuration items using this relationship, you need to clean up the relationship data before deleting this relationship. Please wait patiently.",
     "rollbackconfirm": "Are you sure to roll back to {target}?",
     "commitconfirm": "Are you sure to commit this {target}?",
