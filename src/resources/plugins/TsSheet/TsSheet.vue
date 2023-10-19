@@ -115,7 +115,7 @@
     <div
       ref="tableContainer"
       :class="{ editmode: mode === 'edit' }"
-      style="position:relative;overflow:auto"
+      style="position:relative;overflow:auto;width:100%"
       :style="{ height: mode === 'edit'?containerHeight:'100%' }"
       @scroll="
         event => {
@@ -206,7 +206,7 @@
           </tr>
         </tbody>
       </table>
-      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit' }" :style="{ width:mode==='edit'?tableSize.width + 'px': containerWidth + 'px', height: tableSize.height + 'px', margin: mode==='edit'? 0 : '0 auto' }">
+      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit' }" :style="{ width:mode==='edit'? tableSize.width + 'px':isFormSubassembly? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode==='edit'? 0 : '0 auto' }">
         <colgroup>
           <col v-if="mode === 'edit'" :style="{ width: minWidth + 'px' }" />
           <col
@@ -287,7 +287,7 @@
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>
               </div>
-              <div v-else :style="{ width: mode==='edit'? getCellWidth(cell) + 'px' :tdWidth(null,cell), overflow: 'auto' }">
+              <div v-else :style="{ width: mode==='edit' || isFormSubassembly? getCellWidth(cell) + 'px':tdWidth(null,cell), overflow: 'auto' }">
                 <FormItem
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
@@ -401,7 +401,7 @@ export default {
       type: String, //edit编辑模式|read使用模式
       default: 'edit',
       validator(value) {
-        return ['edit', 'read'].includes(value);
+        return ['edit', 'read', 'editSubform', 'readSubform'].includes(value);
       }
     },
     value: { type: Object }, //表单配置，通过v-model双向绑定
@@ -411,6 +411,10 @@ export default {
       default: function() {
         return {};
       }
+    },
+    isFormSubassembly: { //是否是子表单组件引用
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -797,6 +801,8 @@ export default {
             header.width = hrect.width;
           }
         }
+        //针对子表单
+        this.calcContainerHeight();
       });
     },
     //获取真正的rowspan，排除隐藏行
@@ -1328,6 +1334,8 @@ export default {
         } else {
           ok();
         }
+        //表单编辑：针对子表单
+        this.$emit('updateResize');
       }
     },
     //分拆单元格
@@ -1965,13 +1973,14 @@ export default {
       },
       deep: true,
       immediate: true
-    }
-    /*formData: {
+    },
+    formData: {
       handler: function(newVal, oldVal) {
-        console.log(JSON.stringify(newVal, null, 2));
+        this.$emit('setValue', newVal);
+        // console.log(JSON.stringify(newVal, null, 2));
       },
       deep: true
-    }*/
+    }
   }
 };
 </script>

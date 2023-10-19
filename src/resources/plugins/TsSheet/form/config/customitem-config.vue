@@ -25,6 +25,7 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {},
+  extends: base,
   props: {
     error: { type: Array }, //异常列表
     formItem: { type: Object }, //当前表单组件
