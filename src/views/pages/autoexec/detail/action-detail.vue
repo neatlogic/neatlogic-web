@@ -136,6 +136,7 @@
       <template v-slot:content>
         <ExpiredReasonAlert
           v-if="configExpired == 1"
+          class="pl-md pr-md"
           :configExpiredReason="configExpiredReason"
           :combopId="id"
           type="self"

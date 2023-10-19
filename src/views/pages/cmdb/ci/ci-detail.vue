@@ -60,8 +60,8 @@
             </div>
           </div>
           <div class="mt-nm">
-            <Tabs class="block-tabs" :animated="false">
-              <TabPane :label="$t('page.attribute')" class="padding">
+            <Tabs v-model="currentTab" class="block-tabs" :animated="false">
+              <TabPane name="attr" :label="$t('page.attribute')" class="padding">
                 <CiDetailAttrList
                   :ciData="ciData"
                   :attrData="attrData"
@@ -78,7 +78,7 @@
                   labelPosition="top"
                 ></TsForm>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual && relData && relData.cardList && relData.cardList.length > 0" :label="$t('page.relation')">
+              <TabPane v-if="!ciData.isVirtual && relData && relData.cardList && relData.cardList.length > 0" name="rel" :label="$t('page.relation')">
                 <CiDetailRelList
                   class="bg-op"
                   :ciData="ciData"
@@ -87,7 +87,12 @@
                   @delete="deleteRel"
                 ></CiDetailRelList>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0" class="padding" :label="$t('term.cmdb.globalattr')">
+              <TabPane
+                v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0"
+                name="global"
+                class="padding"
+                :label="$t('term.cmdb.globalattr')"
+              >
                 <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
               </TabPane>
             </Tabs>
@@ -146,6 +151,7 @@ export default {
   data() {
     return {
       attrList: [],
+      currentTab: 'attr',
       isSiderHide: false,
       isCiShow: false, //模型编辑窗口是否显示
       isViewShow: false, //显示设置窗口是否显示
@@ -230,6 +236,7 @@ export default {
       await this.getRelByCiId();
       await this.getGlobalAttr();
       this.getLeftHeight();
+      this.currentTab = 'attr';
     },
     updateCiUniqueRule: function(attrIdList) {
       this.$api.cmdb.ci.saveCiUniqueRule(this.ciId, attrIdList).then(res => {

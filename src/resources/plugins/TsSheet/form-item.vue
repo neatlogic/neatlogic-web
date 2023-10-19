@@ -2,7 +2,7 @@
   <div class="form-item">
     <i v-if="showComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
-    <div v-if="mode === 'edit' && !formItem.isContainer" class="editor-mask"></div>
+    <div v-if="(mode === 'edit' || mode === 'editSubform') && !formItem.isContainer" class="editor-mask"></div>
     <div v-if=" mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
       <!-- <span class="tsfont-eye-off"></span>
       <span class="mask-text text-grey">当前组件不可见</span>-->
@@ -57,8 +57,8 @@
       :value="formItemValue"
       :mode="mode"
       :filter="filter"
-      :readonly="(mode != 'defaultvalue'?formItem.config && formItem.config.isReadOnly:false) || readonly"
-      :disabled="(mode != 'defaultvalue'?formItem.config && formItem.config.isDisabled:false) || disabled"
+      :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
+      :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
       :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
@@ -148,9 +148,9 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    if (this.mode === 'edit') {
-      this.$emit('resize');
-    }
+    // if (this.mode === 'edit') {
+    this.$emit('resize');
+    // }
   },
   beforeUpdate() {},
   updated() {},

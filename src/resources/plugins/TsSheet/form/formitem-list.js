@@ -25,6 +25,7 @@ import { default as formtab } from './define/formtab.js';
 import { default as formcollapse } from './define/formcollapse.js';
 import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
 import { default as AUTOEXECITEMS } from '@/views/pages/autoexec/form/define';
+import { default as formsubassembly } from './define/formsubassembly.js'; //表单子组件
 
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
@@ -56,7 +57,8 @@ export const FORMITEMS = [formlabel,
   formupload,
   formdivider, 
   formtab, 
-  formcollapse, 
+  formcollapse,
+  formsubassembly, 
   ...CMDBITEMS,
   ...AUTOEXECITEMS
 ];
