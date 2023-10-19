@@ -7,6 +7,10 @@ let baseConfiglUrl = './src/dummy-module'; // 如果不引用的话，就引用�
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
+if (process.env.neatlogic_version == 'commercial') {
+  importModuleUrl = '../neatlogic-web-commercial'; // 引入自定义模块
+}
+
 process.env.VUE_APP_TENANT = tenantName; // 租户名称
 process.env.VUE_APP_LOGINTITLE = 'welcome';
 
