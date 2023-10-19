@@ -190,7 +190,7 @@ export default {
           label: this.$t('page.inherit'),
           width: '100%',
           url: 'api/rest/cmdb/ci/listtree',
-          params: { ciId: _this.id },
+          params: { ciId: _this.id, isVirtual: 0 },
           valueName: 'id',
           textName: 'label',
           transfer: true,
