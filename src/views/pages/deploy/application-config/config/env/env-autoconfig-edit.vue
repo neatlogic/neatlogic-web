@@ -142,8 +142,8 @@ export default {
   mounted() {
     if (this.isEdit) {
       this.getAutoConfigList();
-      this.getParamsTypeLit();
     }
+    this.getParamsTypeLit();
   },
   beforeUpdate() {},
   updated() {},
