@@ -8,8 +8,7 @@
     "build": "node version.js && vue-cli-service build",
     "lint": "vue-cli-service lint --fix",
     "test:unit": "vue-cli-service test:unit",
-    "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit",
-    "build:commercial": "node version.js && vue-cli-service build"
+    "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit"
   },
   "dependencies": {
     "@antv/data-set": "^0.11.8",
