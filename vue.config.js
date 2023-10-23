@@ -18,7 +18,7 @@ function getPages(pageList) {
     let customPagePath = [];
     let importModulePathList;
     importModulePathList = glob.sync(`${commercialModule}/**/router.js`);
-    if (importModulePathList && importModulePathList.length > 0 && process.env.neatlogic_version == 'commercial') {
+    if (importModulePathList && importModulePathList.length > 0) {
       customPagePath.push(...importModulePathList);
       pagePathList.push(...customPagePath);
     } else {
@@ -115,7 +115,6 @@ module.exports = {
     config.resolve.alias.set('@', resolve(src));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-    config.resolve.alias.set('commercial-module', resolve(commercialModule));
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));
