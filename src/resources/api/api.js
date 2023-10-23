@@ -22,7 +22,7 @@ try {
     const moduleId = routerPath.split('/')[1];
     const exportValue = apiConfig(routerPath).default || {};
     const lastModuleName = moduleId.split('-');
-    const moduleName = lastModuleName.pop();
+    const moduleName = lastModuleName?.pop() || moduleId;
     moduleApiConfig[moduleName] = exportValue;
   });
 } catch (error) {
