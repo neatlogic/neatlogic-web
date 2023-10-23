@@ -14,7 +14,8 @@
         @changePageSize="changePageSizeAutoConfig"
       >
         <template slot="value" slot-scope="{row}">
-          <span>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
+          <span v-if="row.type==='password'">******</span>
+          <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
         </template>
       </TsTable>
     </div>
@@ -102,6 +103,10 @@ export default {
         {
           title: this.$t('page.variablename'),
           key: 'key'
+        },        
+        {
+          title: this.$t('page.type'),
+          key: 'typeText'
         },
         {
           title: this.$t('page.variablevalue'),

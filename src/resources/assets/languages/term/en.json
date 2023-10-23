@@ -160,7 +160,8 @@
     "changememo": "Reason for change",
     "globalattr": "Global Properties",
     "pleaseselectlayout": "Please select a layout",
-    "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List"
+    "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List",
+    "resourcebatchsearchtooltip": "Batch search is a keyword fuzzy search, in which the wildcard * is supported for batch search of IP, matching any character, such as 192.168.1.1, 192.168.12.1, and 192.168.123.1"
   },
   "process": {
     "workordercenter": "Work Center",
