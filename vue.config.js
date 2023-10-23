@@ -75,7 +75,7 @@ function getModuleName(importModuleList, moduleName) {
 }
 function getLastValue(moduleName) {
   const lastValue = moduleName.split('-');
-  const moduleNames = lastValue?.pop();
+  const moduleNames = lastValue.pop() || moduleName;
   return moduleNames;
 }
 
