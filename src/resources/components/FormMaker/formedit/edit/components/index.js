@@ -50,7 +50,4 @@ let newObj = {
   formupload,
   protocol
 };
-
-import Loader from 'publics/CustomModuleLoader.js';
-Loader.load(newObj, 'formedit');
 export default newObj;

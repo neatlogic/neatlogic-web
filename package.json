@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint --fix",
     "test:unit": "vue-cli-service test:unit",
     "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit",
-    "serve:commercial": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open --mode commercial.local",
+    "serve:commercial": "cross-env neatlogic_version=commercial node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve",
     "build:commercial": "node version.js && cross-env neatlogic_version=commercial vue-cli-service build"
   },
   "dependencies": {

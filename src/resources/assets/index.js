@@ -6,6 +6,3 @@ import table from '../components/TsTable/table.less';
 import theme from './css/theme.less';
 //模块换肤图片
 import moduleimg from './css/moduleimg.less';
-
-// import Loader from 'publics/CustomModuleLoader.js';
-// Loader.Skin();
