@@ -37,14 +37,27 @@
               ></TsFormSwitch>
             </div>
           </template>
-          <template slot="value" slot-scope="{row, index}">
-            <TsFormInput
-              v-model="row.value"
-              :errorMessage="row.valueErrorMessage"
+          <template slot="type" slot-scope="{row, index}">
+            <PoptipSelect
+              v-model="row.type"
+              :list="paramsTypeList"
               :disabled="(row.isEmpty ? true : false)"
-              border="border"
-              @on-change="(value) => valueChange(row, value, index)"
-            ></TsFormInput>
+              isIcon
+              @change="(value) => typeChange(row, value, index)"
+            ></PoptipSelect>
+          </template>
+          <template slot="value" slot-scope="{row, index}">
+            <Items
+              :is="handlerType(row.type)"
+              ref="itemInput"
+              v-model="row.value"
+              :defaultValue="row.value"
+              :config="getselectConfig(row.value)"
+              :disabled="(row.isEmpty ? true : false)"
+              :setValidComponentsList="setValidComponentsList"
+              :isRequired="(row.isEmpty ? true : false)"
+              @getConfig="(config)=>{getParamConfig(index,config)}"
+            ></Items>
           </template>
           <template slot="delOperation" slot-scope="{row, index}">
             <div class="action-group">
@@ -58,12 +71,19 @@
   </div>
 </template>
 <script>
+import Items from '@/views/pages/autoexec/components/param/edit';
+import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
+import TsTable from '@/resources/components/TsTable/TsTable.vue';
+import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch.vue';
+import PoptipSelect from '@/resources/components/PoptipSelect/PoptipSelect.vue';
 export default {
   name: '', // 适配文件适配
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormInput,
+    TsTable,
+    TsFormSwitch,
+    PoptipSelect,
+    ...Items
   },
   props: {
     isEdit: {
@@ -79,6 +99,13 @@ export default {
   },
   data() {
     return {
+      setValidComponentsList: [],
+      paramsTypeList: [],
+      typeList: [
+        'text',         
+        'password'
+        
+      ],
       formValue: {},
       theadList: [
         {
@@ -89,6 +116,10 @@ export default {
         {
           title: '',
           key: 'isEmpty'
+        },
+        {
+          title: this.$t('page.type'),
+          key: 'type'
         },
         {
           title: this.$t('page.variablevalue'),
@@ -111,6 +142,7 @@ export default {
   mounted() {
     if (this.isEdit) {
       this.getAutoConfigList();
+      this.getParamsTypeLit();
     }
   },
   beforeUpdate() {},
@@ -120,9 +152,29 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getParamConfig(index, config) {
+      if (config) {
+        this.$set(this.tableData.tbodyList[index], 'config', config);
+      }
+    },
+    getParamsTypeLit() {
+      //选择组件类型
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.ParamType' };
+      return this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.paramsTypeList = res.Return.filter(item => { return this.typeList.includes(item.value); });
+        }
+      });
+    },
+    getselectConfig(type) {
+      console.log(type);
+      return this.paramsTypeList.find(item => item.value == type);
+    },
     addVariable() {
       this.tableData.tbodyList.push({
+        name: '',
         key: '',
+        type: 'text',
         value: '',
         isEmpty: 0,
         delOperation: ''
@@ -145,6 +197,7 @@ export default {
       tbodyList && tbodyList.forEach((item) => {
         keyValueList.push({
           key: item.key,
+          type: item.type === '' ? null : item.type,
           value: item.value
         });
       }); 
@@ -170,6 +223,7 @@ export default {
           returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
             this.tableData.tbodyList.push({
               key: v.key,
+              type: v.type,
               value: v.hasOwnProperty('value') ? v.value : '',
               isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
               delOperation: ''
@@ -182,6 +236,7 @@ export default {
       if (value) {
         let currentValue = this.$utils.deepClone(row);
         currentValue.value = '';
+        currentValue.type = '';
         this.$set(this.tableData.tbodyList, index, currentValue);
       }
     },
@@ -226,10 +281,29 @@ export default {
         }
       }
       return isValid;
+    },
+    typeChange(row, value, index) {
+      if (value) {
+        let currentValue = this.$utils.deepClone(row);
+        currentValue.value = '';
+        this.$set(this.tableData.tbodyList, index, currentValue);
+      }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    handlerType() {
+      let _this = this;
+      return value => {
+        let type = 'defaultInput';
+        let findConfig = _this.paramsTypeList.find(item => item.value == value);
+        if (findConfig) {
+          type = findConfig.value + 'Handler';
+        }
+        return type;
+      };
+    }
+  },
   watch: {}
 };
 </script>
