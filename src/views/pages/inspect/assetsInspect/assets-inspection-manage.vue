@@ -32,7 +32,7 @@
         >
           <template v-slot:batchSearchList="{valueConfig,textConfig}">
             <div>
-              <TsFormItem :label="$t('page.batchsearch')" labelPosition="left">
+              <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
                 <TsFormRadio
                   v-model="valueConfig.searchField"
                   :dataList="searchFieldRadioDataList"
@@ -42,7 +42,7 @@
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
-                  :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.3'"
+                  :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                   :autoSize="{minRows: 4}"
                   @change="(val)=>{changeBatchSearchList(val,textConfig)}"
                 >

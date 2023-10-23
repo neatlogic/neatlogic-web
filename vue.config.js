@@ -75,7 +75,7 @@ function getModuleName(importModuleList, moduleName) {
 }
 function getLastValue(moduleName) {
   const lastValue = moduleName.split('-');
-  const moduleNames = lastValue?.pop();
+  const moduleNames = lastValue.pop() || moduleName;
   return moduleNames;
 }
 
@@ -115,7 +115,7 @@ module.exports = {
     config.resolve.alias.set('@', resolve(src));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-    config.resolve.alias.set('commercial-module', path.resolve(__dirname, commercialModule));
+    config.resolve.alias.set('commercial-module', resolve(commercialModule));
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));
