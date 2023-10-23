@@ -18,33 +18,20 @@ npm install -g @vue/cli
 npm install
 ```
 
-## Community version local development environment running project
+## local development environment running project
 >To modify the "apiconfig.json" configuration file, change the value of "tenantName" to the tenant you are using (if you are using the official sample data, the tenant is "demo"). Change the "urlPrefix" to the HTTP address of the Neatlogic backend Tomcat service, which should be "http://ip:port".
 ```
 npm run serve
 ```
-
-## Commercial version local development environment running project
-```bash
-npm run serve:commercial
-```
-
 <font color="red">Exception:</font>
 If a large number of unknown errors are found at startup, the possible reason may be that the dependency packages loaded during the `npm install` phase are incomplete. It is suggested to downgrade npm and install again. Currently, tests indicate that npm v14 can install normally, while npm v18+ might cause exceptions. Alternatively, loading dependency packages through `cnpm install` could also work. The cnpm version should not be too high, it's recommended to use v8.2.0.
 ```
 sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
 ```
 
-## Community Edition Packaging Project Code
+## Packaging Project Code
 ```
 npm run build
-```
-
-## Commercial Packaging Project Code
-
-```bash
-npm run build:commercial
-
 ```
 
 ## Update a dependency
