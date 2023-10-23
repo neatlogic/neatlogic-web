@@ -16,7 +16,7 @@ import dr from './dr';
 let moduleApiConfig = {};
 try {
   // 导入自定义模块，获取导出接口地址
-  const apiConfig = require.context('commercial-module', true, /api.js$/);
+  const apiConfig = require.context('@/commercial-module', true, /api.js$/);
   const moduleApiPathList = apiConfig.keys();
   moduleApiPathList.forEach(routerPath => {
     const moduleId = routerPath.split('/')[1];

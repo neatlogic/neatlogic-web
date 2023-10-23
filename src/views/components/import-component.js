@@ -3,7 +3,7 @@ let importComponentConfig = {};
 let exportComponentConfig = {};
 try {
   // 导入自定义组件
-  const componentConfig = require.context('commercial-module', true, /component.js$/);
+  const componentConfig = require.context('@/commercial-module', true, /component.js$/);
   const moduleComponentPathList = componentConfig.keys();
   moduleComponentPathList.forEach(routerPath => {
     const moduleNames = routerPath.split('/')[1];

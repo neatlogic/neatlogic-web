@@ -272,7 +272,7 @@ function getRouterConfig() {
   let routerConfig = {};
   let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
   try {
-    routerPathList.push(require.context('commercial-module', true, /router.js$/));
+    routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
   } catch (error) {
     // 模块找不到
   }
@@ -294,7 +294,7 @@ function getAllMenuTypeList() {
   let menuTypeList = [];
   const configPathList = [require.context('@/views/pages', true, /config.js$/)];
   try {
-    configPathList.push(require.context('commercial-module', true, /config.js$/));
+    configPathList.push(require.context('@/commercial-module', true, /config.js$/));
   } catch (error) {
     //
   }
