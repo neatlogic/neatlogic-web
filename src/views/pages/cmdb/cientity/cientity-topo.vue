@@ -4,6 +4,17 @@
       <div class="grid">
         <div class="action-group">
           <div class="action-item">
+            <TsFormSwitch
+              :trueName="1"
+              :falseName="0"
+              :showStatus="true"
+              :trueText="$t('term.cmdb.onlybackbone')"
+              :falseText="$t('term.cmdb.showallrel')"
+              :value="searchParam.isBackbone"
+              @on-change="changeIsBackbone"
+            ></TsFormSwitch>
+          </div>
+          <div class="action-item">
             <Dropdown placement="bottom-start" @on-click="changeLevel">
               <a href="javascript:void(0)">
                 {{ $t('term.cmdb.extendlevel') }}
@@ -52,7 +63,10 @@
           <div class="action-item">
             <Dropdown placement="bottom-start" :transfer="true" @on-click="changeLayout">
               <a href="javascript:void(0)">
-                <span v-if="currentLayout">{{ layoutList.find(d => d.engine === currentLayout).name }}<Icon type="ios-arrow-down"></Icon></span>
+                <span v-if="currentLayout">
+                  {{ layoutList.find(d => d.engine === currentLayout).name }}
+                  <Icon type="ios-arrow-down"></Icon>
+                </span>
                 <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
               </a>
               <DropdownMenu slot="list">
@@ -128,6 +142,7 @@ export default {
   name: '',
   components: {
     D3Tooltip: resolve => require(['../asset/d3/d3-tooltip.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
   },
   props: {
@@ -152,7 +167,14 @@ export default {
       data: {},
       error: '', //异常信息
       relList: [],
-      searchParam: { ciEntityId: this.ciEntityId, ciId: this.ciId, level: 3, disableRelList: [], globalAttrFilterList: [] },
+      searchParam: {
+        isBackbone: 1,
+        ciEntityId: this.ciEntityId,
+        ciId: this.ciId,
+        level: 3,
+        disableRelList: [],
+        globalAttrFilterList: []
+      },
       currentZoomLevelId: [],
       tooltipTop: null,
       tooltipLeft: null,
@@ -259,6 +281,9 @@ export default {
     },
     changeLevel(name) {
       this.searchParam.level = name;
+    },
+    changeIsBackbone(isBackbone) {
+      this.searchParam.isBackbone = isBackbone;
     },
     changeDisableRel(name) {
       if (name.startsWith('reltype_')) {

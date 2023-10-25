@@ -21,8 +21,6 @@ function getPages(pageList) {
     if (importModulePathList && importModulePathList.length > 0) {
       customPagePath.push(...importModulePathList);
       pagePathList.push(...customPagePath);
-    } else {
-      commercialModule = './src/community-module';
     }
     pagePathList.forEach(p => {
       let filename = '';
