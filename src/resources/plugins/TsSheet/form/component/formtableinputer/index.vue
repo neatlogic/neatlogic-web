@@ -7,6 +7,24 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
+      <span class="action-item tsfont-export" @click="exportTemplateExcel">导出 Excel模板</span>
+      <span class="action-item tsfont-export" @click="exportExcel">导出 Excel</span>
+      <Upload
+        ref="upload"
+        :show-upload-list="false"
+        :default-file-list="[]"
+        :on-success="handleSuccess"
+        :format="['xlsx']"
+        :max-size="2048"
+        :on-format-error="handleFormatError"
+        :on-exceeded-size="handleMaxSize"
+        :before-upload="handleBeforeUpload"
+        type="drag"
+        action=""
+        style="display: inline-block;margin-left: 8px;"
+      >
+        <span class="tsfont-import">导入excel</span>
+      </Upload>
     </div>
     <TsTable
       v-if="hasColumn"
@@ -53,6 +71,8 @@
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
+import ExcelJS from 'exceljs';
+import FileSaver from 'file-saver';
 
 export default {
   name: '',
@@ -240,6 +260,138 @@ export default {
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
       this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
+    },
+    exportTemplateExcel() {
+      // 导出excel模板
+      const _workbook = new ExcelJS.Workbook();
+      // 添加工作表
+      const _sheet1 = _workbook.addWorksheet('sheet1');
+
+      // 设置表头
+      let theadList = [];
+      this.tableData.theadList.forEach((item) => {
+        if (item?.key && item?.title) {
+          theadList.push({
+            header: item.title,
+            key: item.key,
+            width: 20
+          });
+        }
+      });
+      _sheet1.columns = theadList;
+      let headerRow = _sheet1.getRow(1); // 获取第一行
+      headerRow.eachCell((cell, colNum) => {
+      // 设置背景色
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid'
+        };
+        // 设置字体
+        cell.font = {
+          bold: true,
+          size: 12,
+          name: '微软雅黑',
+          color: {argb: '000'}
+        };
+        // 设置对齐方式
+        cell.alignment = {vertical: 'middle', horizontal: 'center', wrapText: false };
+      });
+      // 导出表格
+      _workbook.xlsx.writeBuffer().then((buffer) => {
+        let _file = new Blob([buffer], {
+          type: 'application/octet-stream'
+        });
+        FileSaver.saveAs(_file, '输入表格模板.xlsx');
+      });
+    },
+    exportExcel() {
+      const _workbook = new ExcelJS.Workbook(); // 创建工作簿
+      const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
+      let columnsList = [];
+      this.tableData.theadList.forEach((item) => {
+        if (item?.key && item?.title) {
+          columnsList.push({
+            header: item.title,
+            key: item.key,
+            width: 20
+          });
+        }
+      });
+      _sheet1.columns = columnsList;
+      columnsList.forEach(({ header, key }, columnIndex) => {
+        const headerCell = _sheet1.getCell(`${this.convertToExcelColumn(columnIndex + 1)}1`);
+        headerCell.name = key; // 将key作为每列的名称，作为导入进行数据匹配的字段
+      });
+      // 添加数据
+      this.tableData.tbodyList.forEach((item) => {
+        if (item) {
+          _sheet1.addRow({...item});
+        }
+      });
+      // 数据验证
+      // _sheet1.getCell('B2').dataValidation = {
+      //   type: 'list',
+      //   allowBlank: true,
+      //   formulae: ['"软件一班,软件二班,软件三班"']
+      // };
+
+      // 导出表格
+      _workbook.xlsx.writeBuffer().then((buffer) => {
+        let _file = new Blob([buffer], {
+          type: 'application/octet-stream'
+        });
+        FileSaver.saveAs(_file, `${this.$utils.getCurrenttime('yyyyMMddHHmmss')}输入表格.xlsx`);
+      });
+    },
+    convertToExcelColumn(number) {
+      let result = '';
+      while (number > 0) {
+        const remainder = (number - 1) % 26;
+        result = String.fromCharCode(65 + remainder) + result;
+        number = Math.floor((number - 1) / 26);
+      }
+      return result;
+    },
+    handleSuccess(res, file) {
+      console.log('上传成功', res, file);
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: '格式不正确',
+        desc: `格式${file.name}不正确，请选择正确的格式`
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: '超出文件大小限制',
+        desc: `${file.name}`
+      });
+    },
+    async handleBeforeUpload(file) {
+      const workbook = new ExcelJS.Workbook();
+      let columnsList = [];
+      workbook.xlsx.load(file).then((workbook) => {
+        workbook?.eachSheet((sheet, id) => {
+          sheet?.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+            // includeEmpty：true表示把空行的单元格内容也包含在内
+            if (rowIndex == 1) {
+              // 首行表头的数据
+              row.eachCell((cell) => {
+                if (cell?.name) {
+                  columnsList.push(cell.name);
+                }
+              });
+            } else {
+              console.log('第二行的数据', row.values, columnsList);
+              this.tableData.tbodyList.forEach((item, index) => {
+                item[columnsList[index]] = row.values[index];
+                console.log('返回的值', row.values[index], index);
+              });
+              console.log('改变值', this.tableData.tbodyList);
+            }
+          });
+        });
+      });
     }
   },
   filter: {},
