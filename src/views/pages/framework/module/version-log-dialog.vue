@@ -46,21 +46,9 @@
                   <div v-else-if="index == isActive && !$utils.isEmpty(item.value)" class="mt-nm">
                     <template v-for="(valueItem, valueName, valueIndex) in item.value">
                       <div :key="valueIndex">
-                        <div v-if="hasdllordml(valueName) && getSqlSentence(valueItem)" class="mb-xs">
-                          <li class="text-uppercase mb-xs">
-                            <span class="text-danger tsfont-tags"></span>
-                            {{ valueName }}</li>
-                          <li class="ml-nm">
-                            <TsCodemirror
-                              :value="getSqlSentence(valueItem)"
-                              :isReadOnly="true"
-                              codeMode="shell"
-                            ></TsCodemirror>
-                          </li>
-                        </div>
-                        <template v-else-if="valueName == 'version'">
+                        <template v-if="valueName == 'version'">
                           <div v-for="(versionItem, versionIndex) in item.value[valueName]?.content" :key="versionIndex" class="mb-xs">
-                            <li v-if="versionItem.type" class="mb-xs">
+                            <li v-if="versionItem.type && versionItem.detail && versionItem.detail.length>0" class="mb-xs">
                               <span class="text-danger tsfont-tags"></span>
                               {{ versionItem.type }}
                             </li>
@@ -71,6 +59,22 @@
                             >{{ detailItem.msg }}</li>
                           </div>
                         </template>
+                      </div>
+                    </template>
+                    <template v-for="(valueItem, valueName, valueIndex) in item.value">
+                      <div :key="valueIndex+'1'">
+                        <div v-if="isHasSql(valueName) && getSqlSentence(valueItem)" class="mb-xs">
+                          <li class="text-uppercase mb-xs">
+                            <span class="text-danger tsfont-mysql"></span>
+                            {{ valueName==='neatlogic'?'neatlogic库':'租户库' }}</li>
+                          <li class="ml-nm">
+                            <TsCodemirror
+                              :value="getSqlSentence(valueItem)"
+                              :isReadOnly="true"
+                              codeMode="shell"
+                            ></TsCodemirror>
+                          </li>
+                        </div>
                       </div>
                     </template>
                   </div>
@@ -170,9 +174,9 @@ export default {
   },
   filter: {},
   computed: {
-    hasdllordml() {
+    isHasSql() {
       return (value) => {
-        return ['dll', 'dml'].includes(value);
+        return ['neatlogic', 'neatlogic_tenant'].includes(value);
       };
     },
     getSqlSentence() {
@@ -203,11 +207,11 @@ export default {
     isEmptyObj() {
       return (obj) => {
         let isEmpty = false;
-        let {dll = [], dml = [], version = {}} = obj || {};
+        let {neatlogicSql = [], neatlogicTenantSql = [], version = {}} = obj || {};
 
-        if (this.$utils.isEmpty(dll) && this.$utils.isEmpty(dml) && this.$utils.isEmpty(version)) {
+        if (this.$utils.isEmpty(neatlogicSql) && this.$utils.isEmpty(neatlogicTenantSql) && this.$utils.isEmpty(version)) {
           isEmpty = true;
-        } else if (this.$utils.isEmpty(dll) && this.$utils.isEmpty(dml) && !this.$utils.isEmpty(version?.content)) {
+        } else if (this.$utils.isEmpty(neatlogicSql) && this.$utils.isEmpty(neatlogicTenantSql) && !this.$utils.isEmpty(version?.content)) {
           isEmpty = this.$utils.isEmpty(version.content);
         }
         return isEmpty;
