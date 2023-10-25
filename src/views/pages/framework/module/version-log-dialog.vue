@@ -27,7 +27,7 @@
       </div> -->
           </div>
           <NoData v-if="$utils.isEmpty(versionList)"></NoData>
-          <Timeline v-else style="margin-top: 30px;">
+          <Timeline v-else style="margin-top: 30px" class="ts-dialog-timeline-item-head-bg">
             <TimelineItem v-for="(item, index) of versionList" :key="index">
               <span slot="dot" :class="index == isActive ? 'tsfont-check-s text-success' : 'tsfont-circle'"></span>
               <div>
@@ -222,16 +222,14 @@ export default {
 };
 </script>
 <style lang="less" scoped>
- /deep/ .ivu-timeline-item-head-custom {
-    font-size: 22px;
-  }
-  /deep/ .ivu-timeline-item-head {
-    background: transparent;
-  }
-  /deep/ .ivu-timeline-item-head-custom {
-    left: -7px;
-  }
-  .text-uppercase {
-    text-transform: uppercase;
-  }
+/deep/ .ivu-timeline-item-head-custom {
+  left: -7px;
+  font-size: 22px;
+}
+/deep/ .ivu-timeline-item-tail {
+  left: 12px;
+}
+.text-uppercase {
+  text-transform: uppercase;
+}
 </style>
