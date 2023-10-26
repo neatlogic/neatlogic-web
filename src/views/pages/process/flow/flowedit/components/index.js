@@ -9,7 +9,6 @@ import autoexec from './autoexec-node';
 import timer from './timer-node';
 //cmdb
 import cmdb from '@/views/pages/cmdb/flow/node/index.js';
-import cmdbsync from './cmdbsync-node';
 
 export default {
   condition,
@@ -21,6 +20,5 @@ export default {
   event,
   autoexec,
   ...cmdb,
-  timer,
-  cmdbsync
+  timer
 };

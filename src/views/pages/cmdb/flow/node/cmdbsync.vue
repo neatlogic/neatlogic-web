@@ -40,6 +40,8 @@
       :nodeConfig="nodeConfig"
       @updatebutton="updatebutton"
     ></ButtonSetting>
+    <!-- 模型设置 -->
+    <CmdbsyncSetting ref="ciEntityConfig" :defaultCiEntityConfig="ciEntityConfig"></CmdbsyncSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"
@@ -52,16 +54,17 @@
   </div>
 </template>
 <script>
-import nodemixin from './nodemixin.js';
+import nodemixin from '@/views/pages/process/flow/flowedit/components/nodemixin.js';
 export default {
   name: '',
   components: {
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve), // 表单场景
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
-    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
-    AssignSetting: resolve => require(['./nodesetting/assign-setting.vue'], resolve)
+    FormsceneSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting'], resolve), // 表单场景
+    AuthoritySetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'], resolve),
+    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
+    ActionSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/action-setting.vue'], resolve),
+    ButtonSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'], resolve),
+    AssignSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting.vue'], resolve),
+    CmdbsyncSetting: resolve => require(['./nodesetting/cmdbsync-setting.vue'], resolve)
   },
   mixins: [nodemixin],
   props: {},
@@ -82,7 +85,8 @@ export default {
       replaceableTextList: [], //文案映射
       notifyPolicyConfig: {}, //通知
       actionConfig: {}, //动作数据
-      workerPolicyConfig: {}
+      workerPolicyConfig: {},
+      ciEntityConfig: {}
     };
   },
   beforeCreate() {},
@@ -90,7 +94,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.keyList = ['actionConfig', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig'];//stepConfig 需要包含的数据
+    this.keyList = ['actionConfig', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig', 'ciEntityConfig'];//stepConfig 需要包含的数据
     this.getNodeSetting();
   },
   beforeUpdate() {},
@@ -140,6 +144,10 @@ export default {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();
       }
       stepConfig['formSceneUuid'] = this.configData.stepConfig.formSceneUuid || '';
+      if (this.$refs.ciEntityConfig) { //组合工具cmdb
+        let ciEntityConfig = this.$refs.ciEntityConfig.save();
+        this.$set(stepConfig, 'ciEntityConfig', ciEntityConfig);
+      }
       return this.clearNodeData(stepConfig);
     },
     updateaction(type, data, index) {

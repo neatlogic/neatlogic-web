@@ -15,7 +15,7 @@
           </Tooltip>
         </span>
         <span class="control-btn">
-          <TsFormSwitch v-model="autoexecConfig.rerunStepToCreateNewJob"></TsFormSwitch>
+          <TsFormSwitch v-model="ciEntityConfig.rerunStepToSync"></TsFormSwitch>
         </span>
       </div>
     </div>
@@ -25,7 +25,7 @@
         <div class="input-border">
           <TsFormSelect
             ref="failPolicy"
-            v-model="failPolicy"
+            v-model="ciEntityConfig.failPolicy"
             :dataList="failPolicyList"
             :validateList="validateList"
             border="border"
@@ -33,6 +33,16 @@
         </div>
       </div>
     </div>
+    <div class="mode-mapping">
+      <div class="top">
+        <div class="second-title text-grey require-label">模型映射</div>
+        <div class="text-href" @click="edit()">
+          编辑
+        </div>
+      </div>
+      <div v-if="ciEntityConfig.configList.length" class="pt-sm">{{ ciEntityConfig.configList[0].ciName }}</div>
+    </div>
+    <CmdbsyncDialog v-if="isShowDialog" :configList="ciEntityConfig.configList" @close="close"></CmdbsyncDialog>
   </div>
 </template>
 <script>
@@ -40,15 +50,23 @@ export default {
   name: '',
   components: {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    CmdbsyncDialog: resolve => require(['./cmdbsync-dialog.vue'], resolve)
  
   },
-  props: {},
+  props: {
+    defaultCiEntityConfig: Object
+  },
   data() {
     return {
       failPolicyList: [], //失败策略
-      failPolicy: '',
-      validateList: ['required']
+      validateList: ['required'],
+      isShowDialog: false,
+      ciEntityConfig: {
+        failPolicy: '',
+        rerunStepToSync: 0,
+        configList: []
+      }
     };
   },
   beforeCreate() {},
@@ -56,7 +74,9 @@ export default {
     this.getFailPolicyList();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.initData();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -64,6 +84,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      let config = this.$utils.deepClone(this.defaultCiEntityConfig);
+      if (!this.$utils.isEmpty(config)) {
+        Object.keys(config).forEach(key => {
+          this.ciEntityConfig[key] = config[key];
+        });
+      }
+    },
     getFailPolicyList() {
       let data = {
         enumClass: 'FailPolicy'
@@ -88,6 +116,20 @@ export default {
           this.failPolicyList = newfailPolicyList;
         }
       });
+    },
+    edit() {
+      this.isShowDialog = true;
+    },
+    close(data) {
+      if (data) {
+        Object.keys(data).forEach(key => {
+          this.$set(this.ciEntityConfig, key, data[key]);
+        });
+      }
+      this.isShowDialog = false;
+    },
+    save() {
+      return this.ciEntityConfig;
     }
   },
   filter: {},
@@ -95,5 +137,12 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scpoed>
+.mode-mapping {
+  padding: 10px 16px;
+  .top {
+    display: flex;
+    justify-content: space-between;
+  }
+}
 </style>
