@@ -15,21 +15,17 @@ export default {
       //是否必填，抽离出原组件的必填信息进行覆盖，当此选项为1时覆盖原来的config的validList里的required
       type: [Number, Boolean]
     },
-    setValidComponentsList: { //设置需要校验规则的组件类型列表
+    setValidComponentsList: {
+      //设置需要校验规则的组件类型列表
       type: Array,
       default: () => []
     }
-
   },
   data() {
-    return {
-    };
+    return {};
   },
-  mounted() {
-  },
-  beforeDestroy() {
-
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
     updateval(val) {
       this.$emit('change', val);
@@ -59,6 +55,5 @@ export default {
       return setting;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
