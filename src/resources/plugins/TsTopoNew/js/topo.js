@@ -24,6 +24,10 @@
       this._width = config['canvas.width'] || '100%'; //画布宽度
       this._height = config['canvas.height'] || '100%'; //画布高度
       this._classname = config['canvas.class'] || ''; //画布css样式
+      this._backgroundColor = config['canvas.backgroundColor'] || ''; //画布css样式;
+      this._backgroundImage = config['canvas.backgroundImage'] || ''; //画布css样式;
+      this._backgroundResizable = config['canvas.backgroundResizable'] || false; //背景是否允许拖动
+      this._backgroundLayout = config['canvas.backgroundLayout'] || ''; //背景布局
       this._isAutoAdjust = config['canvas.autoadjust'] || false; //是否显示辅助线自动对齐
       this._linkType = config['link.type']; //连线类型，如果需要实现全局切换连线类型功能，可以使用此属性
       this._dom = null; //d3生成的svg对象
@@ -81,15 +85,16 @@
       if (!json['groups']) {
         json['groups'] = [];
       }
-
       this.canvasJson = json;
 
       const canvasConfig = json['canvas'];
       this.__zoom = canvasConfig['zoom']; //设置缩放
+      this.__backgroundImage = canvasConfig['backgroundImage'];
       this.zoomG.selectAll('g').remove();
       this.nodes = [];
       this.links = [];
       this.groups = [];
+
       json['nodes'].forEach((nodeData, index) => {
         if (nodeData.type) {
           //节点类型属性是必不可少的，通过类型使用节点工厂实例化不同节点实例

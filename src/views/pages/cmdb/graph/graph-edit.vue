@@ -18,7 +18,7 @@
           border="border"
           :placeholder="$t('form.placeholder.name')"
           :validateList="[{ name: 'required', message: '' }]"
-          style="display:inline-block"
+          style="display: inline-block"
           :maxlength="50"
         ></TsFormInput>
       </template>
@@ -59,7 +59,7 @@
             <TabPane label="其他" name="other"></TabPane>
           </Tabs>
           <!--type=card有问题，所以使用这种方式实现，后面修复了再调回来-->
-          <div v-if="activeTab === 'cientity'" class="bg-op padding radius-sm" style="border-top-left-radius:0px;height:calc(100vh - 148px);overflow-y:auto">
+          <div v-if="activeTab === 'cientity'" class="bg-op padding radius-sm" style="border-top-left-radius: 0px; height: calc(100vh - 148px); overflow-y: auto">
             <div>
               <TsFormSelect v-bind="ciSelectConfig"></TsFormSelect>
               <Divider />
@@ -77,16 +77,16 @@
               >
                 <template slot-scope="{ row }">
                   <div :draggable="isNodeExists(row)" :style="!isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="dragCiEntity($event, row)">
-                    <div style="margin:auto;line-height:40px;text-align:center;width: 40px; height: 40px; border-radius: 40px;" class="bg-grey">
-                      <span :class="row.ciIcon" style="font-size:16px" class="text-grey"></span>
+                    <div style="margin: auto; line-height: 40px; text-align: center; width: 40px; height: 40px; border-radius: 40px" class="bg-grey">
+                      <span :class="row.ciIcon" style="font-size: 16px" class="text-grey"></span>
                     </div>
-                    <div class="overflow" style="text-align:center" :class="{ 'text-primary': !isNodeExists(row) }">{{ row.name || '-' }}</div>
+                    <div class="overflow" style="text-align: center" :class="{ 'text-primary': !isNodeExists(row) }">{{ row.name || '-' }}</div>
                   </div>
                 </template>
               </TsUlList>
             </div>
           </div>
-          <div v-if="activeTab === 'graph'" class="bg-op padding radius-sm" style="height:calc(100vh - 148px);overflow-y:auto">
+          <div v-if="activeTab === 'graph'" class="bg-op padding radius-sm" style="height: calc(100vh - 148px); overflow-y: auto">
             <div>
               <InputSearcher :placeholder="$t('form.placeholder.keyword')" @change="doSearch"></InputSearcher>
             </div>
@@ -102,19 +102,19 @@
               >
                 <template slot-scope="{ row }">
                   <div :draggable="isNodeExists(row)" :style="!isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="dragGraph($event, row)">
-                    <div :class="{ 'text-primary': !row.id, 'text-grey': !!row.id }" style="margin:auto;line-height:40px;text-align:center;width: 40px; height: 40px; border-radius: 5px;" class="bg-grey">
-                      <span :class="row.icon" style="font-size:16px"></span>
+                    <div :class="{ 'text-primary': !row.id, 'text-grey': !!row.id }" style="margin: auto; line-height: 40px; text-align: center; width: 40px; height: 40px; border-radius: 5px" class="bg-grey">
+                      <span :class="row.icon" style="font-size: 16px"></span>
                     </div>
-                    <div class="overflow" :class="{ 'text-primary': !row.id || !isNodeExists(row) }" style="text-align:center">{{ row.name || '-' }}</div>
+                    <div class="overflow" :class="{ 'text-primary': !row.id || !isNodeExists(row) }" style="text-align: center">{{ row.name || '-' }}</div>
                   </div>
                 </template>
               </TsUlList>
             </div>
           </div>
-          <div v-if="activeTab === 'other'" class="bg-op padding radius-sm" style="height:calc(100vh - 148px);overflow-y:auto">
+          <div v-if="activeTab === 'other'" class="bg-op padding radius-sm" style="height: calc(100vh - 148px); overflow-y: auto">
             <ul class="tscard-ul ivu-row">
               <div draggable="true" @dragstart="dragGroup($event)">
-                <div style="border-radius: 5px;" class="bg-grey padding cursor">
+                <div style="border-radius: 5px" class="bg-grey padding cursor">
                   <span class="tsfont-square text-grey">{{ $t('page.group') }}</span>
                 </div>
               </div>
@@ -123,19 +123,19 @@
         </div>
       </template>
       <template v-slot:content>
-        <div ref="divTopo" style="position:relative" :style="{ height: height + 'px' }">
-          <div
+        <div ref="divTopo" style="position: relative" :style="{ height: height + 'px' }">
+          <!-- <div
             class="bg-block radius-md topoContainer"
             style="z-index:0;background-size:100% 100%"
             :style="{
               'background-color': graphData.config.backgroundColor || null,
               'background-image': graphData.config.backgroundImage ? 'url(' + graphData.config.backgroundImage + ')' : null
             }"
-          ></div>
-          <div style="z-index:1" class="radius-md topoContainer">
+          ></div>-->
+          <div style="z-index: 1" class="radius-md topoContainer">
             <div
               ref="topo"
-              style="height:100%"
+              style="height: 100%"
               @drop="drop"
               @dragover.prevent
             ></div>
@@ -184,8 +184,8 @@
             <TsFormItem :label="$t('page.backgroundimage')" labelPosition="top">
               <div class="padding-sm radius-sm">
                 <div v-if="graphData.config.backgroundImage" class="snapshot">
-                  <img class="radius-md" style="width:60%" :src="graphData.config.backgroundImage" />
-                  <i class="tsfont-trash-o" style="cursor:pointer" @click="removeBackgrounImage"></i>
+                  <img class="radius-md" style="width: 60%" :src="graphData.config.backgroundImage" />
+                  <i class="tsfont-trash-o" style="cursor: pointer" @click="removeBackgrounImage"></i>
                 </div>
                 <TsUpLoad
                   v-if="!graphData.config.backgroundImage"
@@ -198,6 +198,20 @@
                   @getFileList="setBackgroundImage"
                 ></TsUpLoad>
               </div>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.filltype')" labelPosition="top">
+              <TsFormRadio
+                :value="graphData.config.backgroundLayout"
+                :dataList="[
+                  { value: '', text: $t('page.auto') },
+                  { value: 'scale', text: $t('term.report.axis.scale') },
+                  { value: 'stretch', text: $t('term.report.stretch') }
+                ]"
+                @on-change="setBackgroundLayout"
+              ></TsFormRadio>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.backgroundresizable')" labelPosition="top">
+              <TsFormSwitch v-model="graphData.config.backgroundImageResizable" @on-change="setBackgroundResizable"></TsFormSwitch>
             </TsFormItem>
             <TsFormItem :label="$t('page.description')" labelPosition="top">
               <div class="padding-sm radius-sm">
@@ -236,6 +250,7 @@ export default {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
     GraphConfig: resolve => require(['./graph-config.vue'], resolve),
     GraphAddDialog: resolve => require(['./graph-add-dialog.vue'], resolve)
   },
@@ -278,8 +293,18 @@ export default {
         }
       },
       graphSearchData: [],
-      graphData: { name: '', description: '', icon: 'tsfont-question-o', isActive: 1, config: {} },
-      topoData: { nodes: [], links: [], groups: [] }
+      graphData: {
+        name: '',
+        description: '',
+        icon: 'tsfont-question-o',
+        isActive: 1,
+        config: { backgroundLayout: '' }
+      },
+      topoData: {
+        nodes: [],
+        links: [],
+        groups: []
+      }
     };
   },
   beforeCreate() {},
@@ -347,15 +372,26 @@ export default {
       }
     },
     setBackgroundColor(val) {
+      this.topo.setBackgroundColor(val);
       this.$set(this.graphData.config, 'backgroundColor', val);
     },
     setBackgroundImage(val) {
       if (val && val.length > 0) {
+        this.topo.setBackgroundImage(HOME + '/api/binary/image/download?id=' + val[0].id);
         this.$set(this.graphData.config, 'backgroundImage', HOME + '/api/binary/image/download?id=' + val[0].id);
       }
     },
+    setBackgroundLayout(val) {
+      this.topo.setBackgroundLayout(val);
+      this.$set(this.graphData.config, 'backgroundLayout', val);
+    },
+    setBackgroundResizable(val) {
+      this.topo.setBackgroundResizable(val);
+      this.$set(this.graphData.config, 'backgroundResizable', val);
+    },
     removeBackgrounImage() {
       this.$delete(this.graphData.config, 'backgroundImage');
+      this.topo.setBackgroundImage(null);
     },
     calcTopoHeight() {
       this.$nextTick(() => {
@@ -460,6 +496,10 @@ export default {
         this.topo = new Topo(this.$refs.topo, {
           'canvas.width': width,
           'canvas.height': height,
+          'canvas.backgroundImage': '',
+          'canvas.backgroundColor': '',
+          'canvas.backgroundResizable': false,
+          'canvas.backgroundLayout': '',
           'canvas.class': 'topoGraph',
           'canvas.autoadjust': true, //显示辅助线
           'anchor.size': 4,
@@ -502,6 +542,10 @@ export default {
             }
             this.tagList = res.Return.tagList;
             this.topo.fromJson(this.topoData);
+            this.topo.setBackgroundImage(this.graphData.config.backgroundImage);
+            this.topo.setBackgroundColor(this.graphData.config.backgroundColor);
+            this.topo.setBackgroundResizable(this.graphData.config.backgroundResizable);
+            this.topo.setBackgroundLayout(this.graphData.config.backgroundLayout);
             this.$addWatchData(this.graphData);
           });
         } else {

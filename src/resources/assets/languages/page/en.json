@@ -943,5 +943,8 @@
   "batchpause": "Batch pause",
   "batchabort": "Batch cancellation",
   "ismultiple": "Do you want to select multiple options",
-  "homeurl": "Application Service Address"
+  "homeurl": "Application Service Address",
+  "filltype": "Background Fill Method",
+  "backgroundresizable": "Background Follow Zoom",
+  "auto": "automatic"
 }

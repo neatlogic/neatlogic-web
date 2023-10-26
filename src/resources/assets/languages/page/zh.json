@@ -945,5 +945,8 @@
   "batchpause": "批量暂停",
   "batchabort": "批量取消",
   "ismultiple": "是否多选",
-  "homeurl": "应用服务地址"
+  "homeurl": "应用服务地址",
+  "filltype": "背景填充方式",
+  "backgroundresizable": "背景跟随缩放",
+  "auto": "自动"
 }
