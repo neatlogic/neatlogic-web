@@ -1633,7 +1633,7 @@
     background-repeat: repeat-x;
   }
   .text-dividing {
-    color: @dividing-color
+    color: @dividing-color;
   }
   .text-warning,
   .text-WARN {
@@ -3077,6 +3077,12 @@
   .@{iv-prev}form-label-right {
     > .@{iv-prev}form-item-label {
       color: @title-color;
+    }
+  }
+  .ts-dialog-timeline-item-head-bg {
+    // 弹窗组件里面时间线背景颜色
+    .@{iv-prev}timeline-item-head {
+      background: @background-color;
     }
   }
 
