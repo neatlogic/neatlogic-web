@@ -1,88 +1,78 @@
 <template>
   <div>
     <TsDialog
-      type="modal"
-      :isShow="true"
-      :ok-text="$t('page.save')"
-      width="medium"
+      v-bind="dialogConfig"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
-      <template v-slot:header>
-        <div v-if="isEdit">{{ $t('dialog.title.edittarget', {target: $t('term.deploy.adaptationfileadaptation')}) }}</div>
-        <div v-else>{{ $t('dialog.title.addtarget', {target: $t('term.deploy.adaptationfileadaptation')}) }}</div>
-      </template>
       <template v-slot>
-        <TsTable
-          :theadList="theadList"
-          v-bind="tableData"
-        >
-          <template slot="key" slot-scope="{row}">
-            <TsFormInput
-              v-model="row.key"
-              :errorMessage="row.errorMessage"
-              clearable
-              border="border"
-              @on-change="inputChange"
-            ></TsFormInput>
-          </template>
-          <template slot="isEmpty" slot-scope="{row, index}">
-            <div class="flex-center" style="width: 150px;">
-              <span class="pr-xs">{{ $t('page.settonull') }}</span>
-              <TsFormSwitch
-                v-model="row.isEmpty"
-                :falseValue="0"
-                :trueValue="1"
-                @on-change="(value) => switchChange(row, value, index)"
-              ></TsFormSwitch>
-            </div>
-          </template>
-          <template slot="type" slot-scope="{row, index}">
-            <PoptipSelect
-              v-model="row.type"
-              :list="paramsTypeList"
-              :disabled="(row.isEmpty ? true : false)"
-              isIcon
-              @change="(value) => typeChange(row, value, index)"
-            ></PoptipSelect>
-          </template>
-          <template slot="value" slot-scope="{row, index}">
-            <Items
-              :is="handlerType(row.type)"
-              ref="itemInput"
-              v-model="row.value"
-              :defaultValue="row.value"
-              :config="getselectConfig(row.value)"
-              :disabled="(row.isEmpty ? true : false)"
-              :setValidComponentsList="setValidComponentsList"
-              :isRequired="(row.isEmpty ? true : false)"
-              @getConfig="(config)=>{getParamConfig(index,config)}"
-            ></Items>
-          </template>
-          <template slot="delOperation" slot-scope="{row, index}">
-            <div class="action-group">
-              <span class="tsfont-trash-o text-action" @click="delVariable(row, index)"></span>
-            </div>
-          </template>
-        </TsTable>
-        <span class="variable-text tsfont-plus text-href pt-nm" @click="addVariable">{{ $t('page.variable') }}</span>
+        <div>
+          <TsTable
+            :theadList="theadList"
+            :fixedHeader="false"
+            v-bind="tableData"
+          >
+            <template slot="key" slot-scope="{row}">
+              <TsFormInput
+                v-model="row.key"
+                :errorMessage="row.errorMessage"
+                clearable
+                border="border"
+                @on-change="inputChange"
+              ></TsFormInput>
+            </template>
+            <template slot="isEmpty" slot-scope="{row, index}">
+              <div class="flex-center" style="width: 150px;">
+                <span class="pr-xs">{{ $t('page.settonull') }}</span>
+                <TsFormSwitch
+                  v-model="row.isEmpty"
+                  :falseValue="0"
+                  :trueValue="1"
+                  @on-change="(value) => switchChange(row, value, index)"
+                ></TsFormSwitch>
+              </div>
+            </template>
+            <template slot="type" slot-scope="{row, index}">
+              <PoptipSelect
+                v-model="row.type"
+                :list="paramsTypeList"
+                isIcon
+                @change="(value) => typeChange(row, value, index)"
+              ></PoptipSelect>
+            </template>
+            <template slot="value" slot-scope="{row, index}">
+              <Items
+                :is="handlerType(row.type)"
+                ref="itemInput"
+                v-model="row.value"
+                :defaultValue="row.value"
+                :config="{...getselectConfig(row.value), errorMessage: row.valueErrorMessage}"
+                :disabled="(row.isEmpty ? true : false)"
+                :isRequired="row.isEmpty ? false : row.key ? true : false"
+                @getConfig="(config)=>{getParamConfig(index,config)}"
+              ></Items>
+            </template>
+            <template slot="delOperation" slot-scope="{row, index}">
+              <div class="action-group">
+                <span class="tsfont-trash-o text-action" @click="delVariable(row, index)"></span>
+              </div>
+            </template>
+          </TsTable>
+          <span class="variable-text tsfont-plus text-href pt-nm" @click.stop="addVariable">{{ $t('page.variable') }}</span>
+        </div>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
 import Items from '@/views/pages/autoexec/components/param/edit';
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
-import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch.vue';
-import PoptipSelect from '@/resources/components/PoptipSelect/PoptipSelect.vue';
 export default {
   name: '', // 适配文件适配
   components: {
-    TsFormInput,
-    TsTable,
-    TsFormSwitch,
-    PoptipSelect,
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
+    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
     ...Items
   },
   props: {
@@ -99,12 +89,17 @@ export default {
   },
   data() {
     return {
-      setValidComponentsList: [],
+      dialogConfig: {
+        type: 'modal',
+        isShow: true,
+        okText: this.$t('page.save'),
+        width: 'medium',
+        title: this.isEdit ? this.$t('dialog.title.edittarget', {'target': this.$t('page.param')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.param')})
+      },
       paramsTypeList: [],
       typeList: [
         'text',         
         'password'
-        
       ],
       formValue: {},
       theadList: [
@@ -167,7 +162,6 @@ export default {
       });
     },
     getselectConfig(type) {
-      console.log(type);
       return this.paramsTypeList.find(item => item.value == type);
     },
     addVariable() {
@@ -177,7 +171,8 @@ export default {
         type: 'text',
         value: '',
         isEmpty: 0,
-        delOperation: ''
+        delOperation: '',
+        valueErrorMessage: ''
       });
     },
     delVariable(row, index) {
@@ -252,23 +247,14 @@ export default {
       return true;
     },
     inputChange(currentValue) {
-      if (!this.isRepeat()) {
-        for (let index = 0; index < this.tableData.tbodyList.length; index++) {
+      for (let index = 0; index < this.tableData.tbodyList.length; index++) {
+        if (!this.isRepeat()) {
           if (this.tableData.tbodyList[index].key == currentValue) {
             this.tableData.tbodyList[index].errorMessage = this.$t('form.validate.repeat', {target: currentValue});
+          } else {
+            this.tableData.tbodyList[index].errorMessage = '';
           }
         }
-      } else {
-        for (let index = 0; index < this.tableData.tbodyList.length; index++) {
-          this.tableData.tbodyList[index].errorMessage = '';
-        }
-      }
-    },
-    valueChange(row, currentValue, index) {
-      if (currentValue) {
-        this.$set(this.tableData.tbodyList, index, {...row, valueErrorMessage: ''});
-      } else if (row.key && !row.isEmpty) {
-        this.$set(this.tableData.tbodyList, index, {...row, valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
       }
     },
     validValueIsEmpty() {

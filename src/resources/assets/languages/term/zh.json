@@ -2232,7 +2232,8 @@
     "storywall": "故事墙",
     "forbiddentransfer": "不可流转",
     "importtestcase": "导入测试用例",
-    "downloadtemplate": "点击下载导入模板"
+    "downloadtemplate": "点击下载导入模板",
+    "pleaseactiveapp": "请至少激活一个应用"
   },
   "plugin": {
     "65535": "0至65535之间的整数",

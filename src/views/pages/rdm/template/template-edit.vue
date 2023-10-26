@@ -151,7 +151,10 @@ export default {
       }
     },
     saveTemplate() {
-      console.log(JSON.stringify(this.templateData, null, 2));
+      if (!this.templateData.appTypeList || this.templateData.appTypeList.length == 0) {
+        this.$Message.info(this.$t('term.rdm.pleaseactiveapp'));
+        return;
+      }
       this.$api.rdm.projecttemplate.saveProjectTemplate(this.templateData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
