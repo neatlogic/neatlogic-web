@@ -2236,7 +2236,8 @@
     "storywall": "Story Wall",
     "forbiddentransfer": "Cannot be circulated",
     "importtestcase": "Import test cases",
-    "downloadtemplate": "Click to download and import the template"
+    "downloadtemplate": "Click to download and import the template",
+    "pleaseactiveapp": "Please activate at least one app"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",
