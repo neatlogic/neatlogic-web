@@ -50,6 +50,7 @@
             <template slot="value" slot-scope="{row, index}">
               <TsFormInput
                 v-model="row.value"
+                :type="row.componentType || 'text'"
                 :errorMessage="row.valueErrorMessage"
                 :disabled="(row.isEmpty ? true : false)"
                 border="border"
@@ -193,7 +194,8 @@ export default {
       tbodyList && tbodyList.forEach((item) => {
         keyValueList.push({
           key: item.key,
-          value: item.value
+          value: item.value,
+          type: item.componentType
         });
       });
       let {appSystemId, appModuleId, envId} = this.params;
@@ -247,7 +249,8 @@ export default {
                     key: v.key,
                     value: v.hasOwnProperty('value') ? v.value : '',
                     isEmpty: (v.hasOwnProperty('value') && !v.value) ? 1 : 0,
-                    delOperation: ''
+                    delOperation: '',
+                    componentType: v.type
                   });
                 });
               }
@@ -260,6 +263,7 @@ export default {
               this.currentEnvKeyList.push({
                 text: item.key,
                 value: item.key,
+                componentType: item.type || 'text',
                 variableValue: item.value // 变量值
               });
             });
@@ -273,7 +277,7 @@ export default {
     },
     changekey(currentValue, selectedItem, listIndex) {
       // key值改变
-      let {variableValue} = selectedItem;
+      let {variableValue, componentType = 'text'} = selectedItem || {};
       if (!this.isRepeat()) {
         for (let index = 0; index < this.tableData.tbodyList.length; index++) {
           if (this.tableData.tbodyList[index].key == currentValue) {
@@ -285,6 +289,7 @@ export default {
           this.tableData.tbodyList[index].errorMessage = '';
           if (index == listIndex) {
             this.tableData.tbodyList[index].value = variableValue;
+            this.tableData.tbodyList[index].componentType = componentType;
           }
         }
       }
