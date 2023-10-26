@@ -272,14 +272,16 @@ function getRouterConfig() {
   let routerConfig = {};
   let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
   try {
-    routerPathList.push(require.context('import-module-url', true, /router.js$/));
+    routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
   } catch (error) {
     // 模块找不到
   }
   routerPathList.forEach(item => {
     if (item && item.keys()) {
       item.keys().forEach(routerPath => {
-        const moduleName = routerPath.split('/')[1];
+        const moduleNames = routerPath.split('/')[1];
+        const lastValue = moduleNames.split('-');
+        const moduleName = lastValue?.pop() || moduleNames;
         const routeList = item(routerPath).default || [];
         routerConfig[moduleName] = routeList;
       });
@@ -292,7 +294,7 @@ function getAllMenuTypeList() {
   let menuTypeList = [];
   const configPathList = [require.context('@/views/pages', true, /config.js$/)];
   try {
-    configPathList.push(require.context('import-module-url', true, /config.js$/));
+    configPathList.push(require.context('@/commercial-module', true, /config.js$/));
   } catch (error) {
     //
   }

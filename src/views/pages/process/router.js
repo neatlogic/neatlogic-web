@@ -349,12 +349,4 @@ let routerArr = [
   }
 ];
 
-try {
-  let pageArr = require.context('dummy-module/configPage', false, /\index\.js$/);
-  routerArr = pageArr('./index.js').default.routerModule(routerArr);
-  // 找到指定的index.js 文件,然后调用里面的方法
-} catch (e) {
-  // console.error('无法加载自定义配置页面,异常：' + e);
-}
-
 export default routerArr;

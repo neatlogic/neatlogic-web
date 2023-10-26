@@ -160,7 +160,10 @@
     "changememo": "Reason for change",
     "globalattr": "Global Properties",
     "pleaseselectlayout": "Please select a layout",
-    "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List"
+    "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List",
+    "resourcebatchsearchtooltip": "Batch search is a keyword fuzzy search, in which the wildcard * is supported for batch search of IP, matching any character, such as 192.168.1.1, 192.168.12.1, and 192.168.123.1",
+    "onlybackbone": "Show only backbone relationships",
+    "showallrel": "Show all branch relationships"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2233,7 +2236,8 @@
     "storywall": "Story Wall",
     "forbiddentransfer": "Cannot be circulated",
     "importtestcase": "Import test cases",
-    "downloadtemplate": "Click to download and import the template"
+    "downloadtemplate": "Click to download and import the template",
+    "pleaseactiveapp": "Please activate at least one app"
   },
   "plugin": {
     "65535": "An integer between 0 and 65535",

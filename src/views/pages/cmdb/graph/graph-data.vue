@@ -35,14 +35,14 @@
               </div>
             </div>
             <div ref="divTopo" style="position:relative" :style="{ height: height + 'px' }">
-              <div
+              <!-- <div
                 class="bg-block radius-md topoContainer"
                 style="z-index:0;background-size:100% 100%"
                 :style="{
                   'background-color': graphData.config.backgroundColor || null,
                   'background-image': graphData.config.backgroundImage ? 'url(' + graphData.config.backgroundImage + ')' : null
                 }"
-              ></div>
+              ></div>-->
               <div class="radius-md topoContainer" style="z-index:1">
                 <div ref="topo" style="height:100%"></div>
               </div>
@@ -257,6 +257,10 @@ export default {
           'canvas.width': width,
           'canvas.height': height,
           'canvas.class': 'topoGraph',
+          'canvas.backgroundImage': '',
+          'canvas.backgroundColor': '',
+          'canvas.backgroundResizable': false,
+          'canvas.backgroundLayout': '',
           'link.deleteable': false,
           'link.selectable': false,
           'node.selectable': false,
@@ -289,6 +293,10 @@ export default {
               this.topoData = res.Return.config.topo;
             }
             this.topo.fromJson(this.topoData);
+            this.topo.setBackgroundImage(this.graphData.config.backgroundImage);
+            this.topo.setBackgroundColor(this.graphData.config.backgroundColor);
+            this.topo.setBackgroundResizable(this.graphData.config.backgroundResizable);
+            this.topo.setBackgroundLayout(this.graphData.config.backgroundLayout);
             if (this.topoData && this.topoData.nodes) {
               this.topoData.nodes.forEach(node => {
                 if (node.type === 'Cientity') {

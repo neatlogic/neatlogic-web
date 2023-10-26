@@ -2,15 +2,10 @@ const path = require('path');
 const glob = require('glob');
 let src = './src';
 let baseImg = './public/resource';
-let importModuleUrl = process.env.VUE_APP_IMPORT_MODULE_URL || './src/dummy-module';
-let baseConfiglUrl = './src/dummy-module'; // 如果不引用的话，就引用本地的空文件夹
+let commercialModule = './src/commercial-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
-if (process.env.neatlogic_version == 'commercial') {
-  importModuleUrl = '../neatlogic-web-commercial'; // 引入自定义模块
-}
-
 process.env.VUE_APP_TENANT = tenantName; // 租户名称
 process.env.VUE_APP_LOGINTITLE = 'welcome';
 
@@ -22,11 +17,11 @@ function getPages(pageList) {
     let importModuleList = [];
     let customPagePath = [];
     let importModulePathList;
-    importModulePathList = glob.sync(`${importModuleUrl}/**/router.js`);
+    importModulePathList = glob.sync(`${commercialModule}/**/router.js`);
     if (importModulePathList && importModulePathList.length > 0) {
       customPagePath.push(...importModulePathList);
+      pagePathList.push(...customPagePath);
     }
-    pagePathList.push(...customPagePath);
     pagePathList.forEach(p => {
       let filename = '';
       let customImportModuleName = ''; // 自定义导入模块名称
@@ -42,16 +37,16 @@ function getPages(pageList) {
         }
       }
       const newpage = {};
-      let pageLogin = `${pageTitle}-${filename}`;
+      let pageLogin = `${pageTitle}-${getModuleName(importModuleList, filename)}`;
       if (`${filename}` == 'login') {
         pageLogin = `${pageTitle}`;
       }
-      newpage[filename] = {
-        entry: importModuleList.includes(filename) ? `${importModuleUrl}/${filename}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
+      newpage[getModuleName(importModuleList, filename)] = {
+        entry: importModuleList.includes(filename) ? `${commercialModule}/${filename}/${getLastValue(filename)}.js` : `${src}/views/pages/${filename}/${filename}.js`,
         template: `public/index.html`,
-        filename: `${filename}.html`,
+        filename: `${getModuleName(importModuleList, filename)}.html`,
         title: pageLogin, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, `${filename}`]
+        chunks: [`chunk-vendors`, `chunk-common`, getModuleName(importModuleList, filename)]
       };
       Object.assign(pages, newpage);
     });
@@ -60,17 +55,26 @@ function getPages(pageList) {
     let list = typeof pageList == 'string' ? JSON.parse(pageList) : pageList;
     list.forEach(p => {
       const newpage = {};
-      newpage[p] = {
-        entry: importModuleList.includes(p) ? `${importModuleUrl}/${p}/${p}.js` : `${src}/views/pages/${p}/${p}.js`,
+      newpage[getModuleName(importModuleList, p)] = {
+        entry: importModuleList.includes(p) ? `${commercialModule}/${p}/${getLastValue(p)}.js` : `${src}/views/pages/${p}/${p}.js`,
         template: `public/index.html`,
-        filename: `${p}.html`,
-        title: `${pageTitle}-${p}`, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, `${p}`]
+        filename: `${getModuleName(importModuleList, p)}.html`,
+        title: `${pageTitle}-${getModuleName(importModuleList, p)}`, // 标题名称+参数
+        chunks: [`chunk-vendors`, `chunk-common`, getModuleName(importModuleList, p)]
       };
       Object.assign(pages, newpage);
     });
   }
   return pages;
+}
+function getModuleName(importModuleList, moduleName) {
+  // 自定义模块例如：neatlogic-web-codehub 拿到codehub模块名称
+  return importModuleList.includes(moduleName) ? `${getLastValue(moduleName)}` : `${moduleName}`;
+}
+function getLastValue(moduleName) {
+  const lastValue = moduleName.split('-');
+  const moduleNames = lastValue.pop() || moduleName;
+  return moduleNames;
 }
 
 function resolve(dir) {
@@ -107,10 +111,8 @@ module.exports = {
   chainWebpack: config => {
     config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
     config.resolve.alias.set('@', resolve(src));
-    config.resolve.alias.set('dummy-module', resolve(baseConfiglUrl));
     config.resolve.alias.set('base-module', resolve(localUrl));
     config.resolve.alias.set('img-module', resolve(baseImg));
-    config.resolve.alias.set('import-module-url', path.resolve(__dirname, importModuleUrl)); // path.resolve 解析相对路径为绝对路径，解决require.context 获取router.js/config.js 文件，路径找不到问题
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
     config.resolve.alias.set('publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));
