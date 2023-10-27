@@ -231,7 +231,6 @@ export default {
       if (value) {
         let currentValue = this.$utils.deepClone(row);
         currentValue.value = '';
-        currentValue.type = '';
         this.$set(this.tableData.tbodyList, index, currentValue);
       }
     },
