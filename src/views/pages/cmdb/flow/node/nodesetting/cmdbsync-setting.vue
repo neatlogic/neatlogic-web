@@ -35,12 +35,17 @@
     </div>
     <div class="mode-mapping">
       <div class="top">
-        <div class="second-title text-grey require-label">模型映射</div>
+        <div class="second-title text-grey require-label">{{ $t('term.cmdb.modemapping') }}</div>
         <div class="text-href" @click="edit()">
-          编辑
+          {{ $t('page.edit') }}
         </div>
       </div>
-      <div v-if="ciEntityConfig.configList.length" class="pt-sm">{{ ciEntityConfig.configList[0].ciName }}</div>
+      <div v-if="ciEntityConfig.configList.length" class="pt-sm overflow">{{ ciEntityConfig.configList[0].ciLabel }}
+        <span v-if="ciEntityConfig.configList[0].ciName" class="text-tip">({{ ciEntityConfig.configList[0].ciName }})</span>
+      </div>
+      <div v-if="!isValid && $utils.isEmpty(ciEntityConfig.configList)" class="form-error-tip pl-nm">
+        {{ $t('form.validate.required', { target: $t('term.cmdb.modemapping') }) }}
+      </div>
     </div>
     <CmdbsyncDialog v-if="isShowDialog" :configList="ciEntityConfig.configList" @close="close"></CmdbsyncDialog>
   </div>
@@ -52,7 +57,6 @@ export default {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     CmdbsyncDialog: resolve => require(['./cmdbsync-dialog.vue'], resolve)
- 
   },
   props: {
     defaultCiEntityConfig: Object
@@ -66,7 +70,8 @@ export default {
         failPolicy: '',
         rerunStepToSync: 0,
         configList: []
-      }
+      },
+      isValid: true //校验
     };
   },
   beforeCreate() {},
@@ -74,9 +79,7 @@ export default {
     this.getFailPolicyList();
   },
   beforeMount() {},
-  mounted() {
-    this.initData();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -128,13 +131,33 @@ export default {
       }
       this.isShowDialog = false;
     },
+    valid() {
+      this.isValid = true;
+      if (!this.$refs.failPolicy.valid()) {
+        this.isValid = false;
+      }
+      if (this.$utils.isEmpty(this.ciEntityConfig.configList)) {
+        this.isValid = false;
+      }
+      return this.isValid;
+    },
     save() {
       return this.ciEntityConfig;
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    defaultCiEntityConfig: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.initData();
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scpoed>

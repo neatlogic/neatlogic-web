@@ -163,7 +163,8 @@
     "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List",
     "resourcebatchsearchtooltip": "Batch search is a keyword fuzzy search, in which the wildcard * is supported for batch search of IP, matching any character, such as 192.168.1.1, 192.168.12.1, and 192.168.123.1",
     "onlybackbone": "Show only backbone relationships",
-    "showallrel": "Show all branch relationships"
+    "showallrel": "Show all branch relationships",
+    "modemapping": "Model Mapping"
   },
   "process": {
     "workordercenter": "Work Center",

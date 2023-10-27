@@ -163,7 +163,8 @@
     "gotoresourcetypetreesetting": "请到配置管理-资产清单中设置根目录",
     "resourcebatchsearchtooltip": "批量搜索是关键字模糊搜索，其中批量搜索ip时，支持通配符*，匹配任意个字符，例如192.168.*.1可匹配192.168.1.1、192.168.12.1、192.168.123.1",
     "onlybackbone": "只显示主干关系",
-    "showallrel": "显示所有分支关系"
+    "showallrel": "显示所有分支关系",
+    "modemapping": "模型映射"
   },
   "process": {
     "workordercenter": "工单中心",

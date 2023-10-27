@@ -41,7 +41,7 @@
       @updatebutton="updatebutton"
     ></ButtonSetting>
     <!-- 模型设置 -->
-    <CmdbsyncSetting ref="ciEntityConfig" :defaultCiEntityConfig="ciEntityConfig"></CmdbsyncSetting>
+    <CmdbsyncSetting id="ciEntityConfig" ref="ciEntityConfig" :defaultCiEntityConfig="ciEntityConfig"></CmdbsyncSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"
@@ -121,9 +121,9 @@ export default {
       let querySelect = href.substring(1);
       this.$nextTick(() => {
         if (querySelect != 'assignData') {
-          this.$refs[`${querySelect}`].valid();
+          this.$refs[`${querySelect}`] && this.$refs[`${querySelect}`].valid();
         } else {
-          this.$refs.assignData.assignValid();
+          this.$refs.assignData && this.$refs.assignData.assignValid();
         }
       });
     },

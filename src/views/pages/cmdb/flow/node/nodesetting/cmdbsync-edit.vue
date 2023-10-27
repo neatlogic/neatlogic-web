@@ -136,6 +136,8 @@
                             :attrData="e.element"
                             :valueList="getValueList(ciEntityData.attrEntityData, e.element)"
                             @setData="setAttrData(e.element, arguments[0], arguments[1])"
+                            @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
+                            @select="selectAttrEntity('attr_' + e.element.id, $event)"
                           ></AttrInputer>
                         </div>
                         <div v-else-if="e.type === 'global'">
@@ -343,7 +345,8 @@ export default {
       } else if (!data['attr_' + id]['valueList']) {
         this.$set(data['attr_' + id], 'valueList', []);
       }
-      return data['attr_' + id]['valueList'];
+      console.log(this.ciEntityData.attrEntityData, ' this.ciEntityData.attrEntityData1000');
+      return this.$utils.deepClone(data['attr_' + id]['valueList']);
     },
     disabledFn(elementId) {
       if (this.ciEntityData.editableAttrRelIdList && this.ciEntityData.editableAttrRelIdList.length > 0 && !this.ciEntityData.editableAttrRelIdList.includes(elementId)) {
@@ -482,11 +485,13 @@ export default {
       if (!this.ciEntityData.attrEntityData[key]['actualValueList']) {
         this.$set(this.ciEntityData.attrEntityData[key], 'actualValueList', []);
       }
-      let valueList = this.ciEntityData.attrEntityData[key]['valueList'];
-      if (valueList.findIndex(v => (typeof v == 'object' && (v.uuid == attrentity.uuid || v.id == attrentity.id)) || (typeof v == 'number' && v == attrentity.id)) == -1) {
-        this.ciEntityData.attrEntityData[key]['valueList'].push(attrentity);
-        this.ciEntityData.attrEntityData[key]['actualValueList'].push(attrentity);
-      }
+      this.$nextTick(() => {
+        let valueList = this.ciEntityData.attrEntityData[key]['valueList'];
+        if (valueList.findIndex(v => (typeof v == 'object' && (v.uuid == attrentity.uuid || v.id == attrentity.id)) || (typeof v == 'number' && v == attrentity.id)) == -1) {
+          this.ciEntityData.attrEntityData[key]['valueList'].push(attrentity);
+          this.ciEntityData.attrEntityData[key]['actualValueList'].push(attrentity);
+        }
+      });
     },
     valid() {
       const attrHandlers = this.$refs['attrHandler'];
@@ -550,6 +555,12 @@ export default {
       if (this.ciEntityData) {
         const uniqueList = this.ciEntityData['_uniqueAttrList'] || [];
         const elementList = this.ciEntityData['_elementList'];
+        //流程节点中，模型映射，下框和table不能新增
+        elementList.forEach(e => {
+          if (e.element.type === 'select' || e.element.type === 'table') {
+            e.element.config && this.$delete(e.element.config, 'mode');
+          }
+        });
         const globalObj = { type: 'global', label: this.$t('term.cmdb.globalattr'), elementList: [], isShow: true };
         globalObj.elementList = elementList.filter(d => d.type === 'global');
         if (globalObj.elementList.length > 0) {
@@ -600,6 +611,21 @@ export default {
       }
       return null;
     },
+    // getValueList() {
+    //   return (data, attr) => {
+    //     if (attr) {
+    //       const id = attr.id;
+    //       if (!data['attr_' + id]) {
+    //         this.$set(data, 'attr_' + id, { type: attr.type, config: attr.config, valueList: [] });
+    //       } else if (!data['attr_' + id]['valueList']) {
+    //         this.$set(data['attr_' + id], 'valueList', []);
+    //       }
+    //       return data['attr_' + id]['valueList'];
+    //     } else {
+    //       return null;
+    //     }
+    //   };
+    // },
     getFormComponent() {
       return (type) => {
         let dataList = [];

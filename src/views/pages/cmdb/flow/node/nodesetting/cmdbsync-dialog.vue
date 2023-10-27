@@ -145,8 +145,6 @@ export default {
     changeCiId(val, item) {
       this.saveCiEntityMap = {};
       if (val) {
-        this.ciData.ciId = val;
-        this.ciData.ciName = item.text;
         this.getCiEntityById();
       }
     },
