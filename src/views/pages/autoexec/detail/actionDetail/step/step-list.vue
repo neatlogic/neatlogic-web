@@ -433,7 +433,7 @@ export default {
                 }
               });
               sort++;
-              list.push(arr);
+              arr.length && list.push(arr);
             }
           }
           this.list = list;
