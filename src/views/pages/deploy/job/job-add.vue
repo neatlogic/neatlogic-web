@@ -138,6 +138,7 @@
           <PhaseList
             v-if="selectModuleList.length"
             :appSystemId="appSystemId"
+            :envId="envId"
             :moduleList="selectModuleList"
             :combopPhaseNameList="combopPhaseNameList"
           ></PhaseList>
@@ -307,6 +308,7 @@ export default {
       });
     },
     getAppPipeline() { //流水线
+      this.$set(this.searchParams, 'envId', this.envId);
       this.$api.deploy.apppipeline.getAppPipeline(this.searchParams).then(res => {
         if (res && res.Status == 'OK') {
           let data = res.Return || {};
