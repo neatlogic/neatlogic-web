@@ -75,6 +75,7 @@ export default {
   },
   props: {
     appSystemId: Number,
+    envId: Number,
     moduleList: Array,
     combopPhaseNameList: Array
   },
@@ -114,6 +115,7 @@ export default {
       let data = {
         appSystemId: this.appSystemId,
         appModuleId: appModuleId,
+        envId: this.envId,
         isDeleteDisabledPhase: true
       };
       this.loadingShow = true;
