@@ -227,14 +227,17 @@ export default {
       //根据自定义errorMessage改变isValidPass
       if (this.validMesage) {
         this.isValidPass = false;
-      } else {      
+      } else {
         this.isValidPass = true;
       }
     },
     validateList() {
       this.currentValidList = this.filterValid(this.validateList) || [];
-      this.validMesage = '';
-      this.isValidPass = true;
+      if (this.$utils.isEmpty(this.currentValidList)) {
+        // 修复传递errorMessage错误提示文案没有显示问题
+        this.validMesage = '';
+        this.isValidPass = true;
+      }
     }
   }
 };
