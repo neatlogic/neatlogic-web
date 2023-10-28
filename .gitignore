@@ -18,3 +18,4 @@ yarn.lock
 /.lh
 /.vscode
 /src/commercial-module/*
+*.code-workspace
