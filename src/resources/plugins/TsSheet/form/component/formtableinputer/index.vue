@@ -271,11 +271,14 @@ export default {
       let theadList = [];
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
-          theadList.push({
-            header: item.title,
-            key: item.key,
-            width: 20
-          });
+          if (item.key != 'number') {
+            // 序号是否需要显示
+            theadList.push({
+              header: item.title,
+              key: item.key,
+              width: 20
+            });
+          }
         }
       });
       _sheet1.columns = theadList;
@@ -310,18 +313,20 @@ export default {
       let columnsList = [];
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
-          columnsList.push({
-            header: item.title,
-            key: item.key,
-            width: 20
-          });
+          if (item.key != 'number') {
+            columnsList.push({
+              header: item.title,
+              key: item.key,
+              width: 20
+            }); 
+          }
         }
       });
       _sheet1.columns = columnsList;
-      columnsList.forEach(({ header, key }, columnIndex) => {
-        const headerCell = _sheet1.getCell(`${this.convertToExcelColumn(columnIndex + 1)}1`);
-        headerCell.name = key; // 将key作为每列的名称，作为导入进行数据匹配的字段
-      });
+      // columnsList.forEach(({ header, key }, columnIndex) => {
+      //   const headerCell = _sheet1.getCell(`${this.convertToExcelColumn(columnIndex + 1)}1`);
+      //   headerCell.name = key; // 将key作为每列的名称，作为导入进行数据匹配的字段
+      // });
       // 添加数据
       this.tableData.tbodyList.forEach((item) => {
         if (item) {
@@ -372,7 +377,7 @@ export default {
       let columnsList = [];
       workbook.xlsx.load(file).then((workbook) => {
         workbook?.eachSheet((sheet, id) => {
-          sheet?.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+          sheet?.eachRow((row, rowIndex) => {
             // includeEmpty：true表示把空行的单元格内容也包含在内
             if (rowIndex == 1) {
               // 首行表头的数据
@@ -382,12 +387,25 @@ export default {
                 }
               });
             } else {
-              console.log('第二行的数据', row.values, columnsList);
-              this.tableData.tbodyList.forEach((item, index) => {
-                item[columnsList[index]] = row.values[index];
-                console.log('返回的值', row.values[index], index);
+              let rowValues = this.$utils.deepClone(row.values);
+              rowValues.splice(0, 1);
+              let rowValue = {};
+              this.tableData.theadList.forEach((item, tIndex) => {
+                if (item.key != 'selection' && item.key != 'number') {
+                  this.$set(rowValue, [item.key], rowValues[tIndex - 2]);
+                }
               });
-              console.log('改变值', this.tableData.tbodyList);
+              console.log('rowValues', rowValues, rowIndex);
+              console.log('rowValue', rowValue);
+              this.tableData.tbodyList?.forEach((item, tIndex) => {
+                if (item && (tIndex == (rowIndex - 2))) {
+                  item = Object.assign(item, rowValue);
+                  console.log('1', tIndex, item);
+                } else {
+                  console.log('2', tIndex, item);
+                  this.tableData.tbodyList.push({...Object.assign(item, rowValue)});
+                }
+              });
             }
           });
         });
