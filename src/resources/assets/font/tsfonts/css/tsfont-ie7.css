@@ -576,3 +576,9 @@
 .tsfont-m-stack { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea31;&nbsp;'); }
 .tsfont-spinner { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea32;&nbsp;'); }
 .tsfont-tags { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea33;&nbsp;'); }
+.tsfont-border-bottom { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea34;&nbsp;'); }
+.tsfont-border-horizontal { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea35;&nbsp;'); }
+.tsfont-border-left { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea36;&nbsp;'); }
+.tsfont-border-right { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea37;&nbsp;'); }
+.tsfont-border-top { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea38;&nbsp;'); }
+.tsfont-border-vertical { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea39;&nbsp;'); }
