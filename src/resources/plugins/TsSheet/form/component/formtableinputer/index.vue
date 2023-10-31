@@ -13,7 +13,6 @@
         ref="upload"
         :show-upload-list="false"
         :default-file-list="[]"
-        :on-success="handleSuccess"
         :format="['xlsx']"
         :max-size="2048"
         :on-format-error="handleFormatError"
@@ -308,37 +307,48 @@ export default {
       });
     },
     exportExcel() {
+      // 导出excel带表格数据
       const _workbook = new ExcelJS.Workbook(); // 创建工作簿
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       let columnsList = [];
+      let theadUuidList = []; // 获取所有表头的uuid列表
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
           if (item.key != 'number') {
             columnsList.push({
               header: item.title,
               key: item.key,
-              width: 20
-            }); 
+              style: this.handleCellType(item.key) // 单元格格式为文本类型，解决日期和时间导入时类型是Date日期的类型
+            });
+            theadUuidList.push(item.key);
           }
         }
       });
       _sheet1.columns = columnsList;
-      // columnsList.forEach(({ header, key }, columnIndex) => {
-      //   const headerCell = _sheet1.getCell(`${this.convertToExcelColumn(columnIndex + 1)}1`);
-      //   headerCell.name = key; // 将key作为每列的名称，作为导入进行数据匹配的字段
-      // });
-      // 添加数据
       this.tableData.tbodyList.forEach((item) => {
+        // 添加数据
         if (item) {
           _sheet1.addRow({...item});
         }
       });
       // 数据验证
-      // _sheet1.getCell('B2').dataValidation = {
-      //   type: 'list',
-      //   allowBlank: true,
-      //   formulae: ['"软件一班,软件二班,软件三班"']
-      // };
+      let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
+      const startRow = 2;
+      const endRow = 10;
+      this.extraList.forEach((item, index) => {
+        if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
+          // 遍历每一行，设置数据有效性
+          for (let row = startRow; row <= endRow; row++) {
+            const worksheetRow = _sheet1.getRow(row);
+            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            cell.dataValidation = {
+              type: 'list',
+              allowBlank: false,
+              formulae: this.handleFormulae(item.config)
+            };
+          }
+        }
+      });
 
       // 导出表格
       _workbook.xlsx.writeBuffer().then((buffer) => {
@@ -348,7 +358,17 @@ export default {
         FileSaver.saveAs(_file, `${this.$utils.getCurrenttime('yyyyMMddHHmmss')}输入表格.xlsx`);
       });
     },
+    handleCellType(uuid) {
+      // 设置单元格类型
+      let componentsList = ['formdate', 'formtime'];
+      const foundItem = this.extraList.find((item) => {
+        return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
+      });
+      const formatObj = foundItem ? { numFmt: '@' } : {};
+      return formatObj;
+    },
     convertToExcelColumn(number) {
+      // 将数字转化成A-Z的值
       let result = '';
       while (number > 0) {
         const remainder = (number - 1) % 26;
@@ -357,8 +377,20 @@ export default {
       }
       return result;
     },
-    handleSuccess(res, file) {
-      console.log('上传成功', res, file);
+    handleFormulae(config) {
+      // 处理数据有效性下拉
+      if (config?.dataSource !== 'static') {
+        return []; // 不是静态数据源，返回空数组
+      }
+
+      const resultArray = [
+        `"${config.dataList
+          .filter(item => item?.value)
+          .map(item => `${item.value}/${item.text}`)
+          .join(',')}"`
+      ];
+
+      return resultArray;
     },
     handleFormatError(file) {
       this.$Notice.warning({
@@ -374,42 +406,43 @@ export default {
     },
     async handleBeforeUpload(file) {
       const workbook = new ExcelJS.Workbook();
-      let columnsList = [];
       workbook.xlsx.load(file).then((workbook) => {
         workbook?.eachSheet((sheet, id) => {
           sheet?.eachRow((row, rowIndex) => {
-            // includeEmpty：true表示把空行的单元格内容也包含在内
-            if (rowIndex == 1) {
-              // 首行表头的数据
-              row.eachCell((cell) => {
-                if (cell?.name) {
-                  columnsList.push(cell.name);
-                }
-              });
-            } else {
-              let rowValues = this.$utils.deepClone(row.values);
-              rowValues.splice(0, 1);
+            if (rowIndex != 1) {
               let rowValue = {};
+              let rowValuesList = this.$utils.deepClone(row.values);
+              rowValuesList.splice(0, 1); // 删除excel第一列的序号
               this.tableData.theadList.forEach((item, tIndex) => {
                 if (item.key != 'selection' && item.key != 'number') {
-                  this.$set(rowValue, [item.key], rowValues[tIndex - 2]);
+                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(rowValuesList[tIndex - 2]));
                 }
               });
-              console.log('rowValues', rowValues, rowIndex);
-              console.log('rowValue', rowValue);
-              this.tableData.tbodyList?.forEach((item, tIndex) => {
-                if (item && (tIndex == (rowIndex - 2))) {
-                  item = Object.assign(item, rowValue);
-                  console.log('1', tIndex, item);
-                } else {
-                  console.log('2', tIndex, item);
-                  this.tableData.tbodyList.push({...Object.assign(item, rowValue)});
-                }
-              });
+              let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
+              if (!this.$utils.isEmpty(this.tableData.tbodyList[rowIndex - 2])) {
+                // 不为空时，修改数组对象里面的值
+                this.tableData.tbodyList.splice(rowIndex - 2, 1, item);
+              } else {
+                // 空数组时，新增一条新的数据
+                this.tableData.tbodyList.push(item);
+              }
             }
           });
         });
       });
+    },
+    byComponentTypeSetValue(item) {
+      // 根据组件的类型，设置回显值
+      if (typeof item === 'string') {
+        try {
+          const parsedArray = JSON.parse(item);
+          return parsedArray;
+        } catch (error) {
+          return item;
+        }
+      } else {
+        return item;
+      }
     }
   },
   filter: {},
