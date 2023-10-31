@@ -1,6 +1,6 @@
 <template>
   <TsDialog
-    :title="$t('dialog.title.choosetarget',{target:$t('page.icon')})"
+    :title="$t('dialog.title.choosetarget', { target: $t('page.icon') })"
     width="medium"
     type="modal"
     :isShow="true"
@@ -18,7 +18,7 @@
         >
           <i
             :class="item"
-            style="font-size:25px"
+            style="font-size: 25px"
             aria-hidden="true"
             @click="selectIcon(item)"
           ></i>
@@ -31,7 +31,15 @@
 export default {
   name: '',
   components: {},
-  props: { currentIcon: { type: String } },
+  props: {
+    currentIcon: { type: String },
+    typeList: {
+      type: Array,
+      default: () => {
+        return ['cmdb'];
+      }
+    }
+  },
   data() {
     return {
       iconList: [],
@@ -52,7 +60,7 @@ export default {
   destroyed() {},
   methods: {
     getIconList: function() {
-      this.$api.common.getIconList({ type: ['cmdb'] }).then(res => {
+      this.$api.common.getIconList({ type: this.typeList }).then(res => {
         if (res.Status == 'OK') {
           this.iconList = res.Return;
         }
