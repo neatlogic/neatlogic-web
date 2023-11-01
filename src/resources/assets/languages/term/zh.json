@@ -2527,6 +2527,7 @@
   "diagram": {
     "widgetlist": "组件列表",
     "widget": "图元",
-    "lane": "泳道"
+    "lane": "泳道",
+    "widgetmanage": "组件管理"
   }
 }
