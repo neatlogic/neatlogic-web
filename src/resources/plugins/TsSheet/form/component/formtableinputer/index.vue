@@ -306,7 +306,7 @@ export default {
         FileSaver.saveAs(_file, '输入表格模板.xlsx');
       });
     },
-    exportExcel() {
+    async exportExcel() {
       // 导出excel带表格数据
       const _workbook = new ExcelJS.Workbook(); // 创建工作簿
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
@@ -318,6 +318,7 @@ export default {
             columnsList.push({
               header: item.title,
               key: item.key,
+              width: 20,
               style: this.handleCellType(item.key) // 单元格格式为文本类型，解决日期和时间导入时类型是Date日期的类型
             });
             theadUuidList.push(item.key);
@@ -325,9 +326,24 @@ export default {
         }
       });
       _sheet1.columns = columnsList;
-      this.tableData.tbodyList.forEach((item) => {
+      let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+      tbodyList.forEach((item) => {
         // 添加数据
         if (item) {
+          for (let key in item) {
+            if (key != 'uuid' && key != '_selected') {
+              let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == key);
+              let {config = {}, handler = ''} = selectedItem || {};
+              let {dataSource = '', isMultiple = false} = config;
+              if (dataSource == 'matrix' && isMultiple) {
+                // 矩阵数据源并且是多选，需要处理值去掉&=&
+                this.$set(item, [key], this.handleSpecialValue(item[key]));
+              } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
+                // 静态数据源并且是多选
+                this.$set(item, [key], item[key].join(','));
+              }
+            }
+          }
           _sheet1.addRow({...item});
         }
       });
@@ -335,27 +351,28 @@ export default {
       let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
       const startRow = 2;
       const endRow = 10;
-      this.extraList.forEach((item, index) => {
+      for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
+          let formulaeList = await this.handleFormulae(item.config);
           for (let row = startRow; row <= endRow; row++) {
             const worksheetRow = _sheet1.getRow(row);
             const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
             cell.dataValidation = {
               type: 'list',
               allowBlank: false,
-              formulae: this.handleFormulae(item.config)
+              formulae: formulaeList
             };
           }
         }
-      });
+      }
 
       // 导出表格
       _workbook.xlsx.writeBuffer().then((buffer) => {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-        FileSaver.saveAs(_file, `${this.$utils.getCurrenttime('yyyyMMddHHmmss')}输入表格.xlsx`);
+        FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
       });
     },
     handleCellType(uuid) {
@@ -377,20 +394,40 @@ export default {
       }
       return result;
     },
-    handleFormulae(config) {
+    async handleFormulae(config) {
       // 处理数据有效性下拉
-      if (config?.dataSource !== 'static') {
-        return []; // 不是静态数据源，返回空数组
+      let {dataSource = '', matrixUuid = '', mapping = {}, dataList = [] } = config || {};
+      if (dataSource === 'matrix') {
+        let param = {
+          matrixUuid: matrixUuid,
+          valueField: mapping.value,
+          textField: mapping.text
+        };
+        return await this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
+          if (res.Status == 'OK') {
+            return [`"${res.Return?.dataList?.filter((item) => this.handleSpecialValue(item.value)).map((item) => this.handleSpecialValue(item.value)).join(',')}"`];
+          }
+        });
+      } else {
+        const resultArray = [
+          `"${dataList
+            .filter(item => item?.value)
+            .map(item => item.value)
+            .join(',')}"`
+        ];
+        return resultArray;
+      }
+    },
+    handleSpecialValue(value) {
+      let valueList = [];
+
+      if (typeof value == 'string') {
+        return value?.split('&=&')?.[0] || value;
+      } else if (Array.isArray(value)) {
+        valueList = value.map((item) => item?.split('&=&')?.[0] || item).filter(Boolean);
       }
 
-      const resultArray = [
-        `"${config.dataList
-          .filter(item => item?.value)
-          .map(item => `${item.value}/${item.text}`)
-          .join(',')}"`
-      ];
-
-      return resultArray;
+      return valueList.join(',');
     },
     handleFormatError(file) {
       this.$Notice.warning({
@@ -415,7 +452,7 @@ export default {
               rowValuesList.splice(0, 1); // 删除excel第一列的序号
               this.tableData.theadList.forEach((item, tIndex) => {
                 if (item.key != 'selection' && item.key != 'number') {
-                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(rowValuesList[tIndex - 2]));
+                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(item.key, rowValuesList[tIndex - 2]));
                 }
               });
               let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
@@ -431,18 +468,31 @@ export default {
         });
       });
     },
-    byComponentTypeSetValue(item) {
+    byComponentTypeSetValue(uuid, item) {
       // 根据组件的类型，设置回显值
-      if (typeof item === 'string') {
-        try {
-          const parsedArray = JSON.parse(item);
-          return parsedArray;
-        } catch (error) {
-          return item;
+      console.log(item);
+      let resultValue;
+      let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
+      let {config = {}, handler = ''} = selectedItem || {};
+      if (item) {
+        let {dataSource = '', isMultiple = false} = config || {};
+        if (dataSource === 'matrix' && isMultiple) {
+        // 矩阵
+          resultValue = [];
+          let valueList = item.split(',');
+          valueList.forEach((valueItem) => {
+            if (valueItem) {
+              resultValue.push(`${valueItem}&=&${valueItem}`);
+            }
+          });
+        } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
+          resultValue = [];
+          resultValue.push(item);
+        } else {
+          resultValue = item;
         }
-      } else {
-        return item;
       }
+      return resultValue;
     }
   },
   filter: {},
