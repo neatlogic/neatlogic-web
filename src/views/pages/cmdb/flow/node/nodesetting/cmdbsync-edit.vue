@@ -25,12 +25,12 @@
                 >
                   <Col span="4">
                     <template v-if="e.type == 'rel'">
-                      <div class="text-title overflow" :class="{'require-label':!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))}">
+                      <div class="text-title overflow" :title="e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel" :class="{'require-label':!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))}">
                         {{ e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel }}
                       </div>
                     </template>
                     <template v-else>
-                      <div class="text-title overflow" :class="{'require-label': e.type === 'attr' && !!e.element.isRequired}">
+                      <div class="text-title overflow" :class="{'require-label': e.type === 'attr' && !!e.element.isRequired}" :title="e.element.label">
                         {{ e.element.label }}
                       </div>
                     </template>
@@ -95,7 +95,7 @@
                       </div>
                     </div>
                     <TsRow v-else :gutter="8">
-                      <Col span="10">
+                      <Col span="6">
                         <TsFormSelect
                           ref="attrHandler"
                           :value="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode')"
@@ -107,7 +107,7 @@
                           @change="(val)=>setConfig(val,'mappingMode',e)"
                         ></TsFormSelect>
                       </Col>
-                      <Col span="14">
+                      <Col span="18">
                         <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') == 'constant'">
                           <div v-if="e.type === 'attr'">
                             <AttrInputer
@@ -125,7 +125,7 @@
                           <div v-else-if="e.type === 'global'">
                             <TsFormRadio
                               v-if="!e.element.isMultiple"
-                              :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                              :value="getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)?getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)[0]:null"
                               :allowToggle="true"
                               :dataList="e.element.itemList"
                               valueName="id"
@@ -134,21 +134,21 @@
                               @change="
                                 (val, opt) => {
                                   if (opt) {
-                                    setGlobalAttrData(e.element, [opt], val, e);
+                                    setGlobalAttrData(e.element, [opt], e);
                                   } else {
-                                    setGlobalAttrData(e.element, [], val, e);
+                                    setGlobalAttrData(e.element, [], e);
                                   }
                                 }
                               "
                             ></TsFormRadio>
                             <TsFormCheckbox
                               v-if="!!e.element.isMultiple"
-                              :value="getValue(ciEntityData.globalAttrEntityData, e, 'valueList')"
+                              :value="getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)"
                               :dataList="e.element.itemList"
                               valueName="id"
                               textName="value"
                               :validateList="getValidList(e.type, e.element)"
-                              @change="(val, opt) => setGlobalAttrData(e.element, opt, val, e)"
+                              @change="(val, opt) => setGlobalAttrData(e.element, opt, e)"
                             ></TsFormCheckbox>
                           </div>
                           <div v-else>
@@ -325,6 +325,13 @@ export default {
       }
       return value;
     },
+    getGlobalValueList(data, key) {
+      let value = null;
+      if (data && data[key] && data[key]['valueList']) {
+        value = data[key]['valueList'].map(d => d.id);
+      }
+      return value;
+    },
     disabledFn(elementId) {
       if (this.ciEntityData.editableAttrRelIdList && this.ciEntityData.editableAttrRelIdList.length > 0 && !this.ciEntityData.editableAttrRelIdList.includes(elementId)) {
         return true;
@@ -484,7 +491,7 @@ export default {
       }
       return isValid;
     },
-    setGlobalAttrData(attr, opt, value, item) {
+    setGlobalAttrData(attr, opt, item) {
       if (!this.ciEntityData.globalAttrEntityData) {
         this.ciEntityData.globalAttrEntityData = {};
       }
@@ -492,7 +499,7 @@ export default {
         this.ciEntityData.globalAttrEntityData['global_' + attr.id] = {};
       }
       this.$set(this.ciEntityData.globalAttrEntityData['global_' + attr.id], 'valueList', opt);
-      this.setConfig(value, 'valueList', item);
+      this.setConfig(opt, 'valueList', item);
     },
     setAttrData(item, attr, value, actualValue) {
       if (!this.ciEntityData.attrEntityData) {
