@@ -16,239 +16,241 @@
               slot="content"
               class="pt-nm"
             >
-              <TsRow
-                v-for="(e, index) in elementType.elementList"
-                :key="index"
-                :gutter="8"
-                class="pb-sm"
-              >
-                <Col span="4">
-                  <template v-if="e.type == 'rel'">
-                    <div class="text-title overflow" :class="{'require-label':!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))}">
-                      {{ e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel }}
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="text-title overflow" :class="{'require-label': e.type === 'attr' && !!e.element.isRequired}">
-                      {{ e.element.label }}
-                    </div>
-                  </template>
-                </Col>
-                <Col span="20">
-                  <div v-if="e.type == 'rel'">  
-                    <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
-                      <a
-                        v-if="((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))"
-                        href="javascript:void(0)"
-                        :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)"
-                        @click.stop="addNewRelEntity(e.element)"
-                      >
-                        <i class="tsfont-plus"></i>
-                        {{ $t('page.choose') }}
-                      </a>
-                      <Poptip
-                        v-model="isRelPopShow[e.element.id + '_' + e.element.direction]"
-                        placement="right"
-                        trigger="hover"
-                        :transfer="true"
-                      >
-                        <a></a>
-                        <div slot="content">
-                          <div v-if="relCiList" :style="'overflow:auto;max-height:300px;width:' + Math.min(550, relCiList.length * 90) + 'px'">
-                            <div
-                              v-for="relci in relCiList"
-                              :key="relci.id"
-                              style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
-                              @click="newCiEntity(e.element, relci.id)"
-                            >
-                              <div>
-                                <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
-                              </div>
-                              <div class="overflow" :title="relci.label">
-                                <a href="javascript:void(0)">{{ relci.label }}</a>
+              <template v-for="(e, index) in elementType.elementList">
+                <TsRow
+                  v-if="e.type !== 'attr' || (e.type === 'attr' && e.element.canInput)"
+                  :key="index"
+                  :gutter="8"
+                  class="pb-sm"
+                >
+                  <Col span="4">
+                    <template v-if="e.type == 'rel'">
+                      <div class="text-title overflow" :class="{'require-label':!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))}">
+                        {{ e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel }}
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="text-title overflow" :class="{'require-label': e.type === 'attr' && !!e.element.isRequired}">
+                        {{ e.element.label }}
+                      </div>
+                    </template>
+                  </Col>
+                  <Col span="20">
+                    <div v-if="e.type == 'rel'">  
+                      <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
+                        <a
+                          v-if="((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))"
+                          href="javascript:void(0)"
+                          :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)"
+                          @click.stop="addNewRelEntity(e.element)"
+                        >
+                          <i class="tsfont-plus"></i>
+                          {{ $t('page.choose') }}
+                        </a>
+                        <Poptip
+                          v-model="isRelPopShow[e.element.id + '_' + e.element.direction]"
+                          placement="right"
+                          trigger="hover"
+                          :transfer="true"
+                        >
+                          <a></a>
+                          <div slot="content">
+                            <div v-if="relCiList" :style="'overflow:auto;max-height:300px;width:' + Math.min(550, relCiList.length * 90) + 'px'">
+                              <div
+                                v-for="relci in relCiList"
+                                :key="relci.id"
+                                style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
+                                @click="newCiEntity(e.element, relci.id)"
+                              >
+                                <div>
+                                  <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
+                                </div>
+                                <div class="overflow" :title="relci.label">
+                                  <a href="javascript:void(0)">{{ relci.label }}</a>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </Poptip>
+                        </Poptip>
+                      </div>
+                      <div v-if="ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']">
+                        <Tag
+                          v-for="(relentity, reindex) in ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']"
+                          :key="reindex"
+                          :color="getTagType(relentity)"
+                          type="dot"
+                          size="large"
+                          :closable="!disabledFn('rel' + e.element.direction + '_' + e.element.id) && (relentity.ciEntityId || relentity.type == 'new') ? true : false"
+                          :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
+                          @click.native="
+                            e => {
+                              e.stopPropagation();
+                              editNewRelEntity(relentity);
+                            }
+                          "
+                          @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity, ciEntityData || '')"
+                        >
+                          <span>{{ relentity.ciEntityName }}</span>
+                        </Tag>
+                      </div>
                     </div>
-                    <div v-if="ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']">
-                      <Tag
-                        v-for="(relentity, reindex) in ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']"
-                        :key="reindex"
-                        :color="getTagType(relentity)"
-                        type="dot"
-                        size="large"
-                        :closable="!disabledFn('rel' + e.element.direction + '_' + e.element.id) && (relentity.ciEntityId || relentity.type == 'new') ? true : false"
-                        :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
-                        @click.native="
-                          e => {
-                            e.stopPropagation();
-                            editNewRelEntity(relentity);
-                          }
-                        "
-                        @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity, ciEntityData || '')"
-                      >
-                        <span>{{ relentity.ciEntityName }}</span>
-                      </Tag>
-                    </div>
-                  </div>
-                  <TsRow v-else :gutter="8">
-                    <Col span="10">
-                      <TsFormSelect
-                        ref="attrHandler"
-                        :value="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode')"
-                        :dataList="mappingModeList"
-                        :firstSelect="false"
-                        transfer
-                        border="border"
-                        :validateList="getValidList(e.type, e.element)"
-                        @change="(val)=>setConfig(val,'mappingMode',e)"
-                      ></TsFormSelect>
-                    </Col>
-                    <Col span="14">
-                      <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') == 'constant'">
-                        <div v-if="e.type === 'attr'">
-                          <AttrInputer
-                            ref="attrHandler"
-                            :allowBatchAdd="true"
-                            :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
-                            :disabled="disabledFn('attr_' + e.element.id)"
-                            :attrData="e.element"
-                            :valueList="getValue(ciEntityData.allCiEntityValue, e, 'valueList')"
-                            @setData="setAttrData(e, e.element, arguments[0], arguments[1])"
-                            @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
-                            @select="selectAttrEntity('attr_' + e.element.id, $event)"
-                          ></AttrInputer>
-                        </div>
-                        <div v-else-if="e.type === 'global'">
-                          <TsFormRadio
-                            v-if="!e.element.isMultiple"
-                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
-                            :allowToggle="true"
-                            :dataList="e.element.itemList"
-                            valueName="id"
-                            textName="value"
-                            :validateList="getValidList(e.type, e.element)"
-                            @change="
-                              (val, opt) => {
-                                if (opt) {
-                                  setGlobalAttrData(e.element, [opt], val, e);
-                                } else {
-                                  setGlobalAttrData(e.element, [], val, e);
-                                }
-                              }
-                            "
-                          ></TsFormRadio>
-                          <TsFormCheckbox
-                            v-if="!!e.element.isMultiple"
-                            :value="getValue(ciEntityData.globalAttrEntityData, e, 'valueList')"
-                            :dataList="e.element.itemList"
-                            valueName="id"
-                            textName="value"
-                            :validateList="getValidList(e.type, e.element)"
-                            @change="(val, opt) => setGlobalAttrData(e.element, opt, val, e)"
-                          ></TsFormCheckbox>
-                        </div>
-                        <div v-else>
-                          <TsFormInput
-                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
-                            type="textarea"
-                            maxlength="500"
-                            :validateList="getValidList(e.type, e.element)"
-                            @change="(val)=>setConfig(val,'valueList',e)"
-                          ></TsFormInput>
-                        </div>
-                      </template>
-                      <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formCommonComponent'">
+                    <TsRow v-else :gutter="8">
+                      <Col span="10">
                         <TsFormSelect
                           ref="attrHandler"
-                          :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
-                          :dataList="getFormComponent('formCommonComponent')"
-                          textName="label"
-                          valueName="uuid"
+                          :value="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode')"
+                          :dataList="mappingModeList"
                           :firstSelect="false"
+                          transfer
                           border="border"
                           :validateList="getValidList(e.type, e.element)"
-                          transfer
-                          @change="(val)=>setConfig(val,'valueList',e)"
+                          @change="(val)=>setConfig(val,'mappingMode',e)"
                         ></TsFormSelect>
-                      </template>
-                      <template v-else-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
-                        <TsRow :gutter="8">
-                          <Col span="12">
-                            <TsFormSelect
+                      </Col>
+                      <Col span="14">
+                        <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') == 'constant'">
+                          <div v-if="e.type === 'attr'">
+                            <AttrInputer
                               ref="attrHandler"
+                              :allowBatchAdd="true"
+                              :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
+                              :disabled="disabledFn('attr_' + e.element.id)"
+                              :attrData="e.element"
+                              :valueList="getValue(ciEntityData.allCiEntityValue, e, 'valueList')"
+                              @setData="setAttrData(e, e.element, arguments[0], arguments[1])"
+                              @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
+                              @select="selectAttrEntity(e, 'attr_' + e.element.id, $event)"
+                            ></AttrInputer>
+                          </div>
+                          <div v-else-if="e.type === 'global'">
+                            <TsFormRadio
+                              v-if="!e.element.isMultiple"
                               :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
-                              :dataList="getFormComponent('formTableComponent')"
-                              textName="label"
-                              valueName="uuid"
+                              :allowToggle="true"
+                              :dataList="e.element.itemList"
+                              valueName="id"
+                              textName="value"
                               :validateList="getValidList(e.type, e.element)"
-                              :firstSelect="false"
-                              transfer
-                              border="border"
+                              @change="
+                                (val, opt) => {
+                                  if (opt) {
+                                    setGlobalAttrData(e.element, [opt], val, e);
+                                  } else {
+                                    setGlobalAttrData(e.element, [], val, e);
+                                  }
+                                }
+                              "
+                            ></TsFormRadio>
+                            <TsFormCheckbox
+                              v-if="!!e.element.isMultiple"
+                              :value="getValue(ciEntityData.globalAttrEntityData, e, 'valueList')"
+                              :dataList="e.element.itemList"
+                              valueName="id"
+                              textName="value"
+                              :validateList="getValidList(e.type, e.element)"
+                              @change="(val, opt) => setGlobalAttrData(e.element, opt, val, e)"
+                            ></TsFormCheckbox>
+                          </div>
+                          <div v-else>
+                            <TsFormInput
+                              :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                              type="textarea"
+                              maxlength="500"
+                              :validateList="getValidList(e.type, e.element)"
                               @change="(val)=>setConfig(val,'valueList',e)"
-                            ></TsFormSelect>
-                          </Col>
-                          <Col span="12">
-                            <div class="formTableComponent pr-lg">
+                            ></TsFormInput>
+                          </div>
+                        </template>
+                        <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formCommonComponent'">
+                          <TsFormSelect
+                            ref="attrHandler"
+                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                            :dataList="getFormComponent('formCommonComponent')"
+                            textName="label"
+                            valueName="uuid"
+                            :firstSelect="false"
+                            border="border"
+                            :validateList="getValidList(e.type, e.element)"
+                            transfer
+                            @change="(val)=>setConfig(val,'valueList',e)"
+                          ></TsFormSelect>
+                        </template>
+                        <template v-else-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
+                          <TsRow :gutter="8">
+                            <Col span="12">
                               <TsFormSelect
                                 ref="attrHandler"
-                                :value="getValue(ciEntityData.allCiEntityValue, e, 'column')"
-                                :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                                :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                                :dataList="getFormComponent('formTableComponent')"
+                                textName="label"
+                                valueName="uuid"
                                 :validateList="getValidList(e.type, e.element)"
                                 :firstSelect="false"
                                 transfer
                                 border="border"
-                                @change="(val)=>setConfig(val,'column',e)"
+                                @change="(val)=>setConfig(val,'valueList',e)"
                               ></TsFormSelect>
-                              <Tooltip
-                                max-width="660"
-                                theme="light"
-                                placement="bottom-end"
-                                transfer
-                                class="formTableComponent-tip"
-                              >
-                                <span class="text-href tsfont-info-o"></span>
-                                <div slot="content">
-                                  <div class="pb-sm">{{ $t('message.process.jobpolicycolumn') }}</div>
-                                  <div class="tip-eg">
-                                    <div class="text-center">
-                                      <table border="1" style="border-collapse: collapse; width:50px;">
-                                        <tr>
-                                          <td>A</td>
-                                        </tr>
-                                        <tr>
-                                          <td>B</td>
-                                        </tr>
-                                        <tr>
-                                          <td>C</td>
-                                        </tr>
-                                      </table>
-                                    </div>
-                                    <div class="center-text"></div>
-                                    <div style="width:100px">
-                                      [A,B,C]
+                            </Col>
+                            <Col span="12">
+                              <div class="formTableComponent pr-lg">
+                                <TsFormSelect
+                                  ref="attrHandler"
+                                  :value="getValue(ciEntityData.allCiEntityValue, e, 'column')"
+                                  :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                                  :validateList="getValidList(e.type, e.element)"
+                                  :firstSelect="false"
+                                  transfer
+                                  border="border"
+                                  @change="(val)=>setConfig(val,'column',e)"
+                                ></TsFormSelect>
+                                <Tooltip
+                                  max-width="660"
+                                  theme="light"
+                                  placement="bottom-end"
+                                  transfer
+                                  class="formTableComponent-tip"
+                                >
+                                  <span class="text-href tsfont-info-o"></span>
+                                  <div slot="content">
+                                    <div class="pb-sm">{{ $t('message.process.jobpolicycolumn') }}</div>
+                                    <div class="tip-eg">
+                                      <div class="text-center">
+                                        <table border="1" style="border-collapse: collapse; width:50px;">
+                                          <tr>
+                                            <td>A</td>
+                                          </tr>
+                                          <tr>
+                                            <td>B</td>
+                                          </tr>
+                                          <tr>
+                                            <td>C</td>
+                                          </tr>
+                                        </table>
+                                      </div>
+                                      <div class="center-text"></div>
+                                      <div style="width:100px">
+                                        [A,B,C]
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </Tooltip>
-                            </div>
-                          </Col>
-                        </TsRow>
-                      </template>
-                    </Col>
-                  </TsRow>
-                  <div v-if="ciData.createPolicy === 'single' && getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
-                    <FilterList
-                      ref="attrHandler"
-                      :defaultFilterList="getValue(ciEntityData.allCiEntityValue, e, 'filterList')"
-                      :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
-                      @setConfig="(val)=>setConfig(val,'filterList', e)"
-                    ></FilterList>
-                  </div>
-                </Col>
-              </TsRow>
+                                </Tooltip>
+                              </div>
+                            </Col>
+                          </TsRow>
+                        </template>
+                      </Col>
+                    </TsRow>
+                    <div v-if="ciData.createPolicy === 'single' && getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
+                      <FilterList
+                        ref="attrHandler"
+                        :defaultFilterList="getValue(ciEntityData.allCiEntityValue, e, 'filterList')"
+                        :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                        @setConfig="(val)=>setConfig(val,'filterList', e)"
+                      ></FilterList>
+                    </div>
+                  </Col>
+                </TsRow>
+              </template>
             </div>
           </Panel>
         </Collapse>
@@ -438,7 +440,7 @@ export default {
       }
     },
     //选择引用属性
-    selectAttrEntity(key, attrentity) {
+    selectAttrEntity(item, key, attrentity) {
       if (!this.ciEntityData.attrEntityData[key]) {
         const vo = {};
         vo[key] = { valueList: [], actualValueList: [] };
@@ -456,6 +458,7 @@ export default {
           this.ciEntityData.attrEntityData[key]['valueList'].push(attrentity);
           this.ciEntityData.attrEntityData[key]['actualValueList'].push(attrentity);
         }
+        this.setConfig(valueList, 'valueList', item);
       });
     },
     getValidList(type, data) {

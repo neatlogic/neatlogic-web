@@ -198,7 +198,17 @@ export default {
       validateList: ['required'],
       ciEntityQueue: [], //记录配置项添加队列
       tmpCiEntityData: {}, //临时数据，用于取消修改时还原
-      saveCiEntityMap: {} //最后需要保存的配置项列表
+      saveCiEntityMap: {}, //最后需要保存的配置项列表
+      descriptionConfig: { type: 'description', label: this.$t('term.cmdb.changememo'), elementList: [
+        {
+          type: 'des',
+          element: {
+            label: this.$t('term.cmdb.changememo'),
+            type: 'textarea',
+            maxlength: 500
+          }
+        }
+      ], isShow: true }
     };
   },
   beforeCreate() {},
@@ -289,16 +299,7 @@ export default {
             };
             cientity['_elementList'] = await this.getElementByCiId(this.ciData.ciId);
             cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciData.ciId);
-            cientity['_description'] = { type: 'description', label: this.$t('term.cmdb.changememo'), elementList: [
-              {
-                type: 'des',
-                element: {
-                  label: this.$t('term.cmdb.changememo'),
-                  type: 'textarea',
-                  maxlength: 500
-                }
-              }
-            ], isShow: true };
+            cientity['_description'] = this.descriptionConfig;
             this.initValue(cientity);
             this.ciEntityQueue = [cientity];
           } else {
@@ -418,16 +419,7 @@ export default {
             };
             newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
             newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
-            newCiEntity['_description'] = { type: 'description', label: this.$t('term.cmdb.changememo'), elementList: [
-              {
-                type: 'des',
-                element: {
-                  label: this.$t('term.cmdb.changememo'),
-                  type: 'textarea',
-                  maxlength: 500
-                }
-              }
-            ], isShow: true };
+            newCiEntity['_description'] = this.descriptionConfig;
             newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
               valueList: [
                 {
