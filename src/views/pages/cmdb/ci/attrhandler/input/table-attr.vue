@@ -172,7 +172,6 @@ export default {
   watch: {
     valueList: {
       handler: function(val) {
-        console.log(val, 'val');
         if (val && val.length > 0) {
           //添加配置项
           const newCiEntityIdList = [];

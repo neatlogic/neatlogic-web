@@ -6,26 +6,6 @@
       :loadingShow="isLoading"
       type="fix"
     ></Loading>
-    <div v-if="ciEntityQueue && ciEntityQueue.length > 1">
-      <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
-        <BreadcrumbItem v-for="(entity, index) in ciEntityQueue" :key="index">
-          <span v-if="index == ciEntityQueue.length - 2" style="font-size: 15px">
-            <a href="javascript:void(0)" class="text-info" @click="back()">
-              <span :class="entity.ciIcon"></span>
-              <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
-            </a>
-          </span>
-          <span v-else-if="index == ciEntityQueue.length - 1" style="font-size: 15px">
-            <span :class="entity.ciIcon"></span>
-            <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
-          </span>
-          <span v-else class="text-grey" style="font-size: 15px">
-            <span :class="entity.ciIcon"></span>
-            <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
-          </span>
-        </BreadcrumbItem>
-      </Breadcrumb>
-    </div>
     <div>
       <div class="tsForm tsForm-border-border ivu-form-label-right">
         <Collapse v-model="openPanel" simple>
@@ -58,7 +38,7 @@
                   <div v-if="e.type == 'rel'">  
                     <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
                       <a
-                        v-if="allowBatchAdd && ((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))"
+                        v-if="((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))"
                         href="javascript:void(0)"
                         :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)"
                         @click.stop="addNewRelEntity(e.element)"
@@ -116,26 +96,27 @@
                   <TsRow v-else :gutter="8">
                     <Col span="10">
                       <TsFormSelect
-                        ref="formValid"
-                        v-model="e.mappingMode"
+                        ref="attrHandler"
+                        :value="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode')"
                         :dataList="mappingModeList"
                         :firstSelect="false"
                         transfer
                         border="border"
+                        :validateList="getValidList(e.type, e.element)"
                         @change="(val)=>setConfig(val,'mappingMode',e)"
                       ></TsFormSelect>
                     </Col>
                     <Col span="14">
-                      <template v-if="e.mappingMode == 'constant'">
+                      <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') == 'constant'">
                         <div v-if="e.type === 'attr'">
                           <AttrInputer
                             ref="attrHandler"
-                            :allowBatchAdd="allowBatchAdd"
+                            :allowBatchAdd="true"
                             :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
                             :disabled="disabledFn('attr_' + e.element.id)"
                             :attrData="e.element"
-                            :valueList="getValueList(ciEntityData.attrEntityData, e.element)"
-                            @setData="setAttrData(e.element, arguments[0], arguments[1])"
+                            :valueList="getValue(ciEntityData.allCiEntityValue, e, 'valueList')"
+                            @setData="setAttrData(e, e.element, arguments[0], arguments[1])"
                             @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
                             @select="selectAttrEntity('attr_' + e.element.id, $event)"
                           ></AttrInputer>
@@ -143,61 +124,66 @@
                         <div v-else-if="e.type === 'global'">
                           <TsFormRadio
                             v-if="!e.element.isMultiple"
+                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
                             :allowToggle="true"
                             :dataList="e.element.itemList"
                             valueName="id"
                             textName="value"
-                            :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element).length > 0 ? getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)[0] : null"
+                            :validateList="getValidList(e.type, e.element)"
                             @change="
                               (val, opt) => {
                                 if (opt) {
-                                  setGlobalAttrData(e.element, [opt]);
+                                  setGlobalAttrData(e.element, [opt], val, e);
                                 } else {
-                                  setGlobalAttrData(e.element, []);
+                                  setGlobalAttrData(e.element, [], val, e);
                                 }
                               }
                             "
                           ></TsFormRadio>
                           <TsFormCheckbox
                             v-if="!!e.element.isMultiple"
+                            :value="getValue(ciEntityData.globalAttrEntityData, e, 'valueList')"
                             :dataList="e.element.itemList"
                             valueName="id"
                             textName="value"
-                            :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)"
-                            @change="(val, opt) => setGlobalAttrData(e.element, opt)"
+                            :validateList="getValidList(e.type, e.element)"
+                            @change="(val, opt) => setGlobalAttrData(e.element, opt, val, e)"
                           ></TsFormCheckbox>
                         </div>
                         <div v-else>
                           <TsFormInput
+                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
                             type="textarea"
                             maxlength="500"
+                            :validateList="getValidList(e.type, e.element)"
+                            @change="(val)=>setConfig(val,'valueList',e)"
                           ></TsFormInput>
                         </div>
                       </template>
-                      <template v-if="e.mappingMode === 'formCommonComponent'">
+                      <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formCommonComponent'">
                         <TsFormSelect
-                          ref="formValid"
-                          v-model="e.valueList"
+                          ref="attrHandler"
+                          :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
                           :dataList="getFormComponent('formCommonComponent')"
                           textName="label"
                           valueName="uuid"
-                          :validateList="[]"
                           :firstSelect="false"
-                          transfer
                           border="border"
+                          :validateList="getValidList(e.type, e.element)"
+                          transfer
                           @change="(val)=>setConfig(val,'valueList',e)"
                         ></TsFormSelect>
                       </template>
-                      <template v-else-if="e.mappingMode === 'formTableComponent'">
+                      <template v-else-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
                         <TsRow :gutter="8">
                           <Col span="12">
                             <TsFormSelect
-                              ref="formValid"
-                              v-model="e.valueList"
+                              ref="attrHandler"
+                              :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
                               :dataList="getFormComponent('formTableComponent')"
                               textName="label"
                               valueName="uuid"
-                              :validateList="e.isRequired? validateList:[]"
+                              :validateList="getValidList(e.type, e.element)"
                               :firstSelect="false"
                               transfer
                               border="border"
@@ -207,10 +193,10 @@
                           <Col span="12">
                             <div class="formTableComponent pr-lg">
                               <TsFormSelect
-                                ref="formValid"
-                                v-model="e.column"
-                                :dataList="getAttrList(e.valueList)"
-                                :validateList="e.isRequired && e.valueList?validateList:[]"
+                                ref="attrHandler"
+                                :value="getValue(ciEntityData.allCiEntityValue, e, 'column')"
+                                :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                                :validateList="getValidList(e.type, e.element)"
                                 :firstSelect="false"
                                 transfer
                                 border="border"
@@ -253,13 +239,13 @@
                       </template>
                     </Col>
                   </TsRow>
-                  <div v-if="e.mappingMode === 'formTableComponent'">
-                    <div class="filter-top pb-sm">
-                      <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
-                      <TsFormSwitch
-                        v-model="e.isActive"
-                      ></TsFormSwitch>
-                    </div>
+                  <div v-if="ciData.createPolicy === 'single' && getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
+                    <FilterList
+                      ref="attrHandler"
+                      :defaultFilterList="getValue(ciEntityData.allCiEntityValue, e, 'filterList')"
+                      :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                      @setConfig="(val)=>setConfig(val,'filterList', e)"
+                    ></FilterList>
                   </div>
                 </Col>
               </TsRow>
@@ -279,11 +265,11 @@ export default {
     TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    FilterList: resolve => require(['./cmdbpolicy/filter-list.vue'], resolve)
   },
   props: {
+    ciData: Object,
     allFormitemList: Array,
-    allowBatchAdd: { type: Boolean, default: true }, //是否允许批量创建新配置项
     ciEntityQueue: {
       type: Array,
       default: () => {
@@ -296,11 +282,6 @@ export default {
       openPanel: ['global', 'unique', 'manual', 'description'],
       relCiList: [], //关系的所有下游模型列表
       isRelPopShow: {},
-      activePanel: ['attr', 'rel'],
-      isRelMultiple: true,
-      targetCiId: null,
-      currentRel: null,
-      currentRelEntityValue: null,
       isLoading: false,
       mappingModeList: [
         {
@@ -329,24 +310,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getGlobalValueList(data, attr) {
-      const id = attr.id;
-      if (!data['global_' + id]) {
-        this.$set(data, 'global_' + id, { valueList: [] });
-      } else if (!data['global_' + id]['valueList']) {
-        this.$set(data['global_' + id], 'valueList', []);
+    getValue(data, e, attr) {
+      let value = null;
+      let key = null;
+      if (e.type === 'des') {
+        key = 'description';
+      } else {
+        key = e.type + '_' + e.element.id;
       }
-      return data['global_' + id]['valueList'].map(d => d.id);
-    },
-    getValueList(data, attr) {
-      const id = attr.id;
-      if (!data['attr_' + id]) {
-        this.$set(data, 'attr_' + id, { type: attr.type, config: attr.config, valueList: [] });
-      } else if (!data['attr_' + id]['valueList']) {
-        this.$set(data['attr_' + id], 'valueList', []);
+      if (data && data[key]) {
+        value = data[key][attr];
       }
-      console.log(this.ciEntityData.attrEntityData, ' this.ciEntityData.attrEntityData1000');
-      return this.$utils.deepClone(data['attr_' + id]['valueList']);
+      return value;
     },
     disabledFn(elementId) {
       if (this.ciEntityData.editableAttrRelIdList && this.ciEntityData.editableAttrRelIdList.length > 0 && !this.ciEntityData.editableAttrRelIdList.includes(elementId)) {
@@ -391,12 +366,9 @@ export default {
     delRelEntity(key, relentity, rowdata) {
       this.ciEntityDatafn(key, relentity, rowdata);
     },
-    back() {
-      this.$emit('back');
-    },
     editNewRelEntity(rel) {
       if (this.getTagType(rel) == 'success') {
-        this.$emit('edit', rel.ciEntityUuid);
+        this.$emit('edit', rel.ciEntityUuid, rel);
       }
     },
     addNewRelEntity(rel) {
@@ -417,17 +389,10 @@ export default {
       });
     },
     newCiEntity(rel, ciId) {
-      rel._ciId = ciId;
+      rel.ciId = ciId;
+      rel._relId = rel.id;
       this.isRelPopShow[rel.id + '_' + rel.direction] = false;
       this.$emit('new', 'rel', rel);
-    },
-    addNewAttrEntity(attr) {
-      //添加新的引用属性
-      this.$emit('new', 'attr', attr);
-    },
-    editNewAttrEntity(uuid) {
-      //删除引用属性（只支持新添加的目标，已存在的目标不允许修改）
-      this.$emit('edit', uuid);
     },
     //删除选中的属性
     deleteAttrEntity(key, attrentity) {
@@ -493,6 +458,15 @@ export default {
         }
       });
     },
+    getValidList(type, data) {
+      let validateList = [];
+      if (type == 'rel' && (data.direction == 'from' && data.toIsRequired) || (data.direction == 'to' && data.fromIsRequired)) {
+        validateList = ['required'];
+      } else if (type === 'attr' && !!data.isRequired) {
+        validateList = ['required'];
+      }
+      return validateList;
+    },
     valid() {
       const attrHandlers = this.$refs['attrHandler'];
       let isValid = true;
@@ -507,7 +481,7 @@ export default {
       }
       return isValid;
     },
-    setGlobalAttrData(attr, opt) {
+    setGlobalAttrData(attr, opt, value, item) {
       if (!this.ciEntityData.globalAttrEntityData) {
         this.ciEntityData.globalAttrEntityData = {};
       }
@@ -515,8 +489,9 @@ export default {
         this.ciEntityData.globalAttrEntityData['global_' + attr.id] = {};
       }
       this.$set(this.ciEntityData.globalAttrEntityData['global_' + attr.id], 'valueList', opt);
+      this.setConfig(value, 'valueList', item);
     },
-    setAttrData(attr, value, actualValue) {
+    setAttrData(item, attr, value, actualValue) {
       if (!this.ciEntityData.attrEntityData) {
         this.ciEntityData.attrEntityData = {};
       }
@@ -527,24 +502,32 @@ export default {
       this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'type', attr.type);
       this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'valueList', value);
       this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'actualValueList', actualValue);
+      this.setConfig(value, 'valueList', item);
     },
     setConfig(value, attrName, item) {
-      if (item.type === 'attr') {
-        if (!this.ciEntityData.attrEntityData) {
-          this.ciEntityData.attrEntityData = {};
-        }
-        if (!this.ciEntityData.attrEntityData['attr_' + item.element.id]) {
-          this.ciEntityData.attrEntityData['attr_' + item.element.id] = {};
-        }
-        if (attrName === 'valueList') {
-          if (Array.isArray(value)) {
-            this.$set(this.ciEntityData.attrEntityData['attr_' + item.element.id], attrName, value);
-          } else {
-            this.$set(this.ciEntityData.attrEntityData['attr_' + item.element.id], attrName, [value]);
-          }
+      if (!this.ciEntityData.allCiEntityValue) {
+        this.ciEntityData.allCiEntityValue = {};
+      }
+      let key = null;
+      if (item.type === 'des') {
+        key = 'description';
+      } else {
+        key = item.type + '_' + item.element.id;
+      }
+      if (!this.ciEntityData.allCiEntityValue[key]) {
+        this.$set(this.ciEntityData.allCiEntityValue, key, {});
+      }
+      if (!this.ciEntityData.allCiEntityValue[key]) {
+        this.$set(this.ciEntityData.allCiEntityValue, key, {});
+      }
+      if (attrName === 'valueList') {
+        if (Array.isArray(value)) {
+          this.$set(this.ciEntityData.allCiEntityValue[key], attrName, value);
         } else {
-          this.$set(this.ciEntityData.attrEntityData['attr_' + item.element.id], attrName, value);
+          this.$set(this.ciEntityData.allCiEntityValue[key], attrName, [value]);
         }
+      } else {
+        this.$set(this.ciEntityData.allCiEntityValue[key], attrName, value);
       }
     }
   },
@@ -595,12 +578,6 @@ export default {
       }
       return typeList;
     },
-    uniqueElementList() {
-      if (this.ciEntityData && this.ciEntityData['_uniqueAttrList'] && this.ciEntityData['_uniqueAttrList'].length > 0 && this.ciEntityData['_elementList'] && this.ciEntityData['_elementList'].length > 0) {
-        return this.ciEntityData['_elementList'].filter(d => d.type === 'attr' && this.ciEntityData['_uniqueAttrList'].includes(d.element.id));
-      }
-      return [];
-    },
     ciEntityData() {
       return this.ciEntityQueue[this.ciEntityQueue.length - 1];
     },
@@ -611,21 +588,6 @@ export default {
       }
       return null;
     },
-    // getValueList() {
-    //   return (data, attr) => {
-    //     if (attr) {
-    //       const id = attr.id;
-    //       if (!data['attr_' + id]) {
-    //         this.$set(data, 'attr_' + id, { type: attr.type, config: attr.config, valueList: [] });
-    //       } else if (!data['attr_' + id]['valueList']) {
-    //         this.$set(data['attr_' + id], 'valueList', []);
-    //       }
-    //       return data['attr_' + id]['valueList'];
-    //     } else {
-    //       return null;
-    //     }
-    //   };
-    // },
     getFormComponent() {
       return (type) => {
         let dataList = [];
@@ -644,10 +606,17 @@ export default {
       };
     },
     getAttrList() {
-      return (value) => {
+      return (data, e) => {
         let dataList = [];
+        let key = null;
+        if (e.type === 'des') {
+          key = 'description';
+        } else {
+          key = e.type + '_' + e.element.id;
+        }
+        let valueList = data[key] && data[key]['valueList'];
         if (this.allFormitemList && this.allFormitemList.length > 0) {
-          let find = this.allFormitemList.find(item => item.uuid === value);
+          let find = this.allFormitemList.find(item => valueList && item.uuid === valueList[0]);
           if (find && find.config && find.config.dataConfig) {
             find.config.dataConfig.forEach(d => {
               dataList.push({

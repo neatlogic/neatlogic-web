@@ -40,8 +40,8 @@
           {{ $t('page.edit') }}
         </div>
       </div>
-      <div v-if="ciEntityConfig.configList.length" class="pt-sm overflow">{{ ciEntityConfig.configList[0].ciLabel }}
-        <span v-if="ciEntityConfig.configList[0].ciName" class="text-tip">({{ ciEntityConfig.configList[0].ciName }})</span>
+      <div v-if="!$utils.isEmpty(startCiEntity)" class="pt-sm overflow">{{ startCiEntity.ciLabel }}
+        <span v-if="startCiEntity.ciName" class="text-tip">({{ startCiEntity.ciName }})</span>
       </div>
       <div v-if="!isValid && $utils.isEmpty(ciEntityConfig.configList)" class="form-error-tip pl-nm">
         {{ $t('form.validate.required', { target: $t('term.cmdb.modemapping') }) }}
@@ -71,6 +71,7 @@ export default {
         rerunStepToSync: 0,
         configList: []
       },
+      startCiEntity: {},
       isValid: true //校验
     };
   },
@@ -93,6 +94,9 @@ export default {
         Object.keys(config).forEach(key => {
           this.ciEntityConfig[key] = config[key];
         });
+        if (!this.$utils.isEmpty(this.ciEntityConfig.configList)) {
+          this.startCiEntity = this.ciEntityConfig.configList.find(c => c.isStart);
+        }
       }
     },
     getFailPolicyList() {
@@ -128,6 +132,7 @@ export default {
         Object.keys(data).forEach(key => {
           this.$set(this.ciEntityConfig, key, data[key]);
         });
+        this.startCiEntity = this.ciEntityConfig.configList.find(c => c.isStart);
       }
       this.isShowDialog = false;
     },

@@ -11,7 +11,26 @@
       <template v-slot>
         <div class="cmdbsync-main bg-op radius-sm mb-sm">
           <div class="title">
-            <div>起始模型</div>
+            <div>
+              <Breadcrumb v-if="ciEntityQueue && ciEntityQueue.length > 0" separator="<span class='tsfont-arrow-right'></span>">
+                <BreadcrumbItem v-for="(entity, index) in ciEntityQueue" :key="index">
+                  <span v-if="index == ciEntityQueue.length - 2" style="font-size: 15px">
+                    <a href="javascript:void(0)" class="text-info" @click="back()">
+                      <span :class="entity.ciIcon"></span>
+                      <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
+                    </a>
+                  </span>
+                  <span v-else-if="index == ciEntityQueue.length - 1" style="font-size: 15px">
+                    <span :class="entity.ciIcon"></span>
+                    <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
+                  </span>
+                  <span v-else class="text-grey" style="font-size: 15px">
+                    <span :class="entity.ciIcon"></span>
+                    <span>{{ entity.ciLabel }}({{ entity.ciName }})</span>
+                  </span>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            </div>
             <div class="action-btn">
               <span class="text-tip-active" :class="isShow ? 'tsfont-down' : 'tsfont-up'" @click="isShow=!isShow"></span>
             </div>
@@ -19,8 +38,14 @@
           <div v-show="isShow" class="cmdbsync-content border-color padding">
             <Loading :loadingShow="loadingShow" type="fix"></Loading>
             <div class="pl-lg">
-              <TsFormItem label="配置模型" labelPosition="left">
+              <TsFormItem
+                v-if="ciEntityQueue.length < 2"
+                label="配置模型"
+                labelPosition="left"
+                required
+              >
                 <TsFormSelect
+                  ref="ciConfig"
                   v-model="ciData.ciId"
                   v-bind="ciConfig"
                   @on-change="changeCiId"
@@ -31,6 +56,49 @@
                   <TsFormRadio
                     v-model="ciData.createPolicy"
                     :dataList="createPolicyDataList"
+                    @on-change="(val)=>{
+                      changePolicy(val)
+                    }"
+                  ></TsFormRadio>
+                </TsFormItem>
+                <template v-if="ciData.createPolicy==='batch'">
+                  <TsFormItem v-if="ciData.createPolicy==='batch'" :label="$t('page.foreachtable')" labelPosition="left">
+                    <TsFormSelect
+                      ref="attributeUuid"
+                      :value="ciData.batchDataSource && ciData.batchDataSource.attributeUuid"
+                      :dataList="getFormTableComponent()"
+                      textName="label"
+                      valueName="uuid"
+                      :validateList="validateList"
+                      :firstSelect="false"
+                      transfer
+                      border="border"
+                      @on-change="(val)=>{
+                        setBatchDataSource(val,'attributeUuid',ciData.batchDataSource)
+                      }"
+                    ></TsFormSelect>
+                  </TsFormItem>
+                  <TsFormItem v-if="ciData.createPolicy==='batch'" :label="$t('term.dashboard.datafilter')" labelPosition="left">
+                    <FilterList
+                      ref="attrHandler"
+                      :defaultFilterList="ciData.batchDataSource && ciData.batchDataSource.filterList"
+                      :dataList="getAttrList(ciData.batchDataSource)"
+                      @setConfig="(val)=> setBatchDataSource(val,'filterList',ciData.batchDataSource)"
+                    ></FilterList>
+                  </TsFormItem>
+                </template>
+                <TsFormItem
+                  v-if="ciEntityQueue.length > 1"
+                  label="关系策略"
+                  labelPosition="left"
+                  required
+                >
+                  <TsFormRadio
+                    :dataList="actionDataList"
+                    :value="ciData.action"
+                    @on-change="(val)=>{
+                      setConfig(val,'action')
+                    }"
                   ></TsFormRadio>
                 </TsFormItem>
                 <TsFormItem label="属性映射" labelPosition="top">
@@ -40,8 +108,10 @@
                       ref="cmdbsyncEdit"
                       :allFormitemList="allFormitemList"
                       :ciEntityQueue="ciEntityQueue"
+                      :ciData="ciData"
                       @new="addNewCiEntity"
                       @edit="editNewCiEntity"
+                      @remove="removeNewCiEntity"
                     ></CmdbsyncEdit>
                   </div>
                 </TsFormItem>
@@ -75,7 +145,8 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    CmdbsyncEdit: resolve => require(['./cmdbsync-edit.vue'], resolve)
+    CmdbsyncEdit: resolve => require(['./cmdbsync-edit.vue'], resolve),
+    FilterList: resolve => require(['./cmdbpolicy/filter-list.vue'], resolve)
   },
   props: {
     configList: Array
@@ -83,10 +154,12 @@ export default {
   data() {
     return {
       loadingShow: false,
-      ciData: { 
+      ciData: { //当前配置
         ciId: null,
         ciName: '',
         createPolicy: 'single', 
+        batchDataSource: {},
+        mappingList: [],
         attrEntityData: {}, 
         relEntityData: {}, 
         globalAttrEntityData: {} 
@@ -99,6 +172,7 @@ export default {
           isAbstract: 0,
           isVirtual: 0
         },
+        validateList: ['required'],
         transfer: true
       },
       createPolicyDataList: [
@@ -111,6 +185,17 @@ export default {
           text: '添加多条数据'
         }
       ],
+      actionDataList: [
+        {
+          value: 'append',
+          text: this.$t('page.append')
+        },
+        {
+          value: 'replace',
+          text: this.$t('page.replace')
+        }
+      ],
+      validateList: ['required'],
       ciEntityQueue: [], //记录配置项添加队列
       tmpCiEntityData: {}, //临时数据，用于取消修改时还原
       saveCiEntityMap: {} //最后需要保存的配置项列表
@@ -130,12 +215,44 @@ export default {
   destroyed() {},
   methods: {
     init() {
+      this.saveCiEntityMap = {};
       if (!this.$utils.isEmpty(this.configList)) {
-        this.ciData = this.configList[0];
+        let findItem = this.configList.find(c => c.isStart);
+        if (findItem) {
+          this.ciData = this.$utils.deepClone(findItem);
+        }
+        this.configList.forEach(item => {
+          this.$set(this.saveCiEntityMap, item.uuid, item);
+        });
         this.getCiEntityById();
       }
     },
+    initValue(cientity) {
+      let findItem = this.saveCiEntityMap[cientity.uuid];
+      if (findItem) {
+        Object.keys(findItem).forEach(key => {
+          if (key === 'mappingList') {
+            if (!this.$utils.isEmpty(findItem.mappingList)) {
+              findItem.mappingList.forEach(m => {
+                if (m.key.indexOf('rel') > -1) {
+                  this.$set(cientity.relEntityData, m.key, m);
+                } else {
+                  this.$set(cientity.allCiEntityValue, m.key, m);
+                }
+              });
+            }
+          } else {
+            if (cientity.hasOwnProperty(key)) {
+              this.$set(cientity, key, findItem[key]);
+            }
+          }
+        });
+      }
+    },
     okDialog() {
+      if (!this.$refs.ciConfig.valid()) {
+        return;
+      }
       let data = this.save();
       this.$emit('close', data);
     },
@@ -144,6 +261,8 @@ export default {
     },
     changeCiId(val, item) {
       this.saveCiEntityMap = {};
+      this.ciEntityQueue = [];
+      this.$set(this.ciData, 'uuid', null);
       if (val) {
         this.getCiEntityById();
       }
@@ -155,16 +274,18 @@ export default {
           const ci = res.Return;
           if (ci.isVirtual == 0 && ci.isAbstract == 0) {
             const cientity = {
-              uuid: this.$utils.setUuid(),
+              isStart: 1,
+              uuid: this.ciData.uuid || this.$utils.setUuid(),
               ciId: this.ciData.ciId,
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
               createPolicy: 'single',
+              batchDataSource: {},
               attrEntityData: {},
               relEntityData: {},
               globalAttrEntityData: {},
-              mappingList: []
+              allCiEntityValue: {}
             };
             cientity['_elementList'] = await this.getElementByCiId(this.ciData.ciId);
             cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciData.ciId);
@@ -178,6 +299,7 @@ export default {
                 }
               }
             ], isShow: true };
+            this.initValue(cientity);
             this.ciEntityQueue = [cientity];
           } else {
             if (ci.isVirtual == 1) {
@@ -264,12 +386,12 @@ export default {
         return ciViewList;
       }
     },
-    addNewCiEntity(type, item) {
+    addNewCiEntity(type, item, uuid) {
       this.loadingShow = true;
       if (type === 'rel') {
         const rel = item;
-        const ciId = rel._ciId;
-        const relId = rel.id;
+        const ciId = rel.ciId;
+        const relId = rel._relId;
         const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
         this.$api.cmdb.ci.getCiById(ciId).then(async res => {
           if (res.Return) {
@@ -277,7 +399,7 @@ export default {
             //获取当前配置项数据
             const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
             const newCiEntity = {
-              uuid: this.$utils.setUuid(),
+              uuid: uuid || this.$utils.setUuid(),
               _relId: relId, //记录来自哪个关系，自动填上配置项
               _direction: rel.direction, //记录关系方向
               ciId: ciId,
@@ -285,23 +407,17 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
+              createPolicy: 'single',
+              batchDataSource: {},
+              action: 'append',
               attrEntityData: {},
               relEntityData: {},
               globalAttrEntityData: {},
-              _disableRel: 'rel' + direction + '_' + relId //标记哪个关系不允许添加或选择
+              _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
+              allCiEntityValue: {} //所有的属性
             };
             newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
             newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
-            newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
-              valueList: [
-                {
-                  ciEntityUuid: currentCiEntity.uuid,
-                  ciEntityName: this.$t('term.cmdb.fromcientity'),
-                  ciId: ciId,
-                  type: 'from'
-                }
-              ]
-            };
             newCiEntity['_description'] = { type: 'description', label: this.$t('term.cmdb.changememo'), elementList: [
               {
                 type: 'des',
@@ -312,54 +428,30 @@ export default {
                 }
               }
             ], isShow: true };
+            newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
+              valueList: [
+                {
+                  ciEntityUuid: currentCiEntity.uuid,
+                  ciEntityName: this.$t('term.cmdb.fromcientity'),
+                  ciId: ciId,
+                  type: 'from'
+                }
+              ]
+            };
+            this.initValue(newCiEntity);
+            this.ciData = newCiEntity;
             this.ciEntityQueue.push(newCiEntity);
           }
         }).finally(() => {
           this.loadingShow = false;
         });
-      } else if (type === 'attr') {
-        const attr = item;
-        const ciId = attr.targetCiId;
-        const attrId = attr.id;
-        const attrType = attr.type;
-        const attrConfig = attr.config;
-        if (ciId) {
-          this.$api.cmdb.ci.getCiById(ciId).then(async res => {
-            if (res.Return) {
-              const ci = res.Return;
-              //获取当前配置项数据
-              const newCiEntity = {
-                uuid: this.$utils.setUuid(),
-                _attrId: attrId, //记录来自哪个属性，自动填上配置项
-                _attrType: attrType,
-                _attrConfig: attrConfig,
-                rootCiId: this.propRootCiId,
-                name: this.$t('term.cmdb.newcientity'),
-                ciId: ciId,
-                ciName: ci.name,
-                ciLabel: ci.label,
-                ciIcon: ci.icon,
-                attrEntityData: {},
-                relEntityData: {},
-                globalAttrEntityData: {}
-              };
-              newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
-              newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
-              newCiEntity['_description'] = { type: 'description', label: this.$t('term.cmdb.changememo'), elementList: [
-                {
-                  type: 'des',
-                  element: {
-                    label: this.$t('term.cmdb.changememo'),
-                    type: 'textarea',
-                    maxlength: 500
-                  }
-                }
-              ], isShow: true };
-              this.ciEntityQueue.push(newCiEntity);
-            }
-          }).finally(() => {
-            this.loadingShow = false;
-          });
+      } 
+    },
+    removeNewCiEntity(item) {
+      if (item._relId) { //关系删除
+        const relentity = item;
+        if (relentity.ciEntityUuid) {
+          this.$delete(this.saveCiEntityMap, relentity.ciEntityUuid);
         }
       }
     },
@@ -368,6 +460,7 @@ export default {
       if (cientity._isnew) {
         this.$set(this.saveCiEntityMap, cientity.uuid, this.tmpCiEntityData);
       }
+      this.ciData = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       this.tmpCiEntityData = null;
     },
     cancelNewCiEntity() {
@@ -377,7 +470,7 @@ export default {
         this.closeDialog();
       }
     },
-    editNewCiEntity(uuid) {
+    editNewCiEntity(uuid, rel) {
       if (this.saveCiEntityMap[uuid]) {
         this.tmpCiEntityData = JSON.parse(JSON.stringify(this.saveCiEntityMap[uuid]));
         let index = -1;
@@ -390,7 +483,8 @@ export default {
         if (index > -1) {
           this.ciEntityQueue = this.ciEntityQueue.slice(0, index + 1);
         } else {
-          this.ciEntityQueue.push(this.saveCiEntityMap[uuid]);
+          this.addNewCiEntity('rel', rel, uuid);
+          // this.ciEntityQueue.push(this.saveCiEntityMap[uuid]);
         }
       }
     },
@@ -400,7 +494,7 @@ export default {
         isValid = this.$refs.cmdbsyncEdit.valid();
       }
       if (!isValid) {
-        return; 
+        return false; 
       }
       //队列只剩一个配置项时才写入数据库
       if (this.ciEntityQueue.length > 1) {
@@ -430,8 +524,6 @@ export default {
               Object.assign(currentCiEntity['attrEntityData'], tmp);
               Object.assign(currentCiEntity['attrEntityData']['attr_' + cientity._attrId], { type: cientity['_attrType'], config: cientity['_attrConfig'], valueList: [], actualValueList: [] });
             }
-            //加上type=new，后台需要这个属性将uuid转换成id
-            // currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'].push(cientity);
             const pos = currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'].length;
             this.$set(currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'], pos, cientity);
           }
@@ -454,6 +546,7 @@ export default {
         //标记为已保存的新配置项，用于点击“取消”后判断是否需要删除数据
         cientity._isnew = true;
         this.saveCiEntityMap[cientity.uuid] = cientity;
+        this.ciData = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
         this.saveCiEntityMap[cientity.uuid] = cientity;
@@ -463,12 +556,129 @@ export default {
         }
         return ciEntityList;
       }
-      console.log(this.saveCiEntityMap);
+    },
+    setConfig(val, attr) {
+      this.$set(this.ciEntityQueue[this.ciEntityQueue.length - 1], attr, val);
+    },
+    setBatchDataSource(val, attr, config) {
+      let batchDataSource = config || {};
+      let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+      this.$set(batchDataSource, attr, val);
+      if (ciEntity) {
+        this.$set(ciEntity, 'batchDataSource', batchDataSource);
+        this.$set(this.ciData, 'batchDataSource', batchDataSource);
+        Object.keys(ciEntity.allCiEntityValue).forEach(key => {
+          if (ciEntity.allCiEntityValue[key].mappingMode === 'formTableComponent') {
+            this.$set(ciEntity.allCiEntityValue[key], 'ValueList', val);
+            this.$set(ciEntity.allCiEntityValue[key], 'column', '');
+            this.$set(ciEntity.allCiEntityValue[key], 'filterList', []);
+          }
+        });
+      }
+    },
+    getFormTableComponent() { //获取表单table组件
+      let dataList = [];
+      if (this.allFormitemList && this.allFormitemList.length > 0) {
+        //table组件（表格数据组件、表单选择组件）
+        dataList = this.allFormitemList.filter(item => {
+          return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
+        });
+      }
+      return dataList;
+    },
+    getAttrList(batchDataSource) { //表单table组件，属性列表
+      let dataList = [];
+      let uuid = null;
+      if (batchDataSource && batchDataSource.attributeUuid) {
+        uuid = batchDataSource.attributeUuid;
+        if (this.allFormitemList && this.allFormitemList.length > 0) {
+          let find = this.allFormitemList.find(item => item.uuid === uuid);
+          if (find && find.config && find.config.dataConfig) {
+            find.config.dataConfig.forEach(d => {
+              dataList.push({
+                text: d.label,
+                value: d.uuid
+              });
+            });
+          }
+        }
+      }
+      return dataList;
+    },
+    changePolicy(val) {
+      let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+      if (ciEntity) {
+        Object.keys(ciEntity.allCiEntityValue).forEach(key => {
+          if (ciEntity.allCiEntityValue[key].mappingMode === 'formTableComponent') {
+            this.$set(ciEntity.allCiEntityValue[key], 'valueList', null);
+            this.$set(ciEntity.allCiEntityValue[key], 'column', '');
+            this.$set(ciEntity.allCiEntityValue[key], 'filterList', []);
+          }
+        });
+        this.$set(this.ciData, 'batchDataSource', {});
+        this.$set(ciEntity, 'batchDataSource', {});
+        this.setConfig(val, 'createPolicy');
+      }
     },
     save() {
       let data = {};
-      let configList = this.saveNewCiEntity();
-      console.log(configList, 'configList');
+      let configList = [];
+      let list = this.saveNewCiEntity();
+      if (!list) {
+        return;
+      }
+      list.forEach(item => {
+        let config = {
+          uuid: item.uuid,
+          ciIcon: item.ciIcon,
+          ciId: item.ciId,
+          ciLabel: item.ciLabel,
+          ciName: item.ciName,
+          createPolicy: item.createPolicy,
+          batchDataSource: item.batchDataSource || {},
+          mappingList: []
+        };
+        if (item.hasOwnProperty('isStart')) {
+          config.isStart = item.isStart;
+        }
+        if (item.hasOwnProperty('action')) {
+          config.action = item.action;
+        }
+        if (item.hasOwnProperty('allCiEntityValue')) {
+          if (!this.$utils.isEmpty(item.allCiEntityValue)) {
+            Object.keys(item.allCiEntityValue).forEach(key => {
+              if (!this.$utils.isEmpty(item.allCiEntityValue[key].valueList)) {
+                let objectData = {
+                  key: key,
+                  mappingMode: item.allCiEntityValue[key].mappingMode,
+                  valueList: item.allCiEntityValue[key].valueList 
+                };
+                if (item.allCiEntityValue[key].hasOwnProperty('column')) {
+                  objectData.column = item.allCiEntityValue[key].column;
+                }
+                if (item.allCiEntityValue[key].hasOwnProperty('filterList')) {
+                  objectData.filterList = item.allCiEntityValue[key].filterList;
+                }
+                config.mappingList.push(objectData);
+              }
+            });
+          }
+          if (!this.$utils.isEmpty(item.relEntityData)) {
+            Object.keys(item.relEntityData).forEach(key => {
+              if (!this.$utils.isEmpty(item.relEntityData[key].valueList)) {
+                config.mappingList.push({
+                  key: key,
+                  mappingMode: 'new',
+                  valueList: item.relEntityData[key].valueList
+                });
+              }
+            });
+          }
+        } else {
+          config.mappingList = item.mappingList || [];
+        }
+        configList.push(config);
+      });
       this.$set(data, 'configList', configList);
       return data;
     }
