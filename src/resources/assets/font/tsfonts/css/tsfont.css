@@ -605,3 +605,9 @@
 .tsfont-m-stack:before { content: '\ea31'; } /* '' */
 .tsfont-spinner:before { content: '\ea32'; } /* '' */
 .tsfont-tags:before { content: '\ea33'; } /* '' */
+.tsfont-border-bottom:before { content: '\ea34'; } /* '' */
+.tsfont-border-horizontal:before { content: '\ea35'; } /* '' */
+.tsfont-border-left:before { content: '\ea36'; } /* '' */
+.tsfont-border-right:before { content: '\ea37'; } /* '' */
+.tsfont-border-top:before { content: '\ea38'; } /* '' */
+.tsfont-border-vertical:before { content: '\ea39'; } /* '' */

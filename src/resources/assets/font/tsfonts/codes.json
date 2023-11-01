@@ -3382,5 +3382,41 @@
     "css": "tsfont-tags",
     "hexCodepoint": "0xea33",
     "codepoint": 59955
+  },
+  {
+    "name": "border-bottom",
+    "css": "tsfont-border-bottom",
+    "hexCodepoint": "0xea34",
+    "codepoint": 59956
+  },
+  {
+    "name": "border-horizontal",
+    "css": "tsfont-border-horizontal",
+    "hexCodepoint": "0xea35",
+    "codepoint": 59957
+  },
+  {
+    "name": "border-left",
+    "css": "tsfont-border-left",
+    "hexCodepoint": "0xea36",
+    "codepoint": 59958
+  },
+  {
+    "name": "border-right",
+    "css": "tsfont-border-right",
+    "hexCodepoint": "0xea37",
+    "codepoint": 59959
+  },
+  {
+    "name": "border-top",
+    "css": "tsfont-border-top",
+    "hexCodepoint": "0xea38",
+    "codepoint": 59960
+  },
+  {
+    "name": "border-vertical",
+    "css": "tsfont-border-vertical",
+    "hexCodepoint": "0xea39",
+    "codepoint": 59961
   }
 ]

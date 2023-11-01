@@ -2525,5 +2525,10 @@
     "scenarioplan": "Scenario Plan",
     "relyonmyservices": "Rely on my services",
     "servicerelyon": "The service I rely on"
+  },
+  "diagram": {
+    "widgetlist": "Component List",
+    "widget": "Element",
+    "lane": "Swimming lanes"
   }
 }

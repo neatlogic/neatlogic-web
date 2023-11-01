@@ -2523,5 +2523,10 @@
     "scenarioplan": "场景预案",
     "relyonmyservices": "依赖我的服务",
     "servicerelyon": "我依赖的服务"
+  },
+  "diagram": {
+    "widgetlist": "组件列表",
+    "widget": "图元",
+    "lane": "泳道"
   }
 }
