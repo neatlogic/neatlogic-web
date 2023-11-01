@@ -15,7 +15,6 @@
       ><i class="tsfont-plus"></i>{{ $t('page.add') }}</a>
     </div>
     <div v-if="ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0">
-      {{ ciEntityData.tbodyList }}
       <TsTable
         v-if="ciEntityData"
         v-bind="ciEntityData"
@@ -53,7 +52,7 @@
                 class="tsfont-edittext"
                 @click="editCiEntity(row.uuid)"
               >编辑</li>-->
-              <li class="tsfont-close-o" :class="disabled?'text-disabled':''" @click="deleteCiEntity(row)">删除</li>
+              <li class="tsfont-trash-o" :class="disabled?'text-disabled':''" @click="deleteCiEntity(row)">删除</li>
             </ul>
           </div>
         </template>
