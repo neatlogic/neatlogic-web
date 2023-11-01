@@ -2528,6 +2528,7 @@
   "diagram": {
     "widgetlist": "Component List",
     "widget": "Element",
-    "lane": "Swimming lanes"
+    "lane": "Swimming lanes",
+    "widgetmanage": "Component Management"
   }
 }

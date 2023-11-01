@@ -6,22 +6,23 @@
         :class="disabled?'text-disabled':''"
         href="javascript:void(0)"
         @click="selectCiEntity()"
-      ><i class="tsfont-check"></i>选择</a>
+      ><i class="tsfont-check"></i>{{ $t('page.choose') }}</a>
       <a
         v-if="allowBatchAdd && (attrData.config.mode === 'w' || attrData.config.mode === 'rw')"
         :class="disabled?'text-disabled':''"
         href="javascript:void(0)"
         @click="addCiEntity()"
-      ><i class="tsfont-plus"></i>添加</a>
+      ><i class="tsfont-plus"></i>{{ $t('page.add') }}</a>
     </div>
     <div v-if="ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0">
+      {{ ciEntityData.tbodyList }}
       <TsTable
         v-if="ciEntityData"
         v-bind="ciEntityData"
         :fixedHeader="false"
       >
         <template slot="_type" slot-scope="{ row }">
-          <Tag v-if="!row.id" color="success" type="border">新的配置项</Tag>
+          <Tag v-if="!row.id" color="success" type="border">{{ $t('term.cmdb.newcientity') }}</Tag>
         </template>
         <template v-for="(head, index) in finalHeaderList" :slot="head.key" slot-scope="{ row }">
           <div v-if="head.key.indexOf('attr_') == 0 && row.attrEntityData" :key="index">
@@ -44,12 +45,14 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li
+              <!--
+                旧的cmdb表单组件将会下线，此功能先注释
+                <li
                 v-if="row.uuid"
                 :class="disabled?'text-disabled':''"
                 class="tsfont-edittext"
                 @click="editCiEntity(row.uuid)"
-              >编辑</li>
+              >编辑</li>-->
               <li class="tsfont-close-o" :class="disabled?'text-disabled':''" @click="deleteCiEntity(row)">删除</li>
             </ul>
           </div>
