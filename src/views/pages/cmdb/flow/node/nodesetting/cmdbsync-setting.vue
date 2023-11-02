@@ -3,10 +3,10 @@
     <div class="control-box">
       <div class="control-setting">
         <span class="label">
-          <span>回退重新同步</span>
+          <span>{{ $t('term.cmdb.rerunsteptosync') }}</span>
           <Tooltip
             max-width="300"
-            content="流程回退后，再次流转至当前步骤时，重新同步"
+            :content="$t('term.cmdb.rerunsteptosynctip')"
             theme="light"
             placement="bottom"
             :transfer="true"

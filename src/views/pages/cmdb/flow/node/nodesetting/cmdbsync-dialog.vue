@@ -40,7 +40,7 @@
             <div class="pl-lg">
               <TsFormItem
                 v-if="ciEntityQueue.length < 2"
-                label="配置模型"
+                :label="$t('term.deploy.configurationmodel')"
                 labelPosition="left"
                 required
               >
@@ -52,12 +52,26 @@
                 ></TsFormSelect>
               </TsFormItem>
               <div v-if="ciData.ciId">
-                <TsFormItem label="配置项数量" labelPosition="left">
+                <TsFormItem :label="$t('term.cmdb.ciconfignumber')" labelPosition="left">
                   <TsFormRadio
                     v-model="ciData.createPolicy"
-                    :dataList="createPolicyDataList"
+                    :dataList="ciEntityQueue.length <= 1?createPolicyDataList:createRelDataList"
                     @on-change="(val)=>{
                       changePolicy(val)
+                    }"
+                  ></TsFormRadio>
+                </TsFormItem>
+                <TsFormItem
+                  v-if="ciEntityQueue.length > 1"
+                  :label="$t('term.cmdb.relaction')"
+                  labelPosition="left"
+                  required
+                >
+                  <TsFormRadio
+                    :dataList="actionDataList"
+                    :value="ciData.action"
+                    @on-change="(val)=>{
+                      setConfig(val,'action')
                     }"
                   ></TsFormRadio>
                 </TsFormItem>
@@ -74,7 +88,7 @@
                       transfer
                       border="border"
                       @on-change="(val)=>{
-                        setBatchDataSource(val,'attributeUuid',ciData.batchDataSource)
+                        setBatchDataSource(val,'attributeUuid')
                       }"
                     ></TsFormSelect>
                   </TsFormItem>
@@ -83,25 +97,11 @@
                       ref="attrHandler"
                       :defaultFilterList="ciData.batchDataSource && ciData.batchDataSource.filterList"
                       :dataList="getAttrList(ciData.batchDataSource)"
-                      @setConfig="(val)=> setBatchDataSource(val,'filterList',ciData.batchDataSource)"
+                      @setConfig="(val)=> setBatchDataSource(val,'filterList')"
                     ></FilterList>
                   </TsFormItem>
                 </template>
-                <TsFormItem
-                  v-if="ciEntityQueue.length > 1"
-                  label="关系策略"
-                  labelPosition="left"
-                  required
-                >
-                  <TsFormRadio
-                    :dataList="actionDataList"
-                    :value="ciData.action"
-                    @on-change="(val)=>{
-                      setConfig(val,'action')
-                    }"
-                  ></TsFormRadio>
-                </TsFormItem>
-                <TsFormItem label="属性映射" labelPosition="top">
+                <TsFormItem :label="$t('term.cmdb.attrmapping')" labelPosition="top">
                   <div class="pt-sm">
                     <CmdbsyncEdit
                       v-if="!loadingShow"
@@ -160,9 +160,7 @@ export default {
         createPolicy: 'single', 
         batchDataSource: {},
         mappingList: [],
-        attrEntityData: {}, 
-        relEntityData: {}, 
-        globalAttrEntityData: {} 
+        relEntityData: {}
       },
       isShow: true,
       ciConfig: {
@@ -178,11 +176,21 @@ export default {
       createPolicyDataList: [
         {
           value: 'single',
-          text: '添加一条数据'
+          text: this.$t('term.cmdb.addonedata')
         },
         {
           value: 'batch',
-          text: '添加多条数据'
+          text: this.$t('term.cmdb.addmoredata')
+        }
+      ],
+      createRelDataList: [
+        {
+          value: 'single',
+          text: this.$t('term.cmdb.addonerel')
+        },
+        {
+          value: 'batch',
+          text: this.$t('term.cmdb.addmorerel')
         }
       ],
       actionDataList: [
@@ -247,7 +255,7 @@ export default {
                 if (m.key.indexOf('rel') > -1) {
                   this.$set(cientity.relEntityData, m.key, m);
                 } else {
-                  this.$set(cientity.allCiEntityValue, m.key, m);
+                  this.$set(cientity.allAttrEntityData, m.key, m);
                 }
               });
             }
@@ -292,10 +300,8 @@ export default {
               ciIcon: ci.icon,
               createPolicy: 'single',
               batchDataSource: {},
-              attrEntityData: {},
               relEntityData: {},
-              globalAttrEntityData: {},
-              allCiEntityValue: {}
+              allAttrEntityData: {}
             };
             cientity['_elementList'] = await this.getElementByCiId(this.ciData.ciId);
             cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciData.ciId);
@@ -411,11 +417,9 @@ export default {
               createPolicy: 'single',
               batchDataSource: {},
               action: 'append',
-              attrEntityData: {},
               relEntityData: {},
-              globalAttrEntityData: {},
               _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
-              allCiEntityValue: {} //所有的属性
+              allAttrEntityData: {} //所有的属性
             };
             newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
             newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
@@ -509,30 +513,6 @@ export default {
               currentCiEntity['relEntityData']['rel' + cientity._direction + '_' + cientity._relId] = { valueList: [] };
             }
             currentCiEntity['relEntityData']['rel' + cientity._direction + '_' + cientity._relId]['valueList'].push(newRelEntity);
-          } else if (cientity['_attrId']) {
-            if (!currentCiEntity['attrEntityData']['attr_' + cientity._attrId]) {
-              const tmp = {};
-              tmp['attr_' + cientity._attrId] = {};
-              Object.assign(currentCiEntity['attrEntityData'], tmp);
-              Object.assign(currentCiEntity['attrEntityData']['attr_' + cientity._attrId], { type: cientity['_attrType'], config: cientity['_attrConfig'], valueList: [], actualValueList: [] });
-            }
-            const pos = currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'].length;
-            this.$set(currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'], pos, cientity);
-          }
-        } else {
-          //更新临时数据时，需要更新attr的数据，因为显示字段可能有变化，而关系用不到可能发生变化的字段，所以暂时不用更新，将来可能要补充
-          if (cientity['_attrId']) {
-            if (!currentCiEntity['attrEntityData']['attr_' + cientity._attrId]) {
-              const k = {};
-              k['attr_' + cientity._attrId] = { type: cientity['_attrType'], config: cientity['_attrConfig'], valueList: [] };
-              this.$set(currentCiEntity, 'attrEntityData', k);
-            }
-            for (let index = 0; index < currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'].length; index++) {
-              const d = currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'][index];
-              if (d.uuid && d.uuid === cientity.uuid) {
-                this.$set(currentCiEntity['attrEntityData']['attr_' + cientity._attrId]['valueList'], index, cientity);
-              }
-            }
           }
         }
         //标记为已保存的新配置项，用于点击“取消”后判断是否需要删除数据
@@ -552,18 +532,19 @@ export default {
     setConfig(val, attr) {
       this.$set(this.ciEntityQueue[this.ciEntityQueue.length - 1], attr, val);
     },
-    setBatchDataSource(val, attr, config) {
-      let batchDataSource = config || {};
+    setBatchDataSource(val, attr) {
       let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
-      this.$set(batchDataSource, attr, val);
       if (ciEntity) {
-        this.$set(ciEntity, 'batchDataSource', batchDataSource);
-        this.$set(this.ciData, 'batchDataSource', batchDataSource);
-        Object.keys(ciEntity.allCiEntityValue).forEach(key => {
-          if (ciEntity.allCiEntityValue[key].mappingMode === 'formTableComponent') {
-            this.$set(ciEntity.allCiEntityValue[key], 'ValueList', val);
-            this.$set(ciEntity.allCiEntityValue[key], 'column', '');
-            this.$set(ciEntity.allCiEntityValue[key], 'filterList', []);
+        if (!ciEntity.batchDataSource) {
+          this.$set(ciEntity, 'batchDataSource', {});
+        }
+        this.$set(ciEntity.batchDataSource, attr, val);
+        this.$set(this.ciData, 'batchDataSource', ciEntity.batchDataSource);
+        Object.keys(ciEntity.allAttrEntityData).forEach(key => {
+          if (ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
+            this.$set(ciEntity.allAttrEntityData[key], 'valueList', [val]);
+            this.$set(ciEntity.allAttrEntityData[key], 'column', '');
+            this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
           }
         });
       }
@@ -600,16 +581,16 @@ export default {
     changePolicy(val) {
       let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       if (ciEntity) {
-        Object.keys(ciEntity.allCiEntityValue).forEach(key => {
-          if (ciEntity.allCiEntityValue[key].mappingMode === 'formTableComponent') {
-            this.$set(ciEntity.allCiEntityValue[key], 'valueList', null);
-            this.$set(ciEntity.allCiEntityValue[key], 'column', '');
-            this.$set(ciEntity.allCiEntityValue[key], 'filterList', []);
+        this.$set(ciEntity, 'batchDataSource', {});
+        this.$set(ciEntity, 'createPolicy', val);
+        this.$set(this.ciData, 'batchDataSource', {});
+        Object.keys(ciEntity.allAttrEntityData).forEach(key => {
+          if (val === 'batch' && ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
+            this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
+            this.$set(ciEntity.allAttrEntityData[key], 'column', '');
+            this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
           }
         });
-        this.$set(this.ciData, 'batchDataSource', {});
-        this.$set(ciEntity, 'batchDataSource', {});
-        this.setConfig(val, 'createPolicy');
       }
     },
     save() {
@@ -636,20 +617,20 @@ export default {
         if (item.hasOwnProperty('action')) {
           config.action = item.action;
         }
-        if (item.hasOwnProperty('allCiEntityValue')) {
-          if (!this.$utils.isEmpty(item.allCiEntityValue)) {
-            Object.keys(item.allCiEntityValue).forEach(key => {
-              if (!this.$utils.isEmpty(item.allCiEntityValue[key].valueList)) {
+        if (item.hasOwnProperty('allAttrEntityData')) {
+          if (!this.$utils.isEmpty(item.allAttrEntityData)) {
+            Object.keys(item.allAttrEntityData).forEach(key => {
+              if (!this.$utils.isEmpty(item.allAttrEntityData[key].valueList)) {
                 let objectData = {
                   key: key,
-                  mappingMode: item.allCiEntityValue[key].mappingMode,
-                  valueList: item.allCiEntityValue[key].valueList 
+                  mappingMode: item.allAttrEntityData[key].mappingMode,
+                  valueList: item.allAttrEntityData[key].valueList 
                 };
-                if (item.allCiEntityValue[key].hasOwnProperty('column')) {
-                  objectData.column = item.allCiEntityValue[key].column;
+                if (item.allAttrEntityData[key].hasOwnProperty('column')) {
+                  objectData.column = item.allAttrEntityData[key].column;
                 }
-                if (item.allCiEntityValue[key].hasOwnProperty('filterList')) {
-                  objectData.filterList = item.allCiEntityValue[key].filterList;
+                if (item.allAttrEntityData[key].hasOwnProperty('filterList')) {
+                  objectData.filterList = item.allAttrEntityData[key].filterList;
                 }
                 config.mappingList.push(objectData);
               }

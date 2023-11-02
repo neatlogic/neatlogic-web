@@ -1,11 +1,5 @@
 <template>
   <div>
-    <Loading
-      v-if="isLoading"
-      :text="$t('page.validating')"
-      :loadingShow="isLoading"
-      type="fix"
-    ></Loading>
     <div>
       <div class="tsForm tsForm-border-border ivu-form-label-right">
         <Collapse v-model="openPanel" simple>
@@ -98,26 +92,29 @@
                       <Col span="6">
                         <TsFormSelect
                           ref="attrHandler"
-                          :value="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode')"
+                          :value="getValue(ciEntityData.allAttrEntityData, e, 'mappingMode')"
                           :dataList="mappingModeList"
                           :firstSelect="false"
                           transfer
                           border="border"
                           :validateList="getValidList(e.type, e.element)"
-                          @change="(val)=>setConfig(val,'mappingMode',e)"
+                          @change="(val)=>{
+                            changeMappingMode(val,e)
+                            setConfig(val,'mappingMode',e)
+                          }"
                         ></TsFormSelect>
                       </Col>
                       <Col span="18">
-                        <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') == 'constant'">
+                        <template v-if="getValue(ciEntityData.allAttrEntityData, e, 'mappingMode') == 'constant'">
                           <div v-if="e.type === 'attr'">
                             <AttrInputer
                               ref="attrHandler"
                               :allowBatchAdd="true"
-                              :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
+                              :attrEntity="ciEntityData.allAttrEntityData['attr_' + e.element.id]"
                               :disabled="disabledFn('attr_' + e.element.id)"
                               :attrData="e.element"
-                              :valueList="getValue(ciEntityData.allCiEntityValue, e, 'valueList')"
-                              @setData="setAttrData(e, e.element, arguments[0], arguments[1])"
+                              :valueList="getValue(ciEntityData.allAttrEntityData, e, 'valueList')"
+                              @setData="setConfig(arguments[0],'valueList', e)"
                               @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
                               @select="selectAttrEntity(e, 'attr_' + e.element.id, $event)"
                             ></AttrInputer>
@@ -125,7 +122,7 @@
                           <div v-else-if="e.type === 'global'">
                             <TsFormRadio
                               v-if="!e.element.isMultiple"
-                              :value="getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)?getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)[0]:null"
+                              :value="getGlobalValueList(ciEntityData.allAttrEntityData, 'global_' + e.element.id)?getGlobalValueList(ciEntityData.allAttrEntityData, 'global_' + e.element.id)[0]:null"
                               :allowToggle="true"
                               :dataList="e.element.itemList"
                               valueName="id"
@@ -143,7 +140,7 @@
                             ></TsFormRadio>
                             <TsFormCheckbox
                               v-if="!!e.element.isMultiple"
-                              :value="getGlobalValueList(ciEntityData.allCiEntityValue, 'global_' + e.element.id)"
+                              :value="getGlobalValueList(ciEntityData.allAttrEntityData, 'global_' + e.element.id)"
                               :dataList="e.element.itemList"
                               valueName="id"
                               textName="value"
@@ -153,7 +150,7 @@
                           </div>
                           <div v-else>
                             <TsFormInput
-                              :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                              :value="getValue(ciEntityData.allAttrEntityData, e, 'valueList')?getValue(ciEntityData.allAttrEntityData, e, 'valueList')[0]:null"
                               type="textarea"
                               maxlength="500"
                               :validateList="getValidList(e.type, e.element)"
@@ -161,10 +158,10 @@
                             ></TsFormInput>
                           </div>
                         </template>
-                        <template v-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formCommonComponent'">
+                        <template v-if="getValue(ciEntityData.allAttrEntityData, e, 'mappingMode') === 'formCommonComponent'">
                           <TsFormSelect
                             ref="attrHandler"
-                            :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                            :value="getValue(ciEntityData.allAttrEntityData, e, 'valueList')?getValue(ciEntityData.allAttrEntityData, e, 'valueList')[0]:null"
                             :dataList="getFormComponent('formCommonComponent')"
                             textName="label"
                             valueName="uuid"
@@ -175,12 +172,12 @@
                             @change="(val)=>setConfig(val,'valueList',e)"
                           ></TsFormSelect>
                         </template>
-                        <template v-else-if="getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
+                        <template v-else-if="getValue(ciEntityData.allAttrEntityData, e, 'mappingMode') === 'formTableComponent'">
                           <TsRow :gutter="8">
-                            <Col span="12">
+                            <Col v-if="ciData.createPolicy === 'single'" span="12">
                               <TsFormSelect
                                 ref="attrHandler"
-                                :value="getValue(ciEntityData.allCiEntityValue, e, 'valueList')?getValue(ciEntityData.allCiEntityValue, e, 'valueList')[0]:null"
+                                :value="getValue(ciEntityData.allAttrEntityData, e, 'valueList')?getValue(ciEntityData.allAttrEntityData, e, 'valueList')[0]:null"
                                 :dataList="getFormComponent('formTableComponent')"
                                 textName="label"
                                 valueName="uuid"
@@ -191,12 +188,12 @@
                                 @change="(val)=>setConfig(val,'valueList',e)"
                               ></TsFormSelect>
                             </Col>
-                            <Col span="12">
+                            <Col :span="ciData.createPolicy === 'single'?12:'24'">
                               <div class="formTableComponent pr-lg">
                                 <TsFormSelect
                                   ref="attrHandler"
-                                  :value="getValue(ciEntityData.allCiEntityValue, e, 'column')"
-                                  :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                                  :value="getValue(ciEntityData.allAttrEntityData, e, 'column')"
+                                  :dataList="getAttrList(ciEntityData.allAttrEntityData, e)"
                                   :validateList="getValidList(e.type, e.element)"
                                   :firstSelect="false"
                                   transfer
@@ -240,11 +237,11 @@
                         </template>
                       </Col>
                     </TsRow>
-                    <div v-if="ciData.createPolicy === 'single' && getValue(ciEntityData.allCiEntityValue, e, 'mappingMode') === 'formTableComponent'">
+                    <div v-if="ciData.createPolicy === 'single' && getValue(ciEntityData.allAttrEntityData, e, 'mappingMode') === 'formTableComponent'" class="pt-sm">
                       <FilterList
                         ref="attrHandler"
-                        :defaultFilterList="getValue(ciEntityData.allCiEntityValue, e, 'filterList')"
-                        :dataList="getAttrList(ciEntityData.allCiEntityValue, e)"
+                        :defaultFilterList="getValue(ciEntityData.allAttrEntityData, e, 'filterList')"
+                        :dataList="getAttrList(ciEntityData.allAttrEntityData, e)"
                         @setConfig="(val)=>setConfig(val,'filterList', e)"
                       ></FilterList>
                     </div>
@@ -284,7 +281,6 @@ export default {
       openPanel: ['global', 'unique', 'manual', 'description'],
       relCiList: [], //关系的所有下游模型列表
       isRelPopShow: {},
-      isLoading: false,
       mappingModeList: [
         {
           text: this.$t('page.constant'),
@@ -406,8 +402,8 @@ export default {
     //删除选中的属性
     deleteAttrEntity(key, attrentity) {
       //删除引用属性
-      if (this.ciEntityData.attrEntityData[key]) {
-        let valueList = this.ciEntityData.attrEntityData[key]['valueList'];
+      if (this.ciEntityData.allAttrEntityData[key]) {
+        let valueList = this.ciEntityData.allAttrEntityData[key]['valueList'];
         if (valueList) {
           let j = -1;
           valueList.forEach((v, i) => {
@@ -422,50 +418,24 @@ export default {
             }
           });
           if (j > -1) {
-            this.$delete(this.ciEntityData.attrEntityData[key]['valueList'], j);
+            this.$delete(this.ciEntityData.allAttrEntityData[key]['valueList'], j);
           }
         }
-        let actualValueList = this.ciEntityData.attrEntityData[key]['actualValueList'];
-        if (actualValueList) {
-          let j = -1;
-          actualValueList.forEach((v, i) => {
-            if (typeof v == 'string' || typeof v == 'number') {
-              if (v == attrentity.uuid || v == attrentity.id) {
-                j = i;
-              }
-            } else if (typeof v == 'object') {
-              if (v.uuid == attrentity.uuid || v.id == attrentity.id) {
-                j = i;
-              }
-            }
-          });
-          if (j > -1) {
-            this.$delete(this.ciEntityData.attrEntityData[key]['actualValueList'], j);
-          }
-        }
-        this.$emit('remove', attrentity);
       }
     },
     //选择引用属性
     selectAttrEntity(item, key, attrentity) {
-      if (!this.ciEntityData.attrEntityData[key]) {
-        const vo = {};
-        vo[key] = { valueList: [], actualValueList: [] };
-        Object.assign(this.ciEntityData.attrEntityData, vo);
+      if (!this.ciEntityData.allAttrEntityData[key]) {
+        Object.assign(this.ciEntityData.allAttrEntityData, key, {});
       }
-      if (!this.ciEntityData.attrEntityData[key]['valueList']) {
-        this.$set(this.ciEntityData.attrEntityData[key], 'valueList', []);
-      }
-      if (!this.ciEntityData.attrEntityData[key]['actualValueList']) {
-        this.$set(this.ciEntityData.attrEntityData[key], 'actualValueList', []);
+      if (!this.ciEntityData.allAttrEntityData[key]['valueList']) {
+        this.$set(this.ciEntityData.allAttrEntityData[key], 'valueList', []);
       }
       this.$nextTick(() => {
-        let valueList = this.ciEntityData.attrEntityData[key]['valueList'];
+        let valueList = this.ciEntityData.allAttrEntityData[key]['valueList'];
         if (valueList.findIndex(v => (typeof v == 'object' && (v.uuid == attrentity.uuid || v.id == attrentity.id)) || (typeof v == 'number' && v == attrentity.id)) == -1) {
-          this.ciEntityData.attrEntityData[key]['valueList'].push(attrentity);
-          this.ciEntityData.attrEntityData[key]['actualValueList'].push(attrentity);
+          this.ciEntityData.allAttrEntityData[key]['valueList'].push(attrentity);
         }
-        this.setConfig(valueList, 'valueList', item);
       });
     },
     getValidList(type, data) {
@@ -492,31 +462,18 @@ export default {
       return isValid;
     },
     setGlobalAttrData(attr, opt, item) {
-      if (!this.ciEntityData.globalAttrEntityData) {
-        this.ciEntityData.globalAttrEntityData = {};
+      if (!this.ciEntityData.allAttrEntityData) {
+        this.ciEntityData.allAttrEntityData = {};
       }
-      if (!this.ciEntityData.globalAttrEntityData['global_' + attr.id]) {
-        this.ciEntityData.globalAttrEntityData['global_' + attr.id] = {};
+      if (!this.ciEntityData.allAttrEntityData['global_' + attr.id]) {
+        this.ciEntityData.allAttrEntityData['global_' + attr.id] = {};
       }
-      this.$set(this.ciEntityData.globalAttrEntityData['global_' + attr.id], 'valueList', opt);
+      this.$set(this.ciEntityData.allAttrEntityData['global_' + attr.id], 'valueList', opt);
       this.setConfig(opt, 'valueList', item);
     },
-    setAttrData(item, attr, value, actualValue) {
-      if (!this.ciEntityData.attrEntityData) {
-        this.ciEntityData.attrEntityData = {};
-      }
-      if (!this.ciEntityData.attrEntityData['attr_' + attr.id]) {
-        this.ciEntityData.attrEntityData['attr_' + attr.id] = {};
-      }
-      this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'config', attr.config);
-      this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'type', attr.type);
-      this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'valueList', value);
-      this.$set(this.ciEntityData.attrEntityData['attr_' + attr.id], 'actualValueList', actualValue);
-      this.setConfig(value, 'valueList', item);
-    },
     setConfig(value, attrName, item) {
-      if (!this.ciEntityData.allCiEntityValue) {
-        this.ciEntityData.allCiEntityValue = {};
+      if (!this.ciEntityData.allAttrEntityData) {
+        this.ciEntityData.allAttrEntityData = {};
       }
       let key = null;
       if (item.type === 'des') {
@@ -524,20 +481,25 @@ export default {
       } else {
         key = item.type + '_' + item.element.id;
       }
-      if (!this.ciEntityData.allCiEntityValue[key]) {
-        this.$set(this.ciEntityData.allCiEntityValue, key, {});
+      if (!this.ciEntityData.allAttrEntityData[key]) {
+        this.$set(this.ciEntityData.allAttrEntityData, key, {});
       }
-      if (!this.ciEntityData.allCiEntityValue[key]) {
-        this.$set(this.ciEntityData.allCiEntityValue, key, {});
+      if (!this.ciEntityData.allAttrEntityData[key]) {
+        this.$set(this.ciEntityData.allAttrEntityData, key, {});
       }
       if (attrName === 'valueList') {
         if (Array.isArray(value)) {
-          this.$set(this.ciEntityData.allCiEntityValue[key], attrName, value);
+          this.$set(this.ciEntityData.allAttrEntityData[key], attrName, value);
         } else {
-          this.$set(this.ciEntityData.allCiEntityValue[key], attrName, [value]);
+          this.$set(this.ciEntityData.allAttrEntityData[key], attrName, [value]);
         }
       } else {
-        this.$set(this.ciEntityData.allCiEntityValue[key], attrName, value);
+        this.$set(this.ciEntityData.allAttrEntityData[key], attrName, value);
+      }
+    },
+    changeMappingMode(val, e) {
+      if (val === 'formTableComponent' && this.ciEntityData.batchDataSource && this.ciEntityData.batchDataSource.attributeUuid) {
+        this.setConfig(this.ciEntityData.batchDataSource.attributeUuid, 'valueList', e);
       }
     }
   },

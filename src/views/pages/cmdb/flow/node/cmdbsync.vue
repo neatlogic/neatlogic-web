@@ -144,7 +144,7 @@ export default {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();
       }
       stepConfig['formSceneUuid'] = this.configData.stepConfig.formSceneUuid || '';
-      if (this.$refs.ciEntityConfig) { //组合工具cmdb
+      if (this.$refs.ciEntityConfig) { //cmdb
         let ciEntityConfig = this.$refs.ciEntityConfig.save();
         this.$set(stepConfig, 'ciEntityConfig', ciEntityConfig);
       }
