@@ -1137,7 +1137,10 @@
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",
     "heartbeatthreshold": "心跳阈值",
-    "versionlog": "版本日志"
+    "versionlog": "版本日志",
+    "exporttable": "导出表格",
+    "importtable": "导入表格",
+    "excelinputtemplate": "表格输入模板"
   },
   "knowledge": {
     "document": "文档",

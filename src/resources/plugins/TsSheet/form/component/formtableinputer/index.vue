@@ -7,8 +7,8 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
-      <span class="action-item tsfont-export" @click="exportTemplateExcel">导出 Excel模板</span>
-      <span class="action-item tsfont-export" @click="exportExcel">导出 Excel</span>
+      <span class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
+      <span class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
       <Upload
         ref="upload"
         :show-upload-list="false"
@@ -20,9 +20,10 @@
         :before-upload="handleBeforeUpload"
         type="drag"
         action=""
-        style="display: inline-block;margin-left: 8px;"
+        class="forminputtable-upload ml-sm"
+        style="display: inline-block;"
       >
-        <span class="tsfont-import">导入excel</span>
+        <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
       </Upload>
     </div>
     <TsTable
@@ -260,12 +261,10 @@ export default {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
       this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
     },
-    exportTemplateExcel() {
+    exportExcelTemplate() {
       // 导出excel模板
       const _workbook = new ExcelJS.Workbook();
-      // 添加工作表
-      const _sheet1 = _workbook.addWorksheet('sheet1');
-
+      const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       // 设置表头
       let theadList = [];
       this.tableData.theadList.forEach((item) => {
@@ -283,27 +282,24 @@ export default {
       _sheet1.columns = theadList;
       let headerRow = _sheet1.getRow(1); // 获取第一行
       headerRow.eachCell((cell, colNum) => {
-      // 设置背景色
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid'
-        };
-        // 设置字体
         cell.font = {
           bold: true,
           size: 12,
           name: '微软雅黑',
           color: {argb: '000'}
         };
-        // 设置对齐方式
-        cell.alignment = {vertical: 'middle', horizontal: 'center', wrapText: false };
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle',
+          wrapText: true // 单元格自动换行
+        };
       });
       // 导出表格
       _workbook.xlsx.writeBuffer().then((buffer) => {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-        FileSaver.saveAs(_file, '输入表格模板.xlsx');
+        FileSaver.saveAs(_file, `${this.$t('term.framework.excelinputtemplate')}.xlsx`);
       });
     },
     async exportExcel() {
@@ -470,7 +466,6 @@ export default {
     },
     byComponentTypeSetValue(uuid, item) {
       // 根据组件的类型，设置回显值
-      console.log(item);
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
       let {config = {}, handler = ''} = selectedItem || {};
@@ -479,12 +474,17 @@ export default {
         if (dataSource === 'matrix' && isMultiple) {
         // 矩阵
           resultValue = [];
-          let valueList = item.split(',');
-          valueList.forEach((valueItem) => {
-            if (valueItem) {
-              resultValue.push(`${valueItem}&=&${valueItem}`);
-            }
-          });
+          let valueList = [];
+          if (typeof item == 'string') {
+            valueList = item.split(',');
+            valueList.forEach((valueItem) => {
+              if (valueItem) {
+                resultValue.push(`${valueItem}&=&${valueItem}`);
+              }
+            });
+          } else {
+            resultValue.push(`${item}&=&${item}`);
+          }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
           resultValue.push(item);
@@ -583,4 +583,11 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.forminputtable-upload {
+  /deep/ .ivu-upload-drag {
+    border: none;
+    background: transparent;
+  }
+}
+</style>
