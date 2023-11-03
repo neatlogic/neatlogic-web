@@ -5,7 +5,7 @@ import changehandle from './process-changehandle';
 import event from './process-event'; //事件
 import autoexec from './process-autoexec'; 
 import timer from './process-timer';
-import cientitysync from './process-cientitysync';
+import cmdbsync from './process-cmdbsync';
 export default {
   omnipotent,
   automatic,
@@ -14,5 +14,5 @@ export default {
   event,
   autoexec,
   timer,
-  cientitysync
+  cmdbsync
 };

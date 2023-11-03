@@ -123,9 +123,6 @@
                       {{ actionConfig.copyprocesstask }}
                     </DropdownItem>
                     <!-- 复制上报 -->
-                    <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="createKnowledge">
-                      转为知识文档
-                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </span>
@@ -148,39 +145,25 @@
               <!-- 回退_end -->
               <!-- 流转_start -->
               <span v-if="actionConfig.complete" class="action-item">
-                <template v-if="completeAuth">
-                  <!-- 接下来步骤大于1个，弹窗选择 -->
-                  <Button
-                    v-if="nextStepList.length > 1"
-                    icon="tsfont tsfont-refresh"
-                    type="primary"
-                    :disabled="disabledConfig.completing"
-                    @click="completeTask"
-                  >{{ actionConfig.complete }}</Button>
-                  <!-- 接下来步骤1个 直接选择-->
-                  <Button
-                    v-else-if="nextStepList.length == 1"
-                    icon="tsfont tsfont-refresh"
-                    type="primary"
-                    :disabled="disabledConfig.completing"
-                    :title="nextStepList[0].name ? nextStepList[0].flowDirection + nextStepList[0].name : null"
-                    @click="completeStep(nextStepList[0])"
-                  >
-                    <div class="overflow" style="max-width:150px">{{ nextStepList[0].aliasName || actionConfig.complete }}</div>
-                  </Button>
-                </template>
-                <Tooltip
-                  v-else
-                  placement="bottom-end"
-                  :content="completeErrorText"
-                  transfer
+                <!-- 接下来步骤大于1个，弹窗选择 -->
+                <Button
+                  v-if="nextStepList.length > 1"
+                  icon="tsfont tsfont-refresh"
+                  type="primary"
+                  :disabled="disabledConfig.completing"
+                  @click="completeTask"
+                >{{ actionConfig.complete }}</Button>
+                <!-- 接下来步骤1个 直接选择-->
+                <Button
+                  v-else-if="nextStepList.length == 1"
+                  icon="tsfont tsfont-refresh"
+                  type="primary"
+                  :disabled="disabledConfig.completing"
+                  :title="nextStepList[0].name ? nextStepList[0].flowDirection + nextStepList[0].name : null"
+                  @click="completeStep(nextStepList[0])"
                 >
-                  <Button
-                    icon="tsfont tsfont-refresh"
-                    type="primary"
-                    :disabled="true"
-                  >{{ actionConfig.complete }}</Button>
-                </Tooltip>
+                  <div class="overflow" style="max-width:150px">{{ nextStepList[0].aliasName || actionConfig.complete }}</div>
+                </Button>
               </span>
               <!-- 流转_end -->
               <!-- 评分前回退 -->
@@ -248,8 +231,6 @@
                       :backStepList="backStepList"
                       :selectBackConfig="selectBackConfig"
                       :currentProcessTaskStep="processTask.currentProcessTaskStep"
-                      :completeAuth="completeAuth"
-                      :completeErrorText="completeErrorText"
                       :isDisableCommet="isDisableCommet"
                       @completeTask="completeTask"
                       @completeStep="completeStep"
@@ -266,7 +247,6 @@
                 :actionConfig="actionConfig"
                 :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
-                :knowledgeConfig="knowledgeConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
                 :priorityList="priorityList"
@@ -442,7 +422,6 @@
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
     <RedoDialog :isShow.sync="redoModel" :processTaskConfig="processTaskConfig"></RedoDialog>
-    <KnowledgeDialog :isShow.sync="knowledgeModel" :processTaskConfig="processTaskConfig"></KnowledgeDialog>
   </div>
 </template>
 
@@ -452,8 +431,6 @@ import clipboard from '@/resources/directives/clipboard.js';
 import itemDialog from './workorder/actiondialog/index.js';
 import detailmixin from './detailmixin.js';
 import FooterOperationBtn from './workorder/footer-operation-btn.vue'; // 底部操作按钮组件
-
-let Vm;
 
 export default {
   //工单处理
@@ -487,24 +464,16 @@ export default {
     return {
       ranferreportModel: false, // 转报弹框
       redoModel: false, //评分工单回退
-      knowledgeModel: false,
-      knowledgeConfig: null,
       transferStepList: [], //转交步骤列表
       transferId: null,
       handlerStepInfo: null,
-      completeAuth: false, //人工流转权限判断
-      completeErrorText: '正在执行，无法人工流转',
       taskAlertHeight: 0 // taskAlert高度
-      // taskForm: null, //工单表单查看权限
-    
     };
   },
   created() {
   },
   mounted() {
     this.getAllData();
-    this.getKnowledgeDetail(); //转知识权限
-    Vm = this;
   },
   beforeDestroy() {
     clearInterval(this.timer);
@@ -515,11 +484,6 @@ export default {
       //初始化当前步骤:cmdb同步
       if (this.processTaskStepConfig) {
         this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || null;
-        if (this.handlerStepInfo) {
-          this.completeAuth = !(this.handlerStepInfo.status == 'pending' || this.handlerStepInfo.status == 'running');
-        } else {
-          this.completeAuth = true;
-        }
       }
     },
     async completeTask() {
@@ -633,28 +597,6 @@ export default {
     //评分前回退
     redoTask() {
       this.redoModel = true;
-    },
-    createKnowledge() {
-      //创建知识
-      this.knowledgeModel = true;
-    },
-    getKnowledgeDetail() {
-      //获取工单知识信息
-      let moduleList = JSON.parse(localStorage.getItem('moduleList'));
-      let find = moduleList.find(d => d.moduleId == 'knowledge');
-      if (find && (this.processTask.status == 'succeed' || this.processTask.status == 'scored')) {
-        //工单：完成或者评分状态时，都需要调知识接口
-        let data = {
-          invokeId: this.processTaskId,
-          source: 'processtask'
-        };
-        this.$api.process.processtask.knowledgeDetail(data).then(res => {
-          if (res.Status == 'OK') {
-            let obj = res.Return;
-            this.knowledgeConfig = obj;
-          }
-        });
-      }
     }
   },
   computed: {
@@ -662,7 +604,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask || (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1)) {
+      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;
@@ -676,19 +618,11 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.task-title{
-  font-size: 16px;
-}
 .task-main{
   position: relative;
   width: 100%;
   height: 100%;
   overflow-y: hidden;
-}
-.channel-type{
-  padding: 4px 12px;
-  margin-right: 4px;
-  border-radius: 20px;
 }
 /deep/ .ivu-layout-content{
   overflow-y: hidden !important;

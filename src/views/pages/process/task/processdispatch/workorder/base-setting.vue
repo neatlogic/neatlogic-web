@@ -253,8 +253,6 @@ export default {
         if (res.Status == 'OK') {
           this.knowledgeList = res.Return.dataList;
         }
-      }).catch(error => {
-        this.$Message.error(this.$t('message.failed'), {taregt: this.$t('term.process.relateknowledge')});
       });
     },
     createContent(index, title) {
