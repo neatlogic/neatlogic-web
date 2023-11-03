@@ -2537,6 +2537,8 @@
     "widgetlist": "组件列表",
     "widget": "图元",
     "lane": "泳道",
-    "widgetmanage": "组件管理"
+    "widgetmanage": "组件管理",
+    "dragtosort": "拖动改变排序",
+    "pleaseselectwidget": "请至少选择一个组件"
   }
 }
