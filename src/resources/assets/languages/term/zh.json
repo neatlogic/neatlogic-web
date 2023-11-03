@@ -2525,5 +2525,13 @@
     "scenarioplan": "场景预案",
     "relyonmyservices": "依赖我的服务",
     "servicerelyon": "我依赖的服务"
+  },
+  "diagram": {
+    "widgetlist": "组件列表",
+    "widget": "图元",
+    "lane": "泳道",
+    "widgetmanage": "组件管理",
+    "dragtosort": "拖动改变排序",
+    "pleaseselectwidget": "请至少选择一个组件"
   }
 }

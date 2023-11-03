@@ -280,12 +280,7 @@ export default {
   mounted() {
     this.getReportById();
     this.$nextTick(() => {
-      const canvasContainer = this.$refs['canvasContainer'];
-      if (canvasContainer) {
-        const rect = canvasContainer.getBoundingClientRect();
-        this.containerWidth = rect.width;
-        this.containerHeight = rect.height;
-      }
+      this.calcContainSize();
     });
     window.addEventListener('resize', this.calcContainSize);
     window.addEventListener('keydown', this.windowKeypress);
