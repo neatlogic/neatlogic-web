@@ -146,7 +146,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
     CmdbsyncEdit: resolve => require(['./cmdbsync-edit.vue'], resolve),
-    FilterList: resolve => require(['./cmdbpolicy/filter-list.vue'], resolve)
+    FilterList: resolve => require(['./filter-list.vue'], resolve)
   },
   props: {
     configList: Array
@@ -540,13 +540,19 @@ export default {
         }
         this.$set(ciEntity.batchDataSource, attr, val);
         this.$set(this.ciData, 'batchDataSource', ciEntity.batchDataSource);
-        Object.keys(ciEntity.allAttrEntityData).forEach(key => {
-          if (ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
-            this.$set(ciEntity.allAttrEntityData[key], 'valueList', [val]);
-            this.$set(ciEntity.allAttrEntityData[key], 'column', '');
-            this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
-          }
-        });
+        if (attr === 'attributeUuid') {
+          Object.keys(ciEntity.allAttrEntityData).forEach(key => {
+            if (ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
+              if (val) {
+                this.$set(ciEntity.allAttrEntityData[key], 'valueList', [val]);
+              } else {
+                this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
+              }
+              this.$set(ciEntity.allAttrEntityData[key], 'column', '');
+              this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
+            }
+          });
+        }
       }
     },
     getFormTableComponent() { //获取表单table组件

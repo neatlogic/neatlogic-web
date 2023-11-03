@@ -264,7 +264,7 @@ export default {
     TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
-    FilterList: resolve => require(['./cmdbpolicy/filter-list.vue'], resolve)
+    FilterList: resolve => require(['./filter-list.vue'], resolve)
   },
   props: {
     ciData: Object,

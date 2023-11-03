@@ -56,7 +56,7 @@ export default {
   components: {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    CmdbsyncDialog: resolve => require(['./cmdbsync-dialog.vue'], resolve)
+    CmdbsyncDialog: resolve => require(['./cmdbpolicy/cmdbsync-dialog.vue'], resolve)
   },
   props: {
     defaultCiEntityConfig: Object
@@ -71,7 +71,7 @@ export default {
         rerunStepToSync: 0,
         configList: []
       },
-      startCiEntity: {},
+      startCiEntity: {}, //起始模型数据
       isValid: true //校验
     };
   },
