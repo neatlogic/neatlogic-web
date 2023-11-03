@@ -155,6 +155,7 @@ export default {
               _this.nodeList = _this.dealDataByUrl(_this.nodeList);
             }
             _this.setSelectList();
+            _this.handleEchoFailedDefaultValue();
           } 
         });
       } else if (_this.nodeList && _this.nodeList.length) {
@@ -168,33 +169,48 @@ export default {
             _this.onChangeValue();
           } 
         }
+        
+        this.handleEchoFailedDefaultValue();
+      }
+    },
+    handleEchoFailedDefaultValue() {
+      // 处理回显失败默认值，回显失败清空默认值
+      let selectedList = [];
+      if (this.currentValue) {
+        let selectedItem = this.nodeList.find((item) => item[this.valueName] == this.currentValue);
+        if (!selectedItem) {
+          this.currentValue = null;
+        }
+      }
+      if (!this.$utils.isEmpty(selectedList) && this.isClearEchoFailedDefaultValue) {
+        this.onChangeValue();
       }
     },
     onChangeValue() {
-      let _this = this;
-      let isSame = _this.value === _this.currentValue;
+      let isSame = this.value == this.currentValue;
+      let value = this.currentValue;
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
       let selectedItem = [];
-      if (this.nodeList && this.nodeList.length && _this.currentValue) {
+      if (this.nodeList && this.nodeList.length && value) {
         selectedItem = this.nodeList.find(n => {
-          return n[_this.valueName] === _this.currentValue;
+          return n[this.valueName] === value;
         });
       }
-      _this.$emit('update:value', _this.currentValue);
-      _this.$emit('change', _this.currentValue, selectedItem || null);
+      this.$emit('update:value', value);
+      this.$emit('change', value, selectedItem || null);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
-        _this.$emit('on-change', _this.currentValue, selectedItem || null);
+        this.$emit('on-change', value, selectedItem || null);
       }
       if (!isSame) {
-        typeof _this.onChange == 'function' && _this.onChange(_this.currentValue, selectedItem || null);
-        if (_this.currentValidList.length > 0) {
-          _this.valid(_this.currentValue);
+        typeof this.onChange == 'function' && this.onChange(value, selectedItem || null);
+        if (this.currentValidList.length > 0) {
+          this.valid(value);
         }
       } else {
-        _this.validMesage = '';
+        this.validMesage = '';
       }
-      this.setSelectList(selectedItem[_this.textName] || '');
+      this.setSelectList(selectedItem[this.textName] || '');
     },
     setSelectList(selectedLabel) {
       let _this = this;
@@ -233,11 +249,11 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      let _this = this;
-      if (newValue != _this.currentValue) {
-        _this.currentValue = newValue;
-        _this.validMesage = '';
+      if (newValue != this.currentValue) {
+        this.currentValue = newValue;
+        this.validMesage = '';
         this.setSelectList();
+        this.handleEchoFailedDefaultValue();
       }
     },
     dataList: {
@@ -245,6 +261,7 @@ export default {
         if (!this.url) {
           this.$set(this, 'nodeList', newValue);
           this.setSelectList();
+          this.handleEchoFailedDefaultValue();
         }
       },
       deep: true

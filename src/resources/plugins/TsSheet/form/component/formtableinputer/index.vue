@@ -7,14 +7,31 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
-      <span class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
-      <span class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.pbc.exporttemplate') }}
+      </span>
+      <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.framework.exporttable') }}
+      </span>
+
       <Upload
         ref="upload"
         :show-upload-list="false"
         :default-file-list="[]"
         :format="['xlsx']"
-        :max-size="2048"
+        :max-size="maxSize"
         :on-format-error="handleFormatError"
         :on-exceeded-size="handleMaxSize"
         :before-upload="handleBeforeUpload"
@@ -51,6 +68,7 @@
             mode="read"
             :readonly="readonly"
             :disabled="disabled"
+            :isClearEchoFailedDefaultValue="true"
             style="min-width:130px"
             @change="changeRow(row,index)"
           ></FormItem>
@@ -91,7 +109,10 @@ export default {
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
       tableData: { theadList: [], tbodyList: [] },
-      rowFormItem: {} //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
+      rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
+      maxSize: 1024 * 10,
+      isShowExportExcelTemplate: true,
+      isShowExportExcel: true
     };
   },
   beforeCreate() {},
@@ -261,12 +282,14 @@ export default {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
       this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
     },
-    exportExcelTemplate() {
+    async exportExcelTemplate() {
       // 导出excel模板
+      this.isShowExportExcelTemplate = false;
       const _workbook = new ExcelJS.Workbook();
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       // 设置表头
       let theadList = [];
+      let theadUuidList = [];
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
           if (item.key != 'number') {
@@ -274,8 +297,10 @@ export default {
             theadList.push({
               header: item.title,
               key: item.key,
-              width: 20
+              width: 20,
+              style: this.handleCellType(item.key)
             });
+            theadUuidList.push(item.key);
           }
         }
       });
@@ -294,16 +319,45 @@ export default {
           wrapText: true // 单元格自动换行
         };
       });
+      // 数据验证
+      let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
+      const startRow = 2;
+      const endRow = 10;
+      for (let [index, item] of this.extraList.entries()) {
+        if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
+          // 遍历每一行，设置数据有效性
+          let formulaeList = await this.handleFormulae(item.config);
+          for (let row = startRow; row <= endRow; row++) {
+            const worksheetRow = _sheet1.getRow(row);
+            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            cell.dataValidation = {
+              type: 'list',
+              allowBlank: false,
+              formulae: formulaeList
+            };
+          }
+        }
+      }
       // 导出表格
       _workbook.xlsx.writeBuffer().then((buffer) => {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-        FileSaver.saveAs(_file, `${this.$t('term.framework.excelinputtemplate')}.xlsx`);
+        new Promise((resolve, reject) => {
+          try {
+            FileSaver.saveAs(_file, `${this.$t('term.framework.excelinputtemplate')}.xlsx`);
+            resolve(this.$t('page.success'));
+          } catch (error) {
+            reject(this.$t('page.fail'));
+          }
+        }).finally((message) => {
+          this.isShowExportExcelTemplate = true;
+        });
       });
     },
     async exportExcel() {
       // 导出excel带表格数据
+      this.isShowExportExcel = false;
       const _workbook = new ExcelJS.Workbook(); // 创建工作簿
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       let columnsList = [];
@@ -322,6 +376,20 @@ export default {
         }
       });
       _sheet1.columns = columnsList;
+      let headerRow = _sheet1.getRow(1); // 获取第一行
+      headerRow.eachCell((cell, colNum) => {
+        cell.font = {
+          bold: true,
+          size: 12,
+          name: '微软雅黑',
+          color: {argb: '000'}
+        };
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle',
+          wrapText: true // 单元格自动换行
+        };
+      });
       let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
       tbodyList.forEach((item) => {
         // 添加数据
@@ -368,7 +436,17 @@ export default {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-        FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
+       
+        new Promise((resolve, reject) => {
+          try {
+            FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
+            resolve(this.$t('page.success'));
+          } catch (error) {
+            reject(this.$t('page.fail'));
+          }
+        }).finally((message) => {
+          this.isShowExportExcel = true;
+        });
       });
     },
     handleCellType(uuid) {
@@ -416,24 +494,22 @@ export default {
     },
     handleSpecialValue(value) {
       let valueList = [];
-
       if (typeof value == 'string') {
         return value?.split('&=&')?.[0] || value;
       } else if (Array.isArray(value)) {
         valueList = value.map((item) => item?.split('&=&')?.[0] || item).filter(Boolean);
       }
-
       return valueList.join(',');
     },
     handleFormatError(file) {
       this.$Notice.warning({
-        title: '格式不正确',
-        desc: `格式${file.name}不正确，请选择正确的格式`
+        title: this.$t('message.incorrectformat'),
+        desc: this.$t('form.validate.fileformat', {target: file.name})
       });
     },
     handleMaxSize(file) {
       this.$Notice.warning({
-        title: '超出文件大小限制',
+        title: this.$t('page.uploadfilelimit', {target: this.maxSize / 1024}),
         desc: `${file.name}`
       });
     },
@@ -462,34 +538,35 @@ export default {
             }
           });
         });
+        this.$Message.success(this.$t('message.importsuccess'));
       });
     },
-    byComponentTypeSetValue(uuid, item) {
+    byComponentTypeSetValue(uuid, value) {
       // 根据组件的类型，设置回显值
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
       let {config = {}, handler = ''} = selectedItem || {};
-      if (item) {
+      if (value) {
         let {dataSource = '', isMultiple = false} = config || {};
         if (dataSource === 'matrix' && isMultiple) {
         // 矩阵
           resultValue = [];
           let valueList = [];
-          if (typeof item == 'string') {
-            valueList = item.split(',');
+          if (typeof value == 'string') {
+            valueList = value.split(',');
             valueList.forEach((valueItem) => {
               if (valueItem) {
                 resultValue.push(`${valueItem}&=&${valueItem}`);
               }
             });
           } else {
-            resultValue.push(`${item}&=&${item}`);
+            resultValue.push(`${value}&=&${value}`);
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
-          resultValue.push(item);
+          resultValue.push(value);
         } else {
-          resultValue = item;
+          resultValue = value;
         }
       }
       return resultValue;
@@ -575,7 +652,6 @@ export default {
     'tableData.tbodyList': {
       handler: function(val) {
         this.setValue(val);
-        //console.log(JSON.stringify(val, null, 2));
       },
       deep: true,
       immediate: true

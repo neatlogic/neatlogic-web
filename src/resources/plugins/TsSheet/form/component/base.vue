@@ -10,7 +10,12 @@ export default {
     disabled: { type: Boolean, default: false },
     required: { type: Boolean, default: false },
     formData: Object,
-    readonlyTextIsHighlight: {type: Boolean, default: false} // 只读模式下，是否需要高亮显示值
+    readonlyTextIsHighlight: {type: Boolean, default: false}, // 只读模式下，是否需要高亮显示值
+    isClearEchoFailedDefaultValue: {
+      // 是否清空回显失败默认值
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

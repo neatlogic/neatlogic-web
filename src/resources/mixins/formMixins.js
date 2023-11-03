@@ -40,7 +40,12 @@ export default {
     desc: String,
     descType: String, //描述用alert组件进行包裹  info、success、warning、error
     clearable: Boolean,
-    readonlyTextIsHighlight: { type: Boolean, default: false } // 只读模式下，是否需要高亮显示值
+    readonlyTextIsHighlight: { type: Boolean, default: false }, // 只读模式下，是否需要高亮显示值
+    isClearEchoFailedDefaultValue: {
+      // 是否清空回显失败默认值
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     dispatch(componentName, eventName, params) {
