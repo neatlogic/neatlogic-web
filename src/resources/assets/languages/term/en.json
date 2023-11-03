@@ -2529,6 +2529,8 @@
     "widgetlist": "Component List",
     "widget": "Element",
     "lane": "Swimming lanes",
-    "widgetmanage": "Component Management"
+    "widgetmanage": "Component Management",
+    "dragtosort": "Drag to change sorting",
+    "pleaseselectwidget": "Please select at least one component"
   }
 }
