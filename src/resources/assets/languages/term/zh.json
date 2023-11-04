@@ -2529,6 +2529,9 @@
     "lane": "泳道",
     "widgetmanage": "组件管理",
     "dragtosort": "拖动改变排序",
-    "pleaseselectwidget": "请至少选择一个组件"
+    "pleaseselectwidget": "请至少选择一个组件",
+    "commoncatalog": "普通目录",
+    "cmdbcatalog": "配置项目录",
+    "catalogitem": "目录项"
   }
 }
