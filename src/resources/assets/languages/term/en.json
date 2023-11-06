@@ -2534,6 +2534,7 @@
     "pleaseselectwidget": "Please select at least one component",
     "commoncatalog": "Normal directory",
     "cmdbcatalog": "Configuration Item Catalog",
-    "catalogitem": "Catalog Entry"
+    "catalogitem": "Catalog Entry",
+    "childitem": "Child nodes"
   }
 }
