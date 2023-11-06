@@ -216,12 +216,16 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
-                  :defaultTabValue="isShowJob? 'autoexec' : ''"
+                  :defaultTabValue="isShowCmdbsync? 'cmdbsync' : ''"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
                   }"
                 >
+                  <template v-if="isShowCmdbsync" v-slot:cmdbsync>
+                    <!-- 配置项 -->
+                    <CmdbsyncDetail :handlerStepInfo="handlerStepInfo"></CmdbsyncDetail>
+                  </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
                     <FooterOperationBtn
@@ -448,7 +452,9 @@ export default {
     ...itemDialog,
     TaskAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'], resolve),
     StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
-    FooterOperationBtn
+    FooterOperationBtn,
+    CmdbsyncDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/cmdbsync/cmdbsync-detail.vue'], resolve)
+    
   },
   provide() {
     return {
@@ -609,8 +615,8 @@ export default {
       }
       return moreAction;
     },
-    isShowJob() {
-      return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.jobList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
+    isShowCmdbsync() {
+      return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.tbodyList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
     }
   },
 
