@@ -141,6 +141,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.updatesuccess'));
+            this.refreshIterationList();// 迭代关闭之后刷新迭代列表
           }
         });
     },
