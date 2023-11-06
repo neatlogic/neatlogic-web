@@ -788,7 +788,7 @@ export default {
 
       this.$nextTick(() => {
         if (row != null) {
-          const lefter = this.config.lefterList[row];
+          const lefter = this.$utils.deepClone(this.config.lefterList[row]); // 深拷贝，解决组件行间距很宽的问题
           const lrect = this.$refs['lefter' + row] && this.$refs['lefter' + row][0] ? this.$refs['lefter' + row][0].getBoundingClientRect() : {};
           if (lrect.height > lefter.height) {
             lefter.height = Math.max(lrect.height, this.minHeight);
