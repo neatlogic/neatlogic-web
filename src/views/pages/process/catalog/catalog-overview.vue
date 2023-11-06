@@ -638,9 +638,6 @@ export default {
       }
     }
   }
-  .ivu-cascader-menu {
-    height: 100%;
-  }
 }
 .serviceDilog {
   .tsmodal-header {
