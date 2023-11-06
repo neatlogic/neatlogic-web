@@ -2534,6 +2534,9 @@
     "lane": "Swimming lanes",
     "widgetmanage": "Component Management",
     "dragtosort": "Drag to change sorting",
-    "pleaseselectwidget": "Please select at least one component"
+    "pleaseselectwidget": "Please select at least one component",
+    "commoncatalog": "Normal directory",
+    "cmdbcatalog": "Configuration Item Catalog",
+    "catalogitem": "Catalog Entry"
   }
 }

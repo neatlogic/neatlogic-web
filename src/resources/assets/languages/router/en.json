@@ -296,6 +296,7 @@
     "servicedetail": "Service List Details"
   },
   "diagram": {
-    "diagrammanage": "System Management"
+    "diagrammanage": "System Management",
+    "catalogmanage": "Catalog Management"
   }
 }
