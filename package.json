@@ -40,6 +40,8 @@
     "d3": "^5.14.2",
     "d3-graphviz": "^3.2.0",
     "docx-preview": "^0.1.13",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "github-markdown-css": "^5.2.0",
     "handsontable": "^6.2.2",
     "highlight.js": "^11.8.0",

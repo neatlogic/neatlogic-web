@@ -9,6 +9,7 @@
       :vertical="config.direction === 'vertical'"
       :validateList="validateList"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
+      :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
       @change="
         val => {
           setValue(val);
