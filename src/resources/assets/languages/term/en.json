@@ -1138,7 +1138,10 @@
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",
     "heartbeatthreshold": "Heartbeat threshold",
-    "versionlog": "Version Log"
+    "versionlog": "Version Log",
+    "exporttable": "Export Table",
+    "importtable": "Import Table",
+    "excelinputtemplate": "Table Input Template"
   },
   "knowledge": {
     "document": "Document",

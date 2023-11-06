@@ -58,7 +58,7 @@ const actions = {
         const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
         const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
         if (routerConfig[moduleId]) {
-          const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0);
+          const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0 && authList.includes(route.meta.authority));
           if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
             //有权限菜单的模块才让显示
             moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });

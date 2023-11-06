@@ -155,6 +155,7 @@ export default {
           }
         });
       } else if (_this.nodeList && _this.nodeList.length) {
+        this.handleEchoFailedDefaultValue();
         // if (!_this.value.length) {
         //   //如果没有值的
         //   let selectedItem = _this.nodeList.filter(n => {
@@ -165,6 +166,20 @@ export default {
         //     _this.onChangeValue();
         //   } 
         // }
+      }
+    },
+    handleEchoFailedDefaultValue() {
+      // 处理回显失败默认值，回显失败清空默认值
+      let selectedList = [];
+      let valueList = this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+      valueList.forEach((item, index) => {
+        if (item && !this.nodeList.find((n) => n[this.valueName] == item)) {
+          selectedList.push(item[this.valueName]);
+          this.currentValue.splice(index, 1);
+        }
+      });
+      if (!this.$utils.isEmpty(selectedList) && this.isClearEchoFailedDefaultValue) {
+        this.onChangeValue();
       }
     },
     onChangeValue(val, item) {
@@ -222,6 +237,7 @@ export default {
           }
         }, 100);
       }
+      this.handleEchoFailedDefaultValue();
     }
   },
   computed: {

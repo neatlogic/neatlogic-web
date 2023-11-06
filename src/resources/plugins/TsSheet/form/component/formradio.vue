@@ -10,6 +10,7 @@
       :validateList="validateList"
       :allowToggle="true"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
+      :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
       @change="
         val => {
           setValue(val);
