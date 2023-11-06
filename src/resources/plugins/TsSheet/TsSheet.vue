@@ -1688,7 +1688,7 @@ export default {
       if (this.mode !== 'edit') {
         //只读模式，从下面消除所有没有设置组件的单元格
         for (let i = lefterList.length - 1; i >= 0; i--) {
-          if (!this.config.tableList.find(cell => cell.row === i && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
+          if (!this.config.tableList.find(cell => cell.row === (lefterList[i].index) && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
             lefterList.splice(i, 1);
           }
         }
