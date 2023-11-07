@@ -12,7 +12,6 @@ import process from './process';
 import report from './report';
 import rdm from './rdm';
 import documentonline from './documentonline';
-import dr from './dr';
 let moduleApiConfig = {};
 try {
   // 导入自定义模块，获取导出接口地址
@@ -44,6 +43,5 @@ export default {
   report,
   rdm,
   documentonline,
-  dr,
   ...moduleApiConfig
 };
