@@ -2536,6 +2536,7 @@
     "commoncatalog": "普通目录",
     "cmdbcatalog": "配置项目录",
     "catalogitem": "目录项",
-    "childitem": "子节点"
+    "childitem": "子节点",
+    "relpath": "关系路径"
   }
 }

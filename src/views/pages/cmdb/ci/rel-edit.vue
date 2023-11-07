@@ -24,7 +24,7 @@
                   </TsRow>
                 </Col>
                 <Col span="12">
-                  <div style="text-align:right;line-height:35px">
+                  <div style="text-align: right; line-height: 35px">
                     {{ $t('page.autocollect') }}
                     <i-switch v-model="relData.inputType" :true-value="'at'" :false-value="'mt'"></i-switch>
                     <Poptip
@@ -52,7 +52,7 @@
                       </div>
                       <div class="reledit-icon border-color bg-block" :class="relData.fromCiId == ciData.id ? 'border-primary text-primary' : ''" @click="changeFromCi()">
                         <i v-if="relData.fromCiIcon" :class="relData.fromCiIcon" :style="!relData.id && !relData.fromDisabled ? 'cursor:pointer' : ''"></i>
-                        <i v-if="!relData.fromCiIcon" class="tsfont-plus" style="cursor:pointer"></i>
+                        <i v-if="!relData.fromCiIcon" class="tsfont-plus" style="cursor: pointer"></i>
                       </div>
                       <div class="overflow" :class="relData.fromCiId == ciData.id ? 'text-primary' : ''">
                         {{ relData.fromCiLabel || '...' }}
@@ -73,7 +73,7 @@
                       </div>
                       <div class="reledit-icon border-color bg-block" :class="relData.toCiId == ciData.id ? 'border-primary text-primary' : ''" @click="changeToCi()">
                         <i v-if="relData.toCiIcon" :class="relData.toCiIcon" :style="!relData.id && !relData.toDisabled ? 'cursor:pointer' : ''"></i>
-                        <i v-if="!relData.toCiIcon" class="tsfont-plus" style="cursor:pointer"></i>
+                        <i v-if="!relData.toCiIcon" class="tsfont-plus" style="cursor: pointer"></i>
                       </div>
                       <div class="overflow" :class="relData.toCiId == ciData.id ? 'text-primary' : ''">
                         {{ relData.toCiLabel || '...' }}
@@ -203,7 +203,7 @@
                           :selected="relData.fromGroupId == group.id ? true : false"
                           :name="group.id + ':' + group.name"
                         >{{ group.name }}</DropdownItem>
-                        <DropdownItem name="new" divided>{{ $t('dialog.title.addtarget',{target:$t('page.group')}) }}</DropdownItem>
+                        <DropdownItem name="new" divided>{{ $t('dialog.title.addtarget', { target: $t('page.group') }) }}</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -224,7 +224,7 @@
                           :selected="relData.toGroupId == group.id ? true : false"
                           :name="group.id + ':' + group.name"
                         >{{ group.name }}</DropdownItem>
-                        <DropdownItem divided name="new">{{ $t('dialog.title.addtarget',{target:$t('page.group')}) }}</DropdownItem>
+                        <DropdownItem divided name="new">{{ $t('dialog.title.addtarget', { target: $t('page.group') }) }}</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -444,11 +444,11 @@ export default {
     },
     save: function() {
       if (!this.relData.toCiId) {
-        this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('term.cmdb.targetci')}));
+        this.$Message.info(this.$t('form.placeholder.pleaseselect', { target: this.$t('term.cmdb.targetci') }));
         return;
       }
       if (!this.relData.typeId) {
-        this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('term.cmdb.relationtype')}));
+        this.$Message.info(this.$t('form.placeholder.pleaseselect', { target: this.$t('page.relationtype') }));
         return;
       }
 
