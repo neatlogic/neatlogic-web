@@ -505,6 +505,7 @@ export default {
         });
     },
     focusInput() {
+      this.isVisible = !this.isVisible;
       this.$refs.input && this.$refs.input.focus();
     },
     toggleSelect(item) {
@@ -549,13 +550,19 @@ export default {
         if ((!$el && $el === event.target) || $el.contains(event.target)) {
           return;
         }
-        this.isVisible = false;
+    
         const $contain = this.$refs.dropdownContain ? this.$refs.dropdownContain.$el || null : null;
         if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
           return;
         }
-      } else {
-        this.caretPosition = -1;
+
+        if (this.transfer) {
+        //如果是transfer的时候下拉的区域点击时是在dropdown外层的div上
+          if ($el && $el.offsetParent && ($el.offsetParent === event.target || $el.offsetParent.contains(event.target))) {
+            return;
+          }
+        }
+        this.isVisible = false;
       }
     },
     updatePosition() {
