@@ -188,6 +188,9 @@ export default {
       }
     },
     async confirmUpdate(field) {
+      if (this.$utils.isSame(this.issueDataLocal, this.issueData)) {
+        return;
+      }
       this.isEditing = true;
       await this.$api.rdm.issue.saveIssue(this.issueDataLocal).then(res => {
         this.isEditing = false;
