@@ -17,6 +17,7 @@
         saveMode="emit"
         :hideHeader="true"
         @save="save"
+        @cancel="close"
       ></EditCiEntity>
     </div>
   </TsDialog>
