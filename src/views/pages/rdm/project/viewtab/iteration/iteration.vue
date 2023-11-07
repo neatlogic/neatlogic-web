@@ -37,7 +37,7 @@
               </strong>
             </div>
             <div class="float-left mr-md"><TsFormSwitch
-              :value="selectedIteration.isOpen"
+              v-model="selectedIteration.isOpen"
               :trueValue="1"
               :falseValue="0"
               :showStatus="true"
