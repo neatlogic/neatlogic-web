@@ -1,14 +1,14 @@
 <template>
-  <div v-if="handlerStepInfo">
-    <Alert v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
+  <div>
+    <Alert v-if="!$utils.isEmpty(errorList)" type="error">
       <template slot="desc">
-        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex">
-          创建配置项失败：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
+        <div v-for="(e,eindex) in errorList" :key="eindex">
+          {{ $t('dialog.title.createtarget',{'target':$t('page.fail')}) }}：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
           <span v-if="e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
         </div>
       </template>
     </Alert>
-    <TsTable v-if="handlerStepInfo.tbodyList && handlerStepInfo.tbodyList.length > 0" :theadList="theadList" :tbodyList="handlerStepInfo.tbodyList">
+    <TsTable v-if="tbodyList && tbodyList.length > 0" :theadList="theadList" :tbodyList="tbodyList">
       <template v-slot:detail="{ row }">
         <span style="cursor:pointer" class="tsfont-task" @click="showHistoryDetail(row)"></span>
       </template>
@@ -61,7 +61,7 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li v-if="!(row.action === 'delete' && row.status === 'commited')" class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">配置项详情</li>
+            <li class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">配置项详情</li>
           </ul>
         </div>
       </template>
@@ -71,6 +71,7 @@
       :transactionId="currentTransactionId"
       :ciEntityId="currentCiEntityId"
       :ciId="currentCiId"
+      :isOpenNewPage="true"
       @close="closeHistoryDetail"
     ></HistoryDetail>
   </div>
@@ -84,7 +85,8 @@ export default {
     HistoryDetail: resolve => require(['@/views/pages/cmdb/cientity/history-detail.vue'], resolve)
   },
   props: {
-    handlerStepInfo: Object
+    errorList: Array,
+    tbodyList: Array
   },
   data() {
     return {
@@ -97,7 +99,8 @@ export default {
         { key: 'inputFromText', title: this.$t('page.updatefrom') },
         { key: 'createTime', title: this.$t('page.createtime') },
         { key: 'commitTime', title: this.$t('page.committime') },
-        { key: 'error', title: this.$t('page.exception') }
+        { key: 'error', title: this.$t('page.exception') },
+        {key: 'action'}
       ],
       isHistoryDetailShow: false,
       currentTransactionId: null,
@@ -118,7 +121,6 @@ export default {
   methods: {
     toCiEntity(id, ciId) {
       window.open(HOME + '/cmdb.html#/ci/' + ciId + '/cientity-view/' + id, '_blank');
-      // this.$router.push({ path: '/ci/' + ciId + '/cientity-view/' + id });
     },
     viewDetail(e) {
       this.$set(e, 'isMore', !e.isMore);

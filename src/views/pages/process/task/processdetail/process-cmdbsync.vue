@@ -224,7 +224,7 @@
                 >
                   <template v-if="isShowCmdbsync" v-slot:cmdbsync>
                     <!-- 配置项 -->
-                    <CmdbsyncDetail :handlerStepInfo="handlerStepInfo"></CmdbsyncDetail>
+                    <CmdbsyncDetail :errorList="handlerStepInfo.errorList" :tbodyList="!$utils.isEmpty(handlerStepInfo.tableList)?handlerStepInfo.tableList[0].tbodyList:[]" :handlerStepInfo="handlerStepInfo"></CmdbsyncDetail>
                   </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
@@ -454,7 +454,6 @@ export default {
     StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
     FooterOperationBtn,
     CmdbsyncDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/cmdbsync/cmdbsync-detail.vue'], resolve)
-    
   },
   provide() {
     return {
@@ -616,7 +615,7 @@ export default {
       return moreAction;
     },
     isShowCmdbsync() {
-      return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.tbodyList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
+      return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.tableList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
     }
   },
 
