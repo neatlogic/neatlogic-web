@@ -175,15 +175,17 @@ export default {
     },
     handleEchoFailedDefaultValue() {
       // 处理回显失败默认值，回显失败清空默认值
-      let selectedList = [];
-      if (this.currentValue) {
-        let selectedItem = this.nodeList.find((item) => item[this.valueName] == this.currentValue);
-        if (!selectedItem) {
-          this.currentValue = null;
+      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.nodeList)) {
+        let selectedList = [];
+        if (this.currentValue) {
+          let selectedItem = this.nodeList.find((item) => item[this.valueName] == this.currentValue);
+          if (!selectedItem) {
+            this.currentValue = null;
+          }
         }
-      }
-      if (!this.$utils.isEmpty(selectedList) && this.isClearEchoFailedDefaultValue) {
-        this.onChangeValue();
+        if (!this.$utils.isEmpty(selectedList)) {
+          this.onChangeValue();
+        }
       }
     },
     onChangeValue() {
