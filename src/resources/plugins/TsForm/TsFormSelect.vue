@@ -1,5 +1,5 @@
 <template>
-  <div class="form-li" :class="{ ondropshow: isVisible }">
+  <div class="form-li">
     <span
       v-if="readonly"
       :class="[overflow ? 'overflow' : ' ' + readonlyClass]"
