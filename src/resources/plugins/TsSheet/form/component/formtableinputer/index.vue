@@ -4,7 +4,7 @@
       <div v-if="!config.hasOwnProperty('isCanAdd') || config.isCanAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
       </div>
-      <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
+      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
       <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
@@ -292,7 +292,7 @@ export default {
       let theadUuidList = [];
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
-          if (item.key != 'number') {
+          if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             // 序号是否需要显示
             theadList.push({
               header: item.title,
@@ -364,7 +364,7 @@ export default {
       let theadUuidList = []; // 获取所有表头的uuid列表
       this.tableData.theadList.forEach((item) => {
         if (item?.key && item?.title) {
-          if (item.key != 'number') {
+          if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             columnsList.push({
               header: item.title,
               key: item.key,
@@ -399,12 +399,15 @@ export default {
               let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == key);
               let {config = {}, handler = ''} = selectedItem || {};
               let {dataSource = '', isMultiple = false} = config;
-              if (dataSource == 'matrix' && isMultiple) {
+              console.log('handler', handler);
+              if (handler == 'formtable') {
+                this.$set(item, [key], null);
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio')) {
                 // 矩阵数据源并且是多选，需要处理值去掉&=&
                 this.$set(item, [key], this.handleSpecialValue(item[key]));
               } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
                 // 静态数据源并且是多选
-                this.$set(item, [key], item[key].join(','));
+                this.$set(item, [key], item[key]?.join(','));
               }
             }
           }
@@ -457,6 +460,14 @@ export default {
       });
       const formatObj = foundItem ? { numFmt: '@' } : {};
       return formatObj;
+    },
+    handleExcludeTable(uuid) {
+      // 处理排除表格输入组件
+      let componentsList = ['formtable'];
+      const foundItem = this.extraList.find((item) => {
+        return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
+      });
+      return foundItem;
     },
     convertToExcelColumn(number) {
       // 将数字转化成A-Z的值
@@ -548,7 +559,7 @@ export default {
       let {config = {}, handler = ''} = selectedItem || {};
       if (value) {
         let {dataSource = '', isMultiple = false} = config || {};
-        if (dataSource === 'matrix' && isMultiple) {
+        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio')) {
         // 矩阵
           resultValue = [];
           let valueList = [];
