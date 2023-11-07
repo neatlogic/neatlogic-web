@@ -505,7 +505,6 @@ export default {
         });
     },
     focusInput() {
-      this.isVisible = !this.isVisible;
       this.$refs.input && this.$refs.input.focus();
     },
     toggleSelect(item) {
