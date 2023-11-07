@@ -919,20 +919,22 @@ export default {
     },
     handleEchoFailedDefaultValue() {
       // 处理回显失败默认值，回显失败清空默认值
-      let selectedList = [];
-      let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
-      valueList.forEach((item, index) => {
-        if (item && !this.selectedList.find((n) => n[this.valueName] == item)) {
-          selectedList.push(item[this.valueName]);
-          if (this.currentValue instanceof Array) {
-            this.currentValue.splice(index, 1);
-          } else if (this.currentValue) {
-            this.currentValue = null;
+      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.selectedList)) {
+        let selectedList = [];
+        let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+        valueList.forEach((item, index) => {
+          if (item && !this.selectedList.find((n) => n[this.valueName] == item)) {
+            selectedList.push(item[this.valueName]);
+            if (this.currentValue instanceof Array) {
+              this.currentValue.splice(index, 1);
+            } else if (this.currentValue) {
+              this.currentValue = null;
+            }
           }
+        });
+        if (!this.$utils.isEmpty(selectedList)) {
+          this.onChangeValue();
         }
-      });
-      if (!this.$utils.isEmpty(selectedList) && this.isClearEchoFailedDefaultValue) {
-        this.onChangeValue();
       }
     },
     dynamicSearch(query, isFirst) {

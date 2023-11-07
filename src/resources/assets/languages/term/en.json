@@ -2538,6 +2538,7 @@
     "commoncatalog": "Normal directory",
     "cmdbcatalog": "Configuration Item Catalog",
     "catalogitem": "Catalog Entry",
-    "childitem": "Child nodes"
+    "childitem": "Child nodes",
+    "relpath": "Relationship Path"
   }
 }

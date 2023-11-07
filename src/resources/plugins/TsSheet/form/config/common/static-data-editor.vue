@@ -19,7 +19,7 @@
           <TsFormInput
             v-model="item.value"
             border="border"
-            :validateList="['char', 'required']"
+            :validateList="['required']"
             maxlength="50"
             :disabled="disabled"
             @on-blur="autocompleteText(item, index)"
