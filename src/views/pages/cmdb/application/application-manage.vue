@@ -3,38 +3,18 @@
     <TsContain :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span
-            v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')"
-            class="action-item tsfont-plus"
-            @click="addApp()"
-          >{{ $t('page.apply') }}</span>
-          <span
-            v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')"
-            class="action-item tsfont-plus"
-            @click="addAppModule()"
-          >{{ $t('page.module') }}</span>
+          <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-plus" @click="addApp()">{{ $t('page.apply') }}</span>
+          <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-plus" @click="addAppModule()">{{ $t('page.module') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
-        <div v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY') && (selectedApp && !selectedModule)" class="action-group">
-          <span
-            class="action-item tsfont-edit"
-            @click="editApp()"
-          >{{ $t('page.apply') }}</span>
-          <span
-            class="action-item tsfont-trash-o"
-            @click="deleteApp()"
-          >{{ $t('page.apply') }}</span>
+        <div v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY') && selectedApp && !selectedModule" class="action-group">
+          <span class="action-item tsfont-edit" @click="editApp()">{{ $t('page.apply') }}</span>
+          <span class="action-item tsfont-trash-o" @click="deleteApp()">{{ $t('page.apply') }}</span>
         </div>
         <div v-else-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-group">
-          <span
-            class="action-item tsfont-edit"
-            @click="editAppModule()"
-          >{{ $t('page.module') }}</span>
-          <span
-            class="action-item tsfont-trash-o"
-            @click="deleteAppModule()"
-          >{{ $t('page.module') }}</span>
+          <span class="action-item tsfont-edit" @click="editAppModule()">{{ $t('page.module') }}</span>
+          <span class="action-item tsfont-trash-o" @click="deleteAppModule()">{{ $t('page.module') }}</span>
         </div>
       </template>
       <template v-slot:sider>
@@ -47,11 +27,7 @@
         ></AppModuleTree>
       </template>
       <template v-slot:content>
-        <Tabs
-          v-model="tabValue"
-          :animated="false"
-          class="block-tabs"
-        >
+        <Tabs v-model="tabValue" :animated="false" class="block-tabs">
           <TabPane :label="$t('term.inspect.assetlist')" name="assetsList">
             <AssetsManage
               v-if="tabValue == 'assetsList'"
@@ -165,7 +141,7 @@ export default {
       this.appModuleCiEntityId = this.appModuleId;
       this.isEditAppModuleDialogShow = true;
     },
-    async addAppModule() { 
+    async addAppModule() {
       await this.getRelEntityData();
       this.appModuleCiEntityId = null;
       this.isEditAppModuleDialogShow = true;
@@ -200,7 +176,7 @@ export default {
           this.$refs.appModuleTree.refreshAppByDelModule(this.appSystemId);
         } else if (this.appSystemId) {
           // 删除应用成功，刷新树列表
-          this.$refs.appModuleTree.searchAppSystem(); 
+          this.$refs.appModuleTree.searchAppSystem();
         }
       }
     },
@@ -222,24 +198,28 @@ export default {
       if (this.appModuleCiId) {
         let relList = [];
         let relEntityData = {};
-        await this.$api.cmdb.ci.getRelByCiId(this.appModuleCiId, false, 'all', null).then(res => {
-          relList = res.Return || [];
-          relList.forEach(element => {
-            if ((element.direction === 'from' && element.fromCiId == this.appModuleCiId && element.toCiId == this.appCiId) ||
-            (element.direction === 'to' && element.toCiId == this.appModuleCiId && element.fromCiId == this.appCiId)) {
-              relEntityData[`rel${element.direction}_${element.id}`] = {
-                'valueList': [
-                  {
-                    'ciEntityName': this.selectedApp.name, // 应用层的name
-                    'ciEntityId': this.selectedApp.id, // 应用的id
-                    'ciId': this.appModuleCiId
-                  }
-                ]
-              };
-            }
+        await this.$api.cmdb.ci
+          .getRelByCiId(this.appModuleCiId, {
+            needAction: false,
+            showType: 'all'
+          })
+          .then(res => {
+            relList = res.Return || [];
+            relList.forEach(element => {
+              if ((element.direction === 'from' && element.fromCiId == this.appModuleCiId && element.toCiId == this.appCiId) || (element.direction === 'to' && element.toCiId == this.appModuleCiId && element.fromCiId == this.appCiId)) {
+                relEntityData[`rel${element.direction}_${element.id}`] = {
+                  valueList: [
+                    {
+                      ciEntityName: this.selectedApp.name, // 应用层的name
+                      ciEntityId: this.selectedApp.id, // 应用的id
+                      ciId: this.appModuleCiId
+                    }
+                  ]
+                };
+              }
+            });
+            this.ciEntityData = { uuid: this.$utils.setUuid(), relEntityData: relEntityData };
           });
-          this.ciEntityData = {uuid: this.$utils.setUuid(), relEntityData: relEntityData};
-        });
       }
     }
   },

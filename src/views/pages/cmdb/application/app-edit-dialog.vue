@@ -12,7 +12,7 @@
         mode="dialog"
         :propCiId="ciId"
         :propCiEntityId="ciEntityId"
-        :isForm="isForm"
+        :isRequired="1"
         saveMode="emit"
         :hideHeader="true"
         @save="save"
@@ -40,7 +40,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isForm: true,
       setting: {
         title: this.ciEntityId ? this.$t('dialog.title.edittarget', {'target': this.$t('page.apply')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.apply')}),
         maskClose: false,

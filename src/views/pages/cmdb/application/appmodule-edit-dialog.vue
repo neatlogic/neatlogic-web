@@ -13,7 +13,7 @@
         :propCiId="ciId"
         :propCiEntityId="ciEntityId"
         :propCiEntityData="ciEntityData"
-        :isForm="isForm"
+        :isRequired="1"
         saveMode="emit"
         :hideHeader="true"
         @save="save"
@@ -45,7 +45,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      isForm: true,
       setting: {
         title: this.ciEntityId ? '编辑应用模块' : '添加应用模块',
         maskClose: false,

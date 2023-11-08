@@ -288,7 +288,7 @@ export default {
       if (this.appModuleCiId) {
         let relList = [];
         let relEntityData = {};
-        await this.$api.cmdb.ci.getRelByCiId(this.appModuleCiId, false, 'all', null).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(this.appModuleCiId, {needAction: false, showType: 'all'}).then(res => {
           relList = res.Return || [];
           relList.forEach(element => {
             if ((element.direction === 'from' && element.fromCiId == this.appModuleCiId && element.toCiId == this.appCiId) ||

@@ -3,53 +3,43 @@
     <loading :loadingShow="taskLoading" type="fix"></loading>
     <TsContain
       v-if="!taskLoading"
+      :enableCollapse="true"
       border="none"
-      :isSiderHide.sync="isOrderLeftHide"
       :siderWidth="246"
       :clearStyle="true"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/catalog-overview')">{{ $getFromPage('router.process.servicecatalog') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div>
           <span v-if="draftData.channelVo" class="top-title pr-sm">{{ draftData.channelVo.name }}</span>
-          <span class="text-action tsfont-indent" @click="isTslayout()"></span>
+          <!--<span class="text-action tsfont-indent" @click="isTslayout()"></span>-->
         </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <Button
-            class="buttons"
-            type="text"
-            @click="lookSitemap()"
-          >
-            <span class="tsfont-topo">{{ $t('term.process.viewflowchart') }}</span>
-          </Button>
-          <Button
-            class="buttons"
-            :disable="disabledConfig.submiting"
-            type="text"
-            @click="save()"
-          >
-            <span class="tsfont-save">{{ $t('page.draft') }}</span>
-          </Button>
-          <Button
-            class="buttons"
-            :disable="disabledConfig.submiting"
-            type="primary"
-            @click="submitForm()"
-          >
-            <span class="tsfont-check"></span>
-            <span class="buttontext">{{ $t('page.submit') }}</span>
-          </Button>
+          <div class="action-item">
+            <span class="tsfont-topo" @click="lookSitemap()">{{ $t('term.process.viewflowchart') }}</span>
+          </div>
+          <div class="action-item">
+            <span class="tsfont-save" @click="save()">{{ $t('term.process.savedraft') }}</span>
+          </div>
+          <div class="action-item">
+            <Button
+              :disable="disabledConfig.submiting"
+              type="primary"
+              @click="submitForm()"
+            >{{ $t('page.submit') }}
+            </Button>
+          </div>
         </div>
       </template>
       <template v-slot:sider>
         <div class="task-list">
           <div class="search-main">
             <div class="text-title pl-nm pb-sm">{{ $t('term.process.cataloglist') }}</div>
-            <div class="task-search pl-nm pr-nm">
+            <div class="task-search pr-lg">
               <TsFormInput
                 v-model="keyword"
                 :placeholder="$t('form.placeholder.name')"
@@ -125,7 +115,6 @@ export default {
   data() {
     return {
       taskLoading: true,
-      isOrderLeftHide: true,
       isOrderRightHide: false,
       keyword: '',
       handler: 'omnipotent',
@@ -388,15 +377,6 @@ export default {
         }
       });
     },
-    isTslayout() {
-      this.isOrderLeftHide = !this.isOrderLeftHide;
-      this.$nextTick(() => {
-        this.isOrderRightHide = !this.isOrderLeftHide;
-        if (this.channelUuid != null && document.getElementById(this.channelUuid)) {
-          document.getElementById(this.channelUuid).scrollIntoView();
-        }
-      });
-    },
     channelClick(item) {
       this.$router.replace({ query: { uuid: item.uuid } });
     },
@@ -572,7 +552,6 @@ export default {
         }
       } else if (selector === '#base') {
         this.isOrderRightHide = false;
-        this.isOrderLeftHide = true;
       }
     },
     selectStep(id) {
@@ -580,9 +559,6 @@ export default {
     },
     rightSiderToggle() {
       this.isOrderRightHide = !this.isOrderRightHide;
-      if (!this.isOrderRightHide) {
-        this.isOrderLeftHide = true;
-      }
     },
     setTimer() {
       this.timer = setInterval(() => { 
@@ -630,7 +606,6 @@ export default {
 </script>
 <style lang="less" scoped>
   @import (reference) '~@/resources/assets/css/variable.less';
-
 .dispatch {
   .channel-list {
     position: relative;
@@ -651,13 +626,4 @@ export default {
     }
   }
 }  
-.buttons{
-  padding: @btn-padding-small;
-  &:last-child{
-  margin-left:@space-xs;
-  .buttontext{
-    padding-right:@space-xs;
-  }
-}
-}
 </style>

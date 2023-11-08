@@ -454,7 +454,7 @@ export default {
     },
     getRelByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getRelByCiId(this.ciId, false, 'detail').then(res => {
+        this.$api.cmdb.ci.getRelByCiId(this.ciId, {needAction: false, showType: 'detail'}).then(res => {
           this.relList = res.Return;
         });
       }

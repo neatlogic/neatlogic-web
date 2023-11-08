@@ -485,7 +485,8 @@
     "notificationpolicysettings": "通知策略设置",
     "templateparametermapping": "模板参数映射",
     "targetparams": "目标参数",
-    "selecttask": "选中工单"
+    "selecttask": "选中工单",
+    "savedraft": "保存草稿"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -2537,6 +2538,7 @@
     "cmdbcatalog": "配置项目录",
     "catalogitem": "目录项",
     "childitem": "子节点",
-    "relpath": "关系路径"
+    "relpath": "关系路径",
+    "graph": "架构图"
   }
 }

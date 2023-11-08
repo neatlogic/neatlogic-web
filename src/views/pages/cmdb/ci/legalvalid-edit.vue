@@ -14,13 +14,13 @@
               <div
                 v-for="legalValid in legalValidList"
                 :key="legalValid.id"
-                style="position:relative"
+                style="position: relative"
                 :class="id && id == legalValid.id ? 'text-primary' : ''"
                 class="overflow pr-xs"
                 @click="editLegalValid(legalValid.id)"
               >
                 <span :title="legalValid.name" :class="legalValid.isActive == 0 ? 'text-grey' : ''">{{ legalValid.name }}</span>
-                <i class="tsfont-trash-o" style="cursor:pointer;position:absolute;right:2px;top:2px" @click="delLegalValid(legalValid)"></i>
+                <i class="tsfont-trash-o" style="cursor: pointer; position: absolute; right: 2px; top: 2px" @click="delLegalValid(legalValid)"></i>
               </div>
             </div>
           </div>
@@ -41,7 +41,9 @@
               <template v-slot:rule>
                 <div class="edit-condition">
                   <div>
-                    <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup">{{ $t('term.cmdb.rulegroup') }}</a></span>
+                    <span>
+                      <a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup">{{ $t('term.cmdb.rulegroup') }}</a>
+                    </span>
                   </div>
                   <div v-for="(conditionGroup, groupIndex) in legalValidData.rule.conditionGroupList" :key="groupIndex" class="group-border">
                     <div class="group-content bg-op radius-md group-content-position">
@@ -112,10 +114,10 @@
                           </Col>
                           <div class="operation-btn-group">
                             <div class="btn-group text-tip">
-                              <span class="tsfont-plus mr-xs" style="cursor:pointer" @click="addCondition(conditionGroup)"></span>
+                              <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                               <span
                                 v-if="conditionGroup.conditionList.length > 1"
-                                style="cursor:pointer"
+                                style="cursor: pointer"
                                 class="tsfont-minus"
                                 @click="delCondition(conditionGroup, conditionIndex)"
                               ></span>
@@ -302,7 +304,7 @@ export default {
     delLegalValid(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deleteconfirm', { target: row.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.legalvalid.deleteLegalValid(row.id).then(res => {
@@ -336,7 +338,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, true).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, { needAction: true }).then(res => {
           relList = res.Return;
         });
         relList.forEach(rel => {

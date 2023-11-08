@@ -53,6 +53,7 @@ export default {
     propCiEntityData: { type: Object }, //表单编辑时通过此参数传入暂存的配置项数据
     propCiEntityId: { type: Number }, //资产修改时使用此参数传入配置项id，
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
+    isRequired: {type: Number}, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
     saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数
   },
@@ -431,11 +432,8 @@ export default {
       if (ciId) {
         let attrList;
         let allowEdit = 1;
-        if (this.isForm) {
-          allowEdit = 0;
-        }
         // 兼容表单，所以要必须显示所有的字段
-        await this.$api.cmdb.ci.getAttrByCiId(ciId, { allowEdit: allowEdit }).then(res => {
+        await this.$api.cmdb.ci.getAttrByCiId(ciId, { allowEdit: allowEdit, isRequired: this.isRequired }).then(res => {
           attrList = res.Return;
         });
         return attrList;
@@ -444,7 +442,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, true, null, 1).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true, allowEdit: 1, isRequired: this.isRequired}).then(res => {
           relList = res.Return;
         });
         return relList;

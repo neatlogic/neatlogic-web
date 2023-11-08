@@ -297,6 +297,7 @@
   },
   "diagram": {
     "diagrammanage": "System Management",
-    "catalogmanage": "Catalog Management"
+    "catalogmanage": "Catalog Management",
+    "catalogdetail": "Catalog Detail"
   }
 }

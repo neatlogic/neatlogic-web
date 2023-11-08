@@ -9,7 +9,7 @@ const ci = {
     return axios.post('/api/rest/cmdb/attr/search', params);
   },
   searchCiAttrRel(ciId, keyword) {
-    return axios.post('/api/rest/cmdb/ci/attrrel/search', {ciId: ciId, keyword: keyword});
+    return axios.post('/api/rest/cmdb/ci/attrrel/search', { ciId: ciId, keyword: keyword });
   },
   //保存属性
   saveAttr(params) {
@@ -34,13 +34,13 @@ const ci = {
     return axios.post('/api/rest/cmdb/ci/nameexpression/save', {ciId: ciId, nameExpression: nameExpression});
   },*/
   getCiUniqueByCiId(ciId) {
-    return axios.post('/api/rest/cmdb/ci/unique/get', {ciId: ciId});
+    return axios.post('/api/rest/cmdb/ci/unique/get', { ciId: ciId });
   },
   updateCiNameAttrId(ciId, attrId) {
-    return axios.post('/api/rest/cmdb/ci/savenameattr', {ciId: ciId, attrId: attrId});
+    return axios.post('/api/rest/cmdb/ci/savenameattr', { ciId: ciId, attrId: attrId });
   },
   saveCiUniqueRule(ciId, attrIdList) {
-    return axios.post('/api/rest/cmdb/ciunique/save', {ciId: ciId, attrIdList: attrIdList});
+    return axios.post('/api/rest/cmdb/ciunique/save', { ciId: ciId, attrIdList: attrIdList });
   },
   searchCiTypeCi(params) {
     return axios.post('/api/rest/cmdb/ci/citype/search', params);
@@ -58,30 +58,18 @@ const ci = {
     return axios.post('/api/rest/cmdb/attr/get', { id: attrId });
   },
   getAttrByIdList(attrIdList) {
-    return axios.post('api/rest/cmdb/attr/getlist', {idList: attrIdList});
+    return axios.post('api/rest/cmdb/attr/getlist', { idList: attrIdList });
   },
   getViewConstList(ciId, showType) {
-    return axios.post('/api/rest/cmdb/ciview/listconst', {ciId: ciId, showType: showType});
+    return axios.post('/api/rest/cmdb/ciview/listconst', { ciId: ciId, showType: showType });
   },
   getAttrByCiId(ciId, params) {
     let param = {
       ciId: ciId
     };
     if (params) {
-      Object.assign(param, params);
-    }
-    if (params) {
       param = Object.assign(param, params);
     }
-    // if (showType) {
-    //   param['showType'] = showType;
-    // }
-    // if (isSimple) {
-    //   param['isSimple'] = isSimple;
-    // }
-    // if (allowEdit) {
-    //   param['allowEdit'] = allowEdit;
-    // }
     return axios.post('/api/rest/cmdb/ci/listattr', param);
   },
   getExpressionAttrRelByCiId(ciId) {
@@ -93,15 +81,15 @@ const ci = {
   getRelById(relId) {
     return axios.post('/api/rest/cmdb/rel/get', { id: relId });
   },
-  getRelByCiId(ciId, needAction, showType, allowEdit) {
-    let param = {needAction: !!needAction};
-    if (showType) {
-      param['showType'] = showType;
+  getRelByCiId(ciId, params) {
+    //原参数needAction, showType, allowEdit
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
     }
-    if (allowEdit) {
-      param['allowEdit'] = allowEdit;
-    }
-    return axios.post('/api/rest/cmdb/ci/' + ciId + '/listrel', param);
+    return axios.post('/api/rest/cmdb/ci/listrel', param);
   },
   getRelRuleTypeList() {
     return axios.post('/api/rest/cmdb/relruletype/list');
@@ -137,7 +125,7 @@ const ci = {
     return axios.post('/api/rest/cmdb/attrtype/list');
   },
   getDownwardCiList(ciId) {
-    return axios.post('/api/rest/cmdb/ci/downward/list', {id: ciId});
+    return axios.post('/api/rest/cmdb/ci/downward/list', { id: ciId });
   },
   getAllCiRelList(params) {
     return axios.post('/api/rest/cmdb/ci/rel/list', params);
@@ -152,16 +140,16 @@ const ci = {
     return axios.post('/api/rest/cmdb/rel/delete', { id: relId });
   },
   deleteRelTypeById(relTypeId) {
-    return axios.post('/api/rest/cmdb/reltype/delete', {id: relTypeId});
+    return axios.post('/api/rest/cmdb/reltype/delete', { id: relTypeId });
   },
   getCiInfo(data) {
     return axios.post('/api/rest/cmdb/ci/attrrellist', data);
   },
   exportCi(id) {
-    return axios.post('/api/binary/cmdb/ci/export', {ciId: id});
+    return axios.post('/api/binary/cmdb/ci/export', { ciId: id });
   },
   rebuildRelativeRel(relId) {
-    return axios.post('/api/rest/cmdb/rel/relative/rebuild', {relId: relId});
+    return axios.post('/api/rest/cmdb/rel/relative/rebuild', { relId: relId });
   }
 };
 
