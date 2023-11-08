@@ -393,20 +393,21 @@ export default {
         return ciViewList;
       }
     },
-    addNewCiEntity(type, item, uuid) {
+    addNewCiEntity(type, item) {
       this.loadingShow = true;
       if (type === 'rel') {
         const rel = item;
         const ciId = rel.ciId;
         const relId = rel._relId;
         const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
+        const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
         this.$api.cmdb.ci.getCiById(ciId).then(async res => {
           if (res.Return) {
             const ci = res.Return;
             //获取当前配置项数据
             const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
             const newCiEntity = {
-              uuid: uuid || this.$utils.setUuid(),
+              uuid: uuid,
               _relId: relId, //记录来自哪个关系，自动填上配置项
               _direction: rel.direction, //记录关系方向
               ciId: ciId,
@@ -466,7 +467,8 @@ export default {
         this.closeDialog();
       }
     },
-    editNewCiEntity(uuid, rel) {
+    editNewCiEntity(rel) {
+      let uuid = rel.ciEntityUuid;
       if (this.saveCiEntityMap[uuid]) {
         this.tmpCiEntityData = JSON.parse(JSON.stringify(this.saveCiEntityMap[uuid]));
         let index = -1;
@@ -479,8 +481,8 @@ export default {
         if (index > -1) {
           this.ciEntityQueue = this.ciEntityQueue.slice(0, index + 1);
         } else {
-          this.addNewCiEntity('rel', rel, uuid);
-          // this.ciEntityQueue.push(this.saveCiEntityMap[uuid]);
+          //需要通过接口获取数据回显
+          this.addNewCiEntity('rel', rel);
         }
       }
     },

@@ -77,9 +77,9 @@
                           :closable="!disabledFn('rel' + e.element.direction + '_' + e.element.id) && (relentity.ciEntityId || relentity.type == 'new') ? true : false"
                           :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
                           @click.native="
-                            e => {
-                              e.stopPropagation();
-                              editNewRelEntity(relentity);
+                            element => {
+                              element.stopPropagation();
+                              editNewRelEntity(relentity, e.element);
                             }
                           "
                           @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity, ciEntityData || '')"
@@ -371,9 +371,11 @@ export default {
     delRelEntity(key, relentity, rowdata) {
       this.ciEntityDatafn(key, relentity, rowdata);
     },
-    editNewRelEntity(rel) {
+    editNewRelEntity(rel, config) {
       if (this.getTagType(rel) == 'success') {
-        this.$emit('edit', rel.ciEntityUuid, rel);
+        let data = this.$utils.deepClone(rel);
+        data.direction = config.direction;
+        this.$emit('edit', data);
       }
     },
     addNewRelEntity(rel) {
