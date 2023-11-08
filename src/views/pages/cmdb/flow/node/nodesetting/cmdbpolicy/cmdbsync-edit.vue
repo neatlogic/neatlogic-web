@@ -500,6 +500,8 @@ export default {
     changeMappingMode(val, e) {
       if (val === 'formTableComponent' && this.ciEntityData.batchDataSource && this.ciEntityData.batchDataSource.attributeUuid) {
         this.setConfig(this.ciEntityData.batchDataSource.attributeUuid, 'valueList', e);
+      } else {
+        this.setConfig([], 'valueList', e);
       }
     }
   },
