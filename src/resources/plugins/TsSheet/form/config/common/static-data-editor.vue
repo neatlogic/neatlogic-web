@@ -68,8 +68,7 @@
       @on-ok="confirmBatchEdit()"
     >
       <template v-slot>
-        <div class="text-grey">
-          {{ $t('message.framework.staticbatchdatatip') }}
+        <div class="text-grey" v-html="$t('message.framework.staticbatchdatatip')">
         </div>
         <TsFormInput
           v-model="dataListString"
