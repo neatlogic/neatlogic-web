@@ -268,8 +268,8 @@ export default {
       }
     },
     okDialog() {
-      if (!this.$refs.ciConfig.valid()) {
-        return;
+      if (!this.valid()) {
+        return false; 
       }
       let data = this.save();
       this.$emit('close', data);
@@ -277,7 +277,7 @@ export default {
     closeDialog() {
       this.$emit('close');
     },
-    changeCiId(val, item) {
+    changeCiId(val) {
       this.saveCiEntityMap = {};
       this.ciEntityQueue = [];
       this.$set(this.ciData, 'uuid', null);
@@ -486,12 +486,18 @@ export default {
         }
       }
     },
-    saveNewCiEntity() {
+    valid() {
       let isValid = true;
-      if (this.$refs.cmdbsyncEdit) {
+      if (this.$refs.ciConfig && !this.$refs.ciConfig.valid()) {
+        isValid = false;
+      }
+      if (isValid && this.$refs.cmdbsyncEdit) {
         isValid = this.$refs.cmdbsyncEdit.valid();
       }
-      if (!isValid) {
+      return isValid; 
+    },
+    saveNewCiEntity() {
+      if (!this.valid()) {
         return false; 
       }
       //队列只剩一个配置项时才写入数据库
@@ -605,9 +611,6 @@ export default {
       let data = {};
       let configList = [];
       let list = this.saveNewCiEntity();
-      if (!list) {
-        return;
-      }
       list.forEach(item => {
         let config = {
           uuid: item.uuid,
