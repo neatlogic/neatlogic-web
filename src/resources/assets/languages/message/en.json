@@ -191,7 +191,7 @@
     "maxnumbervalid": "The maximum value must not be less than or equal to the minimum value",
     "matrixtip": "Check the attributes that need to be displayed or searched on PC/mobile devices, and the display of search and display columns does not affect each other",
     "matirxhttpurl": "Please select the attribute in the matrix that saves the http or https link",
-    "staticbatchdatatip": "1. Each row represents an option, and the values in each row cannot be duplicated< 2. Values and names are separated by, and can only have values. Names will be automatically supplemented< 3. Use the symbol - as a prefix to represent hierarchical relationships, and the number of - represents the number of levels, up to a maximum of 5 levels< Br>4. The array length cannot exceed 500.",
+    "staticbatchdatatip": "1. Each row represents an option, and the values in each row cannot be duplicated<br/> 2. Values and names are separated by, and can only have values. Names will be automatically supplemented <br/> 3. Use the symbol - as a prefix to represent hierarchical relationships, and the number of - represents the number of levels, up to a maximum of 5 levels<br/>4. The array length cannot exceed 500.",
     "pastecelltip": "The current cell is not empty. Are you sure to replace the current content with the copied content?",
     "replacenewcomp": "The current cell is not empty. Do you want to replace it with a new component?",
     "clearcelltip": "Merging cells will clear the following components",
