@@ -121,6 +121,8 @@ export default {
   beforeDestroy() {},
   methods: {
     openWorkOrderDialog() {
+      //从左侧菜单点链接，激活清理历史标记
+      this.$route.meta.clearHistory = true;
       // 上报工单
       this.isShowWorkOrderDialog = true;
     },

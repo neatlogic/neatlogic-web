@@ -93,7 +93,7 @@
                     border="border"
                     :validateList="[
                       { name: 'required', message: ' ' },
-                      { name: 'unique_ident', message: $t('form.placeholder.inputenchar') }
+                      { name: 'parameter' }
                     ]"
                   ></TsFormInput>
                 </Col>
@@ -105,7 +105,7 @@
                     border="border"
                     :validateList="[
                       { name: 'required', message: ' ' },
-                      { name: 'unique_ident', message: $t('form.placeholder.inputenchar') }
+                      { name: 'parameter' }
                     ]"
                   ></TsFormInput>
                 </Col>
