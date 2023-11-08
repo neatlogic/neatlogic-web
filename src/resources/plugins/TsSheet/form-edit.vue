@@ -651,12 +651,14 @@ export default {
       if (!this.currentVersion.uuid || this.isnew) {
         //缺少版本uuid或者新建过来的，不带任何数据
         this.currentFormItem = null;
-        this.$set(this.formData, 'formConfig', {});
+        const formConfig = {};
+        this.$set(this.formData, 'formConfig', formConfig);
         this.formDataQueue = [{
           ...this.formData,
           label: this.formData.name
         }];
         this.isFormLoaded = true;
+        this.$addWatchData(formConfig);
         return false;
       }
       let data = {
