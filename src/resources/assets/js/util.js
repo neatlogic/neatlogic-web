@@ -104,7 +104,7 @@ const methods =  {
     } else if (format == 'MMdd') {
       timestr = [month, day].join('');
     } else if (format == 'yyyyMMddHHmmss') {
-      timestr = year + month + day + hours + minutes + seconds;
+      timestr = `${year}${month}${day}${hours}${minutes}${seconds}`;
     }
     return timestr;
   },

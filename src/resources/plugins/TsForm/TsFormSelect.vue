@@ -1,5 +1,5 @@
 <template>
-  <div class="form-li" :class="{ ondropshow: isVisible }">
+  <div class="form-li">
     <span
       v-if="readonly"
       :class="[overflow ? 'overflow' : ' ' + readonlyClass]"
@@ -534,7 +534,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created: function() {
+  created() {
     this.initDataListByUrl(false);
   },
   mounted() {},
@@ -710,6 +710,7 @@ export default {
         this.setDefaultValue();
         this.initValueByNodeList();
         this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
+        this.handleEchoFailedDefaultValue();
       }
     },
     initValueByNodeList() {
@@ -898,8 +899,10 @@ export default {
               });
           }
           this.selectedList = selectedList.length > 1 ? list : selectedList;
+          this.handleEchoFailedDefaultValue();
         } else {
           _this.selectedList = [];
+          this.handleEchoFailedDefaultValue();
         }
 
         if (!_this.multiple) {
@@ -913,6 +916,26 @@ export default {
           _this.$emit('searchCallback');
         }
       });
+    },
+    handleEchoFailedDefaultValue() {
+      // 处理回显失败默认值，回显失败清空默认值
+      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.selectedList)) {
+        let selectedList = [];
+        let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+        valueList.forEach((item, index) => {
+          if (item && !this.selectedList.find((n) => n[this.valueName] == item)) {
+            selectedList.push(item[this.valueName]);
+            if (this.currentValue instanceof Array) {
+              this.currentValue.splice(index, 1);
+            } else if (this.currentValue) {
+              this.currentValue = null;
+            }
+          }
+        });
+        if (!this.$utils.isEmpty(selectedList)) {
+          this.onChangeValue();
+        }
+      }
     },
     dynamicSearch(query, isFirst) {
       //query:搜索的关键字，isFirst 是否第一次初始化下拉值，主要为了必填时只有一个下拉值时默认填充

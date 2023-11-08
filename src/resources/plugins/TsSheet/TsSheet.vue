@@ -788,7 +788,7 @@ export default {
 
       this.$nextTick(() => {
         if (row != null) {
-          const lefter = this.config.lefterList[row];
+          const lefter = this.$utils.deepClone(this.config.lefterList[row]); // 深拷贝，解决组件行间距很宽的问题
           const lrect = this.$refs['lefter' + row] && this.$refs['lefter' + row][0] ? this.$refs['lefter' + row][0].getBoundingClientRect() : {};
           if (lrect.height > lefter.height) {
             lefter.height = Math.max(lrect.height, this.minHeight);
@@ -1688,7 +1688,7 @@ export default {
       if (this.mode !== 'edit') {
         //只读模式，从下面消除所有没有设置组件的单元格
         for (let i = lefterList.length - 1; i >= 0; i--) {
-          if (!this.config.tableList.find(cell => cell.row === i && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
+          if (!this.config.tableList.find(cell => cell.row === (lefterList[i].index) && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
             lefterList.splice(i, 1);
           }
         }

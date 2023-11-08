@@ -1148,7 +1148,10 @@
     "heartbeattime": "Last heartbeat time",
     "heartbeatrate": "heart rate ",
     "heartbeatthreshold": "Heartbeat threshold",
-    "versionlog": "Version Log"
+    "versionlog": "Version Log",
+    "exporttable": "Export Table",
+    "importtable": "Import Table",
+    "excelinputtemplate": "Table Input Template"
   },
   "knowledge": {
     "document": "Document",
@@ -2541,6 +2544,11 @@
     "lane": "Swimming lanes",
     "widgetmanage": "Component Management",
     "dragtosort": "Drag to change sorting",
-    "pleaseselectwidget": "Please select at least one component"
+    "pleaseselectwidget": "Please select at least one component",
+    "commoncatalog": "Normal directory",
+    "cmdbcatalog": "Configuration Item Catalog",
+    "catalogitem": "Catalog Entry",
+    "childitem": "Child nodes",
+    "relpath": "Relationship Path"
   }
 }

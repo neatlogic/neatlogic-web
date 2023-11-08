@@ -4,9 +4,44 @@
       <div v-if="!config.hasOwnProperty('isCanAdd') || config.isCanAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
       </div>
-      <div v-if="selectedIndexList && selectedIndexList.length > 0" class="action-item">
+      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
+      <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.pbc.exporttemplate') }}
+      </span>
+      <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.framework.exporttable') }}
+      </span>
+
+      <Upload
+        ref="upload"
+        :show-upload-list="false"
+        :default-file-list="[]"
+        :format="['xlsx']"
+        :max-size="maxSize"
+        :on-format-error="handleFormatError"
+        :on-exceeded-size="handleMaxSize"
+        :before-upload="handleBeforeUpload"
+        type="drag"
+        action=""
+        class="forminputtable-upload ml-sm"
+        style="display: inline-block;"
+      >
+        <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
+      </Upload>
     </div>
     <TsTable
       v-if="hasColumn"
@@ -33,6 +68,7 @@
             mode="read"
             :readonly="readonly"
             :disabled="disabled"
+            :isClearEchoFailedDefaultValue="true"
             style="min-width:130px"
             @change="changeRow(row,index)"
           ></FormItem>
@@ -53,6 +89,8 @@
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
+import ExcelJS from 'exceljs';
+import FileSaver from 'file-saver';
 
 export default {
   name: '',
@@ -71,7 +109,10 @@ export default {
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
       tableData: { theadList: [], tbodyList: [] },
-      rowFormItem: {} //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
+      rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
+      maxSize: 1024 * 10,
+      isShowExportExcelTemplate: true,
+      isShowExportExcel: true
     };
   },
   beforeCreate() {},
@@ -240,6 +281,306 @@ export default {
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
       this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
+    },
+    async exportExcelTemplate() {
+      // 导出excel模板
+      this.isShowExportExcelTemplate = false;
+      const _workbook = new ExcelJS.Workbook();
+      const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
+      // 设置表头
+      let theadList = [];
+      let theadUuidList = [];
+      this.tableData.theadList.forEach((item) => {
+        if (item?.key && item?.title) {
+          if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
+            // 序号是否需要显示
+            theadList.push({
+              header: item.title,
+              key: item.key,
+              width: 20,
+              style: this.handleCellType(item.key)
+            });
+            theadUuidList.push(item.key);
+          }
+        }
+      });
+      _sheet1.columns = theadList;
+      let headerRow = _sheet1.getRow(1); // 获取第一行
+      headerRow.eachCell((cell, colNum) => {
+        cell.font = {
+          bold: true,
+          size: 12,
+          name: '微软雅黑',
+          color: {argb: '000'}
+        };
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle',
+          wrapText: true // 单元格自动换行
+        };
+      });
+      // 数据验证
+      let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
+      const startRow = 2;
+      const endRow = 10;
+      for (let [index, item] of this.extraList.entries()) {
+        if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
+          // 遍历每一行，设置数据有效性
+          let formulaeList = await this.handleFormulae(item.config);
+          for (let row = startRow; row <= endRow; row++) {
+            const worksheetRow = _sheet1.getRow(row);
+            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            cell.dataValidation = {
+              type: 'list',
+              allowBlank: false,
+              formulae: formulaeList
+            };
+          }
+        }
+      }
+      // 导出表格
+      _workbook.xlsx.writeBuffer().then((buffer) => {
+        let _file = new Blob([buffer], {
+          type: 'application/octet-stream'
+        });
+        new Promise((resolve, reject) => {
+          try {
+            FileSaver.saveAs(_file, `${this.$t('term.framework.excelinputtemplate')}.xlsx`);
+            resolve(this.$t('page.success'));
+          } catch (error) {
+            reject(this.$t('page.fail'));
+          }
+        }).finally((message) => {
+          this.isShowExportExcelTemplate = true;
+        });
+      });
+    },
+    async exportExcel() {
+      // 导出excel带表格数据
+      this.isShowExportExcel = false;
+      const _workbook = new ExcelJS.Workbook(); // 创建工作簿
+      const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
+      let columnsList = [];
+      let theadUuidList = []; // 获取所有表头的uuid列表
+      this.tableData.theadList.forEach((item) => {
+        if (item?.key && item?.title) {
+          if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
+            columnsList.push({
+              header: item.title,
+              key: item.key,
+              width: 20,
+              style: this.handleCellType(item.key) // 单元格格式为文本类型，解决日期和时间导入时类型是Date日期的类型
+            });
+            theadUuidList.push(item.key);
+          }
+        }
+      });
+      _sheet1.columns = columnsList;
+      let headerRow = _sheet1.getRow(1); // 获取第一行
+      headerRow.eachCell((cell, colNum) => {
+        cell.font = {
+          bold: true,
+          size: 12,
+          name: '微软雅黑',
+          color: {argb: '000'}
+        };
+        cell.alignment = {
+          horizontal: 'center',
+          vertical: 'middle',
+          wrapText: true // 单元格自动换行
+        };
+      });
+      let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+      tbodyList.forEach((item) => {
+        // 添加数据
+        if (item) {
+          for (let key in item) {
+            if (key != 'uuid' && key != '_selected') {
+              let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == key);
+              let {config = {}, handler = ''} = selectedItem || {};
+              let {dataSource = '', isMultiple = false} = config;
+              console.log('handler', handler);
+              if (handler == 'formtable') {
+                this.$set(item, [key], null);
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio')) {
+                // 矩阵数据源并且是多选，需要处理值去掉&=&
+                this.$set(item, [key], this.handleSpecialValue(item[key]));
+              } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
+                // 静态数据源并且是多选
+                this.$set(item, [key], item[key]?.join(','));
+              }
+            }
+          }
+          _sheet1.addRow({...item});
+        }
+      });
+      // 数据验证
+      let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
+      const startRow = 2;
+      const endRow = 10;
+      for (let [index, item] of this.extraList.entries()) {
+        if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
+          // 遍历每一行，设置数据有效性
+          let formulaeList = await this.handleFormulae(item.config);
+          for (let row = startRow; row <= endRow; row++) {
+            const worksheetRow = _sheet1.getRow(row);
+            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            cell.dataValidation = {
+              type: 'list',
+              allowBlank: false,
+              formulae: formulaeList
+            };
+          }
+        }
+      }
+
+      // 导出表格
+      _workbook.xlsx.writeBuffer().then((buffer) => {
+        let _file = new Blob([buffer], {
+          type: 'application/octet-stream'
+        });
+       
+        new Promise((resolve, reject) => {
+          try {
+            FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
+            resolve(this.$t('page.success'));
+          } catch (error) {
+            reject(this.$t('page.fail'));
+          }
+        }).finally((message) => {
+          this.isShowExportExcel = true;
+        });
+      });
+    },
+    handleCellType(uuid) {
+      // 设置单元格类型
+      let componentsList = ['formdate', 'formtime'];
+      const foundItem = this.extraList.find((item) => {
+        return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
+      });
+      const formatObj = foundItem ? { numFmt: '@' } : {};
+      return formatObj;
+    },
+    handleExcludeTable(uuid) {
+      // 处理排除表格输入组件
+      let componentsList = ['formtable'];
+      const foundItem = this.extraList.find((item) => {
+        return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
+      });
+      return foundItem;
+    },
+    convertToExcelColumn(number) {
+      // 将数字转化成A-Z的值
+      let result = '';
+      while (number > 0) {
+        const remainder = (number - 1) % 26;
+        result = String.fromCharCode(65 + remainder) + result;
+        number = Math.floor((number - 1) / 26);
+      }
+      return result;
+    },
+    async handleFormulae(config) {
+      // 处理数据有效性下拉
+      let {dataSource = '', matrixUuid = '', mapping = {}, dataList = [] } = config || {};
+      if (dataSource === 'matrix') {
+        let param = {
+          matrixUuid: matrixUuid,
+          valueField: mapping.value,
+          textField: mapping.text
+        };
+        return await this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
+          if (res.Status == 'OK') {
+            return [`"${res.Return?.dataList?.filter((item) => this.handleSpecialValue(item.value)).map((item) => this.handleSpecialValue(item.value)).join(',')}"`];
+          }
+        });
+      } else {
+        const resultArray = [
+          `"${dataList
+            .filter(item => item?.value)
+            .map(item => item.value)
+            .join(',')}"`
+        ];
+        return resultArray;
+      }
+    },
+    handleSpecialValue(value) {
+      let valueList = [];
+      if (typeof value == 'string') {
+        return value?.split('&=&')?.[0] || value;
+      } else if (Array.isArray(value)) {
+        valueList = value.map((item) => item?.split('&=&')?.[0] || item).filter(Boolean);
+      }
+      return valueList.join(',');
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: this.$t('message.incorrectformat'),
+        desc: this.$t('form.validate.fileformat', {target: file.name})
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: this.$t('page.uploadfilelimit', {target: this.maxSize / 1024}),
+        desc: `${file.name}`
+      });
+    },
+    async handleBeforeUpload(file) {
+      const workbook = new ExcelJS.Workbook();
+      workbook.xlsx.load(file).then((workbook) => {
+        workbook?.eachSheet((sheet, id) => {
+          sheet?.eachRow((row, rowIndex) => {
+            if (rowIndex != 1) {
+              let rowValue = {};
+              let rowValuesList = this.$utils.deepClone(row.values);
+              rowValuesList.splice(0, 1); // 删除excel第一列的序号
+              this.tableData.theadList.forEach((item, tIndex) => {
+                if (item.key != 'selection' && item.key != 'number') {
+                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(item.key, rowValuesList[tIndex - 2]));
+                }
+              });
+              let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
+              if (!this.$utils.isEmpty(this.tableData.tbodyList[rowIndex - 2])) {
+                // 不为空时，修改数组对象里面的值
+                this.tableData.tbodyList.splice(rowIndex - 2, 1, item);
+              } else {
+                // 空数组时，新增一条新的数据
+                this.tableData.tbodyList.push(item);
+              }
+            }
+          });
+        });
+        this.$Message.success(this.$t('message.importsuccess'));
+      });
+    },
+    byComponentTypeSetValue(uuid, value) {
+      // 根据组件的类型，设置回显值
+      let resultValue;
+      let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
+      let {config = {}, handler = ''} = selectedItem || {};
+      if (value) {
+        let {dataSource = '', isMultiple = false} = config || {};
+        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio')) {
+        // 矩阵
+          resultValue = [];
+          let valueList = [];
+          if (typeof value == 'string') {
+            valueList = value.split(',');
+            valueList.forEach((valueItem) => {
+              if (valueItem) {
+                resultValue.push(`${valueItem}&=&${valueItem}`);
+              }
+            });
+          } else {
+            resultValue.push(`${value}&=&${value}`);
+          }
+        } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
+          resultValue = [];
+          resultValue.push(value);
+        } else {
+          resultValue = value;
+        }
+      }
+      return resultValue;
     }
   },
   filter: {},
@@ -322,7 +663,6 @@ export default {
     'tableData.tbodyList': {
       handler: function(val) {
         this.setValue(val);
-        //console.log(JSON.stringify(val, null, 2));
       },
       deep: true,
       immediate: true
@@ -330,4 +670,11 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.forminputtable-upload {
+  /deep/ .ivu-upload-drag {
+    border: none;
+    background: transparent;
+  }
+}
+</style>

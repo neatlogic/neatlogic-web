@@ -62,6 +62,7 @@
       :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
+      :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -119,6 +120,11 @@ export default {
       default: function() {
         return {};
       }
+    },
+    isClearEchoFailedDefaultValue: {
+      // 默认值对应不上下列列表时，是否需要清空默认值
+      type: Boolean,
+      default: false
     }
   },
   data() {

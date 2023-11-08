@@ -1147,7 +1147,10 @@
     "heartbeattime": "最近一次心跳时间",
     "heartbeatrate": "心跳频率",
     "heartbeatthreshold": "心跳阈值",
-    "versionlog": "版本日志"
+    "versionlog": "版本日志",
+    "exporttable": "导出表格",
+    "importtable": "导入表格",
+    "excelinputtemplate": "表格输入模板"
   },
   "knowledge": {
     "document": "文档",
@@ -2539,6 +2542,11 @@
     "lane": "泳道",
     "widgetmanage": "组件管理",
     "dragtosort": "拖动改变排序",
-    "pleaseselectwidget": "请至少选择一个组件"
+    "pleaseselectwidget": "请至少选择一个组件",
+    "commoncatalog": "普通目录",
+    "cmdbcatalog": "配置项目录",
+    "catalogitem": "目录项",
+    "childitem": "子节点",
+    "relpath": "关系路径"
   }
 }

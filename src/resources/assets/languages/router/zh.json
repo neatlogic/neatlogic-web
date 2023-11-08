@@ -296,6 +296,7 @@
     "servicedetail": "服务清单详情"
   },
   "diagram": {
-    "diagrammanage": "系统管理"
+    "diagrammanage": "系统管理",
+    "catalogmanage": "目录管理"
   }
 }

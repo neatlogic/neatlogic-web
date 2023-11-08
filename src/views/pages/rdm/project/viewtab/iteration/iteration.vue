@@ -37,7 +37,7 @@
               </strong>
             </div>
             <div class="float-left mr-md"><TsFormSwitch
-              :value="selectedIteration.isOpen"
+              v-model="selectedIteration.isOpen"
               :trueValue="1"
               :falseValue="0"
               :showStatus="true"
@@ -141,6 +141,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.updatesuccess'));
+            this.refreshIterationList();// 迭代关闭之后刷新迭代列表
           }
         });
     },

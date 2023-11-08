@@ -19,7 +19,7 @@ export default {
     params: { type: Object }, //url的参数
     rootName: { type: String }, //url返回数据的根名
     idKey: { type: String, default: 'id' }, //id的名称，默认是id
-    pidKey: { type: String, default: 'parentId' }, //父节点id的名称，默认是parentId
+    pIdKey: { type: String, default: 'parentId' }, //父节点id的名称，默认是parentId
     setting: { type: Object },
     hoverDomList: { type: Array },
     onClick: { type: Function }, //点击事件
@@ -66,7 +66,7 @@ export default {
             enable: true,
             idKey: this.idKey,
             pIdKey: this.pIdKey,
-            rootPId: 1
+            rootPId: null
           }
         },
         callback: {
@@ -95,7 +95,7 @@ export default {
         },
         edit: {
           drag: {
-            isCopy: true,
+            isCopy: false,
             isMove: true,
             prev: true,
             next: true,
@@ -115,6 +115,9 @@ export default {
     this.cancelAxios && this.cancelAxios.cancel();
   },
   methods: {
+    getData() {
+      return this.zTreeObj.transformToArray(this.zTreeObj.getNodes());
+    },
     async initTree() {
       const nodes = [];
       if (this.nodes && this.nodes.length > 0) {
@@ -140,7 +143,6 @@ export default {
             console.error(error);
           });
       }
-
       this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), this.defaultSetting, nodes);
       this.zTreeObj.expandAll(true);
       this.value && this.selectedNodeById(this.value);
