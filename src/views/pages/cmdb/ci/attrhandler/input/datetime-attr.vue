@@ -8,7 +8,7 @@
       :disabled="disabled"
       :validateList="validateList"
       type="datetime"
-      format="yyyy-MM-dd HH:mm:ss"
+      :format="format"
       @change="setData"
     ></TsFormDatePicker>
   </div>
@@ -27,7 +27,8 @@ export default {
   },
   data() {
     return {
-      validateList: []
+      validateList: [],
+      format: this.attrData.config.format || 'yyyy-MM-dd HH:mm:ss'
     };
   },
   beforeCreate() {},
