@@ -628,7 +628,7 @@ export default {
     },
     async initData() {
       this.defaultIniData();
-      if (this.id == true) {
+      if (!this.id) {
         this.basicFormItemList.forEach((item) => {
           if (item && item.name == 'name') {
             item.validateList.forEach((v) => {
@@ -830,8 +830,8 @@ export default {
       let params = {
         ...this.basicFormValue,
         type: 'service',
-        id: this.id == true ? '' : this.id,
-        parentId: this.id == true ? this.selectedTreeNode.id : this.selectedTreeNode.parentId,
+        id: !this.id ? '' : this.id,
+        parentId: !this.id ? this.selectedTreeNode.id : this.selectedTreeNode.parentId,
         config: {
           scenarioId: this.scenarioId,
           roundCount: {

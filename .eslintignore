@@ -5,7 +5,7 @@ src/resources/plugins/TsDiagram/*
 src/resources/plugins/TsFlow/*
 src/resources/plugins/TsTopo/*
 src/resources/plugins/TsTopoNew/*
-src/resources/plugins/ztree/*
+src/resources/plugins/TsZtree/*
 net.js
 node_modules/*
 public/*

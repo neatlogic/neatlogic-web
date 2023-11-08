@@ -99,7 +99,7 @@ export default {
   destroyed() {},
   methods: {
     getCatalogData() {
-      if (this.id == true) {
+      if (!this.id) {
         this.catalogValue = this.$utils.deepClone(this.initValue);
         this.catalogForm.forEach((item) => {
           if (item && item.name == 'name') {

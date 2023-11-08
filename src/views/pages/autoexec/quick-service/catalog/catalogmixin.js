@@ -5,7 +5,7 @@ export default {
       type: String,
       default: ''
     },
-    id: [Number, String, Boolean],
+    id: [Number, String],
     selectedTreeNode: {
       type: Object,
       default: () => ({})

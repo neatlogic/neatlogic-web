@@ -148,8 +148,8 @@
 
 <script>
 import '@/resources/assets/js/jquery-1.11.1.js';
-import '@/resources/plugins/ztree/js/jquery.ztree.all.min.js';
-import '@/resources/plugins/ztree/css/zTreeStyle.css';
+import '@/resources/plugins/TsZtree/js/jquery.ztree.all.min.js';
+import '@/resources/plugins/TsZtree/css/zTreeStyle.css';
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 export default {
   name: '',
