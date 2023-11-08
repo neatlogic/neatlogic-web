@@ -626,7 +626,7 @@ export default {
         if (item.hasOwnProperty('allAttrEntityData')) {
           if (!this.$utils.isEmpty(item.allAttrEntityData)) {
             Object.keys(item.allAttrEntityData).forEach(key => {
-              if (!this.$utils.isEmpty(item.allAttrEntityData[key].valueList)) {
+              if (!this.$utils.isEmpty(item.allAttrEntityData[key].mappingMode) && !this.$utils.isEmpty(item.allAttrEntityData[key].valueList)) {
                 let objectData = {
                   key: key,
                   mappingMode: item.allAttrEntityData[key].mappingMode,
