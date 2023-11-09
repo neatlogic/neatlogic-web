@@ -81,6 +81,11 @@ export default {
         let id = 'heading_' + _this.$utils.setUuid();
         return `<h${level} id="${id}">${text}</h${level}>`;
       };
+      //替换文档中a标签链接参数的特殊字符&
+      renderer.link = (href, title, text) => {
+        const newhref = href.replace(/\&/g, '%26');
+        return `<a href="${newhref}">${text}</a>`;
+      };
       this.markdownContent = marked(this.markdownSource, { renderer }); 
       this.getHeadings();
       this.$nextTick(() => {
