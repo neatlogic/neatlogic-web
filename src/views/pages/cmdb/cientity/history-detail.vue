@@ -97,7 +97,11 @@ export default {
     transactionId: { type: Number },
     ciId: { type: Number },
     ciEntityId: { type: Number },
-    isShow: { type: Boolean }
+    isShow: { type: Boolean },
+    isOpenNewPage: { //是否需要打开新窗口查看详情
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -192,7 +196,11 @@ export default {
       });
     },
     toCiEntity(ciEntityId, ciId) {
-      this.$router.push({ path: '/ci/' + ciId + '/cientity-view/' + ciEntityId });
+      if (this.isOpenNewPage) {
+        window.open(HOME + '/cmdb.html#/ci/' + ciId + '/cientity-view/' + ciEntityId, '_blank');
+      } else {
+        this.$router.push({ path: '/ci/' + ciId + '/cientity-view/' + ciEntityId });
+      }
     },
     getAttrByCiId() {
       this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {

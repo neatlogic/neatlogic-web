@@ -163,7 +163,17 @@
     "gotoresourcetypetreesetting": "请到配置管理-资产清单中设置根目录",
     "resourcebatchsearchtooltip": "批量搜索是关键字模糊搜索，其中批量搜索ip时，支持通配符*，匹配任意个字符，例如192.168.*.1可匹配192.168.1.1、192.168.12.1、192.168.123.1",
     "onlybackbone": "只显示主干关系",
-    "showallrel": "显示所有分支关系"
+    "showallrel": "显示所有分支关系",
+    "modemapping": "模型映射",
+    "ciconfignumber": "配置项数量",
+    "relaction": "关系策略",
+    "attrmapping": "属性映射",
+    "addonedata": "添加一条数据",
+    "addmoredata": "添加多条数据",
+    "addonerel": "添加单个关系",
+    "addmorerel": "添加多个关系",
+    "rerunsteptosync": "回退重新同步",
+    "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1017,7 +1027,7 @@
     "menberlist": "成员列表",
     "grouplist": "分组列表",
     "batchauth": "批量授权",
-    "backtousergrouplist": "返回用户组列表",
+    "returntogrouplist": "返回分组列表",
     "continuecreate": "继续创建",
     "notips": "不再提示",
     "saveusergroupchange": "是否保存对当前用户组的更改？",

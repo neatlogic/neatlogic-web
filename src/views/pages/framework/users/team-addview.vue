@@ -106,13 +106,13 @@
           <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(),saveProfile('backteamlist')">{{ $t('term.framework.backtousergrouplist') }}</Button>
+          <Button size="large" type="primary" @click="$back(),saveProfile('backteamlist')">{{ $t('term.framework.returntogrouplist') }}</Button>
         </div>
         <div class="submit-btn-list">
           <Button size="large" @click="continueCreate(),saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentTeam(),saveProfile('editteam')">{{ $t('dialog.title.edittarget', {target: $t('page.userteam')}) }}</Button>
+          <Button size="large" @click="editCrrentTeam(),saveProfile('editteam')">{{ $t('dialog.title.edittarget',{'target':$t('page.group')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }}</Checkbox>

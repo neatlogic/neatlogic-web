@@ -163,7 +163,17 @@
     "gotoresourcetypetreesetting": "Please set the root directory in Configuration Management - Asset List",
     "resourcebatchsearchtooltip": "Batch search is a keyword fuzzy search, in which the wildcard * is supported for batch search of IP, matching any character, such as 192.168.1.1, 192.168.12.1, and 192.168.123.1",
     "onlybackbone": "Show only backbone relationships",
-    "showallrel": "Show all branch relationships"
+    "showallrel": "Show all branch relationships",
+    "modemapping": "Model Mapping",
+    "ciconfignumber": "Number of configuration items",
+    "relaction": "Relationship strategy",
+    "attrmapping": "Attribute Mapping",
+    "addonedata": "Add a piece of data",
+    "addmoredata": "Add multiple pieces of data",
+    "addonerel": "Add a single relationship",
+    "addmorerel": "Add multiple relationships",
+    "rerunsteptosync": "Fallback Resync",
+    "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1018,7 +1028,7 @@
     "menberlist": "Member List",
     "grouplist": "Group List",
     "batchauth": "Volume Authorization",
-    "backtousergrouplist": "Return to user group list",
+    "returntogrouplist": "Return to group list",
     "continuecreate": "Continue creating",
     "notips": "Don't prompt again",
     "saveusergroupchange": "Do you want to save changes to the current user group?",
