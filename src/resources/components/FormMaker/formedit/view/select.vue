@@ -107,7 +107,7 @@ export default {
         let param = {
           matrixUuid: config.matrixUuid,
           keywordColumn: config.mapping.text,
-          valueField: setting.mapping.value,
+          valueField: config.mapping.value,
           textField: config.mapping.text,
           needPage: false
         };

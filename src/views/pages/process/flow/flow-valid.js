@@ -246,6 +246,26 @@ let valid = {
     }
     return validList;
   },
+  cmdbsync(nodeConfig, d, that) { //cmdb
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let ciEntityConfig = nodeData.ciEntityConfig || {};
+    if (nodeConfig.handler === 'cmdbsync') {
+      if (!ciEntityConfig.failPolicy) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
+          href: '#ciEntityConfig'
+        });
+      }
+      if (that.$utils.isEmpty(ciEntityConfig.configList)) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('term.cmdb.modemapping') }),
+          href: '#ciEntityConfig'
+        });
+      }
+    }
+    return validList;
+  },
   autoexec(nodeConfig, d, that) { //自动化节点
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};

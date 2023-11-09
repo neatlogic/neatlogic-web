@@ -213,7 +213,7 @@ export default {
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
       };
-      if (this.notifyPolicyConfig.hasOwnProperty('policyId')) {
+      if (this.notifyPolicyConfig.hasOwnProperty('policyId') && this.notifyPolicyConfig.policyId) {
         this.$set(data, 'policyId', this.notifyPolicyConfig.policyId);
       }
       if (this.notifyPolicyConfig.hasOwnProperty('policyName')) {
