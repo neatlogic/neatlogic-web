@@ -7,7 +7,7 @@
     @on-ok="issue"
   >
     <div class="mb-nm">
-      <span>{{ $t('term.framework.noticeeffectivetime') }}</span>
+      <span>{{ $t('term.framework.noticeeffitivetime') }}</span>
     </div>
     <div class="grid mb-xs">
       <div>
