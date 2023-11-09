@@ -473,20 +473,26 @@ export default {
 
         if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
           return;
-        } else {
-          //如果点击区域不是自身元素则失去焦点
-          this.isVisible = false;
-          if (!this.multiple) {
-            //单选
-            let value = this.selectedList[0] ? (this.showPath ? this.selectedList[0]._path : this.selectedList[0][this.textName]) : '';
-            if (this.searchKeyWord !== value) {
-              this.searchKeyWord = value;
-              this.initNodeList();
-            }
-          } else if (this.searchKeyWord) {
-            this.searchKeyWord = '';
+        } 
+        
+        if (this.transfer) {
+        //如果是transfer的时候下拉的区域点击时是在dropdown外层的div上
+          if ($el && $el.offsetParent && ($el.offsetParent === event.target || $el.offsetParent.contains(event.target))) {
+            return;
+          }
+        }
+        //如果点击区域不是自身元素则失去焦点
+        this.isVisible = false;
+        if (!this.multiple) {
+          //单选
+          let value = this.selectedList[0] ? (this.showPath ? this.selectedList[0]._path : this.selectedList[0][this.textName]) : '';
+          if (this.searchKeyWord !== value) {
+            this.searchKeyWord = value;
             this.initNodeList();
           }
+        } else if (this.searchKeyWord) {
+          this.searchKeyWord = '';
+          this.initNodeList();
         }
       }
     },
