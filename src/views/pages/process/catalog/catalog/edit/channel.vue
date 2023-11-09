@@ -169,7 +169,6 @@ export default {
   mixins: [editmixin],
   props: {},
   data() {
-    let _this = this;
     return {
       selectedIcon: '', //选中哪一个图标
       defaultPriorityUuid: '', //默认优先级uuid
@@ -265,7 +264,7 @@ export default {
           label: this.$t('term.process.showpriority'),
           validateList: ['required'],
           onChange: (val) => {
-            _this.changePriorty(val);
+            this.changePriorty(val);
           }
         },
         {
@@ -412,28 +411,27 @@ export default {
       });
     },
     getData(hideLoading) {
-      let _this = this;
       this.channelForm.forEach(e => {
         e.width = '75%';
       });
 
       let relationObj = this.channelForm.find(d => d.name == 'channelRelationList');
-      if (this.uuid == true) {
-        _this.channelValue = _this.$utils.deepClone(_this.initValue);
+      if (!this.uuid) {
+        this.channelValue = this.$utils.deepClone(this.initValue);
         relationObj.isHidden = true;
-        _this.changePriorty(_this.channelValue.isNeedPriority);
+        this.changePriorty(this.channelValue.isNeedPriority);
         return;
       }
       let data = {
-        uuid: _this.uuid
+        uuid: this.uuid
       };
       !hideLoading && (this.loading = true);
-      _this.$api.process.service.getChannelInfo(data).then(res => {
-        _this.loading = false;
+      this.$api.process.service.getChannelInfo(data).then(res => {
+        this.loading = false;
         if (res.Status == 'OK') {
           let itemValue = res.Return;
-          itemValue.desc = _this.escape2Html(itemValue.desc);
-          _this.channelValue = {
+          itemValue.desc = this.escape2Html(itemValue.desc);
+          this.channelValue = {
             name: itemValue.name || '',
             processUuid: itemValue.processUuid || '',
             isActive: itemValue.isActive || 0,
@@ -460,11 +458,11 @@ export default {
           } else {
             relationObj.isHidden = false;
           }
-          _this.changePriorty(_this.channelValue.isNeedPriority);
-          _this.$emit('updateName', _this.channelValue.name);
+          this.changePriorty(this.channelValue.isNeedPriority);
+          this.$emit('updateName', this.channelValue.name);
         } else {
-          _this.channelValue = _this.$utils.deepClone(_this.initValue);
-          _this.loading = false;
+          this.channelValue = this.$utils.deepClone(this.initValue);
+          this.loading = false;
         }
       });
     },
@@ -492,10 +490,9 @@ export default {
       this.$Message.success(this.$t('message.executesuccess'));
     },
     priority(list) { //优先级选中时改变默认优先级数据
-      let _this = this;
-      _this.channelForm.forEach(c => {
+      this.channelForm.forEach(c => {
         if (c.name == 'defaultPriorityUuid') {
-          _this.$set(c, 'dataList', list && list.length ? list : []);
+          this.$set(c, 'dataList', list && list.length ? list : []);
         }
       });
     },
@@ -555,7 +552,6 @@ export default {
       window.open(HOME + '/process.html#/relations-manage', '_blank');
     },
     changePriorty(val) {
-      let _this = this;
       this.channelForm.forEach(item => {
         if (item.name == 'priorityUuidList' || item.name == 'defaultPriorityUuid') {
           if (val) {
@@ -567,8 +563,8 @@ export default {
       });
       this.$nextTick(() => {
         if (!val) {
-          _this.channelValue.priorityUuidList = [];
-          _this.channelValue.defaultPriorityUuid = '';
+          this.channelValue.priorityUuidList = [];
+          this.channelValue.defaultPriorityUuid = '';
         }
       });
     }

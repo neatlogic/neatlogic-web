@@ -91,9 +91,8 @@ export default {
   destroyed() {},
   methods: {
     getData(hideLoading) {
-      let _this = this;
-      if (this.uuid == true) {
-        _this.catalogValue = _this.$utils.deepClone(_this.initValue);
+      if (!this.uuid) {
+        this.catalogValue = this.$utils.deepClone(this.initValue);
         return;
       }
       let data = {
@@ -101,7 +100,7 @@ export default {
       };
       !hideLoading && (this.loading = true);
       this.$api.process.service.getCatalogInfo(data).then(res => {
-        _this.loading = false;
+        this.loading = false;
         if (res.Status == 'OK') {
           let itemValue = res.Return;
           itemValue.desc = this.escape2Html(itemValue.desc);
@@ -111,13 +110,13 @@ export default {
             authorityList: itemValue.authorityList,
             desc: itemValue.desc || ''    
           };
-          _this.$emit('updateName', _this.catalogValue.name);
+          this.$emit('updateName', this.catalogValue.name);
         } else {
-          _this.catalogValue = _this.$utils.deepClone(_this.initValue);
+          this.catalogValue = this.$utils.deepClone(this.initValue);
         }
       }).catch(res => {
-        _this.catalogValue = _this.$utils.deepClone(_this.initValue);
-        _this.loading = false;
+        this.catalogValue = this.$utils.deepClone(this.initValue);
+        this.loading = false;
       });
     },
     save() {
