@@ -1,6 +1,6 @@
 export default {
   props: {
-    uuid: [Number, String, Boolean]
+    uuid: [Number, String]
   },
   data() {
     return {
@@ -10,11 +10,8 @@ export default {
   mounted() {
     this.getData();
   },
-  beforeDestroy() {
-
-  },
-  methods: {
-  },
+  beforeDestroy() {},
+  methods: {},
   computed: {
     //去除转义字符
     escape2Html() {
@@ -28,6 +25,5 @@ export default {
       };
     }
   },
-  watch: {
-  }
+  watch: {}
 };

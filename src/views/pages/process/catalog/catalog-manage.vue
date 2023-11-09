@@ -40,7 +40,6 @@
         <div class="content bg-op pt-md radius-lg" :class="!isSiderHide ? 'ml-md' : ''">
           <component
             :is="catalogTypeName"
-            v-if="currentCatalogId"
             :ref="catalogTypeName"
             :uuid="currentCatalogId"
             @save="saveEdit"
@@ -314,7 +313,6 @@ export default {
     },
     //添加子目录
     addCatalogChildren(treeNode) {
-      this.$refs.TsZtree.updateNodeById(treeNode.uuid);
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('page.subdirectory') });
       this.catalogTypeName = 'catalog';
       this.catalogData.parentUuid = treeNode.uuid;
@@ -323,7 +321,6 @@ export default {
     },
     //添加服务
     addChannel(treeNode) {
-      this.$refs.TsZtree && this.$refs.TsZtree.updateNodeById(treeNode.uuid);
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('term.process.catalog') });
       this.catalogTypeName = 'channel';
       this.channelData.parentUuid = treeNode.uuid;
