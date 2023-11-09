@@ -198,7 +198,8 @@ export default {
       this.$emit('on-focus');
     },
     onEnterValue: function() {
-      this.$emit('on-enter');
+      let value = typeof this.currentValue === 'string' ? this.currentValue.trim() : this.currentValue;
+      this.$emit('on-enter', value);
     },
     onSearchValue() {
       //this.$emit('on-enter');
