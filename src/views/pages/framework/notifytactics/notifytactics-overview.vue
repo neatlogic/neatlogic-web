@@ -16,7 +16,7 @@
             :name="tab.value"
             tab="tab1"
           >
-            <div v-if="tab.children && tab.children.length > 0" class="padding ">
+            <div v-if="tab.children && tab.children.length > 0" class="padding">
               <Tabs
                 v-model="handler"
                 class="block-tabs2"
@@ -35,7 +35,6 @@
                 <div class="notify-card padding">
                   <Loading :loadingShow="loadingShow" type="fix"></Loading>
                   <div v-if="isShow" class="search-box pb-md pt-md">
-                    <!-- {{ isShow }} -->
                     <div class="action-group">
                       <span class="tsfont-plus action-item" @click="addTactics">{{ $t('term.process.policy') }}</span>
                       <span class="tsfont-upload action-item" @click="importTactics">{{ $t('page.import') }}</span>
@@ -131,7 +130,6 @@
 
 <script>
 import TimingTask from './tacticsedit/timing-task';
-// import ReferenceSelect from '@/resources/components/ReferenceSelect/ReferenceSelect.vue';
 export default {
   name: 'NotifytacticsOverview',
   components: {
@@ -142,11 +140,9 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TimingTask
-    // ReferenceSelect
   },
   props: {},
   data() {
-    let _this = this;
     return {
       handler: null, 
       actionUrl: BASEURLPREFIX + '/api/binary/notify/policy/import', //导入地址
@@ -193,15 +189,15 @@ export default {
         value: null,
         dynamicUrl: '/api/rest/notify/policy/search',
         params: {
-          handler: _this.handler
+          handler: this.handler
         },
         rootName: 'tbodyList',
         valueName: 'id',
         textName: 'name',
         search: true,
         transfer: true,
-        onChangelabel: function(text) {
-          _this.defaultPolicyFormSelectText = text;
+        onChangelabel: (text) => {
+          this.defaultPolicyFormSelectText = text;
         }
       }
     };
@@ -210,10 +206,13 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.$route.query.addNotify) {
+    let {addNotify = false, handler = null} = this.$route.query || {};
+    if (addNotify) {
       this.tacticsDialog = true;
     }
-    this.handler = this.$route.query.handler || null;
+    if (handler) { // 加个判断，解决下榻页面回显值被替换的问题
+      this.handler = handler;
+    }
     this.getData();
   },
   beforeUpdate() {},
@@ -224,10 +223,9 @@ export default {
   destroyed() {},
   methods: {
     async getData() {
-      let _this = this;
-      let handlerList = await _this.getHandler();
+      let handlerList = await this.getHandler();
       if (handlerList && handlerList.length > 0 && this.handler != this.$t('page.scheduledtask')) {
-        _this.search(1);
+        this.search(1);
       }
     },
     getHandler() {
@@ -280,26 +278,25 @@ export default {
       });
     },
     search(page) {
-      let _this = this;
-      _this.loadingCard = true;
-      _this.currentPage = Math.floor(page) || _this.currentPage;
+      this.loadingCard = true;
+      this.currentPage = Math.floor(page) || this.currentPage;
       let data = {
-        handler: _this.handler,
-        currentPage: _this.currentPage,
-        pageSize: _this.pageSize
+        handler: this.handler,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize
       };
       if (this.keyword) {
-        let keyword = _this.keyword.trim();
-        _this.$set(data, 'keyword', keyword);
+        let keyword = this.keyword.trim();
+        this.$set(data, 'keyword', keyword);
       }
       this.$api.framework.tactics.searchNotifyList(data).then(res => {
         if (res.Status == 'OK') {
           let notifyData = res.Return;
           Object.keys(notifyData).forEach(item => {
             if (item != 'tbodyList') {
-              _this.$set(_this.tacticsData, item, notifyData[item]);
+              this.$set(this.tacticsData, item, notifyData[item]);
             } else {
-              _this.$set(_this.tacticsData, 'cardList', notifyData[item]);
+              this.$set(this.tacticsData, 'cardList', notifyData[item]);
             }
           });
 
@@ -339,21 +336,20 @@ export default {
             });
           }
 
-          _this.currentPage = res.Return.currentPage;
-          _this.pageSize = res.Return.pageSize;
-          _this.loadingShow = false;
-          _this.loadingCard = false;
+          this.currentPage = res.Return.currentPage;
+          this.pageSize = res.Return.pageSize;
+          this.loadingShow = false;
+          this.loadingCard = false;
         }
       });
     },
     changeHandler(val) {
-      let _this = this;
       if (this.handlerConfig && this.handlerConfig.children && this.handlerConfig.children.length > 0) {
         this.handlerConfig.children.forEach(j => {
           if (j.value == val) {
-            _this.defaultPolicyId = j.defaultNotifyPolicyId;
-            _this.defaultPolicyFormSelectValue = _this.defaultPolicyId;
-            _this.defaultPolicyName = j.defaultNotifyPolicyName;
+            this.defaultPolicyId = j.defaultNotifyPolicyId;
+            this.defaultPolicyFormSelectValue = this.defaultPolicyId;
+            this.defaultPolicyName = j.defaultNotifyPolicyName;
           }
         });
       }
@@ -384,7 +380,6 @@ export default {
       this.showDefaultPolicyDialog = true;
     },
     saveDefaultPolicy() {
-      let _this = this;
       if (this.defaultPolicyId == this.defaultPolicyFormSelectValue) {
         return;
       }
@@ -394,17 +389,17 @@ export default {
       };
       this.$api.framework.tactics.updateIsDefaultNotifyPolicy(param).then(res => {
         if (res.Status == 'OK') {
-          _this.defaultPolicyId = _this.defaultPolicyFormSelectValue;
-          _this.defaultPolicyName = _this.defaultPolicyFormSelectText;
-          if (_this.handlerConfig && _this.handlerConfig.children && _this.handlerConfig.children.length > 0) {
-            _this.handlerConfig.children.forEach(j => {
-              if (j.value == _this.handler) {
-                j.defaultNotifyPolicyId = _this.defaultPolicyId;
-                j.defaultNotifyPolicyName = _this.defaultPolicyName;
+          this.defaultPolicyId = this.defaultPolicyFormSelectValue;
+          this.defaultPolicyName = this.defaultPolicyFormSelectText;
+          if (this.handlerConfig && this.handlerConfig.children && this.handlerConfig.children.length > 0) {
+            this.handlerConfig.children.forEach(j => {
+              if (j.value == this.handler) {
+                j.defaultNotifyPolicyId = this.defaultPolicyId;
+                j.defaultNotifyPolicyName = this.defaultPolicyName;
               }
             });
           }
-          _this.showDefaultPolicyDialog = false;
+          this.showDefaultPolicyDialog = false;
         }
       });
     },
@@ -415,6 +410,7 @@ export default {
           id: item.id
         }
       });
+      this.$addHistoryData('handler', this.handler);
     },
     copyTactics(item) {
       this.isCopy = true;
@@ -512,6 +508,9 @@ export default {
         this.defaultPolicyFormSelectValue = this.defaultPolicyId;
         this.search(1);
       }
+    },
+    restoreHistory(historyData) {
+      this.handler = historyData['handler'];
     }
   },
   filter: {},
@@ -521,7 +520,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
 .notifytactics-overview {
   padding-top: 16px;
   .tscontain-container {

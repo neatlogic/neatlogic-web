@@ -2,13 +2,14 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="goPrev(prevPath)">{{ prevPath.name }}</span>
+        <span class="tsfont-left text-action" @click="$back('/notifytactics-overview')">{{ $getFromPage('router.framework.notifytacticsmanage') }}</span>
       </template>
       <template v-slot:topLeft>
         <span>
           <span class="mr-md">{{ tacticsName }}</span>
           <i class="tsfont-edit text-action" @click="editName"></i>
-        </span></template>
+        </span>
+      </template>
       <template v-slot:topRight>
         <div class="action-top">
           <span class="action-group">
@@ -224,10 +225,6 @@ export default {
   data() {
     return {
       loadingShow: true,
-      prevPath: {
-        router: '/notifytactics-overview',
-        name: this.$t('term.process.policy')
-      },
       id: null, //策略id
       handler: null, //模块
       tacticsName: null,
@@ -317,14 +314,6 @@ export default {
       this.triggerList.forEach(e => {
         this.$set(e, 'isDel', false);
         this.$set(e, 'isDelActive', false);
-      });
-    },
-    goPrev() {
-      this.$router.push({
-        path: this.prevPath.router,
-        query: {
-          handler: this.handler
-        }
       });
     },
     searchTacticsList() {
