@@ -1018,7 +1018,7 @@
     "menberlist": "Member List",
     "grouplist": "Group List",
     "batchauth": "Volume Authorization",
-    "backtousergrouplist": "Return to user group list",
+    "returntogrouplist": "Return to group list",
     "continuecreate": "Continue creating",
     "notips": "Don't prompt again",
     "saveusergroupchange": "Do you want to save changes to the current user group?",
