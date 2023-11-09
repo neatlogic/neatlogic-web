@@ -1027,7 +1027,7 @@
     "menberlist": "成员列表",
     "grouplist": "分组列表",
     "batchauth": "批量授权",
-    "backtousergrouplist": "返回用户组列表",
+    "returntogrouplist": "返回分组列表",
     "continuecreate": "继续创建",
     "notips": "不再提示",
     "saveusergroupchange": "是否保存对当前用户组的更改？",
