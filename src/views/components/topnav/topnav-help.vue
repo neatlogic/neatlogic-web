@@ -163,7 +163,9 @@ export default {
     },
     openHelpManage() {
       if (this.isShowDetail) {
-        let url = HOME + '/documentonline.html#/documentonline-detail?filePath=' + this.filePath;
+        //替换文档标题的特殊字符&
+        let filePath = this.filePath.replace(/\&/g, '%26');
+        let url = HOME + '/documentonline.html#/documentonline-detail?filePath=' + filePath;
         if (this.anchorPoint) {
           url += '&anchorPoint=' + this.anchorPoint;
         }
