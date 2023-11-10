@@ -8,7 +8,12 @@
         </div>
       </template>
     </Alert>
-    <TsTable v-if="tbodyList && tbodyList.length > 0" :theadList="theadList" :tbodyList="tbodyList">
+    <TsTable
+      v-if="tbodyList && tbodyList.length > 0"
+      :theadList="theadList"
+      :tbodyList="tbodyList"
+      :fixedHeader="false"
+    >
       <template v-slot:detail="{ row }">
         <span style="cursor:pointer" class="tsfont-task" @click="showHistoryDetail(row)"></span>
       </template>
@@ -22,7 +27,7 @@
         <Poptip
           v-if="row.error"
           trigger="hover"
-          title="异常"
+          :title="$t('page.exception')"
           word-wrap
           width="400"
           :transfer="true"
