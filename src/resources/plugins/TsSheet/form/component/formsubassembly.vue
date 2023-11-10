@@ -1,7 +1,9 @@
 <template>
   <div v-if="subFormData">
     <div v-if="!disabled && !readonly && config.isCanAdd">
-      <Button v-if="mode ==='read' || mode==='readSubform'" @click="addFormData">添加</Button>
+      <Button v-if="mode ==='read' || mode==='readSubform'" @click="addFormData">
+        <span class="tsfont-plus">{{ label }}</span>
+      </Button>
     </div>
     <div>
       <div v-for="(item,index) in formDataList" :key="index" class="sheet-list">
