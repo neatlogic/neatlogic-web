@@ -137,6 +137,9 @@ export default {
     },
     changePageSize(pageSize) {
       this.$emit('changePageSize', pageSize);
+    },
+    unlinkIssue(row) {
+      this.$emit('unlinkIssue', row);
     }
   },
   filter: {},
