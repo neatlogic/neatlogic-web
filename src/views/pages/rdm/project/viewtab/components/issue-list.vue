@@ -94,80 +94,82 @@
         </div>
       </div>
     </div>
-    <div v-if="viewmode === 'gantt'">
-      <IssueListGantt
-        v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
-        :theadList="finalTheadList"
-        :issueData="issueData"
-        :attrList="attrList"
-        :canAction="canAction"
-        :parentId="parentId"
-        :fromId="fromId"
-        :toId="toId"
-        :mode="mode"
-        :projectId="projectId"
-        :checkedIdList="checkedIdList"
-        @searchIssue="searchIssue"
-        @changePageSize="changePageSize"
-        @toIssue="toIssueDetail"
-        @openIssue="openIssueDetail"
-        @deleteIssue="deleteIssue"
-        @toggleChildIssue="toggleChildIssue"
-      ></IssueListGantt>
-      <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
-    </div>
-    <div v-else-if="viewmode === 'table'">
-      <IssueListTable
-        v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
-        :theadList="finalTheadList"
-        :sortList="sortList"
-        :issueData="issueData"
-        :attrList="attrList"
-        :canAction="canAction"
-        :parentId="parentId"
-        :fromId="fromId"
-        :toId="toId"
-        :mode="mode"
-        :sortData="sortData"
-        :projectId="projectId"
-        :checkedIdList="checkedIdList"
-        @updateSort="updateSort"
-        @selected="getSelected"
-        @searchIssue="searchIssue"
-        @changePageSize="changePageSize"
-        @toIssue="toIssueDetail"
-        @openIssue="openIssueDetail"
-        @deleteIssue="deleteIssue"
-        @toggleChildIssue="toggleChildIssue"
-        @unlinkIssue="unlinkIssue"
-      ></IssueListTable>
-      <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
-    </div>
-    <div v-else-if="viewmode === 'storywall'" style="scroll-x: auto; scroll-y: hidden">
-      <IssueListStorywall
-        v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
-        :theadList="finalTheadList"
-        :issueData="issueData"
-        :attrList="attrList"
-        :canAction="canAction"
-        :parentId="parentId"
-        :fromId="fromId"
-        :toId="toId"
-        :mode="mode"
-        :app="app"
-        :projectId="projectId"
-        :checkedIdList="checkedIdList"
-        @selected="getSelected"
-        @searchIssue="searchIssue"
-        @changePageSize="changePageSize"
-        @toIssue="toIssueDetail"
-        @openIssue="openIssueDetail"
-        @deleteIssue="deleteIssue"
-        @toggleChildIssue="toggleChildIssue"
-        @unlinkIssue="unlinkIssue"
-      ></IssueListStorywall>
-      <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
-    </div>
+    <template v-if="!isLoading">
+      <div v-if="viewmode === 'gantt'">
+        <IssueListGantt
+          v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
+          :theadList="finalTheadList"
+          :issueData="issueData"
+          :attrList="attrList"
+          :canAction="canAction"
+          :parentId="parentId"
+          :fromId="fromId"
+          :toId="toId"
+          :mode="mode"
+          :projectId="projectId"
+          :checkedIdList="checkedIdList"
+          @searchIssue="searchIssue"
+          @changePageSize="changePageSize"
+          @toIssue="toIssueDetail"
+          @openIssue="openIssueDetail"
+          @deleteIssue="deleteIssue"
+          @toggleChildIssue="toggleChildIssue"
+          @unlinkIssue="unlinkIssue"
+        ></IssueListGantt>
+        <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
+      </div>
+      <div v-else-if="viewmode === 'table'">
+        <IssueListTable
+          v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
+          :theadList="finalTheadList"
+          :sortList="sortList"
+          :issueData="issueData"
+          :attrList="attrList"
+          :canAction="canAction"
+          :parentId="parentId"
+          :fromId="fromId"
+          :toId="toId"
+          :mode="mode"
+          :sortData="sortData"
+          :projectId="projectId"
+          :checkedIdList="checkedIdList"
+          @updateSort="updateSort"
+          @selected="getSelected"
+          @searchIssue="searchIssue"
+          @changePageSize="changePageSize"
+          @toIssue="toIssueDetail"
+          @openIssue="openIssueDetail"
+          @deleteIssue="deleteIssue"
+          @toggleChildIssue="toggleChildIssue"
+          @unlinkIssue="unlinkIssue"
+        ></IssueListTable>
+        <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
+      </div>
+      <div v-else-if="viewmode === 'storywall'" style="scroll-x: auto; scroll-y: hidden">
+        <IssueListStorywall
+          v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
+          :theadList="finalTheadList"
+          :issueData="issueData"
+          :attrList="attrList"
+          :canAction="canAction"
+          :parentId="parentId"
+          :fromId="fromId"
+          :toId="toId"
+          :mode="mode"
+          :app="app"
+          :projectId="projectId"
+          :checkedIdList="checkedIdList"
+          @selected="getSelected"
+          @searchIssue="searchIssue"
+          @changePageSize="changePageSize"
+          @toIssue="toIssueDetail"
+          @openIssue="openIssueDetail"
+          @deleteIssue="deleteIssue"
+          @toggleChildIssue="toggleChildIssue"
+        ></IssueListStorywall>
+        <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
+      </div>
+    </template>
     <EditIssue
       v-if="isEditIssueShow"
       :app="app"
