@@ -340,6 +340,9 @@ export default {
     },
     scrollTable(scrollTop) {
       this.gantt.setScrollTop(scrollTop);
+    },
+    unlinkIssue(row) {
+      this.$emit('unlinkIssue', row);
     }
   },
   filter: {},

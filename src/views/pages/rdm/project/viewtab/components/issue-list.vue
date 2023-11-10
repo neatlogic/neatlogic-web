@@ -139,6 +139,7 @@
         @openIssue="openIssueDetail"
         @deleteIssue="deleteIssue"
         @toggleChildIssue="toggleChildIssue"
+        @unlinkIssue="unlinkIssue"
       ></IssueListTable>
       <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
     </div>
@@ -163,6 +164,7 @@
         @openIssue="openIssueDetail"
         @deleteIssue="deleteIssue"
         @toggleChildIssue="toggleChildIssue"
+        @unlinkIssue="unlinkIssue"
       ></IssueListStorywall>
       <NoData v-else-if="isReady && isShowEmptyTable"></NoData>
     </div>
