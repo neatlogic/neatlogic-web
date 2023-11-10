@@ -378,7 +378,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, true, null, 1).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true, allowEdit: 1}).then(res => {
           relList = res.Return;
         });
         return relList;

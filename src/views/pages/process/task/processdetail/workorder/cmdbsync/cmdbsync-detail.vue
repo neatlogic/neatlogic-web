@@ -3,8 +3,8 @@
     <Alert v-if="!$utils.isEmpty(errorList)" type="error">
       <template slot="desc">
         <div v-for="(e,eindex) in errorList" :key="eindex">
-          {{ $t('dialog.title.createtarget',{'target':$t('page.fail')}) }}：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
-          <span v-if="e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
+          {{ $t('dialog.title.createtarget',{'target':$t('page.fail')}) }}：{{ e.error && e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
+          <span v-if="e.error && e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
         </div>
       </template>
     </Alert>
