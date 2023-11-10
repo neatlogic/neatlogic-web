@@ -45,12 +45,15 @@
       <template v-slot:topRight>
         <div>
           <CombineSearcher
+            v-show="isSimpleMode"
+            ref="combineSearcher"
             v-model="searchVal"
             v-bind="searchConfig"
-            @change="changeCombineSearcher"
+            @confirm="changeCombineSearcher"
             @change-label="changeLabelCombineSearcher"
+            @switchMode="switchMode"
           >
-            <template v-slot:batchSearchList="{ valueConfig, textConfig }">
+            <template v-slot:batchSearchList="{ valueConfig }">
               <div>
                 <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
                   <TsFormRadio v-model="valueConfig.searchField" :dataList="searchFieldRadioDataList"></TsFormRadio>
@@ -61,16 +64,20 @@
                     type="textarea"
                     :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                     :autoSize="{ minRows: 4 }"
-                    @change="
-                      val => {
-                        changeBatchSearchList(val, textConfig);
-                      }
-                    "
                   ></TsFormInput>
                 </TsFormItem>
               </div>
             </template>
           </CombineSearcher>
+          <AdvancedModeSearch
+            v-show="!isSimpleMode"
+            ref="advancedModeSearch"
+            v-model="searchVal"
+            :searchList="searchList"
+            @search="advancedModeSearch"
+            @switchMode="switchMode"
+          >
+          </AdvancedModeSearch>
         </div>
       </template>
       <template v-slot:sider>
@@ -88,13 +95,14 @@
           v-if="!loadingShow"
           v-model="selectList"
           v-bind="tableConfig"
+          :theadList="theadList"
           :multiple="true"
           :selectedRemain="selectedRemain"
           :loading="loading"
           :hideAction="hasResourceCenterAuth"
           @getSelected="getSelected"
-          @changeCurrent="getData"
-          @changePageSize="getData(1, ...arguments)"
+          @changeCurrent="changeCurrent"
+          @changePageSize="changePageSize"
         >
           <template v-slot:ip="{ row }">
             <span class="text-href" @click.stop="gotoDetails(row)">
@@ -125,12 +133,6 @@
               <span>-</span>
             </span>
           </template>
-          <!-- <template v-slot:taskStatus="{ row }">
-                  <span :style="fonts(row)" @click="taskJob(row)">
-                    <span v-if="row.jobPhaseNodeVo"><span :class="{'tsfont-warning-o': row.jobPhaseNodeVo.value== 'FATAL'}"></span>{{ row.jobPhaseNodeVo.statusVo.text }}</span>
-                    <span v-else>-</span>
-                  </span>
-                </template> -->
           <template v-slot:inspectTime="{ row }">
             <!-- 巡检状态 -->
             <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
@@ -138,7 +140,6 @@
                 <span :class="[row.inspectStatusJson.cssClass, { 'background-FATAL': row.inspectStatusJson.value == 'FATAL' }]" class="vertical">{{ row.inspectStatusJson.text }}</span>
                 <span class="text-title">{{ formatTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }} {{ $t('page.before') }}</span>
               </span>
-              <!-- 'cursor':'pointer','color': row.jobPhaseNodeVo.statusVo.color -->
             </span>
 
             <span v-else>
@@ -173,7 +174,6 @@
         </TsTable>
       </template>
     </TsContain>
-
     <TagEdit
       v-if="isMangeShow"
       :operateType="operateType"
@@ -228,23 +228,25 @@
 export default {
   name: '',
   components: {
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
     AcountEdit: resolve => require(['./components/acount-edit'], resolve),
     DeleteCiEntityDialog: resolve => require(['../cientity/cientity-delete-dialog.vue'], resolve),
     AssetEdit: resolve => require(['./asset-edit-dialog.vue'], resolve),
     TagEdit: resolve => require(['./components/tag-edit'], resolve),
     TreeEdit: resolve => require(['./components/tree-edit'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
     ExportAsset: resolve => require(['./export-asset-dialog.vue'], resolve),
     AccountEditDialog: resolve => require(['./components/account-edit-dialog'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    AdvancedModeSearch: resolve => require(['./advanced-mode-search'], resolve) // 高级模式搜索
   },
   filters: {},
   data() {
     return {
+      isSimpleMode: true,
       isShowAccountEditDialog: false,
       loadingShow: true,
       selectedRemain: true,
@@ -270,7 +272,6 @@ export default {
         isShow: false,
         width: 'medium'
       },
-      id: null,
       resourceId: 0,
       resourceIdList: [],
       tagList: [],
@@ -293,6 +294,8 @@ export default {
         searchField: 'ip'
       },
       searchConfig: {
+        isShowAdvanceMode: true,
+        searchMode: 'clickBtnSearch',
         placeholder: this.$t('term.inspect.inputargetnameip'),
         searchList: [
           {
@@ -318,7 +321,7 @@ export default {
                 this.$nextTick(() => {
                   if (this.searchVal && this.searchVal.appModuleIdList) {
                     this.$delete(this.searchVal, 'appModuleIdList');
-                    this.getData(1);
+                    this.changeCurrent();
                   }
                 });
               }
@@ -416,96 +419,95 @@ export default {
           }
         ]
       },
+      theadList: [
+        {
+          key: 'selection',
+          title: ''
+        },
+        {
+          title: this.$t('page.ipaddress'),
+          key: 'ip'
+        },
+        {
+          title: this.$t('page.type'),
+          key: 'typeLabel'
+        },
+        {
+          title: this.$t('page.name'),
+          key: 'name'
+        },
+        {
+          title: this.$t('term.inspect.monitoringstate'),
+          key: 'monitorTime'
+        },
+        {
+          title: this.$t('term.autoexec.inspectstatus'),
+          key: 'inspectTime'
+        },
+        // {
+        //   title: '巡检作业状态', // 需求变更，屏蔽
+        //   key: 'taskStatus'
+        // },
+        {
+          title: this.$t('page.module'),
+          key: 'appModuleName'
+        },
+        {
+          title: this.$t('page.apply'),
+          key: 'appSystemName'
+        },
+        {
+          title: this.$t('term.inspect.iplist'),
+          key: 'allIp',
+          type: 'tag',
+          valueKey: 'ip'
+        },
+        {
+          title: this.$t('term.autoexec.subordinatedepartment'),
+          key: 'bgList',
+          type: 'tag',
+          valueKey: 'bgName'
+        },
+        {
+          title: this.$t('page.owner'),
+          key: 'ownerList',
+          type: 'usercards'
+        },
+        {
+          title: this.$t('term.autoexec.assetstatus'),
+          key: 'stateName'
+        },
+        {
+          title: this.$t('page.networkarea'),
+          key: 'networkArea'
+        },
+        {
+          title: this.$t('page.tag'),
+          key: 'tagList',
+          type: 'tag'
+        },
+        {
+          title: this.$t('term.deploy.maintenancewindow'),
+          key: 'maintenanceWindow'
+        },
+        {
+          title: this.$t('page.account'),
+          key: 'accountList'
+        },
+        {
+          title: this.$t('page.description'),
+          key: 'description'
+        },
+        {
+          title: '',
+          key: 'action'
+        }
+      ],
       tableConfig: {
         keyName: 'id',
-        value: [],
-        theadList: [
-          {
-            key: 'selection',
-            title: ''
-          },
-          {
-            title: this.$t('page.ipaddress'),
-            key: 'ip'
-          },
-          {
-            title: this.$t('page.type'),
-            key: 'typeLabel'
-          },
-          {
-            title: this.$t('page.name'),
-            key: 'name'
-          },
-          {
-            title: this.$t('term.inspect.monitoringstate'),
-            key: 'monitorTime'
-          },
-          {
-            title: this.$t('term.autoexec.inspectstatus'),
-            key: 'inspectTime'
-          },
-          // {
-          //   title: '巡检作业状态', // 需求变更，屏蔽
-          //   key: 'taskStatus'
-          // },
-          {
-            title: this.$t('page.module'),
-            key: 'appModuleName'
-          },
-          {
-            title: this.$t('page.apply'),
-            key: 'appSystemName'
-          },
-          {
-            title: this.$t('term.inspect.iplist'),
-            key: 'allIp',
-            type: 'tag',
-            valueKey: 'ip'
-          },
-          {
-            title: this.$t('term.autoexec.subordinatedepartment'),
-            key: 'bgList',
-            type: 'tag',
-            valueKey: 'bgName'
-          },
-          {
-            title: this.$t('page.owner'),
-            key: 'ownerList',
-            type: 'usercards'
-          },
-          {
-            title: this.$t('term.autoexec.assetstatus'),
-            key: 'stateName'
-          },
-          {
-            title: this.$t('page.networkarea'),
-            key: 'networkArea'
-          },
-          {
-            title: this.$t('page.tag'),
-            key: 'tagList',
-            type: 'tag'
-          },
-          {
-            title: this.$t('term.deploy.maintenancewindow'),
-            key: 'maintenanceWindow'
-          },
-          {
-            title: this.$t('page.account'),
-            key: 'accountList'
-          },
-          {
-            title: this.$t('page.description'),
-            key: 'description'
-          },
-          {
-            title: '',
-            key: 'action'
-          }
-        ],
         tbodyList: [],
-        pageSize: 20,
-        currentPage: 1
+        currentPage: 1,
+        pageSize: 20
       },
       settingConfig: {
         tagList: []
@@ -530,39 +532,162 @@ export default {
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.tag') }) }, 'name-special']
         }
       },
-      dynamicUrl: '',
       implementName: '',
-      contentHeight: '100',
       isExportAssetDialog: false,
       defaultValue: [],
       isShowTreeEdit: false,
-      treeTypeRootCiId: null
+      treeTypeRootCiId: null,
+      searchList: [
+        {
+          name: 'appSystemIdList',
+          type: 'select',
+          label: this.$t('page.apply'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getAppForselect',
+          dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'appModuleIdList',
+          type: 'select',
+          label: this.$t('page.module'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getAppForselect',
+          dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'envIdList',
+          type: 'select',
+          label: this.$t('page.environment'),
+          search: true,
+          textName: 'name',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          className: 'block-span',
+          url: '/api/rest/resourcecenter/appenv/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          type: 'checkbox',
+          name: 'inspectStatusList',
+          label: this.$t('term.autoexec.inspectstatus'),
+          url: '/api/rest/universal/enum/get',
+          params: { enumClass: 'neatlogic.framework.common.constvalue.InspectStatus' },
+          multiple: true,
+          className: 'block-span'
+        },
+        {
+          name: 'ip',
+          type: 'input',
+          label: this.$t('page.ip'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'name',
+          type: 'input',
+          label: this.$t('page.name'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'vendorIdList',
+          type: 'select',
+          label: this.$t('page.manufacturer'),
+          search: true,
+          textName: 'description',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dynamicUrl: '/api/rest/resourcecenter/vendor/list/forselect',
+          params: {
+            needPage: false
+          },
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'tagIdList',
+          type: 'select',
+          label: this.$t('page.tag'),
+          search: true,
+          textName: 'name',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'protocolIdList',
+          type: 'select',
+          label: this.$t('page.protocol'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getProtocolDataList',
+          className: 'block-span',
+          dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'stateIdList',
+          type: 'select',
+          label: this.$t('term.autoexec.assetstatus'),
+          search: true,
+          textName: 'description',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          className: 'block-span',
+          params: {
+            'needPage': false
+          },
+          url: '/api/rest/resourcecenter/state/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        }]
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   async mounted() {
-    let query = this.$route.query;
-    this.defaultValue = query && query.resourceId ? [parseInt(query.resourceId)] : [];
+    let {resourceId = ''} = this.$route.query || {};
+    this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
     await this.getTreeType();
-    await this.init();
-    if (query && query.resourceId) {
-      this.editAccount({ id: parseInt(query.resourceId) });
+    await this.initData();
+    if (resourceId) {
+      this.editAccount({ id: parseInt(resourceId) });
     }
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-    this.setTimeGetData && clearTimeout(this.setTimeGetData);
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
-    async init() {
-      // this.tableConfig.theadList.splice(0, 1);
-      await this.getData(null, null);
+    async initData() {
+      await this.searchAssetData();
       await this.listForselect();
       await this.listAccount();
       if (this.$route.query && this.$route.query.isAddAccountShow) {
@@ -576,6 +701,15 @@ export default {
           this.editAccount(row);
         }
       }
+    },
+    changeCurrent(currentPage = 1) {
+      this.tableConfig.currentPage = currentPage;
+      this.searchAssetData();
+    },
+    changePageSize(pageSize) {
+      this.tableConfig.currentPage = 1;
+      this.tableConfig.pageSize = pageSize;
+      this.searchAssetData();
     },
     formatTime(time) {
       let data = '-';
@@ -605,16 +739,14 @@ export default {
         this.loadingShow = false;
       });
     },
-    verticals() {
-      this.isSiderHide = !this.isSiderHide;
-    },
     closeDeleteDialog(needRefresh) {
       this.isDeleteDialogShow = false;
       this.selectedCiEntityList = [];
       this.ciEntityList = [];
       this.selectList = [];
       if (needRefresh) {
-        this.getData(1, null, true);
+        this.tableConfig.currentPage = 1;
+        this.searchAssetData(true);
       }
     },
     getTreeType() {
@@ -658,21 +790,20 @@ export default {
         this.setTreeDataExpand(data._parent);
       }
     },
-    getData(currentPage, pageSize, isEmptySelected) {
+    searchAssetData(isEmptySelected) {
       //获取表格数据
       if (!this.selectType.typeId) {
         return;
       }
-      this.CancelToken && this.CancelToken.cancel();
-      this.CancelToken = this.$https.CancelToken.source();
-      // this.loading = true;
-      let params = { ...this.searchVal, ...this.selectType };
-      params.currentPage = currentPage || this.tableConfig.currentPage;
-      params.pageSize = pageSize || this.tableConfig.pageSize;
+      let params = {
+        batchSearchList: [],
+        currentPage: this.tableConfig.currentPage,
+        pageSize: this.tableConfig.pageSize,
+        ...this.searchVal,
+        ...this.selectType
+      };
       if (!this.$utils.isEmpty(params.batchSearchList)) {
         params.batchSearchList = params.batchSearchList.split('\n');
-      } else {
-        params.batchSearchList = [];
       }
       if (this.defaultValue && this.defaultValue.length > 0) {
         params.defaultValue = this.defaultValue;
@@ -683,15 +814,14 @@ export default {
       this.$addHistoryData('currentPage', params.currentPage);
       this.$addHistoryData('pageSize', params.pageSize);
       return this.$api.cmdb.asset
-        .getResourceList(params, { cancelAxios: this.CancelToken.token })
+        .getResourceList(params)
         .then(res => {
-          this.CancelToken = null;
           if (isEmptySelected) {
             this.selectedRemain = false;
           }
           this.tableConfig = Object.assign(this.tableConfig, res.Return);
         })
-        .finally(res => {
+        .finally(() => {
           this.loading = false;
           this.selectedCiEntityList = [];
         });
@@ -714,7 +844,7 @@ export default {
       //检查当前模型是否抽象模型，非抽象模型才显示添加资产按钮
       this.getCiById(node.id);
       //查询资源数据
-      this.getData(1, null);
+      this.changeCurrent();
     },
     getCiById(ciId) {
       this.$api.cmdb.ci.getCiById(ciId).then(res => {
@@ -727,7 +857,6 @@ export default {
       this.selectedRemain = true;
     },
     tagEdit(row) {
-      // this.resourceId = row.id;
       this.resourceIdList = [row.id];
       this.batchAction(this.$t('page.tagmanage'), 'tagEdit');
       this.settingConfig.tagList = row.tagList;
@@ -742,7 +871,7 @@ export default {
       this.resourceId = null;
       this.isShowAccountEditDialog = false;
       if (needFresh) {
-        this.getData();
+        this.searchAssetData();
       }
     },
     addAsset() {
@@ -760,7 +889,7 @@ export default {
       this.ciId = null;
       this.isEditAssetDialogShow = false;
       if (needRefresh) {
-        this.getData();
+        this.searchAssetData();
       }
     },
     deleteAsset(row) {
@@ -778,7 +907,7 @@ export default {
       this.isDeleteDialogShow = true;
     },
     async success(msg) {
-      await this.getData(null, null, true);
+      await this.searchAssetData(true);
       this.$Message.success(msg);
       this.resourceIdList = [];
       this.selectList = [];
@@ -835,7 +964,7 @@ export default {
     closeAddAccount(needFresh) {
       this.isAddAccountShow = false;
       if (needFresh) {
-        this.getData(null, null);
+        this.searchAssetData();
       }
     },
     // 巡检功能
@@ -884,18 +1013,11 @@ export default {
     openExportDialog() {
       this.isExportAssetDialog = true;
     },
-    changeBatchSearchList(val, textConfig) {
-      if (this.$utils.isEmpty(val)) {
-        this.$delete(textConfig, 'batchSearchList');
-      } else {
-        this.$set(textConfig, 'batchSearchList', val.split('\n'));
-      }
-    },
     changeCombineSearcher(val) {
       if (this.$utils.isEmpty(val)) {
         this.$set(this.searchVal, 'searchField', 'ip');
       }
-      this.getData(1);
+      this.changeCurrent();
     },
     changeLabelCombineSearcher(val) {
       if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
@@ -911,8 +1033,33 @@ export default {
         this.treeTypeRootCiId = null;
         this.selectType.typeId = null;
         await this.getTreeType();
-        await this.init();
+        await this.initData();
       }
+    },
+    switchMode() {
+      // 切换模式
+      this.isSimpleMode = !this.isSimpleMode;
+      this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown(); // 切换到简单模式，把高级模式关闭
+      this.$nextTick(() => {
+        this.$refs.combineSearcher && this.$refs.combineSearcher.handleToggleOpen(); // 打开简单模式面板
+      });
+    },
+    advancedModeSearch(searchVal) {
+      // 复杂模式搜索
+      let params = {
+        currentPage: 1,
+        pageSize: 20,
+        typeId: this.selectType.typeId,
+        ...searchVal
+      };
+      this.loadingShow = true;
+      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+        if (res.Status == 'OK') {
+          this.tableConfig = Object.assign(this.tableConfig, res.Return || {});
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     }
   },
   computed: {

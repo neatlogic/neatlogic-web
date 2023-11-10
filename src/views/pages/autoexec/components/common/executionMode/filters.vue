@@ -30,7 +30,7 @@
           :defaultValue="defaultValue"
           :defaultSearchValue="defaultSearchValue"
           @changeValue="changeValue"
-          @complexModeSearch="complexModeSearch"
+          @advancedModeSearch="advancedModeSearch"
         ></FilterSearch>
         <div v-if="tipText" class="text-tip tips padding-top">{{ tipText }}</div>
       </TsFormItem>
@@ -175,7 +175,7 @@ export default {
       };
       if (this.complexModeSearchValue && !this.$utils.isEmptyObj(this.complexModeSearchValue)) {
         // 复杂模式搜索
-        this.complexModeSearch({...this.complexModeSearchValue, ...param});
+        this.advancedModeSearch({...this.complexModeSearchValue, ...param});
       } else {
         param = Object.assign(param, this.searchVal);
         this.searchNodeList(param);
@@ -186,7 +186,7 @@ export default {
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
     },
-    complexModeSearch(searchVal) {
+    advancedModeSearch(searchVal) {
       // 复杂模式搜索
       let params = Object.assign({currentPage: 1, pageSize: 10}, searchVal);
       this.complexModeSearchValue = searchVal;
@@ -207,10 +207,10 @@ export default {
       handler(val) {
         if (val) {
           if (val && val.hasOwnProperty('conditionGroupList')) {
-            this.complexModeSearch(val); // 复杂模式值回显搜索
+            this.advancedModeSearch(val); // 复杂模式值回显搜索
           } else {
             if (this.$utils.isEmptyObj(val) && this.defaultSearchValue && this.defaultSearchValue.hasOwnProperty('conditionGroupList')) {
-              this.complexModeSearch(this.defaultSearchValue); // 复杂模式值回显搜索
+              this.advancedModeSearch(this.defaultSearchValue); // 复杂模式值回显搜索
             } else {
               this.searchVal = this.$utils.deepClone(val);
               this.searchNodeList(val);
