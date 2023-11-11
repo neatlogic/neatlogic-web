@@ -399,7 +399,6 @@ export default {
               let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == key);
               let {config = {}, handler = ''} = selectedItem || {};
               let {dataSource = '', isMultiple = false} = config;
-              console.log('handler', handler);
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
               } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio')) {
@@ -557,7 +556,7 @@ export default {
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
       let {config = {}, handler = ''} = selectedItem || {};
-      if (value) {
+      if (!this.$utils.isEmpty(value)) {
         let {dataSource = '', isMultiple = false} = config || {};
         if (dataSource === 'matrix' && (isMultiple || handler == 'formradio')) {
         // 矩阵
@@ -575,9 +574,9 @@ export default {
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
-          resultValue.push(value);
+          resultValue = typeof value == 'string' ? value.split(',') : [typeof value == 'number' ? String(value) : value];
         } else {
-          resultValue = value;
+          resultValue = typeof value == 'number' ? String(value) : value;
         }
       }
       return resultValue;

@@ -138,7 +138,7 @@ export default {
       return dataList;
     },
     actualValue() {
-      if (this.value) {
+      if (!this.$utils.isEmpty(this.value)) { // 将this.value 改成 this.$utils.isEmpty 解决值为0的时候，被清空的问题
         if (this.value instanceof Array && this.value.length > 0) {
           return this.value[0];
         } else {
