@@ -551,7 +551,7 @@ export default {
       if (config.isMultiple) {
         setting.multiple = config.isMultiple;
       }
-      if (config.dataSource === 'matrix') {
+      if (config.dataSource === 'matrix' && config.matrixUuid) {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
         const params = { matrixUuid: config.matrixUuid };
@@ -562,7 +562,7 @@ export default {
         }
         setting.params = params;
       } else {
-        setting.dataList = config.dataList;
+        setting.dataList = config.dataList || [];
       }
       return setting;
     },
