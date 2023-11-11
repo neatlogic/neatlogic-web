@@ -1,5 +1,5 @@
 <template>
-  <div class="complex-search-wrap">
+  <div class="advanced-search-wrap">
     <div v-if="readonly">
       <div ref="tagDiv" class="pl-sm tag-item">
         <span v-for="(v, index) in searchConditionList" :key="index">
@@ -132,7 +132,7 @@
                           <span class="action-item tsfont-plus" :title="$t('dialog.title.addtarget', {target: $t('page.combinedcondition')})" @click.stop="addChildCondition(tIndex)"></span>
                           <span
                             v-if="(tIndex == 0 && index == 0 ? false : true) && !disabledUuidList.includes(item.uuid)"
-                            class="action-item tsfont-trash-s"
+                            class="tsfont-trash-s"
                             :title="$t('dialog.title.deletetarget', {target: $t('page.combinedcondition')})"
                             @click.stop="delCondition(tIndex, index)"
                           ></span>
@@ -199,7 +199,7 @@
         </Dropdown>
       </div>
       <span v-if="isShowDeleteAllBtn && (disabledUuidList.length == 0)" class="btn-remove tsfont-close-o" @click="deleteAllCondition"></span>
-      <span class="btn-filter tsfont-filter" @click="openDropdown"></span>
+      <span class="btn-filter tsfont-filter cursor" @click="openDropdown"></span>
     </div>
   </div>
 </template>
@@ -211,6 +211,10 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
     TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+  },
+  model: {
+    prop: 'value',
+    event: 'search'
   },
   props: {
     value: {
@@ -236,6 +240,11 @@ export default {
       default: function() {
         return [];
       }
+    },
+    searchList: {
+      // 搜索条件列表
+      type: Array,
+      default: () => { return []; }
     }
   },
   data() {
@@ -299,318 +308,7 @@ export default {
         {
           expression: 'is-not-null',
           expressionName: this.$t('term.expression.notempty')
-        }],
-      defaultConditionList: [
-        {
-          name: 'attributeKey',
-          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.attribute')}),
-          label: this.$t('page.attribute'),
-          multiple: false,
-          textName: 'handlerName',
-          valueName: 'handler',
-          search: true,
-          transfer: true,
-          value: '',
-          dataList: [
-            {
-              handler: 'typeIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('term.cmdb.citype'),
-              config: {
-                search: true,
-                transfer: true,
-                multiple: true,
-                textName: 'label',
-                valueName: 'id',
-                type: 'tree',
-                url: '/api/rest/resourcecenter/resourcetype/tree',
-                validateList: [{name: 'required', message: ''}]
-              }
-            },
-            {
-              handler: 'appSystemIdList',
-              defaultExpression: 'include',
-              conditionModel: 'select',
-              handlerName: this.$t('page.apply'),
-              config: {
-                search: true,
-                transfer: true,
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                dealDataByUrl: 'getAppForselect',
-                type: 'select',
-                dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
-                validateList: [{name: 'required', message: ' '}]
-
-              }
-            },
-            {
-              handler: 'appModuleIdList',
-              defaultExpression: 'include',
-              conditionModel: 'select',
-              handlerName: this.$t('page.module'),
-              config: {
-                search: true,
-                transfer: true,
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                dealDataByUrl: 'getAppForselect',
-                type: 'select',
-                dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'envIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('page.environment'),
-              config: {
-                search: true,
-                textName: 'name',
-                transfer: true,
-                valueName: 'id',
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                className: 'block-span',
-                type: 'select',
-                url: '/api/rest/resourcecenter/appenv/list/forselect',
-                validateList: [{name: 'required', message: ' '}]
-
-              }
-            },
-            {
-              handler: 'protocolIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('page.protocol'),
-              config: {
-                search: true,
-                transfer: true,
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                dealDataByUrl: 'getProtocolDataList',
-                className: 'block-span',
-                type: 'select',
-                dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'tagIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('page.tag'),
-              config: {
-                search: true,
-                textName: 'name',
-                transfer: true,
-                valueName: 'id',
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                type: 'select',
-                dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
-                validateList: [{name: 'required', message: ''}]
-              }
-            },
-            {
-              handler: 'stateIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('term.autoexec.assetstatus'),
-              config: {
-                search: true,
-                textName: 'description',
-                transfer: true,
-                valueName: 'id',
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                className: 'block-span',
-                type: 'select',
-                params: {
-                  'needPage': false
-                },
-                url: '/api/rest/resourcecenter/state/list/forselect',
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'vendorIdList',
-              conditionModel: 'select',
-              handlerName: this.$t('page.manufacturer'),
-              config: {
-                search: true,
-                textName: 'description',
-                transfer: true,
-                valueName: 'id',
-                defaultValue: [],
-                rootName: 'tbodyList',
-                multiple: true,
-                type: 'select',
-                dynamicUrl: '/api/rest/resourcecenter/vendor/list/forselect',
-                params: {
-                  needPage: false
-                },
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'inspectStatusList',
-              conditionModel: 'select',
-              handlerName: this.$t('term.autoexec.inspectstatus'),
-              config: {
-                search: true,
-                transfer: true,
-                defaultValue: [],
-                multiple: true,
-                className: 'block-span',
-                type: 'select',
-                params: {
-                  'enumClass': 'neatlogic.framework.common.constvalue.InspectStatus'
-                },
-                url: '/api/rest/universal/enum/get',
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'port',
-              conditionModel: 'input',
-              handlerName: this.$t('page.port'),
-              config: {
-                type: 'input',
-                validateList: [{name: 'required', message: ' '}],
-                maxlength: 256
-              }
-            },
-            {
-              handler: 'ip',
-              conditionModel: 'input',
-              handlerName: this.$t('page.ip'),
-              config: {
-                type: 'input',
-                validateList: [{name: 'required', message: ' '}],
-                maxlength: 256
-              }
-            },
-            {
-              handler: 'name',
-              conditionModel: 'input',
-              handlerName: this.$t('page.name'),
-              config: {
-                type: 'input',
-                validateList: [{name: 'required', message: ' '}],
-                maxlength: 256
-              }
-            },
-            {
-              handler: 'description',
-              conditionModel: 'input',
-              handlerName: this.$t('page.description'),
-              config: {
-                type: 'input',
-                validateList: [{name: 'required', message: ' '}],
-                maxlength: 256
-              }
-            },
-            {
-              handler: 'networkArea',
-              conditionModel: 'input',
-              handlerName: this.$t('page.networkarea'),
-              config: {
-                type: 'input',
-                validateList: [{name: 'required', message: ' '}],
-                maxlength: 256
-              }
-            },
-            {
-              handler: 'maintenanceWindow',
-              conditionModel: 'date',
-              handlerName: this.$t('term.autoexec.maintenanceperiod'),
-              config: {
-                type: 'datetimerange',
-                format: 'yyyy-MM-dd HH:mm',
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'ownerList',
-              conditionModel: 'select',
-              handlerName: this.$t('page.owner'),
-              config: {
-                search: true,
-                transfer: true,
-                multiple: true,
-                type: 'select',
-                dynamicUrl: '/api/rest/user/search/forselect',
-                rootName: 'tbodyList',
-                textName: 'userName',
-                valueName: 'uuid',
-                params: {
-                  needPage: true
-                },
-                validateList: [{name: 'required', message: ' '}]
-              }
-            },
-            {
-              handler: 'bgList',
-              conditionModel: 'select',
-              handlerName: this.$t('term.autoexec.subordinatedepartment'),
-              config: {
-                search: true,
-                transfer: true,
-                multiple: true,
-                type: 'select',
-                dynamicUrl: '/api/rest/team/search',
-                rootName: 'teamList',
-                textName: 'name',
-                valueName: 'uuid',
-                params: {
-                  needPage: true,
-                  level: 'department'
-                },
-                validateList: [{name: 'required', message: ' '}]
-
-              }
-            }]
-        }, {
-          name: 'expression',
-          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
-          multiple: false,
-          textName: 'expressionName',
-          valueName: 'expression',
-          search: true,
-          transfer: true,
-          value: '',
-          validateList: [{name: 'required', message: ' '}],
-          dataList: [
-            {
-              expression: 'include',
-              expressionName: this.$t('term.expression.like')
-            },
-            {
-              expression: 'exclude',
-              expressionName: this.$t('term.expression.notlike')
-            },
-            {
-              expression: 'is-null',
-              expressionName: this.$t('term.expression.empty')
-            },
-            {
-              expression: 'is-not-null',
-              expressionName: this.$t('term.expression.notempty')
-            }]
-        },
-        {
-          name: 'attributeValue',
-          placeholder: this.$t('form.placeholder.pleaseselect', {target: ''}),
-          transfer: true,
-          multiple: true,
-          value: '',
-          validateList: [{name: 'required', message: ''}]
-        }
-      ]
+        }]
     };
   },
   beforeCreate() {},
@@ -746,7 +444,7 @@ export default {
       this.conditionList[tIndex].conditionList.push({conditionList: this.$utils.deepClone(this.defaultConditionList), joinType: 'or', uuid: this.$utils.setUuid()});
     },
     switchMode() {
-      this.$emit('click');
+      this.$emit('switchMode');
     },
     searchConditionBtn() {
       // 搜索放大镜图标,点击搜索放大镜图标，把关键字拿出来
@@ -997,7 +695,7 @@ export default {
                       vv.value = vv.name == 'attributeKey' ? item.name : (vv.name == 'expression' ? item.expression : (vv.name == 'attributeValue' ? (hasInput ? item.valueList.join() : item.valueList) : ''));
                       vv.labelName = vv.name == 'attributeValue' ? item.text : item.label;
                       if (vv.name == 'attributeKey') {
-                        this.attributeChange(vv.name, conditionList[conditionList.length - 1]['conditionList'], item.valueList, vv.dataList && vv.dataList.find((n) => n.handler == item.name), true);
+                        this.attributeChange(vv.name, conditionList[conditionList.length - 1]['conditionList'], item.valueList, vv.dataList && vv.dataList.find((n) => n.name == item.name), true);
                       } else if (vv.name == 'expression') {
                         if (item.expression == 'is-null' || item.expression == 'is-not-null') {
                           conditionList[conditionList.length - 1]['conditionList'].forEach((v) => {
@@ -1056,6 +754,17 @@ export default {
         }
       });
       this.isShowMoreBtn = spanWidth > tagClientWidth;
+    },
+    filterNameLabelFields(obj) {
+      // 过滤不用的字段
+      let config = this.$utils.deepClone(obj);
+      let removeFiledsList = ['name', 'label'];
+      for (let key in config) {
+        if (removeFiledsList.includes(key)) {
+          delete config[key];
+        }
+      }
+      return config;
     }
   },
   filter: {},
@@ -1068,12 +777,83 @@ export default {
         }
       });
       return hasDeleteTag;
+    },
+    defaultConditionList() {
+      let searchList = [
+        {
+          name: 'attributeKey',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.attribute')}),
+          label: this.$t('page.attribute'),
+          multiple: false,
+          textName: 'label',
+          valueName: 'name',
+          search: true,
+          transfer: true,
+          value: '',
+          dataList: []
+        }, {
+          name: 'expression',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
+          multiple: false,
+          textName: 'expressionName',
+          valueName: 'expression',
+          search: true,
+          transfer: true,
+          value: '',
+          validateList: [{name: 'required', message: ' '}],
+          dataList: [
+            {
+              expression: 'include',
+              expressionName: this.$t('term.expression.like')
+            },
+            {
+              expression: 'exclude',
+              expressionName: this.$t('term.expression.notlike')
+            },
+            {
+              expression: 'is-null',
+              expressionName: this.$t('term.expression.empty')
+            },
+            {
+              expression: 'is-not-null',
+              expressionName: this.$t('term.expression.notempty')
+            }]
+        },
+        {
+          name: 'attributeValue',
+          placeholder: this.$t('form.placeholder.pleaseselect', {target: ''}),
+          transfer: true,
+          multiple: true,
+          value: '',
+          validateList: [{name: 'required', message: ''}]
+        }
+      ];
+      let conditionList = [];
+      this.searchList?.forEach((item) => {
+        // 构造数据解构是[{label: '应用', name: 'appsSystemIdList',type: 'select' {config: 剩余的字段，除了label和name}}]
+        if (item) {
+          conditionList.push({
+            name: item.name,
+            label: item.label,
+            type: item.type,
+            config: {
+              ...this.filterNameLabelFields(item)
+            }
+          });
+        }
+      });
+      searchList.forEach((item) => {
+        if (item && item.name == 'attributeKey') {
+          this.$set(item, 'dataList', conditionList);
+        }
+      });
+      return searchList;
     }
   },
   watch: {
     value: {
       handler(val) {
-        if (val && val.conditionGroupList && !this.$utils.isEmpty(val.conditionGroupList)) {
+        if (val?.conditionGroupList && !this.$utils.isEmpty(val.conditionGroupList)) {
           // 搜索条件回显
           this.getConditionList();
         } else {
@@ -1097,7 +877,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.complex-search-wrap {
+.advanced-search-wrap {
   position: relative;
   .searcher-inputer {
     display: inline-block;
@@ -1116,22 +896,21 @@ export default {
   }
   .btn-filter {
     position: absolute;
-    top: 2px;
+    top: 1px;
     right: 10px;
-    cursor: pointer;
   }
-   .tag-item-sperate{
-      text-align: center;
-      opacity: .4;
-      margin-left: 2px;
-      margin-right: 2px;
-    }
-.dropdown-box {
-  max-height: 450px;
-  overflow-y:scroll;
-  overflow-x: hidden;
-  white-space: pre-wrap;
-}
+  .tag-item-sperate{
+    text-align: center;
+    opacity: .4;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+  .dropdown-box {
+    max-height: 450px;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+  }
   .tag-item{
     display:inline-block;
     width: 96%;
@@ -1157,5 +936,4 @@ export default {
   }
  }
 }
-
 </style>

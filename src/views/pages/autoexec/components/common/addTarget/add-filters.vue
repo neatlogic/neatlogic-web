@@ -63,12 +63,12 @@ export default {
     },
     valid() {
       let data = this.save();
-      let complexModeSearch = this.getComplexModeSearchValue();
-      if (this.$utils.isEmpty(data) && this.$utils.isEmptyObj(complexModeSearch)) {
+      let advancedModeSearch = this.getComplexModeSearchValue();
+      if (this.$utils.isEmpty(data) && this.$utils.isEmptyObj(advancedModeSearch)) {
         this.isValid = false;
-      } else if (this.$utils.isEmpty(data) && !this.$utils.isEmptyObj(complexModeSearch)) {
+      } else if (this.$utils.isEmpty(data) && !this.$utils.isEmptyObj(advancedModeSearch)) {
         this.isValid = true;
-      } else if (!this.$utils.isEmpty(data) && this.$utils.isEmptyObj(complexModeSearch)) {
+      } else if (!this.$utils.isEmpty(data) && this.$utils.isEmptyObj(advancedModeSearch)) {
         this.isValid = true;
       } else {
         this.isValid = true;

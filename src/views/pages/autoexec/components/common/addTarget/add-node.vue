@@ -29,6 +29,7 @@
               :defaultValue="defaultSearchValue"
               :defaultSearchValue="defaultSearchValue"
               @changeValue="changeValue"
+              @advancedModeSearch="advancedModeSearch"
             ></FilterSearch>
           </div>
           <template v-if="!loadingShow">
@@ -228,6 +229,18 @@ export default {
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
+    },
+    advancedModeSearch(searchVal) {
+      // 复杂模式搜索
+      let params = Object.assign({currentPage: 1, pageSize: 10}, searchVal);
+      this.loadingShow = true;
+      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+        if (res.Status == 'OK') {
+          this.tableData = res.Return;
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     }
   },
   computed: {

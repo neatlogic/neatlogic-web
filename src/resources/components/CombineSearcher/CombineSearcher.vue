@@ -119,7 +119,10 @@
                 </template>
               </TsForm>
             </li>
-            <li v-if="searchList && searchList.length && isShowButton" style="padding: 6px 10px 6px 4px;">
+            <li v-if="searchList && searchList.length && isShowButton" style="padding: 6px 10px 6px 4px;" :class="isShowAdvanceMode ? 'flex-between' : ''">
+              <div v-if="isShowAdvanceMode" class="text-left">
+                <span class="tsfont-left text-action" @click="switchMode">{{ $t('page.advancedmode') }}</span>
+              </div>
               <div class="text-right">
                 <!-- 自定义底部操作按钮 -->
                 <div v-if="$slots['action']">
@@ -219,6 +222,11 @@ export default {
     searchMode: {
       type: String, // 搜索模式可选：实时搜索(realtimeSearch)，非实时搜索(clickBtnSearch)
       default: 'realtimeSearch' // 默认实时搜索
+    },
+    isShowAdvanceMode: {
+      // 底部是否显示高级模式文案
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -269,6 +277,9 @@ export default {
       if (this.isVisible && this.searchMode == 'clickBtnSearch') {
         this.isCloseAutomaticSearch = true; // 关闭实时搜索
       }
+    },
+    switchMode() {
+      this.$emit('switchMode');
     },
     initWidth() {
       this.$el && (this.width = this.$el.getBoundingClientRect().width);

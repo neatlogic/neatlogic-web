@@ -33,49 +33,30 @@
       :showSearchNumber="showSearchNumber"
       @confirm="simpleModeSearch"
     >
-      <template slot="action">
-        <div style="position:relative;">
-          <span
-            v-if="!defaultSearchValue"
-            class="tsfont-left cursor text-action"
-            style="position: absolute;left: 10px;top:9px;"
-            @click.stop="switchComplexMode"
-          >{{ $t('page.advancedmode') }}</span>
-          <div class="action-group">
-            <div class="action-item">
-              <Button @click="closeCombineSearch">{{ $t('page.cancel') }}</Button>
-            </div>
-            <div class="action-item">
-              <Button type="primary" @click="searchCombineSearcher">{{ $t('page.search') }}</Button>
-            </div>
-          </div>
-        </div>
-      </template>
     </CombineSearcher>
-    <ComplexSearch
+    <AdvancedModeSearch
       v-show="!isSimpleMode"
-      ref="complexSearch"
+      ref="advancedModeSearch"
       v-model="complexSearchVal"
       :readonly="readonly"
+      :searchList="searchList"
       :disabledUuidList="disabledUuidList"
       :disabledGroupUuidList="disabledGroupUuidList"
-      @search="complexModeSearch"
+      @search="advancedModeSearch"
       @click="switchToSimpleMode"
       @clickMoreBtn="() => $emit('clickMoreBtn')"
     >
-    </ComplexSearch>
+    </AdvancedModeSearch>
   </div>
 </template>
 <script>
-import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
 export default {
   name: '',
   components: {
-    CombineSearcher,
-    ComplexSearch: resolve => require(['./complex-search'], resolve)
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    AdvancedModeSearch: resolve => require(['@/views/pages/cmdb/asset/advanced-mode-search'], resolve)
   },
-  filters: {
-  },
+  filters: {},
   props: {
     defaultValue: {//搜索条件
       type: Object,
@@ -223,7 +204,214 @@ export default {
       },
       disabledList: [], //不可更改的搜索条件
       disabledUuidList: [], // 复杂模式，禁用的搜索条件
-      disabledGroupUuidList: []
+      disabledGroupUuidList: [],
+      searchList: [
+        {
+          name: 'typeIdList',
+          type: 'tree',
+          label: this.$t('term.cmdb.citype'),
+          search: true,
+          transfer: true,
+          multiple: true,
+          textName: 'label',
+          valueName: 'id',
+          url: '/api/rest/resourcecenter/resourcetype/tree',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'appSystemIdList',
+          type: 'select',
+          label: this.$t('page.apply'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getAppForselect',
+          dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'appModuleIdList',
+          type: 'select',
+          label: this.$t('page.module'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getAppForselect',
+          dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'envIdList',
+          type: 'select',
+          label: this.$t('page.environment'),
+          search: true,
+          textName: 'name',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          className: 'block-span',
+          url: '/api/rest/resourcecenter/appenv/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'protocolIdList',
+          type: 'select',
+          label: this.$t('page.protocol'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getProtocolDataList',
+          className: 'block-span',
+          dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'tagIdList',
+          type: 'select',
+          label: this.$t('page.tag'),
+          search: true,
+          textName: 'name',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'stateIdList',
+          type: 'select',
+          label: this.$t('term.autoexec.assetstatus'),
+          search: true,
+          textName: 'description',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          className: 'block-span',
+          params: {
+            'needPage': false
+          },
+          url: '/api/rest/resourcecenter/state/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'vendorIdList',
+          type: 'select',
+          label: this.$t('page.manufacturer'),
+          search: true,
+          textName: 'description',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dynamicUrl: '/api/rest/resourcecenter/vendor/list/forselect',
+          params: {
+            needPage: false
+          },
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'inspectStatusList',
+          type: 'select',
+          label: this.$t('term.autoexec.inspectstatus'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          multiple: true,
+          className: 'block-span',
+          params: {
+            'enumClass': 'neatlogic.framework.common.constvalue.InspectStatus'
+          },
+          url: '/api/rest/universal/enum/get',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'port',
+          type: 'input',
+          label: this.$t('page.port'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'ip',
+          type: 'input',
+          label: this.$t('page.ip'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'name',
+          type: 'input',
+          label: this.$t('page.name'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'description',
+          type: 'input',
+          label: this.$t('page.description'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'networkArea',
+          type: 'input',
+          label: this.$t('page.networkarea'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'maintenanceWindow',
+          type: 'datetimerange',
+          label: this.$t('term.autoexec.maintenanceperiod'),
+          format: 'yyyy-MM-dd HH:mm',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'ownerList',
+          type: 'select',
+          label: this.$t('page.owner'),
+          search: true,
+          transfer: true,
+          multiple: true,
+          dynamicUrl: '/api/rest/user/search/forselect',
+          rootName: 'tbodyList',
+          textName: 'userName',
+          valueName: 'uuid',
+          params: {
+            needPage: true
+          },
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'bgList',
+          type: 'select',
+          label: this.$t('term.autoexec.subordinatedepartment'),
+          search: true,
+          transfer: true,
+          multiple: true,
+          dynamicUrl: '/api/rest/team/search',
+          rootName: 'teamList',
+          textName: 'name',
+          valueName: 'uuid',
+          params: {
+            needPage: true,
+            level: 'department'
+          },
+          validateList: [{name: 'required', message: ''}]
+        }]
     };
   },
   beforeCreate() {},
@@ -284,12 +472,12 @@ export default {
     switchComplexMode() {
       // 切换到复杂模式
       this.isSimpleMode = !this.isSimpleMode;
-      this.$refs.complexSearch && this.$refs.complexSearch.openDropdown();
+      this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown();
     },
     switchToSimpleMode() {
       // 切换到简单模式
       this.isSimpleMode = !this.isSimpleMode;
-      this.$refs.complexSearch && this.$refs.complexSearch.openDropdown(); // 切换到简单模式，把高级模式关闭
+      this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown(); // 切换到简单模式，把高级模式关闭
       this.$nextTick(() => {
         this.$refs.combineSearcher && this.$refs.combineSearcher.handleToggleOpen(); // 打开简单模式面板
       });
@@ -298,22 +486,9 @@ export default {
       // 简单模式搜索
       this.$emit('changeValue', searchVal);
     },
-    closeCombineSearch() {
-      if (this.$refs && this.$refs.combineSearcher) {
-        this.$refs.combineSearcher.handleToggleOpen(); // 关闭面板
-      }
-    },
-    searchCombineSearcher() {
-      if (this.$refs.combineSearcher) {
-        this.$refs.combineSearcher.refreshTextConfig();
-        this.$refs.combineSearcher.handleToggleOpen(); // 关闭面板
-      }
-      this.complexSearchVal = {}; // 清空复杂模式值
-      this.simpleModeSearch(this.searchVal);
-    },
-    complexModeSearch(searchVal) {
+    advancedModeSearch(searchVal) {
       this.searchVal = {}; // 清空简单模式的值
-      this.$emit('complexModeSearch', searchVal);
+      this.$emit('advancedModeSearch', searchVal);
     }
   },
   computed: {},
