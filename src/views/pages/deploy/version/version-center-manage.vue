@@ -283,6 +283,24 @@ export default {
           isShow: 1
         },
         {
+          title: 'HIGH',
+          key: 'highCveCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: 'CRITICAL',
+          key: 'criticalCveCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
+          title: 'CRITICAL*',
+          key: 'criticalStarCveCount',
+          isDisabled: false,
+          isShow: 1
+        },
+        {
           title: this.$t('term.deploy.deletecodeline'),
           key: 'lineDeleteCount',
           isDisabled: false,
@@ -467,16 +485,48 @@ export default {
     checkshow(headList, isShowColumn) {
       // 拖拽排序行列，显示隐藏列
       this.theadList = headList;
+      let newTheadList = [];
+      headList.forEach(item => {
+        if (item.key != 'action') {
+          newTheadList.push(item);
+        }
+      });
       this.$api.deploy.version
         .saveVersionThead({
-          config: { theadList: headList}
+          config: { theadList: newTheadList}
         });
     },
     getTheadList() {
       return this.$api.deploy.version
         .getVersionTheadList().then((res) => {
           if (res?.Status == 'OK') {
-            this.theadList = res?.Return?.config?.theadList ? res.Return.config.theadList : this.defaultTheadList;
+            // this.theadList = res?.Return?.config?.theadList ? res.Return.config.theadList : this.defaultTheadList;
+            let oldTheadList = res.Return?.config?.theadList;
+            if (oldTheadList) {
+              let newTheadList = [];
+              oldTheadList.forEach(item => {
+                this.defaultTheadList.forEach(defaultItem => {
+                  if (item.key == defaultItem.key) {
+                    item.title = defaultItem.title;
+                    newTheadList.push(item);
+                  }
+                });
+              });
+              this.defaultTheadList.forEach(defaultItem => {
+                let flag = false;
+                newTheadList.forEach(item => {
+                  if (item.key == defaultItem.key) {
+                    flag = true;
+                  }
+                });
+                if (!flag) {
+                  newTheadList.push(defaultItem);
+                }
+              });
+              this.theadList = newTheadList;
+            } else {
+              this.theadList = this.defaultTheadList;
+            }
           }
         });
     }
