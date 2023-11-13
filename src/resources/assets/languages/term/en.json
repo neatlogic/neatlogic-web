@@ -2551,6 +2551,7 @@
     "catalogitem": "Catalog Entry",
     "childitem": "Child nodes",
     "relpath": "Relationship Path",
-    "graph": "Architecture diagram"
+    "graph": "Architecture diagram",
+    "catalogtemplate": "The templates that can be used in the current directory"
   }
 }

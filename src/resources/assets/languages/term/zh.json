@@ -2549,6 +2549,7 @@
     "catalogitem": "目录项",
     "childitem": "子节点",
     "relpath": "关系路径",
-    "graph": "架构图"
+    "graph": "架构图",
+    "catalogtemplate": "当前目录可以使用的模板"
   }
 }
