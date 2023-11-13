@@ -53,11 +53,11 @@ const licenseManage = () => import('./license/license-manage.vue');
 
 const moduleManage = () => import('./module/module-manage.vue');
 const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // 批量操作
-const databaseViewManage = () => import('./databaseview/databaseview-manage.vue');//重建视图
-const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue');// 租户配置信息管理
-const serverManage = () => import('./server/server-manage.vue');// 服务器管理
+const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'); //重建视图
+const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
+const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
 
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default [
   {
@@ -99,18 +99,6 @@ export default [
     name: 'welcome',
     component: welcome
   },
-  // {
-  //   path: "/menu-manage",
-  //   name: "menu-manage",
-  //   component: () => import("./menus/menu-manage.vue"),
-  //   meta: {
-  //     title: "菜单管理",
-  //     ismenu: true,
-  //     icon: "tsfont-listsetting",
-  //     authority: "MENU_MODIFY",
-  //     type: ""
-  //   },
-  // },
   {
     path: '/user-manage',
     name: 'user-manage',
@@ -271,7 +259,7 @@ export default [
       authority: 'MATRIX_MODIFY',
       type: 'integration'
     }
-  }, 
+  },
   {
     path: '/matrix-private',
     name: 'matrix-private',
@@ -366,7 +354,7 @@ export default [
       authority: '',
       type: 'message'
     }
-  }, 
+  },
   {
     path: '/subscription-setting',
     name: 'subscription-setting',
@@ -485,7 +473,7 @@ export default [
       type: 'others'
     }
   },
-  
+
   {
     path: '/batch-upgrade',
     name: 'BatchUpgrade',
@@ -518,11 +506,11 @@ export default [
       title: $t('router.framework.tagentadd'),
       ismenu: true,
       icon: 'tsfont-ip-object',
-      authority: 'RUNNER_MODIFY', 
+      authority: 'RUNNER_MODIFY',
       type: 'others'
     }
   },
-  
+
   {
     path: '/runner-manage',
     name: 'runnerManage',
@@ -531,7 +519,7 @@ export default [
       title: $t('router.framework.runnermanage'),
       ismenu: false,
       icon: 'tsfont-ip-object',
-      authority: 'RUNNER_MODIFY', 
+      authority: 'RUNNER_MODIFY',
       type: 'others'
     }
   },

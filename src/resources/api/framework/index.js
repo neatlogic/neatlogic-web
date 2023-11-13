@@ -1,5 +1,4 @@
 //api接口的出口
-import menu from './menus/menu'; //菜单接口
 import role from './users/role'; //角色管理
 import user from './users/user'; //用户管理、个人设置
 import auth from './users/auth'; //权限
@@ -35,7 +34,6 @@ import server from './server/server';// 服务器
 import wechat from './wechat/wechat';// 企业微信
 
 export default {
-  menu,
   role,
   user,
   auth,

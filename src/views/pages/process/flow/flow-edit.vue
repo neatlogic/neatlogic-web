@@ -903,15 +903,15 @@ export default {
         this.$topoVm.highlight(uuidList);
       }
     },
-    drop() {
+    drop(event) {
       // 拖拽结束
       let data = JSON.parse(event.dataTransfer.getData('item'));
       data.uuid = this.$utils.setUuid();
       data.x = event.offsetX;
       data.y = event.offsetY;
       var p = this.$topoVm.positionTransform(data);
-      data.x = p.x;
-      data.y = p.y;
+      data.x = p.x - (data.width / 2);
+      data.y = p.y - (data.height / 2);
       data.uuid = data.uuid || this.$utils.setUuid();
       nodeDataTransform(data);
       data.config = {
