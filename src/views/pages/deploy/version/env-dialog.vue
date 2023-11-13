@@ -112,9 +112,12 @@ export default {
       if (envParams) {
         delete envParams.type; // 删除多余的参数
         envParams.resourceType = this.tabValue;
-        if (this.tabValue && this.tabValue.includes('mirror')) {
+        if (this.tabValue && this.tabValue.includes('mirror') || envParams.buildNo === undefined) {
           // 镜像制品不需要buildNo
           delete envParams.buildNo;
+        }
+        if (envParams.isMirror === undefined) {
+          delete envParams.isMirror;
         }
       }
       return envParams;
