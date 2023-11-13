@@ -820,6 +820,7 @@ export default {
             this.selectedRemain = false;
           }
           this.tableConfig = Object.assign(this.tableConfig, res.Return);
+          this.$set(this.searchVal, 'searchField', params.searchField);
         })
         .finally(() => {
           this.loading = false;
