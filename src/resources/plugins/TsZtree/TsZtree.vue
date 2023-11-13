@@ -39,7 +39,7 @@ export default {
           nameIsHTML: true,
           showTitle: true,
           addHoverDom: (treeId, treeNode) => {
-            var $a = $('#' + treeNode.tId + '_span');
+            var $a = $('#' + treeNode.tId + '_span', this.$refs['treeDom']);
             if (treeNode.hasAddDom || $a.length <= 0 || !this.hoverDomList || this.hoverDomList.length <= 0) {
               return;
             } else {
