@@ -16,7 +16,15 @@
         ></Icon>
         {{ $t('term.pbc.exporttemplate') }}
       </span>
-      <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      <Tooltip
+        v-if="isShowExportExcel"
+        placement="top"
+        content="表格输入控件：下拉框/单选框/复选框<br />
+            字段映射：值和显示文字必须一致，否则导入后，数据回显不出来"
+        :transfer="true"
+      >
+        <span class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      </Tooltip>
       <span v-else class="action-item">
         <Icon
           type="ios-loading"
@@ -401,9 +409,9 @@ export default {
               let {dataSource = '', isMultiple = false} = config;
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
-              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio')) {
-                // 矩阵数据源并且是多选，需要处理值去掉&=&
-                this.$set(item, [key], this.handleSpecialValue(item[key]));
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
+                // 矩阵数据源并且是多选
+                this.$set(item, [key], item[key] instanceof Array ? item[key]?.join(',') : item[key]);
               } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
                 // 静态数据源并且是多选
                 this.$set(item, [key], item[key]?.join(','));
@@ -438,7 +446,6 @@ export default {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-       
         new Promise((resolve, reject) => {
           try {
             FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
@@ -558,7 +565,7 @@ export default {
       let {config = {}, handler = ''} = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
         let {dataSource = '', isMultiple = false} = config || {};
-        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio')) {
+        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
         // 矩阵
           resultValue = [];
           let valueList = [];
@@ -566,11 +573,11 @@ export default {
             valueList = value.split(',');
             valueList.forEach((valueItem) => {
               if (valueItem) {
-                resultValue.push(`${valueItem}&=&${valueItem}`);
+                resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${valueItem}&=&${valueItem}`);
               }
             });
           } else {
-            resultValue.push(`${value}&=&${value}`);
+            resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${value}&=&${value}`);
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
