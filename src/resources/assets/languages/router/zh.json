@@ -298,6 +298,7 @@
   "diagram": {
     "diagrammanage": "系统管理",
     "catalogmanage": "目录管理",
-    "catalogdetail": "目录详情"
+    "catalogdetail": "目录详情",
+    "diagramdetail": "架构图详情"
   }
 }
