@@ -20,7 +20,7 @@
       type="fix"
     ></Loading>
     <CombineSearcher
-      v-if="!loadingShow && isSimpleMode"
+      v-show="!loadingShow && isSimpleMode"
       ref="combineSearcher"
       v-model="searchVal"
       searchMode="clickBtnSearch"
@@ -32,7 +32,7 @@
       :readonly="readonly"
       :showSearchNumber="showSearchNumber"
       @confirm="simpleModeSearch"
-      @switchMode="switchToSimpleMode"
+      @switchMode="switchMode"
     >
     </CombineSearcher>
     <AdvancedModeSearch
@@ -44,7 +44,7 @@
       :disabledUuidList="disabledUuidList"
       :disabledGroupUuidList="disabledGroupUuidList"
       @search="advancedModeSearch"
-      @switchMode="switchToSimpleMode"
+      @switchMode="switchMode"
       @clickMoreBtn="() => $emit('clickMoreBtn')"
     >
     </AdvancedModeSearch>
@@ -87,6 +87,7 @@ export default {
         labelWidth: 100,
         search: true,
         keywordText: this.$t('page.keyword'),
+        isShowAdvanceMode: true,
         searchList: [
           {
             type: 'tree',
@@ -470,13 +471,8 @@ export default {
       }
       this.complexSearchVal = (this.defaultValue && !this.$utils.isEmptyObj(this.defaultValue)) ? this.defaultValue : this.defaultSearchValue;
     },
-    switchComplexMode() {
-      // 切换到复杂模式
-      this.isSimpleMode = !this.isSimpleMode;
-      this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown();
-    },
-    switchToSimpleMode() {
-      // 切换到简单模式
+    switchMode() {
+      // 切换模式
       this.isSimpleMode = !this.isSimpleMode;
       this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown(); // 切换到简单模式，把高级模式关闭
       this.$nextTick(() => {
