@@ -2535,7 +2535,8 @@
     "servicedependency": "服务依赖",
     "scenarioplan": "场景预案",
     "relyonmyservices": "依赖我的服务",
-    "servicerelyon": "我依赖的服务"
+    "servicerelyon": "我依赖的服务",
+    "dependentapp": "依赖应用"
   },
   "diagram": {
     "widgetlist": "组件列表",
@@ -2549,6 +2550,7 @@
     "catalogitem": "目录项",
     "childitem": "子节点",
     "relpath": "关系路径",
-    "graph": "架构图"
+    "graph": "架构图",
+    "catalogtemplate": "当前目录可以使用的模板"
   }
 }

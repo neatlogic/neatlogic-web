@@ -628,16 +628,16 @@ export default {
       handler() {
         // 点击关闭时，清空没有搜索的值
         if (this.searchMode == 'clickBtnSearch' && !this.isVisible) {
-          for (let key in this.searchValue) {
-            if (key && !this.totalText.hasOwnProperty([key])) {
-              this.$delete(this.searchValue, key);
-              this.$delete(this.textConfig, key);
-              this.$delete(this.totalText, key);
-            }
-          }
-          let fullSearch = this.getFullSearch();
-          this.$emit('update:value', fullSearch);
-          this.$emit('close', fullSearch);
+          // for (let key in this.searchValue) {
+          //   if (key && !this.totalText.hasOwnProperty([key])) {
+          //     this.$delete(this.searchValue, key);
+          //     this.$delete(this.textConfig, key);
+          //     this.$delete(this.totalText, key);
+          //   }
+          // }
+          // let fullSearch = this.getFullSearch();
+          // this.$emit('update:value', fullSearch);
+          // this.$emit('close', fullSearch);
         }
       },
       deep: true
