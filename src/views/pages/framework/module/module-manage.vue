@@ -31,6 +31,9 @@
                       <span class="text-grey mr-xs">{{ $t('page.versions') }}</span>
                       <span>{{ row.version || '-' }}</span>
                     </div>
+                    <div class="mt-xs">
+                      <span class="text-grey mr-xs">{{ row.changelogVersion || '-' }}</span>
+                    </div>
                   </div>
                 </template>
                 <template v-slot:control="{ row }">
