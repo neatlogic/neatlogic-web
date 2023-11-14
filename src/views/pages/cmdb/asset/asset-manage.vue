@@ -845,7 +845,11 @@ export default {
       //检查当前模型是否抽象模型，非抽象模型才显示添加资产按钮
       this.getCiById(node.id);
       //查询资源数据
-      this.changeCurrent();
+      if (this.isSimpleMode) {
+        this.changeCurrent();
+      } else {
+        this.advancedModeSearch(this.searchVal);
+      }
     },
     getCiById(ciId) {
       this.$api.cmdb.ci.getCiById(ciId).then(res => {
