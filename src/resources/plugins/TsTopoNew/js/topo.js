@@ -739,7 +739,6 @@
     }
     zoomTransform(transform, time) {
       let _this = this;
-      console.log(transform, 'transform');
       if (!transform) return false;
       time = time !== undefined ? time : 700;
       !this.zoomed
@@ -748,7 +747,6 @@
           }))
         : '';
       this.el.call(this.zoomed);
-      console.log(this.el, 'this.el');
       this.el
         .transition()
         .duration(time)
