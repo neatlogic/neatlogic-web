@@ -7,25 +7,26 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
+     
+      <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.pbc.exporttemplate') }}
+      </span>
+      <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+      <span v-else class="action-item">
+        <Icon
+          type="ios-loading"
+          size="18"
+          class="loading"
+        ></Icon>
+        {{ $t('term.framework.exporttable') }}
+      </span>
       <template v-if="canAdd">
-        <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
-        <span v-else class="action-item">
-          <Icon
-            type="ios-loading"
-            size="18"
-            class="loading"
-          ></Icon>
-          {{ $t('term.pbc.exporttemplate') }}
-        </span>
-        <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
-        <span v-else class="action-item">
-          <Icon
-            type="ios-loading"
-            size="18"
-            class="loading"
-          ></Icon>
-          {{ $t('term.framework.exporttable') }}
-        </span>
         <Upload
           ref="upload"
           :show-upload-list="false"
