@@ -24,7 +24,6 @@
           v-if="canSearch && isShowCombineSearcher"
           v-model="searchValue"
           v-bind="searchConfig"
-          @close="closeCombineSearcher"
           @confirm="searchIssue(1)"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
@@ -379,13 +378,6 @@ export default {
       } else {
         this.$delete(textConfig, 'attr_' + attr.id);
       }
-    },
-    closeCombineSearcher() {
-      // 取消关闭弹窗后，刷新自定属性
-      this.isSearchReady = false;
-      this.$nextTick(() => {
-        this.isSearchReady = true;
-      });
     },
     restoreHistory(historyData) {
       if (historyData) {
