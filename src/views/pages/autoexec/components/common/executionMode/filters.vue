@@ -228,6 +228,9 @@ export default {
 .search{
   width: 100%;
   display: inline-block;
+  /deep/ .btn-filter {
+    top: 7px;// 修复漏洞图标对不齐问题
+  }
 }
 .padding-top{
   padding-top: 8px;

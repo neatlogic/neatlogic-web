@@ -98,7 +98,7 @@
             <div v-if="clearable && totalText && Object.keys(totalText).length" class="tsfont-close-s icon-dropdown bg-op item-clear" @click.stop="clearSearch"></div>
           </div>
           <DropdownMenu v-if="searchList && searchList.length > 0" slot="list" ref="dropdown">
-            <li :style="'padding: 16px 20px;width:' + width + 'px;max-height:500px;overflow:auto;'" @click="isVisible = true">
+            <li :style="'padding: 16px 20px;width:' + width + 'px;max-height:400px;overflow:auto;'" @click="isVisible = true">
               <TsForm
                 ref="form"
                 v-model="searchValue"
@@ -361,6 +361,18 @@ export default {
     handleCancel() {
       // 点击取消
       this.isVisible = false;
+      if (this.searchMode == 'clickBtnSearch' && !this.isVisible) {
+        // 点击取消按钮时，删除已选择但是没有搜索的字段
+        for (let key in this.searchValue) {
+          if (key && !this.totalText.hasOwnProperty([key])) {
+            this.$nextTick(() => {
+              this.$delete(this.searchValue, key);
+              this.$delete(this.textConfig, key);
+              this.$delete(this.totalText, key);
+            });
+          }
+        }
+      }
     },
     doSearch(val) {
       this.isVisible = false;
@@ -623,24 +635,6 @@ export default {
       },
       deep: true,
       immediate: true      
-    },
-    isVisible: {
-      handler() {
-        // 点击关闭时，清空没有搜索的值
-        if (this.searchMode == 'clickBtnSearch' && !this.isVisible) {
-          for (let key in this.searchValue) {
-            if (key && !this.totalText.hasOwnProperty([key])) {
-              this.$delete(this.searchValue, key);
-              this.$delete(this.textConfig, key);
-              this.$delete(this.totalText, key);
-            }
-          }
-          let fullSearch = this.getFullSearch();
-          this.$emit('update:value', fullSearch);
-          this.$emit('close', fullSearch);
-        }
-      },
-      deep: true
     }
   }
 };

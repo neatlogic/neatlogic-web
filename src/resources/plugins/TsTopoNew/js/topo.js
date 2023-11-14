@@ -694,9 +694,16 @@
       action = action || 'invert';
       if (data.hasOwnProperty('x') && data.hasOwnProperty('y')) {
         var zoomTransform = d3.zoomTransform(this.el.node());
+        var k = zoomTransform.k || 1;
         var position = zoomTransform[action]([data.x, data.y]);
-        data.x = position[0];
-        data.y = position[1];
+        if(k !== 1 ){ 
+          //流程图缩放时，坐标轴位置调整
+          data.x = position[0] + zoomTransform.x;
+          data.y = position[1] + zoomTransform.y;
+        } else {
+          data.x = position[0];
+          data.y = position[1];
+        }
       }
       return data;
     }
