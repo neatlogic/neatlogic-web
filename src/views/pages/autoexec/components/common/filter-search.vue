@@ -32,6 +32,7 @@
       :readonly="readonly"
       :showSearchNumber="showSearchNumber"
       @confirm="simpleModeSearch"
+      @switchMode="switchToSimpleMode"
     >
     </CombineSearcher>
     <AdvancedModeSearch
@@ -43,7 +44,7 @@
       :disabledUuidList="disabledUuidList"
       :disabledGroupUuidList="disabledGroupUuidList"
       @search="advancedModeSearch"
-      @click="switchToSimpleMode"
+      @switchMode="switchToSimpleMode"
       @clickMoreBtn="() => $emit('clickMoreBtn')"
     >
     </AdvancedModeSearch>
