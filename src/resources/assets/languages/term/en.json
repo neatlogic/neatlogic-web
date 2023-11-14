@@ -2537,7 +2537,8 @@
     "servicedependency": "Service Dependency",
     "scenarioplan": "Scenario Plan",
     "relyonmyservices": "Rely on my services",
-    "servicerelyon": "The service I rely on"
+    "servicerelyon": "The service I rely on",
+    "dependentapp": "Dependent applications"
   },
   "diagram": {
     "widgetlist": "Component List",
