@@ -204,6 +204,7 @@
         isIssueDetailShow = false;
         currentIssue = null;
         searchIssue();
+        $emit('refresh');
       "
     >
       <template v-slot>
@@ -554,6 +555,7 @@ export default {
               vnode.isShow = false;
               this.$Message.success(this.$t('message.deletesuccess'));
               this.searchIssue();
+              this.$emit('refresh');
             }
           });
         }

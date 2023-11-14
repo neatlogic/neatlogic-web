@@ -35,6 +35,7 @@
                   :canSearch="true"
                   :canAction="true"
                   :isShowEmptyTable="true"
+                  @refresh="refresh(currentProjectId)"
                 ></IssueList>
               </div>
             </TabPane>
@@ -58,6 +59,7 @@
                   :canSearch="true"
                   :canAction="true"
                   :isShowEmptyTable="true"
+                  @refresh="refresh(app.id)"
                 ></IssueList>
               </div>
             </TabPane>
@@ -146,6 +148,55 @@ export default {
             });
           }
         });
+    },
+    async refresh(id) { //刷新列表统计数
+      try {
+        await this.getAppByProjectId();
+      } catch (e) {
+        console.error(e);
+      }
+      if (this.appList && this.appList.length > 0) {
+        let findItem = this.appList.find(app => app.id === id);
+        if (!findItem || !findItem.issueCount) {
+          this.$set(this.currentApp, 'p' + this.projectList[0].id, '#');
+        }
+
+        this.projectList.forEach(item => {
+          if (item.id === this.currentProjectId) {
+            this.$set(item, 'issueCount', this.allIssueCount);
+          }
+        });
+      } else {
+        this.getProjectList();
+      }
+    },
+    getAppByProjectId() {
+      if (!this.currentProjectId) {
+        return;
+      }
+      this.isReady = false;
+      return this.$api.rdm.project.getAppByProjectId(this.currentProjectId, {
+        isActive: 1,
+        needSystemAttr: 1,
+        needIssueCount: 1,
+        isMine: this.isMine,
+        isMyCreated: this.isMyCreated,
+        isProcessed: this.isProcessed,
+        isEnd: this.isEnd,
+        isFavorite: this.isFavorite
+      }).then(res => {
+        this.appList = res.Return;
+        this.allIssueCount = 0;
+        if (this.appList && this.appList.length > 0) {
+          this.appList.forEach(app => {
+            this.allIssueCount += app.issueCount;
+          });
+        }
+      }).finally(() => {
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
+      });
     }
   },
   filter: {},
@@ -197,28 +248,7 @@ export default {
     currentProjectId: {
       handler: function(val) {
         if (val) {
-          this.isReady = false;
-          this.$api.rdm.project.getAppByProjectId(val, {
-            isActive: 1,
-            needSystemAttr: 1,
-            needIssueCount: 1,
-            isMine: this.isMine,
-            isMyCreated: this.isMyCreated,
-            isProcessed: this.isProcessed,
-            isEnd: this.isEnd,
-            isFavorite: this.isFavorite
-          }).then(res => {
-            this.appList = res.Return;
-            this.allIssueCount = 0;
-            if (this.appList && this.appList.length > 0) {
-              this.appList.forEach(app => {
-                this.allIssueCount += app.issueCount;
-              });
-            }
-          });
-          this.$nextTick(() => {
-            this.isReady = true;
-          });
+          this.getAppByProjectId();
         }
       },
       immediate: true
