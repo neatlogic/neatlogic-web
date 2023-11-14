@@ -2553,6 +2553,11 @@
     "childitem": "Child nodes",
     "relpath": "Relationship Path",
     "graph": "Architecture diagram",
-    "catalogtemplate": "The templates that can be used in the current directory"
+    "catalogtemplate": "The templates that can be used in the current directory",
+    "ispublished": "Published",
+    "tofront": "Move to the top",
+    "toend": "Move to the bottom",
+    "publishversion": "Release version",
+    "confirmcheckversion": "Are you sure to submit the current version for review?"
   }
 }
