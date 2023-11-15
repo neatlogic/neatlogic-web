@@ -34,9 +34,14 @@
     "batchcreatetarget": "批量创建{target}",
     "closecomfirm": "关闭确认",
     "openconfirm": "打开确认",
-    "batchconfirm": "批量执行确认"
+    "batchconfirm": "批量执行确认",
+    "passconfirm": "通过确认",
+    "rejectconfirm": "驳回确认"
   },
   "content": {
+    "revocatetargetconfirm": "是否确认撤销当前{target}？",
+    "passtargetconfirm": "是否确认通过当前{target}？",
+    "rejecttargetconfirm": "是否确认驳回当前{target}？",
     "deletetargetconfirm": "是否确认删除{target}？",
     "deleteconfirm": "是否确认删除当前{target}？",
     "revocationconfirm": "是否确认撤销当前{target}？",

@@ -1,10 +1,10 @@
 const HistoryUtil = {};
 const Storage = sessionStorage.getItem('routeStorage') ? JSON.parse(sessionStorage.getItem('routeStorage')) : {};
-import {$t} from '@/resources/init.js';;
+import { $t } from '@/resources/init.js';
 
-HistoryUtil.install = function(Vue, options) {
+HistoryUtil.install = function (Vue, options) {
   //判断当前页面是否需要active左侧菜单
-  Vue.prototype.$isMenuActive = function(url) {
+  Vue.prototype.$isMenuActive = function (url) {
     //处理掉isBack的两种情况：?isBack=true|&isBack=true
     let path = this.$route.fullPath;
     path = path.replace('&isBack=true', '');
@@ -28,15 +28,20 @@ HistoryUtil.install = function(Vue, options) {
     }
     return false;
   };
-  Vue.prototype.$hasBack = function() {
-    return !!(this.$route.meta.fromPageList && this.$route.meta.fromPageList.length > 0 && this.$route.path != this.$route.meta.fromPageList[this.$route.meta.fromPageList.length - 1].path);
+  Vue.prototype.$hasBack = function () {
+    return !!(this.$route.meta.fromPageList && this.$route.meta.fromPageList.length > 0 && this.$route.meta.fromPageList.filter(d => d.path !== this.$route.path).length > 0);
   };
-  Vue.prototype.$back = function(defaultPath) {
+  Vue.prototype.$back = function (defaultPath) {
     const fromPageList = this.$route.meta.fromPageList;
     let backPath = defaultPath;
+    let index = fromPageList.length - 1;
     if (fromPageList && fromPageList.length > 0) {
-      if (this.$route.path != fromPageList[fromPageList.length - 1].path) {
-        backPath = fromPageList[fromPageList.length - 1].fullPath;
+      while (index >= 0) {
+        if (this.$route.path != fromPageList[index].path) {
+          backPath = fromPageList[index].fullPath;
+          break;
+        }
+        index -= 1;
       }
     }
     //const backPath = this.$route.meta.fromPage && this.$route.meta.fromPage.path && this.$route.meta.fromPage.path != '/' ? this.$route.meta.fromPage.path : defaultPath;
@@ -48,23 +53,28 @@ HistoryUtil.install = function(Vue, options) {
     }
   };
   //从本路由跳出时不把当前路由放入历史记录，仅生效一次
-  Vue.prototype.$skipHistory = function() {
+  Vue.prototype.$skipHistory = function () {
     this.$route.meta.isSkip = true;
   };
-  Vue.prototype.$backTo = function(defaultPath) {
+  Vue.prototype.$backTo = function (defaultPath) {
     this.$router.push({
       path: defaultPath,
       query: { isBack: true }
     });
   };
-  Vue.prototype.$getFromPage = function(defaultName, aliasName) {
+  Vue.prototype.$getFromPage = function (defaultName, aliasName) {
     let name = defaultName;
     let hasBack = false;
     const fromPageList = this.$route.meta.fromPageList;
+    let index = fromPageList.length - 1;
     if (fromPageList && fromPageList.length > 0) {
-      if (this.$route.path != fromPageList[fromPageList.length - 1].path) {
-        name = fromPageList[fromPageList.length - 1].title;
-        hasBack = true;
+      while (index >= 0) {
+        if (this.$route.path != fromPageList[index].path) {
+          name = fromPageList[index].title;
+          hasBack = true;
+          break;
+        }
+        index -= 1;
       }
     }
     if (hasBack && aliasName) {
@@ -73,13 +83,13 @@ HistoryUtil.install = function(Vue, options) {
     }
     return $t(name);
   };
-  Vue.prototype.$setHistory = function(historyData) {
+  Vue.prototype.$setHistory = function (historyData) {
     if (historyData && this.$vnode && this.$vnode.tag) {
       Storage[this.$vnode.tag] = historyData;
       sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
     }
   };
-  Vue.prototype.$addHistoryData = function(key, value) {
+  Vue.prototype.$addHistoryData = function (key, value) {
     if (key && this.$vnode && this.$vnode.tag) {
       if (!Storage[this.$vnode.tag]) {
         Storage[this.$vnode.tag] = {};
@@ -88,11 +98,11 @@ HistoryUtil.install = function(Vue, options) {
       sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
     }
   };
-  Vue.prototype.$isBack = function() {
+  Vue.prototype.$isBack = function () {
     return !!this.$route.query['isBack'];
   };
   Vue.mixin({
-    created: function() {
+    created: function () {
       if (this.$vnode && this.$vnode.tag && this.restoreHistory && typeof this.restoreHistory == 'function' && (this.$route.params['isBack'] || this.$route.query['isBack'])) {
         let historyData = Storage[this.$vnode.tag];
         if (historyData) {

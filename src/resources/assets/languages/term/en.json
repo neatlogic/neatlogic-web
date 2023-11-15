@@ -2558,6 +2558,7 @@
     "tofront": "Move to the top",
     "toend": "Move to the bottom",
     "publishversion": "Release version",
-    "confirmcheckversion": "Are you sure to submit the current version for review?"
+    "confirmcheckversion": "Are you sure to submit the current version for review?",
+    "confirmandpublish": "Pass and publish"
   }
 }

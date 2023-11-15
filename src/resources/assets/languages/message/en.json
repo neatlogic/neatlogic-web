@@ -272,5 +272,8 @@
   "editaftersave": "Please save before editing",
   "commentsucces": "Comment successful",
   "syncsuccess": "Sync successful",
-  "downloadsuccessful": "Download successful"
+  "downloadsuccessful": "Download successful",
+  "diagram": {
+    "versionchecking": "The current version is currently under review and cannot be edited"
+  }
 }
