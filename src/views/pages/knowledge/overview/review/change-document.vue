@@ -1,7 +1,7 @@
 <template>
   <div class="document-detail" style="width:100%">
     <!-- <loading :loadingShow="isLoadingShow" type="fix"></loading> -->
-    <Alert v-if="newDataConfig" :type="!newDataConfig.rejectReason?'info':'error'">
+    <Alert v-if="newDataConfig" :type="!newDataConfig.rejectReason?'warning':'error'">
       <div class="alert-box">
         <span v-if="!newDataConfig.rejectReason">
           <span style="display: inline-block;">

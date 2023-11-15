@@ -42,7 +42,7 @@
               :disabled="operate.disabled?true:false"
               ghost
               @click.stop="doAction(operate.value)"
-            > <span class="btn-icon" :class="operate.value=='reject'?'tsfont-close-o':'tsfont-check-o'">{{ operate.text }}</span>
+            > <span class="btn-icon" :class="operate.value=='reject'?'tsfont-close-o':operate.value=='pass'?'tsfont-check-o':'tsfont-undo'">{{ operate.text }}</span>
             </Button>
           </span>
         </div>
@@ -52,12 +52,12 @@
           <div v-if="sourceVersion" class="bg-warning-grey reviewer-tip">
             <span class="tsfont-danger-o text-warning btn-icon"></span>
             <span>
-              <UserCard v-bind="sourceVersion.lcuVo" hideAvatar></UserCard>
+              <UserCard v-bind="sourceVersion.lcuVo"></UserCard>
             </span>
             <span>{{ $t('term.autoexec.submitnewversionwait') }}</span>
-            <span v-if="sourceVersion.reviewerVoList" class="user-group">
+            <span v-if="sourceVersion.reviewerVoList" class="user-group pl-xs">
               <span v-for="(user, index) in sourceVersion.reviewerVoList.slice(0, 2)" :key="index" class="user-list">
-                <UserCard v-bind="user" hideAvatar></UserCard>
+                <UserCard v-bind="user"></UserCard>
               </span>
             </span>
             <span v-if="sourceVersion.reviewerVoList && sourceVersion.reviewerVoList.length > 2">
@@ -410,7 +410,7 @@ export default {
 }
 .reviewer-tip{
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   padding: 10px;
   margin-bottom: 12px;
   border-radius: 6px;
