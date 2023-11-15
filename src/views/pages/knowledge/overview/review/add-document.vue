@@ -13,7 +13,7 @@
     </div>
     <div class="right-sider bg-op" :style="{'left':navWidth}">
       <div v-if="config" class="main">
-        <Alert :type="!config.rejectReason ? 'info' : 'error'">
+        <Alert :type="!config.rejectReason ? 'warning' : 'error'">
           <span v-if="!config.rejectReason">
             <span style="display: inline-block;">
               <UserCard v-bind="config.lcuVo"></UserCard>

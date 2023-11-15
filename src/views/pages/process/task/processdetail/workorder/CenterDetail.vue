@@ -234,7 +234,7 @@
           tab="tab1"
         >
           <!-- 上报历史 -->
-          <ReportingHistory v-if="tabValue == 'reportingHistory'" :processTaskConfig="processTaskConfig"></ReportingHistory>
+          <ReportingHistory :processTaskConfig="processTaskConfig"></ReportingHistory>
         </TabPane>
       </Tabs>
     </div>

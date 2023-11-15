@@ -1,12 +1,13 @@
 <template>
   <div>
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
-      <div v-if="!config.hasOwnProperty('isCanAdd') || config.isCanAdd" class="action-item">
+      <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
       </div>
       <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
+     
       <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
       <span v-else class="action-item">
         <Icon
@@ -25,23 +26,24 @@
         ></Icon>
         {{ $t('term.framework.exporttable') }}
       </span>
-
-      <Upload
-        ref="upload"
-        :show-upload-list="false"
-        :default-file-list="[]"
-        :format="['xlsx']"
-        :max-size="maxSize"
-        :on-format-error="handleFormatError"
-        :on-exceeded-size="handleMaxSize"
-        :before-upload="handleBeforeUpload"
-        type="drag"
-        action=""
-        class="forminputtable-upload ml-sm"
-        style="display: inline-block;"
-      >
-        <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
-      </Upload>
+      <template v-if="canAdd">
+        <Upload
+          ref="upload"
+          :show-upload-list="false"
+          :default-file-list="[]"
+          :format="['xlsx']"
+          :max-size="maxSize"
+          :on-format-error="handleFormatError"
+          :on-exceeded-size="handleMaxSize"
+          :before-upload="handleBeforeUpload"
+          type="drag"
+          action=""
+          class="forminputtable-upload ml-sm"
+          style="display: inline-block;"
+        >
+          <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
+        </Upload>
+      </template>
     </div>
     <TsTable
       v-if="hasColumn"
@@ -401,7 +403,7 @@ export default {
               let {dataSource = '', isMultiple = false} = config;
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
-              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio')) {
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
                 // 矩阵数据源并且是多选，需要处理值去掉&=&
                 this.$set(item, [key], this.handleSpecialValue(item[key]));
               } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
@@ -438,7 +440,6 @@ export default {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
-       
         new Promise((resolve, reject) => {
           try {
             FileSaver.saveAs(_file, `${this.formItem?.label || ''}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.xlsx`);
@@ -489,14 +490,14 @@ export default {
         };
         return await this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
           if (res.Status == 'OK') {
-            return [`"${res.Return?.dataList?.filter((item) => this.handleSpecialValue(item.value)).map((item) => this.handleSpecialValue(item.value)).join(',')}"`];
+            return [`"${res.Return?.dataList?.filter((item) => this.handleSpecialValue(item.text)).map((item) => this.handleSpecialValue(item.text)).join(',')}"`];
           }
         });
       } else {
         const resultArray = [
           `"${dataList
-            .filter(item => item?.value)
-            .map(item => item.value)
+            .filter(item => item?.text)
+            .map(item => item.text)
             .join(',')}"`
         ];
         return resultArray;
@@ -505,9 +506,9 @@ export default {
     handleSpecialValue(value) {
       let valueList = [];
       if (typeof value == 'string') {
-        return value?.split('&=&')?.[0] || value;
+        return value?.split('&=&')?.[1] || value;
       } else if (Array.isArray(value)) {
-        valueList = value.map((item) => item?.split('&=&')?.[0] || item).filter(Boolean);
+        valueList = value.map((item) => item?.split('&=&')?.[1] || item).filter(Boolean);
       }
       return valueList.join(',');
     },
@@ -543,7 +544,7 @@ export default {
                 this.tableData.tbodyList.splice(rowIndex - 2, 1, item);
               } else {
                 // 空数组时，新增一条新的数据
-                this.tableData.tbodyList.push(item);
+                this.tableData.tbodyList.push({...item, uuid: this.$utils.setUuid() });
               }
             }
           });
@@ -558,7 +559,7 @@ export default {
       let {config = {}, handler = ''} = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
         let {dataSource = '', isMultiple = false} = config || {};
-        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio')) {
+        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
         // 矩阵
           resultValue = [];
           let valueList = [];
@@ -566,11 +567,11 @@ export default {
             valueList = value.split(',');
             valueList.forEach((valueItem) => {
               if (valueItem) {
-                resultValue.push(`${valueItem}&=&${valueItem}`);
+                resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${valueItem}&=&${valueItem}`);
               }
             });
           } else {
-            resultValue.push(`${value}&=&${value}`);
+            resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${value}&=&${value}`);
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
@@ -623,6 +624,9 @@ export default {
         }
         return null;
       };
+    },
+    canAdd() {
+      return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
     }
   },
   watch: {

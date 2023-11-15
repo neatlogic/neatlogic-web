@@ -12,7 +12,7 @@
           <div class="bg-error-grey padding-sm mb-md radius-sm">
             <span class="tsfont-danger-o text-danger btn-icon"></span>
             <span style="display: inline-block;">
-              <UserCard v-bind="versionVo.reviewerVo" hideAvatar></UserCard>
+              <UserCard v-bind="versionVo.reviewerVo"></UserCard>
             </span>
             <span>{{ $t('term.autoexec.rejectreason') }}</span>
             <span :title="versionVo.rejectReason">{{ versionVo.rejectReason }}</span>
