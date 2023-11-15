@@ -148,7 +148,14 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    processTaskConfig: {
+      handler(val) {
+        this.getTableList();
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less">
