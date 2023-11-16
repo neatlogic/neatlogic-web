@@ -28,8 +28,13 @@
           </div>
         </div>
       </div> 
-      <div v-if="!disabled && !readonly && config.isCanAdd && mode ==='read' || mode==='readSubform'">
-        <Button type="primary" ghost @click="addFormData">{{ $t('dialog.title.addtarget',{'target': label }) }}</Button>
+      <div v-if="!disabled && !readonly && config.isCanAdd">
+        <Button
+          v-if="mode ==='read' || mode==='readSubform'"
+          type="primary"
+          ghost
+          @click="addFormData"
+        >{{ $t('dialog.title.addtarget',{'target': label }) }}</Button>
       </div>
     </div>
   </div>
@@ -74,6 +79,12 @@ export default {
           value = JSON.parse(value);
         }
         if (value instanceof Array && value.length > 0) {
+          value.forEach(item => {
+            //默认展开
+            if (item.hasOwnProperty('isHide')) {
+              this.$set(item, 'isHide', false);
+            }
+          });
           this.formDataList.push(...value);
         }
       } else { 
@@ -92,12 +103,14 @@ export default {
       const errorList = [];
       const sheet = this.$refs['sheet'];
       let isValid = true;
-      Array.from(sheet).forEach(async s => {
-        let errorData = await s.validData();
+      let list = Array.from(sheet);
+      for (let i in list) {
+        let errorData = await list[i].validData();
         if (!this.$utils.isEmpty(errorData)) {
+          this.$set(this.formDataList[i], 'isHide', false);
           isValid = false;
         }
-      });
+      }
       if (!isValid) {
         errorList.push({uuid: this.formItem.uuid, error: this.formItem.label + '校验失败'});
       }
