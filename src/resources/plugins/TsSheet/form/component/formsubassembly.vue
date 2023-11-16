@@ -1,24 +1,35 @@
 <template>
   <div v-if="subFormData">
-    <div v-if="!disabled && !readonly && config.isCanAdd">
-      <Button v-if="mode ==='read' || mode==='readSubform'" @click="addFormData">添加</Button>
-    </div>
-    <div>
-      <div v-for="(item,index) in formDataList" :key="index" class="sheet-list">
-        <Divider v-if="formDataList.length > 1" orientation="start" class="subForm-label"><div class="text-title">{{ label }}</div></Divider>
-        <TsSheet
-          ref="sheet"
-          :mode="mode==='edit'||mode==='editSubform'?'editSubform':'readSubform'"
-          :value="subFormData"
-          :data="item"
-          :disabled="disabled"
-          :readonly="readonly"
-          isFormSubassembly
-          @setValue="(val)=>{updateValue(val, item, index)}"
-        ></TsSheet>
-        <div v-if="!disabled && !readonly && config.isCanAdd">
-          <div v-if="(mode ==='read'|| mode==='readSubform') && formDataList.length>1" class="tsfont-close-o text-action del-icon" @click="delSheet(index)"></div>
+    <div class="sheet-main">
+      <div><span class="label bg-primary">{{ label }}</span></div>
+      <div class="sheet-detail border-color" :style="{ '--height': getFormDataHeight(formDataList) }">
+        <div v-for="(item,index) in formDataList" :key="index" class="sheet-list border-base radius-md border-color">
+          <div orientation="start" class="subForm-label">
+            <div>
+              <span class="pr-xs">#{{ index+1 }}</span>
+              <span>{{ label }}</span>
+            </div>
+            <div class="">
+              <span v-if="!disabled && !readonly && config.isCanAdd && (mode ==='read'|| mode==='readSubform') && formDataList.length>1" class="tsfont-trash-o text-action del-icon" @click="delSheet(index)"></span>
+              <span class="pl-sm" :class="!item.isHide?'tsfont-down':'tsfont-up'" @click="toggleshow(item)"></span>
+            </div>
+          </div>
+          <div v-show="!item.isHide" class="subForm-detail border-color">
+            <TsSheet
+              ref="sheet"
+              :mode="mode==='edit'||mode==='editSubform'?'editSubform':'readSubform'"
+              :value="subFormData"
+              :data="item"
+              :disabled="disabled"
+              :readonly="readonly"
+              isFormSubassembly
+              @setValue="(val)=>{updateValue(val, item, index)}"
+            ></TsSheet>
+          </div>
         </div>
+      </div> 
+      <div v-if="!disabled && !readonly && config.isCanAdd && mode ==='read' || mode==='readSubform'">
+        <Button type="primary" ghost @click="addFormData">{{ $t('dialog.title.addtarget',{'target': label }) }}</Button>
       </div>
     </div>
   </div>
@@ -38,7 +49,8 @@ export default {
     return {
       formDataList: [],
       subFormData: null,
-      label: ''
+      label: '',
+      isShow: true
     };
   },
   beforeCreate() {},
@@ -98,10 +110,23 @@ export default {
     delSheet(index) {
       this.formDataList.splice(index, 1);
       this.setValue(this.formDataList); 
+    },
+    toggleshow(item) {
+      this.$set(item, 'isHide', !item.isHide);
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getFormDataHeight() {
+      return (list) => {
+        let height = 100;
+        if (list.length > 0 && this.disabled || this.readonly || !this.config || !this.config.isCanAdd || (this.mode !== 'read' && this.mode !== 'readSubform')) {
+          height = 100 * (1 - 1 / (list.length * 2));
+        }
+        return height + '%';
+      };
+    }
+  },
   watch: {
     formItem: {
       handler(val) {
@@ -117,21 +142,63 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.sheet-list {
-  position: relative;
-  .subForm-label {
-    border-collapse: separate;
+.sheet-main {
+  .label {
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    border-radius: 13px;
+    padding: 0 6px;
+    font-size: 12px;
+    color: #fff;
   }
-  &:hover {
-    .del-icon {
-      display: block;
+  .sheet-detail{
+    position: relative;
+    padding-left: 44px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    &::before{
+        position: absolute;
+        content: "";
+        top: 0px;
+        bottom: -10px;
+        left: 20px;
+        border-left: 1px dashed;
+        border-color: inherit;
+        height:  var(--height);
     }
   }
-  .del-icon {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 0;
+  .sheet-list {
+    position: relative;
+    &:not(:last-child){
+      margin-bottom: 10px;
+    }
+    &::before {
+      position: absolute;
+      content: " ";
+      top: 50%;
+      left: -24px;
+      right: 100%;
+      border-top: 1px dashed;
+      border-color: inherit;
+    }
+    .subForm-label {
+      padding: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    &:hover {
+      .del-icon {
+        display: inline-block;
+      }
+    }
+    .del-icon {
+      display: none;
+    }
+    .subForm-detail {
+      padding: 16px;
+      border-top: 1px solid;
+    }
   }
 }
 </style>
