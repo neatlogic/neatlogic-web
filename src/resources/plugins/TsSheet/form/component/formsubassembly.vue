@@ -54,8 +54,7 @@ export default {
     return {
       formDataList: [],
       subFormData: null,
-      label: '',
-      isShow: true
+      label: ''
     };
   },
   beforeCreate() {},
