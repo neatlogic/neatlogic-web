@@ -167,8 +167,8 @@
                       <div v-if="relList && relList.length > 0">
                         <div v-for="(rel, index) in relList" :key="index">
                           <div v-if="activedPanel == 'rel' + rel.direction + '_' + rel.id || (activedPanel == '' && ciEntityData && ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id] && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'])" class="rel-block border-color">
-                            <Divider v-if="rel.direction == 'from'" plain orientation="start">{{ rel.toLabel }}</Divider>
-                            <Divider v-else-if="rel.direction == 'to'" plain orientation="start">{{ rel.fromLabel }}</Divider>
+                            <Divider v-if="rel.direction == 'from'" plain orientation="left">{{ rel.toLabel }}</Divider>
+                            <Divider v-else-if="rel.direction == 'to'" plain orientation="left">{{ rel.fromLabel }}</Divider>
                             <div v-if="ciEntityData && ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id] && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList']" class="rel-item">
                               <div v-if="rel.direction == 'from'">
                                 <SubCiEntityList
@@ -623,7 +623,7 @@ export default {
   }
 }
 .rel-block {
-  padding: 0px 16px 10px 16px;
+  padding: 0px 0px 10px 0px;
   .rel-title {
     margin-bottom: 4px;
   }
