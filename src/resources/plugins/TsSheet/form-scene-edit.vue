@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.defaultscenario') }}</span>
+        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.mainscene') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsRow>

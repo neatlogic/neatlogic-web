@@ -948,5 +948,6 @@
   "homeurl": "应用服务地址",
   "filltype": "背景填充方式",
   "backgroundresizable": "背景跟随缩放",
-  "auto": "自动"
+  "auto": "自动",
+  "mainscene": "主场景"
 }

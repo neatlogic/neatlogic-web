@@ -13,6 +13,10 @@
           <div>
             <div class="pb-sm">
               <span class="tsfont-plus text-action" @click="addScene()">{{ $t('page.scene') }}</span>
+              <span class="pl-nm">
+                <span class="text-tip pr-xs">{{ $t('page.defaultscenario') }}</span>
+                <span class="text-href" @click="selectDefaultscene()">{{ getSceneName(defaultsceneUuid) }}</span>
+              </span>
             </div>
             <TsTable
               :theadList="theadList"
@@ -32,7 +36,7 @@
                   <ul class="tstable-action-ul">
                     <li class="tsfont-copy" @click="copyScene(row)">{{ $t('page.copy') }}</li>
                     <li
-                      v-if="row.uuid !== formConfig.uuid"
+                      v-if="row.uuid !== formConfig.uuid && !row.isDefaultValue"
                       class="tsfont-trash-o"
                       :class="{ 'disable': row.referenceCount }"
                       :title="row.referenceCount? $t('message.framework.notdelscenetip') : ''"
@@ -46,6 +50,28 @@
         </div>
       </template>
     </TsDialog>
+    <TsDialog
+      :title="$t('page.defaultscenario')"
+      type="modal"
+      :isShow.sync="isSelectDefaultsceneDialog"
+      @on-ok="saveDefaultscene"
+      @on-close="closeDefaultsceneDialog"
+    >
+      <template v-slot>
+        <div>
+          <TsFormItem :label="$t('page.defaultscenario')" required>
+            <TsFormSelect
+              v-model="selectSceneUuid"
+              :dataList="tbodyList"
+              textName="name"
+              valueName="uuid"
+              :validateList="validateList"
+              transfer
+            ></TsFormSelect>
+          </TsFormItem>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -53,7 +79,9 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
     uuid: String,
@@ -80,7 +108,11 @@ export default {
         { title: this.$t('page.fcd'), key: 'lcd', type: 'time' },
         {key: 'action'}
       ],
-      tbodyList: []
+      tbodyList: [],
+      defaultsceneUuid: null,
+      isSelectDefaultsceneDialog: false,
+      validateList: ['required'],
+      selectSceneUuid: null
     };
   },
   beforeCreate() {},
@@ -100,15 +132,20 @@ export default {
       let defaultValue = [];
       if (!this.$utils.isEmpty(this.formConfig) && this.formConfig.name) {
         this.tbodyList.push({
-          name: this.formConfig.name,
+          name: this.$t('page.mainscene'),
           uuid: this.formConfig.uuid,
           lcu: this.formConfig.lcu,
           lcd: this.formConfig.lcd
         });
+        this.defaultsceneUuid = this.formConfig.uuid;
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
         this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; }); 
         this.tbodyList.push(...this.formConfig.sceneList);
+        let findDefaultValue = this.formConfig.sceneList.find(s => s.isDefaultValue);
+        if (findDefaultValue) {
+          this.defaultsceneUuid = findDefaultValue.uuid;
+        }
       }
       if (this.tbodyList.length > 0) {
         defaultValue = this.$utils.mapArray(this.tbodyList, 'uuid');
@@ -222,10 +259,43 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    selectDefaultscene() {
+      this.selectSceneUuid = this.$utils.deepClone(this.defaultsceneUuid);
+      this.isSelectDefaultsceneDialog = true;
+      //  = this.tbodyList.find(item => item.isDefaultValue).uuid;
+      //  if
+    },
+    saveDefaultscene() {
+      this.defaultsceneUuid = this.selectSceneUuid;
+      this.tbodyList.forEach(item => {
+        if (item.uuid === this.defaultsceneUuid) {
+          this.$set(item, 'isDefaultValue', true);
+        } else {
+          this.$set(item, 'isDefaultValue', false);
+        }
+      });
+      this.isSelectDefaultsceneDialog = false;
+    },
+    closeDefaultsceneDialog() {
+      this.isSelectDefaultsceneDialog = false;
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getSceneName() {
+      return (uuid) => {
+        let name = '';
+        if (this.tbodyList && this.tbodyList.length > 0) {
+          let findItem = this.tbodyList.find(item => item.uuid === uuid);
+          if (findItem) {
+            name = findItem.name;
+          }
+        }
+        return name;
+      };
+    }
+  },
   watch: {}
 };
 </script>
