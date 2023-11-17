@@ -236,7 +236,6 @@ export default {
     },
     handleCurrentValue(currentValue) {
       let value;
-
       return currentValue => {
         if (this.multiple || this.$options.name == 'TsFormCheckbox') {
           if (this.$utils.isEmpty(currentValue)) {

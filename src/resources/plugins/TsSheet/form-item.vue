@@ -292,34 +292,24 @@ export default {
                           if (this.formData[r.formItemUuid] instanceof Array) {
                             this.formData[r.formItemUuid].forEach(value => {
                               if (typeof value === 'string') {
-                                if (value.includes('&=&')) {
-                                  valueList.push(value.split('&=&')[0]); //只取value部分
-                                  textList.push(value.split('&=&')[1]); //只取text部分
+                                valueList.push(value);
+                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
+                                  let findData = formItem.config.dataList.find(f => f.value === value);
+                                  textList.push(findData.text);
                                 } else {
-                                  valueList.push(value);
-                                  if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                    let findData = formItem.config.dataList.find(f => f.value === value);
-                                    textList.push(findData.text);
-                                  } else {
-                                    textList.push(value);
-                                  }
+                                  textList.push(value);
                                 }
                               }
                             });
                           } else {
                             let value = this.formData[r.formItemUuid];
                             if (value) {
-                              if (value.includes('&=&')) {
-                                valueList.push(value.split('&=&')[0]); //只取value部分
-                                textList.push(value.split('&=&')[1]); //只取text部分,用于矩阵搜索回显
+                              valueList.push(value);
+                              if (!this.$utils.isEmpty(formItem.config.dataList)) {
+                                const findData = formItem.config.dataList.find(f => f.value === value);
+                                textList.push(findData.text);
                               } else {
-                                valueList.push(value);
-                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                  const findData = formItem.config.dataList.find(f => f.value === value);
-                                  textList.push(findData.text);
-                                } else {
-                                  textList.push(value);
-                                }
+                                textList.push(value);
                               }
                             }
                           }

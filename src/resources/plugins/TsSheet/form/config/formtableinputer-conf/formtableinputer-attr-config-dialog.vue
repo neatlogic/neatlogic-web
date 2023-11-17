@@ -130,6 +130,7 @@
                 <TsFormSelect
                   v-model="propertyLocal.config.defaultValue"
                   v-bind="defaultValueSetting"
+                  :isValueObject="true"
                   search
                   transfer
                 ></TsFormSelect>
