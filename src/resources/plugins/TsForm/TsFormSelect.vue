@@ -535,8 +535,8 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.initDataListByUrl(false);
     this.currentValue = this.handleCurrentValue(this.value);
+    this.initDataListByUrl(false);
   },
   mounted() {},
   updated() {},
@@ -1021,7 +1021,7 @@ export default {
       if (this.multiple) {
         isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
         if (this.isValueObject) {
-          toValue = this.selectedList.concat([]);
+          toValue = this.$utils.deepClone(this.selectedList);
         } else {
           toValue = this.currentValue.concat([]);
         }

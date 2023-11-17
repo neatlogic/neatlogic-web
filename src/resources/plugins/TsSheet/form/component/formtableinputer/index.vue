@@ -71,6 +71,7 @@
             :readonly="readonly"
             :disabled="disabled"
             :isClearEchoFailedDefaultValue="true"
+            :isValueObject="true"
             style="min-width:130px"
             @change="changeRow(row,index)"
           ></FormItem>
@@ -403,8 +404,8 @@ export default {
               let {dataSource = '', isMultiple = false} = config;
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
-              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
-                // 矩阵数据源并且是多选，需要处理值去掉&=&
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox' || handler == 'formselect')) {
+                // 矩阵数据源并且是多选
                 this.$set(item, [key], this.handleSpecialValue(item[key]));
               } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
                 // 静态数据源并且是多选
@@ -506,10 +507,13 @@ export default {
     handleSpecialValue(value) {
       let valueList = [];
       if (typeof value == 'string') {
-        return value?.split('&=&')?.[1] || value;
+        return value;
+      } else if (typeof value == 'object' && value?.['text']) {
+        return value['text'];
       } else if (Array.isArray(value)) {
-        valueList = value.map((item) => item?.split('&=&')?.[1] || item).filter(Boolean);
+        valueList = value.map((item) => item['text']).filter(Boolean);
       }
+      console.log('返回的值', value);
       return valueList.join(',');
     },
     handleFormatError(file) {
@@ -567,11 +571,11 @@ export default {
             valueList = value.split(',');
             valueList.forEach((valueItem) => {
               if (valueItem) {
-                resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${valueItem}&=&${valueItem}`);
+                resultValue.push({text: valueItem, value: valueItem});
               }
             });
           } else {
-            resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${value}&=&${value}`);
+            resultValue.push({text: valueItem, value: valueItem});
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
@@ -614,7 +618,7 @@ export default {
             if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
               const defaultValueField = dataConfig.config.defaultValueField;
               const defaultTextField = dataConfig.config.defaultTextField;
-              return row[defaultValueField] + '&=&' + row[defaultTextField];
+              return {text: row[defaultValueField], value: row[defaultTextField]};
             } else {
               return row[defaultValue];
             }

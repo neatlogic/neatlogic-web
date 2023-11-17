@@ -16,7 +16,6 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       myConfig: {length: '', defaultValue: ''},
       formConfig: {

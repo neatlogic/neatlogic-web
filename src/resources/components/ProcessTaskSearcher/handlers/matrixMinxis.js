@@ -9,13 +9,13 @@ export default {
             if (this.config.mapping.value != this.config.mapping.text) {
               columlist.push({
                 text: co[this.config.mapping.text].text,
-                value: co[this.config.mapping.value].value + '&=&' + co[this.config.mapping.text].text,
+                value: co[this.config.mapping.value].value,
                 html: co[this.config.mapping.text].text + "<small class='text-grey'>(" + co[this.config.mapping.value].text + ')</small>'
               });
             } else {
               columlist.push({
                 text: co[this.config.mapping.text].text,
-                value: co[this.config.mapping.value].value + '&=&' + co[this.config.mapping.text].text,
+                value: co[this.config.mapping.value].value,
                 html: co[this.config.mapping.text].text
               });
             }

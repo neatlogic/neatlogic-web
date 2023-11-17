@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       myConfig: {
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+        url: '/api/rest/matrix/column/data/search/forselect',
         rootName: 'dataList',
         params: {
           matrixUuid: this.config.matrix,
@@ -45,8 +45,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() { 
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},

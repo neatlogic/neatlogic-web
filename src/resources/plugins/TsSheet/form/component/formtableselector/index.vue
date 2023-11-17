@@ -273,7 +273,7 @@ export default {
           if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
             const defaultValueField = dataConfig.config.defaultValueField;
             const defaultTextField = dataConfig.config.defaultTextField;
-            return row[defaultValueField] + '&=&' + row[defaultTextField];
+            return {text: row[defaultTextField], value: row[defaultValueField]};
           } else {
             return row[defaultValue];
           }
