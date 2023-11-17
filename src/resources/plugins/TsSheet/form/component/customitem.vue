@@ -122,9 +122,10 @@ export default {
               this.templateData.data = config.data;
             }
             //加载完毕调用resize
-            this.templateData.mounted = () => {
-              this.$emit('resize');
-            };
+            this.templateData.mounted = config.mounted;
+            // this.templateData.mounted = () => {
+            //   this.$emit('resize');
+            // };
           } catch (e) {
             console.error(e);
             this.error = e;

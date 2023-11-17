@@ -8,6 +8,10 @@ export default {
     initFormItemList: {
       type: Array,
       default: () => []
+    },
+    customItemList: { //自定义组件列表
+      type: Array,
+      default: () => []
     }
   },
   methods: {

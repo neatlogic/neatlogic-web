@@ -2,6 +2,7 @@
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
       <div>
+        {{ customItemList }}
         <TsForm ref="formitem_formConfig" v-model="propertyLocal" :item-list="formConfig">
           <template v-slot:isRequired>
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
@@ -271,6 +272,10 @@ export default {
     isNeedReaction: {
       type: Boolean,
       default: true
+    },
+    customItemList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -423,6 +428,16 @@ export default {
         this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
         this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
       }
+      if (this.customItemList && this.customItemList.length > 0) {
+        let findDataList = this.formConfig.find(item => item.name === 'handler').dataList;
+        this.customItemList.forEach(c => {
+          findDataList.push({
+            text: c.label,
+            value: c.name,
+            type: 'custom'
+          });
+        });
+      }
     },
     close() {
       this.$emit('close');
@@ -503,7 +518,10 @@ export default {
       this.$nextTick(() => {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
         this.$set(this.propertyLocal, 'value', null);
-        if (val != 'formtable') {
+        let findCustomItem = this.customItemList.find(c => c.name === val);
+        if (findCustomItem) {
+          this.$set(this.propertyLocal, 'type', 'custom');
+        } else if (val != 'formtable') {
           this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
         } else {

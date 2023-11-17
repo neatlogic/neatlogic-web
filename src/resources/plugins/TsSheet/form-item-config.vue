@@ -28,6 +28,7 @@
             :formItemList="formItemList"
             :disabled="!!formItem.inherit || disabled"
             :initFormItemList="initFormItemList"
+            :customItemList="customItemList"
             class="mb-sm"
             @editSubForm="editSubForm"
           ></component>
@@ -101,6 +102,10 @@ export default {
     customFormItem: { type: Object }, //测试时直接从外部传入的组件数据
     disabled: {type: Boolean, default: false},
     initFormItemList: { //默认表单组件列表
+      type: Array,
+      default: () => []
+    },
+    customItemList: { //自定义组件列表(表格输入组件用到)
       type: Array,
       default: () => []
     }

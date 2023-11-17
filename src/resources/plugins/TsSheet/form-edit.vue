@@ -251,6 +251,7 @@
             :formItem="currentFormItem"
             :formItemList="cellFormItemList"
             :error="currentFormItemError"
+            :customItemList="customItemList"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
             @editSubForm="editSubForm"
@@ -537,7 +538,7 @@ export default {
         type != 'saveother' && (data.currentVersionUuid = this.currentVersion.uuid);
         // 场景uuid,name
         !formConfig.uuid && (formConfig.uuid = this.$utils.setUuid());
-        !formConfig.name && (formConfig.name = this.$t('page.defaultscenario'));
+        !formConfig.name && (formConfig.name = this.$t('page.mainscene'));
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
         if (type === 'saveother') {
           this.$set(formConfig, 'uuid', this.$utils.setUuid());
