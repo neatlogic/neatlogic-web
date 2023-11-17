@@ -63,6 +63,7 @@
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+      :isValueObject="isValueObject"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -123,6 +124,11 @@ export default {
     },
     isClearEchoFailedDefaultValue: {
       // 默认值对应不上下列列表时，是否需要清空默认值
+      type: Boolean,
+      default: false
+    },
+    isValueObject: {
+      // 返回的值是否是对象
       type: Boolean,
       default: false
     }

@@ -80,7 +80,7 @@ export default {
       default: 'text'
     },
     value: {
-      type: [String, Number, Boolean],
+      type: [String, Number, Boolean, Object],
       default: ''
     }, 
     url: {
@@ -121,13 +121,14 @@ export default {
   },
   data() {
     return {
-      currentValue: this.value,
+      currentValue: '',
       validMesage: this.errorMessage || '',
       nodeList: this.url ? [] : this.dataList,
       currentValidList: this.filterValid(this.validateList) || []
     };
   },
   created() {
+    this.currentValue = this.handleCurrentValue(this.value);
     this.setSelectList();
     this.initDataListByUrl();
   },
@@ -198,6 +199,9 @@ export default {
           return n[this.valueName] === value;
         });
       }
+      if (this.isValueObject) {
+        value = selectedItem || {};
+      }
       this.$emit('update:value', value);
       this.$emit('change', value, selectedItem || null);
       if (!(!this.isChangeWrite && isSame)) {
@@ -252,7 +256,7 @@ export default {
   watch: {
     value(newValue, oldValue) {
       if (newValue != this.currentValue) {
-        this.currentValue = newValue;
+        this.currentValue = this.handleCurrentValue(newValue);
         this.validMesage = '';
         this.setSelectList();
         this.handleEchoFailedDefaultValue();

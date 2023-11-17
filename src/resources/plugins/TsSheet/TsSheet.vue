@@ -298,6 +298,7 @@
                   :disabled="disabled"
                   :readonly="readonly"
                   :formHighlightData="formHighlightData"
+                  :isValueObject="true"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"

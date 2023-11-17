@@ -15,6 +15,11 @@ export default {
       // 是否清空回显失败默认值
       type: Boolean,
       default: false
+    },
+    isValueObject: {
+      // 返回的值是否是对象
+      type: Boolean,
+      default: false
     }
   },
   data() {

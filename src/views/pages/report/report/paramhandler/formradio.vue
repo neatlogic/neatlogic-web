@@ -3,10 +3,9 @@
     <TsFormRadio
       v-model="value"
       v-bind="myConfig"
-      :dataList="dataList"
       border="border"
       :search="true"
-      :dealDataByUrl="formatDataList"
+      :isValueObject="true"
       :validateList="validateList"
     ></TsFormRadio>
   </div>
@@ -40,8 +39,7 @@ export default {
           textField: this.config.textKey
         }
       },
-      value: '',
-      dataList: []
+      value: ''
     };
   },
   beforeCreate() {},
@@ -55,20 +53,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    formatDataList: function(nodeList) {
-      let dataList = [];
-      if (nodeList.tbodyList) {
-        nodeList.tbodyList.forEach(element => {
-          dataList.push({
-            //后端要求value值需要用&=&分隔，后期要改掉，后端直接返回正确的值
-            value: element[this.config.valueKey].value + '&=&' + element[this.config.textKey].text,
-            text: element[this.config.textKey].text});
-        });
-      }
-      return dataList;
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {

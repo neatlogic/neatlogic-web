@@ -314,7 +314,7 @@ export default {
     mode: { type: String, default: 'normal' }, //normal或group，group代表分组下拉框
     value: {
       //默认值
-      type: [String, Number, Array],
+      type: [String, Number, Array, Object],
       default: function() {
         if (this.multiple == true) {
           return new Array();
@@ -511,7 +511,7 @@ export default {
       focussing: false, //是否处于焦点中
       focusIndex: -1, //通过键盘选中列表
       searchKeyWord: '', //搜索对应可以word
-      currentValue: this.multiple ? (this.$utils.isEmpty(this.value) ? [] : [].concat(this.value)) : this.value,
+      currentValue: null,
       isVisible: false, //下拉选项显示
       selectedList: [], //选中的集合{text："",value:""}
       nodeList: this.url ? [] : JSON.parse(JSON.stringify(this.dataList || [])),
@@ -536,6 +536,7 @@ export default {
   beforeCreate() {},
   created() {
     this.initDataListByUrl(false);
+    this.currentValue = this.handleCurrentValue(this.value);
   },
   mounted() {},
   updated() {},
@@ -1012,14 +1013,21 @@ export default {
     },
     onChangeValue() {
       let isSame = false;
-      let valueObject = this.selectedList.map(item => {
+      let selectedList = this.selectedList.map(item => {
         return { value: item[this.valueName], text: item[this.textName] };
       });
-      valueObject = this.multiple ? valueObject : valueObject[0] || {};
+      let valueObject = this.multiple ? selectedList : selectedList[0] || {};
       let toValue = this.currentValue; //额外赋值主要是为了避免引用数据导致值的联动
       if (this.multiple) {
         isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
-        toValue = this.currentValue.concat([]);
+        if (this.isValueObject) {
+          toValue = this.selectedList.concat([]);
+        } else {
+          toValue = this.currentValue.concat([]);
+        }
+      } else if (this.isValueObject) {
+        isSame = this.$utils.isSame(this.value, this.currentValue);
+        toValue = valueObject;
       } else if (this.value == this.currentValue) {
         isSame = true;
       }
@@ -1430,7 +1438,7 @@ export default {
         //   isSame = true;
         // }
         if (!isSame) {
-          this.currentValue = this.multiple ? (this.$utils.isEmpty(newValue) ? [] : [].concat(newValue)) : newValue;
+          this.currentValue = this.handleCurrentValue(newValue);
           this.validMesage = '';
           this.isValidPass = true;
           this.watchChange(!!this.url);

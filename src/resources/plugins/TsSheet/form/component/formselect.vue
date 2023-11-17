@@ -10,6 +10,7 @@
       :validateList="validateList"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+      :isValueObject="isValueObject"
       border="border"
       search
       @change="

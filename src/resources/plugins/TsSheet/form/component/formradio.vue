@@ -11,6 +11,7 @@
       :allowToggle="true"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+      :isValueObject="isValueObject"
       @change="
         val => {
           setValue(val);
