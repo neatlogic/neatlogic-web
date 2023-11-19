@@ -27,10 +27,28 @@
             <span v-else-if="row.status === 'ready'" class="text-success">{{ $t('page.pending') }}</span>
             <span v-else-if="row.status === 'pending'" class="text-grey">{{ $t('page.notbuild') }}</span>
           </template>
+          <template v-slot:action="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-circulation-s" @click="viewData(1, 10, row.name)">{{ $t('page.viewdata') }}</li>
+              </ul>
+            </div>
+          </template>
         </TsTable>
       </template>
     </TsContain>
     <ResourceEditDialog v-if="isEditShow" :name="currentEntityName" @close="closeEntityDialog"></ResourceEditDialog>
+    <TsDialog
+      v-bind="dialogConfig"
+      @on-close="close"
+    >
+      <TsTable
+        :fixedHeader="false"
+        v-bind="viewDataTable"
+        @changeCurrent="viewData"
+        @changePageSize="viewData(1, ...arguments)"
+      ></TsTable>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -55,9 +73,26 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'initTime', title: this.$t('page.inittime'), type: 'time' },
-        { key: 'description', title: this.$t('page.description') }
+        { key: 'description', title: this.$t('page.description') },
+        {
+          key: 'action'
+        }
       ],
-      tbodyList: []
+      tbodyList: [],
+      dialogConfig: {
+        type: 'modal',
+        maskClose: false,
+        isShow: false,
+        width: 'large',
+        title: '',
+        hasFooter: false
+      },
+      viewDataTable: {},
+      viewDataParams: {
+        currentPage: 1,
+        pageSize: 10,
+        name: ''
+      }
     };
   },
   beforeCreate() {},
@@ -81,6 +116,29 @@ export default {
       this.$api.cmdb.resourceentity.searchResourceEntity().then(res => {
         this.tbodyList = res.Return;
       });
+    },
+    viewData(currentPage, pageSize, name) {
+      console.log(name, 'name');
+      if (currentPage) {
+        this.viewDataParams.currentPage = currentPage;
+      }
+      if (pageSize) {
+        this.viewDataParams.pageSize = pageSize;
+      }
+      if (name) {
+        this.dialogConfig.title = name;
+        this.viewDataParams.name = name;
+      }
+      this.$api.cmdb.resourceentity.getResourceEntityViewDataList(this.viewDataParams).then(res => {
+        this.viewDataTable = res.Return;
+        this.dialogConfig.isShow = true;
+      });
+    },
+    close() {
+      this.dialogConfig.isShow = false;
+      this.viewDataTable = {};
+      this.dialogConfig.title = '';
+      this.viewDataParams.name = '';
     },
     closeEntityDialog(needRefresh) {
       this.isEditShow = false;
