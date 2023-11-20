@@ -513,7 +513,6 @@ export default {
       } else if (Array.isArray(value)) {
         valueList = value.map((item) => item['text']).filter(Boolean);
       }
-      console.log('返回的值', value);
       return valueList.join(',');
     },
     handleFormatError(file) {

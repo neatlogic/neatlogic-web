@@ -8,6 +8,7 @@
         :workcenterConditionData="workcenterConditionData"
         :conditionData="getWorkcenterConditionData(condition.handler)"
         :mode="mode"
+        :isValueObject="isValueObject"
         @change="change"
         @changeWithCondition="changeWithCondition"
       ></component>
@@ -19,6 +20,7 @@
         :condition="condition"
         :conditionData="conditionData || getWorkcenterConditionData(condition.handler)"
         :mode="mode"
+        :isValueObject="fromComponent == 'channelselect' && isValueObject"
         @change="change"
       ></component>
     </div>
@@ -50,7 +52,15 @@ export default {
     mode: { type: String, default: 'simple' },
     workcenterConditionData: { type: Object }, //全量的工单中心条件数据，主要提供给channelselect.vue使用，其他组件不需要用的此数据
     condition: { type: Object }, //默认条件
-    conditionData: { type: Object } //工单中心组件条件数据
+    conditionData: { type: Object }, //工单中心组件条件数据
+    isValueObject: { // 返回的值是否是对象
+      type: Boolean,
+      default: false
+    },
+    fromComponent: { // 用于再简单模式下，表单过滤属性按钮打开之后，表单属性下拉框传递的值是对象的问题
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {

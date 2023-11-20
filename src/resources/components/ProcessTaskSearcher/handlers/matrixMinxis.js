@@ -1,4 +1,11 @@
 export default {
+  props: {
+    isValueObject: {
+      // 返回的值是否是对象
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     dealDataByUrl(nodeList) {
       //处理返回的数据结构为tsFormSelect需要的数据结构

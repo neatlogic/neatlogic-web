@@ -44,6 +44,8 @@
               mode="simple"
               :condition="getFormConditionByName(formcondition.name)"
               :workcenterConditionData="workcenterConditionData"
+              :isValueObject="isValueObject"
+              fromComponent="channelselect"
               @change="changeFromCondition"
             ></SearchInputer>
           </div>
@@ -65,7 +67,12 @@ export default {
     mode: { type: String, default: 'simple' },
     conditionData: { type: Object }, //当前组件在工单中心配置中的数据
     condition: { type: Object },
-    workcenterConditionData: { type: Object } //工单中心所有条件数据
+    workcenterConditionData: { type: Object }, //工单中心所有条件数据
+    isValueObject: {
+      // 返回的值是否是对象
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

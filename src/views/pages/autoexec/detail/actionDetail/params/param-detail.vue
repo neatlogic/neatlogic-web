@@ -66,7 +66,6 @@
           </Col>
           <Col span="8">
             <div class="param-handler">
-              {{ getselectConfig(item) }}
               <div v-if="excludeTyptList.indexOf(item.type) > -1">-</div>
               <Items
                 :is="handlerType(item.type)"

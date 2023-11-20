@@ -15,6 +15,7 @@
             :formData="row"
             :showStatusIcon="false"
             :readonly="readonly"
+            :isValueObject="isValueObject"
             mode="read"
             style="min-width:130px"
             @change="changeRow(row,index)"
