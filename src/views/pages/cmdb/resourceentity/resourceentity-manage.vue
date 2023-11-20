@@ -2,9 +2,6 @@
   <div>
     <TsContain>
       <template v-slot:topLeft>
-        <div class="action-group">
-          <span class="action-item tsfont-rotate-right" @click="rebuildAll()">{{ $t('term.cmdb.rebuildallview') }}</span>
-        </div>
       </template>
       <template v-slot:topRight>
         <InputSearcher v-model="keyword"></InputSearcher>
@@ -145,18 +142,6 @@ export default {
       if (needRefresh) {
         this.getResourceEntityList();
       }
-    },
-    rebuildAll() {
-      this.$api.cmdb.resourceentity
-        .rebuildAllResourceEntity()
-        .then(res => {
-          if (res.Status === 'OK') {
-            this.$Message.success('重建完毕');
-          }
-        })
-        .finally(() => {
-          this.getResourceEntityList();
-        });
     }
   },
   filter: {},
