@@ -151,7 +151,6 @@ export default {
       this.paraConditionList = [];
       this.$api.process.process.processParamList(data).then(res => {
         if (res.Status == 'OK') {
-          let defaultParamConditionList = res.Return;
           this.$set(this, 'paraConditionList', res.Return || []);
         }
       });
@@ -256,7 +255,7 @@ export default {
     },
     'formConfig.uuid': {
       handler: function(val, oldval) {
-        this.getParaConditionList(val.uuid);
+        this.getParaConditionList(val);
       },
       deep: true,
       immediate: true

@@ -2556,6 +2556,7 @@
     "tofront": "移到最顶端",
     "toend": "移到最底端",
     "publishversion": "发布版本",
-    "confirmcheckversion": "是否确认将当前版本提交审核？"
+    "confirmcheckversion": "是否确认将当前版本提交审核？",
+    "confirmandpublish": "通过并发布"
   }
 }

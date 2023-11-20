@@ -946,5 +946,7 @@
   "homeurl": "Application Service Address",
   "filltype": "Background Fill Method",
   "backgroundresizable": "Background Follow Zoom",
-  "auto": "automatic"
+  "auto": "automatic",
+  "enter": "enter",
+  "viewdata": "View Data"
 }
