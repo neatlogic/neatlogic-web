@@ -115,7 +115,6 @@ export default {
       });
     },
     viewData(currentPage, pageSize, name) {
-      console.log(name, 'name');
       if (currentPage) {
         this.viewDataParams.currentPage = currentPage;
       }
