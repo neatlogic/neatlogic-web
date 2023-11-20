@@ -947,5 +947,6 @@
   "filltype": "Background Fill Method",
   "backgroundresizable": "Background Follow Zoom",
   "auto": "automatic",
-  "enter": "enter"
+  "enter": "enter",
+  "viewdata": "View Data"
 }
