@@ -538,7 +538,7 @@ export default {
         type != 'saveother' && (data.currentVersionUuid = this.currentVersion.uuid);
         // 场景uuid,name
         !formConfig.uuid && (formConfig.uuid = this.$utils.setUuid());
-        !formConfig.name && (formConfig.name = this.$t('page.defaultscenario'));
+        !formConfig.name && (formConfig.name = this.$t('page.mainscene'));
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
         this.$set(formConfig, 'defaultSceneUuid', this.initFormConfig.defaultSceneUuid || formConfig.uuid);
         if (type === 'saveother') {
