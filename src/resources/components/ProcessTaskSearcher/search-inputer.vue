@@ -20,7 +20,7 @@
         :condition="condition"
         :conditionData="conditionData || getWorkcenterConditionData(condition.handler)"
         :mode="mode"
-        :isValueObject="fromComponent == 'channelselect' && isValueObject"
+        :isValueObject="isCustomPanel && isValueObject"
         @change="change"
       ></component>
     </div>
@@ -57,9 +57,9 @@ export default {
       type: Boolean,
       default: false
     },
-    fromComponent: { // 用于再简单模式下，表单过滤属性按钮打开之后，表单属性下拉框传递的值是对象的问题
-      type: String,
-      default: ''
+    isCustomPanel: { // 用于简单模式下，表单过滤属性按钮打开之后，表单属性下拉框需要是{text:1,value:1}或者[{text:1,value:1}]
+      type: Boolean,
+      default: false
     }
   },
   data() {

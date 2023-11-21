@@ -45,7 +45,7 @@
               :condition="getFormConditionByName(formcondition.name)"
               :workcenterConditionData="workcenterConditionData"
               :isValueObject="isValueObject"
-              fromComponent="channelselect"
+              :isCustomPanel="true"
               @change="changeFromCondition"
             ></SearchInputer>
           </div>
