@@ -3,12 +3,12 @@
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]">
       <template v-if="nodeList && nodeList.length > 0">
         <span
-          v-for="(val, dindex) in value"
+          v-for="(val, dindex) in currentValue"
           :key="dindex"
           style="display:flex;"
         >
           {{ getText(val) }}
-          <span v-if="dindex < value.length - 1" class="text-grey tsform-readonly-sperate">{{ sperateText }}</span>
+          <span v-if="dindex < currentValue.length - 1" class="text-grey tsform-readonly-sperate">{{ sperateText }}</span>
         </span>
       </template>
       <template v-else>-</template>
@@ -253,10 +253,9 @@ export default {
       return reslutClass;
     },
     getText() {
-      let _this = this;
-      return function(val) {
-        let node = _this.nodeList.find(item => item[_this.valueName] == val);
-        return node && node[_this.textName] ? node[_this.textName] : '-';
+      return (val) => {
+        let node = this.nodeList.find(item => item[this.valueName] == val);
+        return node && node[this.textName] ? node[this.textName] : '-';
       };
     }
   },

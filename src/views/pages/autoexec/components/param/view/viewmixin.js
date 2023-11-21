@@ -22,11 +22,11 @@ export default {
     event: 'change'
   },
   data() {
-    let _this = this;
-    return {};
+    return {
+      isValueObject: (this.config && this.config.dataSource == 'matrix') || false
+    };
   },
-  created() {
-  },
+  created() {},
   mounted() {},
   beforeDestroy() {},
   methods: {
@@ -40,8 +40,7 @@ export default {
         return true;
       }
     },
-    getDatalist() {
-    }
+    getDatalist() {}
   },
   computed: {
     getSetting() {
@@ -81,6 +80,5 @@ export default {
       return setting;
     }
   },
-  watch: {
-  }
+  watch: {}
 };

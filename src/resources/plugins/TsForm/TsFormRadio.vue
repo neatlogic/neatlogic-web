@@ -15,7 +15,7 @@
           :label="data[valueName]"
           :disabled="disabled || data.disabled || readonly"
           :class="{ 'tsform-radio-readonly': readonly }"
-          @click.native="cancelRadio(data[valueName])"
+          @click.native="cancelRadio(data[valueName], data.disabled)"
         >
           <span>
             <slot name="label" :node="data" :index="index">{{ data[textName] || '-' }}</slot>
@@ -233,12 +233,18 @@ export default {
         }, 100);
       }
     },
-    cancelRadio(label) { //取消勾选
-      if (this.allowToggle && this.currentValue == label) {
-        this.currentValue = null;
-        this.$emit('update:value', this.currentValue);
-        this.$emit('change', this.currentValue);
-        this.$emit('on-change', this.currentValue);
+    cancelRadio(label, disabled) { //取消勾选
+      if (disabled || this.disabled) {
+        // 禁用之后按钮不可点击
+        return false;
+      }
+      if (this.is) {
+        if (this.allowToggle && this.currentValue == label) {
+          this.currentValue = null;
+          this.$emit('update:value', this.currentValue);
+          this.$emit('change', this.currentValue);
+          this.$emit('on-change', this.currentValue);
+        } 
       }
     }
   },
@@ -249,7 +255,7 @@ export default {
       return reslutClass;
     },
     getText() {
-      let node = this.nodeList.find(item => item[this.valueName] == this.value);
+      let node = this.nodeList.find(item => item[this.valueName] == this.currentValue);
       return node && node[this.textName] ? node[this.textName] : '-';
     }
   },

@@ -7,6 +7,7 @@
       :readonly="readonly"
       :disabled="disabled"
       :transfer="true"
+      :isValueObject="isValueObject"
       border="border"
       @on-change="updateval"
     ></TsFormSelect>

@@ -622,7 +622,7 @@ export default {
       // 取消上次请求的接口
       // let ajaxArr = { method: this.ajaxType, url: url, cancelAxios: this[cancel].token};
       let needdataLi = ['post', 'put'];
-      this.ArrIndexOf(needdataLi, this.ajaxType) < 0 ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
+      !needdataLi.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
       let res = await this.$https(ajaxArr);
       let nodeList = [];
       if (res && res.Status == 'OK') {
@@ -893,7 +893,7 @@ export default {
                 findSelect && list.push(findSelect);
               });
           }
-          this.selectedList = selectedList.length > 1 ? list : selectedList;
+          this.selectedList = selectedList.length > 1 && !this.$utils.isEmpty(list) ? list : selectedList;
           this.handleEchoFailedDefaultValue();
         } else {
           this.selectedList = [];
@@ -1341,7 +1341,7 @@ export default {
       let index = -1;
       if (arr instanceof Array) {
         arr.find((item, i) => {
-          utils.equalStr(this.isValueObject ? item[this.valueName] : item, str) && (index = i);
+          utils.equalStr(this.isValueObject && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
           return index >= 0;
         });
       } else {

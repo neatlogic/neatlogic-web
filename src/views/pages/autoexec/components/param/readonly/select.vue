@@ -15,6 +15,7 @@
           v-bind="getSetting"
           :multiple="multiple"
           :readonly="true"
+          :isValueObject="true"
         ></TsFormSelect>
       </div>
     </template>
@@ -72,8 +73,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   computed: {
     getSetting() { //更新默认值设置
       let config = Object.assign({}, this.matrixAttributeConfig);
