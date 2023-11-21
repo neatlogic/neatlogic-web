@@ -76,7 +76,7 @@ const form = {
   getReferenceCount(params) { //查询引用数量
     return axios.post('/api/rest/dependency/count', params);
   },
-  getFormDefaultscene(params) { //查询引用数量
+  getFormDefaultscene(params) { //保持默认场景
     return axios.post('/api/rest/form/version/defaultscene/save', params);
   }
 };
