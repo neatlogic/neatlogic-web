@@ -1151,7 +1151,8 @@
     "versionlog": "版本日志",
     "exporttable": "导出表格",
     "importtable": "导入表格",
-    "excelinputtemplate": "表格输入模板"
+    "excelinputtemplate": "表格输入模板",
+    "formsubassembly": "表单子组件"
   },
   "knowledge": {
     "document": "文档",

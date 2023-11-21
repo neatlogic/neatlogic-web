@@ -30,7 +30,6 @@
       </div> 
       <div v-if="!disabled && !readonly && config.isCanAdd">
         <Button
-          v-if="mode ==='read' || mode==='readSubform'"
           type="primary"
           ghost
           @click="addFormData"
@@ -132,7 +131,7 @@ export default {
     getFormDataHeight() {
       return (list) => {
         let height = 100;
-        if (list.length > 0 && this.disabled || this.readonly || !this.config || !this.config.isCanAdd || (this.mode !== 'read' && this.mode !== 'readSubform')) {
+        if (list.length > 0 && this.disabled || this.readonly || !this.config || !this.config.isCanAdd) {
           height = 100 * (1 - 1 / (list.length * 2));
         }
         return height + '%';

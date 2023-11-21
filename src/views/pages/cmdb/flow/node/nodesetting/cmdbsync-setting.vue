@@ -47,7 +47,12 @@
         {{ $t('form.validate.required', { target: $t('term.cmdb.modemapping') }) }}
       </div>
     </div>
-    <CmdbsyncDialog v-if="isShowDialog" :configList="ciEntityConfig.configList" @close="close"></CmdbsyncDialog>
+    <CmdbsyncDialog
+      v-if="isShowDialog"
+      :configList="ciEntityConfig.configList"
+      :formUuid="formUuid"
+      @close="close"
+    ></CmdbsyncDialog>
   </div>
 </template>
 <script>
@@ -59,6 +64,7 @@ export default {
     CmdbsyncDialog: resolve => require(['./cmdbpolicy/cmdbsync-dialog.vue'], resolve)
   },
   props: {
+    formUuid: String,
     defaultCiEntityConfig: Object
   },
   data() {

@@ -1152,7 +1152,8 @@
     "versionlog": "Version Log",
     "exporttable": "Export Table",
     "importtable": "Import Table",
-    "excelinputtemplate": "Table Input Template"
+    "excelinputtemplate": "Table Input Template",
+    "formsubassembly": "List subcomponents"
   },
   "knowledge": {
     "document": "Document",
