@@ -296,6 +296,7 @@
       :sceneUuid="sceneUuid"
       @close="closeScene"
       @deleteScene="deleteScene"
+      @updateDefaultSceneUuid="updateDefaultSceneUuid"
     ></FormSceneDialog>
   </div>
 </template>
@@ -539,6 +540,7 @@ export default {
         !formConfig.uuid && (formConfig.uuid = this.$utils.setUuid());
         !formConfig.name && (formConfig.name = this.$t('page.defaultscenario'));
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
+        this.$set(formConfig, 'defaultSceneUuid', this.initFormConfig.defaultSceneUuid || formConfig.uuid);
         if (type === 'saveother') {
           this.$set(formConfig, 'uuid', this.$utils.setUuid());
           formConfig.sceneList.forEach(item => {
@@ -991,6 +993,9 @@ export default {
       this.$nextTick(() => {
         this.isFormLoaded = true;
       });
+    },
+    updateDefaultSceneUuid(uuid) {
+      this.$set(this.initData, 'defaultsceneUuid', uuid);
     }
   },
   filter: {},

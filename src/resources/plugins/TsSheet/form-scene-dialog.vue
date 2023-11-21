@@ -15,7 +15,7 @@
               <span class="tsfont-plus text-action" @click="addScene()">{{ $t('page.scene') }}</span>
               <span class="pl-nm">
                 <span class="text-tip pr-xs">{{ $t('page.defaultscenario') }}</span>
-                <span class="text-href" @click="selectDefaultscene()">{{ getSceneName(defaultsceneUuid) }}</span>
+                <span class="text-href" @click="selectDefaultscene()">{{ getSceneName(defaultSceneUuid) }}</span>
               </span>
             </div>
             <TsTable
@@ -36,7 +36,7 @@
                   <ul class="tstable-action-ul">
                     <li class="tsfont-copy" @click="copyScene(row)">{{ $t('page.copy') }}</li>
                     <li
-                      v-if="row.uuid !== formConfig.uuid && !row.isDefaultValue"
+                      v-if="row.uuid !== formConfig.uuid && row.uuid !== defaultSceneUuid"
                       class="tsfont-trash-o"
                       :class="{ 'disable': row.referenceCount }"
                       :title="row.referenceCount? $t('message.framework.notdelscenetip') : ''"
@@ -61,6 +61,7 @@
         <div>
           <TsFormItem :label="$t('page.defaultscenario')" required>
             <TsFormSelect
+              ref="sceneUuid"
               v-model="selectSceneUuid"
               :dataList="tbodyList"
               textName="name"
@@ -109,7 +110,7 @@ export default {
         {key: 'action'}
       ],
       tbodyList: [],
-      defaultsceneUuid: null,
+      defaultSceneUuid: null,
       isSelectDefaultsceneDialog: false,
       validateList: ['required'],
       selectSceneUuid: null
@@ -130,21 +131,21 @@ export default {
   methods: {
     initData() {
       let defaultValue = [];
-      if (!this.$utils.isEmpty(this.formConfig) && this.formConfig.name) {
+      if (!this.$utils.isEmpty(this.formConfig)) {
         this.tbodyList.push({
           name: this.$t('page.mainscene'),
           uuid: this.formConfig.uuid,
           lcu: this.formConfig.lcu,
           lcd: this.formConfig.lcd
         });
-        this.defaultsceneUuid = this.formConfig.uuid;
+        this.defaultSceneUuid = this.formConfig.defaultSceneUuid || this.formConfig.uuid;
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
         this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; }); 
         this.tbodyList.push(...this.formConfig.sceneList);
         let findDefaultValue = this.formConfig.sceneList.find(s => s.isDefaultValue);
         if (findDefaultValue) {
-          this.defaultsceneUuid = findDefaultValue.uuid;
+          this.defaultSceneUuid = findDefaultValue.uuid;
         }
       }
       if (this.tbodyList.length > 0) {
@@ -261,21 +262,25 @@ export default {
       });
     },
     selectDefaultscene() {
-      this.selectSceneUuid = this.$utils.deepClone(this.defaultsceneUuid);
+      this.selectSceneUuid = this.$utils.deepClone(this.defaultSceneUuid);
       this.isSelectDefaultsceneDialog = true;
-      //  = this.tbodyList.find(item => item.isDefaultValue).uuid;
-      //  if
     },
     saveDefaultscene() {
-      this.defaultsceneUuid = this.selectSceneUuid;
-      this.tbodyList.forEach(item => {
-        if (item.uuid === this.defaultsceneUuid) {
-          this.$set(item, 'isDefaultValue', true);
-        } else {
-          this.$set(item, 'isDefaultValue', false);
+      if (!this.$refs.sceneUuid.valid()) {
+        return;
+      }
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.getFormDefaultscene({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: this.defaultSceneUuid
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('updateDefaultSceneUuid', this.defaultSceneUuid);
         }
+      }).finally(() => {
+        this.isSelectDefaultsceneDialog = false;
       });
-      this.isSelectDefaultsceneDialog = false;
     },
     closeDefaultsceneDialog() {
       this.isSelectDefaultsceneDialog = false;
