@@ -238,13 +238,11 @@ export default {
         // 禁用之后按钮不可点击
         return false;
       }
-      if (this.is) {
-        if (this.allowToggle && this.currentValue == label) {
-          this.currentValue = null;
-          this.$emit('update:value', this.currentValue);
-          this.$emit('change', this.currentValue);
-          this.$emit('on-change', this.currentValue);
-        } 
+      if (this.allowToggle && this.currentValue == label) {
+        this.currentValue = null;
+        this.$emit('update:value', this.currentValue);
+        this.$emit('change', this.currentValue);
+        this.$emit('on-change', this.currentValue);
       }
     }
   },
