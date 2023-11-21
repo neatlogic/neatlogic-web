@@ -50,7 +50,6 @@
     <CmdbsyncDialog
       v-if="isShowDialog"
       :configList="ciEntityConfig.configList"
-      :formUuid="formUuid"
       @close="close"
     ></CmdbsyncDialog>
   </div>
@@ -64,7 +63,6 @@ export default {
     CmdbsyncDialog: resolve => require(['./cmdbpolicy/cmdbsync-dialog.vue'], resolve)
   },
   props: {
-    formUuid: String,
     defaultCiEntityConfig: Object
   },
   data() {
