@@ -42,6 +42,7 @@
             v-bind="defaultValueConfig" 
             :multiple="multiple"
             :readonly="true"
+            :isValueObject="dataSource == 'matrix' ? true : false"
             border="border"
           >
           </TsFormSelect>
@@ -63,6 +64,7 @@
       :sourcConfig="sourcConfig"
       :isShow="isShow"
       :multiple="multiple"
+      :isValueObject="isValueObject"
       @saveSourc="saveSourc"
       @close="close"
     ></DataSource> 
@@ -83,9 +85,13 @@ export default {
     prop: 'value',
     event: 'change'
   },
-  props: {},
+  props: {
+    isValueObject: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
-    let _this = this;
     return {
       matrixConfig: { //矩阵
         dynamicUrl: '/api/rest/matrix/search', 

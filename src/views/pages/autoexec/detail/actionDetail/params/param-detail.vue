@@ -77,6 +77,7 @@
                 :disabled="!isEdit"
                 :setValidComponentsList="setValidComponentsList"
                 :isRequired="item.isRequired && !item.editable"
+                :isValueObject="true"
                 @getConfig="(config)=>{getParamConfig(index,config)}"
               ></Items>
             </div>
@@ -117,7 +118,7 @@
         type="primary"
         ghost
         @click="addParam"
-      ><span class="tsfont-plus ">{{ $t('page.param') }}</span></Button>
+      ><span class="tsfont-plus">{{ $t('page.param') }}</span></Button>
     </div>
   </div>
 </template>

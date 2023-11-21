@@ -60,6 +60,7 @@
         v-model="defaultValue" 
         v-bind="defaultSelfJson"
         :multiple="multiple"
+        :isValueObject="isValueObject"
         border="border"
         transfer
       ></TsFormSelect>
@@ -78,10 +79,13 @@ export default {
   },
   props: {
     sourcConfig: Object,
-    multiple: Boolean
+    multiple: Boolean,
+    isValueObject: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
-    let _this = this;
     return {
       matrixConfig: { 
         dynamicUrl: '/api/rest/matrix/search', 
