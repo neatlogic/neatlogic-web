@@ -39,7 +39,6 @@
         ref="dataSource"
         :sourcConfig="config"
         :multiple="multiple"
-        :isValueObject="isValueObject && dataSource == 'matrix' ? true : false"
         @update="update"
       ></div>
     </div>
@@ -62,11 +61,7 @@ export default {
       default: false
     },
     sourcConfig: Object,
-    multiple: Boolean,
-    isValueObject: {
-      type: Boolean,
-      default: false
-    }
+    multiple: Boolean
   },
   data() {
     return {

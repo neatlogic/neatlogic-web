@@ -19,11 +19,6 @@ export default {
       //设置需要校验规则的组件类型列表
       type: Array,
       default: () => []
-    },
-    isValueObject: {
-      // 返回的值是否是对象{text:1,value:2}或者[{text:1,value:2}]
-      type: Boolean,
-      default: false
     }
   },
   data() {

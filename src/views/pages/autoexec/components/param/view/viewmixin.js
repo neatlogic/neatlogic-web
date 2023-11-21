@@ -22,9 +22,7 @@ export default {
     event: 'change'
   },
   data() {
-    return {
-      isValueObject: (this.config && this.config.dataSource == 'matrix') || false
-    };
+    return {};
   },
   created() {},
   mounted() {},

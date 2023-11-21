@@ -47,7 +47,7 @@ export default {
       default: false
     },
     isValueObject: {
-      // 返回值是否是对象，默认是false
+      // 返回值是否是对象，默认是false，如：{text:1,value:1} 或者 [{text:1,value:1}]
       type: Boolean,
       default: false
     }

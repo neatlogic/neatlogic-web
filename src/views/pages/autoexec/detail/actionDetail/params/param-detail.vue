@@ -77,7 +77,6 @@
                 :disabled="!isEdit"
                 :setValidComponentsList="setValidComponentsList"
                 :isRequired="item.isRequired && !item.editable"
-                :isValueObject="true"
                 @getConfig="(config)=>{getParamConfig(index,config)}"
               ></Items>
             </div>

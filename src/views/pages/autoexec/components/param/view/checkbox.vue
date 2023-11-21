@@ -5,7 +5,6 @@
     v-bind="getSetting"
     :readonly="readonly"
     :disabled="disabled"
-    :isValueObject="isValueObject"
     @on-change="updateval"
   ></TsFormCheckbox>
 </template>

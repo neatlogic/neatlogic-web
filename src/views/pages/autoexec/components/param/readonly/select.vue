@@ -15,7 +15,6 @@
           v-bind="getSetting"
           :multiple="multiple"
           :readonly="true"
-          :isValueObject="true"
         ></TsFormSelect>
       </div>
     </template>

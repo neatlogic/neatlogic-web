@@ -60,7 +60,6 @@
         v-model="defaultValue" 
         v-bind="defaultSelfJson"
         :multiple="multiple"
-        :isValueObject="isValueObject"
         border="border"
         transfer
       ></TsFormSelect>
@@ -79,11 +78,7 @@ export default {
   },
   props: {
     sourcConfig: Object,
-    multiple: Boolean,
-    isValueObject: {
-      type: Boolean,
-      default: false
-    }
+    multiple: Boolean
   },
   data() {
     return {
