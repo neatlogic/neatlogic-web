@@ -44,7 +44,7 @@
               mode="simple"
               :condition="getFormConditionByName(formcondition.name)"
               :workcenterConditionData="workcenterConditionData"
-              :isValueObject="isValueObject"
+              :isCustomValue="isCustomValue"
               :isCustomPanel="true"
               @change="changeFromCondition"
             ></SearchInputer>
@@ -68,8 +68,8 @@ export default {
     conditionData: { type: Object }, //当前组件在工单中心配置中的数据
     condition: { type: Object },
     workcenterConditionData: { type: Object }, //工单中心所有条件数据
-    isValueObject: {
-      // 返回的值是否是对象
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
     }

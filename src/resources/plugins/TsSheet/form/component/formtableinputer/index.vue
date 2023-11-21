@@ -71,7 +71,7 @@
             :readonly="readonly"
             :disabled="disabled"
             :isClearEchoFailedDefaultValue="true"
-            :isValueObject="true"
+            :isCustomValue="true"
             style="min-width:130px"
             @change="changeRow(row,index)"
           ></FormItem>

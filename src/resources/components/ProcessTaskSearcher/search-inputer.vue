@@ -8,7 +8,7 @@
         :workcenterConditionData="workcenterConditionData"
         :conditionData="getWorkcenterConditionData(condition.handler)"
         :mode="mode"
-        :isValueObject="isValueObject"
+        :isCustomValue="isCustomValue"
         @change="change"
         @changeWithCondition="changeWithCondition"
       ></component>
@@ -20,7 +20,7 @@
         :condition="condition"
         :conditionData="conditionData || getWorkcenterConditionData(condition.handler)"
         :mode="mode"
-        :isValueObject="isCustomPanel && isValueObject"
+        :isCustomValue="isCustomPanel && isCustomValue"
         @change="change"
       ></component>
     </div>
@@ -53,7 +53,8 @@ export default {
     workcenterConditionData: { type: Object }, //全量的工单中心条件数据，主要提供给channelselect.vue使用，其他组件不需要用的此数据
     condition: { type: Object }, //默认条件
     conditionData: { type: Object }, //工单中心组件条件数据
-    isValueObject: { // 返回的值是否是对象
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
     },

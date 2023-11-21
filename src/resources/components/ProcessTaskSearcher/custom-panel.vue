@@ -32,7 +32,7 @@
                   mode="custom"
                   :condition="getConditionConfigByConditionData(conditionGroup, conditionData)"
                   :conditionData="conditionData"
-                  :isValueObject="true"
+                  :isCustomValue="true"
                   :isCustomPanel="true"
                   @change="
                     (conditionConfig, val, textStr) => {

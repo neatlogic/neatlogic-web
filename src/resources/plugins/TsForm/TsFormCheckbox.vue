@@ -198,7 +198,7 @@ export default {
             return true;
           }
         });
-        if (this.isValueObject) {
+        if (this.isCustomValue) {
           value = selectedItem;
         }
       }

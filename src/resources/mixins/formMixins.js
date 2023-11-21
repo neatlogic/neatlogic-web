@@ -46,8 +46,8 @@ export default {
       type: Boolean,
       default: false
     },
-    isValueObject: {
-      // 返回值是否是对象，默认是false，如：{text:1,value:1} 或者 [{text:1,value:1}]
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
     }
@@ -116,7 +116,7 @@ export default {
             let valueList = [];
             value.forEach(v => {
               if (v != false && !this.$utils.isEmpty(v)) {
-                if (this.isValueObject && v[this.valueName]) {
+                if (this.isCustomValue && v[this.valueName]) {
                   // 数组对象类型
                   valueList.push(v?.[this.valueName]);
                 } else {
@@ -241,7 +241,7 @@ export default {
           if (this.$utils.isEmpty(currentValue)) {
             value = [];
           } else {
-            if (this.isValueObject) {
+            if (this.isCustomValue) {
               // 返回的是对象处理需要处理成['value1', 'value2']
               value = currentValue instanceof Array ? currentValue.filter(item => item?.[this.valueName]).map(item => item[this.valueName]) : [];
             } else {
@@ -249,7 +249,7 @@ export default {
             }
           }
         } else {
-          if (this.isValueObject && currentValue && typeof currentValue === 'object' && currentValue[this.valueName]) {
+          if (this.isCustomValue && currentValue && typeof currentValue === 'object' && currentValue[this.valueName]) {
             value = currentValue[this.valueName];
           } else {
             value = currentValue;

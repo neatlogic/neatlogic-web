@@ -7,7 +7,7 @@
           mode="simple"
           :condition="condition"
           :workcenterConditionData="workcenterConditionDataLocal"
-          :isValueObject="true"
+          :isCustomValue="true"
           @change="change"
         ></SearchInputer>
       </div>

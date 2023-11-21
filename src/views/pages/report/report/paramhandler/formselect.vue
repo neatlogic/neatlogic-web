@@ -6,7 +6,7 @@
       border="border"
       :search="true"
       :transfer="true"
-      :isValueObject="true"
+      :isCustomValue="true"
       :validateList="validateList"
     ></TsFormSelect>
   </div>

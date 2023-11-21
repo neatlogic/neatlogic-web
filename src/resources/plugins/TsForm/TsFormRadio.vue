@@ -199,7 +199,7 @@ export default {
           return n[this.valueName] === value;
         });
       }
-      if (this.isValueObject) {
+      if (this.isCustomValue) {
         value = selectedItem || {};
       }
       this.$emit('update:value', value);

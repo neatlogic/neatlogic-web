@@ -913,7 +913,7 @@ export default {
       });
     },
     handleObjectValue(valueName) {
-      if (!this.isValueObject) {
+      if (!this.isCustomValue) {
         return this.currentValue == valueName;
       }
       if (this.currentValue instanceof Array) {
@@ -1025,12 +1025,12 @@ export default {
       let toValue = this.currentValue; //额外赋值主要是为了避免引用数据导致值的联动
       if (this.multiple) {
         isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
-        if (this.isValueObject) {
+        if (this.isCustomValue) {
           toValue = this.$utils.deepClone(this.selectedList);
         } else {
           toValue = this.currentValue.concat([]);
         }
-      } else if (this.isValueObject) {
+      } else if (this.isCustomValue) {
         isSame = this.$utils.isSame(this.value, this.currentValue);
         toValue = valueObject;
       } else if (this.value == this.currentValue) {
@@ -1341,7 +1341,7 @@ export default {
       let index = -1;
       if (arr instanceof Array) {
         arr.find((item, i) => {
-          utils.equalStr(this.isValueObject && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
+          utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
           return index >= 0;
         });
       } else {

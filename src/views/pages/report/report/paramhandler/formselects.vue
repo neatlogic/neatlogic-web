@@ -7,7 +7,7 @@
       :search="true"
       :transfer="true"
       :multiple="true"
-      :isValueObject="true"
+      :isCustomValue="true"
       :validateList="validateList"
     ></TsFormSelect>
   </div>

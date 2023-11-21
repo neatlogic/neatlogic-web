@@ -63,7 +63,7 @@
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
-      :isValueObject="isValueObject"
+      :isCustomValue="isCustomValue"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -127,8 +127,8 @@ export default {
       type: Boolean,
       default: false
     },
-    isValueObject: {
-      // 返回的值是否是对象
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
     }

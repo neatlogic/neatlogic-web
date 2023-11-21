@@ -6,7 +6,7 @@
       className="block-span"
       :value="conditionData && conditionData.valueList"
       :validateList="[{ name: 'required', message: ' ' }]"
-      :isValueObject="isValueObject"
+      :isCustomValue="isCustomValue"
       @on-change="change"
     ></TsFormCheckbox>
   </div>

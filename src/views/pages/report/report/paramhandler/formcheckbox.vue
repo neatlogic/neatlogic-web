@@ -5,7 +5,7 @@
       v-bind="myConfig"
       border="border"
       :search="true"
-      :isValueObject="true"
+      :isCustomValue="true"
       :validateList="validateList"
     ></TsFormCheckbox>
   </div>
