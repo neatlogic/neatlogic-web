@@ -947,5 +947,7 @@
   "filltype": "Background Fill Method",
   "backgroundresizable": "Background Follow Zoom",
   "auto": "automatic",
-  "foreachobj": "Traverse Object"
+  "foreachobj": "Traverse Object",
+  "enter": "enter",
+  "viewdata": "View Data"
 }
