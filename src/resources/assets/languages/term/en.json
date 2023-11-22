@@ -2559,6 +2559,10 @@
     "toend": "Move to the bottom",
     "publishversion": "Release version",
     "confirmcheckversion": "Are you sure to submit the current version for review?",
-    "confirmandpublish": "Pass and publish"
+    "confirmandpublish": "Pass and publish",
+    "line": "straight line",
+    "orth": "orthogonal",
+    "metro": "Intelligent avoidance",
+    "startci": "Starting model"
   }
 }
