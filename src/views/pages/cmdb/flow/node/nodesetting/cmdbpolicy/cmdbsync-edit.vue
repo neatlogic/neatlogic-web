@@ -100,7 +100,6 @@
                           :validateList="getValidList(e.type, e.element)"
                           @change="(val)=>{
                             changeMappingMode(val,e)
-                            setConfig(val,'mappingMode',e)
                           }"
                         ></TsFormSelect>
                       </Col>
@@ -176,16 +175,16 @@
                           <TsRow :gutter="8">
                             <Col :span="24">
                               <div class="formTableComponent pr-lg">
-                                <TsFormSelect
+                                <TsFormCascader
                                   ref="attrHandler"
-                                  :value="getValue(ciEntityData.allAttrEntityData, e, 'column')"
-                                  :dataList="getAttrList(ciEntityData.allAttrEntityData, e)"
+                                  :value="getValue(ciEntityData.allAttrEntityData, e, 'valueList')"
+                                  :dataList="tableComponentAttrList"
                                   :validateList="getValidList(e.type, e.element)"
                                   :firstSelect="false"
                                   transfer
                                   border="border"
-                                  @change="(val)=>setConfig(val,'column',e)"
-                                ></TsFormSelect>
+                                  @change="(val)=>setConfig(val,'valueList',e)"
+                                ></TsFormCascader>
                                 <Tooltip
                                   max-width="660"
                                   theme="light"
@@ -224,18 +223,16 @@
                         <template v-else-if="getValue(ciEntityData.allAttrEntityData, e, 'mappingMode') === 'formSubassemblyComponent'">
                           <TsRow :gutter="8">
                             <Col :span="24">
-                              <div class="formTableComponent pr-lg">
-                                <TsFormSelect
-                                  ref="attrHandler"
-                                  :value="getValue(ciEntityData.allAttrEntityData, e, 'column')"
-                                  :dataList="[]"
-                                  :validateList="getValidList(e.type, e.element)"
-                                  :firstSelect="false"
-                                  transfer
-                                  border="border"
-                                  @change="(val)=>setConfig(val,'column',e)"
-                                ></TsFormSelect>
-                              </div>
+                              <TsFormCascader
+                                ref="attrHandler"
+                                :value="getValue(ciEntityData.allAttrEntityData, e, 'valueList')"
+                                :dataList="subFormComponentList"
+                                :validateList="getValidList(e.type, e.element)"
+                                :firstSelect="false"
+                                transfer
+                                border="border"
+                                @change="(val)=>setConfig(val,'valueList',e)"
+                              ></TsFormCascader>
                             </Col>
                           </TsRow>
                         </template>
@@ -259,7 +256,8 @@ export default {
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
     TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve)
+    AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
+    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader.vue'], resolve)
   },
   props: {
     ciData: Object,
@@ -269,7 +267,9 @@ export default {
       default: () => {
         return [];
       }
-    } 
+    },
+    subFormComponentList: Array,
+    tableComponentAttrList: Array
   },
   data() {
     return {
@@ -499,11 +499,8 @@ export default {
       }
     },
     changeMappingMode(val, e) {
-      if ((val === 'formTableComponent' || val === 'formSubassemblyComponent') && this.ciEntityData.batchDataSource && this.ciEntityData.batchDataSource.attributeUuid) {
-        this.setConfig(this.ciEntityData.batchDataSource.attributeUuid, 'valueList', e);
-      } else {
-        this.setConfig([], 'valueList', e);
-      }
+      this.setConfig(val, 'mappingMode', e);
+      this.setConfig([], 'valueList', e);
     }
   },
   filter: {},
@@ -574,30 +571,6 @@ export default {
           } else if (type === 'formTableComponent') { //table组件（表格数据组件、表单选择组件）
             dataList = this.allFormitemList.filter(item => {
               return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
-            });
-          }
-        }
-        return dataList;
-      };
-    },
-    getAttrList() {
-      return (data, e) => {
-        let dataList = [];
-        let key = null;
-        if (e.type === 'des') {
-          key = 'description';
-        } else {
-          key = e.type + '_' + e.element.id;
-        }
-        let valueList = data[key] && data[key]['valueList'];
-        if (this.allFormitemList && this.allFormitemList.length > 0) {
-          let find = this.allFormitemList.find(item => valueList && item.uuid === valueList[0]);
-          if (find && find.config && find.config.dataConfig) {
-            find.config.dataConfig.forEach(d => {
-              dataList.push({
-                text: d.label,
-                value: d.uuid
-              });
             });
           }
         }

@@ -126,6 +126,8 @@
                       :allFormitemList="allFormitemList"
                       :ciEntityQueue="ciEntityQueue"
                       :ciData="ciData"
+                      :subFormComponentList="getTreeSubFormComponent()"
+                      :tableComponentAttrList="getTableAttrList()"
                       @new="addNewCiEntity"
                       @edit="editNewCiEntity"
                       @remove="removeNewCiEntity"
@@ -240,7 +242,7 @@ export default {
           value: 'formTableComponent'
         },
         {
-          text: '表单子组件',
+          text: this.$t('term.framework.formsubassembly'),
           value: 'formSubassemblyComponent'
         }
       ],
@@ -598,20 +600,14 @@ export default {
             if (val === 'formSubassemblyComponent' && ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent' || (val === 'formTableComponent' && ciEntity.allAttrEntityData[key].mappingMode === 'formSubassemblyComponent')) {
               this.$set(ciEntity.allAttrEntityData[key], 'mappingMode', '');
               this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
-              this.$set(ciEntity.allAttrEntityData[key], 'column', '');
               this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
             }
           });
         }
         if (attr === 'attributeUuid') {
           Object.keys(ciEntity.allAttrEntityData).forEach(key => {
-            if (ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
-              if (val) {
-                this.$set(ciEntity.allAttrEntityData[key], 'valueList', [val]);
-              } else {
-                this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
-              }
-              this.$set(ciEntity.allAttrEntityData[key], 'column', '');
+            if (ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent' || ciEntity.allAttrEntityData[key].mappingMode === 'formSubassemblyComponent') {
+              this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
               this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
             }
           });
@@ -620,34 +616,35 @@ export default {
     },
     getFormTableComponent() { //获取表单table组件
       let dataList = [];
-      if (this.ciData.batchDataSource) {
-        if (this.ciData.batchDataSource.type === 'formTableComponent') {
-          if (this.preCiEntity && this.preCiEntity.batchDataSource && this.preCiEntity.batchDataSource.attributeUuid) {
-            let findTable = this.allFormitemList.find(item => item.uuid === this.preCiEntity.batchDataSource.attributeUuid);
-            if (findTable && findTable.config && findTable.config.dataConfig) {
-              findTable.config.dataConfig.forEach(d => {
-                if (d.handler === 'formtable') {
-                  dataList.push({
-                    label: d.label,
-                    uuid: d.uuid
-                  });
-                }
+      if (this.currentCiEntity) {
+        if (this.currentCiEntity.batchDataSource) {
+          if (this.currentCiEntity.batchDataSource.type === 'formTableComponent') {
+            if (this.preCiEntity && this.preCiEntity.batchDataSource && this.preCiEntity.batchDataSource.attributeUuid) {
+              let findTable = this.allFormitemList.find(item => item.uuid === this.preCiEntity.batchDataSource.attributeUuid);
+              if (findTable && findTable.config && findTable.config.dataConfig) {
+                findTable.config.dataConfig.forEach(d => {
+                  if (d.handler === 'formtable') {
+                    dataList.push({
+                      label: d.label,
+                      uuid: d.uuid
+                    });
+                  }
+                });
+              }
+            } else {
+            //table组件（表格数据组件、表单选择组件）
+              dataList = this.currentFormItemList.filter(item => {
+                return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
               });
             }
-          } else {
-            //table组件（表格数据组件、表单选择组件）
+          } else if (this.currentCiEntity.batchDataSource.type === 'formSubassemblyComponent') {
+          //表单子组件
             dataList = this.currentFormItemList.filter(item => {
-              return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
+              return item.handler === 'formsubassembly';
             });
           }
-        } else if (this.ciData.batchDataSource.type === 'formSubassemblyComponent') {
-          //表单子组件
-          dataList = this.currentFormItemList.filter(item => {
-            return item.handler === 'formsubassembly';
-          });
         }
       }
-      
       return dataList;
     },
     getAttrList(batchDataSource) { //过滤条件，属性选择列表
@@ -706,7 +703,6 @@ export default {
         Object.keys(ciEntity.allAttrEntityData).forEach(key => {
           if (val === 'batch' && ciEntity.allAttrEntityData[key].mappingMode === 'formTableComponent') {
             this.$set(ciEntity.allAttrEntityData[key], 'valueList', []);
-            this.$set(ciEntity.allAttrEntityData[key], 'column', '');
             this.$set(ciEntity.allAttrEntityData[key], 'filterList', []);
           }
         });
@@ -742,9 +738,6 @@ export default {
                   mappingMode: item.allAttrEntityData[key].mappingMode,
                   valueList: item.allAttrEntityData[key].valueList 
                 };
-                if (item.allAttrEntityData[key].hasOwnProperty('column')) {
-                  objectData.column = item.allAttrEntityData[key].column;
-                }
                 if (item.allAttrEntityData[key].hasOwnProperty('filterList')) {
                   objectData.filterList = item.allAttrEntityData[key].filterList;
                 }
@@ -780,7 +773,7 @@ export default {
       });
       return list;
     },
-    updateCurrentFormItemList(currentCiEntity) {
+    updateCurrentFormItemList(currentCiEntity) { 
       if (!this.$utils.isEmpty(currentCiEntity) && currentCiEntity.batchDataSource && currentCiEntity.batchDataSource.type === 'formSubassemblyComponent') {
         let subFormConfig = this.currentFormItemList.find(c => c.uuid === currentCiEntity.batchDataSource.attributeUuid);
         if (subFormConfig) {
@@ -791,7 +784,97 @@ export default {
       } else {
         this.currentFormItemList = this.$utils.deepClone(this.allFormitemList);
       }
+    },
+    getTableAttrList() { //过滤对象为表格组件时，属性映射可选的表格属性
+      let list = [];
+      if (this.currentCiEntity && 
+      this.currentCiEntity.batchDataSource && 
+      this.currentCiEntity.batchDataSource.type === 'formTableComponent' && 
+      this.currentCiEntity.batchDataSource.attributeUuid) {
+        let uuidList = [];
+        for (let i = this.ciEntityQueue.length - 1; i >= 0; i--) {
+          if (this.ciEntityQueue[i].batchDataSource && this.ciEntityQueue[i].batchDataSource.attributeUuid) {
+            uuidList.unshift(this.ciEntityQueue[i].batchDataSource.attributeUuid);
+          } else {
+            break;
+          }
+        }
+        if (uuidList.length > 0) {
+          let findItem = this.allFormitemList.find(item => item.uuid === uuidList[0]);
+          if (findItem && findItem.config.dataConfig) {
+            list = this.getTreeAttrList(findItem.config.dataConfig, uuidList, 'formTableComponent');
+          }
+        }
+      }
+      return list;
+    },
+    getTreeSubFormComponent() { //过滤对象为子表单, 属性映射可选的子表单组件
+      let list = [];
+      if (this.currentCiEntity && 
+      this.currentCiEntity.batchDataSource && 
+      this.currentCiEntity.batchDataSource.type === 'formSubassemblyComponent' && 
+      this.currentCiEntity.batchDataSource.attributeUuid) {
+        let subformUuidList = [];
+        for (let i = this.ciEntityQueue.length - 1; i >= 0; i--) {
+          if (this.ciEntityQueue[i].batchDataSource && this.ciEntityQueue[i].batchDataSource.attributeUuid) {
+            subformUuidList.unshift(this.ciEntityQueue[i].batchDataSource.attributeUuid);
+          } else {
+            break;
+          }
+        }
+        if (subformUuidList.length > 0) {
+          let findItem = this.allFormitemList.find(item => item.uuid === subformUuidList[0]);
+          if (findItem) {
+            let formComponentList = this.getFormComponent(findItem.formData.formConfig.tableList);
+            list = this.getTreeAttrList(formComponentList, subformUuidList, 'formSubassemblyComponent');
+          }
+        }
+      }
+      return list;
+    },
+    getTreeAttrList(formItemList, uuidList, type) { //表单子组件和表格组件，拼接成级联下拉的格式
+      let treeList = [];
+      formItemList.forEach(f => {
+        if (type === 'formSubassemblyComponent') {
+          if (f.handler !== 'formtableselector' && f.handler !== 'formtableinputer' && f.handler !== 'formsubassembly') {
+            treeList.push(
+              {
+                value: f['uuid'],
+                label: f['label']
+              }
+            );
+          } else if (uuidList.includes(f.uuid)) {
+            let obj = {
+              value: f['uuid'],
+              label: f['label']
+            };
+            let currentComponentList = this.getFormComponent(f.formData.formConfig.tableList);
+            let children = this.getTreeAttrList(currentComponentList, uuidList, type);
+            this.$set(obj, 'children', children);
+            treeList.push(obj);
+          }
+        } else if (type === 'formTableComponent') {
+          if (f.handler !== 'formtable') {
+            treeList.push(
+              {
+                value: f['uuid'],
+                label: f['label']
+              }
+            );
+          } else if (uuidList.includes(f.uuid)) {
+            let obj = {
+              value: f['uuid'],
+              label: f['label']
+            };
+            let children = this.getTreeAttrList(f.config.dataConfig, uuidList, type);
+            this.$set(obj, 'children', children);
+            treeList.push(obj);
+          }
+        }
+      });
+      return treeList;
     }
+
   },
   filter: {},
   computed: {
@@ -805,7 +888,6 @@ export default {
       return {};
     },
     allFormitemList() { //表单组件
-      console.log(store.allFormitemList, 'store.allFormitemList');
       return store.allFormitemList;
     },
     isDisabledType() {
