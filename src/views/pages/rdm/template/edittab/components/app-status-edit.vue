@@ -128,7 +128,7 @@ export default {
     AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/template/edittab/components/app-statusrel-config-dialog.vue'], resolve)
   },
   props: {
-    statusList: { type: Array },
+    statusList: { type: Array, default: () => { return []; } },
     statusRelList: { type: Array }
   },
   data() {

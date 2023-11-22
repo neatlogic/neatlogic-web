@@ -34,7 +34,7 @@ HistoryUtil.install = function (Vue, options) {
   Vue.prototype.$back = function (defaultPath) {
     const fromPageList = this.$route.meta.fromPageList;
     let backPath = defaultPath;
-    let index = fromPageList.length - 1;
+    let index = fromPageList?.length - 1;
     if (fromPageList && fromPageList.length > 0) {
       while (index >= 0) {
         if (this.$route.path != fromPageList[index].path) {
@@ -66,7 +66,7 @@ HistoryUtil.install = function (Vue, options) {
     let name = defaultName;
     let hasBack = false;
     const fromPageList = this.$route.meta.fromPageList;
-    let index = fromPageList.length - 1;
+    let index = fromPageList?.length - 1;
     if (fromPageList && fromPageList.length > 0) {
       while (index >= 0) {
         if (this.$route.path != fromPageList[index].path) {

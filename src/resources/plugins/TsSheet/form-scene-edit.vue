@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.defaultscenario') }}</span>
+        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.mainscene') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsRow>
@@ -343,7 +343,7 @@ export default {
         });
       } else {
         let findName = this.sceneList.find(s => s.uuid !== this.sceneUuid && s.name === this.sceneName);
-        if (findName || this.sceneName === this.$t('page.defaultscenario')) {
+        if (findName || this.sceneName === this.$t('page.mainscene')) {
           this.$set(this.errorData, 'scene', [{
             field: 'name',
             error: this.$t('message.cannotrepeat', {'target': this.$t('page.scenarioname')})
