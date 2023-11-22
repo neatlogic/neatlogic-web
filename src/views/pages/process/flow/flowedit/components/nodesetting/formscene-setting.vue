@@ -104,6 +104,7 @@ export default {
             try {
               let formConfig = res.Return.formConfig || {};
               this.formPreviewContent = formConfig;
+              let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
               this.versionUuid = res.Return.currentVersionUuid;
               formConfig.sceneList && formConfig.sceneList.forEach((item) => {
                 if (item.name && item.uuid && isClear) {
@@ -135,9 +136,13 @@ export default {
               });
               if (formConfig.name && formConfig.uuid && isClear) {
                 this.dataList.unshift({
-                  text: formConfig.name,
+                  text: this.$t('page.mainscene'),
                   value: formConfig.uuid
                 });
+              }
+              let findScene = this.dataList.find(item => item.value === defaultSceneUuid);
+              if (findScene) {
+                this.$set(findScene, 'text', findScene.text + '(' + this.$t('page.defaultscenario') + ')');
               }
             } catch (error) {
               this.dataList = [];

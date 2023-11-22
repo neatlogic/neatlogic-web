@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @close="close">
+  <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
       <TsForm ref="form" :item-list="formConfig">
         <template v-slot:color>
@@ -39,7 +39,7 @@ export default {
     return {
       statusDataLocal: {},
       dialogConfig: {
-        title: this.statusData.uuid ? this.$t('dialog.title.edittarget', { target: this.$t('page.attribute') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.attribute') }),
+        title: this.statusData.uuid ? this.$t('dialog.title.edittarget', { target: this.$t('page.status') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.status') }),
         isShow: true,
         width: 'small',
         type: 'modal',
