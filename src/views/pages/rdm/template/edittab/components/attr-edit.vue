@@ -99,7 +99,7 @@ export default {
       this.$api.rdm.attr.getPrivateAttrList().then(res => {
         const privateAttrList = res.Return;
         privateAttrList.forEach(attr => {
-          if (!this.attrList.find(d => d.type === attr.type)) {
+          if (this.attrList && !this.attrList.find(d => d.type === attr.type)) {
             this.attrList.push({ ...attr, isPrivate: 1 });
           }
         });
