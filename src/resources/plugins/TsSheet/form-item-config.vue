@@ -80,7 +80,7 @@
   </div>
 </template>
 <script>
-import * as formItemConfig from './form/config/index.js';
+import formItemConfig from './form/config/index.js';
 import { FORMITEMS } from './form/formitem-list.js';
 
 export default {
