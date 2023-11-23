@@ -286,7 +286,8 @@ export default {
         let formSceneUuid = this.processTaskConfig.currentProcessTaskStep ? this.processTaskConfig.currentProcessTaskStep.formSceneUuid : null;
         let formConfig = this.processTaskConfig.formConfig;
         this.formConfig = formConfig;
-        if (this.formConfig._type == 'new') {
+        if (this.formConfig._type == 'new' && !this.$utils.isEmpty(this.processTask.currentProcessTaskStep)) {
+          //步骤进行中展示设置的节点场景或者默认场景
           this.formConfig = this.initNewFormConfig(formSceneUuid, this.formConfig);
         }
       }

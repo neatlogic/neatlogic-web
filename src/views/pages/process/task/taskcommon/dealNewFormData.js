@@ -3,8 +3,9 @@ export default {
     initNewFormConfig(formSceneUuid, formConfig) {
       let data = this.$utils.deepClone(formConfig);
       let formItemList = [];
-      if (formSceneUuid && formSceneUuid != this.formConfig.uuid) {
-        let sceneConfig = this.formConfig.sceneList.find(item => item.uuid === formSceneUuid);
+      let currentSceneUuid = formSceneUuid || formConfig.defaultSceneUuid || this.formConfig.uuid;
+      if (currentSceneUuid && currentSceneUuid != this.formConfig.uuid) {
+        let sceneConfig = this.formConfig.sceneList.find(item => item.uuid === currentSceneUuid);
         if (sceneConfig) {
           if (formConfig.tableList) {
             formConfig.tableList.forEach(item => {
