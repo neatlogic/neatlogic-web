@@ -754,6 +754,10 @@ function setWidth($contain, $target, transfer) {
             cursor: default;
           }
       }
+      .ivu-icon-ios-arrow-forward:before {
+        font-family: 'tsfont';
+        content: '\e899'; // tsfont-drop-right字体图标
+      }
     }
 }
 .form-transfer-tree {

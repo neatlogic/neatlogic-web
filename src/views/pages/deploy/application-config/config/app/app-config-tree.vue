@@ -621,6 +621,9 @@ export default {
   /deep/ .ivu-tree-arrow {
     padding-top: 5px;
   }
-  
+  /deep/ .ivu-icon-ios-arrow-forward:before {
+    font-family: 'tsfont';
+    content: '\e899'; // tsfont-drop-right字体图标
+  }
 }
 </style>
