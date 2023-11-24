@@ -302,7 +302,7 @@ export default {
         return { 'grid-template-columns': 'auto 0px 0px' };
       } else if (this.$slots.topLeft && !this.$slots.topCenter && this.$slots.topRight) {
         //左右
-        return { 'grid-template-columns': '50% 0px 50%' };
+        return { 'grid-template-columns': 'auto 0px auto' };
       } else if (!this.$slots.topLeft && !this.$slots.topCenter && this.$slots.topRight) {
         //右
         return { 'grid-template-columns': '50% 0px 50%' };
