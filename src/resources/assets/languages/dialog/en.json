@@ -36,7 +36,8 @@
     "openconfirm": "Open Confirmation",
     "batchconfirm": "Batch execution confirmation",
     "passconfirm": "By confirming",
-    "rejectconfirm": "Rejection confirmation"
+    "rejectconfirm": "Rejection confirmation",
+    "actionconfirm": "Operation confirmation"
   },
   "content": {
     "revocatetargetconfirm": "Are you sure to recall of the {target}?",

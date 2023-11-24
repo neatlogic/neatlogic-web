@@ -36,7 +36,8 @@
     "openconfirm": "打开确认",
     "batchconfirm": "批量执行确认",
     "passconfirm": "通过确认",
-    "rejectconfirm": "驳回确认"
+    "rejectconfirm": "驳回确认",
+    "actionconfirm": "操作确认"
   },
   "content": {
     "revocatetargetconfirm": "是否确认撤销当前{target}？",

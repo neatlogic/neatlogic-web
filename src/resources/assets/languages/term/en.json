@@ -1153,7 +1153,9 @@
     "exporttable": "Export Table",
     "importtable": "Import Table",
     "excelinputtemplate": "Table Input Template",
-    "formsubassembly": "List subcomponents"
+    "formsubassembly": "List subcomponents",
+    "globalreadonly": "Global read-only",
+    "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state"
   },
   "knowledge": {
     "document": "Document",
@@ -2564,6 +2566,10 @@
     "line": "straight line",
     "orth": "orthogonal",
     "metro": "Intelligent avoidance",
-    "startci": "Starting model"
+    "startci": "Starting model",
+    "endci": "Endpoint model",
+    "autofill": "Auto Fill",
+    "beginci": "Starting point model",
+    "snapshotedit": "Generate Snapshot&Edit"
   }
 }

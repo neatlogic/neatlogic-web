@@ -35,7 +35,8 @@ export default {
         name: '',
         isActive: 1,
         authorityList: null,
-        desc: ''
+        desc: '',
+        uuid: this.uuid
       },
       catalogForm: [
         {
@@ -108,7 +109,8 @@ export default {
             name: itemValue.name || '',
             isActive: itemValue.isActive || 0,
             authorityList: itemValue.authorityList,
-            desc: itemValue.desc || ''    
+            desc: itemValue.desc || '',
+            uuid: this.uuid   
           };
           this.$emit('updateName', this.catalogValue.name);
         } else {
