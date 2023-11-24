@@ -2565,6 +2565,10 @@
     "line": "straight line",
     "orth": "orthogonal",
     "metro": "Intelligent avoidance",
-    "startci": "Starting model"
+    "startci": "Starting model",
+    "endci": "Endpoint model",
+    "autofill": "Auto Fill",
+    "beginci": "Starting point model",
+    "snapshotedit": "Generate Snapshot&Edit"
   }
 }

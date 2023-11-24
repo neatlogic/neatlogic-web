@@ -2563,6 +2563,10 @@
     "line": "直线",
     "orth": "正交",
     "metro": "智能避让",
-    "startci": "起始模型"
+    "startci": "起始模型",
+    "endci": "终点模型",
+    "autofill": "自动填充",
+    "beginci": "起点模型",
+    "snapshotedit": "生成快照&编辑"
   }
 }
