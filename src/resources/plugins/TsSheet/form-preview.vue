@@ -9,7 +9,7 @@
             mode="read"
             :value="data"
             :data="inputFormData"
-            :readonly="readOnly"
+            :readonly="data.readOnly || false"
             @emit="emitFn"
           ></TsSheet>
         </TabPane>
@@ -78,11 +78,7 @@ export default {
   },
   directives: { clipboard },
   props: {
-    data: { type: Object },
-    readOnly: {
-      type: Boolean,
-      default: false
-    }
+    data: { type: Object }
   },
   data() {
     return {

@@ -279,7 +279,6 @@
           <FormPreview
             v-if="isPreviewShow"
             :data="previewFormData"
-            :readOnly="readOnly"
             @close="closePreview"
           ></FormPreview>
         </div>
