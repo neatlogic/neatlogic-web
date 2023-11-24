@@ -1152,7 +1152,9 @@
     "versionlog": "Version Log",
     "exporttable": "Export Table",
     "importtable": "Import Table",
-    "excelinputtemplate": "Table Input Template"
+    "excelinputtemplate": "Table Input Template",
+    "globalreadonly": "Global read-only",
+    "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state"
   },
   "knowledge": {
     "document": "Document",
