@@ -59,7 +59,7 @@
                   mode="read"
                   :value="formConfig"
                   :data="processTaskConfig.formAttributeDataMap"
-                  :readonly="!actionConfig.save || !formEdit"
+                  :readonly="!actionConfig.save || !formEdit || formConfig.readOnly"
                   class="pl-sm pr-sm"
                   @emit="formSheetEmitData"
                   @updateHiddenComponentList="updateHiddenComponentList"

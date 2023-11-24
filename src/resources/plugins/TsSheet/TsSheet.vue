@@ -665,12 +665,14 @@ export default {
     //校验表单内所有组件的数据，返回异常数据
     async validData(validConifg) {
       const errorMap = {};
-      for (let i = 0; i < this.componentCells.length; i++) {
-        const component = this.componentCells[i].component;
-        if (component && component.uuid) {
-          const es = this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] ? await this.$refs['formitem_' + component.uuid][0].validData(validConifg) : null;
-          if (es && es.length > 0) {
-            errorMap[component.uuid] = es;
+      if (!this.disabled && !this.readonly) {
+        for (let i = 0; i < this.componentCells.length; i++) {
+          const component = this.componentCells[i].component;
+          if (component && component.uuid) {
+            const es = this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] ? await this.$refs['formitem_' + component.uuid][0].validData(validConifg) : null;
+            if (es && es.length > 0) {
+              errorMap[component.uuid] = es;
+            }
           }
         }
       }
@@ -1556,11 +1558,16 @@ export default {
       let hiddenComponentList = [];
       if (this.config.tableList && this.config.tableList.length > 0) {
         this.config.tableList.forEach(item => {
-          if (item.component && item.component.hasValue && !hiddenComponentList.includes(item.component.uuid)) {
-            if (!this.$refs['formitem_' + item.component.uuid]) {
+          if (item.component && item.component.hasValue) {
+            if (this.disabled || this.readonly) { 
+              //表单只读或者禁用,所有组件都不校验
               hiddenComponentList.push(item.component.uuid);
-            } else if (this.config.hiddenRowList.includes(item.row) || (item.component.config && item.component.config.isHide)) {
-              hiddenComponentList.push(item.component.uuid);
+            } else if (!hiddenComponentList.includes(item.component.uuid)) {
+              if (!this.$refs['formitem_' + item.component.uuid]) {
+                hiddenComponentList.push(item.component.uuid);
+              } else if (this.config.hiddenRowList.includes(item.row) || (item.component.config && item.component.config.isHide)) {
+                hiddenComponentList.push(item.component.uuid);
+              }
             }
           }
         });
