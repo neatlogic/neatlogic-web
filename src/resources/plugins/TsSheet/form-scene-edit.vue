@@ -604,7 +604,7 @@ export default {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.initFormConfig.sceneList.forEach(item => {
-            if (item.uuid === sceneUuid) {
+            if (item.uuid === this.sceneUuid) {
               this.$set(item, 'readOnly', readOnly);
             }
           });
