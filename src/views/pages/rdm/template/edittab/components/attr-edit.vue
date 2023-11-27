@@ -4,12 +4,12 @@
       <a class="tsfont-plus" @click="addAttr">{{ $t('term.rdm.customattribute') }}</a>
     </div>
     <TsTable
-      v-if="attrList && attrList.length > 0"
+      v-if="appType.config.attrList && appType.config.attrList.length > 0"
       :fixedHeader="false"
       :canDrag="true"
       keyName="id"
       :theadList="theadList"
-      :tbodyList="attrList"
+      :tbodyList="appType.config.attrList"
       @updateRowSort="updateAttrList"
     >
       <template v-slot:isActive="{ row, index }">
@@ -61,7 +61,7 @@ export default {
     CustomAttrEdit: resolve => require(['@/views/pages/rdm/template/edittab/components/customattr-edit-dialog.vue'], resolve)
   },
   props: {
-    attrList: { type: Array }
+    appType: { type: Object }
   },
   data() {
     return {
@@ -96,11 +96,11 @@ export default {
   destroyed() {},
   methods: {
     getPrivateAttrList() {
-      this.$api.rdm.attr.getPrivateAttrList().then(res => {
+      this.$api.rdm.attr.getPrivateAttrList({ appType: this.appType.appType }).then(res => {
         const privateAttrList = res.Return;
         privateAttrList.forEach(attr => {
-          if (this.attrList && !this.attrList.find(d => d.type === attr.type)) {
-            this.attrList.push({ ...attr, isPrivate: 1 });
+          if (this.appType.config.attrList && !this.appType.config.attrList.find(d => d.type === attr.type)) {
+            this.appType.config.attrList.push({ ...attr, isPrivate: 1 });
           }
         });
       });
@@ -108,12 +108,12 @@ export default {
     changeAttrActive(index, attr, isActive) {
       this.$set(attr, 'isActive', isActive);
       //这是为了触发外部对象发生变化
-      this.attrList.splice(index, 1, attr);
+      this.appType.config.attrList.splice(index, 1, attr);
     },
     changeIsRequired(index, attr, isRequired) {
       this.$set(attr, 'isRequired', isRequired);
       //这是为了触发外部对象发生变化
-      this.attrList.splice(index, 1, attr);
+      this.appType.config.attrList.splice(index, 1, attr);
     },
     addAttr() {
       this.currentAttrId = null;
@@ -126,9 +126,9 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.attribute') }),
         btnType: 'error',
         'on-ok': vnode => {
-          const index = this.attrList.findIndex(d => d.uuid === attr.uuid);
+          const index = this.appType.config.attrList.findIndex(d => d.uuid === attr.uuid);
           if (index > -1) {
-            this.attrList.splice(index, 1);
+            this.appType.config.attrList.splice(index, 1);
           }
           vnode.isShow = false;
         }
@@ -141,25 +141,25 @@ export default {
     closeAttr(attrData) {
       this.isAttrShow = false;
       if (attrData) {
-        const index = this.attrList.findIndex(d => d.uuid === attrData.uuid);
+        const index = this.appType.config.attrList.findIndex(d => d.uuid === attrData.uuid);
         if (index < 0) {
-          this.attrList.push(attrData);
+          this.appType.config.attrList.push(attrData);
         } else {
-          this.$set(this.attrList, index, attrData);
+          this.$set(this.appType.config.attrList, index, attrData);
         }
       }
     },
     updateAttrList(event, val) {
-      this.attrList.sort((x, y) => val.findIndex(d => d.uuid === x.uuid) - val.findIndex(d => d.uuid === y.uuid));
+      this.appType.config.attrList.sort((x, y) => val.findIndex(d => d.uuid === x.uuid) - val.findIndex(d => d.uuid === y.uuid));
     },
     getNewAttrById(id) {
       this.$api.rdm.project.getAttrById(id).then(res => {
         const attrData = res.Return;
-        const index = this.attrList.findIndex(d => d.id === attrData.id);
+        const index = this.appType.config.attrList.findIndex(d => d.id === attrData.id);
         if (index > -1) {
-          this.$set(this.attrList, index, attrData);
+          this.$set(this.appType.config.attrList, index, attrData);
         } else {
-          this.attrList.push(attrData);
+          this.appType.config.attrList.push(attrData);
         }
       });
     }
