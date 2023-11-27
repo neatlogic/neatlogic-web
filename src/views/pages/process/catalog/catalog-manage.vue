@@ -32,7 +32,8 @@
             :hoverDomList="hoverDomList"
             :onClick="clickNode"
             :onDrop="onDrop"
-            :value="currentCatalogId"
+            :value="treeUuid"
+            :beforeDrop="beforeDrop"
           ></TsZtree>
         </div>
       </template>
@@ -41,7 +42,8 @@
           <component
             :is="catalogTypeName"
             :ref="catalogTypeName"
-            :uuid="currentCatalogId"
+            :uuid="currentUuid"
+            :processUuid="processUuid"
             @save="saveEdit"
             @updateName="updateName"
           ></component>
@@ -63,7 +65,9 @@ export default {
   props: [''],
   data() {
     return { 
-      currentCatalogId: null,
+      firstTreeUuid: '', // 用于从流程编辑跳转到服务目录，新增服务，需要默认选中第一个目录，但是打开新增服务的页面
+      currentUuid: null,
+      treeUuid: null,
       isSiderHide: false,
       catalogTypeName: 'catalog', // 类型,默认目录表单
       catalogName: this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') }), //表单标题
@@ -127,7 +131,7 @@ export default {
             }
           },
           clickFn: (treeNode) => {
-            this.addChannel(treeNode);
+            this.addChannel(treeNode?.uuid);
           }
         },
         {
@@ -149,8 +153,7 @@ export default {
     };
   },
   created() {
-    let {parentUuid = '', processUuid = '', uuid = ''} = this.$route.query || {};
-    this.parentUuid = parentUuid;
+    let {processUuid = '', uuid = ''} = this.$route.query || {};
     this.processUuid = processUuid;
     this.uuid = uuid;
   },
@@ -168,14 +171,20 @@ export default {
         if (res.Status == 'OK') {
           this.nodeList = res.Return || [];
           if (!isFirst) {
-            this.currentCatalogId = this.selectSaveUuid;
-          } else if (this.parentUuid != '') {
-            this.currentCatalogId = this.parentUuid;
-            this.addChannel(this.parentUuid);
-          } else if (this.uuid != '') {
-            this.currentCatalogId = this.uuid;
+            this.currentUuid = this.selectSaveUuid;
+            this.treeUuid = this.selectSaveUuid;
+          } else if (this.uuid) {
+            this.currentUuid = this.uuid;
+            this.treeUuid = this.uuid;
+            this.catalogTypeName = 'channel';//服务
+            this.firstTreeUuid = this.uuid;
+          } else if (this.processUuid) {
+            this.treeUuid = !this.$utils.isEmpty(this.nodeList) ? this.nodeList[0]?.uuid : null;
+            this.firstTreeUuid = this.treeUuid;
+            this.catalogTypeName = 'channel';//服务
           } else if (!this.$utils.isEmpty(this.nodeList)) {
-            this.currentCatalogId = this.nodeList[0]?.uuid || null;
+            this.currentUuid = this.nodeList[0]?.uuid || null;
+            this.treeUuid = this.nodeList[0]?.uuid || null;
           } else {
             this.addRoot();
           }
@@ -185,19 +194,35 @@ export default {
     },
     clickNode(tree, node) {
       // 节点选中
+      if (node?.uuid && this.firstTreeUuid == node.uuid) {
+        // 从流程管理跳转到服务目录，有目录列表就打开新增服务的页面，没有就新增跟目录
+        if (this.$utils.isEmpty(this.nodeList)) {
+          this.addRoot();
+        } else {
+          if (this.processUuid) {
+            this.addChannel(node.uuid);// 新加服务
+          } else if (this.uuid) {
+            this.channelData.parentUuid = node.parentUuid; // 编辑服务
+            this.channelData.uuid = node.uuid;
+          }
+        }
+        return false;
+      }
       this.catalogTypeName = node?.type;
       if (this.catalogTypeName) {
         let {uuid = '', parentUuid = null, childrenCount = null, type = ''} = node || {};
         this.catalogName = this.$t('dialog.title.edittarget', { target: type == 'channel' ? this.$t('term.process.catalog') : this.$t('page.catalogue') });
         this.childrenCount = childrenCount;
-        this.currentCatalogId = uuid;
+        this.currentUuid = uuid;
+        this.treeUuid = uuid;
         this.$set(this.channelData, 'uuid', uuid);
         this.$set(this.channelData, 'parentUuid', parentUuid);
       }
     },
     treeSelected(uuid) {
       //树select选择中
-      this.currentCatalogId = uuid;
+      this.currentUuid = uuid;
+      this.treeUuid = uuid;
     },
     //添加根目录按钮
     addRoot() {
@@ -205,7 +230,7 @@ export default {
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('page.rootdirectory') });
       this.catalogData.parentUuid = '0';
       this.catalogData.uuid = '';
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     //搜索服务点击
     selectChannel(uuid) {
@@ -230,9 +255,15 @@ export default {
           this.disabledConfig.saving = false;
         });
     },
+    beforeDrop(tree, treeNodes, targetNode, moveType) {
+      // 不允许将服务拖拽为根目录
+      if (targetNode == null) {
+        return false;
+      }
+    },
     onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
       if (targetNode == null) {
-        return;
+        return false;
       }
       let treeNode = treeNodes[0];
       let parentId = null;
@@ -244,20 +275,29 @@ export default {
         parentUuid: parentId,
         targetUuid: targetNode.uuid
       };
+     
       if (moveType != null) {
-        let typeConfig = {
-          catalog: this.$api.process.service.moveCatalog(data),
-          channel: this.$api.process.service.moveChannel(data)
-        };
-        typeConfig[typeConfig].then(res => {
-          if (res) {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.executesuccess'));
+        if (treeNode.type == 'catalog') {
+          this.$api.process.service.moveCatalog(data).then(res => {
+            if (res) {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+              }
             }
-          }
-        }).finally(() => {
-          this.getTreeList();
-        });
+          }).finally(() => {
+            this.getTreeList();
+          });
+        } else if (treeNode.type == 'channel') {
+          this.$api.process.service.moveChannel(data).then(res => {
+            if (res) {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+              }
+            }
+          }).finally(() => {
+            this.getTreeList();
+          });
+        }
       }
     },
     handleDelete() {
@@ -317,18 +357,18 @@ export default {
       this.catalogTypeName = 'catalog';
       this.catalogData.parentUuid = treeNode.uuid;
       this.catalogData.uuid = '';
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     //添加服务
-    addChannel(treeNode) {
+    addChannel(uuid) {
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('term.process.catalog') });
       this.catalogTypeName = 'channel';
-      this.channelData.parentUuid = treeNode.uuid;
+      this.channelData.parentUuid = uuid;
       this.channelData.uuid = '';
-      if (this.processUuid != '') {
+      if (this.processUuid) {
         this.channelData.processUuid = this.processUuid;
       }
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     saveEdit(data) {
       //底部保存按钮
