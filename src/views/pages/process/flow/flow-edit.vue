@@ -1003,7 +1003,7 @@ export default {
         });
     },
     goCreatecatalog() {
-      window.open(HOME + '/process.html#/catalog-manage?parentUuid=1&processUuid=' + this.processConfig.uuid, '_blank');
+      window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processConfig.uuid, '_blank');
     },
     removeAuthconfig(node) {
       if (node && node.uuid) {
