@@ -215,8 +215,15 @@ export default {
         this.childrenCount = childrenCount;
         this.currentUuid = uuid;
         this.treeUuid = uuid;
-        this.$set(this.channelData, 'uuid', uuid);
-        this.$set(this.channelData, 'parentUuid', parentUuid);
+        if (type == 'catalog') {
+          // 编辑目录
+          this.$set(this.catalogData, 'uuid', uuid);
+          this.$set(this.catalogData, 'parentUuid', parentUuid);
+        } else if (type == 'channel') {
+          // 编辑服务
+          this.$set(this.channelData, 'uuid', uuid);
+          this.$set(this.channelData, 'parentUuid', parentUuid);
+        }
       }
     },
     treeSelected(uuid) {
@@ -257,7 +264,7 @@ export default {
     },
     beforeDrop(tree, treeNodes, targetNode, moveType) {
       // 不允许将服务拖拽为根目录
-      if (targetNode == null) {
+      if (targetNode == null && (treeNodes[0] && treeNodes[0]?.type && treeNodes[0]?.type != 'catalog')) {
         return false;
       }
     },
