@@ -118,10 +118,10 @@ export default {
     await this.getVersionEnvList();
     if (this.envId) {
       this.selectedEnvId = this.envId;
-      this.changeCurrent();
     } else {
       this.loadingShow = false;
     }
+    this.changeCurrent();
   },
   beforeUpdate() {},
   updated() {},
@@ -131,7 +131,7 @@ export default {
   destroyed() {},
   methods: {
     getVersionEnvList() {
-      this.$api.deploy.version.getVersionEnvList({versionId: this.versionId}).then((res) => {
+      return this.$api.deploy.version.getVersionEnvList({versionId: this.versionId}).then((res) => {
         if (res.Status == 'OK') {
           this.envList = res.Return;
           if (!this.envId) {
