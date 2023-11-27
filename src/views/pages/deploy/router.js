@@ -16,15 +16,15 @@ const applicationConfigPipeline = () => import('./application-config/application
 // 自动化
 const actionDetail = () => import('@/views/pages/autoexec/detail/action-detail.vue'); // 组合工具详情
 const scriptDetail = () => import('@/views/pages/autoexec/detail/script-detail.vue'); //自动化：自定义工具
-const toolDetail = () => import('@/views/pages/autoexec/detail/tool-detail.vue');//自动化：工具
-const testDetail = () => import('@/views/pages/autoexec/detail/test-detail.vue');//自动化：工具测试
+const toolDetail = () => import('@/views/pages/autoexec/detail/tool-detail.vue'); //自动化：工具
+const testDetail = () => import('@/views/pages/autoexec/detail/test-detail.vue'); //自动化：工具测试
 const jobDetail = () => import('@/views/pages/autoexec/detail/job-detail.vue'); // 自动发现作业详情
 
 // 自动化end
 const publishingJobManage = () => import('./job/job-manage'); //一键发布
 const publishingJobAdd = () => import('./job/job-add'); //新建发布作业
-const batchPublishingJobEdit = () => import('./job/batch-job-edit.vue');//修改批量作业
-const batchPublishingJobExecute = () => import('./job/batch-job-detail.vue');//执行批量作业
+const batchPublishingJobEdit = () => import('./job/batch-job-edit.vue'); //修改批量作业
+const batchPublishingJobExecute = () => import('./job/batch-job-detail.vue'); //执行批量作业
 const pipelineDetail = () => import('./application-config/pipeline-detail.vue'); // 流水线详情
 
 //超级流水线
@@ -46,7 +46,7 @@ const jobWebhookEdit = () => import('./webhook/job-webhook-edit.vue');
 // 工具分类
 const toolClassificationManage = () => import('./toolclassification/tool-classification-manage.vue');
 
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default [
   {
@@ -136,7 +136,6 @@ export default [
     }
   },
   {
-
     path: '/application-config-pipeline',
     name: 'application-config-pipeline',
     component: applicationConfigPipeline,

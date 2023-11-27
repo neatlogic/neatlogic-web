@@ -31,6 +31,14 @@
                   :referenceCount="row.referenceCount"
                 ></ReferenceSelect>
               </template> 
+              <template v-slot:readOnly="{row}">
+                <TsFormSwitch
+                  v-model="row.readOnly"
+                  :falseValue="false"
+                  :trueValue="true"
+                  @on-change="(val)=>changeReadOnly(val, row)"
+                ></TsFormSwitch>
+              </template>
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
@@ -82,7 +90,8 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   props: {
     uuid: String,
@@ -104,6 +113,7 @@ export default {
       },
       theadList: [
         { title: this.$t('page.scenarioname'), key: 'name', type: 'linktext', textValue: 'edit'},
+        { title: this.$t('term.framework.globalreadonly'), key: 'readOnly', tooltip: this.$t('term.framework.globalreadonlytip')},
         { title: this.$t('term.process.associatedsteps'), key: 'referenceCount'},
         { title: this.$t('page.fcu'), key: 'lcu', type: 'user' },
         { title: this.$t('page.fcd'), key: 'lcd', type: 'time' },
@@ -136,8 +146,10 @@ export default {
           name: this.$t('page.mainscene'),
           uuid: this.formConfig.uuid,
           lcu: this.formConfig.lcu,
-          lcd: this.formConfig.lcd
+          lcd: this.formConfig.lcd,
+          readOnly: this.formConfig.readOnly || false
         });
+        
         this.defaultSceneUuid = this.formConfig.defaultSceneUuid || this.formConfig.uuid;
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
@@ -270,7 +282,7 @@ export default {
         return;
       }
       this.defaultSceneUuid = this.selectSceneUuid;
-      this.$api.framework.form.getFormDefaultscene({
+      this.$api.framework.form.saveFormDefaultscene({
         versionUuid: this.currentVersionUuid,
         sceneUuid: this.defaultSceneUuid
       }).then(res => {
@@ -284,6 +296,19 @@ export default {
     },
     closeDefaultsceneDialog() {
       this.isSelectDefaultsceneDialog = false;
+    },
+    changeReadOnly(val, row) {
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.saveFormSceneReadonly({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: row.uuid,
+        readOnly: val
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('updateSceneReadOnly', val, row.uuid);
+        }
+      });
     }
   },
   filter: {},
