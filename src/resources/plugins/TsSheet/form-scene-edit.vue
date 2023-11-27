@@ -30,7 +30,7 @@
                   :content="$t('term.framework.globalreadonlytip')"
                 >
                   <span>{{ $t('term.framework.globalreadonly') }}</span>
-                  <span class="pl-xs pr-xs text-href tsfont-info-o"></span>
+                  <span class="text-href tsfont-info-o"></span>
                 </Poptip>
               </span>
               <TsFormSwitch
