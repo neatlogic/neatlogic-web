@@ -25,7 +25,8 @@ export default {
     onClick: { type: Function }, //点击事件
     onDrop: { type: Function }, //拖放事件
     value: { type: [String, Number] }, //默认选择节点
-    enableToggleClick: { type: Boolean, default: false } //是否激活反选功能（点击已选中节点取消点击）
+    enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
+    beforeDrop: {type: Function} // 拖放之前事件
   },
   data() {
     return {
@@ -70,6 +71,7 @@ export default {
           }
         },
         callback: {
+          beforeDrop: this.beforeDrop,
           onDrop: (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
             if (this.onDrop) {
               this.onDrop(this.zTreeObj, treeNodes, targetNode, moveType, isCopy);

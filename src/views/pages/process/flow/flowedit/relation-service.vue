@@ -130,7 +130,7 @@ export default {
       // });
     },
     linkCatalog() {
-      window.open(HOME + '/process.html#/catalog-manage?parentUuid=1&processUuid=' + this.processUuid, '_blank');
+      window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processUuid, '_blank');
     }
   },
   filter: {},

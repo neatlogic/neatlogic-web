@@ -5,18 +5,19 @@
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
-        <TsRow v-if="formDataQueue.length <=1">
-          <Col span="12">
-            <TsFormInput
-              ref="formName"
-              v-model="formData.name"
-              :placeholder="$t('form.placeholder.name')"
-              maxlength="30"
-              border="border"
-              :validateList="nameValidateList"
-            ></TsFormInput>
-          </Col>
-          <Col span="12">
+        <div class="flex-between">
+          <div v-if="formDataQueue.length <=1" class="flex-start">
+            <div class="pr-sm">
+              <TsFormInput
+                ref="formName"
+                v-model="formData.name"
+                :placeholder="$t('form.placeholder.name')"
+                maxlength="30"
+                border="border"
+                :validateList="nameValidateList"
+                style="width:200px"
+              ></TsFormInput>
+            </div>
             <div v-if="currentVersion.uuid">
               <Dropdown trigger="hover" placement="bottom-start" style="line-height: 30px;cursor: pointer;">
                 <span class="btn-green-op">
@@ -54,91 +55,111 @@
                 </DropdownMenu>
               </Dropdown>
             </div>
-          </Col>
-        </TsRow>
-      </template>
-      <template v-slot:topRight>
-        <div class="action-group">
-          <div v-if="formDataQueue.length <=1" class="action-item">
-            <Poptip
-              v-model="isShowValidList"
-              word-wrap
-              width="350"
-              :title="$t('page.exception')"
-              transfer
-              :disabled="$utils.isEmpty(errorData)"
-            >
-              <span class="tsfont-xitongpeizhi" @click="formValid()">{{ $t('page.validate') }}</span>
-              <div slot="content">
-                <div v-for="(key) of Object.keys(errorData)" :key="key">
-                  <div
-                    v-for="(item, index) in errorData[key]"
-                    :key="index"
-                    class="ovewflow text-action pb-sm valid-list"
-                    @click="jumpToItem(key, item)"
+          </div>
+          <div class="action-group">
+            <div class="action-item">
+              <div class="flex-start">
+                <span class="">
+                  <Poptip
+                    word-wrap
+                    width="350"
+                    transfer
+                    :content="$t('term.framework.globalreadonlytip')"
                   >
-                    {{ item.error }}
-                    <span class="text-error tsfont-close-o valid-icon"></span>
+                    <span>{{ $t('term.framework.globalreadonly') }}</span>
+                    <span class="pl-xs pr-xs text-href tsfont-info-o"></span>
+                  </Poptip>
+                </span>
+                <span><TsFormSwitch
+                  v-model="readOnly"
+                  :falseValue="false"
+                  :trueValue="true"
+                  style="display: inline-block;"
+                  @on-change="(val)=>changeReadOnly(val)"
+                ></TsFormSwitch></span>
+              </div>
+            </div>
+            <div v-if="formDataQueue.length <=1" class="action-item">
+              <Poptip
+                v-model="isShowValidList"
+                word-wrap
+                width="350"
+                :title="$t('page.exception')"
+                transfer
+                :disabled="$utils.isEmpty(errorData)"
+              >
+                <span class="tsfont-xitongpeizhi" @click="formValid()">{{ $t('page.validate') }}</span>
+                <div slot="content">
+                  <div v-for="(key) of Object.keys(errorData)" :key="key">
+                    <div
+                      v-for="(item, index) in errorData[key]"
+                      :key="index"
+                      class="ovewflow text-action pb-sm valid-list"
+                      @click="jumpToItem(key, item)"
+                    >
+                      {{ item.error }}
+                      <span class="text-error tsfont-close-o valid-icon"></span>
+                    </div>
                   </div>
                 </div>
+              </Poptip>
+            </div>
+            <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
+            <template v-if="formDataQueue.length <=1">
+              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
+              <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
+              <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
+              <div class="action-item">
+                <Dropdown trigger="click">
+                  <span class="tsfont-option-horizontal click-btn"></span>
+                  <DropdownMenu slot="list" class="dropdown">
+                    <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
+                      <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
+                    </DropdownItem>
+                    <DropdownItem v-else-if="currentVersion.uuid">
+                      <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
+                    </DropdownItem>
+                    <DropdownItem @click.native="$refs.uploadDialog.showDialog">
+                      <span class="tsfont-import">{{ $t('page.import') }}</span>
+                      <UploadDialog
+                        ref="uploadDialog"
+                        :beforeUpload="beforeUpload"
+                        :actionUrl="importUrl + (formUuid || null)"
+                        :formatList="formatList"
+                        @on-success="uploadSuccess"
+                      />
+                    </DropdownItem>
+                    <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
+                      <div class="tsfont-export">{{ $t('page.export') }}</div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <div
+                        :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
+                        class="action-item tsfont-check-square-o"
+                        :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
+                        @click="activeFormVersion(currentVersion.uuid)"
+                        @mouseenter="haveChangeData"
+                      >{{ $t('page.enable') }}</div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </div>
-            </Poptip>
+              <div class="action-item">
+                <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
+              </div>
+              <div class="action-item last">
+                <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
+              </div>
+            </template>
+            <template v-else>
+              <div class="action-item last">
+                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length-2])">确认</Button>
+              </div>
+            </template>
           </div>
-          <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
-          <template v-if="formDataQueue.length <=1">
-            <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
-            <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
-            <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
-            <div class="action-item">
-              <Dropdown trigger="click">
-                <span class="tsfont-option-horizontal click-btn"></span>
-                <DropdownMenu slot="list" class="dropdown">
-                  <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
-                    <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
-                  </DropdownItem>
-                  <DropdownItem v-else-if="currentVersion.uuid">
-                    <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
-                  </DropdownItem>
-                  <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                    <span class="tsfont-import">{{ $t('page.import') }}</span>
-                    <UploadDialog
-                      ref="uploadDialog"
-                      :beforeUpload="beforeUpload"
-                      :actionUrl="importUrl + (formUuid || null)"
-                      :formatList="formatList"
-                      @on-success="uploadSuccess"
-                    />
-                  </DropdownItem>
-                  <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                    <div class="tsfont-export">{{ $t('page.export') }}</div>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <div
-                      :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
-                      class="action-item tsfont-check-square-o"
-                      :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
-                      @click="activeFormVersion(currentVersion.uuid)"
-                      @mouseenter="haveChangeData"
-                    >{{ $t('page.enable') }}</div>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-            <div class="action-item">
-              <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
-            </div>
-            <div class="action-item last">
-              <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
-            </div>
-          </template>
-          <template v-else>
-            <div class="action-item last">
-              <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length-2])">确认</Button>
-            </div>
-          </template>
         </div>
       </template>
       <template v-slot:sider>
@@ -255,7 +276,11 @@
             @close="currentFormItem = null"
             @editSubForm="editSubForm"
           ></FormItemConfig>
-          <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
+          <FormPreview
+            v-if="isPreviewShow"
+            :data="previewFormData"
+            @close="closePreview"
+          ></FormPreview>
         </div>
       </template>
     </TsContain>
@@ -297,6 +322,7 @@
       @close="closeScene"
       @deleteScene="deleteScene"
       @updateDefaultSceneUuid="updateDefaultSceneUuid"
+      @updateSceneReadOnly="updateSceneReadOnly"
     ></FormSceneDialog>
   </div>
 </template>
@@ -319,7 +345,8 @@ export default {
     FormReferenceDialog: resolve => require(['./form-reference-dialog.vue'], resolve),
     UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
     FormWidthDialog: resolve => require(['./form-width-dialog.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve)
+    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   extends: subformconfig,
   mixins: [download],
@@ -376,7 +403,8 @@ export default {
       isShowEditFormWidth: false, //表单宽度设置
       formGroup: ['basic', 'layout', 'autoexec', 'cmdb', 'custom'],
       isFormSceneDialog: false,
-      sceneUuid: null
+      sceneUuid: null,
+      readOnly: false //设置全局只读
     };
   },
   beforeCreate() {},
@@ -541,6 +569,7 @@ export default {
         !formConfig.name && (formConfig.name = this.$t('page.mainscene'));
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
         this.$set(formConfig, 'defaultSceneUuid', this.initFormConfig.defaultSceneUuid || formConfig.uuid);
+        this.$set(formConfig, 'readOnly', this.readOnly);
         if (type === 'saveother') {
           this.$set(formConfig, 'uuid', this.$utils.setUuid());
           formConfig.sceneList.forEach(item => {
@@ -679,6 +708,7 @@ export default {
             this.versionList = res.Return.versionList || [];
             let formConfig = res.Return.formConfig || {};
             this.sceneUuid = formConfig.uuid;
+            this.readOnly = formConfig.readOnly || false;
             this.$set(this.formData, 'name', res.Return.name);
             if (this.versionList.length > 0) {
               this.versionList.forEach(item => {
@@ -995,7 +1025,32 @@ export default {
       });
     },
     updateDefaultSceneUuid(uuid) {
-      this.$set(this.initData, 'defaultsceneUuid', uuid);
+      this.$set(this.initFormConfig, 'defaultSceneUuid', uuid);
+    },
+    updateSceneReadOnly(readOnly, sceneUuid) {
+      if (sceneUuid === this.initFormConfig.uuid) {
+        this.$set(this.initFormConfig, 'readOnly', readOnly);
+        this.readOnly = readOnly;
+      } else {
+        this.initFormConfig.sceneList.forEach(item => {
+          if (item.uuid === sceneUuid) {
+            this.$set(item, 'readOnly', readOnly);
+          }
+        });
+      }
+    },
+    changeReadOnly(val) {
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.saveFormSceneReadonly({
+        versionUuid: this.currentVersion.uuid,
+        sceneUuid: this.sceneUuid,
+        readOnly: val
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$set(this.initFormConfig, 'readOnly', readOnly);
+        }
+      });
     }
   },
   filter: {},
