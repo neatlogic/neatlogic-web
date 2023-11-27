@@ -22,7 +22,7 @@
         <div class="action-group">
           <div class="action-item">
             <div class="flex-start">
-              <span class="">
+              <span>
                 <Poptip
                   word-wrap
                   width="350"
@@ -33,13 +33,12 @@
                   <span class="pl-xs pr-xs text-href tsfont-info-o"></span>
                 </Poptip>
               </span>
-              <span><TsFormSwitch
+              <TsFormSwitch
                 v-model="readOnly"
                 :falseValue="false"
                 :trueValue="true"
-                style="display: inline-block;"
                 @on-change="(val)=>changeReadOnly(val)"
-              ></TsFormSwitch></span>
+              ></TsFormSwitch>
             </div>
           </div>
           <div class="action-item">
@@ -415,6 +414,7 @@ export default {
     openPreview() {
       const data = this.$refs.sheet.getFormConfig();
       this.$set(data, 'formWidth', this.initFormConfig.formWidth);
+      this.$set(data, 'readOnly', this.readOnly);
       this.previewFormData = data;
       this.isPreviewShow = true;
     },
@@ -594,12 +594,12 @@ export default {
         this.readOnly = readOnly;
       }
     },
-    changeReadOnly(val) {
+    changeReadOnly(readOnly) {
       this.defaultSceneUuid = this.selectSceneUuid;
       this.$api.framework.form.saveFormSceneReadonly({
         versionUuid: this.currentVersionUuid,
         sceneUuid: this.sceneUuid,
-        readOnly: val
+        readOnly: readOnly
       }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
