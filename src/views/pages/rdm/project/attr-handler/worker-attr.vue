@@ -9,6 +9,7 @@
       :transfer="true"
       :extendCondition="{ projectId: projectId }"
       :groupList="groupList"
+      :border="border"
       :includeList="['common#loginuser']"
       :excludeList="['common#alluser']"
       @change="

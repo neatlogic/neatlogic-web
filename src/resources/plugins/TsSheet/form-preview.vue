@@ -9,6 +9,7 @@
             mode="read"
             :value="data"
             :data="inputFormData"
+            :readonly="data.readOnly || false"
             @emit="emitFn"
           ></TsSheet>
         </TabPane>

@@ -13,68 +13,73 @@ function getPages(pageList) {
   const pages = {};
   if (!pageList) {
     const pagePath = glob.sync(src + '/views/pages/*/router.js');
+    let importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
     let pagePathList = [...pagePath];
-    let importModuleList = [];
-    let customPagePath = [];
-    let importModulePathList;
-    importModulePathList = glob.sync(`${commercialModule}/**/router.js`);
+
+    let defaultModuleList = getAllModuleList([], JSON.parse(JSON.stringify(pagePath)));
+    let commercialModuleList = [];
     if (importModulePathList && importModulePathList.length > 0) {
-      customPagePath.push(...importModulePathList);
-      pagePathList.push(...customPagePath);
-    }
-    pagePathList.forEach(p => {
-      let filename = '';
-      let customImportModuleName = ''; // 自定义导入模块名称
-      const projectFilename = p.match(/src\/views\/pages\/(.*)\/router\.js/);
-      const importFilename = p.match(/\/[^\/]+\/router\.js$/);
-      if (projectFilename) {
-        filename = projectFilename[1];
-      } else if (importFilename) {
-        customImportModuleName = importFilename[0].match(/\/([^\/]+)\/router\.js$/);
-        if (customImportModuleName) {
-          filename = customImportModuleName[1];
-          importModuleList.push(filename);
+      importModulePathList.forEach(filePath => {
+        let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+        if (moduleName && !defaultModuleList.includes(getModuleName(moduleName))) {
+          // 剔除非模块的情况，如自定义页面或者自定义组件
+          pagePathList.push(filePath);
+          commercialModuleList.push(getModuleName(moduleName));
         }
-      }
+      });
+    }
+    pagePathList.forEach(filePath => {
+      let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+
       const newpage = {};
-      let pageLogin = `${pageTitle}-${getModuleName(importModuleList, filename)}`;
+      let filename = getModuleName(moduleName);
+      let pageLogin = `${pageTitle}-${filename}`;
       if (`${filename}` == 'login') {
         pageLogin = `${pageTitle}`;
       }
-      newpage[getModuleName(importModuleList, filename)] = {
-        entry: importModuleList.includes(filename) ? `${commercialModule}/${filename}/${getLastValue(filename)}.js` : `${src}/views/pages/${filename}/${filename}.js`,
+      newpage[filename] = {
+        entry: commercialModuleList.includes(filename) ? `${commercialModule}/${moduleName}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
         template: `public/index.html`,
-        filename: `${getModuleName(importModuleList, filename)}.html`,
+        filename: `${filename}.html`,
         title: pageLogin, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, getModuleName(importModuleList, filename)]
+        chunks: [`chunk-vendors`, `chunk-common`, filename]
       };
       Object.assign(pages, newpage);
     });
   } else {
     //eg:['process','dashboard']
     let list = typeof pageList == 'string' ? JSON.parse(pageList) : pageList;
-    list.forEach(p => {
+    list.forEach(filePath => {
       const newpage = {};
-      newpage[getModuleName(importModuleList, p)] = {
-        entry: importModuleList.includes(p) ? `${commercialModule}/${p}/${getLastValue(p)}.js` : `${src}/views/pages/${p}/${p}.js`,
+      newpage[filePath] = {
+        entry: `${src}/views/pages/${filePath}/${filePath}.js`,
         template: `public/index.html`,
-        filename: `${getModuleName(importModuleList, p)}.html`,
-        title: `${pageTitle}-${getModuleName(importModuleList, p)}`, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, getModuleName(importModuleList, p)]
+        filename: `${filePath}.html`,
+        title: `${pageTitle}-${filePath}`, // 标题名称+参数
+        chunks: [`chunk-vendors`, `chunk-common`, filePath]
       };
       Object.assign(pages, newpage);
     });
   }
   return pages;
 }
-function getModuleName(importModuleList, moduleName) {
-  // 自定义模块例如：neatlogic-web-codehub 拿到codehub模块名称
-  return importModuleList.includes(moduleName) ? `${getLastValue(moduleName)}` : `${moduleName}`;
+function getModuleName(moduleName) {
+  // 截取neatlofic-web-xxx xxx值
+  let currentModuleName = moduleName ? JSON.parse(JSON.stringify(moduleName)) : '';
+  return (currentModuleName && currentModuleName.split('-') && currentModuleName.split('-').pop()) || currentModuleName;
 }
-function getLastValue(moduleName) {
-  const lastValue = moduleName.split('-');
-  const moduleNames = lastValue.pop() || moduleName;
-  return moduleNames;
+function getAllModuleList(defaultModuleList, modulePathList = []) {
+  // 获取所有非自定义模块
+  let moduleList = [];
+  modulePathList.forEach(filePath => {
+    if (filePath) {
+      const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+      if (moduleName && getModuleName(moduleName) && !defaultModuleList.includes(getModuleName(moduleName))) {
+        moduleList.push(getModuleName(moduleName));
+      }
+    }
+  });
+  return moduleList;
 }
 
 function resolve(dir) {

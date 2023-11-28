@@ -142,7 +142,7 @@ export default {
     },
     searchAppAttr() {
       if (this.app.id) {
-        this.$api.rdm.app.searchAppAttr({ appId: this.app.id }).then(res => {
+        this.$api.rdm.app.searchAppAttr({ appId: this.app.id, isActive: 1 }).then(res => {
           this.attrList = res.Return;
         });
       }
