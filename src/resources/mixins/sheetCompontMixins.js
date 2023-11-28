@@ -24,13 +24,13 @@ export default {
             if (config.mapping.value != config.mapping.text) {
               columlist.push({
                 text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
+                value: co[config.mapping.value].value,
                 html: co[config.mapping.text].text + "<small class='text-grey'>(" + co[config.mapping.value].text + ')</small>'
               });
             } else {
               columlist.push({
                 text: co[config.mapping.text].text,
-                value: co[config.mapping.value].value + '&=&' + co[config.mapping.text].text,
+                value: co[config.mapping.value].value,
                 html: co[config.mapping.text].text
               });
             }
