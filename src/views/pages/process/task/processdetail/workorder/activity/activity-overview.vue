@@ -46,6 +46,8 @@
                   :key="jindex"
                   :config="jitem"
                   :formConfig="formConfigData"
+                  :processTaskStepId="item.processTaskStepId"
+                  :formSceneUuid="item.formSceneUuid"
                   class="mb-sm"
                 ></component>
               </template>
