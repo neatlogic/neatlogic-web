@@ -1,8 +1,8 @@
 import axios from '../../http';
 
 const attr = {
-  getPrivateAttrList(needSystemAttr) {
-    return axios.post('/api/rest/rdm/project/app/privateattr/list', { needSystemAttr: needSystemAttr });
+  getPrivateAttrList(params) {
+    return axios.post('/api/rest/rdm/project/app/privateattr/list', params || {});
   }
 };
 export default attr;

@@ -59,7 +59,7 @@
           <div class="action-group">
             <div class="action-item">
               <div class="flex-start">
-                <span class="">
+                <span>
                   <Poptip
                     word-wrap
                     width="350"
@@ -67,16 +67,15 @@
                     :content="$t('term.framework.globalreadonlytip')"
                   >
                     <span>{{ $t('term.framework.globalreadonly') }}</span>
-                    <span class="pl-xs pr-xs text-href tsfont-info-o"></span>
+                    <span class="text-href tsfont-info-o"></span>
                   </Poptip>
                 </span>
-                <span><TsFormSwitch
+                <TsFormSwitch
                   v-model="readOnly"
                   :falseValue="false"
                   :trueValue="true"
-                  style="display: inline-block;"
                   @on-change="(val)=>changeReadOnly(val)"
-                ></TsFormSwitch></span>
+                ></TsFormSwitch>
               </div>
             </div>
             <div v-if="formDataQueue.length <=1" class="action-item">
@@ -635,6 +634,7 @@ export default {
     previewForm() {
       const sheet = this.$refs['sheet'];
       const data = sheet.getFormConfig();
+      this.$set(data, 'readOnly', this.readOnly);
       this.previewFormData = data;
       this.isPreviewShow = true;
     },
@@ -1039,12 +1039,12 @@ export default {
         });
       }
     },
-    changeReadOnly(val) {
+    changeReadOnly(readOnly) {
       this.defaultSceneUuid = this.selectSceneUuid;
       this.$api.framework.form.saveFormSceneReadonly({
         versionUuid: this.currentVersion.uuid,
         sceneUuid: this.sceneUuid,
-        readOnly: val
+        readOnly: readOnly
       }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
