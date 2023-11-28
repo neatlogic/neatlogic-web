@@ -772,7 +772,6 @@ export default {
       saveData.config && saveData.config.process && saveData.config.process.stepList.length > 0 && saveData.config.process.stepList.forEach((item) => {
         if (item && item.stepConfig && item.stepConfig.hasOwnProperty('formSceneUuid') && item.stepConfig.formSceneUuid) {
           // 如果某些步骤节点，找不到匹配的场景名称时，回填失败，表单场景下拉框处为空
-          item.stepConfig['formSceneName'] = !this.formSceneUuidList.includes(item.stepConfig.formSceneUuid) ? '' : item.stepConfig.formSceneName;
           item.stepConfig['formSceneUuid'] = !this.formSceneUuidList.includes(item.stepConfig.formSceneUuid) ? '' : item.stepConfig.formSceneUuid;
         }
       });
@@ -1004,7 +1003,7 @@ export default {
         });
     },
     goCreatecatalog() {
-      window.open(HOME + '/process.html#/catalog-manage?parentUuid=1&processUuid=' + this.processConfig.uuid, '_blank');
+      window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processConfig.uuid, '_blank');
     },
     removeAuthconfig(node) {
       if (node && node.uuid) {
@@ -1127,6 +1126,7 @@ export default {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};
+              let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
               formConfig.sceneList && formConfig.sceneList.forEach((item) => {
                 if (item.uuid) {
                   this.formSceneUuidList.push(item.uuid);
@@ -1137,8 +1137,7 @@ export default {
               }
               this.stepList && !this.$utils.isEmpty(this.stepList) && this.stepList.forEach((item) => {
                 if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
-                  this.$set(item.stepConfig, 'formSceneUuid', (formConfig && formConfig.uuid) ? formConfig.uuid : '');
-                  this.$set(item.stepConfig, 'formSceneName', (formConfig && formConfig.name) ? formConfig.name : '');
+                  this.$set(item.stepConfig, 'formSceneUuid', (formConfig && formConfig.uuid) ? defaultSceneUuid : '');
                 }
               });
             } catch (error) {
@@ -1150,7 +1149,6 @@ export default {
         this.stepList && !this.$utils.isEmpty(this.stepList) && this.stepList.forEach((item) => {
           if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
             this.$set(item.stepConfig, 'formSceneUuid', '');
-            this.$set(item.stepConfig, 'formSceneName', '');
           }
         });
       }

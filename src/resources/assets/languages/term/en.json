@@ -1152,7 +1152,9 @@
     "versionlog": "Version Log",
     "exporttable": "Export Table",
     "importtable": "Import Table",
-    "excelinputtemplate": "Table Input Template"
+    "excelinputtemplate": "Table Input Template",
+    "globalreadonly": "Global read-only",
+    "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state"
   },
   "knowledge": {
     "document": "Document",
@@ -2559,6 +2561,14 @@
     "toend": "Move to the bottom",
     "publishversion": "Release version",
     "confirmcheckversion": "Are you sure to submit the current version for review?",
-    "confirmandpublish": "Pass and publish"
+    "confirmandpublish": "Pass and publish",
+    "line": "straight line",
+    "orth": "orthogonal",
+    "metro": "Intelligent avoidance",
+    "startci": "Starting model",
+    "endci": "Endpoint model",
+    "autofill": "Auto Fill",
+    "beginci": "Starting point model",
+    "snapshotedit": "Generate Snapshot&Edit"
   }
 }

@@ -1,10 +1,12 @@
 <template>
-  <component
-    :is="appType.appType + 'Editor'"
-    v-if="appType"
-    ref="editor"
-    :appType="appType"
-  ></component>
+  <div v-if="appType && editors[appType.appType + 'Editor']">
+    <component
+      :is="appType.appType + 'Editor'"
+      ref="editor"
+      :appType="appType"
+    ></component>
+  </div>
+  <div v-else><Alert>{{ $t('term.rdm.noconfig') }}</Alert></div>
 </template>
 <script>
 import * as editor from './edittab/index.js';
@@ -19,6 +21,7 @@ export default {
   },
   data() {
     return {
+      editors: editor
     };
   },
   beforeCreate() {},

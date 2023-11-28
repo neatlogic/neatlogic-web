@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.defaultscenario') }}</span>
+        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.mainscene') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsRow>
@@ -20,6 +20,27 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
+          <div class="action-item">
+            <div class="flex-start">
+              <span>
+                <Poptip
+                  word-wrap
+                  width="350"
+                  transfer
+                  :content="$t('term.framework.globalreadonlytip')"
+                >
+                  <span>{{ $t('term.framework.globalreadonly') }}</span>
+                  <span class="text-href tsfont-info-o"></span>
+                </Poptip>
+              </span>
+              <TsFormSwitch
+                v-model="readOnly"
+                :falseValue="false"
+                :trueValue="true"
+                @on-change="(val)=>changeReadOnly(val)"
+              ></TsFormSwitch>
+            </div>
+          </div>
           <div class="action-item">
             <Poptip
               v-model="isShowValidList"
@@ -107,7 +128,11 @@
             @close="currentFormItem = null"
             @inheritFormItem="inheritFormItem"
           ></FormItemConfig>
-          <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
+          <FormPreview
+            v-if="isPreviewShow"
+            :data="previewFormData"
+            @close="closePreview"
+          ></FormPreview>
         </div>
       </template>
     </TsContain>
@@ -120,6 +145,8 @@
       :formConfig="initFormConfig"
       @close="closeScene"
       @deleteScene="deleteScene"
+      @updateDefaultSceneUuid="updateDefaultSceneUuid"
+      @updateSceneReadOnly="updateSceneReadOnly"
     ></FormSceneDialog>
     <ReactionDialog
       v-if="isReactionShow"
@@ -139,7 +166,8 @@ export default {
     FormItemConfig: resolve => require(['./form-item-config.vue'], resolve),
     FormPreview: resolve => require(['./form-preview.vue'], resolve),
     FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
-    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve)
+    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   props: {},
   data() {
@@ -168,7 +196,8 @@ export default {
       isFormSceneDialog: false,
       disabled: false,
       sceneList: [],
-      deleteSceneUuid: ''
+      deleteSceneUuid: '',
+      readOnly: false
     };
   },
   beforeCreate() {},
@@ -316,6 +345,7 @@ export default {
                 return !sceneConfig.tableList.find(t => t.component && t.component.uuid === f.uuid);
               });
               this.formData.formConfig = this.$utils.deepClone(sceneConfig);
+              this.readOnly = sceneConfig.readOnly || false;
             }
           }
           this.$addWatchData(this.getCompareData(sceneConfig));
@@ -343,7 +373,7 @@ export default {
         });
       } else {
         let findName = this.sceneList.find(s => s.uuid !== this.sceneUuid && s.name === this.sceneName);
-        if (findName || this.sceneName === this.$t('page.defaultscenario')) {
+        if (findName || this.sceneName === this.$t('page.mainscene')) {
           this.$set(this.errorData, 'scene', [{
             field: 'name',
             error: this.$t('message.cannotrepeat', {'target': this.$t('page.scenarioname')})
@@ -384,6 +414,7 @@ export default {
     openPreview() {
       const data = this.$refs.sheet.getFormConfig();
       this.$set(data, 'formWidth', this.initFormConfig.formWidth);
+      this.$set(data, 'readOnly', this.readOnly);
       this.previewFormData = data;
       this.isPreviewShow = true;
     },
@@ -478,6 +509,7 @@ export default {
         let formConfig = this.$refs.sheet.getFormConfig();
         this.$set(formConfig, 'name', this.sceneName);
         this.$set(formConfig, 'uuid', this.sceneUuid);
+        this.$set(formConfig, 'readOnly', this.readOnly);
         if (formConfig.tableList) {
           formConfig.tableList.forEach(item => {
             if (item.component && item.component.inherit) {
@@ -542,6 +574,40 @@ export default {
         query: {
           uuid: this.uuid,
           currentVersionUuid: this.currentVersionUuid
+        }
+      });
+    },
+    updateDefaultSceneUuid(uuid) {
+      this.$set(this.initFormConfig, 'defaultSceneUuid', uuid);
+    },
+    updateSceneReadOnly(readOnly, sceneUuid) {
+      if (sceneUuid === this.initFormConfig.uuid) {
+        this.$set(this.initFormConfig, 'readOnly', readOnly);
+      } else {
+        this.initFormConfig.sceneList.forEach(item => {
+          if (item.uuid === sceneUuid) {
+            this.$set(item, 'readOnly', readOnly);
+          }
+        });
+      }
+      if (sceneUuid === this.sceneUuid) {
+        this.readOnly = readOnly;
+      }
+    },
+    changeReadOnly(readOnly) {
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.saveFormSceneReadonly({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: this.sceneUuid,
+        readOnly: readOnly
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.initFormConfig.sceneList.forEach(item => {
+            if (item.uuid === this.sceneUuid) {
+              this.$set(item, 'readOnly', readOnly);
+            }
+          });
         }
       });
     }

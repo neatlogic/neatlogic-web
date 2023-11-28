@@ -13,6 +13,10 @@
           <div>
             <div class="pb-sm">
               <span class="tsfont-plus text-action" @click="addScene()">{{ $t('page.scene') }}</span>
+              <span class="pl-nm">
+                <span class="text-tip pr-xs">{{ $t('page.defaultscenario') }}</span>
+                <span class="text-href" @click="selectDefaultscene()">{{ getSceneName(defaultSceneUuid) }}</span>
+              </span>
             </div>
             <TsTable
               :theadList="theadList"
@@ -27,12 +31,20 @@
                   :referenceCount="row.referenceCount"
                 ></ReferenceSelect>
               </template> 
+              <template v-slot:readOnly="{row}">
+                <TsFormSwitch
+                  v-model="row.readOnly"
+                  :falseValue="false"
+                  :trueValue="true"
+                  @on-change="(val)=>changeReadOnly(val, row)"
+                ></TsFormSwitch>
+              </template>
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
                     <li class="tsfont-copy" @click="copyScene(row)">{{ $t('page.copy') }}</li>
                     <li
-                      v-if="row.uuid !== formConfig.uuid"
+                      v-if="row.uuid !== formConfig.uuid && row.uuid !== defaultSceneUuid"
                       class="tsfont-trash-o"
                       :class="{ 'disable': row.referenceCount }"
                       :title="row.referenceCount? $t('message.framework.notdelscenetip') : ''"
@@ -46,6 +58,29 @@
         </div>
       </template>
     </TsDialog>
+    <TsDialog
+      :title="$t('page.defaultscenario')"
+      type="modal"
+      :isShow.sync="isSelectDefaultsceneDialog"
+      @on-ok="saveDefaultscene"
+      @on-close="closeDefaultsceneDialog"
+    >
+      <template v-slot>
+        <div>
+          <TsFormItem :label="$t('page.defaultscenario')" required>
+            <TsFormSelect
+              ref="sceneUuid"
+              v-model="selectSceneUuid"
+              :dataList="tbodyList"
+              textName="name"
+              valueName="uuid"
+              :validateList="validateList"
+              transfer
+            ></TsFormSelect>
+          </TsFormItem>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -53,7 +88,10 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
+    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   props: {
     uuid: String,
@@ -75,12 +113,17 @@ export default {
       },
       theadList: [
         { title: this.$t('page.scenarioname'), key: 'name', type: 'linktext', textValue: 'edit'},
+        { title: this.$t('term.framework.globalreadonly'), key: 'readOnly', tooltip: this.$t('term.framework.globalreadonlytip')},
         { title: this.$t('term.process.associatedsteps'), key: 'referenceCount'},
         { title: this.$t('page.fcu'), key: 'lcu', type: 'user' },
         { title: this.$t('page.fcd'), key: 'lcd', type: 'time' },
         {key: 'action'}
       ],
-      tbodyList: []
+      tbodyList: [],
+      defaultSceneUuid: null,
+      isSelectDefaultsceneDialog: false,
+      validateList: ['required'],
+      selectSceneUuid: null
     };
   },
   beforeCreate() {},
@@ -98,17 +141,24 @@ export default {
   methods: {
     initData() {
       let defaultValue = [];
-      if (!this.$utils.isEmpty(this.formConfig) && this.formConfig.name) {
+      if (!this.$utils.isEmpty(this.formConfig)) {
         this.tbodyList.push({
-          name: this.formConfig.name,
+          name: this.$t('page.mainscene'),
           uuid: this.formConfig.uuid,
           lcu: this.formConfig.lcu,
-          lcd: this.formConfig.lcd
+          lcd: this.formConfig.lcd,
+          readOnly: this.formConfig.readOnly || false
         });
+        
+        this.defaultSceneUuid = this.formConfig.defaultSceneUuid || this.formConfig.uuid;
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
         this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; }); 
         this.tbodyList.push(...this.formConfig.sceneList);
+        let findDefaultValue = this.formConfig.sceneList.find(s => s.isDefaultValue);
+        if (findDefaultValue) {
+          this.defaultSceneUuid = findDefaultValue.uuid;
+        }
       }
       if (this.tbodyList.length > 0) {
         defaultValue = this.$utils.mapArray(this.tbodyList, 'uuid');
@@ -222,10 +272,60 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    selectDefaultscene() {
+      this.selectSceneUuid = this.$utils.deepClone(this.defaultSceneUuid);
+      this.isSelectDefaultsceneDialog = true;
+    },
+    saveDefaultscene() {
+      if (!this.$refs.sceneUuid.valid()) {
+        return;
+      }
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.saveFormDefaultscene({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: this.defaultSceneUuid
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('updateDefaultSceneUuid', this.defaultSceneUuid);
+        }
+      }).finally(() => {
+        this.isSelectDefaultsceneDialog = false;
+      });
+    },
+    closeDefaultsceneDialog() {
+      this.isSelectDefaultsceneDialog = false;
+    },
+    changeReadOnly(val, row) {
+      this.defaultSceneUuid = this.selectSceneUuid;
+      this.$api.framework.form.saveFormSceneReadonly({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: row.uuid,
+        readOnly: val
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$emit('updateSceneReadOnly', val, row.uuid);
+        }
+      });
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getSceneName() {
+      return (uuid) => {
+        let name = '';
+        if (this.tbodyList && this.tbodyList.length > 0) {
+          let findItem = this.tbodyList.find(item => item.uuid === uuid);
+          if (findItem) {
+            name = findItem.name;
+          }
+        }
+        return name;
+      };
+    }
+  },
   watch: {}
 };
 </script>

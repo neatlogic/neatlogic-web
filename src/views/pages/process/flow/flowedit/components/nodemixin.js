@@ -140,7 +140,6 @@ export default {
     },
     updateScene(sceneConfig) {
       // 更新表单场景值
-      this.$set(this.configData.stepConfig, 'formSceneName', sceneConfig.text);
       this.$set(this.configData.stepConfig, 'formSceneUuid', sceneConfig.value);
     },
     clearNodeData(stepConfig) {

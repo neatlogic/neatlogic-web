@@ -33,32 +33,25 @@ export const FORMITEM_CATEGORY = [
   { value: 'autoexec', text: $t('term.framework.automationwidget') },
   { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
 ];
-
-export const FORMITEMS = [formlabel,
-  formtext,
-  formtextarea,
-  formckeditor,
-  formnumber,
-  formpassword,
-  formselect,
-  formcascader, 
-  formradio, 
-  formcheckbox, 
-  formcube, 
-  formtableselector, 
-  formtableinputer, 
-  formdate,
-  formtime,
-  formlink,
-  formrate, 
-  formuserselect, 
-  formtreeselect, 
-  formaccounts, 
-  formupload,
-  formdivider, 
-  formtab, 
-  formcollapse,
-  formsubassembly, 
-  ...CMDBITEMS,
-  ...AUTOEXECITEMS
-];
+let importComponentConfig = {};
+let defineList = [];
+try {
+  // 导入自定义组件
+  const componentConfig = require.context('@/commercial-module', true, /formdefine.js$/);
+  componentConfig.keys().forEach(path => {
+    if (path) {
+      const moduleName = path.split('/')[1]?.split('-')?.pop() || path.split('/')[1];
+      if (moduleName == MODULEID) {
+        importComponentConfig = componentConfig(path).default || {};
+      }
+    }
+  });
+  for (let key in importComponentConfig) {
+    if (key && importComponentConfig.hasOwnProperty(key)) {
+      defineList.push(importComponentConfig[key]);
+    }
+  }
+} catch (error) {
+  console.error('formitem-list.js抛出异常', error);
+}
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, formsubassembly, ...CMDBITEMS, ...AUTOEXECITEMS, ...defineList];

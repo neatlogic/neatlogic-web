@@ -1,6 +1,11 @@
 export default {
   props: {
-    uuid: [Number, String]
+    uuid: [Number, String],
+    processUuid: {
+      // 流程id
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {

@@ -75,6 +75,12 @@ const form = {
   },
   getReferenceCount(params) { //查询引用数量
     return axios.post('/api/rest/dependency/count', params);
+  },
+  saveFormDefaultscene(params) { //保存默认场景
+    return axios.post('/api/rest/form/version/defaultscene/save', params);
+  },
+  saveFormSceneReadonly(params) { //场景设置只读
+    return axios.post('/api/rest/form/version/scene/readonly', params);
   }
 };
 export default form;

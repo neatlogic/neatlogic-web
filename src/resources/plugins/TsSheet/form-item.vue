@@ -89,7 +89,7 @@
   </div>
 </template>
 <script>
-import * as formItems from './form/component/index.js';
+import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
