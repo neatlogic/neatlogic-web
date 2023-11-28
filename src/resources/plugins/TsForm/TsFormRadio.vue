@@ -200,7 +200,7 @@ export default {
         });
       }
       if (this.isCustomValue) {
-        value = selectedItem || {};
+        value = selectedItem || null;
       }
       this.$emit('update:value', value);
       this.$emit('change', value, selectedItem || null);

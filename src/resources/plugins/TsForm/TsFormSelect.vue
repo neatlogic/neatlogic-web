@@ -1032,7 +1032,7 @@ export default {
         }
       } else if (this.isCustomValue) {
         isSame = this.$utils.isSame(this.value, this.currentValue);
-        toValue = valueObject;
+        toValue = this.$utils.isEmpty(valueObject) ? null : valueObject;
       } else if (this.value == this.currentValue) {
         isSame = true;
       }
