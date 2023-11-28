@@ -9,19 +9,21 @@
       class="mt-xs"
       style="margin-left: 88px"
       :readonly="true"
-      :value="formConfig"
+      :value="currentFormConfig"
       :data="formData"
       :formHighlightData="formHighlightData"
     ></TsSheet>
   </div>
 </template>
 <script>
+import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
 export default {
   name: '',
   components: {
     TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
   },
   filters: {},
+  mixins: [dealFormMix],
   props: {
     config: Object,
     formConfig: {
@@ -29,19 +31,30 @@ export default {
       default: function() {
         return {};
       }
+    },
+    processTaskStepId: {
+      type: Number,
+      default: null
+    },
+    formSceneUuid: {
+      type: String,
+      default: null
     }
   },
   data() {
     return {
       isShow: false,
       formData: {},
-      formHighlightData: {}
+      formHighlightData: {},
+      currentFormConfig: {}
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -49,6 +62,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      if (!this.$utils.isEmpty(this.formConfig)) {
+        if (this.processTaskStepId) { //流转时，表单展示需要与节点场景保持一致
+          this.currentFormConfig = this.initNewFormConfig(this.formSceneUuid, this.formConfig);
+        } else {
+          this.currentFormConfig = this.formConfig;
+        }
+      }
+    },
     handleData() {
       this.formData = {};
       let oldContent = JSON.parse(this.config.oldContent);
