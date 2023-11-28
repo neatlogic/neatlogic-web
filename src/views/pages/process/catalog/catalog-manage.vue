@@ -202,6 +202,7 @@ export default {
           if (this.processUuid) {
             this.addChannel(node.uuid);// 新加服务
           } else if (this.uuid) {
+            this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
             this.channelData.parentUuid = node.parentUuid; // 编辑服务
             this.channelData.uuid = node.uuid;
           }
@@ -211,16 +212,17 @@ export default {
       this.catalogTypeName = node?.type;
       if (this.catalogTypeName) {
         let {uuid = '', parentUuid = null, childrenCount = null, type = ''} = node || {};
-        this.catalogName = this.$t('dialog.title.edittarget', { target: type == 'channel' ? this.$t('term.process.catalog') : this.$t('page.catalogue') });
         this.childrenCount = childrenCount;
         this.currentUuid = uuid;
         this.treeUuid = uuid;
         if (type == 'catalog') {
           // 编辑目录
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
           this.$set(this.catalogData, 'uuid', uuid);
           this.$set(this.catalogData, 'parentUuid', parentUuid);
         } else if (type == 'channel') {
           // 编辑服务
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
           this.$set(this.channelData, 'uuid', uuid);
           this.$set(this.channelData, 'parentUuid', parentUuid);
         }
@@ -270,36 +272,37 @@ export default {
     },
     onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
       if (targetNode == null) {
+        // 服务不可以拖拽为根目录
         return false;
       }
       let treeNode = treeNodes[0];
       let parentId = null;
       let keyId = 'uuid';
-      parentId = moveType == 'inner' ? targetNode[keyId] : targetNode.getParentNode() == null ? 0 : targetNode.getParentNode()[keyId];
+      if (moveType === 'inner') {
+        parentId = targetNode?.[keyId] || 0;
+      } else {
+        parentId = targetNode && targetNode.getParentNode() === null ? 0 : (targetNode?.getParentNode()?.[keyId] || 0);
+      }
       let data = {
         uuid: treeNode.uuid,
         moveType: moveType,
         parentUuid: parentId,
-        targetUuid: targetNode.uuid
+        targetUuid: targetNode?.uuid || 0
       };
      
       if (moveType != null) {
         if (treeNode.type == 'catalog') {
           this.$api.process.service.moveCatalog(data).then(res => {
-            if (res) {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.executesuccess'));
-              }
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
             }
           }).finally(() => {
             this.getTreeList();
           });
         } else if (treeNode.type == 'channel') {
           this.$api.process.service.moveChannel(data).then(res => {
-            if (res) {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.executesuccess'));
-              }
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
             }
           }).finally(() => {
             this.getTreeList();
