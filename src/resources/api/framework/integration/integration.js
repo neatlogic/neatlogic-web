@@ -48,9 +48,6 @@ const integration = {
   getIntegrationColumnList(params) {
     return axios.post('/api/rest/integration/table/column/list', params);
   },
-  getIntegrationColumnSearch(params) {
-    return axios.post('/api/rest/integration/column/data/search', params);
-  },
   getIntegrationTableSearch(params) {
     return axios.post('/api/rest/integration/table/data/search', params);
   },
@@ -62,7 +59,6 @@ const integration = {
     // 查看集成调用记录内容
     return axios.post('/api/rest/integration/audit/detail/get', params);
   }
-
 };
 
 export default integration;

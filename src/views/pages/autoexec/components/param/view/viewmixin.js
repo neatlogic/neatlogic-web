@@ -22,11 +22,9 @@ export default {
     event: 'change'
   },
   data() {
-    let _this = this;
     return {};
   },
-  created() {
-  },
+  created() {},
   mounted() {},
   beforeDestroy() {},
   methods: {
@@ -40,8 +38,7 @@ export default {
         return true;
       }
     },
-    getDatalist() {
-    }
+    getDatalist() {}
   },
   computed: {
     getSetting() {
@@ -81,6 +78,5 @@ export default {
       return setting;
     }
   },
-  watch: {
-  }
+  watch: {}
 };

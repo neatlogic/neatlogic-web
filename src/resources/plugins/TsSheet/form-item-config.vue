@@ -48,6 +48,7 @@
               mode="defaultvalue"
               :value="formItem.config.defaultValue"
               :disabled="!!formItem.inherit || disabled"
+              :isCustomValue="true"
               @change="
                 val => {
                   setConfig('defaultValue', val);

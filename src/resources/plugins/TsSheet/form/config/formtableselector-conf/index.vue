@@ -259,13 +259,13 @@ export default {
             if (this.config.mapping.value != this.config.mapping.text) {
               columlist.push({
                 text: d[this.config.mapping.text].text,
-                value: d[this.config.mapping.value].value + '&=&' + d[this.config.mapping.text].text,
+                value: d[this.config.mapping.value].value,
                 html: d[this.config.mapping.text].text + "<small class='text-grey'>(" + d[this.config.mapping.value].text + ')</small>'
               });
             } else {
               columlist.push({
                 text: d[this.config.mapping.text].text,
-                value: d[this.config.mapping.value].value + '&=&' + d[this.config.mapping.text].text,
+                value: d[this.config.mapping.value].value,
                 html: d[this.config.mapping.text].text
               });
             }
