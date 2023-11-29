@@ -59,15 +59,14 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    await this.getAppSystemCiAttrList();
     if (this.appSystemId) {
       this.getAppSystemById(this.appSystemId);
     }
   },
   beforeMount() {},
-  mounted() {
-    this.getAppSystemCiAttrList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -82,7 +81,7 @@ export default {
       };
       //获取应用系统模型属性列表
       //此接口查询的属性列表里的控件，现在from控件大部分都支持，有个别不支持，如附件、表格、表达式、超链接
-      this.$api.deploy.applicationConfig.getAppSystemCiAttrList(params).then((res) => {
+      return this.$api.deploy.applicationConfig.getAppSystemCiAttrList(params).then((res) => {
         if (res.Status == 'OK') {
           this.formConfig = this.formConfig.concat(this.getAppCiAttrList(res.Return, this.attrNameList, 'APP'));
         }
@@ -116,8 +115,8 @@ export default {
     getAppSystemById(id) {
       this.$api.deploy.applicationConfig.getAppSystem(id).then((res) => {
         if (res && res.Status == 'OK') {
-          let dataInfo = res.Return;
-          if (dataInfo && !this.$utils.isEmptyObj(dataInfo)) {
+          let dataInfo = res.Return || {};
+          if (dataInfo && !this.$utils.isEmpty(dataInfo)) {
             this.formConfig && this.formConfig.forEach((item) => {
               if (dataInfo[item.name]) {
                 this.$set(this.formValue, item.name, item.name == 'maintenanceWindow' ? this.handleMaintenanceWindowValue(dataInfo[item.name]) : dataInfo[item.name]);
