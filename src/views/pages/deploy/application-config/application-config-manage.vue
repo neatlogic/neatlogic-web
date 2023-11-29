@@ -63,7 +63,7 @@
                 :hasEditConfigAuth="canShow ? canEdit : canShow"
                 :authList="authList"
                 :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
-                :hideFucntionExcludeAppModuleRunner="canShow"
+                :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
                 @updateAuth="updateAuth"
               ></AppManage>
               <ModuleManage v-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
@@ -95,7 +95,7 @@
                   :hasEditConfigAuth="canShow ? canEdit : canShow"
                   :authList="authList"
                   :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
-                  :hideFucntionExcludeAppModuleRunner="canShow"
+                  :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
                   @updateAuth="updateAuth"
                 ></AppManage>
                 <ModuleManage v-else-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
