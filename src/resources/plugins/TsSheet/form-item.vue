@@ -203,7 +203,7 @@ export default {
     },
     //根据联动配置初始化watch
     initReactionWatch() {
-      if (this.mode === 'read') {
+      if (this.mode === 'read' || this.mode === 'readSubform') {
         let needWatch = false;
         if (this.formItem.reaction) {
           for (let key in this.formItem.reaction) {
@@ -515,7 +515,7 @@ export default {
     showComponent() {
       return formItem => {
         let isShow = true;
-        if ((this.mode === 'read' && formItem.config && formItem.config.isHide) || formItem.isEditing ||
+        if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing ||
          (formItem.override_config && formItem.override_config.isHide)
         ) {
           isShow = false;

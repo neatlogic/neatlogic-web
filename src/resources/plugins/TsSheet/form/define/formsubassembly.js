@@ -10,6 +10,7 @@ export default {
   'hasValue': true,
   'component': [],
   'config': {
+    'disableDefaultValue': true,
     'width': '100%',
     'isMask': false,
     'isHide': false,
