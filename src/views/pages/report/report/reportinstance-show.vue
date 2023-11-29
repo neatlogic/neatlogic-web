@@ -170,20 +170,6 @@ export default {
       }
     },
     setParam(paramName, paramValue) {
-      if (Array.isArray(paramValue)) {
-        let _paramValue = [];
-        paramValue.forEach((element) => {
-          if (element.indexOf('&=&') > -1) {
-            let item = element.split('&=&')[0];
-            _paramValue.push(item);
-          }
-        }); 
-        paramValue = _paramValue;
-      } else {
-        if (paramValue && paramValue.indexOf('&=&') > -1) {
-          paramValue = paramValue.split('&=&')[0];
-        }
-      }
       let obj = {};
       obj[paramName] = paramValue;
       this.searchParam = Object.assign({}, this.searchParam, obj);

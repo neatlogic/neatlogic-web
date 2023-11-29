@@ -11,6 +11,7 @@
           v-if="tabValue == 'appConfig'"
           :appSystemId="appSystemId"
           :hasEditConfigAuth="hasEditConfigAuth"
+          :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
           @updateAuth="updateAuth"
         ></AppInfoManage>
       </TabPane>
@@ -54,6 +55,11 @@ export default {
     },
     hasEditPipelineAuth: {
       // 是否有超级流水线权限
+      type: Boolean,
+      default: false
+    },
+    hideFucntionExcludeAppModuleRunner: {
+      // codehub新增应用配置入口，为了维护应用和模块，以及模块对应的runner组,发布其他功能全部屏蔽
       type: Boolean,
       default: false
     }

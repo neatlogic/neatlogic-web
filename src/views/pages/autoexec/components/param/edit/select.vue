@@ -85,7 +85,6 @@ export default {
   },
   props: {},
   data() {
-    let _this = this;
     return {
       matrixConfig: { //矩阵
         dynamicUrl: '/api/rest/matrix/search', 

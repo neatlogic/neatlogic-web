@@ -14,7 +14,9 @@ export default {
     'description': '',
     'width': '100%',
     'isMask': false,
-    'isHide': false
+    'isHide': false,
+    'isReadOnly': false,
+    'isDisabled': false
   },
   'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'required': {} }
 };

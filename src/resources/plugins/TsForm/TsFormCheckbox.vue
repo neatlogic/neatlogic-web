@@ -3,12 +3,12 @@
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]">
       <template v-if="nodeList && nodeList.length > 0">
         <span
-          v-for="(val, dindex) in value"
+          v-for="(val, dindex) in currentValue"
           :key="dindex"
           style="display:flex;"
         >
           {{ getText(val) }}
-          <span v-if="dindex < value.length - 1" class="text-grey tsform-readonly-sperate">{{ sperateText }}</span>
+          <span v-if="dindex < currentValue.length - 1" class="text-grey tsform-readonly-sperate">{{ sperateText }}</span>
         </span>
       </template>
       <template v-else>-</template>
@@ -114,13 +114,14 @@ export default {
   },
   data() {
     return {
-      currentValue: this.value || [],
+      currentValue: [],
       validMesage: this.errorMessage || '',
       nodeList: this.url ? [] : this.dataList,
       currentValidList: this.filterValid(this.validateList) || []
     };
   },
   created() {
+    this.currentValue = this.handleCurrentValue(this.value) || [];
     this.setSelectList();
     this.initDataListByUrl();
   },
@@ -186,7 +187,7 @@ export default {
     },
     onChangeValue(val, item) {
       let isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
-      let value = JSON.parse(JSON.stringify(this.currentValue));
+      let value = this.$utils.deepClone(this.currentValue);
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
       let selectedItem = [];
       let label = [];
@@ -197,6 +198,9 @@ export default {
             return true;
           }
         });
+        if (this.isCustomValue) {
+          value = selectedItem;
+        }
       }
       this.$emit('update:value', value);
       this.$emit('change', value, selectedItem);
@@ -249,17 +253,16 @@ export default {
       return reslutClass;
     },
     getText() {
-      let _this = this;
-      return function(val) {
-        let node = _this.nodeList.find(item => item[_this.valueName] == val);
-        return node && node[_this.textName] ? node[_this.textName] : '-';
+      return (val) => {
+        let node = this.nodeList.find(item => item[this.valueName] == val);
+        return node && node[this.textName] ? node[this.textName] : '-';
       };
     }
   },
   watch: {
     value(newValue, oldValue) {
       if (JSON.stringify(newValue) != JSON.stringify(this.currentValue)) {
-        this.currentValue = JSON.parse(JSON.stringify(newValue || []));
+        this.currentValue = this.handleCurrentValue(this.$utils.deepClone(newValue)) || [];
         this.validMesage = '';
         this.setSelectList();
       }

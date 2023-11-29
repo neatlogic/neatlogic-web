@@ -32,6 +32,8 @@
                   mode="custom"
                   :condition="getConditionConfigByConditionData(conditionGroup, conditionData)"
                   :conditionData="conditionData"
+                  :isCustomValue="true"
+                  :isCustomPanel="true"
                   @change="
                     (conditionConfig, val, textStr) => {
                       change(conditionData, 'valueList', val);

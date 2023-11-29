@@ -45,6 +45,11 @@ export default {
       // 是否清空回显失败默认值
       type: Boolean,
       default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -111,7 +116,12 @@ export default {
             let valueList = [];
             value.forEach(v => {
               if (v != false && !this.$utils.isEmpty(v)) {
-                valueList.push(v);
+                if (this.isCustomValue && v[this.valueName]) {
+                  // 数组对象类型
+                  valueList.push(v?.[this.valueName]);
+                } else {
+                  valueList.push(v);
+                }
               }
             });
             value = valueList;
@@ -223,6 +233,30 @@ export default {
         className = 'text-warning';
       }
       return className;
+    },
+    handleCurrentValue(currentValue) {
+      let value;
+      return currentValue => {
+        if (this.multiple || this.$options.name == 'TsFormCheckbox') {
+          if (this.$utils.isEmpty(currentValue)) {
+            value = [];
+          } else {
+            if (this.isCustomValue) {
+              // 返回的是对象处理需要处理成['value1', 'value2']
+              value = currentValue instanceof Array ? currentValue.filter(item => item?.[this.valueName]).map(item => item[this.valueName]) : [];
+            } else {
+              value = [].concat(currentValue);
+            }
+          }
+        } else {
+          if (this.isCustomValue && currentValue && typeof currentValue === 'object' && currentValue[this.valueName]) {
+            value = currentValue[this.valueName];
+          } else {
+            value = currentValue;
+          }
+        }
+        return value;
+      };
     }
   },
 

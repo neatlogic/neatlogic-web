@@ -15,6 +15,11 @@ export default {
       // 是否清空回显失败默认值
       type: Boolean,
       default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -24,7 +29,7 @@ export default {
   },
   created() {
     //在非条件模式下，用默认值替换空的value值
-    if (this.mode === 'read' && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
+    if ((this.mode === 'read' || this.mode === 'readSubform') && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
   },
@@ -121,7 +126,7 @@ export default {
     required: {
       handler(val) {
         this.validateList = [];
-        if (this.mode === 'read' && val) {
+        if ((this.mode === 'read' || this.mode === 'readSubform') && val) {
           this.validateList.push({name: 'required', message: ' '});
         }
       },

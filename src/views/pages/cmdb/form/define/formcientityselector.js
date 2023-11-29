@@ -15,6 +15,8 @@ export default {
     'width': '100%',
     'isMask': false,
     'isHide': false,
+    'isReadOnly': false,
+    'isDisabled': false,
     'ciList': []
   },
   'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'required': {} }
