@@ -57,10 +57,10 @@ export default {
     return {
       versionUuid: '', // 表单版本id
       formSceneUuid: this.value.formSceneUuid || '',
-      formSceneName: this.value.formSceneName || '',
       isPreviewShow: false,
       formPreviewContent: {},
-      dataList: []
+      dataList: [],
+      mainSceneUuid: '' //主场景
     };
   },
   beforeCreate() {},
@@ -89,7 +89,11 @@ export default {
     },
     toEditFormScene() {
       // 表单场景编辑
-      window.open(HOME + '/framework.html#form-scene-edit' + '?uuid=' + this.formConfig.uuid + '&currentVersionUuid=' + this.versionUuid + '&sceneUuid=' + this.formSceneUuid + '&type=edit', '_blank');
+      if (this.formSceneUuid != this.mainSceneUuid) {
+        window.open(HOME + '/framework.html#form-scene-edit' + '?uuid=' + this.formConfig.uuid + '&currentVersionUuid=' + this.versionUuid + '&sceneUuid=' + this.formSceneUuid + '&type=edit', '_blank');
+      } else {
+        window.open(HOME + '/framework.html#form-edit' + '?uuid=' + this.formConfig.uuid + '&currentVersionUuid=' + this.versionUuid + '&sceneUuid=' + this.formSceneUuid + '&type=edit', '_blank');
+      }
     },
     async getSceneDataList(isClear = true) {
       // 获取表单场景列表
@@ -103,6 +107,7 @@ export default {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};
+              this.mainSceneUuid = formConfig.uuid;
               this.formPreviewContent = formConfig;
               let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
               this.versionUuid = res.Return.currentVersionUuid;
@@ -171,7 +176,6 @@ export default {
     value: {
       handler(val) {
         this.formSceneUuid = (val && val.formSceneUuid) ? val.formSceneUuid : '';
-        this.formSceneName = (val && val.formSceneName) ? val.formSceneName : '';
       }
     }
   }

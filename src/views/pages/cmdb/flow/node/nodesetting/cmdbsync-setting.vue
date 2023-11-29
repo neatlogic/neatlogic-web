@@ -47,7 +47,11 @@
         {{ $t('form.validate.required', { target: $t('term.cmdb.modemapping') }) }}
       </div>
     </div>
-    <CmdbsyncDialog v-if="isShowDialog" :configList="ciEntityConfig.configList" @close="close"></CmdbsyncDialog>
+    <CmdbsyncDialog
+      v-if="isShowDialog"
+      :configList="ciEntityConfig.configList"
+      @close="close"
+    ></CmdbsyncDialog>
   </div>
 </template>
 <script>
