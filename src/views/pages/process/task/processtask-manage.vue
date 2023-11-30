@@ -319,8 +319,6 @@ export default {
     handlerSearchResult(data) {
       // 处理搜索条件过来的数据
       let theadList = data.theadList.map(d => ({
-       
-        //  title: d.name == 'focususers' ? '关注工单' : d.displayName,
         title: d.displayName,
         key: d.name,
         isShow: d.isShow,
