@@ -57,8 +57,8 @@ import { directive as ClickOutside } from '../../directives/v-click-outside-x.js
 export default {
   name: 'TsFormCascader',
   tagComponent: 'TsForm',
-  directives: { ClickOutside, formScrollMixins },
-  mixins: [formMixins],
+  directives: { ClickOutside },
+  mixins: [formMixins, formScrollMixins],
   model: {
     prop: 'value',
     event: 'change'
