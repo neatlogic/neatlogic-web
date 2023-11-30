@@ -758,6 +758,9 @@ function setWidth($contain, $target, transfer) {
         font-family: 'tsfont';
         content: '\e899'; // tsfont-drop-right字体图标
       }
+      .ivu-tree-arrow i {
+        vertical-align: baseline; // 修复向下/向左箭头图标和文案不对齐问题
+      }
     }
 }
 .form-transfer-tree {
