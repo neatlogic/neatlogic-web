@@ -2570,6 +2570,13 @@
     "endci": "Endpoint model",
     "autofill": "Auto Fill",
     "beginci": "Starting point model",
-    "snapshotedit": "Generate Snapshot&Edit"
+    "snapshotedit": "Generate Snapshot&Edit",
+    "startciseted": "Starting point model has been set",
+    "allowlinkout": "Allow connection",
+    "allowlinkin": "Allow connection",
+    "allowresize": "Allow size changes",
+    "allowdelete": "Allow deletion",
+    "allowmove": "Allow movement",
+    "nocientityname": "No display name"
   }
 }

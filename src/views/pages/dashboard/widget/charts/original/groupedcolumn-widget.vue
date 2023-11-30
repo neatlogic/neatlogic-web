@@ -9,8 +9,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -24,8 +23,8 @@ export default {
           visible: true
         },
         meta: {
-          xField: {alias: this.$t('term.report.axis.xfield')},
-          yField: {alias: this.$t('term.report.axis.yfield')}
+          xField: { alias: this.$t('term.report.axis.xfield') },
+          yField: { alias: this.$t('term.report.axis.yfield') }
         },
         color: this.getChartTheme('chart')
       }
@@ -34,8 +33,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -46,7 +44,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 0; i < 10; i++) {
-        this.data.push({xField: this.$t('page.data') + Math.floor(i / 2), yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
+        this.data.push({ xField: this.$t('page.data') + Math.floor(i / 2), yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
       }
     },
     createPlot() {
@@ -86,8 +84,7 @@ export default {
       return data;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

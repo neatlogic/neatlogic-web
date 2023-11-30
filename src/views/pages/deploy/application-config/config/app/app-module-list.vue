@@ -19,7 +19,7 @@
             @click="selectApp(app)"
           >
             <span v-if="(level === 'module' || level === 'env') && app.isHasModule">
-              <span v-if="!app.isLoading" :class="{ 'tsfont-right': !app.isExpand, 'tsfont-down': !!app.isExpand }" @click.stop="showModule(app)"></span>
+              <span v-if="!app.isLoading" :class="{ 'tsfont-drop-right': !app.isExpand, 'tsfont-drop-down': !!app.isExpand }" @click.stop="showModule(app)"></span>
               <Icon
                 v-else
                 type="ios-loading"
@@ -50,7 +50,7 @@
             <div v-for="module in app.appModuleList" :key="module.id">
               <div class="module-item ml-nm pb-xs pt-xs radius-sm overflow cursor module-flex" :class="{ 'item-selected': !!module.isSelected }" @click="selectModule(app, module)">
                 <span v-if="level === 'env' && module.isHasEnv">
-                  <span v-if="!module.isLoading" :class="{ 'tsfont-right': !module.isExpand, 'tsfont-down': !!module.isExpand }" @click.stop="showEnv(app, module)"></span>
+                  <span v-if="!module.isLoading" :class="{ 'tsfont-drop-right': !module.isExpand, 'tsfont-drop-down': !!module.isExpand }" @click.stop="showEnv(app, module)"></span>
                   <Icon
                     v-else
                     type="ios-loading"

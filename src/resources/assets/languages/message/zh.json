@@ -274,6 +274,9 @@
   "syncsuccess": "同步成功",
   "downloadsuccessful": "下载成功",
   "diagram": {
-    "versionchecking": "当前版本正在审核中，无法编辑"
+    "versionchecking": "当前版本正在审核中，无法编辑",
+    "deletetemplateconfirm": "当前模板是自动填充模板，删除后对应的目录或配置项不再自动生成相关架构图，是否确认删除？",
+    "deletetemplateanddiagramconfirm": "当前模板是自动填充模板，并且存在修改记录，删除后对应的目录或配置项不再自动生成相关架构图，修改记录也会一起删除，是否确认删除？",
+    "deletecatalogconfirm": "目录删除后目录下的所有架构图以及修改记录也会一起删除，是否确认？"
   }
 }
