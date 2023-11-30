@@ -117,7 +117,7 @@
         type="primary"
         ghost
         @click="addParam"
-      ><span class="tsfont-plus ">{{ $t('page.param') }}</span></Button>
+      ><span class="tsfont-plus">{{ $t('page.param') }}</span></Button>
     </div>
   </div>
 </template>

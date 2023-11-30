@@ -57,6 +57,7 @@ export default {
       this.$router.push({ path: path });
     },
     toProjectManage(projectId) {
+      this.$route.meta.clearHistory = true; // 激活清理历史标记
       this.$router.push({ path: '/project-edit/' + projectId });
     },
     addProject() {

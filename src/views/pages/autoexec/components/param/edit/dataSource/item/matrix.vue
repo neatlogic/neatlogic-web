@@ -81,7 +81,6 @@ export default {
     multiple: Boolean
   },
   data() {
-    let _this = this;
     return {
       matrixConfig: { 
         dynamicUrl: '/api/rest/matrix/search', 

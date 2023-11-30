@@ -134,7 +134,9 @@ export default {
   watch: {
     defaultFilterList: {
       handler(val) {
-        if (val && !this.$utils.isSame(val, this.filterList)) {
+        this.filterList = [];
+        this.isActive = 0;
+        if (!this.$utils.isEmpty(val) && !this.$utils.isSame(val, this.filterList)) {
           this.filterList = this.$utils.deepClone(val);
           if (this.filterList.length > 0) {
             this.isActive = 1;

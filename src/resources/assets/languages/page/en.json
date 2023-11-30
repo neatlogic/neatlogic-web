@@ -947,6 +947,7 @@
   "filltype": "Background Fill Method",
   "backgroundresizable": "Background Follow Zoom",
   "auto": "automatic",
+  "foreachobj": "Traverse Object",
   "mainscene": "Main scene",
   "enter": "enter",
   "viewdata": "View Data"

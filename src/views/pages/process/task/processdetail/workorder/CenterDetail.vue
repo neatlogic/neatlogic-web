@@ -189,7 +189,7 @@
           tab="tab1"
         >
           <!-- 时间线 -->
-          <ActivityOverview :defaultActiveData="activeData" :formConfig="formConfig"></ActivityOverview>
+          <ActivityOverview :defaultActiveData="activeData" :formConfig="processTaskConfig.formConfig"></ActivityOverview>
         </TabPane>
         <TabPane
           v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"

@@ -125,7 +125,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       myParamList: [],
       controllerTypeList: [

@@ -63,6 +63,7 @@
       :formData="formData"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+      :isCustomValue="isCustomValue"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -123,6 +124,11 @@ export default {
     },
     isClearEchoFailedDefaultValue: {
       // 默认值对应不上下列列表时，是否需要清空默认值
+      type: Boolean,
+      default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
     }
@@ -197,7 +203,7 @@ export default {
     },
     //根据联动配置初始化watch
     initReactionWatch() {
-      if (this.mode === 'read') {
+      if (this.mode === 'read' || this.mode === 'readSubform') {
         let needWatch = false;
         if (this.formItem.reaction) {
           for (let key in this.formItem.reaction) {
@@ -286,34 +292,24 @@ export default {
                           if (this.formData[r.formItemUuid] instanceof Array) {
                             this.formData[r.formItemUuid].forEach(value => {
                               if (typeof value === 'string') {
-                                if (value.includes('&=&')) {
-                                  valueList.push(value.split('&=&')[0]); //只取value部分
-                                  textList.push(value.split('&=&')[1]); //只取text部分
+                                valueList.push(value);
+                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
+                                  let findData = formItem.config.dataList.find(f => f.value === value);
+                                  textList.push(findData.text);
                                 } else {
-                                  valueList.push(value);
-                                  if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                    let findData = formItem.config.dataList.find(f => f.value === value);
-                                    textList.push(findData.text);
-                                  } else {
-                                    textList.push(value);
-                                  }
+                                  textList.push(value);
                                 }
                               }
                             });
                           } else {
                             let value = this.formData[r.formItemUuid];
                             if (value) {
-                              if (value.includes('&=&')) {
-                                valueList.push(value.split('&=&')[0]); //只取value部分
-                                textList.push(value.split('&=&')[1]); //只取text部分,用于矩阵搜索回显
+                              valueList.push(value);
+                              if (!this.$utils.isEmpty(formItem.config.dataList)) {
+                                const findData = formItem.config.dataList.find(f => f.value === value);
+                                textList.push(findData.text);
                               } else {
-                                valueList.push(value);
-                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                  const findData = formItem.config.dataList.find(f => f.value === value);
-                                  textList.push(findData.text);
-                                } else {
-                                  textList.push(value);
-                                }
+                                textList.push(value);
                               }
                             }
                           }
@@ -519,7 +515,7 @@ export default {
     showComponent() {
       return formItem => {
         let isShow = true;
-        if ((this.mode === 'read' && formItem.config && formItem.config.isHide) || formItem.isEditing ||
+        if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing ||
          (formItem.override_config && formItem.override_config.isHide)
         ) {
           isShow = false;
