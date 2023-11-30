@@ -2568,6 +2568,7 @@
     "endci": "终点模型",
     "autofill": "自动填充",
     "beginci": "起点模型",
-    "snapshotedit": "生成快照&编辑"
+    "snapshotedit": "生成快照&编辑",
+    "startciseted": "已设置起点模型"
   }
 }

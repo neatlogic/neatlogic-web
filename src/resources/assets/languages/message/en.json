@@ -274,6 +274,9 @@
   "syncsuccess": "Sync successful",
   "downloadsuccessful": "Download successful",
   "diagram": {
-    "versionchecking": "The current version is currently under review and cannot be edited"
+    "versionchecking": "The current version is currently under review and cannot be edited",
+    "deletetemplateconfirm": "The current template is an automatically filled template. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams. Are you sure you want to delete it?",
+    "deletetemplateanddiagramconfirm": "The current template is an automatically filled template with modification records. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams, and the modification records will also be deleted. Are you sure you want to delete it?",
+    "deletecatalogconfirm": "After deleting the directory, all architecture diagrams and modification records under the directory will also be deleted. Are you sure?"
   }
 }

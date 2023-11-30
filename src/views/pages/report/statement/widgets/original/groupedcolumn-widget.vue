@@ -10,8 +10,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -25,8 +24,8 @@ export default {
           visible: true
         },
         meta: {
-          xField: {alias: this.$t('term.report.axis.xfield')},
-          yField: {alias: this.$t('term.report.axis.yfield')}
+          xField: { alias: this.$t('term.report.axis.xfield') },
+          yField: { alias: this.$t('term.report.axis.yfield') }
         },
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]
       }
@@ -35,8 +34,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -47,7 +45,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 0; i < 10; i++) {
-        this.data.push({xField: this.$t('page.data') + Math.floor(i / 2), yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
+        this.data.push({ xField: this.$t('page.data') + Math.floor(i / 2), yField: Math.floor(Math.random() * 100) + 1, seriesField: this.$t('page.group') + (i % 2) });
       }
     },
     createPlot() {
@@ -58,14 +56,14 @@ export default {
       if (this.$refs.container) {
         this.plot = new Column(this.$refs.container, {
           ...this.chartConfig,
-          data: this.changeData
+          data: this.finalData
         });
         this.plot.render();
       }
     },
     changeData() {
       if (this.plot) {
-        this.plot.changeData(this.changeData);
+        this.plot.changeData(this.finalData);
       }
     }
   },
@@ -87,8 +85,7 @@ export default {
       return data;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>
