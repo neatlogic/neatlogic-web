@@ -54,7 +54,7 @@
                 @getSelected="(value,selectList)=>{ getSelected(selectList) }"
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
-                  <div :key="tindex">
+                  <div :key="tindex" style="overflow: hidden;" :style="tbody.key == 'currentstep' ? {height: '50px',display: 'flex',alignItems: 'center'} : {height: '50px',lineHeight: '50px'}">
                     <tdjson
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
                       :key="tindex"
@@ -280,7 +280,7 @@ export default {
     checkshow(headList, val) {
       //设置表格列是否可视
       let theadList = headList
-        .filter(item => !['action', 'focususers', 'score'].includes(item.key))
+        .filter(item => !['action', 'focususers', 'score', 'selection'].includes(item.key))
         .map((d, i) => ({
           name: d.key,
           sort: i,
@@ -319,11 +319,12 @@ export default {
     handlerSearchResult(data) {
       // 处理搜索条件过来的数据
       let theadList = data.theadList.map(d => ({
+       
+        //  title: d.name == 'focususers' ? '关注工单' : d.displayName,
         title: d.displayName,
         key: d.name,
         isShow: d.isShow,
         type: d.type,
-        width: d.width,
         //20220415需求调整为标题可配置
         disabled: d.name == '_' ? 1 : d.disabled,
         isDisabled: d.name == 'title',
@@ -334,7 +335,29 @@ export default {
       }));
       // 页码
       if (this.tableConfig.theadList.length <= 0) {
-        this.tableConfig.theadList = theadList;
+        let newTheadList = [];
+        theadList.forEach((item) => {
+          if (item && item.key) {
+            newTheadList.push(this.getColumnWidth(item));
+          }
+        });
+        // 添加操作
+        let isAction = newTheadList.find(d => d.key === 'action');
+        let isSelection = newTheadList.find(d => d.key === 'selection');
+        if (!isAction) {
+          newTheadList.push({
+            key: 'action',
+            align: 'right',
+            width: 20,
+            isShow: 1
+          });
+        }
+        if (!isSelection) {
+          newTheadList.unshift({
+            key: 'selection'
+          });
+        }
+        this.tableConfig.theadList = [...newTheadList];
       }
       this.tableConfig.rowNum = data.rowNum;
       this.tableConfig.pageSize = data.pageSize;
@@ -385,6 +408,15 @@ export default {
         // 表格里面的 action 显示列表接口信息
         this.getListOperation(idList);
       }
+    },
+    getColumnWidth(item = {}) {
+      const newItem = {...item };
+      if (item && item.key == 'focususers') {
+        // 解决关注工单字段，没有title导致页面宽度会有抖动的问题
+        newItem.width = 50;
+        newItem.style = {width: '50px', display: 'inline-block'};
+      }
+      return newItem;
     },
     checkExpire(timeList) {
       let timeLeftMin, expireStatus, expireTimeMin, expiredSlaName, willOverTimeMin, willOverSlaName;
@@ -462,24 +494,6 @@ export default {
               }
             });
           });
-          // 添加操作
-          let isAction = this.tableConfig.theadList.find(d => d.key === 'action');
-          if (!isAction) {
-            this.tableConfig.theadList.push({
-              //这个是最后一行操作栏
-              key: 'action',
-              align: 'right',
-              width: 10,
-              isShow: 1
-            });
-          }
-          //选择列表
-          let isSelection = this.tableConfig.theadList.find(d => d.key === 'selection');
-          if (!isSelection) {
-            this.tableConfig.theadList.unshift({
-              key: 'selection'
-            });
-          }
         }
       });
     },
