@@ -3,6 +3,9 @@
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="renderFormat(labeList,selectedData)">{{ renderFormat(labeList,selectedData) }}</span>
     <div
       v-else
+      v-click-outside:false="onClickOutside"
+      v-click-outside:false.mousedown="onClickOutside"
+      v-click-outside:false.touchstart="onClickOutside"
       :class="borderClass"
       :style="getStyle"
     >
@@ -16,6 +19,7 @@
         :content="labels"
       > -->
       <Cascader
+        ref="cascader"
         v-model="currentValue"
         :data="actualDataList"
         :disabled="disabled"
@@ -49,10 +53,12 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
+import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
 export default {
   name: 'TsFormCascader',
   tagComponent: 'TsForm',
-  mixins: [formMixins, formScrollMixins],
+  directives: { ClickOutside, formScrollMixins },
+  mixins: [formMixins],
   model: {
     prop: 'value',
     event: 'change'
@@ -165,6 +171,26 @@ export default {
         });
       }
       return dataList;
+    },
+    onClickOutside(event) {
+      //点击外部，下拉框消失
+      if (this.$refs.cascader && this.$refs.cascader.visible) {
+        const $contain = this.$refs.cascader ? this.$refs.cascader.$el || null : null;
+        if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
+          return;
+        }
+        //点击下拉框容器主要是在transfer为true的情况下面
+        const $el = this.$refs.cascader && this.$refs.cascader.$refs.drop ? this.$refs.cascader.$refs.drop.$el || null : null;
+        if (!$el || $el === event.target || $el.contains(event.target)) {
+          return;
+        }
+        this.$refs.cascader.visible = false;
+      }
+    },
+    onScroll(event) {
+      if (this.$refs.cascader && this.$refs.cascader.visible) {
+        this.$refs.cascader.visible = false;
+      }
     }
   },
   computed: {
