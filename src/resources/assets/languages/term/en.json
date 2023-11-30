@@ -2569,6 +2569,7 @@
     "endci": "Endpoint model",
     "autofill": "Auto Fill",
     "beginci": "Starting point model",
-    "snapshotedit": "Generate Snapshot&Edit"
+    "snapshotedit": "Generate Snapshot&Edit",
+    "startciseted": "Starting point model has been set"
   }
 }

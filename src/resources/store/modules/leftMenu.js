@@ -16,6 +16,7 @@ const state = {
   workCenterMenuData: null, //工单分类接口返回数据
   workcenterList: null,
   dashboardCount: 0, //仪表板数量
+  diagramCatalogCount: 0, //架构图目录数量
   recentIssuesMenuData: null, // 最新问题分类返回数据(巡检)
   recentIssuesList: null
 };
@@ -117,6 +118,13 @@ const mutations = {
       state.dashboardCount++;
     } else {
       state.dashboardCount--;
+    }
+  },
+  setDiagramCatalogCount(status, type) {
+    if (type === 'add') {
+      state.diagramCatalogCount++;
+    } else {
+      state.diagramCatalogCount--;
     }
   },
   setWorkerMenuIsWillDo(state, data) {
