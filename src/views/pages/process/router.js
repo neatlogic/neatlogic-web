@@ -25,7 +25,9 @@ const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-import {$t} from '@/resources/init.js';
+const eoaTemplateManage = () => import('./eoa/eoa-template-manage.vue');
+const eoaTemplateEdit = () => import('./eoa/eoa-template-edit.vue');
+import { $t } from '@/resources/init.js';
 
 let routerArr = [
   {
@@ -107,7 +109,7 @@ let routerArr = [
       icon: 'tsfont-star',
       authority: 'PROCESS_BASE',
       type: 'catalog'
-      
+
     }
   },
   {
@@ -325,7 +327,7 @@ let routerArr = [
       type: 'others'
     }
   },
-  
+
   {
     path: '/flow-demo',
     name: 'flow-demo',
@@ -345,6 +347,30 @@ let routerArr = [
       icon: 'tsfont-modules',
       authority: 'PROCESS_BASE',
       type: 'others'
+    }
+  },
+  {
+    path: '/eoa-template-manage',
+    name: 'eoa-template-manage',
+    component: eoaTemplateManage,
+    meta: {
+      title: 'EOA模板',
+      ismenu: true,
+      icon: 'tsfont-shitu',
+      authority: '',
+      type: 'flow'
+    }
+  },
+  {
+    path: '/eoa-template-edit',
+    name: 'eoa-template-edit',
+    component: eoaTemplateEdit,
+    meta: {
+      title: 'EOA模板编辑',
+      ismenu: false,
+      icon: 'tsfont-shitu',
+      authority: '',
+      type: 'flow'
     }
   }
 ];
