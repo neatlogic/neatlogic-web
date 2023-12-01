@@ -57,7 +57,7 @@
             </div>
           </div>
           <div class="action-group">
-            <div class="action-item">
+            <div v-if="formDataQueue.length <=1" class="action-item">
               <div class="flex-start">
                 <span>
                   <Poptip
