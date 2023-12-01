@@ -41,7 +41,12 @@
       @updatebutton="updatebutton"
     ></ButtonSetting>
     <!-- 模型设置 -->
-    <CmdbsyncSetting id="ciEntityConfig" ref="ciEntityConfig" :defaultCiEntityConfig="ciEntityConfig"></CmdbsyncSetting>
+    <CmdbsyncSetting
+      id="ciEntityConfig"
+      ref="ciEntityConfig"
+      :defaultCiEntityConfig="ciEntityConfig"
+      :formUuid="formUuid"
+    ></CmdbsyncSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"

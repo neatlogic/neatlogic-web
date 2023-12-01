@@ -949,6 +949,7 @@
   "filltype": "背景填充方式",
   "backgroundresizable": "背景跟随缩放",
   "auto": "自动",
+  "foreachobj": "遍历对象",
   "mainscene": "主场景",
   "enter": "进入",
   "viewdata": "查看数据"

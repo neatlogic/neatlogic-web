@@ -696,7 +696,7 @@
         var zoomTransform = d3.zoomTransform(this.el.node());
         var k = zoomTransform.k || 1;
         var position = zoomTransform[action]([data.x, data.y]);
-        if(k !== 1 ){ 
+        if (action ==='invert' && k !== 1 ){ 
           //流程图缩放时，坐标轴位置调整
           data.x = position[0] + zoomTransform.x;
           data.y = position[1] + zoomTransform.y;

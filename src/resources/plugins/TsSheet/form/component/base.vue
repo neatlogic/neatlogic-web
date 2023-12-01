@@ -29,7 +29,7 @@ export default {
   },
   created() {
     //在非条件模式下，用默认值替换空的value值
-    if (this.mode === 'read' && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
+    if ((this.mode === 'read' || this.mode === 'readSubform') && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
   },
@@ -126,7 +126,7 @@ export default {
     required: {
       handler(val) {
         this.validateList = [];
-        if (this.mode === 'read' && val) {
+        if ((this.mode === 'read' || this.mode === 'readSubform') && val) {
           this.validateList.push({name: 'required', message: ' '});
         }
       },

@@ -35,6 +35,8 @@ function onScroll(event) {
       let $date = el.querySelector('.ivu-date-picker');
       let dateVue = $date.__vue__;
       dateVue && dateVue.visible && elVue.onScroll && elVue.onScroll(event);
+    } else if (elVue && elVue.$refs.cascader && elVue.$refs.cascader.visible) { //TsFormCascader
+      elVue.onScroll && elVue.onScroll(event);
     }
   });
 

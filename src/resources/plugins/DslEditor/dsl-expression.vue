@@ -25,6 +25,15 @@
       <DslExpression v-for="(child, index) in expressionData.children" :key="index" :expressionData="child"></DslExpression>
       <div class="item text-grey expression"><b>)</b></div>
     </div>
+    <div v-if="needInputer" class="item-container">
+      <input
+        ref="input"
+        class="inputer"
+        type="text"
+        @keydown="backspace"
+        @input="input"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -34,6 +43,7 @@ export default {
     DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
   },
   props: {
+    needInputer: { type: Boolean, default: false },
     expressionData: { type: Object }
   },
   data() {
@@ -50,6 +60,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    focus() {
+      this.$refs['input'] && this.$refs['input'].focus();
+    },
+    backspace(e) {
+      if (e.keyCode == 8 || e.keyCode == 46) {
+        this.$emit('backspace');
+      }
+    },
+    input(e) {
+      let v = '';
+      if (e.data) {
+        v += e.data;
+      } else if (e.inputType === 'insertFromPaste') {
+        v += e.target.value;
+      }
+      e.target.value = '';
+      this.$emit('input', v);
+    },
     isValid(expressionData) {
       if (expressionData.type === 'expression') {
         if (expressionData.attr) {
@@ -80,6 +108,13 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.inputer {
+  outline: none;
+  width: 20px;
+  border: 0px;
+  height: 100%;
+  background: transparent;
+}
 .item-container {
   display: inline-block;
 }

@@ -38,7 +38,12 @@
         </template>
       </TsTable>
     </div>
-    <ModuleEdit v-if="isShowModuleInfoEdit" :params="params" @close="closeModuleInfoEdit">
+    <ModuleEdit
+      v-if="isShowModuleInfoEdit"
+      :runnerId="runnerId"
+      :params="params"
+      @close="closeModuleInfoEdit"
+    >
     </ModuleEdit>
   </div>
 </template>
@@ -70,6 +75,7 @@ export default {
       moduleInfo: {},
       runnerGroupInfo: {},
       tableConfig: {},
+      runnerId: null,
       theadList: [
         {
           key: 'name', 
@@ -113,6 +119,7 @@ export default {
   destroyed() {},
   methods: {
     openModuleInfoEdit() {
+      this.runnerId = this.runnerGroupInfo?.id;
       this.isShowModuleInfoEdit = true;
     },
     closeModuleInfoEdit(needRefresh) {

@@ -1189,6 +1189,13 @@ span {
     -webkit-user-select: none;
     user-select: none;
   }
+  .ivu-icon-ios-arrow-forward:before {
+    font-family: 'tsfont';
+    content: '\e899'; // tsfont-drop-right字体图标
+  }
+  .ivu-tree-arrow i {
+    vertical-align: baseline; // 修复drop箭头和文案对不齐问题
+  }
 }
 
 //操作分类组
@@ -1987,31 +1994,31 @@ span {
   .radius-md {
     border-radius: @block-border-radius-min;
   }
-  .radius-md-tl{
+  .radius-md-tl {
     border-top-left-radius: @block-border-radius-min;
   }
-  .radius-md-tr{
+  .radius-md-tr {
     border-top-right-radius: @block-border-radius-min;
   }
-  .radius-md-bl{
+  .radius-md-bl {
     border-bottom-left-radius: @block-border-radius-min;
   }
-  .radius-md-br{
+  .radius-md-br {
     border-bottom-right-radius: @block-border-radius-min;
   }
   .radius-sm {
     border-radius: @item-border-radius;
   }
-  .radius-sm-tl{
+  .radius-sm-tl {
     border-top-left-radius: @item-border-radius;
   }
-  .radius-sm-tr{
+  .radius-sm-tr {
     border-top-right-radius: @item-border-radius;
   }
-  .radius-sm-bl{
+  .radius-sm-bl {
     border-bottom-left-radius: @item-border-radius;
   }
-  .radius-sm-br{
+  .radius-sm-br {
     border-bottom-right-radius: @item-border-radius;
   }
   .radius-mi {

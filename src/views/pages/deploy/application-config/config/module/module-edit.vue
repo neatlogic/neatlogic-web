@@ -32,11 +32,17 @@ export default {
       default: function() {
         return {};
       }
+    },
+    runnerId: {
+      type: Number,
+      default: null
     }
   },
   data() {
     return {
-      formValue: {},
+      formValue: {
+        runnerGroupId: this.runnerId
+      },
       formConfig: [
         {
           name: 'runnerGroupId',

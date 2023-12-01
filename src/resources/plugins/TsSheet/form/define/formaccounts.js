@@ -23,6 +23,7 @@ export default {
     'hide': {},
     'display': {},
     'readonly': {},
+    'disable': {},
     'required': {}
   }
 };

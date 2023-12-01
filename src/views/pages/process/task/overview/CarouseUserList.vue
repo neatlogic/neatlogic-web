@@ -13,7 +13,7 @@
           class=""
         >
           <CarouselItem v-for="(item,iindex) in row.currentstep" :key="row.id+'_'+item.id+'_'+iindex" class="mb-xs">
-            <div class="title-top ">
+            <div class="title-top mt-xs">
               <span class="colorText">{{ item.name }}</span>
             </div>
             <Row>
@@ -213,10 +213,8 @@ export default {
   }
   &.table-Carousel {
     width: 216px;
-    height: 56px;
     padding: 0 20px;
     .title-top {
-      // margin-bottom: 3px;
       font-size: 12px;
     }
 

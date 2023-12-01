@@ -1152,6 +1152,7 @@
     "exporttable": "导出表格",
     "importtable": "导入表格",
     "excelinputtemplate": "表格输入模板",
+    "formsubassembly": "表单子组件",
     "globalreadonly": "全局只读",
     "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态"
   },
@@ -2567,6 +2568,13 @@
     "endci": "终点模型",
     "autofill": "自动填充",
     "beginci": "起点模型",
-    "snapshotedit": "生成快照&编辑"
+    "snapshotedit": "生成快照&编辑",
+    "startciseted": "已设置起点模型",
+    "allowlinkout": "允许连出",
+    "allowlinkin": "允许连入",
+    "allowresize": "允许改变大小",
+    "allowdelete": "允许删除",
+    "allowmove": "允许移动",
+    "nocientityname": "无显示名"
   }
 }

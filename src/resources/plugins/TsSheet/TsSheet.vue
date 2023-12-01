@@ -1159,7 +1159,7 @@ export default {
           rindex = this.handlerCell.row + (this.handlerCell.rowspan || 1);
         }
         if (rindex >= 0) {
-          this.config.lefterList.push({ height: this.minHeight });
+          this.config.lefterList.splice(rindex, 0, { height: this.minHeight });
           this.config.tableList.forEach(cell => {
             if (cell.row >= rindex) {
               cell.row = cell.row + 1;

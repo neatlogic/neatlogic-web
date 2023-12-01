@@ -5,7 +5,7 @@
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="flex-between">
+        <div :class="formDataQueue.length <=1?'flex-between':'flex-end'">
           <div v-if="formDataQueue.length <=1" class="flex-start">
             <div class="pr-sm">
               <TsFormInput
@@ -57,7 +57,7 @@
             </div>
           </div>
           <div class="action-group">
-            <div class="action-item">
+            <div v-if="formDataQueue.length <=1" class="action-item">
               <div class="flex-start">
                 <span>
                   <Poptip
