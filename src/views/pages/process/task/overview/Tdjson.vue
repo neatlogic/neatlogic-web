@@ -122,15 +122,15 @@ export default {
   props: ['config', 'header', 'row'],
   data() {
     return {
-      isShowUserCard: false
+      isShowUserCard: true
     };
   },
   mounted() {
-    let _this = this;
-    setTimeout(() => {
-      // 优化用户信息加载时间
-      _this.isShowUserCard = true;
-    }, 0);
+    // let _this = this; // 注释头像从小变大会有抖动问题
+    // setTimeout(() => {
+    //   // 优化用户信息加载时间
+    //   _this.isShowUserCard = true;
+    // }, 0);
   },
   methods: {
     updateFocus(row) {

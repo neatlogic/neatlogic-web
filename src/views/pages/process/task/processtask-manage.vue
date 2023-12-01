@@ -47,6 +47,7 @@
                 :canEdit="true"
                 keyName="id"
                 multiple
+                class="tstable-box"
                 @changeCurrent="changePage"
                 @changePageSize="changePageSize"
                 @updateSort="updateSort"
@@ -248,7 +249,7 @@ export default {
             this.handlerSearchResult(res.Return);
           }
         })
-        .finally(res => {
+        .catch(res => {
           this.isLoading = false;
         });
     },
@@ -405,14 +406,19 @@ export default {
       if (this.tableConfig.tbodyList.length > 0) {
         // 表格里面的 action 显示列表接口信息
         this.getListOperation(idList);
+      } else {
+        this.isLoading = false;
       }
     },
     getColumnWidth(item = {}) {
       const newItem = {...item };
       if (item && item.key == 'focususers') {
         // 解决关注工单字段，没有title导致页面宽度会有抖动的问题
-        newItem.width = 50;
-        newItem.style = {width: '50px', display: 'inline-block'};
+        newItem.width = 3;
+        newItem.style = {display: 'inline-block', width: '3px', textAlign: 'right'};
+      } else if (item && item.key == 'currentstep') {
+        newItem.width = 260;
+        newItem.style = {display: 'inline-block', width: '260px'}; // 修复当前步骤宽度被撑大，页面有抖动问题
       }
       return newItem;
     },
@@ -493,6 +499,8 @@ export default {
             });
           });
         }
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     clearTimmer() {
@@ -807,6 +815,24 @@ html {
       padding-right: 9px;
       padding-left: 4px;
     }
+  }
+}
+.tstable-box {
+  // 修复关注工单列左右间隙过大问题
+  /deep/ td:nth-of-type(1) {
+    padding-right: 0 !important;
+  }
+  /deep/ td:nth-of-type(2) {
+    padding-right: 0 !important;
+  }
+  /deep/ td:nth-of-type(2) {
+    padding-left: 4px !important;
+  }
+  /deep/ th:nth-of-type(3) {
+    padding-left: 0 !important;
+  }
+  /deep/ td:nth-of-type(3) {
+    padding-left: 0 !important;
   }
 }
 </style>
