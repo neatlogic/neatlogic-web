@@ -1040,6 +1040,9 @@ export default {
       }
     },
     changeReadOnly(readOnly) {
+      if (!this.currentVersion.uuid) {
+        return;
+      }
       this.$api.framework.form.saveFormSceneReadonly({
         versionUuid: this.currentVersion.uuid,
         sceneUuid: this.sceneUuid,
