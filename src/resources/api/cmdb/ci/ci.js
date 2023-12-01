@@ -52,13 +52,13 @@ const ci = {
     return axios.post('/api/rest/cmdb/ci/get', { id: ciId, needAction: !!needAction });
   },
   getCiListForTree() {
-    return axios.post('api/rest/cmdb/ci/listtree', {});
+    return axios.post('/api/rest/cmdb/ci/listtree', {});
   },
   getAttrById(attrId) {
     return axios.post('/api/rest/cmdb/attr/get', { id: attrId });
   },
   getAttrByIdList(attrIdList) {
-    return axios.post('api/rest/cmdb/attr/getlist', { idList: attrIdList });
+    return axios.post('/api/rest/cmdb/attr/getlist', { idList: attrIdList });
   },
   getViewConstList(ciId, showType) {
     return axios.post('/api/rest/cmdb/ciview/listconst', { ciId: ciId, showType: showType });

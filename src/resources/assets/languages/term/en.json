@@ -2577,6 +2577,7 @@
     "allowresize": "Allow size changes",
     "allowdelete": "Allow deletion",
     "allowmove": "Allow movement",
-    "nocientityname": "No display name"
+    "nocientityname": "No display name",
+    "allowselect": "Allow selection"
   }
 }

@@ -2575,6 +2575,7 @@
     "allowresize": "允许改变大小",
     "allowdelete": "允许删除",
     "allowmove": "允许移动",
-    "nocientityname": "无显示名"
+    "nocientityname": "无显示名",
+    "allowselect": "允许选中"
   }
 }
