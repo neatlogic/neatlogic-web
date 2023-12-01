@@ -1,4 +1,3 @@
-import Vue from 'vue';
 export default (currentValue, oldValue, conditionValue) => {
   let isEqual = false;
   if (currentValue == conditionValue) {
