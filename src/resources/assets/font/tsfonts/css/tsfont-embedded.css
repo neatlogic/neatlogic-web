@@ -497,7 +497,7 @@
 .tsfont-taskperson:before { content: '\e9b8'; } /* '' */
 .tsfont-team-s:before { content: '\e9b9'; } /* '' */
 .tsfont-team:before { content: '\e9ba'; } /* '' */
-.tsfont-techsure:before { content: '\e9bb'; } /* '' */
+.tsfont-ts:before { content: '\e9bb'; } /* '' */
 .tsfont-tencentcloud:before { content: '\e9bc'; } /* '' */
 .tsfont-test:before { content: '\e9bd'; } /* '' */
 .tsfont-text-delete:before { content: '\e9be'; } /* '' */
