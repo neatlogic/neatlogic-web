@@ -598,7 +598,6 @@ export default {
       if (this.type === 'add' || this.type === 'copy') {
         return;
       }
-      this.defaultSceneUuid = this.selectSceneUuid;
       this.$api.framework.form.saveFormSceneReadonly({
         versionUuid: this.currentVersionUuid,
         sceneUuid: this.sceneUuid,
