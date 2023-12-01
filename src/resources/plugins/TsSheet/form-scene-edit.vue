@@ -595,7 +595,9 @@ export default {
       }
     },
     changeReadOnly(readOnly) {
-      this.defaultSceneUuid = this.selectSceneUuid;
+      if (this.type === 'add' || this.type === 'copy') {
+        return;
+      }
       this.$api.framework.form.saveFormSceneReadonly({
         versionUuid: this.currentVersionUuid,
         sceneUuid: this.sceneUuid,
