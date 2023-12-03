@@ -32,7 +32,7 @@
               ></UserCard>
               <span v-if="item.originalUserVo">
                 <span style="vertical-align: bottom;">（{{ $t('term.process.act') }}</span>
-                <UserCard v-bind="item.originalUserVo" hideAvatar style="vertical-align: bottom;"></UserCard>
+                <UserCard v-bind="item.originalUserVo" hideAvatar style="vertical-align: middle;"></UserCard>
                 <span style="vertical-align: bottom;">）</span>
               </span>
               <span class="pl-sm pr-sm text-success" v-html="item.description"></span>
