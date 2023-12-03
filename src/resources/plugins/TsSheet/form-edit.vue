@@ -1,12 +1,12 @@
 <template>
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
-      <template v-if="formDataQueue.length <=1" v-slot:navigation>
+      <template v-if="formDataQueue.length <= 1" v-slot:navigation>
         <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
       </template>
       <template v-slot:topLeft>
-        <div :class="formDataQueue.length <=1?'flex-between':'flex-end'">
-          <div v-if="formDataQueue.length <=1" class="flex-start">
+        <div :class="formDataQueue.length <= 1 ? 'flex-between' : 'flex-end'">
+          <div v-if="formDataQueue.length <= 1" class="flex-start">
             <div class="pr-sm">
               <TsFormInput
                 ref="formName"
@@ -15,11 +15,11 @@
                 maxlength="30"
                 border="border"
                 :validateList="nameValidateList"
-                style="width:200px"
+                style="width: 200px"
               ></TsFormInput>
             </div>
             <div v-if="currentVersion.uuid">
-              <Dropdown trigger="hover" placement="bottom-start" style="line-height: 30px;cursor: pointer;">
+              <Dropdown trigger="hover" placement="bottom-start" style="line-height: 30px; cursor: pointer">
                 <span class="btn-green-op">
                   {{ currentVersion.text }}
                   <Icon type="ios-arrow-down"></Icon>
@@ -57,7 +57,7 @@
             </div>
           </div>
           <div class="action-group">
-            <div v-if="formDataQueue.length <=1" class="action-item">
+            <div v-if="formDataQueue.length <= 1" class="action-item">
               <div class="flex-start">
                 <span>
                   <Poptip
@@ -74,11 +74,11 @@
                   v-model="readOnly"
                   :falseValue="false"
                   :trueValue="true"
-                  @on-change="(val)=>changeReadOnly(val)"
+                  @on-change="val => changeReadOnly(val)"
                 ></TsFormSwitch>
               </div>
             </div>
-            <div v-if="formDataQueue.length <=1" class="action-item">
+            <div v-if="formDataQueue.length <= 1" class="action-item">
               <Poptip
                 v-model="isShowValidList"
                 word-wrap
@@ -89,7 +89,7 @@
               >
                 <span class="tsfont-xitongpeizhi" @click="formValid()">{{ $t('page.validate') }}</span>
                 <div slot="content">
-                  <div v-for="(key) of Object.keys(errorData)" :key="key">
+                  <div v-for="key of Object.keys(errorData)" :key="key">
                     <div
                       v-for="(item, index) in errorData[key]"
                       :key="index"
@@ -104,7 +104,7 @@
               </Poptip>
             </div>
             <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
-            <template v-if="formDataQueue.length <=1">
+            <template v-if="formDataQueue.length <= 1">
               <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
               <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
               <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
@@ -155,7 +155,7 @@
             </template>
             <template v-else>
               <div class="action-item last">
-                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length-2])">确认</Button>
+                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length - 2])">确认</Button>
               </div>
             </template>
           </div>
@@ -192,7 +192,7 @@
                         }
                       "
                     >
-                      <div :class="item.icon" style="font-size:24px"></div>
+                      <div :class="item.icon" style="font-size: 24px"></div>
                       <div class="item-text overflow" :title="item.label">{{ item.label }}</div>
                     </div>
                   </Col>
@@ -205,8 +205,8 @@
                 <TsRow :gutter="8">
                   <Col :span="8" class="form-item mt-md custom-formitem">
                     <div class="text-href" @click="addCustomItem()">
-                      <div class="tsfont-plus" style="font-size:24px"></div>
-                      <div class="item-text">{{ $t('dialog.title.addtarget',{'target':$t('page.component')}) }}</div>
+                      <div class="tsfont-plus" style="font-size: 24px"></div>
+                      <div class="item-text">{{ $t('dialog.title.addtarget', { target: $t('page.component') }) }}</div>
                     </div>
                   </Col>
                   <Col
@@ -215,8 +215,8 @@
                     :span="8"
                     class="form-item mt-md custom-formitem"
                   >
-                    <span style="right:15px;" class="text-action customitem-btn cursor tsfont-edit" @click.stop="editCustomItem(item)"></span>
-                    <span style="right:0px;" class="text-action customitem-btn cursor tsfont-trash-o" @click.stop="removeCustomItem(item)"></span>
+                    <span style="right: 15px" class="text-action customitem-btn cursor tsfont-edit" @click.stop="editCustomItem(item)"></span>
+                    <span style="right: 0px" class="text-action customitem-btn cursor tsfont-trash-o" @click.stop="removeCustomItem(item)"></span>
                     <div
                       draggable="true"
                       @ondrop="
@@ -235,7 +235,7 @@
                         }
                       "
                     >
-                      <div :class="item.icon" style="font-size:24px"></div>
+                      <div :class="item.icon" style="font-size: 24px"></div>
                       <div class="item-text overflow" :title="item.label">{{ item.label }}</div>
                     </div>
                   </Col>
@@ -246,16 +246,11 @@
         </div>
       </template>
       <template v-slot:content>
-        <div v-if="isFormLoaded" style="position:relative">
+        <div v-if="isFormLoaded" style="position: relative">
           <div v-if="formDataQueue && formDataQueue.length > 1" class="pb-sm">
             <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
-              <BreadcrumbItem
-                v-for="(item,index) in formDataQueue"
-                :key="index"
-              ><span
-                :class="index == formDataQueue.length - 2?'text-href':index != formDataQueue.length - 1?'text-tip':''"
-                @click="backPreFormData(item,index)"
-              >{{ item.label }}</span>
+              <BreadcrumbItem v-for="(item, index) in formDataQueue" :key="index">
+                <span :class="index == formDataQueue.length - 2 ? 'text-href' : index != formDataQueue.length - 1 ? 'text-tip' : ''" @click="backPreFormData(item, index)">{{ item.label }}</span>
               </BreadcrumbItem>
             </Breadcrumb>
           </div>
@@ -275,11 +270,7 @@
             @close="currentFormItem = null"
             @editSubForm="editSubForm"
           ></FormItemConfig>
-          <FormPreview
-            v-if="isPreviewShow"
-            :data="previewFormData"
-            @close="closePreview"
-          ></FormPreview>
+          <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
         </div>
       </template>
     </TsContain>
@@ -376,7 +367,7 @@ export default {
             if (isValid) {
               this.nameMsg = '';
             } else {
-              this.nameMsg = this.$t('form.validate.repeat', {'target': this.$t('page.formname')});
+              this.nameMsg = this.$t('form.validate.repeat', { target: this.$t('page.formname') });
             }
           }
         }
@@ -435,7 +426,8 @@ export default {
       //离开页面，二次弹窗，点击'确认按钮'，存储数据,
       return await this.saveForm('back');
     },
-    compareData(oldData, newData) { //对比数据
+    compareData(oldData, newData) {
+      //对比数据
       let isSame = true;
       let oldLefterList = this.$utils.deepClone(oldData.lefterList);
       let newLefterList = this.$utils.deepClone(newData.lefterList);
@@ -457,27 +449,28 @@ export default {
       }
       return isSame;
     },
-    filterFormData(data) { //删除不需要对比的数据
+    filterFormData(data) {
+      //删除不需要对比的数据
       this.$delete(data, 'lefterList');
       this.$delete(data, 'headerList');
       this.$delete(data, 'lcd');
       this.$delete(data, 'lcu');
       data.tableList.forEach(item => {
         if (item.component && item.component.formData && item.component.formData.formConfig) {
-          this.filterFormData(item.component.formData.formConfig); 
+          this.filterFormData(item.component.formData.formConfig);
         }
       });
     },
     contrastError(oldData, newData, type) {
       let isSame = true;
-      let num = 10;//对比：误差高度在5px内可忽略
+      let num = 10; //对比：误差高度在5px内可忽略
       if (oldData && newData) {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;
           if (oldData && oldData[i] && oldData[i][type]) {
-            oldNum = oldData[i][type] + num; 
+            oldNum = oldData[i][type] + num;
           }
-          if (newData[i] && (newData[i][type] > oldNum)) { 
+          if (newData[i] && newData[i][type] > oldNum) {
             isSame = false;
             break;
           }
@@ -502,7 +495,7 @@ export default {
     removeCustomItem(customItem) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: customItem.label}),
+        content: this.$t('dialog.content.deleteconfirm', { target: customItem.label }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.deleteCustomItem(customItem.id).then(res => {
@@ -615,7 +608,7 @@ export default {
             }
             this.$addWatchData(formConfig);
             this.$Message.success(this.$t('message.savesuccess'));
-            if (type != 'back' && ((res.Return.uuid != this.$route.query.uuid) || (res.Return.currentVersionUuid != this.$route.query.currentVersionUuid))) {
+            if (type != 'back' && (res.Return.uuid != this.$route.query.uuid || res.Return.currentVersionUuid != this.$route.query.currentVersionUuid)) {
               this.$router.replace({
                 path: '/form-edit',
                 query: {
@@ -684,10 +677,12 @@ export default {
         this.currentFormItem = null;
         const formConfig = {};
         this.$set(this.formData, 'formConfig', formConfig);
-        this.formDataQueue = [{
-          ...this.formData,
-          label: this.formData.name
-        }];
+        this.formDataQueue = [
+          {
+            ...this.formData,
+            label: this.formData.name
+          }
+        ];
         this.isFormLoaded = true;
         this.$addWatchData(formConfig);
         return false;
@@ -726,10 +721,12 @@ export default {
 
             this.$set(this.formData, 'formConfig', formConfig);
             this.initFormConfig = this.$utils.deepClone(formConfig);
-            this.formDataQueue = [{
-              ...this.formData,
-              label: this.formData.name
-            }];
+            this.formDataQueue = [
+              {
+                ...this.formData,
+                label: this.formData.name
+              }
+            ];
             this.currentFormData = {
               ...this.formData
             };
@@ -851,7 +848,7 @@ export default {
 
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: version + this.$t('page.versions')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: version + this.$t('page.versions') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.delFormVersion({ uuid: uuid }).then(res => {
@@ -961,25 +958,28 @@ export default {
     },
     formValid() {
       if (this.valid()) {
-        this.$Notice.success({title: this.$t('message.validatesuccess') });
+        this.$Notice.success({ title: this.$t('message.validatesuccess') });
       }
     },
-    valid() { //整个表单校验
+    valid() {
+      //整个表单校验
       this.errorData = {};
       const sheet = this.$refs['sheet'];
       let isValid = this.$refs['formName'].valid();
       if (!isValid || this.nameMsg) {
-        this.$set(this.errorData, 'form', [{
-          field: 'name',
-          error: !isValid ? this.$t('page.formname') + '：' + this.$t('form.validate.requiredname') : this.nameMsg
-        }]);
+        this.$set(this.errorData, 'form', [
+          {
+            field: 'name',
+            error: !isValid ? this.$t('page.formname') + '：' + this.$t('form.validate.requiredname') : this.nameMsg
+          }
+        ]);
         this.$nextTick(() => {
           this.$refs.formName.focus();
         });
       } else {
         this.errorData.form && this.$delete(this.errorData, 'form');
       }
-      this.errorData = Object.assign(this.errorData, sheet.validConfig()); 
+      this.errorData = Object.assign(this.errorData, sheet.validConfig());
       if (isValid && !this.$utils.isEmpty(this.errorData)) {
         isValid = false;
       }
@@ -1043,16 +1043,18 @@ export default {
       if (!this.currentVersion.uuid) {
         return;
       }
-      this.$api.framework.form.saveFormSceneReadonly({
-        versionUuid: this.currentVersion.uuid,
-        sceneUuid: this.sceneUuid,
-        readOnly: readOnly
-      }).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.$set(this.initFormConfig, 'readOnly', readOnly);
-        }
-      });
+      this.$api.framework.form
+        .saveFormSceneReadonly({
+          versionUuid: this.currentVersion.uuid,
+          sceneUuid: this.sceneUuid,
+          readOnly: readOnly
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.$set(this.initFormConfig, 'readOnly', readOnly);
+          }
+        });
     }
   },
   filter: {},
@@ -1083,7 +1085,7 @@ export default {
       return formItemList;
     },
     getFormCategoryList() {
-      return (category) => {
+      return category => {
         return this.formItemList.filter(d => d.category === category);
       };
     }
