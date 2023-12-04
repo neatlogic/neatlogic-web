@@ -278,6 +278,9 @@
     "deletetemplateconfirm": "当前模板是自动填充模板，删除后对应的目录或配置项不再自动生成相关架构图，是否确认删除？",
     "deletetemplateanddiagramconfirm": "当前模板是自动填充模板，并且存在修改记录，删除后对应的目录或配置项不再自动生成相关架构图，修改记录也会一起删除，是否确认删除？",
     "deletecatalogconfirm": "目录删除后目录下的所有架构图以及修改记录也会一起删除，是否确认？",
-    "lockmessage":"当前架构图已被 {user} 锁定编辑，锁定时间 {time}"
+    "lockmessage": "当前架构图已被 {user} 锁定编辑，锁定时间 {time}",
+    "lockdiagramconfirm": "是否确认锁定当前架构图并进入编辑模式？",
+    "editingversionnotfound": "当前架构图不存在编辑中的版本",
+    "noauthtoedit": "您没有权限编辑当前架构图"
   }
 }
