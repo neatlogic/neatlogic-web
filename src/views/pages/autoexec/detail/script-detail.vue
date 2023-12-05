@@ -24,7 +24,7 @@
       border="border"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/script-manage')">{{ $getFromPage('term.autoexec.customtoollibrary') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <template v-if="!isEdit">

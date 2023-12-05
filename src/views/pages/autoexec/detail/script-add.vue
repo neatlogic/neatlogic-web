@@ -17,7 +17,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()"></span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="action-title-name h4">{{ oldId ? $t('page.copyscript'):$t('page.addscript') }}</span>

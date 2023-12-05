@@ -2,7 +2,7 @@
   <div class="flow-edit">
     <TsContain :rightWidth="340" border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/flow-overview')">{{ $getFromPage('router.process.flowmanage') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ processConfig.name }}</span>

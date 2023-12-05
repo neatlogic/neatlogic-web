@@ -67,14 +67,15 @@ export default {
   data() {
     return {
       userList: this.item.userlist,
-      isShowUserCard: false
+      isShowUserCard: true
     };
   },
   mounted() {
     if (this.styleClass === 'table') {
-      setTimeout(() => {
-        this.isShowUserCard = true;
-      }, 0);
+      // 注释，头像会有抖动，放大问题
+      // setTimeout(() => {
+      //   this.isShowUserCard = true;
+      // }, 0);
     } else {
       this.isShowUserCard = true;
     }

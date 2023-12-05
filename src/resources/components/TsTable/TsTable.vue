@@ -1166,7 +1166,7 @@ export default {
         }
         if (showList && showList.length) {
           showList.forEach(s => {
-            thList.push({ key: s.key + 'Width', width: s.width && s.width > 10 ? s.width : s.key == 'selection' ? 40 : null });
+            thList.push({ key: s.key + 'Width', width: s.width && s.width > 1 ? s.width : s.key == 'selection' ? 40 : null });
           });
         }
         return thList;

@@ -43,6 +43,9 @@ const cientity = {
   getCiEntityAuthById(ciEntityId, ciId, authList) {
     return axios.post('/api/rest/cmdb/cientity/auth/get', { ciEntityId: ciEntityId, ciId: ciId, authList: authList });
   },
+  getCiEntityBaseInfoById(id) {
+    return axios.post('/api/rest/cmdb/cientity/baseinfo/get', { id: id });
+  },
   getCiEntityById(ciId, ciEntityId, needAction, limitRelEntity, limitAttrEntity, showAttrRelList) {
     const param = {};
     param.ciId = ciId;

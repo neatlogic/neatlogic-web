@@ -18,7 +18,7 @@
     <TsContain>
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <Button type="primary" @click="checkTagentNumber">{{ action == 'reload' ? $t('page.restart') : $t('page.updatepwd') }}</Button>

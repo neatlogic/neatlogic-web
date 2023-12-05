@@ -47,6 +47,7 @@
                 :canEdit="true"
                 keyName="id"
                 multiple
+                class="tstable-box"
                 @changeCurrent="changePage"
                 @changePageSize="changePageSize"
                 @updateSort="updateSort"
@@ -54,7 +55,7 @@
                 @getSelected="(value,selectList)=>{ getSelected(selectList) }"
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
-                  <div :key="tindex">
+                  <div :key="tindex" style="overflow: hidden;" :style="tbody.key == 'currentstep' ? {height: '50px',display: 'flex',alignItems: 'center'} : {height: '50px',lineHeight: '50px'}">
                     <tdjson
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
                       :key="tindex"
@@ -248,7 +249,7 @@ export default {
             this.handlerSearchResult(res.Return);
           }
         })
-        .finally(res => {
+        .catch(res => {
           this.isLoading = false;
         });
     },
@@ -280,7 +281,7 @@ export default {
     checkshow(headList, val) {
       //设置表格列是否可视
       let theadList = headList
-        .filter(item => !['action', 'focususers', 'score'].includes(item.key))
+        .filter(item => !['action', 'focususers', 'score', 'selection'].includes(item.key))
         .map((d, i) => ({
           name: d.key,
           sort: i,
@@ -323,7 +324,6 @@ export default {
         key: d.name,
         isShow: d.isShow,
         type: d.type,
-        width: d.width,
         //20220415需求调整为标题可配置
         disabled: d.name == '_' ? 1 : d.disabled,
         isDisabled: d.name == 'title',
@@ -334,7 +334,29 @@ export default {
       }));
       // 页码
       if (this.tableConfig.theadList.length <= 0) {
-        this.tableConfig.theadList = theadList;
+        let newTheadList = [];
+        theadList.forEach((item) => {
+          if (item && item.key) {
+            newTheadList.push(this.getColumnWidth(item));
+          }
+        });
+        // 添加操作
+        let isAction = newTheadList.find(d => d.key === 'action');
+        let isSelection = newTheadList.find(d => d.key === 'selection');
+        if (!isAction) {
+          newTheadList.push({
+            key: 'action',
+            align: 'right',
+            width: 20,
+            isShow: 1
+          });
+        }
+        if (!isSelection) {
+          newTheadList.unshift({
+            key: 'selection'
+          });
+        }
+        this.tableConfig.theadList = [...newTheadList];
       }
       this.tableConfig.rowNum = data.rowNum;
       this.tableConfig.pageSize = data.pageSize;
@@ -384,7 +406,21 @@ export default {
       if (this.tableConfig.tbodyList.length > 0) {
         // 表格里面的 action 显示列表接口信息
         this.getListOperation(idList);
+      } else {
+        this.isLoading = false;
       }
+    },
+    getColumnWidth(item = {}) {
+      const newItem = {...item };
+      if (item && item.key == 'focususers') {
+        // 解决关注工单字段，没有title导致页面宽度会有抖动的问题
+        newItem.width = 3;
+        newItem.style = {display: 'inline-block', width: '3px', textAlign: 'right'};
+      } else if (item && item.key == 'currentstep') {
+        newItem.width = 260;
+        newItem.style = {display: 'inline-block', width: '260px'}; // 修复当前步骤宽度被撑大，页面有抖动问题
+      }
+      return newItem;
     },
     checkExpire(timeList) {
       let timeLeftMin, expireStatus, expireTimeMin, expiredSlaName, willOverTimeMin, willOverSlaName;
@@ -462,25 +498,9 @@ export default {
               }
             });
           });
-          // 添加操作
-          let isAction = this.tableConfig.theadList.find(d => d.key === 'action');
-          if (!isAction) {
-            this.tableConfig.theadList.push({
-              //这个是最后一行操作栏
-              key: 'action',
-              align: 'right',
-              width: 10,
-              isShow: 1
-            });
-          }
-          //选择列表
-          let isSelection = this.tableConfig.theadList.find(d => d.key === 'selection');
-          if (!isSelection) {
-            this.tableConfig.theadList.unshift({
-              key: 'selection'
-            });
-          }
         }
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     clearTimmer() {
@@ -795,6 +815,24 @@ html {
       padding-right: 9px;
       padding-left: 4px;
     }
+  }
+}
+.tstable-box {
+  // 修复关注工单列左右间隙过大问题
+  /deep/ td:nth-of-type(1) {
+    padding-right: 0 !important;
+  }
+  /deep/ td:nth-of-type(2) {
+    padding-right: 0 !important;
+  }
+  /deep/ td:nth-of-type(2) {
+    padding-left: 4px !important;
+  }
+  /deep/ th:nth-of-type(3) {
+    padding-left: 0 !important;
+  }
+  /deep/ td:nth-of-type(3) {
+    padding-left: 0 !important;
   }
 }
 </style>

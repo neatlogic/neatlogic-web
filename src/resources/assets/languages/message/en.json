@@ -277,6 +277,11 @@
     "versionchecking": "The current version is currently under review and cannot be edited",
     "deletetemplateconfirm": "The current template is an automatically filled template. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams. Are you sure you want to delete it?",
     "deletetemplateanddiagramconfirm": "The current template is an automatically filled template with modification records. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams, and the modification records will also be deleted. Are you sure you want to delete it?",
-    "deletecatalogconfirm": "After deleting the directory, all architecture diagrams and modification records under the directory will also be deleted. Are you sure?"
+    "deletecatalogconfirm": "After deleting the directory, all architecture diagrams and modification records under the directory will also be deleted. Are you sure?",
+    "lockmessage": "The diagram is locked by {user} at {time}",
+    "lockdiagramconfirm": "Are you sure to lock the current architecture diagram and enter editing mode?",
+    "editingversionnotfound": "The current architecture diagram does not have a editing version",
+    "noauthtoedit": "You do not have permission to edit the current architecture diagram",
+    "isactivenotfound": "The current architecture diagram does not have an activated version"
   }
 }

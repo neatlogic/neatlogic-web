@@ -57,8 +57,8 @@
 
 .ztree li span.button.switch {
 	width: 18px;
-	height: 22px;
-	line-height: 22px;
+	height: 26px;
+	line-height: 25px;
 }
 
 .ztree li span.button.ico_open,
@@ -80,14 +80,16 @@
 }
 
 .ztree li a {
+	display: inline-block;
+	width: calc(100% - 30px);
+	height: 26px;
+	line-height: 26px;
 	padding: 0 3px 0 0;
 	margin: 0;
 	cursor: pointer;
-	height: 21px;
 	background-color: transparent;
 	text-decoration: none;
-	vertical-align: top;
-	display: inline;
+	vertical-align: middle;
 }
 
 .ztree li a:hover {
@@ -236,11 +238,6 @@ ul.ztree.zTreeDragUL>li a {
 
 .ztree li .noline_open+a+ul li:before {
 	border-top: none;
-}
-
-.ztree li a {
-	height: 26px;
-	line-height: 26px;
 }
 
 .ztree li a i {
@@ -425,7 +422,7 @@ ul.ztree.zTreeDragUL>li a {
 
 .ztree li span.button.adduser:before {
 	content: "\e80a";
-		/* tsfont-adduser 类名 */
+	/* tsfont-adduser 类名 */
 }
 
 .ztree li span.button.firstPage:before {
@@ -471,12 +468,6 @@ ul.ztree.zTreeDragUL>li a {
 .ztree li a.curSelectedNode,
 .ztree li a.tmpTargetNode_inner {
 	height: 26px;
-}
-
-.ztree li a {
-	/*font-size: 95%;*/
-	width: calc(100% - 30px);
-	display: inline-block;
 }
 
 .ztree li a>* {

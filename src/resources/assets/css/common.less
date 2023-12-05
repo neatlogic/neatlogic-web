@@ -1179,10 +1179,13 @@ span {
 .menu-tree.ivu-tree {
   .ivu-tree-children > li {
     font-size: 13px;
-    line-height: 25px;
+    line-height: 27px;
     margin: 5px 0;
   }
   .ivu-tree-arrow {
+    width: 18px;
+    height: 26px;
+    line-height: 27px;
     transform: translateY(-2px);
   }
   .ivu-tree-title {
@@ -1217,6 +1220,9 @@ span {
     vertical-align: middle;
     &.disable {
       cursor: not-allowed;
+    }
+    &.text {
+      cursor: default;
     }
 
     &:before {
