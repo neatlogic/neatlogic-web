@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border" :enableCollapse="true">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <div v-if="ciData.authData && ciData.authData['cimanage']" class="dashboard-action action-group" style="text-align: right">

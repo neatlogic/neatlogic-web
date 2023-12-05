@@ -3,7 +3,7 @@
     <TsContain border="border">
       <template v-slot:navigation>
         <template v-if="canBack">
-          <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+          <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
         </template>
         <template v-else>
           <span>{{ prevsetting.name }}</span>

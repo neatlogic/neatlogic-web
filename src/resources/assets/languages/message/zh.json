@@ -281,6 +281,7 @@
     "lockmessage": "当前架构图已被 {user} 锁定编辑，锁定时间 {time}",
     "lockdiagramconfirm": "是否确认锁定当前架构图并进入编辑模式？",
     "editingversionnotfound": "当前架构图不存在编辑中的版本",
-    "noauthtoedit": "您没有权限编辑当前架构图"
+    "noauthtoedit": "您没有权限编辑当前架构图",
+    "isactivenotfound": "当前架构图不存在已激活版本"
   }
 }

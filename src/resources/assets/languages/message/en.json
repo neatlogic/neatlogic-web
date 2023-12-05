@@ -281,6 +281,7 @@
     "lockmessage": "The diagram is locked by {user} at {time}",
     "lockdiagramconfirm": "Are you sure to lock the current architecture diagram and enter editing mode?",
     "editingversionnotfound": "The current architecture diagram does not have a editing version",
-    "noauthtoedit": "You do not have permission to edit the current architecture diagram"
+    "noauthtoedit": "You do not have permission to edit the current architecture diagram",
+    "isactivenotfound": "The current architecture diagram does not have an activated version"
   }
 }

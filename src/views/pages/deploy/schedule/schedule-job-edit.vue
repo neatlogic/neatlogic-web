@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/schedule-job-manage')">{{ $getFromPage('term.autoexec.timingjob') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>{{ $t('dialog.title.edittarget', {target: $t('term.autoexec.timingjob')}) }}</template>
       <template v-slot:topRight>
