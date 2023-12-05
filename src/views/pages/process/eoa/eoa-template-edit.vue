@@ -2,11 +2,12 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="gotoManage()">{{ $t('page.back') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-else class="tsfont-left text-action" @click="back()">{{ $t('page.back') }}</span>
       </template>
       <template v-slot:topLeft>
-        <div>
-          <span>修改人</span>
+        <div class="text-title">
+          <span class="pr-xs">修改人</span>
           <span>时间</span>
         </div>
       </template>
@@ -23,9 +24,10 @@
       <template v-slot:content>
         <div>
           <TsForm
+            ref="eoaForm"
             :itemList="formConfig"
           >
-            <template v-slot:flow>
+            <template v-slot:stepList>
               <div class="eoa-flow">
                 <div class="step-list bg-op radius-sm mb-nm">
                   <div class="pl-nm pr-nm flex-between">
@@ -33,10 +35,10 @@
                     <div class="action-icon text-action" :class="isShow?'tsfont-down':'tsfont-up'" @click="isShow = !isShow"></div>
                   </div>
                   <div v-show="isShow" class="step-content border-color">
-                    <TsFormItem label="步骤名称" required>
-                      <div>创建签报</div>
+                    <TsFormItem :label="$t('term.process.stepname')" required>
+                      <div>{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
                       <div class="text-tip">
-                        所有审批流第1个步骤，均为创建签报步骤，不支持修改。创建签报的处理人，为流程中EOA节点的处理人，在流程管理中设置。
+                        {{ $t('term.process.signreporttip') }}
                       </div>
                     </TsFormItem>
                   </div>
@@ -58,19 +60,25 @@
                         <span class="item-index">#{{ index + 2 }}</span>
                       </div>
                       <div class="action-icon">
-                        <span class="tsfont-trash-o text-action pr-sm"></span>
+                        <span class="tsfont-trash-o text-action pr-sm" @click="deleteStep(index)"></span>
                         <span class="text-action" :class="item.isShow?'tsfont-up':'tsfont-down'" @click="toggleshow(item)"></span>
                       </div>
                     </div>
                     <div v-show="item.isShow" class="step-content border-color">
                       <TsRow>
                         <Col span="12">
-                          <TsFormItem label="步骤名称" required>
-                            <TsFormInput v-model="item.name"></TsFormInput>
+                          <TsFormItem :label="$t('term.process.stepname')" required>
+                            <TsFormInput
+                              ref="name"
+                              v-model="item.name"
+                              :validateList="validateList"
+                              :errorMessage="item.errorMessage"
+                              @on-change="changeName(item)"
+                            ></TsFormInput>
                           </TsFormItem>
                         </Col>
                         <Col span="12">
-                          <TsFormItem label="审批策略" required>
+                          <TsFormItem :label="$t('term.process.approvalpolicy')" required>
                             <PoptipSelect
                               ref="policy"
                               v-model="item.policy"
@@ -82,7 +90,7 @@
                           </TsFormItem>
                         </Col>
                         <Col span="12">
-                          <TsFormItem label="处理人" tooltip="模板设置处理人后，编辑流程时中不可修改处理人">
+                          <TsFormItem :label="$t('term.process.dealwithuser')" :tooltip="$t('term.process.eoadealwithusertip')">
                             <UserSelect
                               v-model="item.user"
                               :transfer="true"
@@ -91,8 +99,8 @@
                           </TsFormItem>
                         </Col>
                         <Col span="12">
-                          <TsFormItem label="回复模板">
-                            <TsFormInput v-model="item.content"></TsFormInput>
+                          <TsFormItem :label="$t('page.replytemplate')">
+                            <TsFormInput v-model="item.commentTemplate"></TsFormInput>
                           </TsFormItem>
                         </Col>
                       </TsRow>
@@ -104,7 +112,7 @@
                   icon="tsfont tsfont-plus"
                   ghost
                   @click="addStep()"
-                >审批步骤</Button>
+                >{{ $t('term.process.approvalstep') }}</Button>
               </div>
             </template>
           </TsForm>
@@ -127,6 +135,7 @@ export default {
   props: {},
   data() {
     return {
+      id: null,
       isShow: true,
       saving: false,
       formConfig: {
@@ -136,22 +145,28 @@ export default {
           maxlength: 50,
           validateList: ['required']
         },
-        desc: {
+        description: {
           type: 'ckeditor',
           label: this.$t('page.description')
         },
-        flow: {
+        stepList: {
           type: 'slot',
-          label: '审批流'
+          label: this.$t('term.process.approvalprocess')
         }
       },
       stepList: [
         {
-          name: 'ooo',
+          name: 'qqq',
+          policy: '1',
+          user: [],
+          commentTemplate: '',
           isShow: true
         },
         {
-          name: 'sad',
+          name: 'qqq',
+          policy: '1',
+          user: [],
+          commentTemplate: '',
           isShow: true
         }
       ],
@@ -181,11 +196,17 @@ export default {
           text: '传阅',
           description: '审批人传阅审批流程，不参与否决，仅查看'
         }
-      ]
+      ],
+      validateList: ['required']
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.$route.query.id) {
+      this.id = parseInt(this.$route.query.id);
+      this.init();
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -195,7 +216,108 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    gotoManage() {},
+    init() {
+      this.$api.process.eoa.getEoaTemplate({id: this.id}).then(res => {
+        if (res.Status === 'OK') {
+          let eoaConfig = res.Return;
+        }
+      });
+    },
+    back() {
+      this.$router.push({
+        path: '/eoa-template-manage'
+      });
+    },
+    deleteStep(index) {
+      this.stepList.splice(index, 1);
+    },
+    addStep() {
+      this.stepList.push({
+        name: 'sad11',
+        isShow: true
+      });
+    },
+    toggleshow(item) {
+      this.$set(item, 'isShow', !item.isShow);
+    },
+    changeName(item) {
+      let findNameList = this.stepList.filter(s => {
+        return s.name && s.name === item.name;
+      });
+      if (findNameList.length > 1) {
+        this.$set(item, 'errorMessage', this.$t('message.cannotrepeat', {'target': this.$t('term.process.stepname')}));
+      } else {
+        this.stepList.forEach(p => {
+          this.$set(p, 'errorMessage', '');
+        });
+      }
+    },
+    valid() {
+      let isValid = true;
+      if (!this.$refs.eoaForm.valid()) {
+        isValid = false;
+      }
+      if (this.$utils.isEmpty(this.stepList)) {
+        isValid = false;
+        this.$Notice.warning({
+          title: this.$t('term.process.approvalprocess'),
+          desc: this.$t('term.process.approvalprocesstip')
+        });
+      } else {
+        //校验名称重复
+        this.stepList.forEach(item => {
+          if (item.name) {
+            this.changeName(item);
+          }
+          if (item.errorMessage) {
+            isValid = false;
+          }
+        });
+        let nameList = this.$refs.name;
+        let policyList = this.$refs.policy;
+        nameList.forEach(item => {
+          if (!item.valid()) {
+            isValid = false;
+          }
+        });
+        policyList.forEach(item => {
+          if (!item.valid()) {
+            isValid = false;
+          }
+        });
+      }
+      return isValid;
+    },
+    saveTemplate() {
+      if (!this.valid()) {
+        return;
+      }
+      let eoaFormData = this.$refs.eoaForm.getFormValue();
+      let data = {
+        name: eoaFormData.name,
+        description: eoaFormData.description || '',
+        config: {
+          stepList: []
+        }
+      };
+      if (this.id) {
+        this.$set(data, 'id', id);
+      }
+      this.stepList.forEach(item => {
+        data.config.stepList.push({
+          name: item.name,
+          policy: item.policy,
+          user: item.user || [],
+          commentTemplate: item.commentTemplate || ''
+        });
+      });
+      console.log(data);
+      // this.$api.process.eoa.saveEoaTemplate(data).then(res => {
+      //   if (res.Status == 'OK') {
+      //     this.$Message.success(this.$t('message.savesuccess'));
+      //   }
+      // });
+    },
     deleteTemplate() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
@@ -214,23 +336,6 @@ export default {
           vnode.isShow = false;
         }
       });
-    },
-    saveTemplate() {
-      let data = {};
-      // this.$api.process.eoa.saveEoaTemplate(data).then(res => {
-      //   if (res.Status == 'OK') {
-      //     this.$Message.success(this.$t('message.savesuccess'));
-      //   }
-      // });
-    },
-    addStep() {
-      this.stepList.push({
-        name: 'sad11',
-        isShow: true
-      });
-    },
-    toggleshow(item) {
-      this.$set(item, 'isShow', !item.isShow);
     }
   },
   filter: {},

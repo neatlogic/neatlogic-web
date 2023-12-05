@@ -497,7 +497,14 @@
     "templateparametermapping": "Template parameter mapping",
     "targetparams": "Target parameters",
     "selecttask": "Select Work Order",
-    "savedraft": "Save Draft "
+    "savedraft": "Save Draft ",
+    "signreport": "Sign a report",
+    "signreporttip": "The first step of all approval processes is the creation and signing step, and modification is not supported. Create the handler for signing the report, which is the handler for the EOA node in the process, and set it in the process management.",
+    "approvalpolicy": "Approval strategy",
+    "eoadealwithusertip": "After setting the processor for the template, the processor cannot be modified during the editing process",
+    "approvalstep": "Approval steps",
+    "approvalprocess": "Approval process",
+    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

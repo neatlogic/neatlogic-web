@@ -496,7 +496,14 @@
     "templateparametermapping": "模板参数映射",
     "targetparams": "目标参数",
     "selecttask": "选中工单",
-    "savedraft": "保存草稿"
+    "savedraft": "保存草稿",
+    "signreport": "签报",
+    "signreporttip": "所有审批流第1个步骤，均为创建签报步骤，不支持修改。创建签报的处理人，为流程中EOA节点的处理人，在流程管理中设置。",
+    "approvalpolicy": "审批策略",
+    "eoadealwithusertip": "模板设置处理人后，编辑流程时中不可修改处理人",
+    "approvalstep": "审批步骤",
+    "approvalprocess": "审批流",
+    "approvalprocesstip": "在【创建签报】节点之外，至少要添加一个节点"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
