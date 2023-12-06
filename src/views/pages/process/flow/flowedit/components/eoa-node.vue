@@ -64,7 +64,7 @@ export default {
     ActionSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/action-setting.vue'], resolve),
     ButtonSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'], resolve),
     AssignSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting.vue'], resolve),
-    EoaSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/eoa-setting.vue'], resolve)
+    EoaSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/eoa/eoa-setting.vue'], resolve)
   },
   mixins: [nodemixin, itemmixin],
   props: {},

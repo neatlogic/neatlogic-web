@@ -20,15 +20,16 @@
     <div class="pb-sm">
       <div class="flex-between text-grey pb-xs">
         <div class="require-label">EOA模板</div>
-        <div class="action-group"> 
-          <span class="tsfont-edit"></span>
-          <span class="action-item tsfont-refresh"></span>
+        <div v-if="eoaConfig.template" class="action-group"> 
+          <span class="tsfont-edit" @click="editEoaTemplate()"></span>
+          <span class="action-item tsfont-refresh" @click="refreshEoaTemplate()"></span>
         </div>
       </div>
       <div>
         <TsFormSelect
-          v-model="eoaConfig.template"
+          v-model="eoaConfig.templateIdList"
           v-bind="templateConfig"
+          @first="addTemplate()"
         ></TsFormSelect>
       </div>
       <div v-for="(item,index) in templateList" :key="index" class="template-list flex-between pt-sm">
@@ -53,7 +54,7 @@ export default {
     return {
       eoaConfig: {
         auto: 1,
-        template: []
+        templateIdList: []
       },
       templateConfig: {
         dynamicUrl: '/api/rest/universal/enum/get',
@@ -87,6 +88,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editEoaTemplate() {
+      window.open(HOME + '/process.html#/eoa-template-manage', '_blank');
+    },
+    refreshEoaTemplate() {
+
+    },
+    addTemplate() {
+      window.open(HOME + '/process.html#/eoa-template-edit', '_blank');
+    },
     editUser() {
       this.isShowTemplateDialog = true;
     },

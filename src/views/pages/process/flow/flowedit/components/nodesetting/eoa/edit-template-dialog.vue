@@ -11,48 +11,66 @@
       <template v-slot>
         <div class="template-main">
           <Timeline>
+            <TimelineItem class="template-list">
+              <div class="name owerflow">创建签报</div>
+              <div slot="dot" class="text-tip">1</div>
+              <div class="user pl-sm">EOA步骤处理人</div>
+            </TimelineItem>
             <TimelineItem
               v-for="(item,index) in list"
               :key="index"
               class="template-list"
             >
               <div class="name owerflow">{{ item.name }}</div>
-              <div slot="dot" class="text-tip">{{ index + 1 }}</div>
+              <div slot="dot" class="text-tip">{{ index + 2 }}</div>
               <div class="user pl-sm">
                 <TsRow :gutter="8">
                   <Col span="2">
-                    <span class="text-title">单人</span>
+                    <span class="text-title">{{ item.policy }}</span>
                   </Col>
-                  <Col span="8">
-                    <TsFormSelect
-                      v-model="item.type"
-                      :dataList="dataList"
-                      transfer
-                      border="border"
-                    ></TsFormSelect>
-                  </Col>
-                  <Col span="14">
-                    <template v-if="item.type === 'form'">
+                  <template v-if="!item.type && !$utils.isEmpty(item.user)">
+                    <div class="tsform-readonly">
+                      <UserCard
+                        v-for="(u,uindex) in item.user"
+                        :key="uindex"
+                        :uuid="u"
+                        :hideAvatar="false"
+                        class="pr-sm"
+                      ></UserCard>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <Col span="8">
                       <TsFormSelect
-                        :dataList="formList"
-                        textName="label"
-                        valueName="uuid"
-                        border="border"
+                        v-model="item.type"
+                        :dataList="dataList"
                         transfer
-                      ></TsFormSelect>
-                    </template>
-                    <template v-else-if="item.type === 'custom'">
-                      <UserSelect
                         border="border"
-                        :multiple="true"
-                        :transfer="true"
-                        :groupList="['user']"
-                      ></UserSelect>
-                    </template>
-                    <template v-else>
-                      <TsFormSelect border="border" transfer></TsFormSelect>
-                    </template>
-                  </Col>
+                      ></TsFormSelect>
+                    </Col>
+                    <Col span="14">
+                      <template v-if="item.type === 'form'">
+                        <TsFormSelect
+                          :dataList="formList"
+                          textName="label"
+                          valueName="uuid"
+                          border="border"
+                          transfer
+                        ></TsFormSelect>
+                      </template>
+                      <template v-else-if="item.type === 'custom'">
+                        <UserSelect
+                          border="border"
+                          :multiple="true"
+                          :transfer="true"
+                          :groupList="['user']"
+                        ></UserSelect>
+                      </template>
+                      <template v-else>
+                        <TsFormSelect border="border" transfer></TsFormSelect>
+                      </template>
+                    </Col>
+                  </template>  
                 </TsRow>
               </div>
             </TimelineItem>
@@ -67,7 +85,8 @@ export default {
   name: '',
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   props: {
     allFormitemList: {
@@ -79,10 +98,16 @@ export default {
     return {
       list: [
         {
-          name: 112313
+          name: '科室领导审批',
+          policy: '单人',
+          user: ['user#fccf704231734072a1bf80d90b2d1de2', 'user#fccf704231734072a1bf80d90b2d1de2'],
+          commentTemplate: '同意'
         },
         {
-          name: 112313
+          name: '科室领导审批',
+          policy: '单人',
+          user: [],
+          commentTemplate: '同意'
         }
       ],
       dataList: [
