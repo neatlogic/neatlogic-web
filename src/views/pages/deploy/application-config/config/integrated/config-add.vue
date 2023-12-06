@@ -3,7 +3,11 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage('', 'term.deploy.configurationlist') }}</span>
+        <span
+          v-if="$hasBack()"
+          class="tsfont-left text-action"
+          @click="$back()"
+        >{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="tsfont-question-s text-action" @click="openConfigAddHelpDialog">{{ $t('page.help') }}</span>

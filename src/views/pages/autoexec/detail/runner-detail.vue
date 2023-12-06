@@ -9,7 +9,7 @@
       @scroll="scroll"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('router.autoexec.combinationtool') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft><span>{{ $t('term.autoexec.addjob') }}</span></template>
       <template v-if="!id" v-slot:topRight>
