@@ -124,6 +124,7 @@ export default {
     },
     toggleshow(item) {
       this.$set(item, 'isHide', !item.isHide);
+      this.$emit('resize');
     }
   },
   filter: {},
