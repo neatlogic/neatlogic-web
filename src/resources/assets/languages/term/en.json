@@ -2581,6 +2581,7 @@
     "allowdelete": "Allow deletion",
     "allowmove": "Allow movement",
     "nocientityname": "No display name",
-    "allowselect": "Allow selection"
+    "allowselect": "Allow selection",
+    "releaselock": "Unlock"
   }
 }

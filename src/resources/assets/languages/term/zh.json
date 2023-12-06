@@ -2579,6 +2579,7 @@
     "allowdelete": "允许删除",
     "allowmove": "允许移动",
     "nocientityname": "无显示名",
-    "allowselect": "允许选中"
+    "allowselect": "允许选中",
+    "releaselock": "解除锁定"
   }
 }
