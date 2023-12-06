@@ -104,7 +104,7 @@ export default {
         name: {
           type: 'text',
           label: this.$t('page.uniquekey'),
-          validateList: ['required'],
+          validateList: ['required', 'parameter'],
           maxlength: 25,
           onChange: function(value) {
             _this.$set(_this.attrData, 'name', value);

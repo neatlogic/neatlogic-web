@@ -173,7 +173,10 @@
     "addonerel": "Add a single relationship",
     "addmorerel": "Add multiple relationships",
     "rerunsteptosync": "Fallback Resync",
-    "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize"
+    "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize",
+    "onlyupward": "Just look upstream",
+    "onlydownward": "Just look downstream",
+    "noextend": "Hide Extend Relationships"
   },
   "process": {
     "workordercenter": "Work Center",

@@ -173,7 +173,10 @@
     "addonerel": "添加单个关系",
     "addmorerel": "添加多个关系",
     "rerunsteptosync": "回退重新同步",
-    "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步"
+    "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步",
+    "onlyupward": "只看上游",
+    "onlydownward": "只看下游",
+    "noextend": "隐藏继承关系"
   },
   "process": {
     "workordercenter": "工单中心",
