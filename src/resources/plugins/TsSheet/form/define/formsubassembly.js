@@ -12,6 +12,7 @@ export default {
   'config': {
     'disableDefaultValue': true,
     'width': '100%',
+    'isRequired': false,
     'isMask': false,
     'isHide': false,
     'isReadOnly': false,
