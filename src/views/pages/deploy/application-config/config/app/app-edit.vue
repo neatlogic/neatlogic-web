@@ -26,29 +26,29 @@
                     <div class="text-grey auth-text">{{ $t('term.deploy.operationauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.operationAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="operation"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.envAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="env"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.scenarioAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="scenario"
                     ></AuthEdit>
@@ -77,7 +77,12 @@ export default {
         return {};
       }
     },
-    isEdit: Number // 是否是编辑：0否 1是
+    isEdit: Number, // 是否是编辑：0否 1是
+    hideFucntionExcludeAppModuleRunner: {
+      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -93,6 +98,7 @@ export default {
         scenarioAuthList: [], // 场景权限列表
         envAuthList: [] // 环境权限列表
       },
+      authSetting: {},
       authRequired: false, // 权限必填
       loadingShow: true,
       defaultoperationAuthList: [], // 权限列表，用户回显操作
@@ -118,17 +124,14 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
     this.loadingShow = true; 
-    this.getAuthList().then(() => {
-      if (this.isEdit) {
-        this.getAuthInfoById();
-      } else {
-        this.loadingShow = false;
-      }
-    }).catch(() => {
+    await this.getAuthList();
+    if (this.isEdit) {
+      this.getAuthInfoById();
+    } else {
       this.loadingShow = false;
-    });
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -238,9 +241,10 @@ export default {
         this.loadingShow = false;
       });
     },
-    async getAuthList() {
-      await this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId}).then((res) => {
+    getAuthList() {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, isCodehub: this.hideFucntionExcludeAppModuleRunner ? 1 : 0}).then((res) => {
         if (res && res.Status == 'OK') {
+          this.authSetting = res.Return || {};
           for (let key in res.Return) {
             if (key && res.Return[key]) {
               res.Return[key].forEach((item) => {
@@ -253,7 +257,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canShowEnvScenario() {
+      // 显示环境场景
+      return !this.hideFucntionExcludeAppModuleRunner;
+    }
+  },
   watch: {}
 };
 </script>

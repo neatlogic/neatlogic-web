@@ -41,10 +41,6 @@ export default {
         return [];
       }
     },
-    appSystemId: {
-      type: Number,
-      default: null
-    },
     isEdit: {
       type: Number,
       default: 0
@@ -52,6 +48,12 @@ export default {
     operationType: {
       type: String,
       default: 'opertaion' // operation/env/scenario 操作/环境/场景
+    },
+    authSetting: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
   },
   data() {
@@ -65,7 +67,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getAuthList();
+    this.handleAuthData();
   },
   beforeMount() {},
   mounted() {},
@@ -76,43 +78,39 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getAuthList() {
-      this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId}).then((res) => {
-        if (res && res.Status == 'OK') {
-          let operationTypeObj = {
-            operation: 'operationAuthList',
-            env: 'envAuthList',
-            scenario: 'scenarioAuthList'
-          };
-          this.checkboxList = res.Return[operationTypeObj[this.operationType]] || [];
-          this.defaultAuthList = this.$utils.deepClone(this.checkboxList);
-          if (this.value.length == 0) {
-            this.checkAll = false;
-            this.indeterminate = false;
-          } else {
-            if (this.checkboxList.length == this.value.length) {
-              this.checkAll = true;
-              this.indeterminate = false;
-            } else {
-              this.checkAll = false;
-              this.indeterminate = true;
-            }
-          }
-          if (!this.isEdit) {
-            // 默认选中所有
-            let authList = [];
-            if (this.checkboxList && this.checkboxList.length > 0) {
-              this.checkboxList.forEach((item) => {
-                authList.push(item.value);
-              });
-            }
-            this.indeterminate = false;
-            this.checkAll = !(authList && authList.length == 0);
-            this.authList = authList;
-            this.handleEmit();
-          }
+    handleAuthData() {
+      let operationTypeObj = {
+        operation: 'operationAuthList',
+        env: 'envAuthList',
+        scenario: 'scenarioAuthList'
+      };
+      this.checkboxList = this.authSetting[operationTypeObj[this.operationType]] || [];
+      this.defaultAuthList = this.$utils.deepClone(this.checkboxList);
+      if (this.value.length == 0) {
+        this.checkAll = false;
+        this.indeterminate = false;
+      } else {
+        if (this.checkboxList.length == this.value.length) {
+          this.checkAll = true;
+          this.indeterminate = false;
+        } else {
+          this.checkAll = false;
+          this.indeterminate = true;
         }
-      });
+      }
+      if (!this.isEdit) {
+        // 默认选中所有
+        let authList = [];
+        if (this.checkboxList && this.checkboxList.length > 0) {
+          this.checkboxList.forEach((item) => {
+            authList.push(item.value);
+          });
+        }
+        this.indeterminate = false;
+        this.checkAll = !(authList && authList.length == 0);
+        this.authList = authList;
+        this.handleEmit();
+      }
     },
     handleCheckAll() {
       if (this.indeterminate) {
