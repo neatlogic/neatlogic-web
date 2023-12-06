@@ -13,7 +13,7 @@
           <Timeline>
             <TimelineItem class="template-list">
               <div class="name owerflow">创建签报</div>
-              <div slot="dot" class="text-tip">1</div>
+              <div slot="dot" class="text-tip icon-index border-color">1</div>
               <div class="user pl-sm">EOA步骤处理人</div>
             </TimelineItem>
             <TimelineItem
@@ -22,7 +22,7 @@
               class="template-list"
             >
               <div class="name owerflow">{{ item.name }}</div>
-              <div slot="dot" class="text-tip">{{ index + 2 }}</div>
+              <div slot="dot" class="text-tip icon-index border-color">{{ index + 2 }}</div>
               <div class="user pl-sm">
                 <TsRow :gutter="8">
                   <Col span="2">
@@ -155,7 +155,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .template-main {
   padding-left: 140px;
   .template-list {
@@ -173,17 +173,24 @@ export default {
       padding-right: 32px;
     }
   }
-  .ivu-timeline-item-tail {
+  /deep/ .ivu-timeline-item-tail {
     left: -1px;
-    top: 1px;
+    top: 2px;
   }
-  .ivu-timeline-item-head-custom {
+  /deep/ .ivu-timeline-item-head-custom {
+    margin-top: 14px;
     width: 24px;
     height: 24px;
+    line-height: 24px;
     text-align: center;
-    line-height: 18px;
     border-radius: 50%;
-    margin-top: 14px;
+    padding: 0;
+  }
+  .icon-index {
+    width: 100%;
+    height: 100%;
+    border: 1px solid;
+    border-radius: 50%;
   }
 }
 </style>

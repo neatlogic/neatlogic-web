@@ -47,7 +47,7 @@ export default {
   components: {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    EditTemplateDialog: resolve => require(['./eoa/edit-template-dialog.vue'], resolve)
+    EditTemplateDialog: resolve => require(['./edit-template-dialog.vue'], resolve)
   },
   props: {},
   data() {
