@@ -15,7 +15,7 @@
           @updateAuth="updateAuth"
         ></AppInfoManage>
       </TabPane>
-      <TabPane v-if="hasEditConfigAuth" :label="$t('term.deploy.continuousintegration')" name="integrated">
+      <TabPane v-if="!hideFucntionExcludeAppModuleRunner" :label="$t('term.deploy.continuousintegration')" name="integrated">
         <IntegratedManage v-if="tabValue == 'integrated'" :appSystemId="appSystemId"></IntegratedManage>
       </TabPane>
       <TabPane v-if="hasEditPipelineAuth" :label="$t('term.deploy.superpipeline')" name="pipeline">
@@ -59,7 +59,7 @@ export default {
       default: false
     },
     hideFucntionExcludeAppModuleRunner: {
-      // codehub新增应用配置入口，为了维护应用和模块，以及模块对应的runner组,发布其他功能全部屏蔽
+      // codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
       type: Boolean,
       default: false
     }
