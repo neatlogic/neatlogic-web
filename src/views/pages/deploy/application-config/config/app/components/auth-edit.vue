@@ -84,7 +84,14 @@ export default {
         env: 'envAuthList',
         scenario: 'scenarioAuthList'
       };
-      this.checkboxList = this.authSetting[operationTypeObj[this.operationType]] || [];
+      this.checkboxList = [];
+      let checkboxList = this.authSetting[operationTypeObj[this.operationType]] || [];
+      checkboxList.forEach((item) => {
+        // 过滤为空对象
+        if (item && item.value) {
+          this.checkboxList.push(item);
+        }
+      });
       this.defaultAuthList = this.$utils.deepClone(this.checkboxList);
       if (this.value.length == 0) {
         this.checkAll = false;
@@ -103,7 +110,9 @@ export default {
         let authList = [];
         if (this.checkboxList && this.checkboxList.length > 0) {
           this.checkboxList.forEach((item) => {
-            authList.push(item.value);
+            if (item && item.value) {
+              authList.push(item.value);
+            }
           });
         }
         this.indeterminate = false;
@@ -122,9 +131,11 @@ export default {
       if (this.checkAll) {
         let authList = [];
         this.defaultAuthList && this.defaultAuthList.forEach((item) => {
-          authList.push(item.value);
-          this.authList = authList;
+          if (item && item.value) {
+            authList.push(item.value);
+          }
         });
+        this.authList = authList;
       } else {
         this.authList = [];
       }

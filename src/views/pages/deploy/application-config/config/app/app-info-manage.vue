@@ -198,7 +198,7 @@ export default {
   destroyed() {},
   methods: {
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId, isCodehub: !this.canShow ? 1 : 0}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId, actionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
         if (res && res.Status == 'OK') {
           let dataInfo = res.Return || {};
           this.handleAuthListData(dataInfo);
@@ -225,7 +225,7 @@ export default {
         authorityStrList: this.authorityStrList ? [this.authorityStrList] : []
       };
       this.loadingShow = true;
-      this.$api.deploy.applicationConfig.getAppConfigAuthList({...this.searchParam, ...searchParam, isCodehub: !this.canShow ? 1 : 0}).then((res) => {
+      this.$api.deploy.applicationConfig.getAppConfigAuthList({...this.searchParam, ...searchParam, actionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
         if (res && res.Status == 'OK') {
           this.operationAuthLength = 0;
           this.envAuthLength = 0;
@@ -446,10 +446,12 @@ export default {
         for (let key in authObj) {
           if (key && authObj[key]) {
             authObj[key].forEach((item) => {
-              this.authList.push({
-                text: item.text,
-                value: item.value ? `${obj[key]}/${item.value}` : ''
-              });
+              if (item && item.value) {
+                this.authList.push({
+                  text: item.text,
+                  value: item.value ? `${obj[key]}/${item.value}` : ''
+                });
+              }
             });
           }
         }
