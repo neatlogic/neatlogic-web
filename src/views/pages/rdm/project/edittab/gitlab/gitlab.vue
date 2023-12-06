@@ -23,9 +23,6 @@
         <a @click="createSecretToken()">{{ $t('term.framework.recreate') }}</a>
       </div>
     </TsFormItem>
-    <div style="text-align: right" class="mt-md">
-      <Button type="primary" @click="save()">{{ $t('page.save') }}</Button>
-    </div>
   </div>
 </template>
 <script>
@@ -72,12 +69,15 @@ export default {
   methods: {
     createWebhookUrl() {
       this.$set(this.webhookData, 'webhookUrl', this.$utils.setUuid());
+      this.save();
     },
     createSecretToken() {
       this.$set(this.webhookData, 'secretToken', this.$utils.setUuid());
+      this.save();
     },
     clearSecretToken() {
       this.$set(this.webhookData, 'secretToken', null);
+      this.save();
     },
     getWebhookConfig() {
       if (this.appData.id) {
