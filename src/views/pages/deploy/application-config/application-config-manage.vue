@@ -89,7 +89,6 @@
               </div>
               <template v-else>
                 <!-- codehub无配置流水线时，需要展示应用层和模块层 -->
-                {{ canEdit }}
                 <AppManage
                   v-if="configType == 'app'"
                   :appSystemId="appSystemId"
