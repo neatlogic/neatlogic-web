@@ -116,7 +116,7 @@
       ref="tableContainer"
       :class="{ editmode: mode === 'edit' }"
       style="position:relative;overflow:auto;width:100%"
-      :style="{ height: mode === 'edit'?containerHeight:'100%' }"
+      :style="{ height: mode === 'edit' || mode === 'editSubform' ?containerHeight:'100%' }"
       @scroll="
         event => {
           scrollContainer(event);
