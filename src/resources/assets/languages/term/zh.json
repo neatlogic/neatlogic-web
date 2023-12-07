@@ -2580,6 +2580,7 @@
     "allowmove": "允许移动",
     "nocientityname": "无显示名",
     "allowselect": "允许选中",
-    "releaselock": "解除锁定"
+    "releaselock": "解除锁定",
+    "tryfill": "模拟填充"
   }
 }
