@@ -1078,7 +1078,7 @@ export default {
       if (index < 0) {
         //选中
         this.multiple ? this.selectedList.push(item) : (this.selectedList = [item]);
-        this.multiple && value ? this.currentValue.push(value) : (this.currentValue = value);
+        this.multiple && !this.$utils.isEmpty(value) ? this.currentValue.push(value) : (this.currentValue = value);
       } else if (this.isRequired && !this.multiple) {
         //取消选中  如果必填且单选，则不能取消选中
         return;

@@ -234,7 +234,7 @@ export default {
       }
       return className;
     },
-    handleCurrentValue(currentValue) {
+    handleCurrentValue() {
       let value;
       return currentValue => {
         if (this.multiple || this.$options.name == 'TsFormCheckbox') {
