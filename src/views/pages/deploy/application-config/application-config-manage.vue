@@ -488,7 +488,6 @@ export default {
     canEdit() {
       // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
       if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
-        console.log('返回的值', this.selectedApp, this.authList);
         return true;
       }
       return false;
