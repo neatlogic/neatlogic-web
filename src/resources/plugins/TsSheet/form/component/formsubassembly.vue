@@ -29,7 +29,7 @@
           </div>
         </div>
       </div> 
-      <div v-if="!disabled && !readonly && config.isCanAdd">
+      <div v-if="!disabled && !readonly && config.isCanAdd" class="text-left">
         <Button
           type="primary"
           ghost
