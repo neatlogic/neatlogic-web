@@ -149,7 +149,8 @@ export default {
           text: this.$t('page.or'),
           value: 'or'
         }
-      ]
+      ],
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
@@ -318,7 +319,7 @@ export default {
   filter: {},
   computed: {
     hasValueFormItemList() {
-      return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)));
+      return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
     },
     isNeedAttrValue() {
       return condition => {
