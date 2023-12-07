@@ -1,7 +1,8 @@
 <template>
   <div v-if="subFormData">
-    <div class="sheet-main">
-      <div><span class="label bg-primary">{{ label }}</span></div>
+    <div v-if="readonly && !formDataList.length">-</div>
+    <div v-else class="sheet-main">
+      <div class="text-left"><span class="label bg-primary">{{ label }}</span></div>
       <div class="sheet-detail border-color" :style="{ '--height': getFormDataHeight(formDataList) }">
         <div v-for="(item,index) in formDataList" :key="index" class="sheet-list border-base radius-md border-color">
           <div orientation="start" class="subForm-label">
@@ -10,7 +11,7 @@
               <span>{{ label }}</span>
             </div>
             <div class="">
-              <span v-if="!disabled && !readonly && config.isCanAdd && (mode ==='read'|| mode==='readSubform') && formDataList.length>1" class="tsfont-trash-o text-action del-icon" @click="delSheet(index)"></span>
+              <span v-if="!disabled && !readonly && config.isCanAdd && (mode ==='read'|| mode==='readSubform')" class="tsfont-trash-o text-action del-icon" @click="delSheet(index)"></span>
               <span class="pl-sm" :class="!item.isHide?'tsfont-down':'tsfont-up'" @click="toggleshow(item)"></span>
             </div>
           </div>
@@ -101,7 +102,7 @@ export default {
       const errorList = [];
       const sheet = this.$refs['sheet'];
       let isValid = true;
-      let list = Array.from(sheet);
+      let list = sheet && Array.from(sheet) || [];
       for (let i in list) {
         let errorData = await list[i].validData();
         if (!this.$utils.isEmpty(errorData)) {
@@ -124,6 +125,7 @@ export default {
     },
     toggleshow(item) {
       this.$set(item, 'isHide', !item.isHide);
+      this.$emit('resize');
     }
   },
   filter: {},
