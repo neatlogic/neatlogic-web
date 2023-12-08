@@ -2584,6 +2584,8 @@
     "allowselect": "Allow selection",
     "releaselock": "Unlock",
     "privatecatalog": "Personal directory",
-    "publiccatalog": "Public directory"
+    "publiccatalog": "Public directory",
+    "releaseconfirm": "Are you sure to publish the current architecture diagram?",
+    "edgemode": "line mode"
   }
 }
