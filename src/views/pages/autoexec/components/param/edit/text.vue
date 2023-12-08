@@ -94,7 +94,8 @@ export default {
           value: 'highriskcode'
         }
       ],
-      valiDate: null
+      valiDate: null,
+      type: 'text'
     };
   },
 
