@@ -175,6 +175,9 @@ export default {
       this.downloadParams.relIdList = selectedList
         .filter(item => item.rowType === 'rel')
         .map(item => item.id);
+      this.downloadParams.globalAttrIdList = selectedList
+        .filter(item => item.rowType === 'global')
+        .map(item => item.id);
     }
   },
   computed: {
