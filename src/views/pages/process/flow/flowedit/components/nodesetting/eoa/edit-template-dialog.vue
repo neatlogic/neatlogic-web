@@ -119,7 +119,8 @@ export default {
           text: '表单组件',
           value: 'form'
         }
-      ]
+      ],
+      includeComponentList: ['formtext', 'formtextarea', 'formselect', 'formradio', 'formcheckbox', 'formuserselect'] //eoa：匹配的表单组件
     };
   },
   beforeCreate() {},
@@ -146,7 +147,7 @@ export default {
       let list = [];
       if (this.allFormitemList && this.allFormitemList.length > 0) {
         list = this.allFormitemList.filter(item => {
-          return item.handler == 'formtext' || item.handler == 'formtextarea' || item.handler == 'formuserselect'; 
+          return this.includeComponentList.includes(item.handler); 
         });
       }
       return list;
