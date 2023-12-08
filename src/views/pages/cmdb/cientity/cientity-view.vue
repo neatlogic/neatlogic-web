@@ -8,6 +8,7 @@
     >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-else-if="fromFullPath" class="tsfont-left text-action" @click="back()">{{ $t('router.cmdb.cidetail') }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -284,8 +285,14 @@ export default {
       isHistoryShow: true, //修改历史是否显示,默认显示
       isSiderHide: false,
       unCommitTransactionCount: 0, //未提交事务数量
-      isTransactionDialogShow: false
+      isTransactionDialogShow: false,
+      fromFullPath: '' // 上一个页面地址
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.fromFullPath = from?.fullPath || '';
+    });
   },
   beforeCreate() {},
   created() {},
@@ -308,6 +315,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    back() {
+      // 下榻页面返回
+      this.$router.push({
+        path: this.fromFullPath,
+        query: {isBack: true}
+      });
+    },
     showCustomViewData(customView) {
       if (customView._type === 'data') {
         if (customView.type === 'scene') {
