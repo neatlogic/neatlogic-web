@@ -189,7 +189,8 @@ export default {
           this.valid(this.currentValue);
         }
       } else {
-        this.validMesage = '';
+        // 回车键会清空校验
+        // this.validMesage = '';
         this.isValidPass = true;
       }
     },
@@ -287,7 +288,7 @@ export default {
           return;
         }
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
-        this.validMesage = '';
+        // this.validMesage = '';
         this.isValidPass = true;
         this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }

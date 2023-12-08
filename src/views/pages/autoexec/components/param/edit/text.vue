@@ -16,6 +16,7 @@
       <Col :span="validSetting?14:24">
         <TsFormInput
           ref="item"
+          :type="type"
           :value="value"
           :readonly="readonly"
           :disabled="disabled"
@@ -86,6 +87,10 @@ export default {
         {
           text: 'URL',
           value: 'url'
+        },
+        {
+          text: '高危代码',
+          value: 'highriskcode'
         }
       ],
       valiDate: null
@@ -130,7 +135,7 @@ export default {
   computed: {
     validSetting() {
       let isSet = false;
-      if (this.setValidComponentsList.includes('text')) {
+      if (this.setValidComponentsList.includes('text') || this.setValidComponentsList.includes('textarea')) {
         isSet = true;
       }
       return isSet; 
@@ -140,13 +145,18 @@ export default {
   watch: {
     config: {
       handler(val) {
-        let validList = ['unique_ident', 'lowercase', 'uppercase', 'number', 'enchar', 'mail', 'phone', 'ip', 'port', 'url'];
-        if (val && !this.$utils.isEmpty(val.validateList)) {
-          val.validateList.forEach(item => {
-            if (validList.includes(item.name)) {
-              this.valiDate = item.name;
-            }
-          });
+        let validList = ['unique_ident', 'lowercase', 'uppercase', 'number', 'enchar', 'mail', 'phone', 'ip', 'port', 'url', 'highriskcode'];
+        if (val) {
+          if (!this.$utils.isEmpty(val.validateList)) {
+            val.validateList.forEach(item => {
+              if (validList.includes(item.name)) {
+                this.valiDate = item.name;
+              }
+            });
+          }
+          if (val.type) {
+            this.type = val.type;
+          }
         }
       },
       deep: true,
