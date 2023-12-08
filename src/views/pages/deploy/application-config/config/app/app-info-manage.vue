@@ -35,7 +35,7 @@
             :multiple="false"
             :dataList="authList"
             :placeholder="$t('page.authority')"
-            @on-change="searchAuth(1)"
+            @change="searchAuth(1)"
           ></TsFormSelect>
         </Col>
         <Col span="8">
@@ -198,7 +198,7 @@ export default {
   destroyed() {},
   methods: {
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId, actionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId, includeActionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
         if (res && res.Status == 'OK') {
           let dataInfo = res.Return || {};
           this.handleAuthListData(dataInfo);
@@ -221,11 +221,13 @@ export default {
     searchAuth(currentPage) {
       this.searchParam.currentPage = currentPage || 1;
       let searchParam = {
+        ...this.searchParam,
         actionList: this.handleActionList(this.actionList),
-        authorityStrList: this.authorityStrList ? [this.authorityStrList] : []
+        authorityStrList: this.authorityStrList ? [this.authorityStrList] : [],
+        includeActionList: !this.canShow ? ['view', 'edit'] : []
       };
       this.loadingShow = true;
-      this.$api.deploy.applicationConfig.getAppConfigAuthList({...this.searchParam, ...searchParam, actionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
+      this.$api.deploy.applicationConfig.getAppConfigAuthList(searchParam).then((res) => {
         if (res && res.Status == 'OK') {
           this.operationAuthLength = 0;
           this.envAuthLength = 0;
@@ -457,10 +459,10 @@ export default {
         }
       }
     },
-    handleActionList(auth) {
+    handleActionList(valueList) {
       let actionList = [];
-      if (auth) {
-        let authList = auth.split('/');
+      if (!this.$utils.isEmpty(valueList)) {
+        let authList = valueList.split('/');
         if (authList && authList.length > 0) {
           actionList.push({
             action: authList[1],

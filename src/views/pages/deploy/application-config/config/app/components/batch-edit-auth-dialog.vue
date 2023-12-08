@@ -28,7 +28,7 @@
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
@@ -39,7 +39,7 @@
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
@@ -221,7 +221,7 @@ export default {
       });
     },
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, actionList: this.hideFucntionExcludeAppModuleRunner ? ['view', 'edit'] : []}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.hideFucntionExcludeAppModuleRunner ? ['view', 'edit'] : []}).then((res) => {
         if (res && res.Status == 'OK') {
           this.authSetting = res.Return || {};
           for (let key in res.Return) {
@@ -236,7 +236,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canShowEnvScenario() {
+      // 显示环境场景
+      return !this.hideFucntionExcludeAppModuleRunner;
+    }
+  },
   watch: {}
 };
 </script>

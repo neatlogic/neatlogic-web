@@ -589,7 +589,7 @@ export default {
   filter: {},
   computed: {
     hasColumn() {
-      if (this.mode != 'edit' && this.config.dataConfig && this.config.dataConfig.length > 0) {
+      if (this.mode != 'edit' && (this.mode != 'editSubform') && this.config.dataConfig && this.config.dataConfig.length > 0) {
         return true;
       }
       return false;
