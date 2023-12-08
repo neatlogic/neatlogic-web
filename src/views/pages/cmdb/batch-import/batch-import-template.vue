@@ -4,7 +4,7 @@
       <template slot="sider">
         <ciTypeList :ciId="ciId" @click="getTemplate"></ciTypeList>
       </template>
-      <template slot="content" class="content flex-start">
+      <template slot="content">
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <TsTable
           class="table"
