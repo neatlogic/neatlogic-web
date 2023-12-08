@@ -207,6 +207,15 @@ export default {
           maxlength: 50,
           label: this.$t('term.framework.rolename'),
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.rolename')}) }, { name: 'name-special' }]
+        },        
+        {
+          type: 'text',
+          name: 'env',
+          value: '',
+          placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.environment')}),
+          maxlength: 50,
+          label: this.$t('page.environment'),
+          tooltip: '登录认证的请求需要携带Key为Env的Header，如果Env Header值等于当前值或当前值为空则该角色生效，否则不生效'
         }
       ],
       uuid: '', //角色uuid
