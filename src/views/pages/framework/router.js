@@ -56,6 +56,7 @@ const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // �
 const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'); //重建视图
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
+const importExportManage = () => import('./importexport/importexport-manage.vue'); // 导入导出管理
 
 import { $t } from '@/resources/init.js';
 
@@ -625,6 +626,18 @@ export default [
     component: serverManage,
     meta: {
       title: $t('router.framework.servermanage'),
+      ismenu: true,
+      icon: 'tsfont-config',
+      authority: 'ADMIN',
+      type: 'others'
+    }
+  },
+  {
+    path: '/importexport-manage',
+    name: 'importexport-manage',
+    component: importExportManage,
+    meta: {
+      title: '导入导出测试',
       ismenu: true,
       icon: 'tsfont-config',
       authority: 'ADMIN',
