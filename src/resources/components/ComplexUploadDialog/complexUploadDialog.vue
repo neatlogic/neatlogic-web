@@ -11,11 +11,11 @@
             {{ $t('page.importoverdescrition') }}
           </Alert>
           <div class="common-auth">
-            <div v-if="relateConfig && relateConfig?.typeList?.length > 0" class="wrapper">
+            <div v-if="userSelectedData && userSelectedData?.typeList?.length > 0" class="wrapper">
               <span class="text check-all-text-pr mb-nm" :class="[ selectedAll ? 'tsfont-check-square-o':'tsfont-minus-square']" @click.stop="handleCheckedAll()">
                 {{ selectedAll ? $t('page.unselectall') : $t('page.selectall') }}
               </span>
-              <div v-for="(item, index) in relateConfig.typeList" :key="index" class="item mb-md">
+              <div v-for="(item, index) in userSelectedData.typeList" :key="index" class="item mb-md">
                 <div class="title text-grey">{{ item.text }}</div>
                 <div class="radius-lg bg-op">
                   <div class="pl-nm pt-nm h2 flex-start" :class="secondSelectedAll(item) ? 'tsfont-check-square-o':'tsfont-minus-square'" @click.stop="handleSecondCheckedAll(item)">
@@ -58,11 +58,6 @@ export default {
     UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
   },
   props: {
-    isShowCoverDialog: {
-      // 是否显示覆盖弹窗
-      type: Boolean,
-      default: false
-    },
     targetType: { // 上传类型
       type: String,
       default: ''
@@ -81,7 +76,6 @@ export default {
   data() {
     return {
       isEmit: false, // 二次弹窗，导入数据是不需要分发方法
-      isRefreshTree: false, // 导入配置没有配置信息时，也需要刷新树
       defaultSelectedConfig: {}, // 默认选中的config
       selectedConfig: {},
       configDialog: {
@@ -102,35 +96,16 @@ export default {
           ...this.uploadParams
         }
       },
-      relateConfig: {},
-      uploadSuccessFile: {}
+      userSelectedData: {},
+      uploadSuccessFile: {},
+      userSelection: {},
+      alreadyExistsConfig: {}
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.isRefreshTree = false;
-    if (this.isShowCoverDialog) {
-      this.$createDialog({
-        title: this.$t('term.deploy.coverpipeline'),
-        cancelText: this.$t('term.deploy.cancelimport'),
-        okText: this.$t('page.cover'),
-        content: `${this.appSystemAbbrNameAndName}${this.$t('term.deploy.overexistpipelineiscontinue')}`,
-        'on-ok': (vnode) => {
-          vnode.isShow = false;
-          this.showDialog();
-        },
-        'on-close': () => {
-          this.$emit('close');
-        }
-      });
-      this.isEmit = false;
-    }
-    this.$nextTick(() => {
-      this.showDialog();
-    });
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -140,10 +115,10 @@ export default {
   methods: {
     handleDefaultSelectedConfig() {
       // 处理选中默认值，为了后续用于对比高亮使用
-      let relateConfig = this.$utils.deepClone(this.relateConfig);
+      let userSelectedData = this.$utils.deepClone(this.userSelectedData);
       let defaultSelectedConfig = {};
       let selectedConfig = {};
-      relateConfig?.typeList?.forEach((item) => {
+      userSelectedData?.typeList?.forEach((item) => {
         // 处理默认选中值
         defaultSelectedConfig[item.value] = [];
         selectedConfig[item.value] = [];
@@ -154,7 +129,7 @@ export default {
           if (optionItem?.value) {
             defaultSelectedConfig[item.value].push(optionItem.value);
           }
-          if (relateConfig.checkedAll || item.checkedAll || optionItem.checked) {
+          if (userSelectedData.checkedAll || item.checkedAll || optionItem.checked) {
             selectedConfig[item.value].push(optionItem.value);
           }
         });
@@ -163,8 +138,8 @@ export default {
       this.selectedConfig = selectedConfig;
 
       // 清空默认选中值
-      this.relateConfig.checkedAll = false;
-      this.relateConfig?.typeList?.forEach((item) => {
+      this.userSelectedData.checkedAll = false;
+      this.userSelectedData?.typeList?.forEach((item) => {
         item.checkedAll = false;
         item.optionList?.forEach((innerItem) => {
           if (innerItem) {
@@ -175,9 +150,7 @@ export default {
     },
     showDialog() {
       // 提供给外部使用，用于打开上传文件的弹窗
-      this.$nextTick(() => {
-        this.$refs.uploadDialog?.showDialog();
-      });
+      this.$refs.uploadDialog?.showDialog();
     },
     okDialog() {
       // 导入处理存储后端的值
@@ -185,20 +158,24 @@ export default {
         this.$Message.error(this.$t('page.uploadurlmustrequired'));
         return false;
       }
-      let relateConfig = this.$utils.deepClone(this.relateConfig);
-      relateConfig.checkedAll = this.selectedAll;
-      relateConfig.typeList.forEach((item) => {
-        item?.optionList?.forEach((innerItem) => {
-          innerItem.checked = this.selectedConfig[item.value]?.includes(innerItem.value);
+      let userSelectedData = this.$utils.deepClone(this.userSelectedData);
+      if (!this.$utils.isEmpty(this.userSelection)) {
+        userSelectedData = this.userSelection;
+      } else {
+        userSelectedData.checkedAll = this.selectedAll;
+        userSelectedData.typeList.forEach((item) => {
+          item?.optionList?.forEach((innerItem) => {
+            innerItem.checked = this.selectedConfig[item.value]?.includes(innerItem.value);
+          });
+          item.checkedAll = item.optionList?.every((innerItem) => {
+            return this.selectedConfig[item.value]?.includes(innerItem.value);
+          });
         });
-        item.checkedAll = item.optionList?.every((innerItem) => {
-          return this.selectedConfig[item.value]?.includes(innerItem.value);
-        });
-      });
+      }
       const formData = new FormData();
       formData.append('targetType', this.targetType);
       formData.append('file', this.uploadSuccessFile.file);
-      formData.append('userSelection', JSON.stringify(relateConfig));
+      formData.append('userSelection', JSON.stringify(userSelectedData));
       axios.post(this.url, formData, {
         contentType: 'multipart/form-data'
       }).then(res => {
@@ -209,39 +186,64 @@ export default {
       });
     },
     closeDialog() {
-      if (!this.isShowCoverDialog) {
-        this.selectedConfig = {};
-        this.defaultSelectedConfig = {};
-      }
+      this.configDialog.isShow = false;
       this.$emit('close');
     },
     closeUploadDialog() {
       if (!this.isEmit) {
-        this.$emit('close', this.isRefreshTree); // 导入成功之后，不需要分发这个方法，隐藏整个组件
+        this.$emit('close'); // 导入成功之后，不需要分发这个方法，隐藏整个组件
       }
     },
     uploadSuccess(data, file, fileList) {
-      this.relateConfig = data.Return || {};
+      let {alreadyExists = {}, typeList = [], checkedAll = false} = data.Return || {};
       this.uploadSuccessFile = file;
-      if (!this.$utils.isEmpty(this.relateConfig)) {
-        this.configDialog.isShow = true;
-        this.isEmit = true;
-        this.isRefreshTree = false;
-        this.handleDefaultSelectedConfig();
+      this.userSelectedData = {
+        checkedAll,
+        typeList
+      };
+      if (!this.$utils.isEmpty(alreadyExists) && alreadyExists.name && checkedAll) {
+        this.alreadyExistsConfig = alreadyExists || {};
+        this.userSelection = {
+          typeList,
+          checkedAll
+        };
+        this.openCreateDialog();
       } else {
-        this.isEmit = false;
-        this.isRefreshTree = true;
+        if (!this.$utils.isEmpty(this.userSelectedData)) {
+          this.configDialog.isShow = true;
+          this.isEmit = true;
+          this.handleDefaultSelectedConfig();
+        } else {
+          this.isEmit = false;
+        }
       }
-      this.isRefreshTree = true;
       this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
+    },
+    openCreateDialog() {
+      if (!this.$utils.isEmpty(this.userSelection) && !this.$utils.isEmpty(this.alreadyExistsConfig) && this.alreadyExistsConfig.name && this.userSelection.checkedAll) {
+        this.$createDialog({
+          title: this.$t('page.cover') + this.$t('page.tip'),
+          cancelText: this.$t('term.deploy.cancelimport'),
+          okText: this.$t('page.cover'),
+          content: this.$t('page.existiscoverimport', {target: this.alreadyExistsConfig.name, type: this.alreadyExistsConfig.type}),
+          'on-ok': (vnode) => {
+            vnode.isShow = false;
+            this.okDialog();
+          },
+          'on-close': () => {
+            this.$emit('close');
+          }
+        });
+        this.isEmit = false;
+      }
     },
     handleCheckedAll() {
       // 顶层选中
-      this.relateConfig.typeList.forEach((item) => {
+      this.userSelectedData.typeList.forEach((item) => {
         if (item.value) {
           this.$set(this.selectedConfig, [item.value], []);
         }
-        if (!this.relateConfig.checkedAll) {
+        if (!this.userSelectedData.checkedAll) {
           item.optionList.forEach((optionItem) => {
             if (optionItem?.value) {
               this.selectedConfig[item.value].push(optionItem.value);
@@ -249,7 +251,7 @@ export default {
           });
         }
       });
-      this.relateConfig.checkedAll = !this.relateConfig.checkedAll;
+      this.userSelectedData.checkedAll = !this.userSelectedData.checkedAll;
     },
     handleSecondCheckedAll(currentRow) {
       // 二级选中
@@ -262,9 +264,10 @@ export default {
           }
         });
       }
-      this.relateConfig.checkedAll = checkedAll;
+      this.userSelectedData.checkedAll = checkedAll;
     },
     arraysAreEqual(arr1, arr2) {
+      // 判断两个数组是否相等
       const array1 = this.$utils.deepClone(arr1).sort();
       const array2 = this.$utils.deepClone(arr2).sort();
       if (array1.length !== array2.length) {
@@ -294,11 +297,10 @@ export default {
     }
   },
   watch: {
-    id: {
+    targetType: {
       handler() {
-        this.uploadConfig.data.id = this.id;
+        this.uploadConfig.data.targetType = this.targetType;
         this.isEmit = false;
-        this.isRefreshTree = false;
       },
       deep: true
     }

@@ -15,7 +15,7 @@
       </template>
     </TsContain>
     <ComplexUploadDialog  
-      v-if="isImportCiShow"  
+      ref="uploadDialog" 
       :targetType="targetType"  
       url="/api/binary/common/import"  
       @close="() => isImportCiShow = false"  
@@ -91,10 +91,9 @@ export default {
       }
       console.log(this.targetType, 'this.targetType');
       this.isImportCiShow = true;
+      this.$refs.uploadDialog.showDialog();
     },
     exportPipeline() {
-      let primaryKey = '';
-      let targetType = '';
       if (this.$refs.form) {
         let formData = this.$refs.form.getFormValue();
         if (formData) {
@@ -107,7 +106,7 @@ export default {
         }
       }
       // 导出流水线配置
-      this.download({url: '/api/binary/common/export', params: { primaryKey: primaryKey, type: targetType}});
+      this.download({url: '/api/binary/common/export', params: { primaryKey: this.primaryKey, type: this.targetType}});
     }
   },
   filter: {},
