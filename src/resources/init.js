@@ -92,6 +92,7 @@ export function initRouter(VueRouter, store) {
         const isBack = !!to.query.isBack;
         //console.log('b', isBack, fromPageList);
         //处理回退请求，从最后匹配的路径开始截断
+        //debugger;
         if (isBack) {
           const toFullPath = to.fullPath.replace('&isBack=true', '').replace('?isBack=true', '');
           if (fromPageList.length > 0) {
@@ -135,6 +136,7 @@ export function initRouter(VueRouter, store) {
           }
         }
         //console.log('a', isBack, fromPageList);
+        //console.log(to, JSON.stringify(fromPageList, null, 2));
         next();
       } else {
         next({ path: '/404', replace: true, query: { des: '无访问权限' } });
