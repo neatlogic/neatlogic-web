@@ -541,7 +541,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: '存在高危代码'
+    message: $t('message.plugin.highriskcode')
   }
 };
 

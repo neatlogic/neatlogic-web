@@ -90,7 +90,7 @@ export default {
           value: 'url'
         },
         {
-          text: '高危代码',
+          text: this.$t('page.highriskcode'),
           value: 'highriskcode'
         }
       ],
@@ -137,7 +137,7 @@ export default {
   computed: {
     validSetting() {
       let isSet = false;
-      if (this.setValidComponentsList.includes('text') || this.setValidComponentsList.includes('textarea')) {
+      if (this.setValidComponentsList.includes('text')) {
         isSet = true;
       }
       return isSet; 
