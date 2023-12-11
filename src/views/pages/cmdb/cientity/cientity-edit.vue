@@ -421,10 +421,10 @@ export default {
         }
       }
     },
-    async getGlobalAttr() {
+    async getGlobalAttrByCiId(ciId) {
       let globalAttrList;
-      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
-        globalAttrList = res.Return.tbodyList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, {isActive: 1, allowEdit: 1}).then(res => {
+        globalAttrList = res.Return;
       });
       return globalAttrList;
     },
@@ -467,7 +467,7 @@ export default {
     async getElementByCiId(ciId) {
       const attrList = await this.getAttrByCiId(ciId);
       const relList = await this.getRelByCiId(ciId);
-      const globalAttrList = await this.getGlobalAttr();
+      const globalAttrList = await this.getGlobalAttrByCiId(ciId);
       const ciViewList = await this.getCiViewByCiId(ciId);
       const elementList = [];
       ciViewList.forEach((e, index) => {

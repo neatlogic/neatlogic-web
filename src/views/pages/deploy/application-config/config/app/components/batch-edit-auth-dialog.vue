@@ -144,7 +144,8 @@ export default {
         authorityStrList,
         appSystemId: this.params.appSystemId,
         isEdit: this.isEdit,
-        actionList: this.handleActionList(this.authConfig)
+        actionList: this.handleActionList(this.authConfig),
+        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit'] 
       };
       this.$api.deploy.applicationConfig.saveAppConfigAuth(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -221,7 +222,7 @@ export default {
       });
     },
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.hideFucntionExcludeAppModuleRunner ? ['view', 'edit'] : []}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']}).then((res) => {
         if (res && res.Status == 'OK') {
           this.authSetting = res.Return || {};
           for (let key in res.Return) {
