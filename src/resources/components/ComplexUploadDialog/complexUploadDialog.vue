@@ -196,6 +196,7 @@ export default {
       }
     },
     uploadSuccess(data, file, fileList) {
+      let dataInfo = data.Return || {};
       let {alreadyExists = {}, typeList = [], checkedAll = false} = data.Return || {};
       this.uploadSuccessFile = file;
       this.userSelectedData = {
@@ -210,7 +211,7 @@ export default {
         };
         this.openCreateDialog();
       } else {
-        if (!this.$utils.isEmpty(this.userSelectedData)) {
+        if (!this.$utils.isEmpty(this.userSelectedData) && !this.$utils.isEmpty(dataInfo)) {
           this.configDialog.isShow = true;
           this.isEmit = true;
           this.handleDefaultSelectedConfig();
