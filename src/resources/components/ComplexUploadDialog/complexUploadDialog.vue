@@ -217,6 +217,8 @@ export default {
           this.handleDefaultSelectedConfig();
         } else {
           this.isEmit = false;
+          this.$Message.success(this.$t(this.$t('message.importsuccess')));
+          this.$emit('close', true);
         }
       }
       this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
