@@ -159,7 +159,7 @@ export default {
         return false;
       }
       let userSelectedData = this.$utils.deepClone(this.userSelectedData);
-      if (!this.$utils.isEmpty(this.userSelection)) {
+      if (!this.$utils.isEmpty(this.userSelection) && this.userSelection.checkedAll) {
         userSelectedData = this.userSelection;
       } else {
         userSelectedData.checkedAll = this.selectedAll;
@@ -181,6 +181,7 @@ export default {
       }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t(this.$t('message.importsuccess')));
+          this.configDialog.isShow = false;
           this.$emit('close', true);
         }
       });
@@ -201,7 +202,7 @@ export default {
         checkedAll,
         typeList
       };
-      if (!this.$utils.isEmpty(alreadyExists) && alreadyExists.name && checkedAll) {
+      if (!this.$utils.isEmpty(alreadyExists) && alreadyExists.name) {
         this.alreadyExistsConfig = alreadyExists || {};
         this.userSelection = {
           typeList,
@@ -220,7 +221,7 @@ export default {
       this.$refs.uploadDialog?.hideDialog(); // 关闭弹窗
     },
     openCreateDialog() {
-      if (!this.$utils.isEmpty(this.userSelection) && !this.$utils.isEmpty(this.alreadyExistsConfig) && this.alreadyExistsConfig.name && this.userSelection.checkedAll) {
+      if (!this.$utils.isEmpty(this.userSelection) && !this.$utils.isEmpty(this.alreadyExistsConfig) && this.alreadyExistsConfig.name) {
         this.$createDialog({
           title: this.$t('page.cover') + this.$t('page.tip'),
           cancelText: this.$t('term.deploy.cancelimport'),
@@ -228,7 +229,13 @@ export default {
           content: this.$t('page.existiscoverimport', {target: this.alreadyExistsConfig.name, type: this.alreadyExistsConfig.type}),
           'on-ok': (vnode) => {
             vnode.isShow = false;
-            this.okDialog();
+            if (!this.$utils.isEmpty(this.alreadyExistsConfig) && this.userSelection.checkedAll) {
+              this.okDialog();
+            } else {
+              this.configDialog.isShow = true;
+              this.isEmit = true;
+              this.handleDefaultSelectedConfig();
+            }
           },
           'on-close': () => {
             this.$emit('close');

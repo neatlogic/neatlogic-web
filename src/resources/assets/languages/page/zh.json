@@ -956,5 +956,5 @@
   "you": "您",
   "importoverdescrition": "以下关联的对象，在系统中已经存在，如需覆盖，请勾选需要覆盖的对象后，点击下方[导入]按钮，完成导入。",
   "uploadurlmustrequired": "上传地址不能为空",
-  "existiscoverimport": "组合流程【{target}】已存在，是否继续导入并覆盖"
+  "existiscoverimport": "{type}【{target}】已存在，是否继续导入并覆盖"
 }
