@@ -189,7 +189,7 @@ export default {
           this.valid(this.currentValue);
         }
       } else {
-        this.validMesage = '';
+        // this.validMesage = '';  // enter键回车会清空校验提示信息
         this.isValidPass = true;
       }
     },
@@ -287,7 +287,7 @@ export default {
           return;
         }
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
-        this.validMesage = '';
+        // this.validMesage = ''; //值改变时会使校验信息消失，先屏蔽
         this.isValidPass = true;
         this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }
