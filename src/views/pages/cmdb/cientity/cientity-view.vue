@@ -433,7 +433,7 @@ export default {
       }
     },
     getGlobalAttr() {
-      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId).then(res => {
+      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail' }).then(res => {
         this.globalAttrList = res.Return;
       });
     },
@@ -454,7 +454,7 @@ export default {
     },
     getRelByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getRelByCiId(this.ciId, {needAction: false, showType: 'detail'}).then(res => {
+        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail' }).then(res => {
           this.relList = res.Return;
         });
       }

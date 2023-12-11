@@ -1,8 +1,14 @@
 import axios from '../../http';
 
 const globalattr = {
-  getCiEntityGlobalAttr(ciEntityId) {
-    return axios.post('/api/rest/cmdb/cientity/globalattr/get', { ciEntityId: ciEntityId });
+  getCiEntityGlobalAttr(ciEntityId, params) {
+    let param = {
+      ciEntityId: ciEntityId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/cientity/globalattr/get', param);
   },
   getGlobalAttrById(id) {
     return axios.post('/api/rest/cmdb/globalattr/get', { id: id });
