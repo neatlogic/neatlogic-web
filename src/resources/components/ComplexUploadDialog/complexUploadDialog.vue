@@ -25,7 +25,7 @@
                   </div>
                   <div class="item-cli pl-nm pr-nm">
                     <CheckboxGroup v-model="selectedConfig[item.value]">
-                      <Checkbox 
+                      <Checkbox
                         v-for="(innerItem) in item.optionList"
                         :key="innerItem.value"
                         :label="innerItem.value"
@@ -63,16 +63,13 @@ export default {
       type: Boolean,
       default: false
     },
-    id: { // 上传id
-      type: Number
+    targetType: { // 上传类型
+      type: String,
+      default: ''
     },
     url: { // 上传地址
       type: String,
       default: ''
-    },
-    textName: { // 传递的key值，作为参数
-      type: String,
-      default: 'id'
     },
     uploadParams: { // 上传参数
       type: Object,
@@ -101,7 +98,7 @@ export default {
         multiple: false,
         showSuccessNotice: false,
         data: {
-          [this.textName]: this.id,
+          targetType: this.targetType,
           ...this.uploadParams
         }
       },
@@ -199,7 +196,7 @@ export default {
         });
       });
       const formData = new FormData();
-      formData.append([this.textName], this.id);
+      formData.append('targetType', this.targetType);
       formData.append('file', this.uploadSuccessFile.file);
       formData.append('userSelection', JSON.stringify(relateConfig));
       axios.post(this.url, formData, {
