@@ -34,7 +34,7 @@
             ></component>
             <div v-else>
               <Alert show-icon>
-                {{ formItem.handler }}组件是商业版专供，需要额外付费购买才能使用。
+                {{ $t('page.commercialcomponenttip') }}
               </Alert>
             </div>
           </template>

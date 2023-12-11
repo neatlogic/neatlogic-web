@@ -69,7 +69,7 @@
         @resize="$emit('resize')"
         @select="selectFormItem"
       ></component>
-      <div v-else class="text-warning">该组件是商业版专供</div>
+      <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
     </template>
     <CustomItem
       v-else-if="showComponent(formItem) && formItem.type === 'custom'"
