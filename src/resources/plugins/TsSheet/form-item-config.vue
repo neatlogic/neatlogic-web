@@ -20,17 +20,24 @@
       </TsFormItem>
       <TsForm labelPosition="top" :item-list="formConfig">
         <template v-slot:customConfig>
-          <component
-            :is="formItem.handler"
-            v-if="formItem.type === 'form'"
-            :error="error"
-            :formItem="formItem"
-            :formItemList="formItemList"
-            :disabled="!!formItem.inherit || disabled"
-            :initFormItemList="initFormItemList"
-            class="mb-sm"
-            @editSubForm="editSubForm"
-          ></component>
+          <template v-if="formItem.type === 'form'">
+            <component
+              :is="formItem.handler"
+              v-if="isExistComponent(formItem.handler)"
+              :error="error"
+              :formItem="formItem"
+              :formItemList="formItemList"
+              :disabled="!!formItem.inherit || disabled"
+              :initFormItemList="initFormItemList"
+              class="mb-sm"
+              @editSubForm="editSubForm"
+            ></component>
+            <div v-else>
+              <Alert show-icon>
+                {{ $t('page.commercialcomponenttip') }}
+              </Alert>
+            </div>
+          </template>
           <FormCustomItemConfig
             v-else-if="formItem.type === 'custom'"
             :error="error"
@@ -393,6 +400,15 @@ export default {
     needConfig() {
       return attr => {
         return this.formItem.config.hasOwnProperty(attr);
+      };
+    },
+    isExistComponent() { //判断是否存在
+      return (handler) => {
+        let component = true;
+        if (!formItemConfig[handler]) {
+          component = false;
+        }
+        return component;
       };
     }
   },

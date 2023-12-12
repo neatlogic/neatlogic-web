@@ -261,7 +261,8 @@
     "donotinput": "请不要输入&lt; &gt; &quot; &apos; 等特殊符号",
     "supporttype1": "仅支持汉字、字母、数字和特殊字符(._-)",
     "supporttype2": "仅支持字母、数字和特殊字符(._-)",
-    "supporttype3": "仅支持字母、数字、斜杠和下划线"
+    "supporttype3": "仅支持字母、数字、斜杠和下划线",
+    "highriskcode": "存在高危代码"
   },
   "incorrectformat": "格式不正确",
   "accordingformat": "请按照格式要求输入",

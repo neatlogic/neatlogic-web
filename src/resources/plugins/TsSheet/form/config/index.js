@@ -26,7 +26,6 @@ import formcollapse from './formcollapse-conf.vue';
 import * as cmdbComponent from '@/views/pages/cmdb/form/config';
 import * as autoexecComponent from '@/views/pages/autoexec/form/config';
 
-import formsubassembly from './formsubassembly-conf.vue';
 let importComponentConfig = {};
 try {
   // 导入表单自定义配置文件
@@ -34,7 +33,7 @@ try {
   componentConfig.keys().forEach(path => {
     if (path) {
       const moduleName = path.split('/')[1].split('-').pop() || path.split('/')[1];
-      if (moduleName == MODULEID) {
+      if (moduleName == 'framework') {
         importComponentConfig = componentConfig(path).default || {};
       }
     }
@@ -67,7 +66,6 @@ export default {
   formcube,
   formtab,
   formcollapse,
-  formsubassembly,
   ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig

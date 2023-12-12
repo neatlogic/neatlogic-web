@@ -2545,12 +2545,12 @@
     "dependentapp": "依赖应用"
   },
   "diagram": {
-    "widgetlist": "组件列表",
+    "widgetlist": "图元列表",
     "widget": "图元",
     "lane": "泳道",
-    "widgetmanage": "组件管理",
+    "widgetmanage": "图元管理",
     "dragtosort": "拖动改变排序",
-    "pleaseselectwidget": "请至少选择一个组件",
+    "pleaseselectwidget": "请至少选择一个图元",
     "commoncatalog": "普通目录",
     "cmdbcatalog": "配置项目录",
     "catalogitem": "目录项",
@@ -2583,6 +2583,13 @@
     "releaselock": "解除锁定",
     "tryfill": "模拟填充",
     "privatecatalog": "个人目录",
-    "publiccatalog": "公共目录"
+    "publiccatalog": "公共目录",
+    "releaseconfirm": "是否确认发布当前架构图？",
+    "edgemode": "连线模式",
+    "sourcemarker": "起点箭头",
+    "targetmarker": "终点箭头",
+    "classic": "经典",
+    "block": "块",
+    "cross": "交叉"
   }
 }
