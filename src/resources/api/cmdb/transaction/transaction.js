@@ -24,8 +24,8 @@ const transaction = {
   getBrotherTransactionCount(transactionId, transactionGroupId) {
     return axios.post('/api/rest/cmdb/transaction/brothercount', { transactionId: transactionId, transactionGroupId: transactionGroupId });
   },
-  deleteTransaction(transactionId) {
-    return axios.post('/api/rest/cmdb/transaction/delete', { id: transactionId });
+  deleteTransaction(ciId, transactionId) {
+    return axios.post('/api/rest/cmdb/transaction/delete', { ciId: ciId, id: transactionId });
   },
   recoverTransaction(transactionId) {
     return axios.post('/api/rest/cmdb/transaction/recover', { id: transactionId });
