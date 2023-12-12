@@ -7,6 +7,7 @@
       border="none"
       :siderWidth="246"
       :clearStyle="true"
+      @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
@@ -70,7 +71,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <DispatchCommon 
+        <DispatchCommon
           ref="dispatchCommon"
           :handler="handler"
           :draftData="draftData"
@@ -559,6 +560,7 @@ export default {
     },
     rightSiderToggle() {
       this.isOrderRightHide = !this.isOrderRightHide;
+      this.updateFormWidth();
     },
     setTimer() {
       this.timer = setInterval(() => { 
@@ -576,6 +578,16 @@ export default {
     clearTimer() {
       clearInterval(this.timer);
       this.timer = null;
+    },
+    toggleSiderHide() {
+      this.updateFormWidth();
+    },
+    updateFormWidth() { //更新表单宽度
+      setTimeout(() => {
+        if (this.$refs.dispatchCommon) {
+          this.$refs.dispatchCommon.updateFormWidth();
+        }
+      }, 300);//动画有延迟
     }
   },
   filter: {},

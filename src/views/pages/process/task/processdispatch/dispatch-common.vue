@@ -247,6 +247,11 @@ export default {
     },
     knowledgeSearch() {
       this.$refs.baseSetting.knowledgeSearch(this.dispatchTitle);
+    },
+    updateFormWidth() {
+      if (this.$refs.formSetting && this.$refs.formSetting.$el && this.$refs.formSetting.$el.__vue__.$refs.formSheet) {
+        this.$refs.formSetting.$el.__vue__.$refs.formSheet.initContainerWidth();
+      }
     }
   },
   computed: {
