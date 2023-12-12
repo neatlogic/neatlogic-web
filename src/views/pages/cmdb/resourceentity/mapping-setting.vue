@@ -68,11 +68,11 @@ export default {
           value: 'rel'
         },
         {
-          text: this.$t('全局属性'),
+          text: this.$t('term.cmdb.globalattr'),
           value: 'globalAttr'
         },
         {
-          text: this.$t('为空'),
+          text: this.$t('term.expression.empty'),
           value: 'empty'
         }
       ],
