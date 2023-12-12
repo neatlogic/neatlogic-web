@@ -66,6 +66,14 @@ export default {
         {
           text: this.$t('page.relation'),
           value: 'rel'
+        },
+        {
+          text: this.$t('全局属性'),
+          value: 'globalAttr'
+        },
+        {
+          text: this.$t('为空'),
+          value: 'empty'
         }
       ],
       validateList: ['required'],
