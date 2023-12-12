@@ -953,5 +953,6 @@
   "viewdata": "View Data",
   "you": "you",
   "commercialcomponent": "This component is exclusively available in the commercial version",
-  "commercialcomponenttip": "This component is exclusively for commercial use and requires additional payment to purchase in order to use."
+  "commercialcomponenttip": "This component is exclusively for commercial use and requires additional payment to purchase in order to use.",
+  "highriskcode": "High risk code"
 }

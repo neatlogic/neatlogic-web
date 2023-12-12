@@ -955,5 +955,6 @@
   "viewdata": "查看数据",
   "you": "您",
   "commercialcomponent": "该组件是商业版专供",
-  "commercialcomponenttip": "该组件是商业版专供，需要额外付费购买才能使用。"
+  "commercialcomponenttip": "该组件是商业版专供，需要额外付费购买才能使用。",
+  "highriskcode": "高危代码"
 }
