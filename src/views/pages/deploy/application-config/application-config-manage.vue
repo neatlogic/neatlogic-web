@@ -3,7 +3,7 @@
     <TsContain :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-if="canEdit" class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.apply') }}</span>
+          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.apply') }}</span>
         </div>
       </template>
       <template v-slot:topRight>

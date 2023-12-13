@@ -12,7 +12,7 @@
     </div>
     <div class="topnav-right-container">
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
-      <TopnavMessage :style="{'margin-right': '15px'}" />
+      <TopnavMessage class="pr-nm" />
       <TopnavUser />
     </div>
   </div>

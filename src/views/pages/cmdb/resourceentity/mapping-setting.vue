@@ -66,6 +66,14 @@ export default {
         {
           text: this.$t('page.relation'),
           value: 'rel'
+        },
+        {
+          text: this.$t('term.cmdb.globalattr'),
+          value: 'globalAttr'
+        },
+        {
+          text: this.$t('term.expression.empty'),
+          value: 'empty'
         }
       ],
       validateList: ['required'],

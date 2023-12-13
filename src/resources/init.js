@@ -33,7 +33,8 @@ Vue.use(VueI18n);
 let i18n = new VueI18n(config);
 Vue.prototype.i18n = i18n;
 export function $t(value, targetObj) {
-  if (Vue.prototype.i18n) { // 初始化报错问题
+  if (Vue.prototype.i18n) {
+    // 初始化报错问题
     return Vue.prototype.i18n.t(value, targetObj);
   }
 }
@@ -79,11 +80,11 @@ export function initRouter(VueRouter, store) {
        * 场景一：正常路由跳转，有完整的to和from
        * 全局维护一个fromPageList,遇到isBack时，找到fromPageList最后一个match的path开始截断。
        * fromPageList同时保存到Localstrage里。每个MODULE一份数据，防止跨模块直接URL访问时出现不可达的fromPage
-       * 
-       * 
+       *
+       *
        * 场景二：刷新页面和直接粘贴URL访问，这是的from的path都是”/“
        * 直接从localstrage调出fromPageList,后续访问使用场景一的处理方式。
-       * 
+       *
        */
       await gettingUserInfo;
       let auth = to.meta ? to.meta.authority : [];
@@ -92,6 +93,7 @@ export function initRouter(VueRouter, store) {
         const isBack = !!to.query.isBack;
         //console.log('b', isBack, fromPageList);
         //处理回退请求，从最后匹配的路径开始截断
+        //debugger;
         if (isBack) {
           const toFullPath = to.fullPath.replace('&isBack=true', '').replace('?isBack=true', '');
           if (fromPageList.length > 0) {
@@ -132,9 +134,11 @@ export function initRouter(VueRouter, store) {
             sessionStorage.setItem('moduleFromPage', JSON.stringify(routerFromPageConfig));
             //重置clearHistory参数
             delete to.meta.clearHistory;
+            delete from.meta.clearHistory; // 解决左侧菜单页面作为详情页面，clearHistory没有清空，导致下榻页面路由数据被清空，返回有问题
           }
         }
         //console.log('a', isBack, fromPageList);
+        //console.log(to, JSON.stringify(fromPageList, null, 2));
         next();
       } else {
         next({ path: '/404', replace: true, query: { des: '无访问权限' } });
@@ -143,4 +147,3 @@ export function initRouter(VueRouter, store) {
   });
   return router;
 }
-

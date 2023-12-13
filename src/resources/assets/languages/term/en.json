@@ -2547,12 +2547,12 @@
     "dependentapp": "Dependent applications"
   },
   "diagram": {
-    "widgetlist": "Component List",
+    "widgetlist": "Element List",
     "widget": "Element",
     "lane": "Swimming lanes",
-    "widgetmanage": "Component Management",
+    "widgetmanage": "Element Management",
     "dragtosort": "Drag to change sorting",
-    "pleaseselectwidget": "Please select at least one component",
+    "pleaseselectwidget": "Please select at least one element",
     "commoncatalog": "Normal directory",
     "cmdbcatalog": "Configuration Item Catalog",
     "catalogitem": "Catalog Entry",
@@ -2582,6 +2582,15 @@
     "allowmove": "Allow movement",
     "nocientityname": "No display name",
     "allowselect": "Allow selection",
-    "releaselock": "Unlock"
+    "releaselock": "Unlock",
+    "privatecatalog": "Personal directory",
+    "publiccatalog": "Public directory",
+    "releaseconfirm": "Are you sure to publish the current architecture diagram?",
+    "edgemode": "line mode",
+    "sourcemarker": "Starting arrow",
+    "targetmarker": "End arrow",
+    "classic": "classical",
+    "block": "block",
+    "cross": "overlapping"
   }
 }
