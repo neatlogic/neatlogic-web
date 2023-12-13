@@ -176,7 +176,8 @@
     "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步",
     "onlyupward": "只看上游",
     "onlydownward": "只看下游",
-    "noextend": "隐藏继承关系"
+    "noextend": "隐藏继承关系",
+    "autoexec": "自动化操作"
   },
   "process": {
     "workordercenter": "工单中心",

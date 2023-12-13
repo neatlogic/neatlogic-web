@@ -7,7 +7,7 @@
           <TsForm ref="form" :item-list="formConfig"></TsForm>
           <div class="edit-condition">
             <div v-for="(ciGroup, index) in groupData.ciGroupList" :key="index">
-              <Divider plain style="font-size:13px">
+              <Divider plain style="font-size: 13px">
                 <a class="tsfont-minus" href="javascript:void(0)" @click="delCi(index)">{{ $t('page.model') + '#' + (index + 1) }}</a>
               </Divider>
               <TsForm ref="subForm" class="mt-md" :item-list="subFormConfig">
@@ -27,7 +27,9 @@
                 <template v-slot:rule>
                   <div>
                     <div>
-                      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup(index)">{{ $t('term.cmdb.rulegroup') }}</a></span>
+                      <span>
+                        <a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup(index)">{{ $t('term.cmdb.rulegroup') }}</a>
+                      </span>
                     </div>
                     <div v-for="(conditionGroup, groupIndex) in ciGroup.rule.conditionGroupList" :key="groupIndex" class="group-border">
                       <div class="group-content bg-op radius-md">
@@ -97,10 +99,10 @@
                             </Col>
                             <Col span="2">
                               <div class="btn-group text-tip">
-                                <span class="tsfont-plus mr-xs" style="cursor:pointer" @click="addCondition(conditionGroup)"></span>
+                                <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                                 <span
                                   v-if="conditionGroup.conditionList.length > 1"
-                                  style="cursor:pointer"
+                                  style="cursor: pointer"
                                   class="tsfont-minus"
                                   @click="delCondition(conditionGroup, conditionIndex)"
                                 ></span>
@@ -154,7 +156,7 @@
               </TsForm>
             </div>
           </div>
-          <Divider v-if="groupData" plain style="font-size:13px">
+          <Divider v-if="groupData" plain style="font-size: 13px">
             <a class="tsfont-plus" href="javascript:void(0)" @click="addCi()">{{ $t('dialog.title.addtarget', { target: $t('page.model') }) }}</a>
           </Divider>
         </div>
@@ -240,9 +242,11 @@ export default {
         type: {
           type: 'radio',
           label: this.$t('page.type'),
+          desc: '只读：查看配置项，可作为自动化中，【查询类】组合工具的执行目标。维护：在只读权限的基础上，增加对配置项进行修改。自动化操作：在只读权限基础上，增加可作为自动化中，【操作类】组合工具的执行目标',
           dataList: [
             { value: 'readonly', text: this.$t('page.readonly') },
-            { value: 'maintain', text: this.$t('page.maintain') }
+            { value: 'maintain', text: this.$t('page.maintain') },
+            { value: 'autoexec', text: this.$t('term.cmdb.autoexec') }
           ],
           validateList: ['required'],
           onChange: value => {
@@ -325,7 +329,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true}).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, { needAction: true }).then(res => {
           relList = res.Return;
         });
         relList.forEach(rel => {
