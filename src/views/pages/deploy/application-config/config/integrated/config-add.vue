@@ -384,7 +384,9 @@ export default {
       this.$api.deploy.integrated.saveConfig(this.getConfigData()).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.$back(); // 保存成功，返回列表页面
+          this.$router.push({
+            path: '/application-config-manage'
+          });
         }
       });
     },
