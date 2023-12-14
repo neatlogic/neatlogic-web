@@ -181,13 +181,13 @@
           <i class="tsfont-check-s text-success"></i>{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(), saveProfile('backuserlist')">{{ $t('term.framework.backtouserlist') }}</Button>
+          <Button size="large" type="primary" @click="backUserManage(); saveProfile('backuserlist')">{{ $t('term.framework.backtouserlist') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="continueCreate(), saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
+          <Button size="large" @click="continueCreate(); saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentUser(), saveProfile('edituser')">{{ $t('dialog.title.edittarget', {target: $t('page.user')}) }}</Button>
+          <Button size="large" @click="editCrrentUser(); saveProfile('edituser')">{{ $t('dialog.title.edittarget', {target: $t('page.user')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
@@ -550,7 +550,7 @@ export default {
                 switch (value) {
                   //返回用户列表
                   case 'backuserlist':
-                    this.$back();
+                    this.backUserManage();
                     break;
                   //编辑用户
                   case 'edituser':
@@ -863,6 +863,11 @@ export default {
           this.userToken = res.Return;
           this.$Message.success(this.$t('message.executesuccess'));
         }
+      });
+    },
+    backUserManage() {
+      this.$router.push({
+        path: '/user-manage'
       });
     }
   },

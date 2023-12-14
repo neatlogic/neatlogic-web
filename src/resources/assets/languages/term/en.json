@@ -176,7 +176,8 @@
     "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize",
     "onlyupward": "Just look upstream",
     "onlydownward": "Just look downstream",
-    "noextend": "Hide Extend Relationships"
+    "noextend": "Hide Extend Relationships",
+    "autoexec": "Automated operations"
   },
   "process": {
     "workordercenter": "Work Center",
