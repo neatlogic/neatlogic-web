@@ -6,7 +6,7 @@
       :rightWidth="300"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
@@ -688,7 +688,9 @@ export default {
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
             vnode.isShow = false;
-            this.$back('/statement-manage');
+            this.$router.push({
+              path: '/statement-manage'
+            });
           });
         }
       });

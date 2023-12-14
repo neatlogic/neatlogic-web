@@ -2,7 +2,7 @@
   <div class="job-detail border-radius">
     <TsContain :siderWidth="258" :enableCollapse="true">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -129,10 +129,6 @@ export default {
       isShowResourceLockDialog: false, //资源锁弹框默认不弹框
       idList: [],
       isReady: true, //刷新后用于重置组件，让组件可以重新开始所有刷新
-      prevPath: {
-        router: '/job-manage',
-        name: this.$t('router.autoexec.jobmanage')
-      },
       tabsValue: 'jobdetail',
       selectStepId: null,
       isShowJobParam: false, //显示参数弹框
