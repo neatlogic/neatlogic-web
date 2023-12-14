@@ -54,7 +54,7 @@
                                   "
                                 >
                                   <template v-slot:option="{ item }">
-                                    <span class="text-grey">{{ item.type == 'attr' ? '属性' : '关系' }}·</span>
+                                    <span class="text-grey">{{ item.typeText }}·</span>
                                     <span>{{ item.label }}</span>
                                     <span class="text-grey">({{ item.name }})</span>
                                   </template>
@@ -78,15 +78,24 @@
                               </div>
                             </Col>
                             <Col v-if="isNeedAttrValue(conItem)" span="8">
+                              <TsFormSelect
+                                v-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
+                                v-bind="getGlobalSelectConfig(conItem.id)"
+                                :value="conItem.valueList"
+                                transfer
+                                @change="val=>{
+                                  setAttrValue(conItem, val);
+                                }"
+                              ></TsFormSelect>
                               <AttrSearcher
-                                v-if="conItem.type == 'attr' && getAttrById(conItem.id)"
+                                v-else-if="conItem.type === 'attr' && getAttrById(conItem.id)"
                                 ref="attrHandler"
                                 :valueList="conItem.valueList"
                                 :attrData="getAttrById(conItem.id)"
                                 @setData="setAttrValue(conItem, arguments[0])"
                               ></AttrSearcher>
                               <TsFormSelect
-                                v-if="conItem.type == 'relfrom' || conItem.type == 'relto'"
+                                v-if="conItem.type === 'relfrom' || conItem.type === 'relto'"
                                 v-bind="getRelSelectConfig(conItem.id)"
                                 :value="conItem.valueList"
                                 :transfer="true"
@@ -186,6 +195,7 @@ export default {
       ciMap: {},
       attrMap: {},
       relMap: {},
+      globalMap: {},
       joinTypeList: [
         {
           text: this.$t('page.and'),
@@ -312,6 +322,36 @@ export default {
         this.$set(this.groupData, 'ciGroupList', []);
       }
     },
+    async getGlobalAttrByCiId(ciId) {
+      let globalAttrList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, { isActive: 1 }).then(res => {
+        globalAttrList = res.Return;
+      });
+      globalAttrList.forEach(attr => {
+        attr.expressionList = [
+          {
+            text: this.$t('term.expression.notlike'),
+            value: 'notlike'
+          },
+          {
+            text: this.$t('term.expression.like'),
+            value: 'like'
+          },
+          {
+            text: this.$t('term.expression.empty'),
+            value: 'is-null'
+          },
+          {
+            text: this.$t('term.expression.notempty'),
+            value: 'is-not-null'
+          }
+        ];
+        if (!this.globalMap['global_' + attr.id]) {
+          this.$set(this.globalMap, 'global_' + attr.id, attr);
+        }
+      });
+      return globalAttrList;
+    },
     async getAttrByCiId(ciId) {
       if (ciId) {
         let attrList;
@@ -345,6 +385,8 @@ export default {
         return this.attrMap[condition.id].expressionList;
       } else if ((condition.type == 'relfrom' || condition.type == 'relto') && this.relMap[condition.id]) {
         return this.relMap[condition.id].expressionList;
+      } else if (condition.type === 'global' && this.globalMap[condition.id]) {
+        return this.globalMap[condition.id].expressionList;
       }
       return [];
     },
@@ -370,13 +412,31 @@ export default {
         const elementList = [];
         const attrList = await this.getAttrByCiId(ciId);
         const relList = await this.getRelByCiId(ciId);
+        const globalAttrList = await this.getGlobalAttrByCiId(ciId);
+        globalAttrList.forEach(attr => {
+          elementList.push({
+            typeText: this.$t('term.cmdb.globalattr'),
+            type: 'global',
+            id: 'global_' + attr.id,
+            name: attr.name,
+            label: attr.label,
+            expressionList: attr.expressionList
+          });
+        });
         attrList.forEach(attr => {
-          elementList.push({ type: 'attr', id: 'attr_' + attr.id, name: attr.name, label: attr.label, expressionList: attr.expressionList });
+          elementList.push({
+            typeText: this.$t('page.attribute'),
+            type: 'attr',
+            id: 'attr_' + attr.id,
+            name: attr.name,
+            label: attr.label,
+            expressionList: attr.expressionList
+          });
         });
         relList.forEach(rel => {
           const name = rel.direction == 'from' ? rel.toName : rel.fromName;
           const label = rel.direction == 'from' ? rel.toLabel : rel.fromLabel;
-          elementList.push({ type: 'rel' + rel.direction, id: 'rel' + rel.direction + '_' + rel.id, name: name, label: label, expressionList: rel.expressionList });
+          elementList.push({ typeText: this.$t('page.relation'), type: 'rel' + rel.direction, id: 'rel' + rel.direction + '_' + rel.id, name: name, label: label, expressionList: rel.expressionList });
         });
         this.$set(this.ciMap, 'ci' + ciId, elementList);
       }
@@ -499,6 +559,11 @@ export default {
         return this.ciMap['ci' + ciId];
       };
     },
+    getGlobalAttrById() {
+      return attrId => {
+        return this.globalMap[attrId];
+      };
+    },
     getAttrById() {
       return attrId => {
         return this.attrMap[attrId];
@@ -509,8 +574,22 @@ export default {
         return this.relMap[relId];
       };
     },
+    getGlobalSelectConfig() {
+      return (id) => {
+        const globalAttr = this.getGlobalAttrById(id);
+        if (globalAttr) {
+          return {
+            border: 'border',
+            multiple: true,
+            dataList: globalAttr.itemList,
+            textName: 'value',
+            valueName: 'id'
+          };
+        }
+      };
+    },
     getRelSelectConfig() {
-      return function(id) {
+      return (id) => {
         const rel = this.getRelById(id);
         if (rel) {
           return {
