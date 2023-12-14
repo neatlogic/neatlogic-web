@@ -3,7 +3,7 @@
     <loading :loadingShow="knowledgeLoading" type="fix"></loading>
     <TsContain v-if="knowledgeConfing">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(backPath)">{{ $getFromPage(backPageName) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div>
@@ -127,8 +127,6 @@ export default {
         },
         method: 'post'
       },
-      backPath: '', // 返回页面的路径
-      backPageName: '', // 返回页面名称
       knowledgeLoading: true,
       knowledgeDocumentId: null,
       knowledgeDocumentVersionId: null,
@@ -151,16 +149,6 @@ export default {
     this.downurl.params.knowledgeDocumentVersionId = this.knowledgeDocumentVersionId;
     if (this.$route.query.status) {
       this.status = this.$route.query.status;
-    }
-    if (this.$route.query.isBack) {
-      // 处理从第三层详情页面，返回页面刷新，拿不到上一层返回路径问题
-      let routerFromPageConfig = sessionStorage.getItem('routerFromPageConfig') ? JSON.parse(sessionStorage.getItem('routerFromPageConfig')) : {};
-      routerFromPageConfig?.[MODULEID]?.['knowledge-detail']?.forEach((item) => {
-        if (item.name == 'knowledge-overview') {
-          this.backPath = item.fullPath;
-          this.backPageName = item.title;
-        }
-      });
     }
     this.initData();
   },

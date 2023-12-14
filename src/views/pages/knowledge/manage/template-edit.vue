@@ -2,7 +2,7 @@
   <div class="template-edit">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/template-manage')">{{ $getFromPage($t('term.report.templatemanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
