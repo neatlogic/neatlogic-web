@@ -71,7 +71,8 @@ export default {
           name: 'name',
           maxlength: 50,
           validateList: ['required', 'char'],
-          label: this.$t('page.uniquekey')
+          label: this.$t('page.uniquekey'),
+          desc: this.$t('message.cmdb.noedit')
         },
         {
           type: 'text',

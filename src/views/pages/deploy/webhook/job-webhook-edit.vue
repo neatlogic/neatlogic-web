@@ -666,7 +666,9 @@ export default {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.$addWatchData(param);
-          this.$back();
+          this.$router.push({
+            path: '/job-webhook-manage'
+          });
         }
       });
     },

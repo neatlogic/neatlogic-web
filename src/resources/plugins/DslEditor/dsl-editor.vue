@@ -115,29 +115,33 @@ export default {
       }
     },
     createAst(input) {
-      try {
-        const inputStream = new antlr4.InputStream(input);
-        const lexer = new CmdbDSLLexer(inputStream);
-        const tokenStream = new antlr4.CommonTokenStream(lexer);
-        const parser = new CmdbDSLParser(tokenStream);
-        // 添加自定义的ErrorListener
-        const errorListener = new ErrorListener();
-        parser.removeErrorListeners(); // 移除默认的ErrorListener
-        parser.addErrorListener(errorListener);
-        // 以你的起始规则作为开始
-        const parseTree = parser.expressions();
-        const expressionList = [];
-        const attrList = [];
-        const visitor = new CmdbDSLVisitor(expressionList, attrList);
-        visitor.visit(parseTree);
-        this.expressionData = visitor.getRootExpression() || null;
-        if (this.expressionData) {
-          this.valueLocal = this.rewriteValue(this.expressionData);
-          this.$emit('input', this.valueLocal);
-        }
-      } catch (e) {
-        this.expressionData = null;
+      if (input) {
+        try {
+          const inputStream = new antlr4.InputStream(input);
+          const lexer = new CmdbDSLLexer(inputStream);
+          const tokenStream = new antlr4.CommonTokenStream(lexer);
+          const parser = new CmdbDSLParser(tokenStream);
+          // 添加自定义的ErrorListener
+          const errorListener = new ErrorListener();
+          parser.removeErrorListeners(); // 移除默认的ErrorListener
+          parser.addErrorListener(errorListener);
+          // 以你的起始规则作为开始
+          const parseTree = parser.expressions();
+          const expressionList = [];
+          const attrList = [];
+          const visitor = new CmdbDSLVisitor(expressionList, attrList);
+          visitor.visit(parseTree);
+          this.expressionData = visitor.getRootExpression() || null;
+          if (this.expressionData) {
+            this.valueLocal = this.rewriteValue(this.expressionData);
+            this.$emit('input', this.valueLocal);
+          }
+        } catch (e) {
+          this.expressionData = null;
         //console.error('解释异常', e);
+        }
+      } else {
+        this.$emit('input', '');
       }
     },
     isValid(expressionData) {

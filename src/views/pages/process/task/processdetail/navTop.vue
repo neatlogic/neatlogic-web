@@ -121,19 +121,6 @@ export default {
         this.$refs.titleInput && this.$refs.titleInput.focus();
       });
     },
-    toPrevpath() {
-      let uuid = sessionStorage.getItem('processTaskUuid');
-      let url = '';
-      if (uuid) {
-        url = '/task-overview-' + uuid; 
-      } else {
-        let allClassifyData = this.$store.state.leftMenu.workcenterList;
-        if (allClassifyData && allClassifyData.length) {
-          url = '/task-overview-' + allClassifyData[0].uuid;
-        }
-      }
-      this.$backTo(url);
-    },
     isTslayout() {
       this.$emit('isTslayout');
     },

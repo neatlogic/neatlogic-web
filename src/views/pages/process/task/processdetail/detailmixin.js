@@ -340,15 +340,6 @@ export default {
         this.medium = 'medium';
       }
     },
-    toPrevpath() {
-      if (!sessionStorage.getItem('taskdetailPrev')) {
-        this.$router.push({
-          path: this.prevPath.router
-        });        
-      } else {
-        this.$router.back();
-      }
-    },
     toTask(taskId, taskStepId) {
       //刷新
       this.$router.push({
