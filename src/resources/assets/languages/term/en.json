@@ -2592,6 +2592,8 @@
     "targetmarker": "End arrow",
     "classic": "classical",
     "block": "block",
-    "cross": "overlapping"
+    "cross": "overlapping",
+    "larger": "enlarge",
+    "smaller": "narrow"
   }
 }

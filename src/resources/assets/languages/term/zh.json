@@ -2591,6 +2591,8 @@
     "targetmarker": "终点箭头",
     "classic": "经典",
     "block": "块",
-    "cross": "交叉"
+    "cross": "交叉",
+    "larger": "放大",
+    "smaller": "缩小"
   }
 }
