@@ -180,7 +180,8 @@
     "cidirectory": "Model Catalog",
     "directoryname": "Catalog Name",
     "noaddcidirectory": "No model directory added,",
-    "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it"
+    "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
+    "autoexec": "Automated operations"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2595,6 +2596,8 @@
     "targetmarker": "End arrow",
     "classic": "classical",
     "block": "block",
-    "cross": "overlapping"
+    "cross": "overlapping",
+    "larger": "enlarge",
+    "smaller": "narrow"
   }
 }

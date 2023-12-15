@@ -2,7 +2,7 @@
   <div class="reportinstance-show-wrap">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/reportinstance-manage')">{{ $getFromPage($t('term.report.report')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ reportInstanceData.name }}</span>

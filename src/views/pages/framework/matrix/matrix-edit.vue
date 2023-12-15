@@ -3,7 +3,7 @@
     <Loading :loading-show="loadingShow" type="fix"></Loading>
     <TsContain border="none">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$backTo('/matrix-overview')">{{ $getFromPage($t('router.framework.matrixmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <div slot="topLeft">
         <navTopLeft

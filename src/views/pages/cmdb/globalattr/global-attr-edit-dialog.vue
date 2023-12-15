@@ -70,8 +70,10 @@ export default {
           type: 'text',
           name: 'name',
           maxlength: 50,
+          readonly: !!this.id,
           validateList: ['required', 'char'],
-          label: this.$t('page.uniquekey')
+          label: this.$t('page.uniquekey'),
+          desc: this.$t('message.cmdb.noedit')
         },
         {
           type: 'text',

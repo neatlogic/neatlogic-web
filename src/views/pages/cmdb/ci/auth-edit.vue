@@ -28,6 +28,7 @@ export default {
     var _this = this;
     return {
       authList: [],
+      ciData: null,
       dialogConfig: {
         type: 'modal',
         title: this.$t('dialog.title.authsetting'),
@@ -128,10 +129,13 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getCiById();
+    this.getAuthData();
+  },
   beforeMount() {},
   mounted() {
-    this.getAuthData();
+   
   },
   beforeUpdate() {},
   updated() {},
@@ -155,6 +159,13 @@ export default {
             authUuid: element.split('#')[1],
             action: action
           });
+        });
+      }
+    },
+    getCiById() {
+      if (this.ciId) {
+        this.$api.cmdb.ci.getCiById(this.ciId).then(res => {
+          this.ciData = res.Return;
         });
       }
     },
