@@ -8,7 +8,8 @@
           <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.type') }}</div>
           <div class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
           <div class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
-          <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('term.cmdb.typesetting') }}</div>
+          <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('term.cmdb.cilevel') }}</div>
+          <div class="action-item tsfont-edit" @click="editCiDirectory()">{{ $t('term.cmdb.cidirectory') }}</div>
           <div class="action-item">
             <TsFormSwitch
               v-model="isCiTopoShow"
@@ -120,22 +121,24 @@
     <CiEdit v-if="isCiShow" :ciTypeId="newCiTypeId" @close="closeCiDialog"></CiEdit>
     <CiImportDialog v-if="isImportCiShow" @close="closeImportCiDialog"></CiImportDialog>
     <CiExportDialog v-if="isExportCiShow" @close="isExportCiShow = false"></CiExportDialog>
+    <CiDirectoryDialog v-if="isShowCiDirectory" @close="isShowCiDirectory = false"></CiDirectoryDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
+    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     CiTypeEdit: resolve => require(['../citype/citype-edit.vue'], resolve),
     CiTypeManage: resolve => require(['../citype/citype-manage.vue'], resolve),
     CiEdit: resolve => require(['./ci-edit.vue'], resolve),
     CiTopo: resolve => require(['./ci-topo.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     CiImportDialog: resolve => require(['./ci-import-dialog.vue'], resolve),
     CiExportDialog: resolve => require(['./ci-export-dialog.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    CiDirectoryDialog: resolve => require(['./ci-directory-dialog'], resolve)
   },
   props: {},
   data() {
@@ -199,6 +202,7 @@ export default {
       isCiTopoShow: false, //拓扑开关
       ciTypeList: [],
       isLoading: false,
+      isShowCiDirectory: false,
       ciTypeConfig: {
         search: true,
         valueName: 'id',
@@ -228,6 +232,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editCiDirectory() {
+      this.isShowCiDirectory = true;
+    },
     updateSort(sort) {
       this.sortOrder = [];
       this.sortOrder.push(sort);

@@ -19,6 +19,7 @@ import dataInit from './dataInit/index.js'; // 资源中心/数据初始化
 import globalsearch from './globalsearch/globalsearch.js';
 import resourceentity from './resource/resourceentity/resourceentity.js';
 import graph from './graph/graph.js';
+import cicatalog from './ci/cicatalog.js';
 export default {
   ci,
   validator,
@@ -39,5 +40,6 @@ export default {
   dataInit,
   globalsearch,
   resourceentity,
-  graph
+  graph,
+  cicatalog
 };

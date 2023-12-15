@@ -87,7 +87,6 @@
     "uncommittransaction": "Uncommitted transaction",
     "radius": "Rounded corners",
     "transaction": "Transaction",
-    "typesetting": "Type Setting",
     "importci": "Import model",
     "exportci": "Export model",
     "extendto": "Inherited from",
@@ -176,7 +175,12 @@
     "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize",
     "onlyupward": "Just look upstream",
     "onlydownward": "Just look downstream",
-    "noextend": "Hide Extend Relationships"
+    "noextend": "Hide Extend Relationships",
+    "cilevel": "Model hierarchy",
+    "cidirectory": "Model Catalog",
+    "directoryname": "Catalog Name",
+    "noaddcidirectory": "No model directory added,",
+    "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it"
   },
   "process": {
     "workordercenter": "Work Center",

@@ -7,28 +7,48 @@
         border="bottom"
         :search="true"
         :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
+        @change="searchTreeData"
       ></TsFormInput>
     </div>
+    <div class="mb-nm">
+      <RadioGroup
+        v-model="ciName"
+        class="col-3"
+      >
+        <Radio label="ciDirectory">{{ $t('term.cmdb.cidirectory') }}</Radio>
+        <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
+      </RadioGroup>
+    </div>
     <div style="height:calc(100vh - 205px);overflow-y:auto">
-      <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
-        <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
-        <div v-if="item.ciList.length > 0">
-          <ul>
-            <li
-              v-for="ci in item.ciList"
-              :id="'ci-' + ci.id"
-              :key="ci.id"
-              class="text-default overflow treeList radius-sm pl-sm pr-sm"
-              :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
-              :title="ci.label + '(' + ci.name + ')'"
-              @click="click(item, ci)"
-            >
-              <span>{{ ci.label }}</span>
-              <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
-            </li>
-          </ul>
+      <template v-if="ciName == 'ciDirectory'">
+        <TsZtree
+          :nodes="treeList"
+          :onClick="clickTreeNode"
+          :value="treeId"
+        ></TsZtree>
+      </template>
+      <template v-else-if="ciName == 'ciLevel'">
+        <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
+          <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
+          <div v-if="item.ciList.length > 0">
+            <ul>
+              <li
+                v-for="ci in item.ciList"
+                :id="'ci-' + ci.id"
+                :key="ci.id"
+                class="text-default overflow treeList radius-sm pl-sm pr-sm"
+                :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
+                :title="ci.label + '(' + ci.name + ')'"
+                @click="click(item, ci)"
+              >
+                <span>{{ ci.label }}</span>
+                <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </template>
+     
     </div>
   </div>
 </template>
@@ -36,7 +56,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve)
   },
   filters: {},
   props: {
@@ -52,13 +73,17 @@ export default {
   data() {
     return {
       ciTypeList: [],
-      keyword: ''
+      keyword: '',
+      treeList: [],
+      ciName: 'ciDirectory',
+      treeId: ''
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   async mounted() {
+    await this.searchTreeData();
     if (this.tree.length === 0) {
       await this.searchCiTypeCi();
     } else {
@@ -77,6 +102,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    clickTreeNode(tree, node) {
+      let {type = ''} = node || {};
+      if (type == 'ci') {
+        this.click('', node);
+      }
+    },
+    searchTreeData() {
+      return this.$api.cmdb.cicatalog.searchCiCatalogTree({keyword: this.keyword}).then(res => {
+        if (res.Status == 'OK') {
+          this.treeList = res.Return || [];
+        }
+      });
+    },
+  
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';
