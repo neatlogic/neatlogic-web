@@ -29,7 +29,7 @@
         </div>
       </template>
     </TsDialog>
-    <DirectoryEditDialog v-if="isShowDirectoryEditDialog" :directoryData="directoryData" @close="closeDirectoryEditDialog"></DirectoryEditDialog>
+    <CatalogEditDialog v-if="isShowCatalogEditDialog" :catalogData="catalogData" @close="closeCatalogEditDialog"></CatalogEditDialog>
   </div>
 </template>
 <script>
@@ -37,15 +37,15 @@ export default {
   name: '',
   components: {
     TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    DirectoryEditDialog: resolve => require(['./directory-edit-dialog'], resolve)
+    CatalogEditDialog: resolve => require(['./catalog-edit-dialog'], resolve)
   },
   props: {},
   data() {
     return {
-      isShowDirectoryEditDialog: false,
+      isShowCatalogEditDialog: false,
       loadingShow: true,
       treeId: '',
-      directoryData: {
+      catalogData: {
         parentId: '',
         id: ''
       },
@@ -54,12 +54,6 @@ export default {
         isShow: true,
         hasFooter: false,
         type: 'slider'
-      },
-      formSelectSetting: {
-        textName: 'name',
-        valueName: 'id',
-        url: '/api/rest/cmdb/cicatalog/listtree',
-        search: true
       },
       nodeList: [],
       hoverDomList: [
@@ -81,7 +75,7 @@ export default {
           },
           clickFn: (treeNode) => {
             if (treeNode && !treeNode.childrenCount) {
-              this.deleteNode(treeNode);
+              this.deleteTreeNode(treeNode);
             }
           }
         }
@@ -105,9 +99,7 @@ export default {
       this.loadingShow = true;
       this.$api.cmdb.cicatalog.getCiCatalogTreeList().then(res => {
         if (res.Status == 'OK') {
-          let dataList = res.Return || [];
-          this.nodeList = dataList;
-          this.formSelectSetting.dataList = this.$utils.deepClone(dataList);
+          this.nodeList = res.Return || [];
           this.loadingShow = false;
         }
       });
@@ -117,16 +109,16 @@ export default {
       let {id = '', parentId = null} = node || {};
       if (id && !this.$utils.isSame(this.treeId, id)) {
         this.treeId = id;
-        this.$set(this.directoryData, 'id', id);
-        this.$set(this.directoryData, 'parentId', parentId);
-        this.isShowDirectoryEditDialog = true;
+        this.$set(this.catalogData, 'id', id);
+        this.$set(this.catalogData, 'parentId', parentId);
+        this.isShowCatalogEditDialog = true;
       }
     },
     //添加根目录按钮
     addRoot() {
-      this.directoryData.parentId = '0';
-      this.directoryData.id = '';
-      this.isShowDirectoryEditDialog = true;
+      this.catalogData.parentId = '0';
+      this.catalogData.id = '';
+      this.isShowCatalogEditDialog = true;
     },
     onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
       let treeNode = treeNodes[0];
@@ -144,7 +136,7 @@ export default {
         });
       }
     },
-    deleteNode(node) {
+    deleteTreeNode(node) {
       let {name = '', id = null} = node || {};
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
@@ -163,12 +155,12 @@ export default {
     },
     //添加子目录
     addSubDirectory(treeNode) {
-      this.directoryData.parentId = treeNode.id;
-      this.directoryData.id = '';
-      this.isShowDirectoryEditDialog = true;
+      this.catalogData.parentId = treeNode.id;
+      this.catalogData.id = '';
+      this.isShowCatalogEditDialog = true;
     },
-    closeDirectoryEditDialog(id) {
-      this.isShowDirectoryEditDialog = false;
+    closeCatalogEditDialog(id) {
+      this.isShowCatalogEditDialog = false;
       if (id) {
         this.treeId = id;
         this.getTreeList();

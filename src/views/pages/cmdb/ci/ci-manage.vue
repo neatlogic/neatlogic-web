@@ -9,7 +9,7 @@
           <div class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
           <div class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
           <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('term.cmdb.cilevel') }}</div>
-          <div class="action-item tsfont-edit" @click="editCiDirectory()">{{ $t('term.cmdb.cidirectory') }}</div>
+          <div class="action-item tsfont-edit" @click="editCiCatalog()">{{ $t('term.cmdb.cidirectory') }}</div>
           <div class="action-item">
             <TsFormSwitch
               v-model="isCiTopoShow"
@@ -121,7 +121,7 @@
     <CiEdit v-if="isCiShow" :ciTypeId="newCiTypeId" @close="closeCiDialog"></CiEdit>
     <CiImportDialog v-if="isImportCiShow" @close="closeImportCiDialog"></CiImportDialog>
     <CiExportDialog v-if="isExportCiShow" @close="isExportCiShow = false"></CiExportDialog>
-    <CiDirectoryDialog v-if="isShowCiDirectory" @close="isShowCiDirectory = false"></CiDirectoryDialog>
+    <CiCatalogDialog v-if="isShowCiCatalog" @close="isShowCiCatalog = false"></CiCatalogDialog>
   </div>
 </template>
 <script>
@@ -138,7 +138,7 @@ export default {
     CiTopo: resolve => require(['./ci-topo.vue'], resolve),
     CiImportDialog: resolve => require(['./ci-import-dialog.vue'], resolve),
     CiExportDialog: resolve => require(['./ci-export-dialog.vue'], resolve),
-    CiDirectoryDialog: resolve => require(['./ci-directory-dialog'], resolve)
+    CiCatalogDialog: resolve => require(['./ci-catalog-dialog'], resolve)
   },
   props: {},
   data() {
@@ -202,7 +202,7 @@ export default {
       isCiTopoShow: false, //拓扑开关
       ciTypeList: [],
       isLoading: false,
-      isShowCiDirectory: false,
+      isShowCiCatalog: false,
       ciTypeConfig: {
         search: true,
         valueName: 'id',
@@ -232,8 +232,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    editCiDirectory() {
-      this.isShowCiDirectory = true;
+    editCiCatalog() {
+      this.isShowCiCatalog = true;
     },
     updateSort(sort) {
       this.sortOrder = [];

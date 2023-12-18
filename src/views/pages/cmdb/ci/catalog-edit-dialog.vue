@@ -24,7 +24,7 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
   },
   props: {
-    directoryData: {
+    catalogData: {
       type: Object,
       default: () => {
         return {};
@@ -34,20 +34,20 @@ export default {
   data() {
     return {
       formValue: {
-        id: this.directoryData.id,
-        parentId: this.directoryData.parentId,
+        id: this.catalogData.id,
+        parentId: this.catalogData.parentId,
         name: ''
       },
       dialogSetting: {
         isShow: true,
-        title: this.directoryData?.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.cmdb.directoryname')}) : this.$t('dialog.title.addtarget', {'target': this.$t('term.cmdb.directoryname')})
+        title: this.catalogData?.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.cmdb.directoryname')}) : this.$t('dialog.title.addtarget', {'target': this.$t('term.cmdb.directoryname')})
       },
       formConfig: {
         name: {
           type: 'text',
           label: this.$t('page.name'),
           maxlength: 50,
-          validateList: ['required', {name: 'searchUrl', url: '/api/rest/cmdb/cicatalog/save', key: 'name', params: {id: this.directoryData.id, parentId: this.directoryData.parentId}}]
+          validateList: ['required', {name: 'searchUrl', url: '/api/rest/cmdb/cicatalog/save', key: 'name', params: {id: this.catalogData.id, parentId: this.catalogData.parentId}}]
         }
       }
     };
@@ -78,11 +78,11 @@ export default {
       });
     },
     getCicatalog() {
-      if (this.$utils.isEmpty(this.directoryData) || (!this.$utils.isEmpty(this.directoryData) && this.$utils.isEmpty(this.directoryData.id))) {
+      if (this.$utils.isEmpty(this.catalogData) || (!this.$utils.isEmpty(this.catalogData) && this.$utils.isEmpty(this.catalogData.id))) {
         return false;
       }
       let params = {
-        id: this.directoryData.id
+        id: this.catalogData.id
       };
       this.$api.cmdb.cicatalog.getCiCatalog(params).then(res => {
         if (res.Status == 'OK') {
