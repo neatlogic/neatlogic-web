@@ -2,7 +2,7 @@
   <div class="taskdetail-autoexec">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
-      :leftWidth="260"
+      :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
     >
@@ -176,7 +176,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:left>
+      <template v-slot:sider>
         <slot></slot>
       </template>
       <template v-slot:content>

@@ -195,7 +195,6 @@ export default {
       attrRuleList: [],
       relData: { theadList: [] },
       isLoading: true,
-      leftWidth: 200,
       sessionName: 'civiewbox'
     };
   },

@@ -37,7 +37,7 @@
       :style="mode == 'dialog' ? 'height:100%;' : ''"
       @scroll.stop="scroll"
     >
-      <slot v-if="!$slots.sider && !$slots.left && !$slots.right" name="content"></slot>
+      <slot v-if="!$slots.sider && !$slots.right" name="content"></slot>
       <Layout v-else-if="!isDrag" :style="{ height: '100%' }">
         <Sider
           v-if="$slots.sider"
@@ -55,25 +55,13 @@
             <slot name="sider"></slot>
           </div>
         </Sider>
-        <Sider
-          v-if="$slots.left"
-          v-model="leftSiderHide"
-          :width="$slots.left && leftWidth ? leftWidth : 200"
-          collapsible
-          :collapsed-width="0"
-          hide-trigger
-        >
-          <div class="tscontain-left" style="height: 100%;overflow: auto;">
-            <slot name="left"></slot>
-          </div>
-        </Sider>
         <Content>
           <slot name="content"></slot>
         </Content>
         <Sider
           v-if="$slots.right"
           v-model="rightSiderHide"
-          :width="$slots.right && rightWidth ? rightWidth : 0"
+          :width="rightSiderHide ? 0 : $slots.right && rightWidth ? rightWidth : 0"
           collapsible
           :collapsed-width="0"
           hide-trigger
@@ -99,11 +87,11 @@
         @on-move-end="moveEnd"
       >
         <template slot="left">
-          <slot v-if="siderPosition == 'left' && $slots.left" name="left"></slot>
-          <Layout v-else-if="siderPosition == 'right' && $slots.left" :style="{ height: '100%' }">
-            <Sider :width="$slots.left && leftWidth ? leftWidth : 200">
+          <slot v-if="siderPosition == 'left' && $slots.sider" name="sider"></slot>
+          <Layout v-else-if="siderPosition == 'right' && $slots.sider" :style="{ height: '100%' }">
+            <Sider :width="$slots.sider && siderWidth ? siderWidth : 200">
               <div class="radius-lg tscontain-left" style="height: 100%;overflow: auto;">
-                <slot name="left"></slot>
+                <slot name="sider"></slot>
               </div>
             </Sider>
             <Content>
@@ -141,6 +129,7 @@ export default {
     enableDivider: { type: Boolean, default: false }, //slot为top时可选选择是否展示分隔线
     sessionName: String, //localStorage 记录siderHide转态，下次进来时使用存储的转态来判断是否展开sider
     isSiderHide: { type: Boolean, default: false }, //是否隐藏sider内容
+    isRightSiderHide: {type: Boolean, default: false}, // 是否隐藏右侧sider内容
     gutter: { type: Number, default: 16 }, //栅格之间的距离
     border: { type: String, default: 'none' }, //左右布局之间是否有边框分割
     navHeaderBottom: { type: String, default: 'none' }, //头部布局下面是否有底部边框分割
@@ -151,17 +140,14 @@ export default {
     isBackgroung: { type: Boolean, default: true }, // 背景色默认为灰色，如果传的话就白色
     clearStyle: { type: Boolean, default: false }, //是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）
     rightWidth: { type: Number, default: 200 },
-    leftWidth: { type: Number, default: 200 },
     mode: { type: String, default: 'window' }, //显示模式，有window和dialog两种，如果是dialog模式，高度强制变成100%
     rightBtn: { type: Boolean, default: false } //右侧收起展开按钮
   },
   data() {
-    let _this = this;
     return {
       dragWidth: null,
-      siderHide: _this.isSiderHide,
-      leftSiderHide: !!(_this.isSiderHide && _this.siderPosition == 'left'),
-      rightSiderHide: !!(_this.isSiderHide && _this.siderPosition == 'right')
+      siderHide: this.isSiderHide,
+      rightSiderHide: this.isRightSiderHide ? this.isRightSiderHide : !!(this.isRightSiderHide && this.siderPosition == 'right')
     };
   },
   mounted() {
@@ -235,7 +221,7 @@ export default {
         let width = this.dragWidth;
         value = parseFloat(value) || this.dragWidth;
         let clientWidth = this.$refs.contain.clientWidth;
-        let siderWidth = this.$slots.sider ? this.siderWidth : this.siderPosition == 'left' ? this.leftWidth : this.rightWidth;
+        let siderWidth = this.$slots.sider ? this.siderWidth : this.siderPosition == 'left' ? this.siderWidth : this.rightWidth;
         this.maxSplit = (siderWidth * 2) / clientWidth;
         this.minSplit = siderWidth / clientWidth;
         !value && (width = this.minSplit);
@@ -286,6 +272,7 @@ export default {
     },
     rightSiderToggle() {
       //右侧展示隐藏
+      this.rightSiderHide = !this.rightSiderHide;
       this.$emit('rightSiderToggle');
     }
   },
@@ -365,9 +352,6 @@ export default {
     isSiderHide: {
       handler(val) {
         this.siderHide = val;
-        if (this.siderPosition == 'left') {
-          this.leftSiderHide = val;
-        }
         if (this.siderPosition == 'right') {
           this.rightSiderHide = val;
         }
