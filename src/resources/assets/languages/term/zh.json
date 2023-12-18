@@ -87,7 +87,6 @@
     "uncommittransaction": "未提交事务",
     "radius": "圆角",
     "transaction": "事务",
-    "typesetting": "类型设置",
     "importci": "导入模型",
     "exportci": "导出模型",
     "extendto": "继承自",
@@ -177,8 +176,13 @@
     "onlyupward": "只看上游",
     "onlydownward": "只看下游",
     "noextend": "隐藏继承关系",
-    "autoexec": "自动化操作",
-    "nochange": "没有任何修改"
+    "nochange": "没有任何修改",
+    "cilevel": "模型层级",
+    "cidirectory": "模型目录",
+    "directoryname": "目录名称",
+    "noaddcidirectory": "未添加模型目录，",
+    "currentcatalogcitenodeletedescrition": "当前目录节点已被引用，请解除引用后删除",
+    "autoexec": "自动化操作"
   },
   "process": {
     "workordercenter": "工单中心",

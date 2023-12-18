@@ -63,13 +63,13 @@ export default {
       if (setting.dataSource == 'matrix') {
         let param = { matrixUuid: setting.matrixUuid };
         param.keywordColumn = setting.mapping.text;
-        param.valueField = this.setting.mapping.value;
-        param.textField = this.setting.mapping.text;
+        param.valueField = setting.mapping.value;
+        param.textField = setting.mapping.text;
         json.rootName = 'dataList';
         json = this.defaultSelfJson;
         json.params = param;
         json.dynamicUrl = json.defaultUrl;
-        json.showName = 'html';
+        // json.showName = 'html';
         json.readonlyClass = setting.readonlyClass;
         json.sperateText = setting.sperateText;
       } else {
