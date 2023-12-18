@@ -13,7 +13,7 @@ const extramenu = {
   saveMenuTreeNode(params) {
     return axios.post('/api/rest/extramenu/save', params);
   },
-  getMenuList(params) {
+  getMenuList(params) { //获取拥有权限的附加菜单列表
     return axios.post('/api/rest/extramenu/list', params);
   }
 };

@@ -46,7 +46,7 @@ const Mutations = {
     state.slaTimeList = slaTimeList;
   },
   setExtramenu(state, isUpdateExtramenu) {
-    // 设置自定义菜单
+    // 更新附加菜单
     state.isUpdateExtramenu = isUpdateExtramenu;
   }
 };
