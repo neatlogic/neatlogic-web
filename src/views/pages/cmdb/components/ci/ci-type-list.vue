@@ -13,7 +13,6 @@
     <div class="mb-nm">
       <RadioGroup
         v-model="ciName"
-        type="button"
         @on-change="changeRadio"
       >
         <Radio label="ciCatalog">{{ $t('term.cmdb.cidirectory') }}</Radio>
@@ -90,6 +89,10 @@ export default {
       await this.searchCiTypeCi();
     } else {
       this.ciTypeList = JSON.parse(JSON.stringify(this.tree));
+    }
+    if (!this.$utils.isEmpty(this.treeList) && this.ciId) {
+      // 模型目录不为空，并且有ciId时，需要选中tree
+      this.treeId = this.ciId;
     }
     if (this.ciId) {
       this.$nextTick(() => {
