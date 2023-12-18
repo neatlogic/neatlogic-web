@@ -93,6 +93,9 @@ export default {
     if (!this.$utils.isEmpty(this.treeList) && this.ciId) {
       // 模型目录不为空，并且有ciId时，需要选中tree
       this.treeId = this.ciId;
+    } else if (!this.ciId && this.needDefaultCiId) {
+      // 没有ciId默认选中第一个模型
+      this.treeId = this.findFirstCiId(this.treeList);
     }
     if (this.ciId) {
       this.$nextTick(() => {
@@ -107,6 +110,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    findFirstCiId(treeList) {
+      // 获取第一个ciId
+      for (let i = 0; i < treeList.length; i++) {
+        const item = treeList[i];
+        if (item && item.type === 'ci') {
+          return item.id;
+        } else if (item.children && item.children.length > 0) {
+          const ciId = findFirstCiId(item.children);
+          if (ciId) {
+            return ciId;
+          }
+        }
+      }
+    },
     changeRadio(value) {
       if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
         this.searchTreeData();
