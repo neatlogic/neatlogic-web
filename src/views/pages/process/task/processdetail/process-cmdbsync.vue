@@ -7,7 +7,7 @@
       :sessionName="sessionName"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="taskdetail-top">
@@ -20,7 +20,6 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
           <div class="toolbar-right">
             <div class="action-group">

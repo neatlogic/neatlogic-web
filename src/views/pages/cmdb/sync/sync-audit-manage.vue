@@ -2,7 +2,7 @@
   <div>
     <TsContain :enableCollapse="true">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/sync-manage')">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span v-auth="['ADMIN']"><AuditConfig auditName="CISYNC-AUDIT"></AuditConfig></span>

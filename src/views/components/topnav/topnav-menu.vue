@@ -40,16 +40,16 @@
       </div>
     </Poptip>
     <!-- 导航内容开始 -->
-    <ul class="topnav-menu-module">
-      <li 
-        v-for="module in moduleList"
-        :key="module.moduleId"
-        class="module-item text-action"
-        :class="{ 'module-item-active': module.moduleId === moduleId }"
-        @click.prevent="toMenu(module.moduleId)"   
-        @contextmenu="newTab($event, module)"     
-      >{{ module.moduleName }}</li>
-    </ul>
+    <div class="topnav-menu-module overflow">
+      <Tabs :value="moduleId" @on-click="toMenu">
+        <TabPane
+          v-for="module in moduleList"
+          :key="module.moduleId"
+          :label="renderLabel(module)"
+          :name="module.moduleId"
+        ></TabPane>
+      </Tabs>
+    </div>
     <!-- //导航内容_end -->
   </div>
 </template>
@@ -84,6 +84,21 @@ export default {
       //鼠标右键打开新标签页
       let replaceStr = `<a href="${HOME}/${module.moduleId}.html#/" style="display:block;">${module.moduleName}</a>`;
       e.currentTarget.innerHTML = replaceStr;
+    },
+    renderLabel(module) {
+      return h => {
+        return h(
+          'a',
+          {
+            domProps: {
+              href: HOME + '/' + module.moduleId + '.html#/'
+            },
+            style: {
+              display: 'block'
+            }
+          }, module.moduleName
+        );
+      };
     }
   },
   computed: {
@@ -107,53 +122,71 @@ export default {
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.topnav-menu {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  .apps-icon {
-    font-size: 16px;
-    transition: color 0.2s ease;
-    display: flex;
+.theme(@top-active){
+  .topnav-menu {
+    // display: flex;
+    // align-items: center;
+    // justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 46px auto;
     align-items: center;
-    margin-left: 12px;
-    margin-right: 10px;
-    cursor: pointer;
-    &::before {
-      padding: 4px;
-    }
-  }
 
-  .topnav-menu-module {
-    height: @top-height;
-    background-color: transparent;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .module-item {
-      height: @top-height;
-      line-height: @top-height;
-      padding: 0 @space-sm;
-      min-width: 60px;
-      text-align: center;
-      position: relative;
-      transition: all 0.2s ease-in-out;
-    }
-    li{
-      a{
-        display:inline-block;
-        padding: 0 10px;
-        height: 50px;
-        line-height: 50px;
-        min-width: 60px;
-        text-align: center;
-        position: relative;
-        transition: all 0.2s ease-in-out;
+    .apps-icon {
+      font-size: 16px;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      margin-left: 12px;
+      margin-right: 10px;
+      cursor: pointer;
+      &::before {
+        padding: 4px;
       }
     }
+
+    .topnav-menu-module {
+      height: @top-height;
+      background-color: transparent;
+      cursor: pointer;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /deep/ .ivu-tabs {
+        color: @white;
+        .ivu-tabs-bar {
+          margin: 0;
+        }
+        .ivu-tabs-ink-bar {
+          display: none;
+        }
+        .ivu-tabs-tab {
+          padding: 0 10px;
+          height: 50px;
+          line-height: 50px;
+          margin: 0;
+        }
+        .ivu-tabs-nav-prev, .ivu-tabs-nav-next {
+          line-height: 50px;
+        }
+        .ivu-tabs-nav .ivu-tabs-tab:hover {
+          color: @white;
+          background: fade(@top-active, 50%);
+        }
+        .ivu-tabs-nav .ivu-tabs-tab-active {
+          color: @white;
+          background: var(--top-active, @top-active);
+          border-color: none;
+        }
+      }
+    }
+  }
+}
+html {
+  .theme(@default-top-active);
+
+  &.theme-dark {
+    .theme(@dark-top-active);
   }
 }
 </style>

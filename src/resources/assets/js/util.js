@@ -878,7 +878,8 @@ const methods =  {
   },
   validParamValue(val, validateList) {
     //参数校验规则：判断值是否满足正则规则
-    const validtorJson = require('@/resources/plugins/TsForm/TsValidtor'); // 解决TsValidtor.js加载最快，导致拿不到$t，弹窗校验出不来的问题
+    const validtorConfig = require('@/resources/plugins/TsForm/TsValidtor'); // 解决TsValidtor.js加载最快，导致拿不到$t，弹窗校验出不来的问题
+    const validtorJson = validtorConfig.default; //require引入TsValidtor的默认为'export default validtor'，会包一层default
     let _this = this;
     let resultValidtorJson = [];
     let isValid = true;

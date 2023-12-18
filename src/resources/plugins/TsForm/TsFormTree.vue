@@ -78,12 +78,23 @@
                 class="ivu-input search-input"
                 @input="filterNode($event)"
               />
-              <span
-                v-else
-                class="overflow empty-placeholder single-span"
-                :class="[disabled ? 'empty-placeholder-disable' : '']"
-                :placeholder="placeholder"
-              >{{ searchKeyWord }}</span>
+              <template v-else>
+                <Tooltip
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="searchKeyWord"
+                  :disabled="$utils.isEmpty(searchKeyWord)"
+                >
+                  <div
+                    class="overflow empty-placeholder single-span"
+                    :class="[disabled ? 'empty-placeholder-disable' : '']"
+                    :placeholder="placeholder"
+                  >{{ searchKeyWord }}</div>
+                </Tooltip>
+              </template>
             </template>
             <i class="ivu-icon tsfont-down ivu-select-arrow"></i>
             <i v-if="getClearable" class="clearBtn text-icon ivu-icon tsfont-close-s bg-op" @click.stop="clearValue"></i>
@@ -689,8 +700,6 @@ function setWidth($contain, $target, transfer) {
       text-align: left;
       .single-span {
         width: 100%;
-        display: inline-block;
-        vertical-align: top;
       }
       .search-input {
         height: 28px;

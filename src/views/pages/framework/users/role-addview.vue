@@ -139,13 +139,13 @@
           <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(),saveProfile('backrolelist')">{{ $t('term.framework.backtorolelist') }}</Button>
+          <Button size="large" type="primary" @click="backRoleManage(); saveProfile('backrolelist')">{{ $t('term.framework.backtorolelist') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="continueCreate(),saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
+          <Button size="large" @click="continueCreate(); saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentRole(),saveProfile('editrole')">{{ $t('dialog.title.edittarget', {target: $t('page.role')}) }}</Button>
+          <Button size="large" @click="editCrrentRole(); saveProfile('editrole')">{{ $t('dialog.title.edittarget', {target: $t('page.role')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
@@ -363,9 +363,9 @@ export default {
               let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
               let value = data.value;
               switch (value) {
-                //返回用户列表
+                //返回角色列表
                 case 'backrolelist':
-                  this.$back();
+                  this.backRoleManage();
                   break;
                 //编辑用户
                 case 'editrole':
@@ -671,6 +671,11 @@ export default {
           }
         });
       }
+    },
+    backRoleManage() {
+      this.$router.push({
+        path: '/role-manage'
+      });
     }
   },
 

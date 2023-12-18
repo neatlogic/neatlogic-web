@@ -91,8 +91,9 @@ export default {
       const url = status == 'submit'
         ? `/knowledge-detail?knowledgeDocumentId=${this.documentId}&status=${status}&knowledgeDocumentVersionId=${this.versionId}`
         : `/knowledge-detail?knowledgeDocumentId=${this.documentId}&status=${status}`;
-
-      this.$backTo(url);
+      this.$router.push({
+        path: url
+      });
     },
     reviewOk() {
       let data = {

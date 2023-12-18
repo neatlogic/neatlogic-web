@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft><span>{{ reportData.name }}</span></template>
       <template slot="topRight">
@@ -236,7 +236,9 @@ export default {
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
             vnode.isShow = false;
-            this.$back('/statement-manage');
+            this.$router.push({
+              path: '/statement-manage'
+            });
           });
         }
       });
