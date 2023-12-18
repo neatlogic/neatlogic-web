@@ -51,12 +51,19 @@
       </Tabs>
     </div>
     <!-- //导航内容_end -->
+    <!-- 自定义菜单 -->
+    <div v-if="$AuthUtils.hasRole('EXTRA_MENU_MODIFY')">
+      <TopnavExtramenu></TopnavExtramenu>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'TopnavMenu',
+  components: {
+    TopnavExtramenu: resolve => require(['./topnav-extramenu.vue'], resolve)
+  },
   data() {
     return {
       isShow: false,
@@ -128,7 +135,7 @@ export default {
     // align-items: center;
     // justify-content: flex-start;
     display: grid;
-    grid-template-columns: 46px auto;
+    grid-template-columns: 46px auto auto;
     align-items: center;
 
     .apps-icon {

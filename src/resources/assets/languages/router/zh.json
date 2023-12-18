@@ -163,7 +163,8 @@
     "job": "定时作业",
     "others": "基础服务",
     "healthcheck": "健康检查",
-    "license": "许可管理"
+    "license": "许可管理",
+    "extramenu": "菜单管理"
   },
   "knowledge": {
     "knowledgedetail": "词条详情",

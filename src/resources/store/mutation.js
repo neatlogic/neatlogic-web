@@ -44,6 +44,10 @@ const Mutations = {
   setTaskSlaTimeList(state, slaTimeList) {
     // 设置工单sla时效
     state.slaTimeList = slaTimeList;
+  },
+  setExtramenu(state, isUpdateExtramenu) {
+    // 设置自定义菜单
+    state.isUpdateExtramenu = isUpdateExtramenu;
   }
 };
 
