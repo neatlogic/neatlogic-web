@@ -106,7 +106,36 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.item.fromCi = this.mainCi;
+    if (this.item.field == 'id') {
+      this.item.fromAttr = '_id';
+    } else if (this.item.field == 'name') {
+      this.item.fromAttr = '_name';
+    } else if (this.item.field == 'type_id') {
+      this.item.fromAttr = '_typeId';
+    } else if (this.item.field == 'type_name') {
+      this.item.fromAttr = '_typeName';
+    } else if (this.item.field == 'type_label') {
+      this.item.fromAttr = '_typeLabel';
+    } else if (this.item.field == 'fcu') {
+      this.item.fromAttr = '_fcu';
+    } else if (this.item.field == 'fcd') {
+      this.item.fromAttr = '_fcd';
+    } else if (this.item.field == 'lcu') {
+      this.item.fromAttr = '_lcu';
+    } else if (this.item.field == 'lcd') {
+      this.item.fromAttr = '_lcd';
+    } else if (this.item.field == 'inspect_status') {
+      this.item.fromAttr = '_inspectStatus';
+    } else if (this.item.field == 'inspect_time') {
+      this.item.fromAttr = '_inspectTime';
+    } else if (this.item.field == 'monitor_status') {
+      this.item.fromAttr = '_monitorStatus';
+    } else if (this.item.field == 'monitor_time') {
+      this.item.fromAttr = '_monitorTime';
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

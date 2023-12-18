@@ -80,7 +80,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.item.fromCi = this.mainCi;
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
