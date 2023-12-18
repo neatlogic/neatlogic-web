@@ -61,7 +61,7 @@ export default {
           icon: 'tsfont-plus',
           desc: this.$t('page.subdirectory'),
           clickFn: (treeNode) => {
-            this.addSubDirectory(treeNode);
+            this.addSubCatalog(treeNode);
           }
         },
         {
@@ -154,7 +154,7 @@ export default {
       });
     },
     //添加子目录
-    addSubDirectory(treeNode) {
+    addSubCatalog(treeNode) {
       this.catalogData.parentId = treeNode.id;
       this.catalogData.id = '';
       this.isShowCatalogEditDialog = true;

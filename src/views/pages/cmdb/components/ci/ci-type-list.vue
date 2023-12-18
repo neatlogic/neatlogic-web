@@ -13,15 +13,18 @@
     <div class="mb-nm">
       <RadioGroup
         v-model="ciName"
-        class="col-3"
+        type="button"
+        @on-change="changeRadio"
       >
-        <Radio label="ciDirectory">{{ $t('term.cmdb.cidirectory') }}</Radio>
+        <Radio label="ciCatalog">{{ $t('term.cmdb.cidirectory') }}</Radio>
         <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
       </RadioGroup>
     </div>
     <div style="height:calc(100vh - 205px);overflow-y:auto">
-      <template v-if="ciName == 'ciDirectory'">
+      <template v-if="ciName == 'ciCatalog'">
+        <NoData v-if="$utils.isEmpty(treeList)"></NoData>
         <TsZtree
+          v-else
           :nodes="treeList"
           :onClick="clickTreeNode"
           :value="treeId"
@@ -48,7 +51,6 @@
           </div>
         </div>
       </template>
-     
     </div>
   </div>
 </template>
@@ -75,7 +77,7 @@ export default {
       ciTypeList: [],
       keyword: '',
       treeList: [],
-      ciName: 'ciDirectory',
+      ciName: 'ciCatalog',
       treeId: ''
     };
   },
@@ -102,6 +104,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeRadio(value) {
+      if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
+        this.searchTreeData();
+      }
+    },
     clickTreeNode(tree, node) {
       let {type = ''} = node || {};
       if (type == 'ci') {
