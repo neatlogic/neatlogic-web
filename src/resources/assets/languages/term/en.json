@@ -176,6 +176,7 @@
     "onlyupward": "Just look upstream",
     "onlydownward": "Just look downstream",
     "noextend": "Hide Extend Relationships",
+    "nochange": "No modifications made",
     "cilevel": "Model hierarchy",
     "cidirectory": "Model Catalog",
     "directoryname": "Catalog Name",

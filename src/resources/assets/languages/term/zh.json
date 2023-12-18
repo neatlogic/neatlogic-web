@@ -176,6 +176,7 @@
     "onlyupward": "只看上游",
     "onlydownward": "只看下游",
     "noextend": "隐藏继承关系",
+    "nochange": "没有任何修改",
     "cilevel": "模型层级",
     "cidirectory": "模型目录",
     "directoryname": "目录名称",
