@@ -479,11 +479,11 @@ export default {
       globalAttrExpressionList: [
         {
           value: 'like',
-          text: '包含'
+          text: this.$t('term.expression.like')
         },
-        { value: 'notlike', text: '不包含' },
-        { value: 'is-null', text: '为空' },
-        { value: 'is-not-null', text: '不为空' }
+        { value: 'notlike', text: this.$t('term.expression.notlike') },
+        { value: 'is-null', text: this.$t('term.expression.empty') },
+        { value: 'is-not-null', text: this.$t('term.expression.notempty') }
       ],
       isOnlyExportSelected: false, //只导出选中数据开关
       // 点击展开

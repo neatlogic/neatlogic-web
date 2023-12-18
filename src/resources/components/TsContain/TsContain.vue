@@ -1,12 +1,12 @@
 <template>
   <div ref="contain" :class="[getContainClass]" class="bg-grey">
     <div v-if="!hideHeader" :class="[{ 'pl-nm': true, 'pr-nm': true }, { 'tscontain-header': isBackgroung == true, 'tscontain-headerBg padding-lr': isBackgroung == false }, { 'input-border': border == 'border' }, { 'tsForm-border-none': border == 'none' }, { 'tscontain-headerbottom': navHeaderBottom == 'none' }]">
-      <div :style="getCollapseStyle" style="display:grid">
-        <div v-if="hasNavigation" style="white-space:nowrap">
+      <div :style="getCollapseStyle" style="display: grid">
+        <div v-if="hasNavigation" style="white-space: nowrap">
           <slot name="navigation"></slot>
           <Divider v-if="(enableCollapse && $slots.sider) || $slots.topLeft || enableDivider" type="vertical" />
         </div>
-        <div v-if="hasCollapse" style="white-space:nowrap">
+        <div v-if="hasCollapse" style="white-space: nowrap">
           <span
             class="tsfont-bar text-action"
             @click="
@@ -20,10 +20,10 @@
         </div>
         <div>
           <slot name="top">
-            <div :style="getTopStyle" style="white-space:nowrap;display:grid">
+            <div :style="getTopStyle" style="white-space: nowrap; display: grid">
               <div><slot name="topLeft"></slot></div>
               <div><slot name="topCenter"></slot></div>
-              <div style="text-align:right"><slot name="topRight"></slot></div>
+              <div style="text-align: right"><slot name="topRight"></slot></div>
             </div>
           </slot>
         </div>
@@ -32,7 +32,11 @@
     <div
       ref="body"
       v-scrollHidden
-      :class="{ 'pl-nm': hasContentPadding, 'pr-nm': hasContentPadding }"
+      :class="{
+        'pl-nm': hasContentPadding,
+        'pr-nm': hasContentPadding,
+        'tscontain-body-height-nopadding': !gutter
+      }"
       class="tscontain-body bg-grey"
       :style="mode == 'dialog' ? 'height:100%;' : ''"
       @scroll.stop="scroll"
@@ -63,7 +67,7 @@
           :collapsed-width="0"
           hide-trigger
         >
-          <div class="tscontain-left" style="height: 100%;overflow: auto;">
+          <div class="tscontain-left" style="height: 100%; overflow: auto">
             <slot name="left"></slot>
           </div>
         </Sider>
@@ -78,7 +82,7 @@
           :collapsed-width="0"
           hide-trigger
         >
-          <div class="radius-lg tscontain-right" style="height: 100%;overflow: auto;">
+          <div class="radius-lg tscontain-right" style="height: 100%; overflow: auto">
             <slot name="right"></slot>
             <div
               v-if="rightBtn"
@@ -102,7 +106,7 @@
           <slot v-if="siderPosition == 'left' && $slots.left" name="left"></slot>
           <Layout v-else-if="siderPosition == 'right' && $slots.left" :style="{ height: '100%' }">
             <Sider :width="$slots.left && leftWidth ? leftWidth : 200">
-              <div class="radius-lg tscontain-left" style="height: 100%;overflow: auto;">
+              <div class="radius-lg tscontain-left" style="height: 100%; overflow: auto">
                 <slot name="left"></slot>
               </div>
             </Sider>
@@ -119,7 +123,7 @@
               <slot name="content"></slot>
             </Content>
             <Sider :width="$slots.right && rightWidth ? rightWidth : 200">
-              <div class="radius-lg tscontain-left" style="height: 100%;overflow: auto;">
+              <div class="radius-lg tscontain-left" style="height: 100%; overflow: auto">
                 <slot name="right"></slot>
               </div>
             </Sider>

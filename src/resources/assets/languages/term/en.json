@@ -177,7 +177,8 @@
     "onlyupward": "Just look upstream",
     "onlydownward": "Just look downstream",
     "noextend": "Hide Extend Relationships",
-    "autoexec": "Automated operations"
+    "autoexec": "Automated operations",
+    "nochange": "No modifications made"
   },
   "process": {
     "workordercenter": "Work Center",

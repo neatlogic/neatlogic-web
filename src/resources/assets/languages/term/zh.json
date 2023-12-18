@@ -177,7 +177,8 @@
     "onlyupward": "只看上游",
     "onlydownward": "只看下游",
     "noextend": "隐藏继承关系",
-    "autoexec": "自动化操作"
+    "autoexec": "自动化操作",
+    "nochange": "没有任何修改"
   },
   "process": {
     "workordercenter": "工单中心",
