@@ -2,7 +2,7 @@
   <div>
     <TsContain siderPosition="right" :siderWidth="200" :isSiderHide="isSiderHideHistory">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/configfile-manage')">{{ $getFromPage($t('page.back')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>

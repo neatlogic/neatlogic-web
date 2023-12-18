@@ -402,6 +402,7 @@ export default {
         this.getCiById();
         this.getAttrByCiId();
         this.getRelByCiId();
+        this.$refs['ciTypeList'] && this.$refs['ciTypeList'].searchTreeData();
       }
     },
     closeAttrDialog: function(needRefresh) {

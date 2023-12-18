@@ -6,7 +6,7 @@
           <div class="tsForm tsForm-border-border ivu-form-label-right ">
             <div v-if="elementList && elementList.length > 0">
               <div v-for="(e, index) in elementList" :key="index" style="margin:0 auto;width:80%;">
-                <div v-if="e.type == 'attr'">
+                <div v-if="e.type === 'attr'">
                   <div
                     v-if="e.element.canInput"
                     class="ivu-form-item tsform-item ivu-form-label-right"
@@ -36,7 +36,47 @@
                     </div>
                   </div>
                 </div>
-                <div v-if="e.type == 'rel'">
+                <div v-else-if="e.type === 'global'">
+                  <div
+                    class="ivu-form-item tsform-item ivu-form-label-right"
+                    style="width: 100%;"
+                  >
+                    <label class="ivu-form-item-label overflow" style="width: 120px;">
+                      <div>
+                        {{ e.element.label }}
+                        <Checkbox v-model="checkData['global_' + e.element.id]" class="ml-md"></Checkbox>
+                      </div>
+                    </label>
+                    <div class="ivu-form-item-content" style="margin-left: 120px !important;">
+                      <TsFormRadio
+                        v-if="!e.element.isMultiple"
+                        :disabled="!checkData['global_' + e.element.id] ? true : false"
+                        :allowToggle="true"
+                        :dataList="e.element.itemList"
+                        valueName="id"
+                        textName="value"
+                        @change="
+                          (val, opt) => {
+                            if (opt) {
+                              setGlobalAttrData(e.element, [opt]);
+                            } else {
+                              setGlobalAttrData(e.element, []);
+                            }
+                          }
+                        "
+                      ></TsFormRadio>
+                      <TsFormCheckbox
+                        v-if="!!e.element.isMultiple"
+                        :disabled="!checkData['global_' + e.element.id] ? true : false"
+                        :dataList="e.element.itemList"
+                        valueName="id"
+                        textName="value"
+                        @change="(val, opt) => setGlobalAttrData(e.element, opt)"
+                      ></TsFormCheckbox>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="e.type === 'rel'">
                   <div class="ivu-form-item tsform-item ivu-form-label-right" :class="(e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired) ? 'ivu-form-item-required' : ''" style="width: 100%;">
                     <label class="ivu-form-item-label overflow" style="width: 120px;">
                       <div v-if="e.element.direction == 'from'">
@@ -164,11 +204,10 @@
   </div>
 </template>
 <script>
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 export default {
   name: '',
   components: {
-    TsFormInput,
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     AttrInputer: resolve => require(['./attr-inputer.vue'], resolve),
     CiEntityChoose: resolve => require(['./cientity-choose.vue'], resolve),
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
@@ -227,6 +266,7 @@ export default {
         ciEntityIdList: this.ciEntityList.map(c => c.id),
         attrEntityData: {},
         relEntityData: {},
+        globalAttrEntityData: {},
         needCommit: needCommit,
         description: this.ciEntityData.description
       };
@@ -241,6 +281,8 @@ export default {
                 v.action = params.relEntityData[k].action;
               });
             }
+          } else if (this.ciEntityData.globalAttrEntityData[k]) {
+            params.globalAttrEntityData[k] = this.ciEntityData.globalAttrEntityData[k];
           }
         }
       }
@@ -255,6 +297,11 @@ export default {
           hasChange = true;
         }
       }
+      for (let k in params.globalAttrEntityData) {
+        if (params.globalAttrEntityData[k].valueList && params.globalAttrEntityData[k].valueList.length > 0) {
+          hasChange = true;
+        }
+      }
       if (hasChange) {
         this.$api.cmdb.cientity.batchUpdateCiEntity(params).then(res => {
           if (res.Status == 'OK') {
@@ -263,8 +310,17 @@ export default {
           }
         });
       } else {
-        this.$Message.info('没有任何修改');
+        this.$Message.info(this.$t('term.cmdb.nochange'));
       }
+    },
+    setGlobalAttrData(attr, opt) {
+      if (!this.ciEntityData.globalAttrEntityData) {
+        this.ciEntityData.globalAttrEntityData = {};
+      }
+      if (!this.ciEntityData.globalAttrEntityData['global_' + attr.id]) {
+        this.ciEntityData.globalAttrEntityData['global_' + attr.id] = {};
+      }
+      this.$set(this.ciEntityData.globalAttrEntityData['global_' + attr.id], 'valueList', opt);
     },
     setAttrData(attr, value, actualValue) {
       if (!this.ciEntityData.attrEntityData) {
@@ -338,6 +394,13 @@ export default {
         return relList;
       }
     },
+    async getGlobalAttrByCiId(ciId) {
+      let globalAttrList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, {isActive: 1, allowEdit: 1}).then(res => {
+        globalAttrList = res.Return;
+      });
+      return globalAttrList;
+    },
     async getCiViewByCiId(ciId) {
       if (ciId) {
         let ciViewList;
@@ -350,6 +413,7 @@ export default {
     async getElementByCiId(ciId) {
       const attrList = await this.getAttrByCiId(ciId);
       const relList = await this.getRelByCiId(ciId);
+      const globalAttrList = await this.getGlobalAttrByCiId(ciId);
       const ciViewList = await this.getCiViewByCiId(ciId);
       const elementList = [];
       ciViewList.forEach((e, index) => {
@@ -367,6 +431,11 @@ export default {
           const rel = relList.find(a => a.direction == 'to' && a.id == e.itemId);
           if (rel) {
             elementList.push({ type: 'rel', element: rel });
+          }
+        } else if (e.type === 'global') {
+          const globalattr = globalAttrList.find(a => a.id == e.itemId);
+          if (globalattr) {
+            elementList.push({ type: 'global', element: globalattr });
           }
         }
       });

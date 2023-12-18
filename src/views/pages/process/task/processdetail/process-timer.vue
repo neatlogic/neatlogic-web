@@ -35,7 +35,6 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
     
           <div class="toolbar-right">
