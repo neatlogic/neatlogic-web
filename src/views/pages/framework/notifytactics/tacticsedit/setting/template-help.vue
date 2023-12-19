@@ -69,7 +69,6 @@ export default {
   data() {
     return {
       sessionName: 'templatehelpbox',
-      leftWidth: '246',
       templateConfig: null,
       helpList: []
     };

@@ -154,7 +154,6 @@ export default {
       isreload: false,
       modal: false,
       type: 'modal',
-      leftWidth: 0,
       selectValue: [],
       moreList: [], //查看更多
       moreUuid: null,
