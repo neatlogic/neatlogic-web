@@ -753,7 +753,7 @@
     "pleaseselectdirectoryname": "请选择目录名称",
     "pleaseselectuploadfile": "脚本内容：请上传附件",
     "supportonlytarfile": "仅支持tar文件",
-    "scriptcontenttips": "帮助：\n 通过参数名来获取参数值，如：\nprint $inputParam1\n通过给输出参数赋值来设定返回值，如：\nmy $outParam1=＂outParam1-Value＂\n输入参数：\n“文本”、“密码”类参数可获得一个代表实际值的字符串\n“节点”类参数可以获得一个IP\n“文件”类参数可获得文件名，存放地址就在当前执行目录。\n输出参数：\n“文本“类参数可输出任意格式的文本\n报告数据：\n定义名称为:report_json的参数，值需要是合法的json格式。\n退出码标识：\n只要ExitCode不等于0则代表异常退出。\n注意：\n如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
+    "scriptcontenttips": "帮助：\n 工具执行是通过标准的命令行参数来传参。\n 输入参数：\n 1）具备参数名的参数：\n   option名称就是参数名，option值就是参数值。\n 2）没有参数名的参数：\n   对应工具的自由参数，通过参数序号来获取参数。\n 不同的编程语言如何处理命令行参数，具体请查看相关的demo。\n 输出参数：\n 通过把输出参数写入当前作业工作目录下的json文件ouput.json进行参数的输出。\n 平台提供的不同语言的输出封装，具体请查看相关的demo，例如：\n Python：\n from lib import AutoExecUtils\n out = {}\n out['outtext'] = 'this is the text out value'\n AutoExecUtils.saveOutput(out) \n Perl：\n use AutoExecUtils;\n my $out = {};\n $out->{outtext}     = 'this is the text out value';\n AutoExecUtils::saveOutput($out); \n Bash：\n outtext='this is the text out value'\n if [ ! -z '$OUTPUT_PATH' ]; then\n     cat <<EOF >'$OUTPUT_PATH'\n {\n     'outtext':'$outtext'\n }\n EOF\n fi\n 退出码标识：\n 只要ExitCode不等于0则代表异常退出。\n注意：\n 如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
     "speedlevel": "速度级别",
     "workthread": "工作线程",
     "loadedjob": "已加载作业",
