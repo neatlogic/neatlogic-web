@@ -16,8 +16,10 @@
             :value="selectedTreeId"
             :nodes="nodeList"
             :hoverDomList="hoverDomList"
-            :onClick="clickNode"
             urlKey="xUrl"
+            :onClick="clickNode"
+            :beforeDrop="beforeDrop"
+            :onDrop="onDrop"
           ></TsZtree>
           <NoData v-else-if="!loadingShow && $utils.isEmpty(nodeList)"></NoData>
         </div>
@@ -245,6 +247,31 @@ export default {
         }
       }).finally(() => {
         this.saving = false;
+      });
+    },
+    beforeDrop(treeId, treeNodes, targetNode, moveType) {
+      if (targetNode === null) {
+        return;
+      } else if (moveType === 'inner' && targetNode.type === 1) {
+        return false;
+      } else if ((moveType === 'prev' || moveType === 'next') && !targetNode.parentId) {
+        return false;
+      }
+    },
+    onDrop(tree, treeNodes, targetNode, moveType) {
+      let treeNode = treeNodes[0];
+      let data = {
+        id: treeNode.id,
+        moveType: moveType,
+        targetId: targetNode?.id || 0
+      };
+      this.$api.framework.extramenu.moveExtramenu(data).then(res => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.$store.commit('setExtramenu', true); 
+        }
+      }).finally(() => {
+        this.getTreeList();
       });
     }
   },

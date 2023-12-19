@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!$utils.isEmpty(extramenu)">
+  <div>
     <Cascader
       :value="selecteData"
       :data="getDatalist(extramenu.children)"
@@ -18,19 +18,21 @@ export default {
   name: '',
   components: {
   },
-  props: {},
+  props: {
+    extramenu: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
-      extramenu: {},
       selecteData: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.init();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -38,15 +40,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    init() {
-      this.$api.framework.extramenu.getMenuList().then(res => {
-        if (res.Status === 'OK') {
-          this.extramenu = res.Return || {};
-        }
-      }).finally(() => {
-        this.$store.commit('setExtramenu', false); 
-      });
-    },
     getDatalist(arr) {
       for (var i in arr) {
         if (arr[i].name) {
@@ -70,21 +63,8 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    isUpdateExtramenu() {
-      return this.$store.state.isUpdateExtramenu;
-    }
-  },
-  watch: {
-    isUpdateExtramenu: {
-      handler(val) {
-        if (val) {
-          this.init();
-        }
-      },
-      immediate: true
-    }
-  }
+  computed: {},
+  watch: {}
 };
 </script>
 <style lang="less">

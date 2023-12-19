@@ -40,7 +40,7 @@
       </div>
     </Poptip>
     <!-- 导航内容开始 -->
-    <div class="topnav-menu-module overflow">
+    <div v-if="!extramenuLoading" class="topnav-menu-module overflow">
       <Tabs :value="moduleId" @on-click="toMenu">
         <TabPane
           v-for="module in moduleList"
@@ -51,10 +51,8 @@
       </Tabs>
     </div>
     <!-- //导航内容_end -->
-    <!-- 自定义菜单 -->
-    <div v-if="$AuthUtils.hasRole('EXTRA_MENU_MODIFY')">
-      <TopnavExtramenu></TopnavExtramenu>
-    </div>
+    <!-- 附加菜单 -->
+    <TopnavExtramenu v-if="!$utils.isEmpty(extramenu)" :extramenu="extramenu"></TopnavExtramenu>
   </div>
 </template>
 
@@ -68,8 +66,17 @@ export default {
     return {
       isShow: false,
       moduleId: MODULEID,
-      home: HOME
+      home: HOME,
+      extramenu: {},
+      extramenuLoading: true
     };
+  },
+  created() {
+    if (this.$AuthUtils.hasRole('EXTRA_MENU_MODIFY')) {
+      this.initExtramenu();
+    } else {
+      this.extramenuLoading = false;
+    }
   },
   methods: {
     updateMenu() {
@@ -106,6 +113,18 @@ export default {
           }, module.moduleName
         );
       };
+    },
+    initExtramenu() {
+      this.$api.framework.extramenu.getMenuList().then(res => {
+        if (res.Status === 'OK') {
+          this.extramenu = res.Return || {};
+        }
+      }).finally(() => {
+        this.$nextTick(() => {
+          this.extramenuLoading = false;
+          this.$store.commit('setExtramenu', false); 
+        });
+      });
     }
   },
   computed: {
@@ -123,6 +142,19 @@ export default {
         }
         return groupList;
       };
+    },
+    isUpdateExtramenu() {
+      return this.$store.state.isUpdateExtramenu;
+    }
+  },
+  watch: {
+    isUpdateExtramenu: {
+      handler(val) {
+        if (val) {
+          this.initExtramenu();
+        }
+      },
+      immediate: true
     }
   }
 };

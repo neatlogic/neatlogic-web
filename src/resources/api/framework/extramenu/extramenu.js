@@ -15,6 +15,9 @@ const extramenu = {
   },
   getMenuList(params) { //获取拥有权限的附加菜单列表
     return axios.post('/api/rest/extramenu/list', params);
+  },
+  moveExtramenu(params) { //拖拽排序
+    return axios.post('/api/rest/extramenu/move', params);
   }
 };
 export default extramenu;
