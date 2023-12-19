@@ -367,6 +367,12 @@ export default {
           this.initConfig('', this.oldWidth);
         }
       }
+    },
+    isRightSiderHide: {
+      handler(val) {
+        this.rightSiderHide = val;
+      },
+      deep: true
     }
   }
 };
