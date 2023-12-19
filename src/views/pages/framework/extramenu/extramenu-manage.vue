@@ -135,6 +135,10 @@ export default {
       } catch (error) {
         console.error(error);
       }
+      if (!this.selectedTreeId) {
+        this.loadingShow = false;
+        return;
+      }
       this.getMenuTreeNode();
     },
     getTreeList(isFirst) {

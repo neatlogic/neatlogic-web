@@ -62,9 +62,6 @@ export default {
     changeMenu(val, selectedData) {
       if (!this.$utils.isEmpty(selectedData) && selectedData[selectedData.length - 1].url) {
         let url = selectedData[selectedData.length - 1].url;
-        if (sessionStorage.getItem('neatlogic_authorization')) {
-          url += '?neatlogic_authorization=' + sessionStorage.getItem('neatlogic_authorization');
-        }
         window.open(url, '_blank');
       }
     },
