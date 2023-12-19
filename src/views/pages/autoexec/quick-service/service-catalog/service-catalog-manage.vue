@@ -113,7 +113,6 @@ export default {
     return {
       loadingShow: false,
       isShowSeeMoreDialog: false,
-      leftWidth: 0,
       pageSize: 8,
       currentPage: 1,
       pageCount: null,

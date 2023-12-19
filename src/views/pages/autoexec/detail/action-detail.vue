@@ -4,7 +4,7 @@
     <TsContain
       v-if="dataConfig"
       :rightWidth="280"
-      :leftWidth="230"
+      :siderWidth="230"
       enableDivider
     >
       <template v-slot:navigation>
@@ -120,7 +120,7 @@
     
       </template> -->
       <!-- 左侧步骤列表 -->
-      <template v-slot:left>
+      <template v-slot:sider>
         <StepList
           :id="id"
           v-model="currentStep"

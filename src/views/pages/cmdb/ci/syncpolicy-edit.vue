@@ -9,9 +9,9 @@
           mode="dialog"
           border="border"
           :hideHeader="true"
-          :leftWidth="150"
+          :siderWidth="150"
         >
-          <div v-if="policyList && policyList.length > 0" slot="left">
+          <div v-if="policyList && policyList.length > 0" slot="sider">
             <div class="policy">
               <div :class="!id ? 'text-primary' : ''" @click="editPolicy()">新建策略</div>
               <div
