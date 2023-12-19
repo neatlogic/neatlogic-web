@@ -87,7 +87,6 @@
     "uncommittransaction": "Uncommitted transaction",
     "radius": "Rounded corners",
     "transaction": "Transaction",
-    "typesetting": "Type Setting",
     "importci": "Import model",
     "exportci": "Export model",
     "extendto": "Inherited from",
@@ -177,6 +176,12 @@
     "onlyupward": "Just look upstream",
     "onlydownward": "Just look downstream",
     "noextend": "Hide Extend Relationships",
+    "nochange": "No modifications made",
+    "cilevel": "Model hierarchy",
+    "cidirectory": "Model Catalog",
+    "directoryname": "Catalog Name",
+    "noaddcidirectory": "No model directory added,",
+    "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
     "autoexec": "Automated operations"
   },
   "process": {
@@ -2592,6 +2597,8 @@
     "targetmarker": "End arrow",
     "classic": "classical",
     "block": "block",
-    "cross": "overlapping"
+    "cross": "overlapping",
+    "larger": "enlarge",
+    "smaller": "narrow"
   }
 }

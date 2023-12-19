@@ -7,28 +7,49 @@
         border="bottom"
         :search="true"
         :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
+        @change="searchTreeData"
       ></TsFormInput>
     </div>
-    <div style="height:calc(100vh - 205px);overflow-y:auto">
-      <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
-        <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
-        <div v-if="item.ciList.length > 0">
-          <ul>
-            <li
-              v-for="ci in item.ciList"
-              :id="'ci-' + ci.id"
-              :key="ci.id"
-              class="text-default overflow treeList radius-sm pl-sm pr-sm"
-              :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
-              :title="ci.label + '(' + ci.name + ')'"
-              @click="click(item, ci)"
-            >
-              <span>{{ ci.label }}</span>
-              <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
-            </li>
-          </ul>
+    <div class="mb-nm">
+      <RadioGroup
+        v-model="ciName"
+        @on-change="changeRadio"
+      >
+        <Radio label="ciCatalog">{{ $t('term.cmdb.cidirectory') }}</Radio>
+        <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
+      </RadioGroup>
+    </div>
+    <div id="treeheight" style="overflow-y:auto;" :style="{height: catalogHeight}">
+      <template v-if="ciName == 'ciCatalog'">
+        <NoData v-if="$utils.isEmpty(treeList)"></NoData>
+        <TsZtree
+          v-else
+          :nodes="treeList"
+          :onClick="clickTreeNode"
+          :value="treeId"
+        ></TsZtree>
+      </template>
+      <template v-else-if="ciName == 'ciLevel'">
+        <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
+          <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
+          <div v-if="item.ciList.length > 0">
+            <ul>
+              <li
+                v-for="ci in item.ciList"
+                :id="'ci-' + ci.id"
+                :key="ci.id"
+                class="text-default overflow treeList radius-sm pl-sm pr-sm"
+                :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
+                :title="ci.label + '(' + ci.name + ')'"
+                @click="click(item, ci)"
+              >
+                <span>{{ ci.label }}</span>
+                <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -36,7 +57,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve)
   },
   filters: {},
   props: {
@@ -52,22 +74,39 @@ export default {
   data() {
     return {
       ciTypeList: [],
-      keyword: ''
+      keyword: '',
+      treeList: [],
+      ciName: 'ciCatalog',
+      treeId: '',
+      catalogHeight: '200px'
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   async mounted() {
+    await this.searchTreeData();
     if (this.tree.length === 0) {
       await this.searchCiTypeCi();
     } else {
       this.ciTypeList = JSON.parse(JSON.stringify(this.tree));
     }
+    if (!this.$utils.isEmpty(this.treeList) && this.ciId) {
+      // 模型目录不为空，并且有ciId时，需要选中tree
+      this.treeId = this.ciId;
+    } else if (!this.ciId && this.needDefaultCiId) {
+      // 没有ciId默认选中第一个模型
+      this.treeId = this.findFirstCiId(this.treeList);
+    }
     if (this.ciId) {
       this.$nextTick(() => {
         this.$utils.jumpTo('#ci-' + this.ciId);
       });
+    }
+    let element = document.getElementById('treeheight');
+    let rect = element?.getBoundingClientRect();
+    if (rect && rect.top) {
+      this.catalogHeight = `calc(100vh - ${rect.top.toFixed(0)}px - 16px)`; // 减去底部的16
     }
   },
   beforeUpdate() {},
@@ -77,6 +116,39 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    findFirstCiId(treeList) {
+      // 获取第一个ciId
+      for (let i = 0; i < treeList.length; i++) {
+        const item = treeList[i];
+        if (item && item.type === 'ci') {
+          return item.id;
+        } else if (item.children && item.children.length > 0) {
+          const ciId = this.findFirstCiId(item.children);
+          if (ciId) {
+            return ciId;
+          }
+        }
+      }
+    },
+    changeRadio(value) {
+      if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
+        this.searchTreeData();
+      }
+    },
+    clickTreeNode(tree, node) {
+      let {type = ''} = node || {};
+      if (type == 'ci') {
+        this.click('', node);
+      }
+    },
+    searchTreeData() {
+      return this.$api.cmdb.cicatalog.searchCiCatalogTree({keyword: this.keyword}).then(res => {
+        if (res.Status == 'OK') {
+          this.treeList = res.Return || [];
+        }
+      });
+    },
+  
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';

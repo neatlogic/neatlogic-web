@@ -48,10 +48,8 @@ export default {
     customViewId: { type: Number }
   },
   data() {
-    const _this = this;
     return {
-      id: _this.$route.params['id'] ? parseInt(_this.$route.params['id']) : this.customViewId,
-      leftWidth: 200,
+      id: this.$route.params['id'] ? parseInt(this.$route.params['id']) : this.customViewId,
       scrollHeight: 800,
       loadingShow: false,
       isSiderHide: false,

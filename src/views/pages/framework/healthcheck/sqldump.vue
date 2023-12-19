@@ -166,7 +166,6 @@ export default {
       ],
       fromPath: '',
       leftHeight: 0,
-      leftWidth: 200,
       maxTimeCost: 0
     };
   },
