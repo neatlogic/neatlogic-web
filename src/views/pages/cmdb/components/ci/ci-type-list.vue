@@ -19,7 +19,7 @@
         <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
       </RadioGroup>
     </div>
-    <div style="height:calc(100vh - 205px);overflow-y:auto">
+    <div id="treeheight" style="overflow-y:auto;" :style="{height: catalogHeight}">
       <template v-if="ciName == 'ciCatalog'">
         <NoData v-if="$utils.isEmpty(treeList)"></NoData>
         <TsZtree
@@ -77,7 +77,8 @@ export default {
       keyword: '',
       treeList: [],
       ciName: 'ciCatalog',
-      treeId: ''
+      treeId: '',
+      catalogHeight: '200px'
     };
   },
   beforeCreate() {},
@@ -102,6 +103,11 @@ export default {
         this.$utils.jumpTo('#ci-' + this.ciId);
       });
     }
+    let element = document.getElementById('treeheight');
+    let rect = element?.getBoundingClientRect();
+    if (rect && rect.top) {
+      this.catalogHeight = `calc(100vh - ${rect.top.toFixed(0)}px - 16px)`; // 减去底部的16
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -117,7 +123,7 @@ export default {
         if (item && item.type === 'ci') {
           return item.id;
         } else if (item.children && item.children.length > 0) {
-          const ciId = findFirstCiId(item.children);
+          const ciId = this.findFirstCiId(item.children);
           if (ciId) {
             return ciId;
           }
