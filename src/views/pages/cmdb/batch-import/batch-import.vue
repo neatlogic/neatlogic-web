@@ -1,8 +1,7 @@
 <template>
   <div>
     <TsContain
-      :isSiderHide="isHelpHide"
-      siderPosition="right"
+      :isRightSiderHide="isHelpHide"
       navBorderBottom="none"
       :class="{ helps: !isHelpHide }"
     >
@@ -31,7 +30,7 @@
         </div>
       </template>
 
-      <div slot="sider" class="help-container">
+      <div slot="right" class="help-container">
         <h3 class="help-title text-title">{{ $t('page.help') }}</h3>
         <ul class="help-list">
           <li class="help-item">{{ $t('message.cmdb.importhelp1') }}</li>
