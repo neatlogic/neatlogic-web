@@ -26,7 +26,8 @@ export default {
     onDrop: { type: Function }, //拖放事件
     value: { type: [String, Number] }, //默认选择节点
     enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
-    beforeDrop: {type: Function} // 拖放之前事件
+    beforeDrop: {type: Function}, // 拖放之前事件
+    urlKey:{type: String, default:'url'} //节点链接的目标URL的属性名称, 特殊用途：当后台数据只能生成 url 属性，又不想实现点击节点跳转的功能时，可以直接修改此属性为其他不存在的属性名称
   },
   data() {
     return {
@@ -68,6 +69,9 @@ export default {
             idKey: this.idKey,
             pIdKey: this.pIdKey,
             rootPId: null
+          },
+          key: {
+            url: this.urlKey
           }
         },
         callback: {
