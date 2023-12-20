@@ -593,6 +593,7 @@ export default {
                 let data = res.Return.config && (typeof res.Return.config == 'string') ? JSON.parse(res.Return.config) : res.Return.config;
                 this.referenceCount = res.Return.referenceCount;
                 Object.assign(this.processConfig, data.process.processConfig);
+                this.processConfig.uuid = res.Return.uuid;
                 this.processConfig.name = res.Return.name;
                 this.initTopo(data, action);
               } else {
