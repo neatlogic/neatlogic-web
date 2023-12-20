@@ -116,7 +116,7 @@ export default {
       _this.menutype = MENUTYPE;
 
       _this.$store.state.topMenu.gettingModuleList.then(res => {
-        if (res.Status == 'OK') {
+        if (res && res.Status == 'OK') {
           //这里还有个过滤当前模块的
           let authlist = res.Return || [];
           authlist = authlist

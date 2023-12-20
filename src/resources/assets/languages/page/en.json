@@ -957,5 +957,10 @@
   "highriskcode": "High risk code",
   "importoverdescrition": "The following associated objects already exist in the system. If you want to overwrite them, please check the objects you want to overwrite and click the [Import] button below to complete the import.",
   "uploadurlmustrequired": "The upload address cannot be empty",
-  "existiscoverimport": "{type}【{target}】 already exists. Do you want to continue importing and overwrite it"
+  "existiscoverimport": "{type}【{target}】 already exists. Do you want to continue importing and overwrite it",
+  "nofindauthmethodstarget": "Unable to find authentication method {target}",
+  "noauthinfofoundpleaselogin": "No authentication information found, please log in",
+  "thesessionhastimedoutorbeenterminatedpleaseloginagain": "The session has timed out or been terminated. Please log in again",
+  "userauthfailedpleaselogin": "User authentication failed, please log in",
+  "authenticationfailed": "Authentication failed"
 }
