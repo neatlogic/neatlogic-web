@@ -11,15 +11,12 @@
       ></TsFormInput>
     </div>
     <div class="mb-nm">
-      <RadioGroup
-        v-model="ciName"
-        @on-change="changeRadio"
-      >
+      <RadioGroup v-model="ciName" @on-change="changeRadio">
         <Radio label="ciCatalog">{{ $t('term.cmdb.cidirectory') }}</Radio>
         <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
       </RadioGroup>
     </div>
-    <div id="treeheight" style="overflow-y:auto;" :style="{height: catalogHeight}">
+    <div id="treeheight" style="overflow-y: auto" :style="{ height: catalogHeight }">
       <template v-if="ciName == 'ciCatalog'">
         <NoData v-if="$utils.isEmpty(treeList)"></NoData>
         <TsZtree
@@ -27,6 +24,7 @@
           :nodes="treeList"
           :onClick="clickTreeNode"
           :value="treeId"
+          :nodeClasses="nodeClasses"
         ></TsZtree>
       </template>
       <template v-else-if="ciName == 'ciLevel'">
@@ -38,13 +36,13 @@
                 v-for="ci in item.ciList"
                 :id="'ci-' + ci.id"
                 :key="ci.id"
-                class="text-default overflow treeList radius-sm pl-sm pr-sm"
+                class="text-default overflow treeList radius-sm pl-sm pr-xs"
                 :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
                 :title="ci.label + '(' + ci.name + ')'"
                 @click="click(item, ci)"
               >
                 <span>{{ ci.label }}</span>
-                <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
+                <span style="padding-left: 2px" class="text-grey">({{ ci.name }})</span>
               </li>
             </ul>
           </div>
@@ -130,25 +128,28 @@ export default {
         }
       }
     },
+    nodeClasses(treeId, treeNode) {
+      return treeNode && treeNode.type == 'ci' ? {add: [treeNode.icon, 'icon-pr-6']} : {};
+    },
     changeRadio(value) {
       if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
         this.searchTreeData();
       }
     },
     clickTreeNode(tree, node) {
-      let {type = ''} = node || {};
+      let { type = '' } = node || {};
       if (type == 'ci') {
         this.click('', node);
       }
     },
     searchTreeData() {
-      return this.$api.cmdb.cicatalog.searchCiCatalogTree({keyword: this.keyword}).then(res => {
+      return this.$api.cmdb.cicatalog.searchCiCatalogTree({ keyword: this.keyword }).then(res => {
         if (res.Status == 'OK') {
           this.treeList = res.Return || [];
         }
       });
     },
-  
+
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';
@@ -237,5 +238,10 @@ export default {
 // }
 .tsbg-block {
   border-radius: 6px;
+}
+/deep/.icon-pr-6 {
+  &::before {
+    padding-right: 6px;
+  }
 }
 </style>

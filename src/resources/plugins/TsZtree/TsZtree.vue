@@ -1,10 +1,5 @@
 <template>
-  <ul
-    id="ztree"
-    ref="treeDom"
-    class="ztree"
-    :class="{ hoverDom: hoverDomList && hoverDomList.length > 0 }"
-  ></ul>
+  <ul id="ztree" ref="treeDom" class="ztree" :class="{ hoverDom: hoverDomList && hoverDomList.length > 0 }"></ul>
 </template>
 
 <script>
@@ -26,8 +21,9 @@ export default {
     onDrop: { type: Function }, //拖放事件
     value: { type: [String, Number] }, //默认选择节点
     enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
-    beforeDrop: {type: Function}, // 拖放之前事件
-    urlKey:{type: String, default:'url'} //节点链接的目标URL的属性名称, 特殊用途：当后台数据只能生成 url 属性，又不想实现点击节点跳转的功能时，可以直接修改此属性为其他不存在的属性名称
+    beforeDrop: { type: Function }, // 拖放之前事件
+    urlKey: { type: String, default: 'url' }, //节点链接的目标URL的属性名称, 特殊用途：当后台数据只能生成 url 属性，又不想实现点击节点跳转的功能时，可以直接修改此属性为其他不存在的属性名称,
+    nodeClasses: { type: Function } // 使用 className 设置文字样式，只针对 zTree 在节点上显示的<A>对象。便于 css 与 js 解耦 默认值：{add: [], remove: []} add表示新增类名，remove表示移除类名
   },
   data() {
     return {
@@ -40,6 +36,7 @@ export default {
           selectedMulti: false,
           nameIsHTML: true,
           showTitle: true,
+          nodeClasses: this.nodeClasses,
           addHoverDom: (treeId, treeNode) => {
             var $a = $('#' + treeNode.tId + '_span', this.$refs['treeDom']);
             if (treeNode.hasAddDom || $a.length <= 0 || !this.hoverDomList || this.hoverDomList.length <= 0) {
@@ -166,13 +163,13 @@ export default {
   computed: {},
   watch: {
     nodes: {
-      handler: function(val) {
+      handler: function (val) {
         this.initTree();
       },
       deep: true
     },
     value: {
-      handler: function(id) {
+      handler: function (id) {
         this.selectedNodeById(id);
       },
       deep: true
