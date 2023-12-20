@@ -633,7 +633,8 @@ export default {
       }
       this.formShow = true;
       let data = {
-        userUuid: id
+        userUuid: id,
+        isAuthEnv: false
       };
       this.$api.common.getUser(data).then(res => {
         if (res.Status == 'OK') {

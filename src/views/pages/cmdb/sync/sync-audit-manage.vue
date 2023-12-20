@@ -113,7 +113,6 @@ export default {
       isLoading: false,
       searchVal: {},
       sessionName: 'sync-audit-manage',
-      leftWidth: 200,
       syncCiCollectionData: {},
       syncAuditData: {},
       searchCiCollectionParam: { collectMode: 'initiative', pageSize: 20 },

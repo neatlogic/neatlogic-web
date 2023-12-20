@@ -52,7 +52,6 @@ export default {
       isStepRequired: 0, //回复是否必填
       stepDialogClass: 'task-step', //弹框样式
       timer: null, //定时器
-      leftWidth: 280,
       isOrderRight: false, //是否展示右侧基本信息（接口控制isShowBaseInfo：1展示，0不展示）
       isOrderLeft: false,
       transferModal: false, //转交弹框

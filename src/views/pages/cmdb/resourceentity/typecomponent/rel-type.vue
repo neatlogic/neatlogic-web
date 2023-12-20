@@ -79,7 +79,7 @@ export default {
         }
       ],
       attrConfig: {
-        url: '/api/rest/cmdb/ci/listattr',
+        url: '/api/rest/cmdb/ci/listattr/forview',
         validateList: ['required'],
         valueName: 'name',
         textName: 'label',

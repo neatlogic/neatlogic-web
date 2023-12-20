@@ -163,7 +163,8 @@
     "job": "Timed job",
     "others": "Basic Services",
     "healthcheck": "Health Check",
-    "license": "License Management"
+    "license": "License Management",
+    "extramenu": "Menu management"
   },
   "knowledge": {
     "knowledgedetail": "entry details",

@@ -133,7 +133,7 @@ export default {
         {
           name: 'typeId',
           type: 'select',
-          label: this.$t('page.type'),
+          label: this.$t('term.cmdb.cilevel'),
           width: '100%',
           maxlength: 50,
           transfer: true,
@@ -143,6 +143,20 @@ export default {
           textName: 'name',
           onChange: name => {
             this.$set(_this.ciData, 'typeId', name);
+          }
+        },
+        {
+          name: 'catalogId',
+          type: 'tree',
+          label: this.$t('term.cmdb.cidirectory'),
+          width: '100%',
+          transfer: true,
+          url: '/api/rest/cmdb/cicatalog/listtree',
+          validateList: ['required'],
+          valueName: 'id',
+          textName: 'name',
+          onChange: id => {
+            this.$set(_this.ciData, 'catalogId', id);
           }
         },
         {
