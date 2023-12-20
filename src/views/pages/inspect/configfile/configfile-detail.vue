@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain siderPosition="right" :siderWidth="200" :isSiderHide="isSiderHideHistory">
+    <TsContain :rightWidth="200" :isRightSiderHide="isSiderHideHistory">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -23,7 +23,7 @@
           <span class="action-item tsfont-history" @click="openHistory">{{ $t('page.hisversions') }}</span>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <div class="list-main pl-nm">
           <Tabs class="block-tabs2" :animated="false">
             <TabPane :label="$t('term.inspect.changerecord')" name="changeRecord">

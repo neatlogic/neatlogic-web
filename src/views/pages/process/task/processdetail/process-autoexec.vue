@@ -212,8 +212,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >
