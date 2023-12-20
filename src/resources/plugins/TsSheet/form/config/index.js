@@ -23,7 +23,7 @@ import formcube from './formcube-conf.vue';
 import formtab from './formtab-conf.vue';
 import formcollapse from './formcollapse-conf.vue';
 
-import * as cmdbComponent from '@/views/pages/cmdb/form/config';
+// import * as cmdbComponent from '@/views/pages/cmdb/form/config';
 import * as autoexecComponent from '@/views/pages/autoexec/form/config';
 
 let importComponentConfig = {};
@@ -66,7 +66,7 @@ export default {
   formcube,
   formtab,
   formcollapse,
-  ...cmdbComponent,
+  // ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig
 };
