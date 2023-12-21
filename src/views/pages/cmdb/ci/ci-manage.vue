@@ -5,9 +5,9 @@
       <template slot="topLeft">
         <div class="action-group">
           <div class="action-item tsfont-plus" @click="addCi()">{{ $t('term.cmdb.ci') }}</div>
-          <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.type') }}</div>
           <div class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
           <div class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
+          <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
           <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('term.cmdb.cilevel') }}</div>
           <div class="action-item tsfont-edit" @click="editCiCatalog()">{{ $t('term.cmdb.cidirectory') }}</div>
           <div class="action-item">
