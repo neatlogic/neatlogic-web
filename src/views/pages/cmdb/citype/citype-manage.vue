@@ -92,10 +92,9 @@ export default {
     isShow: { type: Boolean }
   },
   data() {
-    const _this = this;
     return {
       dialogConfig: {
-        title: this.$t('dialog.title.edittarget', { target: this.$t('page.type') }),
+        title: this.$t('dialog.title.edittarget', { target: this.$t('term.cmdb.cilevel') }),
         type: 'modal',
         maskClose: false,
         isShow: true,
