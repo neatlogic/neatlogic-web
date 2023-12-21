@@ -1031,7 +1031,7 @@ export default {
             this.hasEditAuth = true;
           } else {
             this.$router.push({
-              path: '/404',
+              path: '/no-authority',
               query: {des: this.$t('term.deploy.noappviewauth', {abbrname: authInfo.abbrName || ''})}
             });
           }

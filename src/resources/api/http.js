@@ -69,17 +69,15 @@ if (SSOTICKETKEY && SSOTICKETVALUE) {
 const toLogin = (url, status) => {
   let splitParam = '';
   let queryParam = '';
-  if (httpcode) {
-    splitParam = `&httpcode=${status}`;
-    queryParam = `?httpcode=${status}`;
+  if (status) {
+    splitParam = `&httpresponsestatuscode=${status}`;
+    queryParam = `?httpresponsestatuscode=${status}`;
   }
-  console.log('返回的壮', status, url);
   if (url) {
     window.location.href = handleUrl(url, splitParam, queryParam);
   } else {
     try {
       let path = Vue.prototype.$tsrouter.currentRoute.fullPath == '/' ? window.location.href.split(MODULEID + '.html#')[1] : Vue.prototype.$tsrouter.currentRoute.fullPath;
-
       window.location.href = HOME + '/login.html#?tenant=' + TENANT + splitParam + '&redirect=' + MODULEID + '.html#' + path;
     } catch (e) {
       console.log(e);
@@ -153,7 +151,6 @@ instance.interceptors.response.use(
  */
 const errorHandle = res => {
   let status = res.status;
-  console.log('返回的只', status);
   let other = preLang(res.data.Message, res.data.Param);
   let rejectSource = '';
   if (res.data.Return) {
@@ -191,52 +188,37 @@ const errorHandle = res => {
       window.location.href = '/500.html';
       // 跳到服务器错误页面
       break;
-    case 520:
-      //已知的接口问题
-      tip(other, null, res.config.url, '提示', 'info');
-      throw res.data.Message; //把后端返回的错误信息抛出到页面中，这样页面可以catch这些错误做一些处理
     case 521:
       //租户问题，需要跳出系统重新输入租户
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       window.location.href = '/404.html';
       break;
     case 522:
-      //用户接口认证有问题,重新登录
+      // 认证类型失败
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       toLogin(res.data && res.data.directUrl ? res.data.directUrl : null, status);
       break;
-    case 523:
+    case 523: // 没有资源权限
+    case 526: // 对象不存在
       //用户权限不足，跳回每一个路由的404页面提示无访问权限
       Vue.prototype.$tsrouter.replace({
-        path: '/404',
+        path: '/no-authority',
         query: {
           des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
         }
       });
       break;
-    case 524:
-      //重复提交表单
+    case 520: // 运行已知错误
+    case 524: // 重复提交表单
+    case 525: // 认证类型不存在
+    case 550: // license 认证失败
       tip(other, null, res.config.url, '提示', 'info');
       throw res;
-    case 525:
-      //认证失败
-      tip(other, null, res.config.url, '提示', 'info');
-      throw res;
-    case 526:
-      //用户权限不足，跳回每一个路由的404页面提示无访问权限
-      Vue.prototype.$tsrouter.replace({
-        path: '/404',
-        query: {
-          des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
-        }
-      });
-      break;
     case 527:
       //会话已超时或已被终止,重新登录
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
       break;
-
     case 530:
       //接口参数不符合规范
       throw res.data.Message; //把后端返回的校验信息抛出到页面中

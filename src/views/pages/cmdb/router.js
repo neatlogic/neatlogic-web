@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-//const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const ciDetail = () => import('./ci/ci-detail.vue');
 //const ciEdit = () => import('./ci/ci-edit.vue');
@@ -43,7 +43,7 @@ const inspectStatusDetail = () => import('./application/inspect-status-detail.vu
 const graphEdit = () => import('./graph/graph-edit.vue');
 const graphData = () => import('./graph/graph-data.vue');
 const alertLevelManage = () => import('./alertlevel/alertlevel-manage.vue');
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 let routerArr = [
   {
     path: '/',
@@ -74,6 +74,14 @@ let routerArr = [
     path: '/refresh',
     name: 'refresh',
     component: refresh
+  },
+  {
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
+    meta: {
+      title: $t('router.common.pagenoexist')
+    }
   },
   {
     path: '/global-search',

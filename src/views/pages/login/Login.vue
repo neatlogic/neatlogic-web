@@ -83,20 +83,11 @@ export default {
       loading: false,
       needRefresh: false, // 点击登录会有闪一下的问题
       themeClass: localStorage.getItem('themeClass') || 'theme-default',
-      httpCodeLst: [
-        '521',
-        '531',
-        '532',
-        '533',
-        '534',
-        '535'
+      httpResponseStatusCodeLst: [
+        '522'
       ], // http状态码，用于显示接口异常返回的错误信息
-      httpCodeMessage: {
-        '531': this.$t('page.nofindauthmethodstarget', {target: SSOTICKETKEY}),
-        '532': this.$t('page.noauthinfofoundpleaselogin'),
-        '533': this.$t('page.thesessionhastimedoutorbeenterminatedpleaseloginagain'),
-        '534': this.$t('page.userauthfailedpleaselogin'),
-        '535': this.$t('page.authenticationfailed')
+      httpResponseStatusCodeMessage: {
+        '522': this.$t('page.userauthfailedpleaselogin')
       }
     };
   },
@@ -117,9 +108,9 @@ export default {
         replace: true
       });
     }
-    let httpcode = this.getHttpCode();
-    if (httpcode && this.httpCodeLst.includes(httpcode)) {
-      this.errorTips = this.httpCodeMessage[httpcode]; // 重定向之后，把后台返回的错误信息显示在页面上
+    let httpresponsestatuscode = this.getHttpCode();
+    if (httpresponsestatuscode && this.httpResponseStatusCodeLst.includes(httpresponsestatuscode)) {
+      this.errorTips = this.httpResponseStatusCodeMessage[httpresponsestatuscode]; // 重定向之后，把后台返回的错误信息显示在页面上
     }
   },
   beforeMount() {},
@@ -182,14 +173,14 @@ export default {
     },
     getHttpCode() {
       // 获取接口异常，返回的信息
-      let url = window.location.href; // http://192.168.0.12:8080?tenent=admin&httpcode=512&redirecurl=http://xxx.xxx.xxx/
-      let httpcode = '';
+      let url = window.location.href; // http://192.168.0.12:8080?tenent=admin&httpresponsestatuscode=512&redirecurl=http://xxx.xxx.xxx/
+      let httpresponsestatuscode = '';
       new URLSearchParams(url.slice(url.indexOf('?') + 1)).forEach((value, key) => {
-        if (key === 'httpcode') {
-          httpcode = value;
+        if (key === 'httpresponsestatuscode') {
+          httpresponsestatuscode = value;
         }
       });
-      return httpcode;
+      return httpresponsestatuscode;
     },
     changeTheme() {
       this.needRefresh = true;
