@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const download = () => import('@/views/pages/common/download.vue');
 const preview = () => import('@/views/pages/common/preview.vue');
@@ -76,9 +76,9 @@ export default [
     component: refresh
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('router.common.pagenoexist')
     }

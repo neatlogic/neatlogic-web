@@ -3,9 +3,8 @@
     <loading :loadingShow="taskLoading" type="fix"></loading>
     <TsContain
       :rightWidth="290"
-      :isSiderHide="isOrderRightHide"
+      :isRightSiderHide="isOrderRightHide"
       :hasContentPadding="false"
-      siderPosition="right"
       rightBtn
       hideHeader
       @rightSiderToggle="rightSiderToggle"

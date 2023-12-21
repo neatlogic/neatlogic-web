@@ -13,6 +13,7 @@
             ref="uploadDialog" 
             targetType="process"  
             url="/api/binary/common/import"  
+            @close="closeComplexUploadDialog"
           ></ComplexUploadDialog>
         </div>
       </template>
@@ -403,6 +404,11 @@ export default {
       this.keyword = historyData['keyword'] || '';
       this.isCreator = historyData['isCreator'] || 0;
       this.currentPage = historyData['currentPage'] || 1;
+    },
+    closeComplexUploadDialog(isSuccess) {
+      if (isSuccess) {
+        this.searchFlow();
+      }
     }
   },
   computed: {
