@@ -59,7 +59,8 @@ export function initRouter(VueRouter, store) {
   if (routerFromPageConfig && routerFromPageConfig[MODULEID]) {
     fromPageList = routerFromPageConfig[MODULEID];
   }
-  router.beforeEach(async(to, from, next) => {
+  // eslint-disable-next-line space-before-function-paren
+  router.beforeEach(async (to, from, next) => {
     let title = to.meta.title ? to.meta.title : to.name || to.path;
     document.title = $t(title);
     let usertoken = utils.getCookie('neatlogic_authorization');
@@ -69,11 +70,7 @@ export function initRouter(VueRouter, store) {
     }
 
     if (!usertoken) {
-      if (to.fullPath && to.fullPath != '/') {
-        window.location.href = HOME + '/login.html?tenant=' + TENANT + '&redirect=' + MODULEID + '.html#' + to.fullPath;
-      } else {
-        window.location.href = HOME + '/login.html?tenant=' + TENANT + '&redirect=' + MODULEID + '.html#';
-      }
+      window.location.href = `${HOME}/login.html?tenant=${TENANT}${HTTP_RESPONSE_STATUS_CODE ? '&httpresponsestatuscode=' + HTTP_RESPONSE_STATUS_CODE : ''}&redirect=${MODULEID}.html#${to.fullPath ? to.fullPath : ''}`;
     } else {
       /**
        * 以下逻辑用语自动生成回退路径：
@@ -141,7 +138,7 @@ export function initRouter(VueRouter, store) {
         //console.log(to, JSON.stringify(fromPageList, null, 2));
         next();
       } else {
-        next({ path: '/404', replace: true, query: { des: '无访问权限' } });
+        next({ path: '/no-authority', replace: true, query: { des: '无访问权限' } });
       }
     }
   });

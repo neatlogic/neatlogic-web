@@ -1,4 +1,4 @@
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const documentonline = () => import('./document/documentonline-help-center.vue');
 const documentonlineDetail = () => import('./document/documentonline-detail.vue');
 const documentonlineSearch = () => import('./document/documentonline-search.vue');
@@ -11,9 +11,9 @@ export default [
     redirect: '/documentonline'
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('page.pagenotvalid')
     }

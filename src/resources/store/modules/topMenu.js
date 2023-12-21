@@ -49,7 +49,7 @@ const actions = {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
       showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
     }
-    res.Return.forEach(moduleGroup => {
+    res?.Return?.forEach(moduleGroup => {
       try {
         let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
         if (!description || !description.trim()) {

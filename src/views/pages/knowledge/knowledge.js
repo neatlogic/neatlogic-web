@@ -35,7 +35,8 @@ const gettingUserInfo = store.dispatch('getUserInfo');
 const gettingModuleList = store.dispatch('getModuleList');
 const gettingKnowledgeTypeMenu = store.dispatch('leftMenu/getKnowledgeTypeMenu');
 
-router.beforeEach(async(to, from, next) => {
+// eslint-disable-next-line space-before-function-paren
+router.beforeEach(async (to, from, next) => {
   let title = to.meta.title ? to.meta.title : to.name || to.path;
   document.title = $t(title);
   let usertoken = Vue.prototype.$utils.getCookie('neatlogic_authorization');
@@ -53,7 +54,7 @@ router.beforeEach(async(to, from, next) => {
     if (!auth || store.getters.userAuthList.includes(auth)) {
       next();
     } else {
-      next({ path: '/404', replace: true, query: { des: $t('page.acessdenine') } });
+      next({ path: '/no-authority', replace: true, query: { des: $t('page.acessdenine') } });
     }
   }
 });
