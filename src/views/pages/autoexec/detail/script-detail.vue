@@ -18,8 +18,7 @@
     <Loading :loadingShow="isLoading" type="fix"></Loading>
     <TsContain
       v-if="!isLoading && scriptConfig"
-      siderPosition="right"
-      :siderWidth="204"
+      :rightWidth="204"
       :clearStyle="true"
       border="border"
     >
@@ -82,7 +81,7 @@
           ></VersionDetail>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <BasicDetail 
           :config="scriptConfig" 
           @updetaScriptName="updetaScriptName" 

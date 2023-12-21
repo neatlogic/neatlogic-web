@@ -32,8 +32,7 @@
             </Dropdown>
           </span>
           <span
-            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0"
-            v-auth="['RESOURCECENTER_MODIFY']"
+            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0 && ciData.authData && ciData.authData.cientityinsert"
             class="action-item tsfont-plus"
             @click="addAsset"
           >
@@ -162,12 +161,12 @@
           </template>
           <template v-slot:action="{ row }">
             <!-- 是否是巡检页面 -->
-            <div v-auth="'RESOURCECENTER_MODIFY'" class="tstable-action">
+            <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-label" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
-                <li class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
-                <li class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
-                <li class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
+                <li v-auth="'RESOURCECENTER_MODIFY'" class="tsfont-label" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
+                <li v-auth="'RESOURCECENTER_MODIFY'" class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
+                <li v-if="row.isCanEdit" class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
+                <li v-if="row.isCanDelete" class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
               </ul>
             </div>
           </template>
@@ -852,7 +851,7 @@ export default {
       }
     },
     getCiById(ciId) {
-      this.$api.cmdb.ci.getCiById(ciId).then(res => {
+      this.$api.cmdb.ci.getCiById(ciId, true).then(res => {
         this.ciData = res.Return;
       });
     },
