@@ -49,25 +49,27 @@ const actions = {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
       showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
     }
-    res?.Return?.forEach(moduleGroup => {
-      try {
-        let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
-        if (!description || !description.trim()) {
-          description = `${moduleName}平台`;
-        }
-        const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
-        const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
-        if (routerConfig[moduleId]) {
-          const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0 && authList.includes(route.meta.authority));
-          if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
-            //有权限菜单的模块才让显示
-            moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
+    res &&
+      res.Return &&
+      res.Return.forEach(moduleGroup => {
+        try {
+          let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
+          if (!description || !description.trim()) {
+            description = `${moduleName}平台`;
           }
+          const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
+          const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
+          if (routerConfig[moduleId]) {
+            const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0 && authList.includes(route.meta.authority));
+            if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
+              //有权限菜单的模块才让显示
+              moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
+            }
+          }
+        } catch (e) {
+          console.log(moduleGroup.groupName + '模块加载异常，' + e);
         }
-      } catch (e) {
-        console.log(moduleGroup.groupName + '模块加载异常，' + e);
-      }
-    });
+      });
     commit('setModuleList', moduleList);
     return res;
   },
