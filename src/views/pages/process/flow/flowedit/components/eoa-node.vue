@@ -1,5 +1,5 @@
 <template>
-  <div class="cmdbsyncNode">
+  <div class="eoaNode">
     <!-- 表单场景 -->
     <FormsceneSetting
       v-model="configData.stepConfig"
@@ -40,7 +40,7 @@
       :nodeConfig="nodeConfig"
       @updatebutton="updatebutton"
     ></ButtonSetting>
-    <EoaSetting></EoaSetting>
+    <EoaSetting id="eoaSetting" ref="eoaSetting"></EoaSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"
@@ -131,12 +131,15 @@ export default {
       let stepConfig = Object.assign({}, this.configData.stepConfig);
       if (this.keyList && this.keyList.length) {
         this.keyList.forEach(item => {
-          stepConfig[item] = this[item] || undefined;
+          stepConfig[item] = this[item] || null;
         });
       }
       //权限设置
       if (this.$refs.NoticeSetting) { //通知
         stepConfig.notifyPolicyConfig = this.$refs.NoticeSetting.getData();
+      }
+      if (this.$refs.eoaSetting) {
+        stepConfig.eoaConfig = this.$refs.eoaSetting.getData();
       }
       //分派处理人
       if (this.$refs.assignData) {

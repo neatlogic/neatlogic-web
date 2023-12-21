@@ -27,6 +27,7 @@
       </div>
       <div>
         <TsFormSelect
+          ref="templateId"
           v-model="eoaConfig.templateIdList"
           v-bind="templateConfig"
           @first="addTemplate()"
@@ -64,7 +65,8 @@ export default {
         firstText: '模板',
         firstSelect: false,
         transfer: true,
-        border: 'border'
+        border: 'border',
+        validateList: ['required']
       },
       templateList: [
         {
@@ -102,6 +104,16 @@ export default {
     },
     close() {
       this.isShowTemplateDialog = false;
+    },
+    valid() {
+      let isValid = true;
+      if (this.$refs.templateId) {
+        isValid = this.$refs.templateId.valid();
+      }
+      return isValid;
+    },
+    getData() {
+      return this.eoaConfig;
     }
   },
   filter: {},
