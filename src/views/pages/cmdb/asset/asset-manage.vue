@@ -6,8 +6,8 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
-          <span v-if="resourceIdList.length > 0" class="action-item">
-            <Dropdown v-auth="['RESOURCECENTER_MODIFY']" trigger="click" placement="bottom-start">
+          <span v-if="resourceIdList.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item">
+            <Dropdown trigger="click" placement="bottom-start">
               <div>
                 <span>{{ $t('page.batchoperation') }}</span>
                 <span class="tsfont-down"></span>
