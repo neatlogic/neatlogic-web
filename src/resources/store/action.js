@@ -7,7 +7,7 @@ const Actions = {
   //从后台获取用户信息并保存在VUEX中
   async getUserInfo({ commit }) {
     const res = await commonApi.getUser();
-    commit('setUserInfo', res?.Return);
+    commit('setUserInfo', res && res.Return ? res.Return : {});
     return res;
   },
   // 设置定时器
