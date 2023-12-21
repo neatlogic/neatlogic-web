@@ -45,7 +45,7 @@ export default {
     const _this = this;
     return {
       ciTypeDialogConfig: {
-        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.type')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.type')}),
+        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.hierarchy')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.hierarchy')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
