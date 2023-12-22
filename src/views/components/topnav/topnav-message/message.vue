@@ -174,7 +174,7 @@ export default {
     async getMessageCount() {
       clearTimeout(this.timer);
       const res = await this.$api.common.getMessageCount();
-      const {unreadCount, shortShowCount, longShowCount, message: popupMsg} = res.Return;
+      const {unreadCount = 0, shortShowCount = 0, longShowCount = 0, message: popupMsg} = res?.Return || {};
       this.$emit('update:messageCount', unreadCount);
       this.popupCount = shortShowCount + longShowCount;
       this.popupMsg = popupMsg;

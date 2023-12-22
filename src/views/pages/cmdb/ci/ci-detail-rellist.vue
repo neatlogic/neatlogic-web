@@ -1,8 +1,58 @@
 <template>
   <div class="divRel">
+    <div class="action-group padding-sm">
+      <div class="action-item">
+        <TsFormSwitch
+          :value="directionType === 'from'"
+          :showStatus="true"
+          :trueValue="true"
+          :falseValue="false"
+          :trueText="$t('term.cmdb.onlyupward')"
+          :falseText="$t('term.cmdb.onlyupward')"
+          @on-change="
+            val => {
+              if (val) {
+                directionType = 'from';
+              } else {
+                directionType = null;
+              }
+            }
+          "
+        ></TsFormSwitch>
+      </div>
+      <div class="action-item">
+        <TsFormSwitch
+          :value="directionType === 'to'"
+          :showStatus="true"
+          :trueValue="true"
+          :falseValue="false"
+          :trueText="$t('term.cmdb.onlydownward')"
+          :falseText="$t('term.cmdb.onlydownward')"
+          @on-change="
+            val => {
+              if (val) {
+                directionType = 'to';
+              } else {
+                directionType = null;
+              }
+            }
+          "
+        ></TsFormSwitch>
+      </div>
+      <div class="action-item">
+        <TsFormSwitch
+          v-model="noExtended"
+          :showStatus="true"
+          :trueValue="true"
+          :falseValue="false"
+          :trueText="$t('term.cmdb.noextend')"
+          :falseText="$t('term.cmdb.noextend')"
+        ></TsFormSwitch>
+      </div>
+    </div>
     <TsCard
-      v-if="relData.cardList"
-      v-bind="relData"
+      v-if="finalRelList.length > 0"
+      :cardList="finalRelList"
       :sm="24"
       :md="24"
       :lg="12"
@@ -10,7 +60,7 @@
       :xxl="8"
     >
       <template slot-scope="{ row }">
-        <div class="rel-container" style="cursor:pointer" @click="editRel(row)">
+        <div class="rel-container" style="cursor: pointer" @click="editRel(row)">
           <div v-if="row.isExtended == 0" class="rel-control">
             <i class="tsfont-trash-o" @click.stop="deleteRel(row)"></i>
           </div>
@@ -24,7 +74,7 @@
               <div class="overflow">
                 {{ row.fromCiLabel }}
               </div>
-              <div class="overflow text-grey" style="font-size:12px">{{ row.fromGroupName }}</div>
+              <div class="overflow text-grey" style="font-size: 12px">{{ row.fromGroupName }}</div>
             </div>
             <div class="rel-line border-color"></div>
             <div class="rel-middle">
@@ -39,7 +89,7 @@
               <div class="overflow">
                 {{ row.toCiLabel }}
               </div>
-              <div class="overflow text-grey" style="font-size:12px">{{ row.toGroupName }}</div>
+              <div class="overflow text-grey" style="font-size: 12px">{{ row.toGroupName }}</div>
             </div>
             <div v-if="row.relativeRelList && row.relativeRelList.length > 0" class="rel-relative">
               <span class="text-href" @click.stop="rebuildRelativeRel(row)">{{ $t('term.cmdb.calccascaderelation') }}</span>
@@ -56,14 +106,18 @@ import TsCard from '@/resources/components/TsCard/TsCard.vue';
 export default {
   name: '',
   components: {
-    TsCard
+    TsCard,
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   props: {
     ciData: { type: Object },
     relData: { type: Object }
   },
   data() {
-    return {};
+    return {
+      directionType: null,
+      noExtended: false
+    };
   },
   beforeCreate() {},
   created() {},
@@ -98,7 +152,18 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalRelList() {
+      const relList = [];
+      this.relData.cardList.forEach(rel => {
+        if ((!this.noExtended || (this.noExtended && !rel.isExtended)) &&
+        (!this.directionType || this.directionType === rel.direction)) {
+          relList.push(rel);
+        }
+      });
+      return relList;
+    }
+  },
   watch: {}
 };
 </script>
@@ -223,7 +288,7 @@ export default {
       position: absolute;
       bottom: 10px;
       left: 0px;
-      padding:0px 15px;
+      padding: 0px 15px;
       width: 100%;
     }
   }

@@ -55,7 +55,6 @@ siderWidth|Number|200|否|sider的宽度|如果可以拖动，则拖动的范围
 siderPosition|String|left|否|sider在布局的位置,主要是针对可拖动块是的插槽|left  right
 isDrag|Boolean|false|否|sider是否可以拖动|拖动产生的宽度会存在localStorage 下次进来时通过存储的值来渲染
 rightWidth|Number|200|否|如果是左中右布局的右侧宽度|需配合slot使用；在isDrag为true的前提下,如果siderWidth 和 rightWidth 同时存在，则优先使用siderWidth
-leftWidth|Number|200|否|如果是左中右布局的左侧宽度|需配合slot使用；在isDrag为true的前提下,如果siderWidth 和 leftWidth 同时存在，则优先使用siderWidth
 mode|String|window|否|显示模式|如果是window模式，会使用100vh来计算高度，如果是弹窗中使用，则需要使用dialog模式，则高度变成100%，避免弹窗下有大量留白
 >>  slot卡槽说明
 
@@ -67,8 +66,7 @@ topLeft|头部固定格式，左侧布局内容| -
 topCenter|头部固定模式，中间布局内容| 尽量少用
 topRight|头部固定模式，右侧布局内容| 主要是用来统一右侧搜索的宽度
 content|下部正文内容| -
-sider|侧边栏|尽量不用，sider 和 left是互斥的，可以的话尽量使用left  ;是否隐藏同样使用 isSiderHide 来控制;
-left|左边侧边栏| -
+sider|左边侧边栏|;
 right|右边侧边栏| - 
 
 
@@ -86,6 +84,5 @@ config:{
     siderPosition: 'left' , // left, right
     isDrag: false, //slider是否可以拖动
     rightWidth:280,//左边侧边栏宽度
-    leftWidth:230//右边侧边栏宽度
 }
 ```

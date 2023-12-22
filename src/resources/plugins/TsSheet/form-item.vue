@@ -47,27 +47,30 @@
     ></div>
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
-    <component
-      :is="formItem.handler"
-      v-if="showComponent(formItem) && (!formItem.type || formItem.type === 'form')"
-      ref="formItem"
-      :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
-      :formItem="formItem"
-      :formItemList="formItemList"
-      :value="formItemValue"
-      :mode="mode"
-      :filter="filter"
-      :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
-      :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
-      :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
-      :formData="formData"
-      :readonlyTextIsHighlight="readonlyTextIsHighlight"
-      :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
-      :isCustomValue="isCustomValue"
-      @setValue="setValue"
-      @resize="$emit('resize')"
-      @select="selectFormItem"
-    ></component>
+    <template v-if="showComponent(formItem) && (!formItem.type || formItem.type === 'form')">
+      <component
+        :is="formItem.handler"
+        v-if="isExistComponent(formItem.handler)"
+        ref="formItem"
+        :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
+        :formItem="formItem"
+        :formItemList="formItemList"
+        :value="formItemValue"
+        :mode="mode"
+        :filter="filter"
+        :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
+        :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
+        :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
+        :formData="formData"
+        :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+        :isCustomValue="isCustomValue"
+        @setValue="setValue"
+        @resize="$emit('resize')"
+        @select="selectFormItem"
+      ></component>
+      <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
+    </template>
     <CustomItem
       v-else-if="showComponent(formItem) && formItem.type === 'custom'"
       ref="formItem"
@@ -530,6 +533,15 @@ export default {
         readonlyTextIsHighlight = true;
       }
       return readonlyTextIsHighlight;
+    },
+    isExistComponent() {
+      return (handler) => {
+        let component = true;
+        if (!formItems[handler]) {
+          component = false;
+        }
+        return component;
+      };
     }
   },
   watch: {}

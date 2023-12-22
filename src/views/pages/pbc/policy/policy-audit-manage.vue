@@ -113,7 +113,6 @@ export default {
       searchVal: {},
       currentAuditId: null, //当前选中记录id
       sessionName: 'policy-audit-manage',
-      leftWidth: 200,
       policyData: {},
       policyAuditData: {},
       searchPolicyParam: { collectMode: 'initiative', inpageSize: 20 },

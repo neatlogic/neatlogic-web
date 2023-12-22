@@ -133,7 +133,7 @@ export default {
         {
           name: 'typeId',
           type: 'select',
-          label: this.$t('page.type'),
+          label: this.$t('term.cmdb.cilevel'),
           width: '100%',
           maxlength: 50,
           transfer: true,
@@ -143,6 +143,20 @@ export default {
           textName: 'name',
           onChange: name => {
             this.$set(_this.ciData, 'typeId', name);
+          }
+        },
+        {
+          name: 'catalogId',
+          type: 'tree',
+          label: this.$t('term.cmdb.cidirectory'),
+          width: '100%',
+          transfer: true,
+          url: '/api/rest/cmdb/cicatalog/listtree',
+          validateList: ['required'],
+          valueName: 'id',
+          textName: 'name',
+          onChange: id => {
+            this.$set(_this.ciData, 'catalogId', id);
           }
         },
         {
@@ -173,6 +187,7 @@ export default {
           type: 'switch',
           label: this.$t('term.cmdb.virtualci'),
           value: 0,
+          isHidden: false,
           onChange: function(name) {
             _this.$set(_this.ciData, 'isVirtual', name);
           }
@@ -181,6 +196,7 @@ export default {
           _belong: 'virtualci',
           name: 'file',
           type: 'slot',
+          isHidden: false,
           label: this.$t('term.cmdb.configfile')
         },
         {
@@ -189,6 +205,7 @@ export default {
           type: 'tree',
           label: this.$t('page.inherit'),
           width: '100%',
+          isHidden: false,
           url: 'api/rest/cmdb/ci/listtree',
           params: { ciId: _this.id, isVirtual: 0 },
           valueName: 'id',
@@ -207,6 +224,7 @@ export default {
           _belong: 'realci',
           name: 'isAbstract',
           type: 'switch',
+          isHidden: false,
           label: this.$t('term.cmdb.abstractci'),
           desc: this.$t('message.cmdb.abstractmodelextend'),
           value: 0,
@@ -321,13 +339,6 @@ export default {
             this.currentIcon = this.ciData.icon;
             this.ciFormConfig.forEach(element => {
               element.value = this.ciData[element.name];
-              //不允许修改唯一标识
-              if (element.name == 'name') {
-                element.disabled = true;
-              } else if (element.name == 'isVirtual' || element.name == 'file') {
-                //不允许再次上传配置文件和修改是否虚拟模型
-                element.isHidden = true;
-              }
             });
           }
         });
@@ -361,12 +372,27 @@ export default {
   watch: {
     ciData: {
       handler: function(newVal) {
-        for (let k in this.ciFormConfig) {
-          if (this.ciFormConfig[k]._belong === 'realci') {
-            this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
-          } else if (this.ciFormConfig[k]._belong === 'virtualci') {
-            this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
-          }
+        if (newVal && !newVal.id) { 
+          for (let k in this.ciFormConfig) {
+            if (this.ciFormConfig[k]._belong === 'realci') {
+              this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
+            } else if (this.ciFormConfig[k]._belong === 'virtualci') {
+              this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
+            }
+          } 
+        } else if (newVal && newVal.id) {
+          this.ciFormConfig.forEach(element => {
+            //不允许修改唯一标识
+            if (element.name === 'name') {
+              this.$set(element, 'disabled', true);
+            } else if (element.name === 'isVirtual' || element.name === 'file') {
+              //不允许再次上传配置文件和修改是否虚拟模型
+              this.$set(element, 'isHidden', true);
+            } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
+              //有数据不允许修改是否抽象模型和父模型
+              this.$set(element, 'isHidden', true);
+            }
+          });
         }
       },
       deep: true,

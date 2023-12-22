@@ -16,6 +16,7 @@ var MENUTYPE = {};
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
 const COMMERCIAL_MODULES = []; //已激活的商业模块
+var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 
 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
 var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
@@ -75,9 +76,12 @@ function getDirectUrl() {
       if (response.status === 522) {
         return response.json().then(responseText => {
           removeCookie('neatlogic_authorization');
-          if (responseText.Status === 'FAILED' && responseText.DirectUrl) {
-            const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
-            window.open(directUrl, '_self');
+          if (responseText.Status === 'FAILED') {
+            HTTP_RESPONSE_STATUS_CODE = '522';
+            if (responseText.DirectUrl) {
+              const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
+              window.open(directUrl, '_self');
+            }
           }
         });
       } else if (response.status === 200) {
@@ -91,6 +95,13 @@ function getDirectUrl() {
     .catch(error => {
       console.error(error);
     });
+}
+function handleUrl(url, httpresponsestatuscode) {
+  // 处理url是否带有参数
+  if (url) {
+    return url.indexOf('?') != -1 ? '&httpresponsestatuscode=' + httpresponsestatuscode : '?httpresponsestatuscode=' + httpresponsestatuscode;
+  }
+  return url;
 }
 function getSsoTokenKey() {
   // 获取ssoTokenKey

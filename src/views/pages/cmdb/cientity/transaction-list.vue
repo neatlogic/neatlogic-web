@@ -216,7 +216,7 @@ export default {
         content: content,
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.cmdb.transaction.deleteTransaction(row.id).then(res => {
+          this.$api.cmdb.transaction.deleteTransaction(this.ciId, row.id).then(res => {
             this.$Message.success(this.$t('message.deletesuccess'));
             vnode.isShow = false;
             this.searchTransaction();

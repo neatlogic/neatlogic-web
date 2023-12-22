@@ -60,7 +60,7 @@
               <AppManage
                 v-if="configType == 'app'"
                 :appSystemId="appSystemId"
-                :hasEditConfigAuth="canShow ? canEdit : canShow"
+                :hasEditConfigAuth="canEdit"
                 :authList="authList"
                 :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
                 :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
@@ -92,7 +92,7 @@
                 <AppManage
                   v-if="configType == 'app'"
                   :appSystemId="appSystemId"
-                  :hasEditConfigAuth="canShow ? canEdit : canShow"
+                  :hasEditConfigAuth="canEdit"
                   :authList="authList"
                   :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
                   :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
@@ -141,7 +141,7 @@ export default {
   },
   props: {
     hideFucntionExcludeAppModuleRunner: {
-      //  codehub新增应用配置入口，为了维护应用和模块，以及模块对应的runner组,发布其他功能全部屏蔽
+      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
       type: Boolean,
       default: false
     }

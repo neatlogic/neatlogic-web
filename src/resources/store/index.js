@@ -19,7 +19,8 @@ const State = {
   isTaskExpired: false, //工单是否超时
   isSiderTreeHide: false, //是否隐藏接口管理、操作审计、知识分类页面的左侧树形目录
   readMessage: null, //已读的消息，用于历史消息页面和消息中心的已读状态同步
-  slaTimeList: [] // 工单时效列表，超时/剩余时间
+  slaTimeList: [], // 工单时效列表，超时/剩余时间
+  isUpdateExtramenu: false //是否更新附加菜单列表
 };
 
 const store = new Vuex.Store({

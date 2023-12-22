@@ -23,15 +23,14 @@ import { default as formdivider } from './define/formdivider.js';
 import { default as formcube } from './define/formcube.js';
 import { default as formtab } from './define/formtab.js';
 import { default as formcollapse } from './define/formcollapse.js';
-import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
+// import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
 import { default as AUTOEXECITEMS } from '@/views/pages/autoexec/form/define';
-import { default as formsubassembly } from './define/formsubassembly.js'; //表单子组件
 
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
   { value: 'layout', text: $t('term.framework.layoutwidget') },
-  { value: 'autoexec', text: $t('term.framework.automationwidget') },
-  { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
+  { value: 'autoexec', text: $t('term.framework.automationwidget') }
+  // { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
 ];
 let importComponentConfig = {};
 let defineList = [];
@@ -41,7 +40,7 @@ try {
   componentConfig.keys().forEach(path => {
     if (path) {
       const moduleName = path.split('/')[1]?.split('-')?.pop() || path.split('/')[1];
-      if (moduleName == MODULEID) {
+      if (moduleName == 'framework') {
         importComponentConfig = componentConfig(path).default || {};
       }
     }
@@ -54,4 +53,4 @@ try {
 } catch (error) {
   console.error('formitem-list.js抛出异常', error);
 }
-export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, formsubassembly, ...CMDBITEMS, ...AUTOEXECITEMS, ...defineList];
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...defineList];

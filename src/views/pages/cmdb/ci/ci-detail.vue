@@ -195,7 +195,6 @@ export default {
       attrRuleList: [],
       relData: { theadList: [] },
       isLoading: true,
-      leftWidth: 200,
       sessionName: 'civiewbox'
     };
   },
@@ -402,6 +401,7 @@ export default {
         this.getCiById();
         this.getAttrByCiId();
         this.getRelByCiId();
+        this.$refs['ciTypeList'] && this.$refs['ciTypeList'].searchTreeData();
       }
     },
     closeAttrDialog: function(needRefresh) {

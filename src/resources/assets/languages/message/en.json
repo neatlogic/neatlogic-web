@@ -261,7 +261,8 @@
     "donotinput": "Please do not enter&lt; &gt; &quot; &apos; Equal special symbols",
     "supporttype1": "Only Chinese characters, letters, numbers, and special characters (. _ -) are supported",
     "supporttype2": "Only letters, numbers, and special characters (. _ -) are supported",
-    "supporttype3": "Only letters, numbers, slashes, and underscores are supported"
+    "supporttype3": "Only letters, numbers, slashes, and underscores are supported",
+    "highriskcode": "There are high-risk codes present"
   },
   "incorrectformat": "Incorrect format",
   "accordingformat": "Please input according to the format requirements",

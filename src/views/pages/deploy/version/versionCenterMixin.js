@@ -32,7 +32,9 @@ export default {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 if (isBack == true) {
-                  this.$back('/version-center-manage'); // 版本中心详情页面，删除成功后，返回到列表页面
+                  this.$router.push({ // 版本中心详情页面，删除成功后，返回到列表页面
+                    path: '/version-center-manage'  
+                  });
                 } else {
                   this.changeCurrent();
                 }

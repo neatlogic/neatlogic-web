@@ -18,8 +18,7 @@
     <Loading :loadingShow="isLoading" type="fix"></Loading>
     <TsContain
       v-if="toolConfig"
-      siderPosition="right"
-      :siderWidth="204"
+      :rightWidth="204"
       :clearStyle="true"
       border="border"
     >
@@ -66,7 +65,7 @@
           </template>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <BasicDetail :config="toolConfig" operationType="tool"></BasicDetail>
       </template>
       <template v-slot:content>

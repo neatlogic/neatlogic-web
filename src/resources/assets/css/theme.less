@@ -135,10 +135,10 @@
         a {
           color: @default-top-text;
 
-          &:hover {
-            color: @default-op;
-            background: fade(@top-active, 50%);
-          }
+          // &:hover {
+          //   color: @default-op;
+          //   background: fade(@top-active, 50%);
+          // }
 
           &-active {
             color: @default-op;
@@ -1589,6 +1589,12 @@
 
   .border-base-left {
     border-left: 1px solid var(--border-color, @border-color-base) !important;
+  }
+  .border-base-top {
+    border-top: 1px solid var(--border-color, @border-color-base) !important;
+  }
+  .border-base-bottom {
+    border-bottom: 1px solid var(--border-color, @border-color-base) !important;
   }
 
   .border-error {

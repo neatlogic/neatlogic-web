@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 //const taskOverview = () => import('./task/task-overview.vue');
 const catalogOverview = () => import('./catalog/catalog-overview.vue');
@@ -57,9 +57,9 @@ let routerArr = [
     component: refresh
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('page.pagenotvalid')
     }

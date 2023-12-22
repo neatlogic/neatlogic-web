@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsContain>
-      <template v-slot:topRight>
+      <template v-slot:topLeft>
         <div class="action-group">
           <div class="action-item tsfont-plus" @click="editAttr()">{{ $t('page.attribute') }}</div>
         </div>
@@ -10,11 +10,11 @@
         <TsTable v-bind="globalAttrData" :theadList="theadList">
           <template v-slot:isActive="{ row }">
             <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
-            <span v-if="!row.isActive" class="text-grey">{{ $t('page.no') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template v-slot:isMultiple="{ row }">
             <span v-if="row.isMultiple" class="text-success">{{ $t('page.yes') }}</span>
-            <span v-if="!row.isMultiple" class="text-grey">{{ $t('page.no') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template v-slot:itemList="{ row }">
             <div v-if="row.itemList && row.itemList.length > 0">
@@ -28,7 +28,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="tsfont-edit" @click="editAttr(row)">{{ $t('page.edit') }}</li>
-                <li class="tsfont-trash-o" @click="deleteAttr(row)">{{ $t('page.delete') }}</li>
+                <li v-if="!row.isPrivate" class="tsfont-trash-o" @click="deleteAttr(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -54,7 +54,7 @@ export default {
       theadList: [
         {
           key: 'name',
-          title: '唯一标识'
+          title: this.$t('page.uniquekey')
         },
         { key: 'label', title: this.$t('page.name') },
         { key: 'isActive', title: this.$t('term.report.isactive') },

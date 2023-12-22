@@ -2,12 +2,12 @@
   <div class="taskdetail-omnipotent">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
-      :leftWidth="260"
+      :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="taskdetail-top">
@@ -20,7 +20,6 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
     
           <div class="toolbar-right">
@@ -193,7 +192,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:left>
+      <template v-slot:sider>
         <slot></slot>
       </template>
       <template v-slot:content>
@@ -210,8 +209,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >

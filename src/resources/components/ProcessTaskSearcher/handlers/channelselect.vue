@@ -36,7 +36,8 @@
         :validateList="['required']"
         @change="changeFormAttribute"
       ></TsFormSelect>
-      <div v-for="(formcondition, index) in workcenterFormConditionList" :key="index">
+      <!-- 解决index作为key，导致删除对应属性，属性对应配置信息还是上一个的问题 -->
+      <div v-for="(formcondition) in workcenterFormConditionList" :key="formcondition.uuid">
         <div v-if="getFormConditionByName(formcondition.name)">
           <label class="text-grey">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
           <div>

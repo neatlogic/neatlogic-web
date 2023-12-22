@@ -523,6 +523,25 @@ let validtor = {
     isSearch: true,
     url: '',
     trigger: 'change'
+  },
+  highriskcode: {
+    name: 'highriskcode',
+    validator: function(rule, value) {
+      var flag = true;
+      if (value) {
+        let arr = ['shutdown', 'reboot', 'rm'];
+        for (var i = 0; i < arr.length; i++) {
+          if (value.indexOf(arr[i]) > -1) {
+            flag = false;
+            break;
+          }
+        }
+        return flag;
+      }
+      return true;
+    },
+    trigger: 'change',
+    message: $t('message.plugin.highriskcode')
   }
 };
 

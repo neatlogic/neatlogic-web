@@ -3,9 +3,8 @@
     <loading :loadingShow="taskLoading" type="fix"></loading>
     <TsContain
       :rightWidth="290"
-      :isSiderHide="isOrderRightHide"
+      :isRightSiderHide="isOrderRightHide"
       :hasContentPadding="false"
-      siderPosition="right"
       rightBtn
       hideHeader
       @rightSiderToggle="rightSiderToggle"
@@ -247,6 +246,11 @@ export default {
     },
     knowledgeSearch() {
       this.$refs.baseSetting.knowledgeSearch(this.dispatchTitle);
+    },
+    updateFormWidth() {
+      if (this.$refs.formSetting && this.$refs.formSetting.$el && this.$refs.formSetting.$el.__vue__.$refs.formSheet) {
+        this.$refs.formSetting.$el.__vue__.$refs.formSheet.initContainerWidth();
+      }
     }
   },
   computed: {

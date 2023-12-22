@@ -205,7 +205,8 @@ module.exports = {
           '^/([^/]+)/([^/]+)/check$': '/neatlogic/$2/check/$1'
         },
         headers: {
-          Tenant: tenantName
+          Tenant: tenantName,
+          Env: 'uat'
         }
       }
     }

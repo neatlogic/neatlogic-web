@@ -69,7 +69,7 @@ export default {
     //404页面必须在所有路由加载完成后添加，不然无效
     this.$router.addRoute({
       path: '*',
-      component: () => import('@/views/pages/common/404.vue'),
+      component: () => import('@/views/pages/common/no-authority.vue'),
       meta: {
         title: '页面不存在'
       }
@@ -116,7 +116,7 @@ export default {
       _this.menutype = MENUTYPE;
 
       _this.$store.state.topMenu.gettingModuleList.then(res => {
-        if (res.Status == 'OK') {
+        if (res && res.Status == 'OK') {
           //这里还有个过滤当前模块的
           let authlist = res.Return || [];
           authlist = authlist

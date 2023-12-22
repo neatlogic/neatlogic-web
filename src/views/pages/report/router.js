@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-//const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const reportManage = () => import('./report/report-manage.vue');
 const reportinstanceManage = () => import('./reportinstance/reportinstance-manage.vue');
@@ -11,7 +11,7 @@ const blackWhiteListManage = () => import('./config/blackwhitelist-manage.vue');
 const statementEdit = () => import('./statement/statement-edit.vue');
 const statementView = () => import('./statement/statement-view.vue');
 const statementManage = () => import('./statement/statement-manage.vue');
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default [
   {
@@ -21,16 +21,16 @@ export default [
       try {
         const moduleList = JSON.parse(localStorage.getItem('moduleList'));
         defaultPage =
-        moduleList.find(module => {
-          return module.moduleId === MODULEID;
-        }).defaultPage || '/welcome';
+          moduleList.find(module => {
+            return module.moduleId === MODULEID;
+          }).defaultPage || '/welcome';
       } catch {
         defaultPage = '/welcome';
       }
       if (from.path === defaultPage) {
-        next({ name: 'refresh', replace: true, query: { path: defaultPage} });
+        next({ name: 'refresh', replace: true, query: { path: defaultPage } });
       } else {
-        next({ path: defaultPage, replace: true});
+        next({ path: defaultPage, replace: true });
       }
     }
   },
@@ -43,6 +43,14 @@ export default [
     path: '/refresh',
     name: 'refresh',
     component: refresh
+  },
+  {
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
+    meta: {
+      title: $t('page.pagenotvalid')
+    }
   },
   {
     path: '/reportinstance-manage',

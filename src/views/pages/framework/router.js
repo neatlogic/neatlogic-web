@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const userManage = () => import('./users/user-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
@@ -56,6 +56,7 @@ const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // �
 const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'); //重建视图
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
+const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 
 import { $t } from '@/resources/init.js';
 
@@ -87,9 +88,9 @@ export default [
     component: refresh
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('page.pagenotvalid')
     }
@@ -688,6 +689,18 @@ export default [
       ismenu: false,
       icon: '',
       authority: 'TAGENT_BASE',
+      type: 'others'
+    }
+  },
+  {
+    path: '/extramenu-manage',
+    name: 'extramenuManage',
+    component: extramenuManage,
+    meta: {
+      title: $t('router.framework.extramenu'),
+      ismenu: true,
+      icon: 'tsfont-list',
+      authority: 'EXTRA_MENU_MODIFY',
       type: 'others'
     }
   }

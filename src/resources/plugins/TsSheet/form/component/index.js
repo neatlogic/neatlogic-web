@@ -24,21 +24,18 @@ import formtab from './formtab.vue';
 import formcollapse from './formcollapse.vue';
 import formtable from './formtable.vue';
 
-import * as cmdbComponent from '@/views/pages/cmdb/form/component';
+// import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
-
-import formsubassembly from './formsubassembly.vue';
 
 let importComponentConfig = {};
 try {
   // 导入自定义组件
-  let importComponentConfig;
   const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
   componentConfig
     .keys()
     .filter(path => {
       const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
-      return moduleName === MODULEID;
+      return moduleName === 'framework';
     })
     .forEach(path => {
       importComponentConfig = componentConfig(path).default || {};
@@ -46,6 +43,7 @@ try {
 } catch (error) {
   console.error('form/component/index.js异常', error);
 }
+
 export default {
   formlabel,
   formtext,
@@ -72,8 +70,7 @@ export default {
   formtab,
   formcollapse,
   formtable,
-  formsubassembly,
-  ...cmdbComponent,
+  // ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig
 };

@@ -54,7 +54,7 @@
                   <span>{{ $t('term.process.alwaystransfer') }}</span>
                 </div>
                 <div v-if="item.type=='negative'" class="text-overflow">
-                  <span>$t('term.process.nottransfer')</span>
+                  <span>{{ $t('term.process.nottransfer') }}</span>
                 </div>
               </div>
               <div class="condition-text">

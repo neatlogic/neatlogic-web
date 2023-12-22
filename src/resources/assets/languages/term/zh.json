@@ -87,7 +87,6 @@
     "uncommittransaction": "未提交事务",
     "radius": "圆角",
     "transaction": "事务",
-    "typesetting": "类型设置",
     "importci": "导入模型",
     "exportci": "导出模型",
     "extendto": "继承自",
@@ -173,7 +172,17 @@
     "addonerel": "添加单个关系",
     "addmorerel": "添加多个关系",
     "rerunsteptosync": "回退重新同步",
-    "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步"
+    "rerunsteptosynctip": "流程回退后，再次流转至当前步骤时，重新同步",
+    "onlyupward": "只看上游",
+    "onlydownward": "只看下游",
+    "noextend": "隐藏继承关系",
+    "nochange": "没有任何修改",
+    "cilevel": "模型层级",
+    "cidirectory": "模型目录",
+    "directoryname": "目录名称",
+    "noaddcidirectory": "未添加模型目录，",
+    "currentcatalogcitenodeletedescrition": "当前目录节点已被引用，请解除引用后删除",
+    "autoexec": "自动化操作"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -751,7 +760,7 @@
     "pleaseselectdirectoryname": "请选择目录名称",
     "pleaseselectuploadfile": "脚本内容：请上传附件",
     "supportonlytarfile": "仅支持tar文件",
-    "scriptcontenttips": "帮助：\n 通过参数名来获取参数值，如：\nprint $inputParam1\n通过给输出参数赋值来设定返回值，如：\nmy $outParam1=＂outParam1-Value＂\n输入参数：\n“文本”、“密码”类参数可获得一个代表实际值的字符串\n“节点”类参数可以获得一个IP\n“文件”类参数可获得文件名，存放地址就在当前执行目录。\n输出参数：\n“文本“类参数可输出任意格式的文本\n报告数据：\n定义名称为:report_json的参数，值需要是合法的json格式。\n退出码标识：\n只要ExitCode不等于0则代表异常退出。\n注意：\n如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
+    "scriptcontenttips": "帮助：\n 工具执行是通过标准的命令行参数来传参。\n 输入参数：\n 1）具备参数名的参数：\n   option名称就是参数名，option值就是参数值。\n 2）没有参数名的参数：\n   对应工具的自由参数，通过参数序号来获取参数。\n 不同的编程语言如何处理命令行参数，具体请查看相关的demo。\n 输出参数：\n 通过把输出参数写入当前作业工作目录下的json文件ouput.json进行参数的输出。\n 平台提供的不同语言的输出封装，具体请查看相关的demo，例如：\n Python：\n from lib import AutoExecUtils\n out = {}\n out['outtext'] = 'this is the text out value'\n AutoExecUtils.saveOutput(out) \n Perl：\n use AutoExecUtils;\n my $out = {};\n $out->{outtext}     = 'this is the text out value';\n AutoExecUtils::saveOutput($out); \n Bash：\n outtext='this is the text out value'\n if [ ! -z '$OUTPUT_PATH' ]; then\n     cat <<EOF >'$OUTPUT_PATH'\n {\n     'outtext':'$outtext'\n }\n EOF\n fi\n 退出码标识：\n 只要ExitCode不等于0则代表异常退出。\n注意：\n 如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
     "speedlevel": "速度级别",
     "workthread": "工作线程",
     "loadedjob": "已加载作业",
@@ -1161,7 +1170,8 @@
     "excelinputtemplate": "表格输入模板",
     "formsubassembly": "表单子组件",
     "globalreadonly": "全局只读",
-    "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态"
+    "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态",
+    "iscannotdeletenode": "存在子节点不可删除"
   },
   "knowledge": {
     "document": "文档",
@@ -2549,12 +2559,12 @@
     "dependentapp": "依赖应用"
   },
   "diagram": {
-    "widgetlist": "组件列表",
+    "widgetlist": "图元列表",
     "widget": "图元",
     "lane": "泳道",
-    "widgetmanage": "组件管理",
+    "widgetmanage": "图元管理",
     "dragtosort": "拖动改变排序",
-    "pleaseselectwidget": "请至少选择一个组件",
+    "pleaseselectwidget": "请至少选择一个图元",
     "commoncatalog": "普通目录",
     "cmdbcatalog": "配置项目录",
     "catalogitem": "目录项",
@@ -2583,6 +2593,19 @@
     "allowdelete": "允许删除",
     "allowmove": "允许移动",
     "nocientityname": "无显示名",
-    "allowselect": "允许选中"
+    "allowselect": "允许选中",
+    "releaselock": "解除锁定",
+    "tryfill": "模拟填充",
+    "privatecatalog": "个人目录",
+    "publiccatalog": "公共目录",
+    "releaseconfirm": "是否确认发布当前架构图？",
+    "edgemode": "连线模式",
+    "sourcemarker": "起点箭头",
+    "targetmarker": "终点箭头",
+    "classic": "经典",
+    "block": "块",
+    "cross": "交叉",
+    "larger": "放大",
+    "smaller": "缩小"
   }
 }

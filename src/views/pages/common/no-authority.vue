@@ -5,7 +5,7 @@
         <div class="background-img"></div>
       </div>
       <p class="h2">{{ des }}</p>
-      <div style="padding-top:10px;"><Button type="primary" @click="gotoDefault">{{ $t('page.returntohomepage') }}</Button></div>
+      <div class="pt-sm"><Button type="primary" @click="gotoDefault">{{ $t('page.returntohomepage') }}</Button></div>
     </div>
   </div>
 </template>

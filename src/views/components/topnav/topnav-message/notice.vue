@@ -115,7 +115,7 @@ export default {
         pageSize: (this.pageSize < this.noticeList.length) ? this.noticeList.length : this.pageSize
       };
       const res = await this.$api.common.pullNotice(params);
-      const { tbodyList = [], popUpNoticeIdList = [], rowNum } = res.Return;
+      const { tbodyList = [], popUpNoticeIdList = [], rowNum } = res?.Return || {};
       this.$emit('update:noticeCount', rowNum);
       this.noticeList = tbodyList;
       this.popupIdList = popUpNoticeIdList;

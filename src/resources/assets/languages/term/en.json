@@ -87,7 +87,6 @@
     "uncommittransaction": "Uncommitted transaction",
     "radius": "Rounded corners",
     "transaction": "Transaction",
-    "typesetting": "Type Setting",
     "importci": "Import model",
     "exportci": "Export model",
     "extendto": "Inherited from",
@@ -173,7 +172,17 @@
     "addonerel": "Add a single relationship",
     "addmorerel": "Add multiple relationships",
     "rerunsteptosync": "Fallback Resync",
-    "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize"
+    "rerunsteptosynctip": "After the process is rolled back, when it flows back to the current step, resynchronize",
+    "onlyupward": "Just look upstream",
+    "onlydownward": "Just look downstream",
+    "noextend": "Hide Extend Relationships",
+    "nochange": "No modifications made",
+    "cilevel": "Model hierarchy",
+    "cidirectory": "Model Catalog",
+    "directoryname": "Catalog Name",
+    "noaddcidirectory": "No model directory added,",
+    "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
+    "autoexec": "Automated operations"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -752,7 +761,7 @@
     "pleaseselectdirectoryname": "Please select a directory name",
     "pleaseselectuploadfile": "Script content: Please upload the attachment",
     "supportonlytarfile": "Only support tar files",
-    "scriptcontenttips": "Help:\nGet the parameter value by the parameter name, such as:\nprint $inputParam1\nSet the return value by assigning the output parameter, such as:\nmy $outParam1=\"outParam1-Value\"\n Input parameters: \n Text and Password parameters can obtain a string representing the actual value\n Node parameters can obtain an IP\n File parameters can obtain the file name, and the storage address is in The current execution directory.\nOutput parameters:\nText type parameters can output text in any format\nReport data:\nDefine the parameter named: report_json, the value needs to be in legal json format.\nExit code identification :\nAs long as the ExitCode is not equal to 0, it means abnormal exit.\nNote:\nIf you need to initiate a child process, please pay attention to close the standard output and error output after execution, otherwise the parent process may not exit normally.",
+    "scriptcontenttips": "Help:\nTool execution uses standard command line parameters to pass parameters. \nInput parameters:\n1) Parameters with parameter names:\noption name is the parameter name, option value is the parameter value. \n2) Parameters without parameter names: \nCorresponds to the free parameters of the tool, and obtains the parameters through the parameter serial number. \nHow different programming languages ​​handle command line parameters, please check the relevant demos for details. \nOutput parameters:\nThe parameters are output by writing the output parameters to the json file ouput.json in the current job working directory. \nThe platform provides output packages in different languages. For details, please view the relevant demos, for example:\nPython:\nfromlibimportAutoExecUtils\nout={}\nout['outtext']='thisisthetextoutvalue'\nAutoExecUtils.saveOutput(out)\nPerl :\nuseAutoExecUtils;\nmy$out={};\n$out->{outtext}='thisisthetextoutvalue';\nAutoExecUtils::saveOutput($out);\nBash:\nouttext='thisisthetextoutvalue'\nif[!- z'$OUTPUT_PATH'];then\ncat<<EOF>'$OUTPUT_PATH'\n{\n'outtext':'$outtext'\n}\nEOF\nfi\nExit code identification:\nAs long as ExitCode is not equal to 0 represents an abnormal exit. \nNote:\nIf you need to initiate a child process, please be sure to close the standard output and error output after execution, otherwise the parent process may not exit normally.",
     "speedlevel": "Speed Level",
     "workthread": "Worker thread",
     "loadedjob": "Loaded job",
@@ -1162,7 +1171,8 @@
     "excelinputtemplate": "Table Input Template",
     "formsubassembly": "List subcomponents",
     "globalreadonly": "Global read-only",
-    "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state"
+    "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state",
+    "iscannotdeletenode": "There are child nodes that cannot be deleted"
   },
   "knowledge": {
     "document": "Document",
@@ -2551,12 +2561,12 @@
     "dependentapp": "Dependent applications"
   },
   "diagram": {
-    "widgetlist": "Component List",
+    "widgetlist": "Element List",
     "widget": "Element",
     "lane": "Swimming lanes",
-    "widgetmanage": "Component Management",
+    "widgetmanage": "Element Management",
     "dragtosort": "Drag to change sorting",
-    "pleaseselectwidget": "Please select at least one component",
+    "pleaseselectwidget": "Please select at least one element",
     "commoncatalog": "Normal directory",
     "cmdbcatalog": "Configuration Item Catalog",
     "catalogitem": "Catalog Entry",
@@ -2585,6 +2595,18 @@
     "allowdelete": "Allow deletion",
     "allowmove": "Allow movement",
     "nocientityname": "No display name",
-    "allowselect": "Allow selection"
+    "allowselect": "Allow selection",
+    "releaselock": "Unlock",
+    "privatecatalog": "Personal directory",
+    "publiccatalog": "Public directory",
+    "releaseconfirm": "Are you sure to publish the current architecture diagram?",
+    "edgemode": "line mode",
+    "sourcemarker": "Starting arrow",
+    "targetmarker": "End arrow",
+    "classic": "classical",
+    "block": "block",
+    "cross": "overlapping",
+    "larger": "enlarge",
+    "smaller": "narrow"
   }
 }
