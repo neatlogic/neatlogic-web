@@ -1,5 +1,10 @@
 <template>
-  <div ref="contain" :class="[getContainClass]" class="bg-grey">
+  <div
+    ref="contain"
+    :class="[getContainClass]"
+    class="bg-grey"
+    :style="{height: containHeight}"
+  >
     <div v-if="!hideHeader" :class="[{ 'pl-nm': true, 'pr-nm': true }, { 'tscontain-header': isBackgroung == true, 'tscontain-headerBg padding-lr': isBackgroung == false }, { 'input-border': border == 'border' }, { 'tsForm-border-none': border == 'none' }, { 'tscontain-headerbottom': navHeaderBottom == 'none' }]">
       <div :style="getCollapseStyle" style="display: grid">
         <div v-if="hasNavigation" style="white-space: nowrap">
@@ -38,11 +43,10 @@
         'tscontain-body-height-nopadding': !gutter
       }"
       class="tscontain-body bg-grey"
-      :style="mode == 'dialog' ? 'height:100%;' : ''"
+      :style="handleBodyHeight"
       @scroll.stop="scroll"
     >
-      <slot v-if="!$slots.sider && !$slots.right" name="content"></slot>
-      <Layout v-else-if="!isDrag" :style="{ height: '100%' }">
+      <Layout style="height:100%">
         <Sider
           v-if="$slots.sider"
           v-model="siderHide"
@@ -81,44 +85,6 @@
           </div>
         </Sider>
       </Layout>
-      <Split
-        v-else-if="isDrag"
-        ref="split"
-        v-model="dragWidth"
-        class="tscontain-split"
-        :class="siderPosition"
-        @on-moving="move"
-        @on-move-end="moveEnd"
-      >
-        <template slot="left">
-          <slot v-if="siderPosition == 'left' && $slots.sider" name="sider"></slot>
-          <Layout v-else-if="siderPosition == 'right' && $slots.sider" :style="{ height: '100%' }">
-            <Sider :width="$slots.sider && siderWidth ? siderWidth : 200">
-              <div class="radius-lg tscontain-left" style="height: 100%;overflow: auto;">
-                <slot name="sider"></slot>
-              </div>
-            </Sider>
-            <Content>
-              <slot name="content"></slot>
-            </Content>
-          </Layout>
-          <slot v-else :name="siderPosition == 'left' ? 'sider' : 'content'"></slot>
-        </template>
-        <template slot="right">
-          <slot v-if="siderPosition == 'right' && $slots.right" name="right"></slot>
-          <Layout v-else-if="siderPosition == 'left' && $slots.right" :style="{ height: '100%' }">
-            <Content>
-              <slot name="content"></slot>
-            </Content>
-            <Sider :width="$slots.right && rightWidth ? rightWidth : 200">
-              <div class="radius-lg tscontain-left" style="height: 100%; overflow: auto">
-                <slot name="right"></slot>
-              </div>
-            </Sider>
-          </Layout>
-          <slot v-else :name="siderPosition == 'left' ? 'content' : 'sider'"></slot>
-        </template>
-      </Split>
     </div>
   </div>
 </template>
@@ -140,7 +106,6 @@ export default {
     hideHeader: { type: Boolean, default: false }, //是否隐藏头部
     siderWidth: { type: Number, default: 200 }, //slider的宽度
     siderPosition: { type: String, default: 'left' }, // left, right
-    isDrag: { type: Boolean, default: false }, //slider是否可以拖动
     isBackgroung: { type: Boolean, default: true }, // 背景色默认为灰色，如果传的话就白色
     clearStyle: { type: Boolean, default: false }, //是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）
     rightWidth: { type: Number, default: 200 },
@@ -151,70 +116,21 @@ export default {
     return {
       dragWidth: null,
       siderHide: this.isSiderHide,
-      rightSiderHide: this.isRightSiderHide ? this.isRightSiderHide : !!(this.isRightSiderHide && this.siderPosition == 'right')
+      rightSiderHide: this.isRightSiderHide ? this.isRightSiderHide : !!(this.isRightSiderHide && this.siderPosition == 'right'),
+      containHeight: '100%'
     };
   },
   mounted() {
-    if (this.isDrag) {
-      //如果可以拖动，则需要计算拖动范围
-      let that = this;
-      this.$nextTick(() => {
-        this.href = window.location.href.replace(/\?[\s\S]*$/, '');
-        let value = ''; //去掉缓存
-        // let value = localStorage.getItem(this.href);
-        this.initConfig('', value);
-        const offset = -6; //控制handler偏移位置
-        if (this.$refs.split && this.$refs.split.$el) {
-          let rightPane = document.getElementsByClassName('tscontain-split')[0];
-          // let rightPane = document.getElementsByClassName('right-pane')[0];
-          let newDiv = document.createElement('div');
-          newDiv.id = 'verticalAfter';
-          rightPane.appendChild(newDiv);
-
-          let rightIcons = document.getElementById('verticalAfter');
-          let newIcon = document.createElement('div');
-          newIcon.id = 'rightIcons';
-          rightIcons.appendChild(newIcon);
-
-          let leftIcons = document.getElementById('verticalAfter');
-          let newIconleft = document.createElement('div');
-          newIconleft.id = 'leftIcons';
-          rightIcons.style.left = this.siderWidth - offset + 'px';
-          leftIcons.appendChild(newIconleft);
-
-          newIconleft.style.display = 'none';
-          leftIcons.addEventListener('click', () => {
-            that.verticals();
-            // document.getElementsByClassName('ivu-split-trigger-con')[0].classList.add('isBlock');
-            // istrigger.style = 'display:block';
-
-            if (!this.siderHide) {
-              newIcon.style.display = 'none';
-              newIconleft.style.display = 'block';
-              rightIcons.style.left = -offset + 'px';
-            } else {
-              newIconleft.style.display = 'none';
-              newIcon.style.display = 'block';
-              rightIcons.style.left = this.siderWidth - offset + 'px';
-            }
-          });
-        }
-      });
-      window.addEventListener('resize', this.initConfig);
-    }
     // if (this.sessionName) { //如果有存储
     //   let value = localStorage.getItem(this.sessionName + '_tsContainSider');
     //   value === 'false' ? this.siderHide = false : value === 'true' ? this.siderHide = true : '';
     // }
+    this.handleContainHeight();
   },
   beforeDestroy() {
     this.sessionName && localStorage.removeItem(this.sessionName + '_tsContainSider'); //删除缓存，之前遗留问题
     // this.sessionName && localStorage.setItem(this.sessionName + '_tsContainSider', this.siderHide);
     this.initSetTime && clearTimeout(this.initSetTime);
-    if (this.isDrag) {
-      //如果可以拖动，则需要计算拖动范围
-      window.removeEventListener('resize', this.initConfig);
-    }
   },
   methods: {
     verticals() {
@@ -278,9 +194,35 @@ export default {
       //右侧展示隐藏
       this.rightSiderHide = !this.rightSiderHide;
       this.$emit('rightSiderToggle');
+    },
+    handleContainHeight() {
+      this.$nextTick(() => {
+        let contain = this.$refs.contain;
+        let rect = contain?.getBoundingClientRect();
+        if (rect && rect.top) {
+          this.containHeight = `calc(100vh - ${rect.top.toFixed(0)}px - 16px)`; // 减去底部的16
+        }
+      });
     }
   },
   computed: {
+    handleBodyHeight() {
+      if (this.mode === 'dialog') {
+        if (this.hideHeader) {
+          return {height: '100%'};
+        } else {
+          return {height: 'calc(100% - 50px)'}; // header的高度
+        }
+      } else if (this.containHeight) {
+        if (this.hideHeader) {
+          return {height: this.containHeight};
+        } else {
+          return {height: `calc(${this.containHeight} - 50px)`};
+        }
+      } else {
+        return {height: 'calc(100vh - 116px)'}; // 顶部菜单50px，导航栏50px，底部间隙16px
+      }
+    },
     getTopStyle() {
       if (this.$slots.topLeft && this.$slots.topCenter && this.$slots.topRight) {
         //左中右
