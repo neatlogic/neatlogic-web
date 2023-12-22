@@ -230,6 +230,7 @@
       :executeConfig="executeConfig"
       :runtimeParamList="runtimeParamList"
       :isEditSetting="effectiveEditable"
+      :opType="opType"
       @close="closeExecute"
     ></ExecuteSetting>
     <!-- 执行记录 -->
@@ -334,6 +335,7 @@ export default {
       showBasicInfoEditDialog: false,
       editBasicInfo: {
         name: '',
+        opType: 'readonly',
         typeId: '',
         owner: '',
         viewAuthorityList: '',
@@ -357,6 +359,17 @@ export default {
           maxlength: 50,
           label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/autoexec/combop/basic/info/save', key: 'name' }]
+        },
+        opType: {
+          type: 'radio',
+          label: this.$t('page.combop.optype'),
+          value: '',
+          dataList: [],
+          validateList: ['required'],
+          onChange: (value, opt) => {
+            _this.opTypeName = opt.text;
+          },
+          tooltip: this.$t('page.combop.editinfo.optypetip')
         },
         typeId: {
           type: 'select',
@@ -483,7 +496,8 @@ export default {
       loading: true,
       isShowTestDialog: false,
       configExpired: 0,
-      configExpiredReason: {}
+      configExpiredReason: {},
+      opType: 'readonly' //操作类型
     };
   },
   beforeCreate() {},
@@ -501,6 +515,7 @@ export default {
     if (this.$route.query.versionStatus) {
       this.versionStatus = this.$route.query.versionStatus;
     }
+    this.getOpType();
   },
   beforeMount() {},
   async mounted() {
@@ -562,6 +577,7 @@ export default {
           this.operationType = result.operationType;
           this.$set(this.basicInfo, 'name', result.name);
           this.$set(this.basicInfo, 'typeName', result.typeName);
+          this.$set(this.basicInfo, 'opTypeName', result.opTypeName);
           this.$set(this.basicInfo, 'owner', result.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -571,6 +587,7 @@ export default {
           this.activeVersionId = result.activeVersionId;
           this.versionName = result.name;
           this.versionId = result.specifyVersionId;
+          this.opType = result.opType;
         }
       });
       if (this.versionId != null) {
@@ -1367,6 +1384,7 @@ export default {
           const result = res.Return;
           this.$set(this.editBasicInfo, 'name', result.name);
           this.$set(this.editBasicInfo, 'typeId', result.typeId);
+          this.$set(this.editBasicInfo, 'opType', result.opType);
           this.$set(this.editBasicInfo, 'owner', result.owner);
           this.$set(this.editBasicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.editBasicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -1388,6 +1406,7 @@ export default {
       }
       this.$set(this.editBasicInfo, 'id', this.id);
       this.$set(this.editBasicInfo, 'typeName', this.typeName);
+      this.$set(this.editBasicInfo, 'opTypeName', this.opTypeName);
       const notifyPolicyConfig = noticeSetting.getData();
       if (notifyPolicyConfig?.policyId) {
         this.editBasicInfo.config.invokeNotifyPolicyConfig = notifyPolicyConfig;
@@ -1398,6 +1417,7 @@ export default {
         if (res.Status == 'OK') {
           this.$set(this.basicInfo, 'name', this.editBasicInfo.name);
           this.$set(this.basicInfo, 'typeName', this.editBasicInfo.typeName);
+          this.$set(this.basicInfo, 'opTypeName', this.editBasicInfo.opTypeName);
           this.$set(this.basicInfo, 'owner', this.editBasicInfo.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', this.editBasicInfo.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', this.editBasicInfo.editAuthorityList);
@@ -1444,6 +1464,14 @@ export default {
         });
       }
       this.isShowTestDialog = false;
+    },
+    getOpType() {
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecCombopOpType' };
+      this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.editBasicInfoForm.opType.dataList = res.Return;
+        }
+      });
     }
   },
   computed: {

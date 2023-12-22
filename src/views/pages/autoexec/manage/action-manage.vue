@@ -218,6 +218,13 @@ export default {
           label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/autoexec/combop/basic/info/save', key: 'name' }]
         },
+        opType: {
+          type: 'radio',
+          label: this.$t('page.combop.optype'),
+          value: '',
+          dataList: [],
+          validateList: ['required']
+        },
         typeId: {
           type: 'select',
           name: 'typeId',
@@ -346,6 +353,7 @@ export default {
       this.$set(this.searchVal, 'typeId', typeId);
     }
     this.searchAction();
+    this.getOpType();
   },
   beforeMount() {},
   mounted() {},
@@ -409,6 +417,7 @@ export default {
     initActionConfig() {
       return {
         name: '',
+        opType: 'readonly',
         typeId: '',
         viewAuthorityList: ['common#alluser'],
         editAuthorityList: ['common#alluser'],
@@ -581,6 +590,14 @@ export default {
       if (versionStatus == 'passed') {
         this.theadList[index++] = { title: ' ', key: 'action', align: 'right', width: 10 };
       }
+    },
+    getOpType() {
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecCombopOpType' };
+      this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.addActionForm.opType.dataList = res.Return;
+        }
+      });
     }
   },
   computed: {

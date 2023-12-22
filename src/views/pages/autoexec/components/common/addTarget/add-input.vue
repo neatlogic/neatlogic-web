@@ -83,7 +83,9 @@ export default {
   },
   filtes: {},
   mixins: [addtargetmixin],
-  props: {},
+  props: {
+    opType: String
+  },
   data() {
     return {
       showNumber: 15,

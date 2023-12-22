@@ -47,6 +47,15 @@ export default {
           width: '100%',
           readonly: true
         },
+        opTypeName: {
+          type: 'text',
+          name: 'opTypeName',
+          value: '',
+          maxlength: 50,
+          label: this.$t('page.combop.optype'),
+          width: '100%',
+          readonly: true
+        },
         typeName: {
           type: 'text',
           name: 'typeName',

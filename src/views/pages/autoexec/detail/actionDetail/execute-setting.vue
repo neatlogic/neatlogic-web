@@ -48,6 +48,7 @@
               :canEdit="isEditSetting"
               :type="settingConfig.whenToSpecify"
               :required="true"
+              :opType="opType"
             ></TargetDetail>
           </div>
         </div>
@@ -107,7 +108,8 @@ export default {
       default: () => {}
     },
     runtimeParamList: Array,
-    isEditSetting: Boolean
+    isEditSetting: Boolean,
+    opType: String
   },
   data() {
     let _this = this;
