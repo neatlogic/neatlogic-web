@@ -46,7 +46,8 @@
       :style="handleBodyHeight"
       @scroll.stop="scroll"
     >
-      <Layout style="height:100%">
+      <slot v-if="!$slots.sider && !$slots.right" name="content"></slot>
+      <Layout v-else style="height:100%">
         <Sider
           v-if="$slots.sider"
           v-model="siderHide"
@@ -200,7 +201,7 @@ export default {
         let contain = this.$refs.contain;
         let rect = contain?.getBoundingClientRect();
         if (rect && rect.top) {
-          this.containHeight = `calc(100vh - ${rect.top.toFixed(0)}px - 16px)`; // 减去底部的16
+          this.containHeight = this.containHeight = this.mode == 'window' ? `calc(100vh - ${rect.top.toFixed(0)}px - 16px)` : '100%'; // 底部间隙16; // 减去底部的16
         }
       });
     }
