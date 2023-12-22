@@ -76,7 +76,7 @@ export default {
       treeList: [],
       ciName: 'ciCatalog',
       treeId: '',
-      catalogHeight: '200px'
+      catalogHeight: `calc(100vh - 160px - 64px - 18px - 16px)` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，18按钮，16底部间距
     };
   },
   beforeCreate() {},
