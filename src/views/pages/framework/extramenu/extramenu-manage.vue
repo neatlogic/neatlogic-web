@@ -17,6 +17,7 @@
             :nodes="nodeList"
             :hoverDomList="hoverDomList"
             urlKey="xUrl"
+            :beforeClick="beforeClick"
             :onClick="clickNode"
             :beforeDrop="beforeDrop"
             :onDrop="onDrop"
@@ -169,6 +170,14 @@ export default {
           this.loadingShow = false;
         });
       });
+    },
+    beforeClick(zTreeObj, node) {
+      if (!this.selectSaveId || this.selectSaveId != node.id) {
+        zTreeObj.cancelSelectedNode();
+        return true;
+      } else {
+        return false;
+      }
     },
     clickNode(tree, node) {
       this.isMenu = node.type;

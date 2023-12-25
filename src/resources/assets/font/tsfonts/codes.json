@@ -2658,12 +2658,6 @@
     "codepoint": 59834
   },
   {
-    "name": "ts",
-    "css": "tsfont-ts",
-    "hexCodepoint": "0xe9bb",
-    "codepoint": 59835
-  },
-  {
     "name": "tencentcloud",
     "css": "tsfont-tencentcloud",
     "hexCodepoint": "0xe9bc",
@@ -3418,5 +3412,29 @@
     "css": "tsfont-border-vertical",
     "hexCodepoint": "0xea39",
     "codepoint": 59961
+  },
+  {
+    "name": "bottom",
+    "css": "tsfont-bottom",
+    "hexCodepoint": "0xea3a",
+    "codepoint": 59962
+  },
+  {
+    "name": "double-arrow-down",
+    "css": "tsfont-double-arrow-down",
+    "hexCodepoint": "0xea3b",
+    "codepoint": 59963
+  },
+  {
+    "name": "top",
+    "css": "tsfont-top",
+    "hexCodepoint": "0xea3c",
+    "codepoint": 59964
+  },
+  {
+    "name": "ts",
+    "css": "tsfont-ts",
+    "hexCodepoint": "0xea3d",
+    "codepoint": 59965
   }
 ]
