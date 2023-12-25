@@ -75,7 +75,9 @@
     "flowedit": "流程编辑",
     "slamanage": "时效管理",
     "eventsolutionedit": "编辑事件解决方案",
-    "changeedit": "变更编辑"
+    "changeedit": "变更编辑",
+    "eoatemplate": "EOA模板",
+    "eoatemplateedit": "EOA模板编辑"
   },
   "autoexec": {
     "detail": "自动化明显",
