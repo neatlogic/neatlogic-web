@@ -55,11 +55,23 @@ export default {
     changeMenu(val, selectedData) {
       if (!this.$utils.isEmpty(selectedData) && selectedData[selectedData.length - 1].url) {
         let url = selectedData[selectedData.length - 1].url;
-        window.open(url, '_blank');
+        if (url && this.checkUrl(url)) {
+          window.open(url, '_blank');
+        }
       }
     },
     onVisibleChange() {
       this.selecteData = [];
+    },
+    checkUrl(string) {
+      let givenURL;
+      try {
+        givenURL = new URL(string);
+      } catch (error) {
+        this.$Notice.error({ title: 'URL' + this.$t('page.exception'), desc: error});
+        return false; 
+      }
+      return true;
     }
   },
   filter: {},
