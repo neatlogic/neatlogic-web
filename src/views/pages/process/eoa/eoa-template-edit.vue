@@ -4,7 +4,6 @@
     <TsContain>
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
-        <span v-else class="tsfont-left text-action" @click="back()">{{ $t('page.back') }}</span>
       </template>
       <template v-slot:topLeft>
         <div v-if="!$utils.isEmpty(eoaConfig)" class="text-title">
@@ -231,11 +230,6 @@ export default {
         if (res.Status == 'OK') {
           this.policyList = res.Return;
         }
-      });
-    },
-    back() {
-      this.$router.push({
-        path: '/eoa-template-manage'
       });
     },
     deleteStep(index) {
