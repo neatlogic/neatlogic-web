@@ -357,7 +357,7 @@ let routerArr = [
       title: $t('router.process.eoatemplate'),
       ismenu: true,
       icon: 'tsfont-shitu',
-      authority: '',
+      authority: 'EOA_BASE',
       type: 'flow'
     }
   },
@@ -369,7 +369,7 @@ let routerArr = [
       title: $t('router.process.eoatemplateedit'),
       ismenu: false,
       icon: 'tsfont-shitu',
-      authority: '',
+      authority: 'EOA_BASE',
       type: 'flow'
     }
   }
