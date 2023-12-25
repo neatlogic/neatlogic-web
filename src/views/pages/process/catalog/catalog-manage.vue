@@ -30,6 +30,7 @@
             idKey="uuid"
             :nodes="nodeList"
             :hoverDomList="hoverDomList"
+            :beforeClick="beforeClick"
             :onClick="clickNode"
             :onDrop="onDrop"
             :value="treeUuid"
@@ -191,6 +192,14 @@ export default {
           this.treeloading = false;
         }
       });
+    },
+    beforeClick(zTreeObj, node) {
+      if (!this.currentUuid || this.currentUuid != node.uuid) {
+        zTreeObj.cancelSelectedNode();
+        return true;
+      } else {
+        return false;
+      }
     },
     clickNode(tree, node) {
       // 节点选中
