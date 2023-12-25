@@ -1,22 +1,25 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
         <span v-else class="tsfont-left text-action" @click="back()">{{ $t('page.back') }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="text-title">
-          <span class="pr-xs">修改人</span>
-          <span>时间</span>
+        <div v-if="!$utils.isEmpty(eoaConfig)" class="text-title">
+          <span class="pr-xs">
+            <UserCard :uuid="eoaConfig.fcu" :hideAvatar="true"></UserCard>
+          </span>
+          <span>{{ eoaConfig.fcd | formatDate }}</span>
         </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <div class="action-item" @click="deleteTemplate()">
+          <div v-if="id" class="action-item" @click="deleteTemplate()">
             <span class="tsfont-trash-o">{{ $t('page.delete') }}</span>
           </div>
-          <div class="action-item" @click="saveTemplate()">
+          <div class="action-item last" @click="saveTemplate()">
             <Button type="primary" :disabled="saving">{{ $t('page.save') }}</Button>
           </div>
         </div>
@@ -86,15 +89,17 @@
                               placement="bottom-end"
                               isRequired
                               transfer
+                              @change="changePolicy(item)"
                             ></PoptipSelect>
                           </TsFormItem>
                         </Col>
                         <Col span="12">
                           <TsFormItem :label="$t('term.process.dealwithuser')" :tooltip="$t('term.process.eoadealwithusertip')">
                             <UserSelect
-                              v-model="item.user"
+                              v-model="item.userList"
                               :transfer="true"
                               :groupList="['user']"
+                              :multiple="item.policy !== 'onePerson'"
                             ></UserSelect>
                           </TsFormItem>
                         </Col>
@@ -130,11 +135,13 @@ export default {
     TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },
   props: {},
   data() {
     return {
+      loadingShow: true,
       id: null,
       isShow: true,
       saving: false,
@@ -154,57 +161,20 @@ export default {
           label: this.$t('term.process.approvalprocess')
         }
       },
-      stepList: [
-        {
-          name: 'qqq',
-          policy: '1',
-          user: [],
-          commentTemplate: '',
-          isShow: true
-        },
-        {
-          name: 'qqq',
-          policy: '1',
-          user: [],
-          commentTemplate: '',
-          isShow: true
-        }
-      ],
-      policyList: [
-        {
-          value: '1',
-          text: '单人',
-          description: '设置唯一审批人，同意后通过'
-        },
-        {
-          value: '2',
-          text: '会签',
-          description: '设置多位审批人，所有人同意后审批通过'
-        },
-        {
-          value: '3',
-          text: '或签',
-          description: '设置多位审批人，任意一人同意后审批通过'
-        },
-        {
-          value: '4',
-          text: '投票',
-          description: '设置多位审批人，超过半数同意后审批通过'
-        },
-        {
-          value: '5',
-          text: '传阅',
-          description: '审批人传阅审批流程，不参与否决，仅查看'
-        }
-      ],
-      validateList: ['required']
+      stepList: [],
+      policyList: [],
+      validateList: ['required'],
+      eoaConfig: {}
     };
   },
   beforeCreate() {},
   created() {
+    this.getTypeLit();
     if (this.$route.query.id) {
       this.id = parseInt(this.$route.query.id);
       this.init();
+    } else {
+      this.loadingShow = false;
     }
   },
   beforeMount() {},
@@ -217,9 +187,32 @@ export default {
   destroyed() {},
   methods: {
     init() {
+      this.loadingShow = true;
+      this.stepList = [];
       this.$api.process.eoa.getEoaTemplate({id: this.id}).then(res => {
         if (res.Status === 'OK') {
-          let eoaConfig = res.Return;
+          this.eoaConfig = res.Return || {};
+          Object.keys(this.formConfig).forEach(key => {
+            if (this.eoaConfig[key]) {
+              this.$set(this.formConfig[key], 'value', this.eoaConfig[key]);
+            }
+          });
+          if (this.eoaConfig.config && !this.$utils.isEmpty(this.eoaConfig.config.stepList)) {
+            this.eoaConfig.config.stepList.forEach(item => {
+              this.$set(item, 'isShow', true);
+              this.stepList.push(item);
+            });
+          }
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
+    },
+    getTypeLit() {
+      let data = { enumClass: 'ApprovalPolicy' };
+      this.$api.common.getSelectList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.policyList = res.Return;
         }
       });
     },
@@ -233,7 +226,10 @@ export default {
     },
     addStep() {
       this.stepList.push({
-        name: 'sad11',
+        name: '',
+        policy: '',
+        userList: [],
+        commentTemplate: '',
         isShow: true
       });
     },
@@ -251,6 +247,9 @@ export default {
           this.$set(p, 'errorMessage', '');
         });
       }
+    },
+    changePolicy(item) {
+      this.$set(item, 'user', []);
     },
     valid() {
       let isValid = true;
@@ -301,22 +300,25 @@ export default {
         }
       };
       if (this.id) {
-        this.$set(data, 'id', id);
+        this.$set(data, 'id', this.id);
       }
       this.stepList.forEach(item => {
         data.config.stepList.push({
           name: item.name,
           policy: item.policy,
-          user: item.user || [],
+          userList: item.userList ? (Array.isArray(item.userList) ? item.userList : [item.userList]) : [],
           commentTemplate: item.commentTemplate || ''
         });
       });
-      console.log(data);
-      // this.$api.process.eoa.saveEoaTemplate(data).then(res => {
-      //   if (res.Status == 'OK') {
-      //     this.$Message.success(this.$t('message.savesuccess'));
-      //   }
-      // });
+      this.$api.process.eoa.saveEoaTemplate(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          if (!this.id) {
+            this.id = res.Return;
+          }
+          this.init();
+        }
+      });
     },
     deleteTemplate() {
       this.$createDialog({
@@ -325,14 +327,14 @@ export default {
         btnType: 'error',
         'on-ok': vnode => {
           let data = { id: this.id };
-          // this.$api.process.eoa.deleteEoaTemplate(data).then(res => {
-          //   if (res.Status == 'OK') {
-          //     this.$Message.success(this.$t('message.deletesuccess'));
-          //     this.$router.push({
-          //       path: './eoa-template-manage'
-          //     });
-          //   }
-          // });
+          this.$api.process.eoa.deleteEoaTemplate(data).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$router.push({
+                path: './eoa-template-manage'
+              });
+            }
+          });
           vnode.isShow = false;
         }
       });

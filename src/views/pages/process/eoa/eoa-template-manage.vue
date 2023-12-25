@@ -21,7 +21,7 @@
             @changePageSize="changePageSize(1, ...arguments)"
           >
             <template v-slot:name="{ row }">
-              <div class="text-htef" @click="editTemplate(row)">{{ row.name }}</div>
+              <div class="text-href" @click="editTemplate(row)">{{ row.name }}</div>
             </template>
             <template v-slot:action="{ row }">
               <div class="tstable-action">
@@ -75,6 +75,7 @@ export default {
   data() {
     return {
       loadingShow: false,
+      searchData: {},
       theadList: [
         {
           title: this.$t('page.name'),
@@ -82,7 +83,8 @@ export default {
         },
         {
           title: this.$t('page.description'),
-          key: 'description'
+          key: 'description',
+          type: 'html'
         },
         {
           title: this.$t('page.fcu'),
@@ -104,7 +106,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.searchEoaTemplate();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -114,9 +118,29 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeCurrent(current) {},
-    changePageSize() {
-
+    searchEoaTemplate() {
+      let data = {
+        keyword: this.keyword,
+        currentPage: this.searchData.currentPage,
+        pageSize: this.searchData.pageSize
+      };
+      this.loadingShow = true;
+      this.$api.process.eoa.searchEoaTemplate(data).then(res => {
+        if (res.Status === 'OK') {
+          this.tableConfig = res.Return;
+        }
+      })
+        .finally(() => {
+          this.loadingShow = false;
+        });
+    },
+    changeCurrent(currentPage) {
+      this.searchData.currentPage = currentPage;
+      this.searchEoaTemplate(); 
+    },
+    changePageSize(pageSize) {
+      this.searchData.pageSize = pageSize;
+      this.searchEoaTemplate(); 
     },
     addTemplate() {
       this.$router.push({
@@ -131,8 +155,24 @@ export default {
         }
       });
     },
-    deleteItem(row) {},
-    openPage(item) {
+    deleteItem(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          let data = { id: row.id };
+          this.$api.process.eoa.deleteEoaTemplate(data).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.searchEoaTemplate();
+            }
+          });
+          vnode.isShow = false;
+        }
+      });
+    },
+    openPage(uuid) {
       window.open(HOME + '/process.html#/flow-edit?uuid=' + uuid, '_blank');
     }
   },
