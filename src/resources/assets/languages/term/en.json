@@ -182,7 +182,10 @@
     "directoryname": "Catalog Name",
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
-    "autoexec": "Automated operations"
+    "autoexec": "Automated operations",
+    "grouptypedescreadonly": "Read only: View configuration items, which can be used as the execution target for the query class combination tool in automation.",
+    "grouptypedescmaintain": "Maintenance: Add modifications to configuration items based on read-only permissions.",
+    "grouptypedescautoexec": "Automated operations: On the basis of read-only permissions, add execution targets that can be used as a combination tool for operations in automation"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -767,7 +770,13 @@
     "targetjoberror": "{target} Failed to create job",
     "toolparamstooltip": "Tool parameters are a set of parameters for associated tools. Parameters from custom tool libraries can be added, deleted, and modified, while parameters from tool libraries cannot be added, deleted, or modified.",
     "combophasexpired": "The combination tool has expired",
-    "pleasereedit": "Please re edit and submit for review"
+    "pleasereedit": "Please re edit and submit for review",
+    "combop": {
+      "optype": "Operation classification",
+      "editinfo": {
+        "optypetip": "Query class: Only assets with read-only permissions in the resource center can be used as execution targets; Operations: Only assets with 'automated operations' permissions in the resource center and group management can be used as execution targets;"
+      }
+    }
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",

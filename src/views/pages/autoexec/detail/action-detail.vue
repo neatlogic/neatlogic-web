@@ -171,6 +171,7 @@
             <div class="setting-main bg-op block-large">
               <BasicInfo
                 :dataConfig="basicInfo"
+                :isResourcecenterAuth="editBasicInfoForm.opType.isHidden"
               ></BasicInfo>
               <!-- 定时作业 -->
               <TimeJobClickText
@@ -220,6 +221,7 @@
       :isEditSetting="effectiveEditable"
       :paramsTypeList="paramsTypeList"
       :runtimeParamList="runtimeParamList"
+      :opType="opType"
       @close="isParamsSetting = false"
       @saveParams="getParamsList"
     ></ParamsSetting>
@@ -362,14 +364,15 @@ export default {
         },
         opType: {
           type: 'radio',
-          label: this.$t('page.combop.optype'),
+          label: this.$t('term.autoexec.combop.optype'),
           value: '',
           dataList: [],
           validateList: ['required'],
           onChange: (value, opt) => {
             _this.opTypeName = opt.text;
           },
-          tooltip: this.$t('page.combop.editinfo.optypetip')
+          tooltip: this.$t('term.autoexec.combop.editinfo.optypetip'),
+          isHidden: true
         },
         typeId: {
           type: 'select',
@@ -575,6 +578,8 @@ export default {
           this.name = result.name;
           this.isActive = result.isActive;
           this.operationType = result.operationType;
+          this.isResourcecenterAuth = result.isResourcecenterAuth;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
           this.$set(this.basicInfo, 'name', result.name);
           this.$set(this.basicInfo, 'typeName', result.typeName);
           this.$set(this.basicInfo, 'opTypeName', result.opTypeName);
@@ -1382,6 +1387,8 @@ export default {
       this.$api.autoexec.action.getActionBasicInfo(data).then(res => {
         if (res.Status == 'OK') {
           const result = res.Return;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
+          this.$set(this.editBasicInfo, 'name', result.isResourcecenterAuth);
           this.$set(this.editBasicInfo, 'name', result.name);
           this.$set(this.editBasicInfo, 'typeId', result.typeId);
           this.$set(this.editBasicInfo, 'opType', result.opType);

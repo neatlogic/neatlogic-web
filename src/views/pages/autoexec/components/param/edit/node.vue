@@ -32,6 +32,7 @@
       :visible="showDialog"
       :config="config"
       :disabled="disabled || readonly"
+      :opType="opType"
       @on-ok="onOk"
       @close="endAdd"
     ></NodeDialog>
@@ -63,7 +64,8 @@ export default {
     event: 'change'
   },
   props: {
-    desc: String
+    desc: String,
+    opType: String
   },
   data() {
     return {

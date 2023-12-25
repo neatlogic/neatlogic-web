@@ -182,7 +182,10 @@
     "directoryname": "目录名称",
     "noaddcidirectory": "未添加模型目录，",
     "currentcatalogcitenodeletedescrition": "当前目录节点已被引用，请解除引用后删除",
-    "autoexec": "自动化操作"
+    "autoexec": "自动化操作",
+    "grouptypedescreadonly": "只读：查看配置项，可作为自动化中，【查询类】组合工具的执行目标。",
+    "grouptypedescmaintain": "维护：在只读权限的基础上，增加对配置项进行修改。",
+    "grouptypedescautoexec": "自动化操作：在只读权限基础上，增加可作为自动化中，【操作类】组合工具的执行目标"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -766,7 +769,13 @@
     "targetjoberror": "{target}创建作业失败",
     "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。",
     "combophasexpired": "组合工具已失效",
-    "pleasereedit": "请重新编辑后，提交审核"
+    "pleasereedit": "请重新编辑后，提交审核",
+    "combop": {
+      "optype": "操作分类",
+      "editinfo": {
+        "optypetip": "查询类：在配置管理，具备‘只读’权限的资产，才可以作为执行目标；\n操作类：在配置管理，团体管理中具备‘自动化操作’权限的资产，才可以作为执行目标；"
+      }
+    }
   },
   "framework": {
     "roleauth": "创建完角色立即授权",

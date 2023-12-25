@@ -127,7 +127,8 @@ export default {
     disabled: {
       type: Boolean,
       default: false
-    }
+    },
+    opType: String
   },
   data() {
     let _this = this;
@@ -210,6 +211,7 @@ export default {
     },
     searchNodeList() {
       let data = Object.assign({}, this.searchParams, this.searchVal);
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;

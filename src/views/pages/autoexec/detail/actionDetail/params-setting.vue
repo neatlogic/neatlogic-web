@@ -20,6 +20,7 @@
               :typeList="paramsTypeList"
               :isEdit="isEditSetting"
               :setValidComponentsList="setValidComponentsList"
+              :opType="opType"
             ></ParamDetail>
             <ParamsReadonly
               v-for="(param, index) in paramList"
@@ -51,7 +52,8 @@ export default {
     runtimeParamList: {
       type: Array,
       default: () => []
-    }
+    },
+    opType: String
   },
   data() {
     let _this = this;

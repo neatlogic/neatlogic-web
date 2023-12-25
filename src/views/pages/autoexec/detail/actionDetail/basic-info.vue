@@ -32,7 +32,8 @@ export default {
   },
   filters: {},
   props: {
-    dataConfig: {type: Object, default: () => {}}
+    dataConfig: {type: Object, default: () => {}},
+    isResourcecenterAuth: Boolean
   },
   data() {
     let _this = this;
@@ -54,7 +55,8 @@ export default {
           maxlength: 50,
           label: this.$t('page.combop.optype'),
           width: '100%',
-          readonly: true
+          readonly: true,
+          isHidden: this.isResourcecenterAuth
         },
         typeName: {
           type: 'text',

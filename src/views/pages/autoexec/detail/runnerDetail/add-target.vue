@@ -330,7 +330,8 @@ export default {
       //true不需要提示校验信息
       let data = {
         protocolId: this.executeValue.protocolId ? this.executeValue.protocolId : null,
-        executeUser: null
+        executeUser: null,
+        cmdbGroupType: opType
       };
       if (this.executeValue.executeUser && this.executeValue.executeUser.value) {
         if (this.executeValue.executeUser.mappingMode === 'constant') {

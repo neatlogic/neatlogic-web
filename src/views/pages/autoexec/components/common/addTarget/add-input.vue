@@ -200,7 +200,8 @@ export default {
     validinputnodelist(list) {
       let data = {
         filter: this.defaultSearchValue,
-        inputNodeList: list
+        inputNodeList: list,
+        cmdbGroupType: opType
       };
       return this.$api.autoexec.action.validinputnodelist(data).then(res => {
         if (res.Status == 'OK') {
