@@ -150,7 +150,15 @@ export default {
           type: 'text',
           label: this.$t('page.name'),
           maxlength: 50,
-          validateList: ['required']
+          validateList: [
+            'required',
+            { name: 'searchUrl',
+              url: '/api/rest/eoa/template/save', 
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
+              params: { id: null}
+            }
+          ]
         },
         description: {
           type: 'ckeditor',
@@ -189,6 +197,7 @@ export default {
     init() {
       this.loadingShow = true;
       this.stepList = [];
+      this.validName(this.id);
       this.$api.process.eoa.getEoaTemplate({id: this.id}).then(res => {
         if (res.Status === 'OK') {
           this.eoaConfig = res.Return || {};
@@ -206,6 +215,14 @@ export default {
         }
       }).finally(() => {
         this.loadingShow = false;
+      });
+    },
+    validName(id = null) {
+      // 编辑名称时，名称改回自身，不需要校验
+      this.formConfig['name'].validateList.forEach((item) => {
+        if (item && item.hasOwnProperty('params')) {
+          item.params.id = id || '';
+        }
       });
     },
     getTypeLit() {

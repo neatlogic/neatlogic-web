@@ -18,43 +18,28 @@
             v-bind="tableConfig"
             :theadList="theadList"
             @changeCurrent="changeCurrent"
-            @changePageSize="changePageSize(1, ...arguments)"
+            @changePageSize="changePageSize"
           >
             <template v-slot:name="{ row }">
               <div class="text-href" @click="editTemplate(row)">{{ row.name }}</div>
             </template>
+            <template v-slot:referenceCount="{row}">
+              <ReferenceSelect
+                :id="row.id"
+                calleeType="eoaTemplate"
+                :isTable="true"
+                :referenceCount="row.referenceCount"
+              ></ReferenceSelect>
+            </template> 
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
                   <li
                     class="tsfont-trash-o"
+                    :class="row.referenceCount > 0?'disable':''"
+                    :title="row.referenceCount > 0 ? $t('page.citetarget', {target:$t('page.template')}) : ''"
                     @click="deleteItem(row)"
                   >{{ $t('page.delete') }}</li>
-                  <li class="reference-count">
-                    <Dropdown
-                      v-if="row.referenceCount > 0"
-                      ref="reference"
-                      transfer
-                      trigger="hover"
-                      placement="bottom-start"
-                    >
-                      <div class="text-action">
-                        {{ $t('page.referencelist') }}
-                        <span class="reference-number">{{ getAmount(row.referenceCount) }}</span>
-                      </div>
-                      <DropdownMenu v-if="row.referenceList.length > 0" slot="list">
-                        <DropdownItem
-                          v-for="(reference, rindex) in row.referenceList"
-                          :key="rindex"
-                          class="text-action"
-                          @click.native="openPage(reference.uuid)"
-                        >
-                          <div>{{ reference.name }}</div>
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <span v-else class="text-disabled">{{ $t('page.referencelist') }}</span>
-                  </li>
                 </ul>
               </div>
             </template>
@@ -69,7 +54,9 @@ export default {
   name: '',
   components: {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    
   },
   props: {},
   data() {
@@ -85,6 +72,10 @@ export default {
           title: this.$t('page.description'),
           key: 'description',
           type: 'html'
+        },
+        { 
+          title: this.$t('term.process.relprocess'), 
+          key: 'referenceCount'
         },
         {
           title: this.$t('page.fcu'),
@@ -140,6 +131,7 @@ export default {
     },
     changePageSize(pageSize) {
       this.searchData.pageSize = pageSize;
+      this.searchData.currentPage = 1;
       this.searchEoaTemplate(); 
     },
     addTemplate() {
@@ -156,6 +148,9 @@ export default {
       });
     },
     deleteItem(row) {
+      if (row.referenceCount > 0) {
+        return;
+      }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
@@ -171,20 +166,10 @@ export default {
           vnode.isShow = false;
         }
       });
-    },
-    openPage(uuid) {
-      window.open(HOME + '/process.html#/flow-edit?uuid=' + uuid, '_blank');
     }
   },
   filter: {},
-  computed: {
-    getAmount() {
-      return function(amount) {
-        let showamount = amount ? (Math.floor(amount) > 99 ? '99+' : Math.floor(amount)) : '';
-        return showamount;
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

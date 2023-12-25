@@ -354,7 +354,7 @@ let routerArr = [
     name: 'eoa-template-manage',
     component: eoaTemplateManage,
     meta: {
-      title: 'EOA模板',
+      title: $t('router.process.eoatemplate'),
       ismenu: true,
       icon: 'tsfont-shitu',
       authority: '',
@@ -366,7 +366,7 @@ let routerArr = [
     name: 'eoa-template-edit',
     component: eoaTemplateEdit,
     meta: {
-      title: 'EOA模板编辑',
+      title: $t('router.process.eoatemplateedit'),
       ismenu: false,
       icon: 'tsfont-shitu',
       authority: '',
