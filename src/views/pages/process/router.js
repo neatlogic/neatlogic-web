@@ -350,17 +350,5 @@ let routerList = [
     }
   }
 ];
-let importRouterList = [];
-try {
-  // 导入自定义路由
-  const routerContext = require.context('@/commercial-module', true, /router.js$/);
-  routerContext.keys().forEach(filePath => {
-    const moduleName = filePath?.split('/')[1]?.split('-')?.pop() || filePath?.split('/')[1];
-    if (moduleName && config?.module && moduleName == config.module) {
-      importRouterList = routerContext(filePath).default || [];
-    }
-  });
-} catch (error) {
-  // 捕获异常
-}
-export default [...routerList, ...importRouterList];
+
+export default routerList;
