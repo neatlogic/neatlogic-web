@@ -40,7 +40,7 @@
       :nodeConfig="nodeConfig"
       @updatebutton="updatebutton"
     ></ButtonSetting>
-    <EoaSetting id="eoaSetting" ref="eoaSetting"></EoaSetting>
+    <EoaSetting id="eoaSetting" ref="eoaSetting" :defaultEoaConfig="eoaConfig"></EoaSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"
@@ -85,7 +85,8 @@ export default {
       replaceableTextList: [], //文案映射
       notifyPolicyConfig: {}, //通知
       actionConfig: {}, //动作数据
-      workerPolicyConfig: {}
+      workerPolicyConfig: {},
+      eoaConfig: {}
     };
   },
   beforeCreate() {},
@@ -93,7 +94,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.keyList = ['actionConfig', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig'];//stepConfig 需要包含的数据
+    this.keyList = ['actionConfig', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig', 'eoaConfig'];//stepConfig 需要包含的数据
     this.getNodeSetting();
   },
   beforeUpdate() {},

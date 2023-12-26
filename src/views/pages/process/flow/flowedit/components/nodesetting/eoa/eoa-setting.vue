@@ -14,7 +14,7 @@
         </Tooltip>
       </div>
       <div>
-        <TsFormSwitch v-model="eoaConfig.auto"></TsFormSwitch>
+        <TsFormSwitch v-model="isAutoStart"></TsFormSwitch>
       </div>
     </div>
     <div class="pb-sm">
@@ -38,7 +38,12 @@
         <div class="text-href pl-sm" @click="editUser(item)">审批人</div>
       </div>
     </div>
-    <EditTemplateDialog v-if="isShowTemplateDialog" :allFormitemList="allFormitemList" @close="close"></EditTemplateDialog>
+    <EditTemplateDialog
+      v-if="isShowTemplateDialog"
+      :allFormitemList="allFormitemList"
+      :eoaTemplateList="eoaTemplateList"
+      @close="close"
+    ></EditTemplateDialog>
   </div>
 </template>
 <script>
@@ -50,13 +55,15 @@ export default {
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
     EditTemplateDialog: resolve => require(['./edit-template-dialog.vue'], resolve)
   },
-  props: {},
+  props: {
+    defaultEoaConfig: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data() {
     return {
-      eoaConfig: {
-        auto: 1,
-        templateIdList: []
-      },
+      eoaConfig: {},
       templateConfig: {
         dynamicUrl: '/api/rest/universal/enum/get',
         params: { enumClass: 'neatlogic.framework.common.constvalue.DeviceType' },
@@ -76,7 +83,8 @@ export default {
           name: 'dasdsadddddddddddddddddddddddddddd'
         }
       ],
-      isShowTemplateDialog: false
+      isShowTemplateDialog: false,
+      eoaTemplateList: []
     };
   },
   beforeCreate() {},
@@ -122,7 +130,18 @@ export default {
       return store.allFormitemList;
     }
   },
-  watch: {}
+  watch: {
+    defaultEoaConfig: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.isAutoStart = val.isAutoStart;
+          this.eoaTemplateList = val.eoaTemplateList;
+        }
+      },
+      immediate: true,
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
