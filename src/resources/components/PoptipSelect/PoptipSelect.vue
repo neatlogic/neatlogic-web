@@ -13,8 +13,8 @@
         ref="pop"
         v-model="isshow"
         :trigger="trigger"
-        :width="popWidth"
-        placement="bottom-start"
+        :width="updateWidth()"
+        :placement="placement"
         transfer
         class="select-poptip"
       >
@@ -134,13 +134,20 @@ export default {
       default() {
         return this.$t('page.pleaseselect');
       }
+    },
+    placement: {
+      type: String,
+      default: 'bottom-start'
+    },
+    popWidth: {
+      type: Number,
+      default: 400
     }
   },
   data() {
     return {
       isshow: false,
       selectValue: '',
-      popWidth: 460,
       iconConfig: {
         text: 'tsfont-forminput', //文本输入
         password: 'tsfont-lock', //密码
@@ -166,9 +173,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.updatePosition();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -193,14 +198,6 @@ export default {
         return;
       }
       this.isshow = false;
-    },
-    updatePosition() {
-      if (this.$el) {
-        let width = this.$el.querySelector('.type-select').clientWidth;
-        if (width > this.popWidth) {
-          this.popWidth = width;
-        }
-      }
     },
     handleKeydown(e) {
       //切tab的时候隐藏
@@ -252,6 +249,18 @@ export default {
         resultJson.width = _this.width;
       }
       return resultJson;
+    },
+    updateWidth() {
+      return () => {
+        let width = this.popWidth;
+        if (this.$el) {
+          let clientWidth = this.$el.querySelector('.type-select').clientWidth;
+          if (clientWidth > width) {
+            width = clientWidth;
+          }
+        }
+        return width;
+      };
     }
   },
   watch: {
