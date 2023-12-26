@@ -890,14 +890,16 @@ export default {
   }
   .btn-remove {
     position: absolute;
-    top: 0px;
+    top: 1px;
     right: 30px;
     cursor: pointer;
+    line-height: 32px;
   }
   .btn-filter {
     position: absolute;
     top: 1px;
     right: 10px;
+    line-height: 32px;
   }
   .tag-item-sperate{
     text-align: center;
