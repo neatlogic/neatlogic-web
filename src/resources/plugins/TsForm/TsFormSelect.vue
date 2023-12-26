@@ -1036,10 +1036,10 @@ export default {
       } else if (this.value == this.currentValue) {
         isSame = true;
       }
-      this.$emit('change', toValue, valueObject);
+      let selectItem = this.multiple ? this.selectedList : this.selectedList[0] || {};
+      this.$emit('change', toValue, valueObject, selectItem);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
-        let selectItem = this.multiple ? this.selectedList : this.selectedList[0] || {};
         this.$emit('on-change', toValue, valueObject, selectItem);
         typeof this.onChange == 'function' && this.onChange(toValue, valueObject, selectItem);
         this.multiple && this.updatePosition();

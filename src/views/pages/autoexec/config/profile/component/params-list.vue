@@ -18,7 +18,7 @@
               :width="100"
               transfer
               class="pr-md"
-              @change="handleChange(...arguments, data, index)"
+              @change="(currentValue, valueObj) => handleChange(currentValue, valueObj, data, index)"
             ></TsFormSelect>
             <TsFormSelect
               v-if="data.mappingMode == 'globalparam'"
