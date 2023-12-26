@@ -90,7 +90,6 @@ export default {
       d3.select('#graph')
         .selectWithoutDataPropagation('svg')
         .transition()
-        .duration(700)
         .attr('width', graphEl.offsetWidth - 10)
         .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
     },
@@ -108,6 +107,9 @@ export default {
           .width(graphEl.offsetWidth - 10)
           .zoom(true)
           .fit(true)
+          .tweenShapes(false)
+          .tweenPaths(false)
+          .convertEqualSidedPolygons(false)
           .attributer(function(d) {
             if (d.attributes.class === 'edge') {
               let keys = d.key.split('->');

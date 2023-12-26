@@ -7,13 +7,13 @@
           :key="index"
           class="item fz10"
           :class="currentLayout == layout.engine ? 'text-primary' : 'text-grey'"
-          style="cursor:pointer"
+          style="cursor: pointer"
           @click="changeLayout(layout.engine)"
         >
           {{ layout.name }}
         </span>
       </div>
-      <div style="padding-top:9px;" class="pr-md">
+      <div style="padding-top: 9px" class="pr-md">
         <TsFormInput
           v-model="keyword"
           :search="true"
@@ -39,8 +39,8 @@ export default {
   },
   props: {
     isShow: { type: Boolean, default: false },
-    ciEntityId: {type: Number},
-    viewId: {type: Number}
+    ciEntityId: { type: Number },
+    viewId: { type: Number }
   },
   data() {
     return {
@@ -48,16 +48,16 @@ export default {
       keyword: '',
       currentLayout: 'dot',
       layoutList: [
-        { engine: 'dot', name: '分层布局' },
-        { engine: 'circo', name: '环形布局' },
+        { engine: 'dot', name: this.$t('term.cmdb.topo.dot') },
+        { engine: 'circo', name: this.$t('term.cmdb.topo.circo') },
         //{ engine: 'neato', name: '张力布局' },
-        { engine: 'osage', name: '阵列布局' },
+        { engine: 'osage', name: this.$t('term.cmdb.topo.osage') },
         //{ engine: 'fdp', name: '无向布局' },
-        { engine: 'twopi', name: '星形布局' }
+        { engine: 'twopi', name: this.$t('term.cmdb.topo.twopi') }
       ],
       graph: {},
       data: {},
-      searchParam: {ciEntityId: this.ciEntityId, customViewId: this.viewId, level: 3},
+      searchParam: { ciEntityId: this.ciEntityId, customViewId: this.viewId, level: 3 },
       currentZoomLevelId: [],
       nodeNameMap: {}
     };
@@ -89,13 +89,7 @@ export default {
                 const cY = pos.y + pos.height / 2;
                 const r = 50;
                 //d3.select(g._this).classed('selectednode', true);
-                d3.select(g._this).append('circle').classed('selectedcircle', true)
-                  .attr('cx', cX)
-                  .attr('cy', cY)
-                  .attr('r', r)
-                  .attr('fill-opacity', 0.2)
-                  .attr('fill', 'orange')
-                  .attr('stroke-width', 0);
+                d3.select(g._this).append('circle').classed('selectedcircle', true).attr('cx', cX).attr('cy', cY).attr('r', r).attr('fill-opacity', 0.2).attr('fill', 'orange').attr('stroke-width', 0);
               }
             });
           }
@@ -126,9 +120,9 @@ export default {
           this.graph.graphviz.addImage(image, '48px', '48px');
         });
     },
-    getGraphTop(object, offset) { 
-      offset = offset || {x: 0, y: 0};
-      offset.x += object.offsetLeft; 
+    getGraphTop(object, offset) {
+      offset = offset || { x: 0, y: 0 };
+      offset.x += object.offsetLeft;
       offset.y += object.offsetTop;
       if (object.offsetParent) {
         offset = this.getGraphTop(object.offsetParent, offset);
@@ -138,11 +132,11 @@ export default {
     resizeSVG() {
       const graphEl = document.getElementById('graph');
       if (graphEl) {
-        d3.select('#graph').selectWithoutDataPropagation('svg')
+        d3.select('#graph')
+          .selectWithoutDataPropagation('svg')
           .transition()
-          .duration(700)
           .attr('width', graphEl.offsetWidth - 10)
-          .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+          .attr('height', window.innerHeight - 40 - this.getGraphTop(graphEl).y);
       }
     },
     initGraph() {
@@ -150,16 +144,17 @@ export default {
         const graphEl = document.getElementById('graph');
         let graph = d3.select('#graph');
         const _this = this;
-        graph
-          .on('dblclick.zoom', null)
-          .on('wheel.zoom', null)
-          .on('mousewheel.zoom', null);
+        graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
         this.graph.graphviz = graph
           .graphviz()
-          .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
+          .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
           .width(graphEl.offsetWidth - 10)
           .zoom(true)
           .fit(false)
+          .tweenShapes(false)
+          .tweenPaths(false)
+          .convertEqualSidedPolygons(false)
+          .tweenPrecision('30%')
           .attributer(function(d) {
             if (d.attributes.class === 'edge') {
               let keys = d.key.split('->');
@@ -181,7 +176,8 @@ export default {
                 _this.nodeNameMap[d.attributes['xlink:title']] = [d];
               }
             }
-          });
+          })
+          .on('end', () => {});
         this.renderGraph();
         d3.select(window).on('resize', this.resizeSVG);
       }, 0);
@@ -191,17 +187,15 @@ export default {
       const graphEl = document.getElementById('graph');
       const param = this.searchParam;
       param.layout = this.currentLayout;
-      this.$api.cmdb.customview.getCustomViewCiEntityTopoData(param).then((res) => {
+      this.$api.cmdb.customview.getCustomViewCiEntityTopoData(param).then(res => {
         if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
           const nodesString = this.$utils.handleTopoImagePath(res.Return.dot);
           this.loadImage(nodesString);
           this.graph.graphviz
             .transition()
-            .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
+            .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
             .width(graphEl.offsetWidth - 10)
-            .renderDot(nodesString)
-            .on('end', () => {
-            });
+            .renderDot(nodesString);
           //let svg = d3.select('#graph').select('svg');
           //svg.append('g').lower();
           addEvent('svg', 'mouseover', e => {
@@ -221,7 +215,10 @@ export default {
             const g = e.currentTarget;
             const className = d3.select(g).attr('class');
             if (className) {
-              const ids = className.split(' ').find(d => d.indexOf('CiEntity_') == 0).split('_');
+              const ids = className
+                .split(' ')
+                .find(d => d.indexOf('CiEntity_') == 0)
+                .split('_');
               this.toCiEntityView(ids[1], ids[2]);
             }
           });
@@ -230,10 +227,8 @@ export default {
       });
     },
     unColorNode() {
-      d3.selectAll('g path')
-        .attr('style', '');
-      d3.selectAll('g polygon')
-        .attr('style', '');
+      d3.selectAll('g path').attr('style', '');
+      d3.selectAll('g polygon').attr('style', '');
       d3.selectAll('.edge text').attr('style', '');
     },
     colorNode(nodeName) {
