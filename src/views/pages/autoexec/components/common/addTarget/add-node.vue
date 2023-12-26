@@ -23,6 +23,7 @@
           </div>
         </div>
         <div class="node-table">
+          <Loading :loadingShow="loadingShow" type="fix"></Loading>
           <div class="search input-border">
             <FilterSearch
               style="width:100%;display: inline-block;"
@@ -36,6 +37,7 @@
             <TsTable
               ref="table"
               v-model="selectList"
+              :theadList="theadList"
               v-bind="tableData"
               selectedRemain
               keyName="id"
@@ -154,7 +156,6 @@ export default {
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
-          this.$set(this.tableData, 'theadList', this.theadList);
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -324,7 +325,8 @@ export default {
   }
 }
 .node-table{
-   padding: 16px;
+  position: relative;
+  padding: 16px;
   .search {
     padding-bottom: 10px;
   }
