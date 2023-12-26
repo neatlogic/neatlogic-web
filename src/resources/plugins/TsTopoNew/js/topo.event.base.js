@@ -1,7 +1,7 @@
 /**topo节点的事件基础类**/
-(function(global, factory) {
+(function (global, factory) {
   factory((global.EventBase = global.EventBase || {}), global);
-})(window, function(exports, global) {
+})(window, function (exports, global) {
   'use strict';
   class EventBase {
     constructor(canvas, config) {}
@@ -47,26 +47,26 @@
       }
       //初始化事件
       this.el
-        .on('click', d => {
-          this.onClick(d);
+        .on('click', (event, d) => {
+          this.onClick(event, d);
         })
-        .on('mouseenter', d => {
+        .on('mouseenter', (event, d) => {
           this.onMouseenter(d);
         })
-        .on('mouseleave', d => {
+        .on('mouseleave', (event, d) => {
           this.onMouseleave(d);
         })
-        .on('dragenter', d => {
+        .on('dragenter', (event, d) => {
           this.status.entered = true;
         })
-        .on('dragleave', d => {
+        .on('dragleave', (event, d) => {
           this.status.entered = false;
         });
     }
     /*由于外部拖拽事件的数据都是topo以外的自定义数据，所以需要由子类来继承实现个性化 */
     onDragEnter(event) {}
-    onClick(d) {
-      d3.event.stopPropagation();
+    onClick(event, d) {
+      event.stopPropagation();
       if (this.clickFn && typeof this.clickFn === 'function') {
         this.clickFn(d);
       }
@@ -105,15 +105,15 @@
         this.group.draggingNode = this; //设置拖动节点，分组移动时忽略当前分组
       }
     }
-    onDrag() {
-      this.setDx(d3.event.dx);
-      this.setDy(d3.event.dy);
+    onDrag(event) {
+      this.setDx(event.dx);
+      this.setDy(event.dy);
       //删除拖拽目标的指针事件，让下层元素可以响应鼠标事件
       this.el.attr('pointer-events', 'none');
       //如果属于分组，并且分组不能拖动，则拖动整个分组
       if (this.group && !this.group.getIsDragable()) {
-        this.group.setDx(d3.event.dx);
-        this.group.setDy(d3.event.dy);
+        this.group.setDx(event.dx);
+        this.group.setDy(event.dy);
       }
 
       if (this.canvas.getIsAutoAdjust()) {
@@ -141,15 +141,7 @@
         if (targetX) {
           // 添加对齐辅助线
           if (!this.alignPathX) {
-            this.alignPathX = this.canvas.zoomG
-              .append('path')
-              .attr('stroke-width', 1)
-              .attr('class', 'alignPath')
-              .attr('stroke-dasharray', '3,4')
-              .attr('stroke', 'black')
-              .attr('stroke-opacity', 0.5)
-              .attr('fill', 'none')
-              .attr('d', 'M0,-99999V99999');
+            this.alignPathX = this.canvas.zoomG.append('path').attr('stroke-width', 1).attr('class', 'alignPath').attr('stroke-dasharray', '3,4').attr('stroke', 'black').attr('stroke-opacity', 0.5).attr('fill', 'none').attr('d', 'M0,-99999V99999');
           }
           this.alignPathX.attr('transform', `translate(${targetX.getX()}, 0)`);
           this.alignPathX.datum({ x: targetX.getX() });
@@ -161,15 +153,7 @@
         }
         if (targetY) {
           if (!this.alignPathY) {
-            this.alignPathY = this.canvas.zoomG
-              .append('path')
-              .attr('stroke-width', 1)
-              .attr('class', 'alignPath')
-              .attr('stroke-dasharray', '3,4')
-              .attr('stroke', 'black')
-              .attr('stroke-opacity', 0.5)
-              .attr('fill', 'none')
-              .attr('d', 'M-99999,0H99999');
+            this.alignPathY = this.canvas.zoomG.append('path').attr('stroke-width', 1).attr('class', 'alignPath').attr('stroke-dasharray', '3,4').attr('stroke', 'black').attr('stroke-opacity', 0.5).attr('fill', 'none').attr('d', 'M-99999,0H99999');
           }
           this.alignPathY.attr('transform', `translate(0, ${targetY.getY()})`);
           this.alignPathY.datum({ y: targetY.getY() });

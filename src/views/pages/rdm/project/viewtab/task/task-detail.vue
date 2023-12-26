@@ -64,6 +64,11 @@
                 ></IssueList>
               </div>
             </TabPane>
+            <TabPane :label="render => renderCostTabLabel(render, issueData.costList && issueData.costList.length)" name="timecost">
+              <div v-if="currentTab == 'timecost'" class="pl-nm pr-nm">
+                <TimeCostList :issueData="issueData"></TimeCostList>
+              </div>
+            </TabPane>
             <TabPane v-if="getApp('gitlab')" :label="render => renderWebhookLabel(render, getApp('gitlab').id, $t('term.rdm.gitlabcommit'))" name="gitlab">
               <div v-if="currentTab == 'gitlab'" class="pl-nm pr-nm">
                 <GitlabList :issueId="issueData.id" :appId="getApp('gitlab').id"></GitlabList>
@@ -152,7 +157,8 @@ export default {
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve),
-    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve)
+    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve),
+    TimeCostList: resolve => require(['@/views/pages/rdm/project/viewtab/components/timecost-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},

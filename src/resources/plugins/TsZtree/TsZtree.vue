@@ -23,7 +23,8 @@ export default {
     enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
     beforeDrop: { type: Function }, // 拖放之前事件
     urlKey: { type: String, default: 'url' }, //节点链接的目标URL的属性名称, 特殊用途：当后台数据只能生成 url 属性，又不想实现点击节点跳转的功能时，可以直接修改此属性为其他不存在的属性名称,
-    nodeClasses: { type: Function } // 使用 className 设置文字样式，只针对 zTree 在节点上显示的<A>对象。便于 css 与 js 解耦 默认值：{add: [], remove: []} add表示新增类名，remove表示移除类名
+    nodeClasses: { type: Function }, // 使用 className 设置文字样式，只针对 zTree 在节点上显示的<A>对象。便于 css 与 js 解耦 默认值：{add: [], remove: []} add表示新增类名，remove表示移除类名
+    beforeClick: {type: Function} //返回true或者false，判断是否可以点击
   },
   data() {
     return {
@@ -79,13 +80,17 @@ export default {
             }
           },
           beforeClick: (treeId, treeNode, clickFlag) => {
-            const selectedList = this.zTreeObj.getSelectedNodes();
-            if (!selectedList.includes(treeNode)) {
-              return true;
-            } else if (this.enableToggleClick) {
-              this.zTreeObj.cancelSelectedNode(treeNode);
-              if (this.onClick) {
-                this.onClick(this.zTreeObj, null);
+            if(this.beforeClick) {
+               return this.beforeClick(this.zTreeObj, treeNode);
+            }else {
+              const selectedList = this.zTreeObj.getSelectedNodes();
+              if (!selectedList.includes(treeNode)) {
+                return true;
+              } else if (this.enableToggleClick) {
+                this.zTreeObj.cancelSelectedNode(treeNode);
+                if (this.onClick) {
+                  this.onClick(this.zTreeObj, null);
+                }
               }
             }
             return false;

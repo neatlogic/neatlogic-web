@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain hideHeader :siderWidth="168" :hasContentPadding="false">
+    <TsContain hideHeader :siderWidth="200" :hasContentPadding="false">
       <template slot="sider">
         <ciTypeList :ciId="ciId" @click="getTemplate"></ciTypeList>
       </template>

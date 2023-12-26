@@ -69,6 +69,11 @@
                 <GitlabList :issueId="issueData.id" :appId="getApp('gitlab').id"></GitlabList>
               </div>
             </TabPane>
+            <TabPane :label="render => renderCostTabLabel(render, issueData.costList && issueData.costList.length)" name="timecost">
+              <div v-if="currentTab == 'timecost'" class="pl-nm pr-nm">
+                <TimeCostList :issueData="issueData"></TimeCostList>
+              </div>
+            </TabPane>
             <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
               <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
                 <IssueAuditList
@@ -152,7 +157,8 @@ export default {
     IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
     IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
     MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve),
-    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve)
+    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve),
+    TimeCostList: resolve => require(['@/views/pages/rdm/project/viewtab/components/timecost-list.vue'], resolve)
   },
   extends: IssueDetailBase,
   props: {},

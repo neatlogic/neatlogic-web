@@ -25,9 +25,11 @@ const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-import {$t} from '@/resources/init.js';
 
-let routerArr = [
+import { $t } from '@/resources/init.js';
+import { config } from './config.js';
+
+let routerList = [
   {
     path: '/',
     beforeEnter: (to, from, next) => {
@@ -107,7 +109,7 @@ let routerArr = [
       icon: 'tsfont-star',
       authority: 'PROCESS_BASE',
       type: 'catalog'
-      
+
     }
   },
   {
@@ -325,7 +327,7 @@ let routerArr = [
       type: 'others'
     }
   },
-  
+
   {
     path: '/flow-demo',
     name: 'flow-demo',
@@ -349,4 +351,4 @@ let routerArr = [
   }
 ];
 
-export default routerArr;
+export default routerList;

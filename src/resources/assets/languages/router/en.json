@@ -75,7 +75,9 @@
     "flowedit": "Flow Edit",
     "slamanage": "SLA Sets",
     "eventsolutionedit": "Edit Event Solution",
-    "changeedit": "Change Edit"
+    "changeedit": "Change Edit",
+    "eoatemplate": "EOA template",
+    "eoatemplateedit": "EOA template editing"
   },
   "autoexec": {
     "detail": "Automation is obvious",
