@@ -40,7 +40,7 @@
       </div>
     </Poptip>
     <!-- 导航内容开始 -->
-    <div v-if="!extramenuLoading" class="topnav-menu-module overflow">
+    <div class="topnav-menu-module overflow">
       <Tabs :value="moduleId" @on-click="toMenu">
         <TabPane
           v-for="module in moduleList"
@@ -68,16 +68,10 @@ export default {
       moduleId: MODULEID,
       home: HOME,
       extramenu: {},
-      extramenuLoading: true
+      extramenuLoading: false
     };
   },
-  created() {
-    if (this.$AuthUtils.hasRole('EXTRA_MENU_MODIFY')) {
-      this.initExtramenu();
-    } else {
-      this.extramenuLoading = false;
-    }
-  },
+  created() {},
   methods: {
     updateMenu() {
       this.$store.dispatch('updateMenu');
@@ -121,7 +115,6 @@ export default {
         }
       }).finally(() => {
         this.$nextTick(() => {
-          this.extramenuLoading = false;
           this.$store.commit('setExtramenu', false); 
         });
       });
@@ -143,11 +136,22 @@ export default {
         return groupList;
       };
     },
+    isHasExtramenu() {
+      return this.$AuthUtils.hasRole('EXTRA_MENU_MODIFY');
+    },
     isUpdateExtramenu() {
       return this.$store.state.isUpdateExtramenu;
     }
   },
   watch: {
+    isHasExtramenu: {
+      handler(val) {
+        if (val) {
+          this.initExtramenu();
+        }
+      },
+      immediate: true
+    },
     isUpdateExtramenu: {
       handler(val) {
         if (val) {

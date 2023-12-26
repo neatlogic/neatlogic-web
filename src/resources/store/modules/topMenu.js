@@ -286,9 +286,7 @@ function getRouterConfig() {
   });
   let commercialRouterConfig = getCommercialRouter();
   Object.keys(commercialRouterConfig).forEach(key => {
-    if (routerConfig[key]) {
-      routerConfig[key].push(...commercialRouterConfig[key]);
-    } else {
+    if (!routerConfig[key]) { //模块引入
       routerConfig[key] = commercialRouterConfig[key];
     }
   }); 
