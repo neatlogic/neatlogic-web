@@ -10,7 +10,7 @@
   .selectednode text {
     fill: @cluster-color !important;
     text-decoration: underline;
-    font-weight:bold;
+    font-weight: bold;
   }
   .cluster text {
     fill: @layer-color;
@@ -34,18 +34,23 @@
     fill: @edge-stroke;
   }
 
-  .abstract_ci{
-    image{
+  .abstract_ci {
+    image {
       filter: grayscale(100%);
     }
   }
 
-  .virtual_ci{
-    image{
+  .virtual_ci {
+    image {
       filter: invert(0.4);
     }
   }
-
+  svg text {
+    user-select: none;
+    -moz-user-select: none; /* Firefox */
+    -webkit-user-select: none; /* Chrome, Safari, and Opera */
+    -ms-user-select: none; /* IE */
+  }
 }
 
 html {
