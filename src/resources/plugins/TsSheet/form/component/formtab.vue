@@ -5,6 +5,7 @@
       :name="formItem.uuid"
       :type="config.type"
       :animated="false"
+      @on-click="changeTab()"
     >
       <TabPane
         v-for="(tab, tindex) in tabList"
@@ -128,6 +129,9 @@ export default {
         }
       }
       return errorList;
+    },
+    changeTab() {
+      this.$emit('resize');
     }
   },
   filter: {},
