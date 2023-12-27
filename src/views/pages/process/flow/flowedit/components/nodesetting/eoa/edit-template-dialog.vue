@@ -12,9 +12,9 @@
         <div class="template-main">
           <Timeline>
             <TimelineItem class="template-list">
-              <div class="name owerflow">创建签报</div>
+              <div class="name owerflow">{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
               <div slot="dot" class="text-tip icon-index border-color">1</div>
-              <div class="user pl-sm">EOA步骤处理人</div>
+              <div class="user pl-sm">EOA{{ $t('term.process.stepuser') }}</div>
             </TimelineItem>
             <TimelineItem
               v-for="(item,index) in list"
@@ -24,53 +24,55 @@
               <div class="name owerflow">{{ item.name }}</div>
               <div slot="dot" class="text-tip icon-index border-color">{{ index + 2 }}</div>
               <div class="user pl-sm">
-                <TsRow :gutter="8">
-                  <Col span="2">
-                    <span class="text-title">{{ item.policy }}</span>
+                <div v-if="!item.mappingMode && !$utils.isEmpty(item.valueList)" class="flex-start">
+                  <span class="text-title pr-sm">{{ item.policyName }}</span>
+                  <div class="tsform-readonly">
+                    <UserCard
+                      v-for="(u,uindex) in item.valueList"
+                      :key="uindex"
+                      :uuid="u"
+                      :hideAvatar="false"
+                      class="pr-sm"
+                    ></UserCard>
+                  </div>
+                </div>
+                <TsRow v-else :gutter="8">
+                  <Col span="4">{{ item.policyName }}</Col>
+                  <Col span="8">
+                    <TsFormSelect
+                      v-model="item.mappingMode"
+                      :dataList="dataList"
+                      transfer
+                      border="border"
+                    ></TsFormSelect>
                   </Col>
-                  <template v-if="!item.type && !$utils.isEmpty(item.user)">
-                    <div class="tsform-readonly">
-                      <UserCard
-                        v-for="(u,uindex) in item.user"
-                        :key="uindex"
-                        :uuid="u"
-                        :hideAvatar="false"
-                        class="pr-sm"
-                      ></UserCard>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <Col span="8">
+                  <Col span="12">
+                    <template v-if="item.mappingMode === 'form'">
                       <TsFormSelect
-                        v-model="item.type"
-                        :dataList="dataList"
-                        transfer
+                        :value="currenValue(item)"
+                        :dataList="formList"
+                        textName="label"
+                        valueName="uuid"
                         border="border"
+                        transfer
                       ></TsFormSelect>
-                    </Col>
-                    <Col span="14">
-                      <template v-if="item.type === 'form'">
-                        <TsFormSelect
-                          :dataList="formList"
-                          textName="label"
-                          valueName="uuid"
-                          border="border"
-                          transfer
-                        ></TsFormSelect>
-                      </template>
-                      <template v-else-if="item.type === 'custom'">
-                        <UserSelect
-                          border="border"
-                          :multiple="true"
-                          :transfer="true"
-                          :groupList="['user']"
-                        ></UserSelect>
-                      </template>
-                      <template v-else>
-                        <TsFormSelect border="border" transfer></TsFormSelect>
-                      </template>
-                    </Col>
-                  </template>  
+                    </template>
+                    <template v-else-if="item.mappingMode === 'custom'">
+                      <UserSelect
+                        :value="currenValue(item)"
+                        :multiple="item.policy !== 'onePerson'"
+                        :transfer="true"
+                        :groupList="['user']"
+                        border="border"
+                        @change="(val)=>{
+                          changeValueList(val, item);
+                        }"
+                      ></UserSelect>
+                    </template>
+                    <template v-else>
+                      <TsFormSelect border="border"></TsFormSelect>
+                    </template>
+                  </Col>
                 </TsRow>
               </div>
             </TimelineItem>
@@ -92,24 +94,15 @@ export default {
     allFormitemList: {
       type: Array,
       default: () => []
+    },
+    currentTemplate: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
-      list: [
-        {
-          name: '科室领导审批',
-          policy: '单人',
-          user: ['user#fccf704231734072a1bf80d90b2d1de2', 'user#fccf704231734072a1bf80d90b2d1de2'],
-          commentTemplate: '同意'
-        },
-        {
-          name: '科室领导审批',
-          policy: '单人',
-          user: [],
-          commentTemplate: '同意'
-        }
-      ],
+      list: [],
       dataList: [
         {
           text: '自定义',
@@ -126,7 +119,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -134,6 +129,53 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.list = [];
+      if (!this.$utils.isEmpty(this.currentTemplate)) {
+        if (this.currentTemplate.id) {
+          this.getEoaTemplate(this.currentTemplate.id);
+        }
+      } 
+    },
+    getEoaTemplate(id) {
+      this.$api.process.eoa.getEoaTemplate({id: id}).then(res => {
+        if (res.Status === 'OK') {
+          let eoaConfig = res.Return || {};
+          if (eoaConfig.config && !this.$utils.isEmpty(eoaConfig.config.stepList)) {
+            let stepList = eoaConfig.config.stepList;
+            stepList.forEach(item => {
+              let obj = {
+                id: item.id,
+                name: item.name,
+                policy: item.policy,
+                policyName: item.policyName,
+                valueList: []
+              };
+              if (!this.$utils.isEmpty(item.userList)) {
+                obj.valueList = item.userList;
+              } else {
+                this.$set(obj, 'mappingMode', ''); 
+                if (this.currentTemplate && !this.$utils.isEmpty(this.currentTemplate.mappingList)) {
+                  let findItem = this.currentTemplate.mappingList.find(c => c.id === item.id);
+                  if (findItem) {
+                    this.$set(obj, 'mappingMode', findItem.mappingMode);
+                    this.$set(obj, 'valueList', findItem.valueList);
+                  }
+                }
+              }
+              this.list.push(obj);
+            });
+          }
+        }
+      });
+    },
+    changeValueList(val, item) {
+      if (val) {
+        Array.isArray(val) ? this.$set(item, 'valueList', val) : this.$set(item, 'valueList', [val]);
+      } else {
+        this.$set(item, 'valueList', []);
+      }
+    },
     okDialog() {
       this.$emit('close', this.list);
     },
@@ -151,6 +193,19 @@ export default {
         });
       }
       return list;
+    },
+    currenValue() {
+      return (item) => {
+        let value = '';
+        if (!this.$utils.isEmpty(item.valueList)) {
+          if (item.policy !== 'onePerson' && item.mappingMode === 'custom') {
+            value = item.valueList;
+          } else {
+            value = item.valueList[0];
+          }
+        }
+        return value;
+      };
     }
   },
   watch: {}

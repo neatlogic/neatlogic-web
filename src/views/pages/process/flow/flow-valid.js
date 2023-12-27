@@ -315,7 +315,7 @@ let valid = {
     let nodeData = nodeConfig.stepConfig || {};
     let eoaConfig = nodeData.eoaConfig || {};
     if (nodeConfig.handler === 'eoa') {
-      if (that.$utils.isEmpty(eoaConfig.templateIdList)) {
+      if (that.$utils.isEmpty(eoaConfig.eoaTemplateList)) {
         validList.push({
           name: $t('form.validate.required', { target: $t('page.template') }),
           href: '#eoaSetting'

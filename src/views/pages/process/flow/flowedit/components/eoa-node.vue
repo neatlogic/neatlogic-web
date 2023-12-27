@@ -40,7 +40,7 @@
       :nodeConfig="nodeConfig"
       @updatebutton="updatebutton"
     ></ButtonSetting>
-    <EoaSetting id="eoaSetting" ref="eoaSetting" :defaultEoaConfig="eoaConfig"></EoaSetting>
+    <EoaSetting id="eoaSetting" ref="eoaSetting" :eoaConfig="eoaConfig"></EoaSetting>
     <!-- 异常处理人 -->
     <AssignSetting
       id="assignData"

@@ -2,10 +2,10 @@
   <div class="pl-nm pr-nm eoa-setting">
     <div class="flex-between setting">
       <div>
-        <span class="text-grey">自动创建签报</span>
+        <span class="text-grey">{{ $t('router.process.autostart') }}</span>
         <Tooltip
           max-width="300"
-          content="当处理人唯一、审批模板唯一，且审批模板中的每个审批步骤均已指定审批人时，自动创建签报"
+          :content="$t('router.process.autostarttip')"
           theme="light"
           placement="bottom"
           :transfer="true"
@@ -19,8 +19,8 @@
     </div>
     <div class="pb-sm">
       <div class="flex-between text-grey pb-xs">
-        <div class="require-label">EOA模板</div>
-        <div v-if="eoaConfig.template" class="action-group"> 
+        <div class="require-label">{{ $t('router.process.eoatemplate') }}</div>
+        <div v-if="!$utils.isEmpty(templateIdList)" class="action-group"> 
           <span class="tsfont-edit" @click="editEoaTemplate()"></span>
           <span class="action-item tsfont-refresh" @click="refreshEoaTemplate()"></span>
         </div>
@@ -28,20 +28,21 @@
       <div>
         <TsFormSelect
           ref="templateId"
-          v-model="eoaConfig.templateIdList"
+          v-model="templateIdList"
           v-bind="templateConfig"
           @first="addTemplate()"
+          @on-change="changeTemplateId"
         ></TsFormSelect>
       </div>
-      <div v-for="(item,index) in templateList" :key="index" class="template-list flex-between pt-sm">
+      <div v-for="(item,index) in eoaTemplateList" :key="index" class="template-list flex-between pt-sm">
         <div class="text-title overflow name">{{ item.name }}</div>
-        <div class="text-href pl-sm" @click="editUser(item)">审批人</div>
+        <div class="text-href pl-sm" @click="editUser(item)">{{ $t('term.knowledge.approver') }}</div>
       </div>
     </div>
     <EditTemplateDialog
       v-if="isShowTemplateDialog"
       :allFormitemList="allFormitemList"
-      :eoaTemplateList="eoaTemplateList"
+      :currentTemplate="currentTemplate"
       @close="close"
     ></EditTemplateDialog>
   </div>
@@ -56,17 +57,19 @@ export default {
     EditTemplateDialog: resolve => require(['./edit-template-dialog.vue'], resolve)
   },
   props: {
-    defaultEoaConfig: {
+    eoaConfig: {
       type: Object,
       default: () => {}
     }
   },
   data() {
     return {
-      eoaConfig: {},
       templateConfig: {
-        dynamicUrl: '/api/rest/universal/enum/get',
-        params: { enumClass: 'neatlogic.framework.common.constvalue.DeviceType' },
+        dynamicUrl: '/api/rest/eoa/template/search',
+        rootName: 'tbodyList',
+        valueName: 'id',
+        textName: 'name',
+        dealDataByUrl: this.dealDataByUrl,
         multiple: true,
         firstLi: true,
         firstText: '模板',
@@ -75,16 +78,11 @@ export default {
         border: 'border',
         validateList: ['required']
       },
-      templateList: [
-        {
-          name: 'asdsaddddddddddddddddddddddddddddasdsadddddddddddddddddddddddddddd'
-        },
-        {
-          name: 'dasdsadddddddddddddddddddddddddddd'
-        }
-      ],
       isShowTemplateDialog: false,
-      eoaTemplateList: []
+      isAutoStart: 1,
+      templateIdList: [],
+      eoaTemplateList: [],
+      currentTemplate: {}
     };
   },
   beforeCreate() {},
@@ -98,19 +96,52 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    dealDataByUrl(list) {
+      if (!this.$utils.isEmpty(this.eoaTemplateList)) {
+        list.forEach(item => {
+          let findItem = this.eoaTemplateList.find(e => e.id === item.id);
+          this.$set(findItem, 'name', item.name);
+        });
+      }
+      return list;
+    },
+    changeTemplateId(toValue, valueObject, selectItem) {
+      this.eoaTemplateList = selectItem;
+    },
     editEoaTemplate() {
       window.open(HOME + '/process.html#/eoa-template-manage', '_blank');
     },
     refreshEoaTemplate() {
-
+      this.$api.process.eoa.searchEoaTemplate({defaultValue: this.templateIdList}).then(res => {
+        if (res.Status === 'OK') {
+          let tbodyList = res.Return.tbodyList || [];
+        }
+      });
     },
     addTemplate() {
       window.open(HOME + '/process.html#/eoa-template-edit', '_blank');
     },
-    editUser() {
+    editUser(item) {
+      this.currentTemplate = item;
       this.isShowTemplateDialog = true;
     },
-    close() {
+    close(list) {
+      if (!this.$utils.isEmpty(list)) {
+        let findItem = this.eoaTemplateList.find(item => item.id === this.currentTemplate.id);
+        if (findItem) {
+          let mappingList = [];
+          list.forEach(item => {
+            if (item.mappingMode && !this.$utils.isEmpty(item.valueList)) {
+              mappingList.push({
+                id: item.id,
+                mappingMode: item.mappingMode,
+                valueList: item.valueList ? (Array.isArray(item.valueList) ? item.valueList : [item.valueList]) : []
+              });
+            }
+          });
+          this.$set(findItem, 'mappingList', mappingList);
+        }
+      }
       this.isShowTemplateDialog = false;
     },
     valid() {
@@ -121,7 +152,19 @@ export default {
       return isValid;
     },
     getData() {
-      return this.eoaConfig;
+      let data = {
+        isAutoStart: this.isAutoStart,
+        eoaTemplateList: []
+      };
+      if (!this.$utils.isEmpty(this.eoaTemplateList)) {
+        this.eoaTemplateList.forEach(item => {
+          data.eoaTemplateList.push({
+            id: item.id,
+            mappingList: item.mappingList || []
+          });
+        });
+      }
+      return data;
     }
   },
   filter: {},
@@ -131,11 +174,12 @@ export default {
     }
   },
   watch: {
-    defaultEoaConfig: {
+    eoaConfig: {
       handler(val) {
         if (!this.$utils.isEmpty(val)) {
           this.isAutoStart = val.isAutoStart;
-          this.eoaTemplateList = val.eoaTemplateList;
+          this.eoaTemplateList = val.eoaTemplateList || [];
+          this.templateIdList = this.$utils.mapArray(this.eoaTemplateList, 'id');
         }
       },
       immediate: true,
