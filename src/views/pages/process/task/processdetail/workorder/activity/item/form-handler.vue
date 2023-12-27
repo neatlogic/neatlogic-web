@@ -18,7 +18,7 @@
 <script>
 import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
 export default {
-  name: '',
+  name: 'FormHandler',
   components: {
     TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
   },

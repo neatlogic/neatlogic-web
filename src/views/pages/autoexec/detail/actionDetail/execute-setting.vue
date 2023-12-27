@@ -58,13 +58,13 @@
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
           <div class="target-detail">
-            <Param
+            <ExecutionModeParam
               :id="id"
               ref="runtimeparam"
               :defaultValue="settingConfig.executeNodeConfig.paramList"
               :paramList="nodeTypeParamList"
               :canEdit="isEditSetting"
-            ></Param>
+            ></ExecutionModeParam>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    Param: resolve => require(['@/views/pages/autoexec/components/common/executionMode/param'], resolve),
+    ExecutionModeParam: resolve => require(['@/views/pages/autoexec/components/common/executionMode/param'], resolve),
     Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters'], resolve),
     TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
     ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve)

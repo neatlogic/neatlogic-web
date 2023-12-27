@@ -22,7 +22,7 @@
 </template>
 <script>
 export default {
-  name: '',
+  name: 'WorkerlistHandler',
   components: {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
   },

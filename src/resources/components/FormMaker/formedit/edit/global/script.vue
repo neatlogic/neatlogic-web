@@ -32,7 +32,7 @@
 <script>
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 export default {
-  name: 'Script',
+  name: '',
   components: {
     ScriptEdit: resolve => require(['./script/script-edit.vue'], resolve),
     TsCodemirror

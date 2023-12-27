@@ -43,26 +43,23 @@
                   :ghost="btn.ghost || false"
                   :disabled="btn.disabled"
                   @click.native.stop="btnClick(btn)"
-                  v-html="btn.text"
-                ></Button>
+                >{{ btn.text }}</Button>
               </template>
               <template v-else>
-                <Button @click.native="onCancel" v-html="cancelText"></Button>
+                <Button @click.native="onCancel">{{ cancelText }}</Button>
                 <Button
                   v-if="loading"
                   :type="btnType"
                   :disabled="okBtnDisable"
                   :loading="loading"
                   @click.native.stop="onOk"
-                  v-html="okText"
-                ></Button>
+                >{{ okText }}</Button>
                 <Button
                   v-else
                   :type="btnType"
                   :disabled="okBtnDisable"
                   @click.native.stop="onOk"
-                  v-html="okText"
-                ></Button>
+                >{{ okText }}</Button>
               </template>
             </slot>
           </div>
@@ -98,22 +95,20 @@
           <!-- 底部footer按钮内容 -->
           <div v-if="hasFooter == true" :class="modalPrev + 'footer'">
             <slot name="footer">
-              <Button @click.native="onCancel" v-html="cancelText"></Button>
+              <Button @click.native="onCancel">{{ cancelText }}</Button>
               <Button
                 v-if="loading"
                 type="primary"
                 :loading="loading"
                 :disabled="okBtnDisable"
                 @click.native="onOk"
-                v-html="okText"
-              ></Button>
+              >{{ okText }}</Button>
               <Button
                 v-else
                 type="primary"
                 :disabled="okBtnDisable"
                 @click.native="onOk"
-                v-html="okText"
-              ></Button>
+              >{{ okText }}</Button>
             </slot>
           </div>
         </div>
@@ -135,22 +130,20 @@
           <!-- 底部footer按钮内容 -->
           <div v-if="hasFooter == true" :class="modalPrev + 'footer'">
             <slot name="footer">
-              <Button @click.native="onCancel" v-html="cancelText"></Button>
+              <Button @click.native="onCancel">{{ cancelText }}</Button>
               <Button
                 v-if="loading"
                 type="primary"
                 :disabled="okBtnDisable"
                 :loading="loading"
                 @click.native="onOk"
-                v-html="okText"
-              ></Button>
+              >{{ okText }}</Button>
               <Button
                 v-else
                 type="primary"
                 :disabled="okBtnDisable"
                 @click.native="onOk"
-                v-html="okText"
-              ></Button>
+              >{{ okText }}</Button>
             </slot>
           </div>
         </div>

@@ -52,7 +52,7 @@ module.exports = {
     'vue/singleline-html-element-content-newline': 'off',
     'vue/multiline-html-element-content-newline': 'off',
     'vue/require-prop-types': 'off',
-    'vue/name-property-casing': ['error', 'PascalCase'],
+    'vue/component-definition-name-casing': ['error', 'PascalCase'],
     'vue/no-v-html': 'off',
     'no-constant-condition': 'off',
     'accessor-pairs': 2,
