@@ -2,7 +2,7 @@
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
       <template v-if="formDataQueue.length <= 1" v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span class="tsfont-left text-action" @click="back()">{{ $t('router.framework.formmanage') }}</span>
       </template>
       <template v-slot:topLeft>
         <div :class="formDataQueue.length <= 1 ? 'flex-between' : 'flex-end'">
@@ -417,6 +417,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    back() {
+      this.$router.push({
+        path: '/form-overview'
+      });
+    },
     beforeLeaveCompare(oldData) {
       // 离开当前页面，数据对比
       let newData = this.$refs.sheet.getFormConfig();
