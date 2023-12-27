@@ -302,17 +302,26 @@ export default {
                                 } else {
                                   textList.push(value);
                                 }
+                              } else if (typeof value == 'object') {
+                                valueList.push(value.value);
+                                textList.push(value.text);
                               }
                             });
                           } else {
                             let value = this.formData[r.formItemUuid];
                             if (value) {
-                              valueList.push(value);
+                              let tmpText = value;
+                              let tmpValue = value;
+                              if (typeof value === 'object') {
+                                tmpText = value.text;
+                                tmpValue = value.value;
+                              }
                               if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                const findData = formItem.config.dataList.find(f => f.value === value);
+                                const findData = formItem.config.dataList.find(f => f.value === tmpValue);
                                 textList.push(findData.text);
                               } else {
-                                textList.push(value);
+                                textList.push(tmpText);
+                                valueList.push(tmpValue);
                               }
                             }
                           }
