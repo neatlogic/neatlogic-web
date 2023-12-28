@@ -117,7 +117,7 @@ export default {
       mode: 'level',
       treeId: '',
       isExpandAll: true,
-      catalogHeight: `calc(100vh - 94px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
+      catalogHeight: `calc(100vh - 62px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
     };
   },
   beforeCreate() {},
