@@ -16,12 +16,22 @@
         @change="changDataSource"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'static'" :label="$t('page.dropdownoption')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'static'"
+      :label="$t('page.dropdownoption')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('dataList')">
         <StaticDataEditor v-model="config.dataList" :disabled="disabled"></StaticDataEditor>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'matrix'" :label="$t('page.matrix')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'matrix'"
+      :label="$t('page.matrix')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('matrixUuid')">
         <TsFormSelect
           v-model="config.matrixUuid"

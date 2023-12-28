@@ -63,7 +63,8 @@ export default {
       let formConfig = this.$refs.sheet.getFormConfig();
       this.isFormLoaded = false;
       this.formDataQueue.pop();
-      this.currentFormData = this.formDataQueue[this.formDataQueue.length - 1];
+      let currentFormData = this.formDataQueue[this.formDataQueue.length - 1];
+      this.currentFormData = this.$utils.deepClone(currentFormData);
       if (this.currentFormData.formConfig && this.currentFormData.formConfig.tableList) {
         this.currentFormData.formConfig.tableList.forEach(t => {
           if (t.component) {
