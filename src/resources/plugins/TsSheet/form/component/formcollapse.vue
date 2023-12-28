@@ -86,7 +86,6 @@ export default {
       }, 300);
     },
     dropFormItem(event, panel) {
-      console.log('add');
       const item = JSON.parse(event.dataTransfer.getData('item'));
       if (panel && item) {
         if (this.addComponent(item)) {

@@ -252,8 +252,14 @@ export default {
             if (this.formContent._type == 'new') { //新的表单
               let controllerList = [];
               this.previewFormContent.tableList.forEach(item => {
-                if (!this.$utils.isEmpty(item.component) && item.component.hasValue) {
-                  controllerList.push(item.component);
+                if (!this.$utils.isEmpty(item.component)) {
+                  if (item.component.hasValue) {
+                    controllerList.push(item.component);
+                  } else if (item.component.handler === 'formtab' || item.component.handler === 'formcollapse') {
+                    if (!this.$utils.isEmpty(item.component.component)) {
+                      controllerList.push(...item.component.component);
+                    }
+                  }
                 }
               });
               plugin = controllerList;

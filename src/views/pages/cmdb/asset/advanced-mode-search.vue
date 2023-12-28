@@ -198,7 +198,7 @@
           </DropdownMenu>
         </Dropdown>
       </div>
-      <span v-if="isShowDeleteAllBtn && (disabledUuidList.length == 0)" class="btn-remove tsfont-close-o" @click="deleteAllCondition"></span>
+      <span v-if="isShowDeleteAllBtn && (disabledUuidList.length == 0)" class="btn-remove tsfont-close-o cursor" @click="deleteAllCondition"></span>
       <span class="btn-filter tsfont-filter cursor" @click="openDropdown"></span>
     </div>
   </div>
@@ -890,14 +890,13 @@ export default {
   }
   .btn-remove {
     position: absolute;
-    top: 1px;
+    top: 9px;
     right: 30px;
-    cursor: pointer;
     line-height: 32px;
   }
   .btn-filter {
     position: absolute;
-    top: 1px;
+    top: 9px;
     right: 10px;
     line-height: 32px;
   }

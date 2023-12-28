@@ -580,17 +580,15 @@ export default {
         .getMatrixAttributeByUuid(data)
         .then(res => {
           if (res.Status == 'OK') {
-            let resData = res.Return.tbodyList;
-            let newData = [];
-            resData.forEach(v => {
-              newData.push({text: v.name, value: v.label});
+            let tbodyList = res.Return.tbodyList || [];
+            let dataList = [];
+            tbodyList.forEach(v => {
+              if (v.label && v.name) {
+                dataList.push({text: v.name, value: v.label});
+              }
             });
-            // console.log(resData);
-            this.addAtrixForm.showAttributeLabelList.dataList = newData;
-            // console.log(this.addAtrixForm);
+            this.addAtrixForm.showAttributeLabelList.dataList = dataList;
           }
-        })
-        .catch(error => {
         });
     },
     setFile: function(fileList) {
