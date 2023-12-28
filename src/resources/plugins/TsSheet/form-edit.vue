@@ -147,15 +147,15 @@
                 </Dropdown>
               </div>
               <div class="action-item">
-                <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
+                <Button type="primary" ghost @click.stop="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
               </div>
               <div class="action-item last">
-                <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
+                <Button type="primary" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
               </div>
             </template>
             <template v-else>
               <div class="action-item last">
-                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length - 2])">确认</Button>
+                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length - 2])">{{ $t('page.confirm') }}</Button>
               </div>
             </template>
           </div>
@@ -990,7 +990,7 @@ export default {
       }
       return isValid;
     },
-    jumpToItem(uuid) {
+    jumpToItem(uuid, item) {
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.formData.formConfig.tableList.forEach(d => {
@@ -998,6 +998,13 @@ export default {
           if (!this.$utils.isEmpty(component) && component.uuid === uuid) {
             this.currentFormItem = component;
             this.$refs.sheet.selectCell(d);
+            if (item.uuid && !this.$utils.isEmpty(this.currentFormItem.component)) {
+              this.currentFormItem.component.forEach(c => {
+                if (c.uuid === item.uuid) {
+                  this.currentFormItem = c;
+                }
+              });
+            }
           }
         });
       });
