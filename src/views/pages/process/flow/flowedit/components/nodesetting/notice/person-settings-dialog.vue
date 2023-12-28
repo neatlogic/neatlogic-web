@@ -233,7 +233,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" >
+<style lang="less">
    .status-list {
     display: flex;
     width: 100%;

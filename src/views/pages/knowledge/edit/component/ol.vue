@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable -->
   <div
     :is="handler"
     ref="htmlContent"
@@ -6,6 +7,7 @@
     :class="config?config.className:''"
     v-html="content"
   ></div>
+   <!-- eslint-disable -->
 </template>
 <script>
 import editorMixins from './common/mixins.js';

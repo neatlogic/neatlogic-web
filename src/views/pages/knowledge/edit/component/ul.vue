@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable -->
   <div
     :is="handler"
     ref="htmlContent"
