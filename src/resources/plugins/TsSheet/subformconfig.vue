@@ -63,12 +63,22 @@ export default {
       let formConfig = this.$refs.sheet.getFormConfig();
       this.isFormLoaded = false;
       this.formDataQueue.pop();
-      this.currentFormData = this.formDataQueue[this.formDataQueue.length - 1];
+      let currentFormData = this.formDataQueue[this.formDataQueue.length - 1];
+      this.currentFormData = this.$utils.deepClone(currentFormData);
       if (this.currentFormData.formConfig && this.currentFormData.formConfig.tableList) {
         this.currentFormData.formConfig.tableList.forEach(t => {
-          if (t.component && t.component.uuid === this.currentFormUuid) {
-            this.$set(t.component, 'formData', {});
-            this.$set(t.component.formData, 'formConfig', formConfig);
+          if (t.component) {
+            if (t.component.uuid === this.currentFormUuid) {
+              this.$set(t.component, 'formData', {});
+              this.$set(t.component.formData, 'formConfig', formConfig);
+            } else if (t.component.handler === 'formtab' || t.component.handler === 'formcollapse') {
+              t.component.component.forEach(s => {
+                if (s.uuid === this.currentFormUuid) {
+                  this.$set(s, 'formData', {});
+                  this.$set(s.formData, 'formConfig', formConfig);
+                }
+              });
+            }
           }
         });
       }

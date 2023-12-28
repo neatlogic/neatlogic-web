@@ -86,7 +86,6 @@ export default {
       }, 300);
     },
     dropFormItem(event, panel) {
-      console.log('add');
       const item = JSON.parse(event.dataTransfer.getData('item'));
       if (panel && item) {
         if (this.addComponent(item)) {
@@ -122,6 +121,28 @@ export default {
             }
             if (formitem) {
               const err = await formitem.validData();
+              if (err && err.length > 0) {
+                errorList.push(...err);
+              }
+            }
+          }
+        }
+      }
+      return errorList;
+    },
+    validConfig() {
+      const errorList = [];
+      if (this.$refs) {
+        for (let name in this.$refs) {
+          if (this.$refs[name]) {
+            let formitem = this.$refs[name];
+            if (this.$refs[name] instanceof Array) {
+              formitem = this.$refs[name][0];
+            } else {
+              formitem = this.$refs[name];
+            }
+            if (formitem) {
+              const err = formitem.validConfig();
               if (err && err.length > 0) {
                 errorList.push(...err);
               }

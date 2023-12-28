@@ -1028,7 +1028,7 @@ export default {
         if (this.isCustomValue) {
           toValue = this.$utils.deepClone(this.selectedList);
         } else {
-          toValue = this.currentValue.concat([]);
+          toValue = [...(this.currentValue || {})];
         }
       } else if (this.isCustomValue) {
         isSame = this.$utils.isSame(this.value, this.currentValue);
