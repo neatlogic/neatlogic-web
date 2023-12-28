@@ -1,7 +1,7 @@
 /* * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved. * * Licensed under the Apache License, Version 2.0 (the "License"); * you may not use this file except in compliance with the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the License for the specific language governing permissions and * limitations under the License. */
 <template>
   <div>
-    <div class="padding">
+    <div class="pt-md pr-md pl-md">
       <TsFormInput
         v-model="keyword"
         border="bottom"
@@ -10,44 +10,82 @@
         @change="searchTreeData"
       ></TsFormInput>
     </div>
-    <div class="mb-nm">
-      <RadioGroup v-model="ciName" @on-change="changeRadio">
-        <Radio label="ciCatalog">{{ $t('term.cmdb.cidirectory') }}</Radio>
-        <Radio label="ciLevel">{{ $t('term.cmdb.cilevel') }}</Radio>
-      </RadioGroup>
-    </div>
-    <div id="treeheight" style="overflow-y: auto" :style="{ height: catalogHeight }">
-      <template v-if="ciName == 'ciCatalog'">
-        <NoData v-if="$utils.isEmpty(treeList)"></NoData>
-        <TsZtree
-          v-else
-          :nodes="treeList"
-          :onClick="clickTreeNode"
-          :value="treeId"
-          :nodeClasses="nodeClasses"
-        ></TsZtree>
-      </template>
-      <template v-else-if="ciName == 'ciLevel'">
-        <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
-          <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
-          <div v-if="item.ciList.length > 0">
-            <ul>
-              <li
-                v-for="ci in item.ciList"
-                :id="'ci-' + ci.id"
-                :key="ci.id"
-                class="text-default overflow treeList radius-sm pl-sm pr-xs"
-                :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
-                :title="ci.label + '(' + ci.name + ')'"
-                @click="click(item, ci)"
-              >
-                <span>{{ ci.label }}</span>
-                <span style="padding-left: 2px" class="text-grey">({{ ci.name }})</span>
-              </li>
-            </ul>
+    <div id="treeheight">
+      <Tabs v-model="mode">
+        <TabPane label="层级" name="level">
+          <div style="overflow-y: auto" :style="{ height: catalogHeight }">
+            <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
+              <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
+              <div v-if="item.ciList.length > 0">
+                <ul>
+                  <li
+                    v-for="ci in item.ciList"
+                    :id="'ci-' + ci.id"
+                    :key="ci.id"
+                    class="text-default overflow treeList radius-sm pl-sm pr-xs"
+                    :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
+                    :title="ci.label + '(' + ci.name + ')'"
+                    @click="click(item, ci)"
+                  >
+                    <span>{{ ci.label }}</span>
+                    <span style="padding-left: 2px" class="text-grey">({{ ci.name }})</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-      </template>
+        </TabPane>
+        <TabPane
+          :label="
+            h => {
+              return h('div', [
+                h('span', '自定义'),
+                h('span', {
+                  class: {
+                    'tsfont-plus-square': !isExpandAll,
+                    'tsfont-minus-square': isExpandAll,
+                    fz10: true
+                  },
+                  on: {
+                    click: () => {
+                      toggleExpand();
+                    }
+                  }
+                })
+              ]);
+            }
+          "
+          name="custom"
+        >
+          <div style="overflow-y: auto" :style="{ height: catalogHeight }">
+            <TsZtree
+              ref="tree"
+              :nodes="filterCiTreeList"
+              idKey="id"
+              pIdKey="parentCiId"
+              :value="ciId"
+              :nodeClasses="nodeClasses"
+              :beforeDrag="
+                () => {
+                  return !keyword && $AuthUtils.hasRole('CI_MODIFY');
+                }
+              "
+              :renderName="
+                (name, treeNode) => {
+                  return treeNode.label + '(' + treeNode.name + ')';
+                }
+              "
+              :onDrop="onDrop"
+              :onClick="
+                (tree, node) => {
+                  click(null, node);
+                }
+              "
+            ></TsZtree>
+          </div>
+        </TabPane>
+        
+      </Tabs>
     </div>
   </div>
 </template>
@@ -72,40 +110,24 @@ export default {
   data() {
     return {
       ciTypeList: [],
+      ciTreeList: [],
       keyword: '',
       treeList: [],
       ciName: 'ciCatalog',
+      mode: 'level',
       treeId: '',
-      catalogHeight: `calc(100vh - 160px - 64px - 18px - 16px)` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，18按钮，16底部间距
+      isExpandAll: true,
+      catalogHeight: `calc(100vh - 94px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.mode = this.$localStore.get('mode') || 'level';
+  },
   beforeMount() {},
   async mounted() {
-    await this.searchTreeData();
-    if (this.tree.length === 0) {
-      await this.searchCiTypeCi();
-    } else {
-      this.ciTypeList = JSON.parse(JSON.stringify(this.tree));
-    }
-    if (!this.$utils.isEmpty(this.treeList) && this.ciId) {
-      // 模型目录不为空，并且有ciId时，需要选中tree
-      this.treeId = this.ciId;
-    } else if (!this.ciId && this.needDefaultCiId) {
-      // 没有ciId默认选中第一个模型
-      this.treeId = this.findFirstCiId(this.treeList);
-    }
-    if (this.ciId) {
-      this.$nextTick(() => {
-        this.$utils.jumpTo('#ci-' + this.ciId);
-      });
-    }
-    let element = document.getElementById('treeheight');
-    let rect = element?.getBoundingClientRect();
-    if (rect && rect.top) {
-      this.catalogHeight = `calc(100vh - ${rect.top.toFixed(0)}px - 16px)`; // 减去底部的16
-    }
+    this.searchCiTypeCi();
+    this.getCiTree();
   },
   beforeUpdate() {},
   updated() {},
@@ -114,22 +136,50 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    findFirstCiId(treeList) {
-      // 获取第一个ciId
-      for (let i = 0; i < treeList.length; i++) {
-        const item = treeList[i];
-        if (item && item.type === 'ci') {
-          return item.id;
-        } else if (item.children && item.children.length > 0) {
-          const ciId = this.findFirstCiId(item.children);
-          if (ciId) {
-            return ciId;
-          }
+    toggleExpand() {
+      this.isExpandAll = !this.isExpandAll;
+      this.$refs['tree'].toggleExpand(this.isExpandAll);
+    },
+    getCiTree() {
+      this.$api.cmdb.ci.getCiTree().then(res => {
+        this.ciTreeList = res.Return;
+      });
+    },
+    flattenTreeNodes(nodeList, treeNodes) {
+      treeNodes.forEach(d => {
+        let { id, parentCiId, icon, name, label, sort, children } = d;
+        const obj = { id, parentCiId, sort, name, icon, label, children };
+        if (obj.parentCiId === null) {
+          this.$delete(obj, 'parentCiId');
+        }
+        if (!d.children) {
+          obj.sort = nodeList.length + 1;
+          nodeList.push(obj);
+        } else {
+          const children = obj.children;
+          this.$delete(obj, 'children');
+          obj.sort = nodeList.length + 1;
+          nodeList.push(obj);
+          this.flattenTreeNodes(nodeList, children);
+        }
+      });
+    },
+    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
+      const nodes = tree.getNodes();
+      const nodeList = [];
+      this.flattenTreeNodes(nodeList, nodes);
+      const diffList = [];
+      for (let i = 0; i < nodeList.length; i++) {
+        if (!this.$utils.isSame(nodeList[i], this.ciTreeList[i])) {
+          diffList.push(nodeList[i]);
         }
       }
+
+      this.ciTreeList = nodeList;
+      this.$api.cmdb.ci.saveCiTreeItem({ nodeList: diffList }).then(res => {});
     },
     nodeClasses(treeId, treeNode) {
-      return treeNode && treeNode.type == 'ci' ? {add: [treeNode.icon, 'icon-pr-6']} : {};
+      return { add: [treeNode.icon] };
     },
     changeRadio(value) {
       if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
@@ -184,6 +234,15 @@ export default {
     }
   },
   computed: {
+    filterCiTreeList() {
+      if (!this.keyword) {
+        return this.ciTreeList;
+      } else {
+        const k = this.keyword.trim().toLowerCase();
+        const filterCiTreeList = this.ciTreeList.filter(ci => ci.label.toLowerCase().indexOf(k) > -1 || ci.name.toLowerCase().indexOf(k) > -1);
+        return filterCiTreeList;
+      }
+    },
     filterCiTypeList() {
       if (!this.keyword) {
         return this.ciTypeList;
@@ -206,6 +265,11 @@ export default {
           val = val.trim();
         }
         this.$addHistoryData('keyword', val);
+      }
+    },
+    mode: {
+      handler: function(val) {
+        this.$localStore.set('mode', val);
       }
     }
   }
