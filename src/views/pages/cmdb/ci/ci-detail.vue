@@ -463,9 +463,6 @@ export default {
 </script>
 <style lang="less" scoped>
 @import '../public/common.less';
-/deep/.ivu-tabs-bar {
-  margin-bottom: 0px !important;
-}
 /deep/.ivu-checkbox {
   vertical-align: text-bottom;
 }

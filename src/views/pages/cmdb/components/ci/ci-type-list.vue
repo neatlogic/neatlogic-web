@@ -12,7 +12,7 @@
     </div>
     <div id="treeheight">
       <Tabs v-model="mode">
-        <TabPane label="层级" name="level">
+        <TabPane :label="$t('page.hierarchy')" name="level">
           <div style="overflow-y: auto" :style="{ height: catalogHeight }">
             <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
               <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
@@ -39,7 +39,7 @@
           :label="
             h => {
               return h('div', [
-                h('span', '自定义'),
+                h('span', $t('page.custom')),
                 h('span', {
                   class: {
                     'tsfont-plus-square': !isExpandAll,
@@ -117,7 +117,7 @@ export default {
       mode: 'level',
       treeId: '',
       isExpandAll: true,
-      catalogHeight: `calc(100vh - 62px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
+      catalogHeight: `calc(100vh - 80px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
     };
   },
   beforeCreate() {},
