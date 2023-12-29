@@ -61,7 +61,7 @@
           </div>
           <div class="mt-nm">
             <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-              <TabPane name="attr" :label="$t('page.attribute')" class="pt-nm pl-nm pr-nm">
+              <TabPane name="attr" :label="$t('page.attribute')" class="padding">
                 <CiDetailAttrList
                   :ciData="ciData"
                   :attrData="attrData"
