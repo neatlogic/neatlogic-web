@@ -11,7 +11,7 @@
       ></TsFormInput>
     </div>
     <div id="treeheight">
-      <Tabs v-model="mode">
+      <Tabs v-model="mode" :animated="false">
         <TabPane :label="$t('page.hierarchy')" name="level">
           <div style="overflow-y: auto" :style="{ height: catalogHeight }">
             <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
