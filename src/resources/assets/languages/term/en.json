@@ -183,6 +183,9 @@
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
     "autoexec": "Automated operations",
+    "asyncpolicy": "Synchronization strategy",
+    "globaleditmodetip": "Global mode, do not delete attribute representatives",
+    "partialeditmodetip": "Local mode, do not change if attribute is not given",
     "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode"
   },
   "process": {
