@@ -482,8 +482,7 @@ ul.ztree.zTreeDragUL>li a {
 
 .ztree a[id^="ztree_"]>span[id^="ztree_"] {
 	display: inline-block;
-	overflow: hidden;
-	/* 把注释打开，解决超出隐藏，没有生效的问题 */
+	/*overflow: hidden;*/
 	text-overflow: ellipsis;
 	word-break: break-all;
 	white-space: nowrap;

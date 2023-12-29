@@ -145,7 +145,7 @@ export default {
             this.$set(_this.ciData, 'typeId', name);
           }
         },
-        {
+        /* {
           name: 'catalogId',
           type: 'tree',
           label: this.$t('term.cmdb.cidirectory'),
@@ -158,7 +158,7 @@ export default {
           onChange: id => {
             this.$set(_this.ciData, 'catalogId', id);
           }
-        },
+        },*/
         {
           name: 'name',
           type: 'text',
