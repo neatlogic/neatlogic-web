@@ -40,10 +40,10 @@
             <div class="pl-lg">
               <TsFormItem :label="$t('term.cmdb.asyncpolicy')" labelPosition="left">
                 <TsFormRadio
-                  v-model="ciData.editModeType"
-                  :dataList="editModeTypeList"
+                  v-model="ciData.editMode"
+                  :dataList="editModeList"
                   @on-change="(val)=>{
-                    changeEditModeType(val)
+                    changeEditMode(val)
                   }"
                 ></TsFormRadio>
               </TsFormItem>
@@ -259,7 +259,7 @@ export default {
       ],
       currentFormItemList: [], //当前表单组件（当配置项数量为多数据且遍历对象为子表单添加关系时，当前关系模型可选的表单组件为子表单内组件）
       tableList: [], //遍历对象，选择表格组件
-      editModeTypeList: [
+      editModeList: [
         {
           text: this.$t('page.global'),
           value: 'global',
@@ -369,7 +369,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
-              editModeType: this.ciData.editModeType || '',
+              editMode: this.ciData.editMode || '',
               createPolicy: 'single',
               batchDataSource: {},
               relEntityData: {},
@@ -491,7 +491,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
-              editModeType: '',
+              editMode: '',
               createPolicy: 'single',
               batchDataSource: {},
               action: 'append',
@@ -692,7 +692,7 @@ export default {
           ciId: item.ciId,
           ciLabel: item.ciLabel,
           ciName: item.ciName,
-          editModeType: item.editModeType,
+          editMode: item.editMode,
           createPolicy: item.createPolicy,
           batchDataSource: item.batchDataSource || {},
           mappingList: []
@@ -957,10 +957,10 @@ export default {
       });
       return treeList;
     },
-    changeEditModeType(val) {
+    changeEditMode(val) {
       let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       if (ciEntity) {
-        this.$set(ciEntity, 'editModeType', val);
+        this.$set(ciEntity, 'editMode', val);
       }
     }
   },
