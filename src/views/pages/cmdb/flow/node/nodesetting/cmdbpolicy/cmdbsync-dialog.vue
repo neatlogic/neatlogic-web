@@ -38,6 +38,15 @@
           <div v-show="isShow" class="cmdbsync-content border-color padding">
             <Loading :loadingShow="loadingShow" type="fix"></Loading>
             <div class="pl-lg">
+              <TsFormItem :label="$t('term.cmdb.asyncpolicy')" labelPosition="left">
+                <TsFormRadio
+                  v-model="ciData.editModeType"
+                  :dataList="editModeTypeList"
+                  @on-change="(val)=>{
+                    changeEditModeType(val)
+                  }"
+                ></TsFormRadio>
+              </TsFormItem>
               <TsFormItem
                 v-if="ciEntityQueue.length < 2"
                 :label="$t('term.deploy.configurationmodel')"
@@ -48,7 +57,9 @@
                   ref="ciConfig"
                   v-model="ciData.ciId"
                   v-bind="ciConfig"
-                  @on-change="changeCiId"
+                  @on-change="(val)=>{
+                    changeCiId(val)
+                  }"
                 ></TsFormSelect>
               </TsFormItem>
               <div v-if="ciData.ciId">
@@ -247,7 +258,19 @@ export default {
         }
       ],
       currentFormItemList: [], //当前表单组件（当配置项数量为多数据且遍历对象为子表单添加关系时，当前关系模型可选的表单组件为子表单内组件）
-      tableList: [] //遍历对象，选择表格组件
+      tableList: [], //遍历对象，选择表格组件
+      editModeTypeList: [
+        {
+          text: this.$t('page.global'),
+          value: 'global',
+          description: this.$t('term.cmdb.globaleditmodetip')
+        },
+        {
+          text: this.$t('page.partial'),
+          value: 'partial',
+          description: this.$t('term.cmdb.partialeditmodetip')
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -346,6 +369,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
+              editModeType: this.ciData.editModeType || '',
               createPolicy: 'single',
               batchDataSource: {},
               relEntityData: {},
@@ -467,6 +491,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
+              editModeType: '',
               createPolicy: 'single',
               batchDataSource: {},
               action: 'append',
@@ -667,6 +692,7 @@ export default {
           ciId: item.ciId,
           ciLabel: item.ciLabel,
           ciName: item.ciName,
+          editModeType: item.editModeType,
           createPolicy: item.createPolicy,
           batchDataSource: item.batchDataSource || {},
           mappingList: []
@@ -930,6 +956,12 @@ export default {
         }
       });
       return treeList;
+    },
+    changeEditModeType(val) {
+      let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+      if (ciEntity) {
+        this.$set(ciEntity, 'editModeType', val);
+      }
     }
   },
   filter: {},
