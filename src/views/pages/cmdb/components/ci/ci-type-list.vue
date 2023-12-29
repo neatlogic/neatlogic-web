@@ -51,7 +51,14 @@
                       toggleExpand();
                     }
                   }
-                })
+                }),
+                h('span', {
+                  class: {
+                    'tsfont-question-o': true,
+                    'text-grey':true
+                  },
+                  attrs: { title: $t('term.cmdb.treedraginfo') }
+                }),
               ]);
             }
           "
@@ -64,17 +71,13 @@
               idKey="id"
               pIdKey="parentCiId"
               :value="ciId"
-              :nodeClasses="nodeClasses"
+              :nodeClasses_bak="nodeClasses"
               :beforeDrag="
                 () => {
                   return !keyword && $AuthUtils.hasRole('CI_MODIFY');
                 }
               "
-              :renderName="
-                (name, treeNode) => {
-                  return treeNode.label + '(' + treeNode.name + ')';
-                }
-              "
+              :renderName="renderName"
               :onDrop="onDrop"
               :onClick="
                 (tree, node) => {
@@ -84,7 +87,6 @@
             ></TsZtree>
           </div>
         </TabPane>
-        
       </Tabs>
     </div>
   </div>
@@ -136,6 +138,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    renderName(name, treeNode) {
+      return '<span class="' + treeNode.icon + '">' + treeNode.label + '</span><span class="text-grey">(' + treeNode.name + ')</span>';
+    },
     toggleExpand() {
       this.isExpandAll = !this.isExpandAll;
       this.$refs['tree'].toggleExpand(this.isExpandAll);
@@ -293,9 +298,6 @@ export default {
   height: 32px;
   line-height: 32px;
   cursor: pointer;
-  span {
-    padding-left: 10px;
-  }
 }
 // .bg-block {
 //   border-radius: 6px;

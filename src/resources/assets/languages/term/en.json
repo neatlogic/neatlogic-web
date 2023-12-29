@@ -182,7 +182,8 @@
     "directoryname": "Catalog Name",
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
-    "autoexec": "Automated operations"
+    "autoexec": "Automated operations",
+    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode"
   },
   "process": {
     "workordercenter": "Work Center",
