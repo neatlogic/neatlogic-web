@@ -183,6 +183,7 @@
     "noaddcidirectory": "未添加模型目录，",
     "currentcatalogcitenodeletedescrition": "当前目录节点已被引用，请解除引用后删除",
     "autoexec": "自动化操作",
+    "abstractciallowextend": "被继承模型只能是抽象模型",
     "asyncpolicy": "同步策略",
     "globaleditmodetip": "全局模式，不给属性代表删除",
     "partialeditmodetip": "局部模式，不给属性则不改",

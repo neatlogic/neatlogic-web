@@ -202,16 +202,14 @@ export default {
         {
           name: 'parentCiId',
           _belong: 'realci',
-          type: 'tree',
+          type: 'select',
           label: this.$t('page.inherit'),
+          desc: this.$t('term.cmdb.abstractciallowextend'),
           width: '100%',
           isHidden: false,
-          url: 'api/rest/cmdb/ci/listtree',
-          params: { ciId: _this.id, isVirtual: 0 },
-          valueName: 'id',
-          textName: 'label',
+          url: 'api/rest/cmdb/ci/list',
+          params: { excludeCiId: _this.id, isVirtual: 0, isAbstract: 1 },
           transfer: true,
-          showPath: true,
           onChange: name => {
             if (name) {
               this.$set(_this.ciData, 'parentCiId', name);
@@ -390,6 +388,9 @@ export default {
               this.$set(element, 'isHidden', true);
             } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
               //有数据不允许修改是否抽象模型和父模型
+              this.$set(element, 'isHidden', true);
+            } else if (element.name === 'isAbstract' && this.ciData.hasChildren) {
+              //已被继承不允许修改是否抽象模型
               this.$set(element, 'isHidden', true);
             }
           });

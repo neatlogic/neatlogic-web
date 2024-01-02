@@ -183,6 +183,7 @@
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
     "autoexec": "Automated operations",
+    "abstractciallowextend": "Inherited models can only be abstract models",
     "asyncpolicy": "Synchronization strategy",
     "globaleditmodetip": "Global mode, do not delete attribute representatives",
     "partialeditmodetip": "Local mode, do not change if attribute is not given",

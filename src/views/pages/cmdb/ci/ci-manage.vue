@@ -4,7 +4,7 @@
     <TsContain border="border">
       <template slot="topLeft">
         <div class="action-group">
-          <div class="action-item tsfont-plus" @click="addCi()">{{ $t('term.cmdb.ci') }}</div>
+          <div class="action-item tsfont-plus" @click="addCi()">{{ $t('page.model') }}</div>
           <div class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
           <div class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
           <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
