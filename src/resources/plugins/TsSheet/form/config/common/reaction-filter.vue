@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row :gutter="10" class="mb-sm">
+    <Row v-if="formItem.handler && formItem.handler == 'formselect'" :gutter="10" class="mb-sm">
       <Col :span="24">
         <Alert show-icon>
           {{ $t('term.framework.requiredselectedtips') }}
