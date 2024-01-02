@@ -61,7 +61,7 @@
           </div>
           <div class="mt-nm">
             <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-              <TabPane name="attr" :label="$t('page.attribute')" class="padding">
+              <TabPane name="attr" :label="$t('page.attribute')" class="pt-nm pl-nm pr-nm">
                 <CiDetailAttrList
                   :ciData="ciData"
                   :attrData="attrData"
@@ -90,7 +90,7 @@
               <TabPane
                 v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0"
                 name="global"
-                class="padding"
+                class="pt-nm pl-nm pr-nm"
                 :label="$t('term.cmdb.globalattr')"
               >
                 <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
