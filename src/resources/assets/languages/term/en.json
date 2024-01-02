@@ -183,7 +183,8 @@
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
     "autoexec": "Automated operations",
-    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode"
+    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode",
+    "abstractciallowextend": "Inherited models can only be abstract models"
   },
   "process": {
     "workordercenter": "Work Center",

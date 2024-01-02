@@ -7,7 +7,6 @@
         border="bottom"
         :search="true"
         :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
-        @change="searchTreeData"
       ></TsFormInput>
     </div>
     <div id="treeheight">
@@ -55,10 +54,10 @@
                 h('span', {
                   class: {
                     'tsfont-question-o': true,
-                    'text-grey':true
+                    'text-grey': true
                   },
                   attrs: { title: $t('term.cmdb.treedraginfo') }
-                }),
+                })
               ]);
             }
           "
@@ -186,25 +185,12 @@ export default {
     nodeClasses(treeId, treeNode) {
       return { add: [treeNode.icon] };
     },
-    changeRadio(value) {
-      if (!this.$utils.isEmpty(value) && value == 'ciCatalog') {
-        this.searchTreeData();
-      }
-    },
     clickTreeNode(tree, node) {
       let { type = '' } = node || {};
       if (type == 'ci') {
         this.click('', node);
       }
     },
-    searchTreeData() {
-      return this.$api.cmdb.cicatalog.searchCiCatalogTree({ keyword: this.keyword }).then(res => {
-        if (res.Status == 'OK') {
-          this.treeList = res.Return || [];
-        }
-      });
-    },
-
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';
