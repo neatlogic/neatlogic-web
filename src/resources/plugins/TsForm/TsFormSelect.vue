@@ -654,7 +654,7 @@ export default {
         this.multiple ? (this.currentValue = [this.nodeList[0][this.valueName]]) : (this.currentValue = this.nodeList[0][this.valueName]);
         //是单选,进行赋值处理
         this.searchKeyWord = !this.multiple ? '' : '';
-        this.isSingel = !!(this.isSquare && this.currentSearch);
+        this.isSingel = !!this.isSquare;
         this.onChangeValue();
       }
     },
@@ -679,7 +679,7 @@ export default {
         //url
         let params = {};
         this.nodeList = [];
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
+        this.isSingel = !!this.isSquare;
 
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
           this.nodeList = res;
@@ -709,7 +709,7 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
+        this.isSingel = !!this.isSquare;
         this.handleEchoFailedDefaultValue();
       }
     },
@@ -903,7 +903,7 @@ export default {
         if (!this.multiple) {
           //是单选,进行赋值处理
           this.searchKeyWord = '';
-          this.isSingel = !!(this.isSquare && this.currentSearch);
+          this.isSingel = !!this.isSquare;
         }
         if (this.needCallback) {
           //成功回调设置为false
@@ -1093,8 +1093,7 @@ export default {
         this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = null);
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
-      this.isSingel = !!(this.isSquare && this.currentSearch);
-     
+      this.isSingel = !!this.isSquare;
       this.onChangeValue();
       this.scrollTop();
     },
