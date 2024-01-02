@@ -1176,7 +1176,8 @@
     "formsubassembly": "表单子组件",
     "globalreadonly": "全局只读",
     "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态",
-    "iscannotdeletenode": "存在子节点不可删除"
+    "iscannotdeletenode": "存在子节点不可删除",
+    "requiredselectedtips": "若当前组件设置为必填，且过滤后仅剩余一个选项，系统会自动选中该选项"
   },
   "knowledge": {
     "document": "文档",
