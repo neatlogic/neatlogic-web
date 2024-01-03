@@ -2,10 +2,10 @@ import axios from '../../http';
 
 const form = {
   getCustomItemById(id) {
-    return axios.post('/api/rest/form/customitem/get', {id: id});
+    return axios.post('/api/rest/form/customitem/get', { id: id });
   },
   getCustomItemByName(name) {
-    return axios.post('/api/rest/form/customitem/get', {name: name});
+    return axios.post('/api/rest/form/customitem/get', { name: name });
   },
   searchCustomItem(params) {
     return axios.post('/api/rest/form/customitem/search', params);
@@ -67,20 +67,27 @@ const form = {
   },
   //删除表单自定义组件
   deleteCustomItem(id) {
-    return axios.post('/api/rest/form/customitem/delete', {id: id});
+    return axios.post('/api/rest/form/customitem/delete', { id: id });
   },
   //删除表单场景
   deleteScene(params) {
     return axios.post('/api/rest/form/version/scene/delete', params);
   },
-  getReferenceCount(params) { //查询引用数量
+  getReferenceCount(params) {
+    //查询引用数量
     return axios.post('/api/rest/dependency/count', params);
   },
-  saveFormDefaultscene(params) { //保存默认场景
+  saveFormDefaultscene(params) {
+    //保存默认场景
     return axios.post('/api/rest/form/version/defaultscene/save', params);
   },
-  saveFormSceneReadonly(params) { //场景设置只读
+  saveFormSceneReadonly(params) {
+    //场景设置只读
     return axios.post('/api/rest/form/version/scene/readonly', params);
+  },
+  searchMatrixColumnData(params) {
+    // 表格输入组件批量矩阵属性查询下拉接口
+    return axios.post('/api/rest/matrix/column/data/search/forbatch', params);
   }
 };
 export default form;
