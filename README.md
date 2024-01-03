@@ -2,7 +2,7 @@
 ## 关于
 neatlogic-web是neatlogic平台前端代码，所有子模块的前端代码都在neatlogic-web中。
 
-neatlogic-web基于vue2.x，UI框架在iView4.x源码基础上经过调整。
+neatlogic-web基于vue2.7.0，UI框架在iView4.x源码基础上经过调整。
 
 ## 构建依赖
 vue/cli 5.x,webpack 5.x
