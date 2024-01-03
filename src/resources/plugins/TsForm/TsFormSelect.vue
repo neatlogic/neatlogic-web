@@ -616,12 +616,11 @@ export default {
       if (this.dynamicUrl) {
         // 如果是实时搜索的话，才会用到取消上次请求的接口
         ajaxArr = { method: this.ajaxType, url: url, cancelToken: this[cancel].token };
-        isCancelToken = true;
       } else {
         ajaxArr = { method: this.ajaxType, url: url };
       }
-      let needdataLi = ['post', 'put'];
-      !needdataLi.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
+      let requestMethodList = ['post', 'put'];
+      !requestMethodList.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
       let res = await this.$https(ajaxArr);
       let nodeList = [];
       if (res && res.Status == 'OK') {
@@ -636,6 +635,10 @@ export default {
         } else {
           this.hasLoadMore = false;
         }
+      }
+      if (this.$utils.isEmpty(res) && this.dynamicUrl) {
+        // 请求被取消后，res为空，没有收到服务器响应
+        isCancelToken = true;
       }
       return {nodeList, isCancelToken};
     },
