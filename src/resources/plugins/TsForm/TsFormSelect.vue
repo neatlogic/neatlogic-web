@@ -679,11 +679,10 @@ export default {
         //url
         let params = {};
         this.nodeList = [];
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
-
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
           this.nodeList = res;
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
+          this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索时，并且显示tag标签时，才使用tag标签的样式
           this.setDefaultValue(); //默认选中第一个
           this.initValueByNodeList();
         });
@@ -709,7 +708,7 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
+        this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索并且是tag标签时，才显示tag标签的样式
         this.handleEchoFailedDefaultValue();
       }
     },
@@ -1094,7 +1093,6 @@ export default {
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
       this.isSingel = !!(this.isSquare && this.currentSearch);
-     
       this.onChangeValue();
       this.scrollTop();
     },
