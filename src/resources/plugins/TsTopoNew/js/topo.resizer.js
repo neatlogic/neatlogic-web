@@ -120,10 +120,10 @@
     initEvent() {
       for (const k in this.handlerEls) {
         const el = this.handlerEls[k];
-        el.on('mouseenter', d => {
+        el.on('mouseenter', (event,d) => {
           el.interrupt();
           el.transition().duration(100).attr('stroke-width', d.getSize()).attr('stroke-opacity', '0.3');
-        }).on('mouseleave', d => {
+        }).on('mouseleave', (event,d) => {
           el.interrupt();
           el.transition().duration(100).attr('stroke-width', '1.5').attr('stroke-opacity', '1');
         });
@@ -131,15 +131,15 @@
         el.call(
           d3
             .drag()
-            .on('start', d => {
+            .on('start', (event, d) => {
               this.resizeDir = k;
-              this.initData = { x: this.canvas.getMouseX(), y: this.canvas.getMouseY(), width: this.node.getWidth(), height: this.node.getHeight() };
+              this.initData = { x: this.canvas.getMouseX(event), y: this.canvas.getMouseY(event), width: this.node.getWidth(), height: this.node.getHeight() };
               this.node.setIsResizing(true);
             })
-            .on('drag', d => {
+            .on('drag', (event, d) => {
               if (this.resizeDir && this.initData) {
-                let newX = this.canvas.getMouseX();
-                let newY = this.canvas.getMouseY();
+                let newX = this.canvas.getMouseX(event);
+                let newY = this.canvas.getMouseY(event);
                 let dx = newX - this.initData.x;
                 let dy = newY - this.initData.y;
                 if (this.resizeDir === 'LT') {
@@ -194,7 +194,7 @@
                 this.adjustPosition();
               }
             })
-            .on('end', d => {
+            .on('end', (event, d) => {
               this.resizeDir = null;
               this.initData = null;
               this.node.setIsResizing(false);
