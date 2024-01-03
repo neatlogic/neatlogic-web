@@ -612,17 +612,15 @@ export default {
       this[cancel] && this[cancel].cancel();
       this[cancel] = this.$https.CancelToken.source();
       let ajaxArr = {};
+      let isCancelToken = false; // 是否取消请求，用于取消请求后，nodeList为空，第二次接口没有返回，页面渲染是暂无数据问题
       if (this.dynamicUrl) {
         // 如果是实时搜索的话，才会用到取消上次请求的接口
         ajaxArr = { method: this.ajaxType, url: url, cancelToken: this[cancel].token };
       } else {
         ajaxArr = { method: this.ajaxType, url: url };
       }
-      // let ajaxArr = { method: this.ajaxType, url: url, cancelToken: this[cancel].token};
-      // 取消上次请求的接口
-      // let ajaxArr = { method: this.ajaxType, url: url, cancelAxios: this[cancel].token};
-      let needdataLi = ['post', 'put'];
-      !needdataLi.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
+      let requestMethodList = ['post', 'put'];
+      !requestMethodList.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
       let res = await this.$https(ajaxArr);
       let nodeList = [];
       if (res && res.Status == 'OK') {
@@ -638,7 +636,11 @@ export default {
           this.hasLoadMore = false;
         }
       }
-      return nodeList;
+      if (this.$utils.isEmpty(res) && this.dynamicUrl) {
+        // 请求被取消后，res为空，没有收到服务器响应
+        isCancelToken = true;
+      }
+      return {nodeList, isCancelToken};
     },
     setDefaultValue() {
       //默认选中第一个的判断 ,1、defaultValueIsFirst 2、必填且nodeList长度为1
@@ -680,7 +682,7 @@ export default {
         let params = {};
         this.nodeList = [];
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
-          this.nodeList = res;
+          this.nodeList = res.nodeList || [];
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
           this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索时，并且显示tag标签时，才使用tag标签的样式
           this.setDefaultValue(); //默认选中第一个
@@ -879,8 +881,9 @@ export default {
       let params = { defaultValue: this.dynamicDefaultValue };
       params[this.idListName] = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios1').then(res => {
-        if (((this.multiple && this.currentValue.length) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && res.length) {
-          let selectedList = res.filter(r => {
+        let nodeList = res.nodeList || [];
+        if (((this.multiple && this.currentValue.length) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && nodeList.length) {
+          let selectedList = nodeList.filter(r => {
             return this.multiple ? this.ArrIndexOf(this.currentValue, r[this.valueName]) > -1 : this.handleObjectValue(r[this.valueName]);
           });
           //进行排序，主要是为了显示的text的顺序和value值顺序一样 ,因为接口的数据顺序可能不会根据value来
@@ -956,10 +959,12 @@ export default {
       params[this.keyword] = query ? query.trim() : '';
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios')
         .then(res => {
-          if (this.isReachBottomSearch && this.currentPage > 1 && !this.$utils.isSame(this.nodeList, res)) {
-            if (res && res.length > 0) {
-              for (let i = 0; i < res.length; i++) {
-                this.nodeList.push(res[i]);
+          let nodeList = res.nodeList || [];
+          let isCancelToken = res.isCancelToken || false;
+          if (this.isReachBottomSearch && this.currentPage > 1 && !this.$utils.isSame(this.nodeList, nodeList)) {
+            if (nodeList && nodeList.length > 0) {
+              for (let i = 0; i < nodeList.length; i++) {
+                this.nodeList.push(nodeList[i]);
               }
               this.delMoreSearchTip();
               if (this.pageCount > 1) {
@@ -969,7 +974,7 @@ export default {
             this.nodeList = this.$utils.uniqueByField(this.nodeList, this.valueName); // 去重
           } else {
             this.nodeList = [];
-            this.nodeList = res; // 有传递的时候，拿到所有的值
+            this.nodeList = nodeList; // 有传递的时候，拿到所有的值
           }
           this.creatNewItem(query);
           this.nodeList.splice(0, {});
@@ -982,14 +987,16 @@ export default {
             //如果必填或者默认选中第一个，而且下拉值只有一个则默认选中第一个
             this.setDefaultValue();
           }
-          this.loading = false;
+          if (!isCancelToken) {
+            this.loading = false;
+          }
           if (this.needCallback) {
             //成功回调设置为false
             this.$emit('update:needCallback', false);
             this.$emit('searchCallback');
           }
         })
-        .finally(() => {
+        .catch(() => {
           this.loading = false;
         });
     },
