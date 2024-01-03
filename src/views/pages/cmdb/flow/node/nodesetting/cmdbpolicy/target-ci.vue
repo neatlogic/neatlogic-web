@@ -38,6 +38,7 @@
             border="border"
             :validateList="validateList"
             transfer
+            @on-change="(val)=>changeTargetCi(val,'valueList')"
           ></TsFormSelect>
         </template>
         <template v-else-if="getTargetCi('mappingMode') === 'formTableComponent'">
@@ -52,6 +53,7 @@
                   :firstSelect="false"
                   transfer
                   border="border"
+                  @on-change="(val)=>changeTargetCi(val,'valueList')"
                 ></TsFormCascader>
                 <Tooltip
                   max-width="660"
@@ -99,6 +101,7 @@
                 :firstSelect="false"
                 transfer
                 border="border"
+                @on-change="(val)=>changeTargetCi(val,'valueList')"
               ></TsFormCascader>
             </Col>
           </TsRow>
