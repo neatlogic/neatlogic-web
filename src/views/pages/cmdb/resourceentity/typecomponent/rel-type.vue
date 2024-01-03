@@ -21,7 +21,6 @@
       :dataList="directionList"
       :validateList="validateList"
       :placeholder="$t('term.cmdb.attrci')"
-      :isSquare="false"
       transfer
       @on-change="()=>{
         $set(item,'fromAttr','');

@@ -16,7 +16,6 @@
           :dataList="typeList"
           :placeholder="$t('term.cmdb.inherentfield')+'/'+$t('page.attribute')+'/'+$t('page.relation')"
           :validateList="validateList"
-          :isSquare="false"
           transfer
           @on-change="changeType(item)"
         ></TsFormSelect>

@@ -24,7 +24,6 @@
       :validateList="validateList"
       :placeholder="$t('page.attribute')"
       transfer
-      :isSquare="false"
     ></TsFormSelect>
   </div>
 </template>
@@ -61,8 +60,7 @@ export default {
         params: {},
         transfer: true,
         showPath: true,
-        validateList: ['required'],
-        isSquare: false
+        validateList: ['required']
       },
       validateList: ['required'],
       dataList: [

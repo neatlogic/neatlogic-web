@@ -16,7 +16,6 @@
       :validateList="validateList"
       :placeholder="$t('page.attribute')"
       transfer
-      :isSquare="false"
     ></TsFormSelect>
   </div>
 </template>
