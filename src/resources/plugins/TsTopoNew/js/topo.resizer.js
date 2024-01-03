@@ -120,10 +120,10 @@
     initEvent() {
       for (const k in this.handlerEls) {
         const el = this.handlerEls[k];
-        el.on('mouseenter', (event,d) => {
+        el.on('mouseenter', (event, d) => {
           el.interrupt();
           el.transition().duration(100).attr('stroke-width', d.getSize()).attr('stroke-opacity', '0.3');
-        }).on('mouseleave', (event,d) => {
+        }).on('mouseleave', (event, d) => {
           el.interrupt();
           el.transition().duration(100).attr('stroke-width', '1.5').attr('stroke-opacity', '1');
         });
