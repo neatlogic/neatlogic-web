@@ -211,5 +211,31 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.formTableComponent {
+  position: relative;
+  .formTableComponent-tip {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+.tip-eg {
+  display: flex;
+  align-items: center;
+  .center-text {
+    position: relative;
+    border-bottom: 1px solid;
+    margin: 0 16px;
+    min-width: 50px;
+    &:after {
+      font-family: 'tsfont';
+      content: '\e899';
+      position: absolute;
+      bottom: -15px;
+      font-size: 18px;
+      right: -11px;
+    }
+  }
+}
 </style>

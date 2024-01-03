@@ -58,7 +58,7 @@
                               placement="right"
                               trigger="hover"
                               :transfer="true"
-                              :width="600"
+                              :width="620"
                               word-wrap
                             >
                               <a></a>
@@ -664,7 +664,7 @@ export default {
         return isDisabled;
       };
     },
-    isClosableCi() { //存在子模型是，抽象模型不能删除
+    isClosableCi() { //存在子模型，抽象模型不能删除
       return (relEntityData, rel, subRel) => {
         let isCan = true;
         if (relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'] && 
