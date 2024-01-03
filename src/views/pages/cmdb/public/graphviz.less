@@ -1,55 +1,53 @@
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@layer-color, @edge-stroke, @node-fill, @node-name, @link-stroke, @anchor-color, @mask-color, @cluster-color) {
   @node-removeIcon: @link-stroke;
-  .layer text {
+  .graph /deep/ .layer text {
     fill: @layer-color;
   }
-  .normalnode text {
+  .graph /deep/ .normalnode text {
     fill: @layer-color;
   }
-  .selectednode text {
+  .graph /deep/ .selectednode text {
     fill: @cluster-color !important;
     text-decoration: underline;
     font-weight: bold;
   }
-  .cluster text {
+  .graph /deep/ .cluster text {
     fill: @layer-color;
     font-family: Arial;
     font-size: 12px;
   }
-  .cluster polygon {
+  .graph /deep/ .cluster polygon {
     fill: @cluster-color;
     fill-opacity: 0.1;
     stroke: @cluster-color;
     stroke-opacity: 0.1;
   }
-  .edge path {
+  .graph /deep/ .edge path {
     stroke: @edge-stroke;
   }
-  .edge polygon {
+  .graph /deep/  .edge polygon {
     stroke: @edge-stroke;
     fill: @edge-stroke;
   }
-  .edge text {
+  .graph /deep/ .edge text {
     fill: @edge-stroke;
   }
 
-  .abstract_ci {
+  .graph /deep/ .abstract_ci {
     image {
       filter: grayscale(100%);
     }
   }
 
-  .virtual_ci {
+  .graph /deep/ text{
+    user-select: none;
+  }
+
+  .graph /deep/ .virtual_ci {
     image {
       filter: invert(0.4);
     }
-  }
-  svg text {
-    user-select: none;
-    -moz-user-select: none; /* Firefox */
-    -webkit-user-select: none; /* Chrome, Safari, and Opera */
-    -ms-user-select: none; /* IE */
   }
 }
 
@@ -60,3 +58,5 @@ html {
     .theme(@dark-text, @dark-invert-bg, @dark-dividing, @dark-title, @dark-icon, @dark-blockbg, @dark-background, @dark-primary-color);
   }
 }
+
+

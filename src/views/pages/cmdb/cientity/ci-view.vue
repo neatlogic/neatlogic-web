@@ -47,7 +47,7 @@
                   ref="CiEntityList"
                   :needCheck="true"
                   :needDsl="false"
-                  class="padding"
+                  class="pt-nm pl-nm pr-nm"
                   :ciId="ciData.id"
                   :needExport="true"
                 ></CiEntityList>
@@ -55,7 +55,7 @@
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['transactionmanage'] || ciData.authData['cimanage'])" :label="$t('term.cmdb.uncommittransaction')" name="transaction">
                 <TransactionList
                   v-if="currentTab == 'transaction'"
-                  class="padding bg-op border8"
+                  class="pt-nm pl-nm pr-nm bg-op border8"
                   :needCheck="true"
                   :needAction="true"
                   :ciId="ciData.id"
@@ -64,7 +64,7 @@
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['cientityrecover'] || ciData.authData['cimanage'])" :label="$t('page.deleteaudit')" name="deletecientity">
                 <DeleteCiEntityList
                   v-if="currentTab == 'deletecientity'"
-                  class="padding bg-op border8"
+                  class="pt-nm pl-nm pr-nm bg-op border8"
                   :ciId="ciData.id"
                   @toCiEntity="switchCi"
                 ></DeleteCiEntityList>
@@ -90,7 +90,7 @@
                   <IllegalCiEntityList
                     v-if="currentTab == 'illegal_' + illegal.id"
                     :legalValidId="illegal.id"
-                    class="padding bg-op border8"
+                    class="pt-nm pl-nm pr-nm bg-op border8"
                     :ciId="ciData.id"
                   ></IllegalCiEntityList>
                 </TabPane>

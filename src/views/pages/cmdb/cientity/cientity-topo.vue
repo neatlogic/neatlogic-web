@@ -111,7 +111,7 @@
         </span>
       </div>
       <div style="position: relative">
-        <div ref="graph" class="clearfix home-page"></div>
+        <div ref="graph" class="clearfix graph"></div>
         <D3Tooltip
           v-if="isTooltipShow"
           :width="tooltipWidth"
@@ -381,8 +381,9 @@ export default {
                   _this.nodeNameMap[d.attributes['xlink:title']] = [d];
                 }
               }
-            }).on('end', () => {
-            //console.log('done');
+            })
+            .on('end', () => {
+              //console.log('done');
             });
           this.renderGraph();
           d3.select(window).on('resize', this.resizeSVG);
@@ -405,7 +406,7 @@ export default {
             .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
             .width(graphEl.offsetWidth - 10)
             .renderDot(nodesString);
-            
+
           //let svg = d3.select('#graph').select('svg');
           //svg.append('g').lower();
           addEvent('svg', 'mouseover', e => {

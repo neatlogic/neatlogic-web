@@ -7,15 +7,14 @@
     constructor(canvas, config) {}
     initEvent() {
       //绑定拖拽
-      let selectNode = []; //选中的元素 开始拖动时的更新数据
       if (this.getIsDragable()) {
         this.el.call(
           d3
             .drag()
-            .on('start', d => {
+            .on('start', (event, d) => {
               if (this.getIsDragable()) {
                 this.setIsDragging(true);
-                selectNode = this.canvas.getSelected();
+                let selectNode = this.canvas.getSelected();
                 this.status.selected
                   ? selectNode.forEach(node => {
                       //同时存在多个拖动元素
@@ -24,23 +23,25 @@
                   : this.onDragstart();
               }
             })
-            .on('drag', d => {
+            .on('drag', (event, d) => {
               if (this.getIsDragable()) {
+                let selectNode = this.canvas.getSelected();
                 this.status.selected
                   ? selectNode.forEach(node => {
-                      node.onDrag(node);
+                      node.onDrag(event, node);
                     })
-                  : this.onDrag(d);
+                  : this.onDrag(event, d);
               }
             })
-            .on('end', d => {
+            .on('end', (event, d) => {
               if (this.getIsDragable()) {
                 this.setIsDragging(false);
+                let selectNode = this.canvas.getSelected();
                 this.status.selected
                   ? selectNode.forEach(node => {
-                      node.onDragend(node);
+                      node.onDragend();
                     })
-                  : this.onDragend(d);
+                  : this.onDragend();
               }
             })
         );
@@ -105,7 +106,7 @@
         this.group.draggingNode = this; //设置拖动节点，分组移动时忽略当前分组
       }
     }
-    onDrag(event) {
+    onDrag(event,d) {
       this.setDx(event.dx);
       this.setDy(event.dy);
       //删除拖拽目标的指针事件，让下层元素可以响应鼠标事件

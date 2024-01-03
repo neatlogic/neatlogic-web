@@ -159,6 +159,12 @@ const ci = {
   },
   rebuildRelativeRel(relId) {
     return axios.post('/api/rest/cmdb/rel/relative/rebuild', { relId: relId });
+  },
+  getCiTree() {
+    return axios.post('/api/rest/cmdb/ci/tree', {});
+  },
+  saveCiTreeItem(params) {
+    return axios.post('/api/rest/cmdb/ci/tree/save', params);
   }
 };
 
