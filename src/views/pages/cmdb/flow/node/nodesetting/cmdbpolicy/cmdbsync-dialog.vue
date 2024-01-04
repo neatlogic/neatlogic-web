@@ -38,6 +38,15 @@
           <div v-show="isShow" class="cmdbsync-content border-color padding">
             <Loading :loadingShow="loadingShow" type="fix"></Loading>
             <div class="pl-lg">
+              <TsFormItem :label="$t('term.cmdb.asyncpolicy')" labelPosition="left">
+                <TsFormRadio
+                  v-model="ciData.editMode"
+                  :dataList="editModeList"
+                  @on-change="(val)=>{
+                    changeEditMode(val)
+                  }"
+                ></TsFormRadio>
+              </TsFormItem>
               <TsFormItem
                 v-if="ciEntityQueue.length < 2"
                 :label="$t('term.deploy.configurationmodel')"
@@ -48,7 +57,9 @@
                   ref="ciConfig"
                   v-model="ciData.ciId"
                   v-bind="ciConfig"
-                  @on-change="changeCiId"
+                  @on-change="(val)=>{
+                    changeCiId(val)
+                  }"
                 ></TsFormSelect>
               </TsFormItem>
               <div v-if="ciData.ciId">
@@ -247,7 +258,19 @@ export default {
         }
       ],
       currentFormItemList: [], //当前表单组件（当配置项数量为多数据且遍历对象为子表单添加关系时，当前关系模型可选的表单组件为子表单内组件）
-      tableList: [] //遍历对象，选择表格组件
+      tableList: [], //遍历对象，选择表格组件
+      editModeList: [
+        {
+          text: this.$t('page.global'),
+          value: 'global',
+          description: this.$t('term.cmdb.globaleditmodetip')
+        },
+        {
+          text: this.$t('page.partial'),
+          value: 'partial',
+          description: this.$t('term.cmdb.partialeditmodetip')
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -346,6 +369,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
+              editMode: this.ciData.editMode || '',
               createPolicy: 'single',
               batchDataSource: {},
               relEntityData: {},
@@ -467,6 +491,7 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
+              editMode: '',
               createPolicy: 'single',
               batchDataSource: {},
               action: 'append',
@@ -667,6 +692,7 @@ export default {
           ciId: item.ciId,
           ciLabel: item.ciLabel,
           ciName: item.ciName,
+          editMode: item.editMode,
           createPolicy: item.createPolicy,
           batchDataSource: item.batchDataSource || {},
           mappingList: []
@@ -774,11 +800,22 @@ export default {
           let find = this.currentFormItemList.find(item => item.uuid === uuid);
           if (find && find.formData && find.formData.formConfig) {
             find.formData.formConfig.tableList.forEach(item => {
-              if (!this.$utils.isEmpty(item.component) && item.component.hasValue && (item.component.handler !== 'formsubassembly' && item.component.handler !== 'formtableselector' && item.component.handler !== 'formtableinputer')) {
-                dataList.push({
-                  text: item.component.label,
-                  value: item.component.uuid
-                });
+              if (!this.$utils.isEmpty(item.component)) {
+                if (item.component.hasValue) {
+                  if (item.component.handler !== 'formsubassembly' && item.component.handler !== 'formtableselector' && item.component.handler !== 'formtableinputer') {
+                    dataList.push({
+                      text: item.component.label,
+                      value: item.component.uuid
+                    });
+                  }
+                } else if ((item.component.handler === 'formtab' || item.component.handler === 'formcollapse') && !this.$utils.isEmpty(item.component.component)) {
+                  item.component.component.forEach(c => {
+                    dataList.push({
+                      text: c.label,
+                      value: c.uuid
+                    });
+                  });
+                }
               }
             });
           }
@@ -789,8 +826,14 @@ export default {
     getFormComponent(tableList) { //当前层子表单普通组件
       let list = [];
       tableList.forEach(item => {
-        if (!this.$utils.isEmpty(item.component) && item.component.hasValue) {
-          list.push(item.component);
+        if (!this.$utils.isEmpty(item.component)) {
+          if (item.component.hasValue) {
+            list.push(item.component);
+          } else if (item.component.handler === 'formtab' || item.component.handler === 'formcollapse') {
+            if (!this.$utils.isEmpty(item.component.component)) {
+              list.push(...item.component.component);
+            }
+          }
         }
       });
       return list;
@@ -913,6 +956,12 @@ export default {
         }
       });
       return treeList;
+    },
+    changeEditMode(val) {
+      let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+      if (ciEntity) {
+        this.$set(ciEntity, 'editMode', val);
+      }
     }
   },
   filter: {},

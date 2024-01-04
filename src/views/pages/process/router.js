@@ -25,11 +25,11 @@ const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-const eoaTemplateManage = () => import('./eoa/eoa-template-manage.vue');
-const eoaTemplateEdit = () => import('./eoa/eoa-template-edit.vue');
-import { $t } from '@/resources/init.js';
 
-let routerArr = [
+import { $t } from '@/resources/init.js';
+import { config } from './config.js';
+
+let routerList = [
   {
     path: '/',
     beforeEnter: (to, from, next) => {
@@ -348,31 +348,19 @@ let routerArr = [
       authority: 'PROCESS_BASE',
       type: 'others'
     }
-  },
-  {
-    path: '/eoa-template-manage',
-    name: 'eoa-template-manage',
-    component: eoaTemplateManage,
-    meta: {
-      title: $t('router.process.eoatemplate'),
-      ismenu: true,
-      icon: 'tsfont-shitu',
-      authority: 'EOA_BASE',
-      type: 'flow'
-    }
-  },
-  {
-    path: '/eoa-template-edit',
-    name: 'eoa-template-edit',
-    component: eoaTemplateEdit,
-    meta: {
-      title: $t('router.process.eoatemplateedit'),
-      ismenu: false,
-      icon: 'tsfont-shitu',
-      authority: 'EOA_BASE',
-      type: 'flow'
-    }
   }
 ];
-
-export default routerArr;
+let importRouterList = [];
+try {
+  // 导入自定义路由
+  const routerContext = require.context('@/commercial-module', true, /router.js$/);
+  routerContext.keys().forEach(filePath => {
+    const moduleName = filePath?.split('/')[1]?.split('-')?.pop() || filePath?.split('/')[1];
+    if (moduleName && config?.module && moduleName == config.module) {
+      importRouterList = routerContext(filePath).default || [];
+    }
+  });
+} catch (error) {
+  // 捕获异常
+}
+export default [...routerList, ...importRouterList];

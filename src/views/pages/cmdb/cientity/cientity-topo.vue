@@ -111,7 +111,7 @@
         </span>
       </div>
       <div style="position: relative">
-        <div id="graph" class="clearfix home-page"></div>
+        <div ref="graph" class="clearfix graph"></div>
         <D3Tooltip
           v-if="isTooltipShow"
           :width="tooltipWidth"
@@ -335,56 +335,64 @@ export default {
       return offset;
     },
     resizeSVG() {
-      const graphEl = document.getElementById('graph');
+      const graphEl = this.$refs['graph'];
       if (graphEl) {
-        d3.select('#graph')
+        d3.select(graphEl)
           .selectWithoutDataPropagation('svg')
           .transition()
-          .duration(700)
           .attr('width', graphEl.offsetWidth)
-          .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+          .attr('height', window.innerHeight - 40 - this.getGraphTop(graphEl).y);
       }
     },
     initGraph() {
       window.setTimeout(() => {
-        const graphEl = document.getElementById('graph');
-        let graph = d3.select('#graph');
-        const _this = this;
-        graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
-        this.graph.graphviz = graph
-          .graphviz()
-          .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
-          .width(graphEl.offsetWidth - 10)
-          .zoom(true)
-          .fit(false)
-          .attributer(function(d) {
-            if (d.attributes.class === 'edge') {
-              let keys = d.key.split('->');
-              let from = keys[0].trim();
-              let to = keys[1].trim();
-              d.attributes.from = from;
-              d.attributes.to = to;
-            }
-            if (d.tag === 'text') {
-              let key = d.children[0].text;
-              d3.select(this).attr('text-key', key);
-            }
-            if (d.tag == 'a') {
-              d._this = this;
-              if (_this.nodeNameMap[d.attributes['xlink:title']]) {
-                _this.nodeNameMap[d.attributes['xlink:title']].push(d); //d3.select(this);
-              } else {
-                _this.nodeNameMap[d.attributes['xlink:title']] = [d];
+        const graphEl = this.$refs['graph'];
+        if (graphEl) {
+          let graph = d3.select(graphEl);
+          const _this = this;
+          graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
+          this.graph.graphviz = graph
+            .graphviz()
+            .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+            .width(graphEl.offsetWidth - 10)
+            .zoom(true)
+            .fit(false)
+            .tweenShapes(false)
+            .tweenPaths(false)
+            .convertEqualSidedPolygons(false)
+            .tweenPrecision('30%')
+            .attributer(function(d) {
+              if (d.attributes.class === 'edge') {
+                let keys = d.key.split('->');
+                let from = keys[0].trim();
+                let to = keys[1].trim();
+                d.attributes.from = from;
+                d.attributes.to = to;
               }
-            }
-          });
-        this.renderGraph();
-        d3.select(window).on('resize', this.resizeSVG);
+              if (d.tag === 'text') {
+                let key = d.children[0].text;
+                d3.select(this).attr('text-key', key);
+              }
+              if (d.tag == 'a') {
+                d._this = this;
+                if (_this.nodeNameMap[d.attributes['xlink:title']]) {
+                  _this.nodeNameMap[d.attributes['xlink:title']].push(d); //d3.select(this);
+                } else {
+                  _this.nodeNameMap[d.attributes['xlink:title']] = [d];
+                }
+              }
+            })
+            .on('end', () => {
+              //console.log('done');
+            });
+          this.renderGraph();
+          d3.select(window).on('resize', this.resizeSVG);
+        }
       }, 0);
     },
     renderGraph() {
       this.isloading = true;
-      const graphEl = document.getElementById('graph');
+      const graphEl = this.$refs['graph'];
       const param = this.searchParam;
       param.layout = this.currentLayout;
       this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
@@ -395,10 +403,10 @@ export default {
           this.loadImage(nodesString);
           this.graph.graphviz
             .transition()
-            .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
+            .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
             .width(graphEl.offsetWidth - 10)
-            .renderDot(nodesString)
-            .on('end', () => {});
+            .renderDot(nodesString);
+
           //let svg = d3.select('#graph').select('svg');
           //svg.append('g').lower();
           addEvent('svg', 'mouseover', e => {
@@ -472,7 +480,7 @@ export default {
         const maxHeight = this.tooltipHeight;
         const maxWidth = this.tooltipWidth;
         //由于SVG坐标系和dom的坐标不一致，所以需要使用getBoundingClientRect进行计算
-        const parentRect = document.getElementById('graph').getBoundingClientRect();
+        const parentRect = this.$refs['graph'].getBoundingClientRect();
         const nodeRect = d3.select(node).node().getBoundingClientRect();
 
         //console.log(parentRect);

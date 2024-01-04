@@ -227,8 +227,8 @@
       }
     }
     initEvent() {
-      this.el.on('click', d => {
-        d3.event.stopPropagation();
+      this.el.on('click', (event, d) => {
+        event.stopPropagation();
         if (!this.isShiftKey) {
           d.nodes.forEach(element => {
             element.unselect();
@@ -257,12 +257,14 @@
         window.addEventListener('keyup', _this.handlerKeyup); //监听键盘事件，清楚ctrl标志
       }
     }
-    getMouseX() {
-      const [x, y] = d3.mouse(this.el.node());
+    getMouseX(event) {
+      //const [x, y] = d3.mouse(this.el.node());
+      const [x, y] = d3.pointer(event, this.el.node());
       return x;
     }
-    getMouseY() {
-      const [x, y] = d3.mouse(this.el.node());
+    getMouseY(event) {
+      //const [x, y] = d3.mouse(this.el.node());
+      const [x, y] = d3.pointer(event, this.el.node());
       return y;
     }
     draw() {
@@ -302,8 +304,8 @@
         .on('start', () => {
           zoomIdentity = d3.zoomTransform(this.el.node());
         })
-        .on('brush', () => {
-          const section = d3.event.selection;
+        .on('brush', event => {
+          const section = event.selection;
           // 获取被框选中的节点
           if (section && this.getAllowBrushSelect()) {
             const selectSection = section.map(function (d) {
@@ -360,18 +362,18 @@
       this.el.call(
         d3
           .zoom()
-          .filter(() => {
-            return d3.event.type !== 'dblclick' && d3.event.which !== 3;
+          .filter(event => {
+            return event.type !== 'dblclick' && event.which !== 3;
           })
-          .wheelDelta(() => {
-            return (-d3.event.deltaY * (d3.event.deltaMode ? 120 : 1)) / 1500;
+          .wheelDelta(event => {
+            return (-event.deltaY * (event.deltaMode ? 120 : 1)) / 1500;
           })
           .on('start', () => {
             //this.hook('zoomStart');
           })
-          .on('zoom', () => {
+          .on('zoom', event => {
             //拖动画布，缩放画布都从这里触发
-            this.zoomG.attr('transform', d3.event.transform);
+            this.zoomG.attr('transform', event.transform);
           })
           .on('end', () => {})
       );
@@ -696,7 +698,7 @@
         var zoomTransform = d3.zoomTransform(this.el.node());
         var k = zoomTransform.k || 1;
         var position = zoomTransform[action]([data.x, data.y]);
-        if (action ==='invert' && k !== 1 ){ 
+        if (action === 'invert' && k !== 1) {
           //流程图缩放时，坐标轴位置调整
           data.x = position[0] + zoomTransform.x;
           data.y = position[1] + zoomTransform.y;
@@ -742,8 +744,8 @@
       if (!transform) return false;
       time = time !== undefined ? time : 700;
       !this.zoomed
-        ? (this.zoomed = d3.zoom().on('zoom', function () {
-            _this.zoomG.attr('transform', d3.event.transform);
+        ? (this.zoomed = d3.zoom().on('zoom', function (event) {
+            _this.zoomG.attr('transform', event.transform);
           }))
         : '';
       this.el.call(this.zoomed);

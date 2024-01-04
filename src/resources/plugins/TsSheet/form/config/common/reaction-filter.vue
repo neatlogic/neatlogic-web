@@ -1,5 +1,12 @@
 <template>
   <div>
+    <Row v-if="formItem.handler && formItem.handler == 'formselect'" :gutter="10" class="mb-sm">
+      <Col :span="24">
+        <Alert show-icon>
+          {{ $t('term.framework.requiredselectedtips') }}
+        </Alert>
+      </Col>
+    </Row>
     <Row :gutter="10" class="mb-sm">
       <Col :span="10" class="text-grey">{{ $t('page.attribute') }}</Col>
       <Col :span="2" class="text-grey"></Col>

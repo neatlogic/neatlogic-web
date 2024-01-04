@@ -273,9 +273,31 @@ const actions = {
 function getRouterConfig() {
   let routerConfig = {};
   let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+  routerPathList.forEach(item => {
+    if (item && item.keys()) {
+      item.keys().forEach(routerPath => {
+        const moduleNames = routerPath.split('/')[1];
+        const lastValue = moduleNames.split('-');
+        const moduleName = lastValue?.pop() || moduleNames;
+        const routeList = item(routerPath).default || [];
+        routerConfig[moduleName] = routeList;
+      });
+    }
+  });
+  let commercialRouterConfig = getCommercialRouter();
+  Object.keys(commercialRouterConfig).forEach(key => {
+    if (!routerConfig[key]) { //模块引入
+      routerConfig[key] = commercialRouterConfig[key];
+    }
+  }); 
+  return routerConfig;
+}
+function getCommercialRouter() { //商业版模块
+  let routerConfig = {};
+  let routerPathList = [];
   try {
     routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
-  } catch (error) {
+  } catch {
     // 模块找不到
   }
   routerPathList.forEach(item => {

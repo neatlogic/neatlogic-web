@@ -50,6 +50,14 @@ export default {
           subErrorList.forEach(e => {
             if (e.field && e.error) {
               errorList.push(e);
+            } else if (!this.$utils.isEmpty(e.errorList)) { 
+              //选项卡和折叠面板校验
+              e.errorList.forEach(s => {
+                errorList.push({
+                  uuid: e.uuid,
+                  ...s
+                });
+              });
             }
           });
         }

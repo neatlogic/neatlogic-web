@@ -1,7 +1,7 @@
 /**节点连接点类，一个类实例表示一个连接点**/
-(function(global, factory) {
+(function (global, factory) {
   factory((global.Anchor = global.Anchor || {}), global);
-})(window, function(exports, global) {
+})(window, function (exports, global) {
   'use strict';
   class Anchor {
     constructor(canvas, node, config) {
@@ -43,19 +43,19 @@
         if (k.startsWith('__')) {
           let pname = k.substring(2);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
           };
         } else if (k.startsWith('_')) {
           let pname = k.substring(1);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
           };
         }
@@ -137,7 +137,7 @@
     }
     initEvent() {
       this.el
-        .on('active', d => {
+        .on('active', (event, d) => {
           let needActive = false;
           if (d.getDirection().indexOf('i') > -1) {
             //如果可以连入，有dragging线时才显示
@@ -168,10 +168,10 @@
               .attr('stroke-opacity', '1')
               .on('end', () => {});
           }
-           //将anchor至于最前面
-           d.node.anchorG.raise();
+          //将anchor至于最前面
+          d.node.anchorG.raise();
         })
-        .on('unactive', d => {
+        .on('unactive', (event, d) => {
           //延迟300毫秒退出active
           if (d.resetActiveHandler) {
             clearTimeout(d.resetActiveHandler);
@@ -189,40 +189,30 @@
               .on('end', () => {});
           }, 300);
         })
-        .on('mouseenter', d => {
+        .on('mouseenter', (event, d) => {
           //if (!this.node.getIsDragging() && !this.node.getIsResizing()) {
-            d.anchorEl.interrupt();
-            d.anchorEl
-              .transition()
-              .duration(100)
-              .attr('transform', `scale(1.5)`)
-              .attr('stroke-width', d.getSize())
-              .attr('stroke-opacity', '0.3');
-            //检测是否需要连线
-            const linkList = d.canvas.getLinkByType('dragging');
-            if (linkList && linkList.length > 0) {
-              //如果正在拖拽中
-              const draglink = linkList[0];
-              if (linkList.circle == 'source') {
-                //先已经存在拖动sourceCircle来改变连线的位子
-                draglink.setSource(d.node.getUuid()); //设置起点到拖拽线中
-                draglink.setSAnchor({ dir: d.getPosition() });
-              } else {
-                //1、现已经存在拖动targetCircle来改变连线的位子  2、新建连线
-                draglink.setTarget(d.node.getUuid()); //设置终点到拖拽线中
-                draglink.setTAnchor({ dir: d.getPosition() });
-              }
+          d.anchorEl.interrupt();
+          d.anchorEl.transition().duration(100).attr('transform', `scale(1.5)`).attr('stroke-width', d.getSize()).attr('stroke-opacity', '0.3');
+          //检测是否需要连线
+          const linkList = d.canvas.getLinkByType('dragging');
+          if (linkList && linkList.length > 0) {
+            //如果正在拖拽中
+            const draglink = linkList[0];
+            if (linkList.circle == 'source') {
+              //先已经存在拖动sourceCircle来改变连线的位子
+              draglink.setSource(d.node.getUuid()); //设置起点到拖拽线中
+              draglink.setSAnchor({ dir: d.getPosition() });
+            } else {
+              //1、现已经存在拖动targetCircle来改变连线的位子  2、新建连线
+              draglink.setTarget(d.node.getUuid()); //设置终点到拖拽线中
+              draglink.setTAnchor({ dir: d.getPosition() });
             }
+          }
           //}
         })
-        .on('mouseleave', d => {
+        .on('mouseleave', (event, d) => {
           d.anchorEl.interrupt();
-          d.anchorEl
-            .transition()
-            .duration(100)
-            .attr('transform', `scale(1.5)`)
-            .attr('stroke-width', '1.5')
-            .attr('stroke-opacity', '1');
+          d.anchorEl.transition().duration(100).attr('transform', `scale(1.5)`).attr('stroke-width', '1.5').attr('stroke-opacity', '1');
           //检测是否需要连线
           const linkList = d.canvas.getLinkByType('dragging');
           if (linkList && linkList.length) {
@@ -236,7 +226,7 @@
       this.el.call(
         d3
           .drag()
-          .on('start', d => {
+          .on('start', (event, d) => {
             if (!this.dragLine && d.getDirection().indexOf('o') > -1) {
               this.dragLine = this.linkFactory.create('dragging', this.canvas, {
                 source: this.node.getUuid(),
@@ -250,13 +240,13 @@
               }
             }
           })
-          .on('drag', d => {
+          .on('drag', (event, d) => {
             if (this.dragLine) {
               const sx = this.node.getX() + this.getEdgeX();
               const sy = this.node.getY() + this.getEdgeY();
               let offsetNum = 10;
-              let tx = this.node.getX() + d3.event.x + offsetNum;
-              let ty = this.node.getY() + d3.event.y + offsetNum;
+              let tx = this.node.getX() + event.x + offsetNum;
+              let ty = this.node.getY() + event.y + offsetNum;
               /*拖拽线段缩短offset个像素，这样就不会因为线段盖在连接点上导致触发连接点的mouseleave事件 */
               const offset = 20;
               const longEdge = Math.sqrt(Math.pow(ty - sy, 2) + Math.pow(tx - sx, 2));
@@ -269,7 +259,7 @@
               }
             }
           })
-          .on('end', d => {
+          .on('end', (event, d) => {
             if (this.dragLine) {
               if (this.dragLine.getSource() && this.dragLine.getTarget()) {
                 //如果拖拽线有起点和终点，则代表可以连线

@@ -377,7 +377,7 @@
     if (d.el) {
       if (value) {
         d.el
-          .on('mouseenter.removebtn', function () {
+          .on('mouseenter.removebtn', (event, d) => {
             if (!d.getIsResizing() && !d.getIsDragging()) {
               if (!d.removeEl && d.el) {
                 const iconSize = 14;
@@ -398,8 +398,8 @@
                   .attr('xlink:href', '#tsfont-close-s')
                   .style('cursor', 'pointer');
 
-                d.removeEl.on('click.removebtn', function () {
-                  d3.event.stopPropagation();
+                d.removeEl.on('click.removebtn', (event, d) => {
+                  event.stopPropagation();
                   d.destory();
                 });
 
@@ -411,14 +411,14 @@
                 d.removeEl.raise();
               }
               d.removeEl
-                .transition()
-                .duration(200)
-                .ease(d3.easeLinear)
+                //.transition()
+                //.duration(200)
+                //.ease(d3.easeLinear)
                 .attr('opacity', 1)
                 .attr('transform', `translate(${d.getWidth() + 8}, -8) scale(1)`);
             }
           })
-          .on('mouseleave.removebtn', function () {
+          .on('mouseleave.removebtn', (event, d) => {
             if (d.removeEl) {
               if (d.resetDeleteHandler) {
                 clearTimeout(d.resetDeleteHandler);
@@ -426,20 +426,22 @@
               }
               d.resetDeleteHandler = setTimeout(() => {
                 if (d.removeEl) {
-                  d.removeEl
+                  /*d.removeEl
                     .transition()
                     .duration(200)
                     .ease(d3.easeLinear)
                     .attr('opacity', 0)
                     .attr('transform', `translate(${d.getWidth() + 8}, -8) scale(0)`)
-                    .on('end', () => {
+                    .on('end', (event, d) => {
                       if (d.removeEl) {
                         d.removeEl.remove();
                         d.removeEl = null;
                       }
-                    });
+                    });*/
+                    d.removeEl.remove();
+                    d.removeEl = null;
                 }
-              }, 1000);
+              }, 3000);
             }
           });
       } else {
@@ -453,8 +455,8 @@
     if (value) {
       //绑定选中事件
       if (d.el) {
-        d.el.on('click.selectable', d => {
-          d3.event.stopPropagation();
+        d.el.on('click.selectable', (event, d) => {
+          event.stopPropagation();
           if (!d.status.selected) {
             d.select();
           } else {
@@ -624,15 +626,15 @@
               adjustAnchorEl.call(
                 d3
                   .drag()
-                  .on('start', d => {
+                  .on('start', (event, d) => {
                     _this.status.draging = true;
                     if (_this.removeEl) {
                       _this.removeEl.attr('opacity', '0');
                     }
                   })
-                  .on('drag', d => {
+                  .on('drag', (event, d) => {
                     if (d.direction === 'h') {
-                      const newX = d3.event.x; //points[d.index - 1].x + d3.event.dx;
+                      const newX = event.x; //points[d.index - 1].x + event.dx;
                       let canMove = false;
                       let sx = _this.getSx(),
                         tx = _this.getTx();
@@ -671,7 +673,7 @@
                         points[d.index].x = newX;
                       }
                     } else if (d.direction === 'v') {
-                      const newY = d3.event.y; //points[d.index - 1].y + d3.event.dy;
+                      const newY = event.y; //points[d.index - 1].y + event.dy;
                       let canMove = false;
                       let sy = _this.getSy(),
                         ty = _this.getTy();
@@ -712,7 +714,7 @@
                     }
                     _this.moveAnchor();
                   })
-                  .on('end', d => {
+                  .on('end', (event, d) => {
                     _this.status.draging = false;
                   })
               );
@@ -751,16 +753,16 @@
           .append('tspan')
           .text(eval("'" + '\ue870' + "'")); // tsfont-close-s 删除图标
 
-        d.removeEl.on('click', () => {
+        d.removeEl.on('click', (event, d) => {
           if (d.removeEl.attr('opacity')) {
-            d3.event.stopPropagation();
+            event.stopPropagation();
             d.destory();
           }
         });
         //原先的写法是绑定在d.tractionLinkEl 现在是绑定在el上面，主要方便remove按钮的出现
         if (d.el) {
           d.el
-            .on('mouseenter.removeline', d => {
+            .on('mouseenter.removeline', (event, d) => {
               if (d.resetActiveHandler) {
                 clearTimeout(d.resetActiveHandler);
                 d.resetActiveHandler = null;
@@ -769,7 +771,7 @@
                 d.removeEl.raise().attr('opacity', '1');
               }
             })
-            .on('mouseleave.removeline', d => {
+            .on('mouseleave.removeline', (event, d) => {
               if (d.resetActiveHandler) {
                 clearTimeout(d.resetActiveHandler);
                 d.resetActiveHandler = null;
@@ -778,7 +780,7 @@
                 if (d.removeEl) {
                   d.removeEl.attr('opacity', '0');
                 }
-              }, 1000); //延时1000毫秒消失，方便点中删除按钮
+              }, 3000); //延时1000毫秒消失，方便点中删除按钮
             });
         }
       }
@@ -794,9 +796,9 @@
   PH['link.isSelectable'] = function (d, value) {
     //绘制节点选择框
     if (value) {
-      d.el.on('click.selectable', d => {
+      d.el.on('click.selectable', (event, d) => {
         //原先是绑定在d.tractionLinkEl 上面，如果有文案导致选中不了，因此改了绑定对象
-        d3.event.stopPropagation();
+        event.stopPropagation();
         if (!d.status.selected) {
           d.select();
         } else {
