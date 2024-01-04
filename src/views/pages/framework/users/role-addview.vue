@@ -214,7 +214,7 @@ export default {
           value: '',
           placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.rule')}),
           label: this.$t('page.rule'),
-          tooltip: '登录认证的请求需要携带Header做规则表达式，如果表达式执行后的值为true则该角色生效，否则不生效\n如： "${DATA.env}" == "sit" && ("${DATA.test}" == "1" || "${DATA.test2}" == "aaa")'
+          tooltip: this.$t('page.rolerule')
         }
       ],
       uuid: '', //角色uuid
