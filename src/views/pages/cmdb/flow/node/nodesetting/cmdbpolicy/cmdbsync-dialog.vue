@@ -624,6 +624,7 @@ export default {
       if (!this.valid()) {
         return false; 
       }
+      this.isInherit = false;
       //队列只剩一个配置项时才写入数据库
       if (this.ciEntityQueue.length > 1) {
         const cientity = this.ciEntityQueue.pop();
