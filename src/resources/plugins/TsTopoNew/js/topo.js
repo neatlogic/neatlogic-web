@@ -257,12 +257,14 @@
         window.addEventListener('keyup', _this.handlerKeyup); //监听键盘事件，清楚ctrl标志
       }
     }
-    getMouseX() {
-      const [x, y] = d3.mouse(this.el.node());
+    getMouseX(event) {
+      //const [x, y] = d3.mouse(this.el.node());
+      const [x, y] = d3.pointer(event, this.el.node());
       return x;
     }
-    getMouseY() {
-      const [x, y] = d3.mouse(this.el.node());
+    getMouseY(event) {
+      //const [x, y] = d3.mouse(this.el.node());
+      const [x, y] = d3.pointer(event, this.el.node());
       return y;
     }
     draw() {
@@ -302,7 +304,7 @@
         .on('start', () => {
           zoomIdentity = d3.zoomTransform(this.el.node());
         })
-        .on('brush', (event) => {
+        .on('brush', event => {
           const section = event.selection;
           // 获取被框选中的节点
           if (section && this.getAllowBrushSelect()) {
@@ -360,16 +362,16 @@
       this.el.call(
         d3
           .zoom()
-          .filter((event) => {
+          .filter(event => {
             return event.type !== 'dblclick' && event.which !== 3;
           })
-          .wheelDelta((event) => {
+          .wheelDelta(event => {
             return (-event.deltaY * (event.deltaMode ? 120 : 1)) / 1500;
           })
           .on('start', () => {
             //this.hook('zoomStart');
           })
-          .on('zoom', (event) => {
+          .on('zoom', event => {
             //拖动画布，缩放画布都从这里触发
             this.zoomG.attr('transform', event.transform);
           })

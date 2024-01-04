@@ -961,5 +961,6 @@
   "uploadurlmustrequired": "上传地址不能为空",
   "existiscoverimport": "{type}【{target}】已存在，是否继续导入并覆盖",
   "userauthfailedpleaselogin": "认证失败，请重新登录",
-  "partial": "局部"
+  "partial": "局部",
+  "rolerule": "登录认证的请求需要携带Header做规则表达式(注意表达式中header参数全小写)，如果表达式执行后的值为true则该角色生效，false和语法异常都不生效 。 如：\"${DATA.env}\"==\"sit\"&&(\"${DATA.test}\"==\"1\"||\"${DATA.test2}\"==\"aaa\")"
 }
