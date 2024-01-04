@@ -4,6 +4,7 @@
       <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
       <TsFormSwitch
         v-model="isActive"
+        :disabled="disabled"
         @on-change="changeActive"
       ></TsFormSwitch>
     </div>
@@ -17,6 +18,7 @@
             :validateList="validateList"
             :firstSelect="false"
             transfer
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormSelect>
         </Col>
@@ -28,6 +30,7 @@
             :validateList="validateList"
             :firstSelect="false"
             transfer
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormSelect>
         </Col>
@@ -36,6 +39,7 @@
             ref="formValid"
             v-model="f.value"
             :validateList="validateList"
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormInput>
         </Col>
@@ -59,6 +63,10 @@ export default {
     defaultFilterList: {
       type: Array,
       default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
