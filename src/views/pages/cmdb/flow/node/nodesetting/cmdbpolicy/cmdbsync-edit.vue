@@ -400,6 +400,14 @@ export default {
         } else {
           data._rootId = config.fromCiId;
         }
+        //存在抽象模型和子模型的标识
+        let abstractCiList = this.ciEntityData.relEntityData['rel' + config.direction + '_' + config.id]['valueList'] || [];
+        if (abstractCiList && abstractCiList.length > 1 && data.ciId === data._rootId) {
+          let subCiList = abstractCiList.filter((item) => {
+            return item.ciId !== data._rootId;
+          });
+          data.subCiUuidList = this.$utils.mapArray(subCiList, 'ciEntityUuid');
+        }
         this.$emit('edit', data);
       }
     },

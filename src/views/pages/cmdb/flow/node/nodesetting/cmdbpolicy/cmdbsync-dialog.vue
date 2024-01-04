@@ -42,6 +42,7 @@
                 <TsFormRadio
                   v-model="ciData.editMode"
                   :dataList="editModeList"
+                  :disabled="isInherit"
                   @on-change="(val)=>{
                     changeEditMode(val)
                   }"
@@ -67,6 +68,7 @@
                   <TsFormRadio
                     v-model="ciData.createPolicy"
                     :dataList="ciEntityQueue.length <= 1?createPolicyDataList:createRelDataList"
+                    :disabled="isInherit"
                     @on-change="(val)=>{
                       changePolicy(val)
                     }"
@@ -81,6 +83,7 @@
                   <TsFormRadio
                     :dataList="actionDataList"
                     :value="ciData.action"
+                    :disabled="isInherit"
                     @on-change="(val)=>{
                       setConfig(val,'action')
                     }"
@@ -95,7 +98,7 @@
                           :value="ciData.batchDataSource && ciData.batchDataSource.type"
                           :dataList="batchComponentList"
                           :validateList="validateList"
-                          :disabled="isDisabledType"
+                          :disabled="isDisabledType || isInherit"
                           transfer
                           @on-change="(val)=>{
                             setBatchDataSource(val,'type')
@@ -113,6 +116,7 @@
                           :firstSelect="false"
                           transfer
                           border="border"
+                          :disabled="isInherit"
                           @on-change="(val)=>{
                             setBatchDataSource(val,'attributeUuid')
                           }"
@@ -125,6 +129,7 @@
                       ref="filterList"
                       :defaultFilterList="ciData.batchDataSource && ciData.batchDataSource.filterList"
                       :dataList="getAttrList(ciData.batchDataSource)"
+                      :disabled="isInherit"
                       @setConfig="(val)=> setBatchDataSource(val,'filterList')"
                     ></FilterList>
                   </TsFormItem>
@@ -265,7 +270,9 @@ export default {
           value: 'partial',
           description: this.$t('term.cmdb.partialeditmodetip')
         }
-      ]
+      ],
+      isInherit: false, //判断子模型需要继承根模型的策略
+      subCiUuidList: [] //子模型临时数据(标识)
     };
   },
   beforeCreate() {},
@@ -295,7 +302,9 @@ export default {
         this.currentFormItemList = this.$utils.deepClone(this.allFormitemList);
       }
     },
-    initValue(cientity, preCiEntity) {
+    initValue(cientity, preCiEntity, rootId, subCiUuidList) {
+      this.subCiUuidList = subCiUuidList || [];
+      this.isInherit = false;
       let findItem = this.saveCiEntityMap[cientity.uuid];
       if (findItem) {
         Object.keys(findItem).forEach(key => {
@@ -331,6 +340,21 @@ export default {
             this.$set(cientity.allAttrEntityData[key], 'valueList', []);
           }
         });
+      }
+      if (rootId && rootId != cientity.ciId) {
+        let rootConfig = null;
+        Object.keys(this.saveCiEntityMap).forEach(key => {
+          if (this.saveCiEntityMap[key].ciId === rootId) {
+            rootConfig = this.saveCiEntityMap[key];
+          }
+        });
+        if (rootConfig) {
+          this.$set(cientity, 'action', rootConfig.action);
+          this.$set(cientity, 'batchDataSource', rootConfig.batchDataSource);
+          this.$set(cientity, 'editMode', rootConfig.editMode);
+          this.$set(cientity, 'createPolicy', rootConfig.createPolicy);
+          this.isInherit = true;
+        }
       }
     },
     okDialog() {
@@ -468,7 +492,7 @@ export default {
                 }
               ]
             };
-            this.initValue(newCiEntity, currentCiEntity);
+            this.initValue(newCiEntity, currentCiEntity, rootId, rel.subCiUuidList);
             this.ciData = newCiEntity;
             this.ciEntityQueue.push(newCiEntity);
             this.updateCurrentFormItemList();
@@ -487,6 +511,7 @@ export default {
       }
     },
     back() {
+      this.isInherit = false;
       const cientity = this.ciEntityQueue.pop();
       if (cientity._isnew) {
         this.$set(this.saveCiEntityMap, cientity.uuid, this.tmpCiEntityData);
@@ -627,6 +652,7 @@ export default {
         this.saveCiEntityMap[cientity.uuid] = cientity;
         this.ciData = this.ciEntityQueue[this.ciEntityQueue.length - 1];
         this.updateCurrentFormItemList();
+        this.updateSubCiData(cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
         this.saveCiEntityMap[cientity.uuid] = cientity;
@@ -917,6 +943,36 @@ export default {
       let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       if (ciEntity) {
         this.$set(ciEntity, 'editMode', val);
+      }
+    },
+    updateSubCiData(cientity) { 
+      //抽象模型修改遍历对象的时候，子模型，映射到旧的遍历对象的哪些属性，全部清空
+      if (!this.$utils.isEmpty(this.subCiUuidList)) {
+        this.subCiUuidList.forEach(uuid => {
+          if (this.saveCiEntityMap[uuid]) {
+            this.$set(this.saveCiEntityMap[uuid], 'editMode', cientity.editMode);
+            this.$set(this.saveCiEntityMap[uuid], 'action', cientity.action);
+            if (cientity.createPolicy != this.saveCiEntityMap[uuid].createPolicy ||
+            (!this.$utils.isEmpty(cientity.batchDataSource) && (cientity.batchDataSource.type != this.saveCiEntityMap[uuid].batchDataSource.type) || (cientity.batchDataSource.attributeUuid != this.saveCiEntityMap[uuid].batchDataSource.attributeUuid))
+            ) {
+              if (!this.$utils.isEmpty(this.saveCiEntityMap[uuid].allAttrEntityData)) {
+                Object.keys(this.saveCiEntityMap[uuid].allAttrEntityData).forEach(key => {
+                  let config = this.saveCiEntityMap[uuid].allAttrEntityData[key];
+                  if (config.mappingMode === 'formTableComponent' || config.mappingMode === 'formSubassemblyComponent') {
+                    this.$set(config, 'valueList', []);
+                  }
+                });
+              } else if (!this.$utils.isEmpty(this.saveCiEntityMap[uuid].mappingList)) {
+                let mappingList = this.saveCiEntityMap[uuid].mappingList.filter(item => {
+                  return item.mappingMode !== 'formTableComponent' && item.mappingMode !== 'formSubassemblyComponent';
+                });
+                this.$set(this.saveCiEntityMap[uuid], 'mappingList', mappingList);
+              }
+            }
+            this.$set(this.saveCiEntityMap[uuid], 'createPolicy', cientity.createPolicy);
+            this.$set(this.saveCiEntityMap[uuid], 'batchDataSource', cientity.batchDataSource);
+          }
+        });
       }
     }
   },
