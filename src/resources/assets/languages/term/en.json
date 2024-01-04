@@ -187,7 +187,8 @@
     "asyncpolicy": "Synchronization strategy",
     "globaleditmodetip": "Global mode, do not delete attribute representatives",
     "partialeditmodetip": "Local mode, do not change if attribute is not given",
-    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode"
+    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode",
+    "startci": "Select the starting model first"
   },
   "process": {
     "workordercenter": "Work Center",
