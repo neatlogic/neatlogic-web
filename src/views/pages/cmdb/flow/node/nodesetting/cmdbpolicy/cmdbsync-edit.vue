@@ -424,9 +424,17 @@ export default {
       }
       this.$api.cmdb.ci.getDownwardCiList(ciId).then(res => {
         let relCiList = res.Return || [];
-        this.relCiList = relCiList.filter(item => {
-          return (item.isAbstract && item.id === ciId) || !item.isAbstract;
-        });
+        if (relCiList && relCiList.length > 0) {
+          if (relCiList[0].isAbstract) {
+            //过滤除第一个以外的抽象模型
+            this.relCiList = relCiList.filter(item => {
+              return (item.isAbstract && item.id === ciId) || !item.isAbstract;
+            });
+          } else {
+            //如果没有抽象模型，只留下第一个模型
+            this.relCiList.push(relCiList[0]);
+          }
+        }
         if (this.relCiList.length > 1) {
           this.isRelPopShow[rel.id + '_' + rel.direction] = true;
         } else if (this.relCiList.length == 1) {
