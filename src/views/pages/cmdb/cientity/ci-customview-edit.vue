@@ -1,13 +1,9 @@
 <template>
-  <div ref="container" class="topo-container" :style="{ 'height': !id ? 'calc(100vh - 330px)' : 'calc(100vh - 210px)' }">
+  <div ref="container" class="topo-container" :style="{ height: !id ? 'calc(100vh - 208px)' : 'calc(100vh - 170px)' }">
     <!--:style="{ 'overflow-y': 'auto', 'height': !id ? 'calc(100vh - 330px)' : 'calc(100vh - 210px' }"-->
-    <div style="overflow-y:auto">
+    <div style="overflow-y: auto">
       <div class="mb-md">
-        <TsFormInput
-          border="bottom"
-          :search="true"
-          @on-change="searchCi"
-        ></TsFormInput>
+        <TsFormInput border="bottom" :search="true" @on-change="searchCi"></TsFormInput>
       </div>
       <div>
         <div v-for="(ciType, index) in filterCiTypeList" :key="index">
@@ -26,9 +22,9 @@
                     @dragstart="drag($event, row)"
                   >
                     <div class="bg-op radius-md padding-xs">
-                      <div style="cursor:move;display:grid;grid-template-columns:35px auto;line-height:1.6">
-                        <div style="text-align:center">
-                          <i :class="row.icon" class="text-primary" style="font-size:20px;"></i>
+                      <div style="cursor: move; display: grid; grid-template-columns: 35px auto; line-height: 1.6">
+                        <div style="text-align: center">
+                          <i :class="row.icon" class="text-primary" style="font-size: 20px"></i>
                         </div>
                         <div class="overflow">
                           <div :title="row.label">{{ row.label }}</div>
@@ -44,10 +40,10 @@
         </div>
       </div>
     </div>
-    <div ref="topoContainer" style="position:relative" :style="{ 'height': !id ? 'calc(100vh - 330px)' : 'calc(100vh - 210px)' }">
+    <div ref="topoContainer" style="position: relative" :style="{ height: !id ? 'calc(100vh - 208px)' : 'calc(100vh - 170px)' }">
       <div
         ref="topo"
-        style="height:100%"
+        style="height: 100%"
         @dragover.prevent
         @drop="drop"
       ></div>
@@ -88,24 +84,24 @@
                 </colgroup>
                 <tbody>
                   <tr v-for="(constattr, cindex) in currentCi.constList" :key="'constattr_' + cindex">
-                    <td style="vertical-align:top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
-                    <td style="vertical-align:top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
+                    <td style="vertical-align: top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
+                    <td style="vertical-align: top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
                     <td>
                       <div>{{ constattr.label }}</div>
                       <div class="text-grey">{{ constattr.name }}</div>
                     </td>
                   </tr>
                   <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
-                    <td style="vertical-align:top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
-                    <td style="vertical-align:top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
+                    <td style="vertical-align: top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
+                    <td style="vertical-align: top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
                     <td>
                       <div>{{ attr.label }}</div>
                       <div class="text-grey">{{ attr.name }}</div>
                     </td>
                   </tr>
                   <tr v-for="(rel, rindex) in currentCi.ciRelList" :key="'rel_' + rindex">
-                    <td style="vertical-align:top"><Checkbox v-model="rel.isChecked" disabled></Checkbox></td>
-                    <td style="vertical-align:top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
+                    <td style="vertical-align: top"><Checkbox v-model="rel.isChecked" disabled></Checkbox></td>
+                    <td style="vertical-align: top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
                     <td v-if="rel.direction == 'from'">
                       <div>{{ rel.toLabel }}</div>
                       <div class="text-grey">{{ rel.toName }}</div>
@@ -171,7 +167,7 @@ export default {
         },
         {
           name: 'ciName',
-          label: '模型'
+          label: this.$t('page.model')
         }
       ],
       currentCi: {
@@ -443,6 +439,36 @@ export default {
         }
       }
     },
+    drawRelEnd(ciRel) {
+      const group = this.topo.getGroupByUuid('g_' + ciRel.ciId);
+      if (group) {
+        let node = this.topo.getNodeByUuid(ciRel.relId);
+        if (!node) {
+          node = this.topo.addNode({
+            uuid: ciRel.relId,
+            icon: ciRel.relLabel,
+            deleteable: false,
+            shape: 'rect',
+            x: 0,
+            y: 0,
+            type: 'rel',
+            config: {
+              relId: ciRel.relId,
+              direction: ciRel.direction,
+              fromCiId: ciRel.ciId,
+              toCiId: ciRel.targetCiId
+            }
+          });
+          node.draw();
+          //先绘制节点，再加入分组
+          group.addNode(node);
+        }
+        const offset = 50; //偏移起点
+        const ciNode = this.drawCiRelEnd(ciRel, group.getOriginalX() + group.getWidth() + offset, group.getOriginalY());
+        node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
+        return node;
+      }
+    },
     drawRel(ciRel) {
       const group = this.topo.getGroupByUuid('g_' + ciRel.ciId);
       if (group) {
@@ -472,6 +498,48 @@ export default {
         node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
         return node;
       }
+    },
+    drawCiRelEnd(ciRel, x, y) {
+      let group = this.topo.getGroupByUuid('g_' + ciRel.targetCiId);
+      let hasGroup = true;
+      let hasNode = true;
+      if (!group) {
+        hasGroup = false;
+        group = this.topo.addGroup({
+          uuid: 'g_' + ciRel.targetCiId,
+          type: 'group',
+          x: x,
+          y: y
+        });
+      }
+      let node = this.topo.getNodeByUuid('ci_' + ciRel.targetCiId);
+      if (!node) {
+        hasNode = false;
+        const index = this.getMaxCiIndex() + 1;
+        node = this.topo.addNode({
+          icon: index + '.' + ciRel.targetCiLabel,
+          uuid: 'ci_' + ciRel.targetCiId,
+          shape: 'rect',
+          x: x,
+          y: y,
+          type: 'ci',
+          config: { ciId: ciRel.targetCiId, ciName: ciRel.targetCiName, ciLabel: ciRel.targetCiLabel, alias: ciRel.targetCiLabel, index: index }
+        });
+        group.addNode(node);
+      }
+      if (!hasNode) {
+        //先绘制节点
+        node.draw();
+      }
+      if (!hasGroup) {
+        group.draw();
+      }
+      if (ciRel.next) {
+        this.drawRel(ciRel);
+      } else {
+        //
+      }
+      return node;
     },
     removeRel(rel) {
       const node = this.topo.getNodeByUuid(rel.uuid);
@@ -607,6 +675,8 @@ export default {
       }
       if (ciRel.next) {
         this.drawRel(ciRel);
+      } else {
+        this.drawRelEnd(ciRel);
       }
       return node;
     },

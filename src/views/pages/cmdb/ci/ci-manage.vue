@@ -163,7 +163,7 @@ export default {
             valueName: 'id',
             textName: 'name',
             url: '/api/rest/cmdb/citype/list',
-            label: this.$t('page.type'),
+            label: this.$t('page.hierarchy'),
             multiple: true,
             transfer: true
           },
