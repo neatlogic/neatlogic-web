@@ -1,7 +1,8 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 let valid = {
-  common(nodeConfig, d, that) { //公共校验方法  校验名称
+  common(nodeConfig, d, that) {
+    //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
     if (!nodeConfig.name) {
       validList.push({
@@ -24,7 +25,8 @@ let valid = {
     }
     return validList;
   },
-  poliyUser(nodeConfig, d, that) { //分派处理人校验
+  poliyUser(nodeConfig, d, that) {
+    //分派处理人校验
     // 分派处理人校验
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
@@ -32,11 +34,13 @@ let valid = {
     let isStart = parentNodes.find(d => {
       return d.getConfig() && d.getConfig().handler === 'start';
     });
-    if (isStart) { //如果是开始节点
+    if (isStart) {
+      //如果是开始节点
       return validList;
     }
     let extendsHandlerList = ['condition', 'distributary', 'changehandle', 'timer'];
-    if (!nodeData.workerPolicyConfig && extendsHandlerList.indexOf(nodeConfig.handler) < 0) { //分派处理人必填
+    if (!nodeData.workerPolicyConfig && extendsHandlerList.indexOf(nodeConfig.handler) < 0) {
+      //分派处理人必填
       validList.push({
         name: $t('form.validate.required', { target: $t('term.process.poliyuser') }),
         href: '#assignData'
@@ -52,10 +56,10 @@ let valid = {
       let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
-          'prestepassign': { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
-          'copy': { value: 'processStepUuid', text: $t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
-          'form': { value: 'attributeUuidList', text: $t('term.process.formworkerpolicyvalid') }, //表单值
-          'assign': { value: 'workerList', text: $t('term.process.assignworkerpolicyvalid') }//自定义
+          prestepassign: { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
+          copy: { value: 'processStepUuid', text: $t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
+          form: { value: 'attributeUuidList', text: $t('term.process.formworkerpolicyvalid') }, //表单值
+          assign: { value: 'workerList', text: $t('term.process.assignworkerpolicyvalid') } //自定义
         };
         for (let i = 0; i < policyList.length; i++) {
           if (policyList[i].isChecked == 1) {
@@ -81,7 +85,8 @@ let valid = {
                 errorText = keyConfig[type].text;
                 break;
               }
-            } else if (policyList[i].type == 'automatic') { //分派器
+            } else if (policyList[i].type == 'automatic') {
+              //分派器
               if (policyList[i].config.handler && policyList[i].config.handler != '') {
                 if (policyList[i].config.handlerConfig != {}) {
                   let newObj = that.automaticList.find(d => d.handler === policyList[i].config.handler);
@@ -132,11 +137,13 @@ let valid = {
     }
     return validList;
   },
-  omnipotent(nodeConfig, d, that) { //通用节点
+  omnipotent(nodeConfig, d, that) {
+    //通用节点
     let validList = [];
     return validList;
   },
-  automatic(nodeConfig, d, that) { //auto 自动处理节点校验
+  automatic(nodeConfig, d, that) {
+    //auto 自动处理节点校验
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
     if (nodeConfig.handler === 'automatic') {
@@ -172,7 +179,8 @@ let valid = {
     }
     return validList;
   },
-  changecreate(nodeConfig, d, that) { //变更创建的校验
+  changecreate(nodeConfig, d, that) {
+    //变更创建的校验
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
     if (nodeConfig.handler === 'changecreate') {
@@ -200,7 +208,8 @@ let valid = {
     }
     return validList;
   },
-  changehandle(nodeConfig, d, that) { //变更处理的校验
+  changehandle(nodeConfig, d, that) {
+    //变更处理的校验
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
     let allPrevNodes = d.getAllPrevNodes();
@@ -219,7 +228,8 @@ let valid = {
     }
     return validList;
   },
-  cientitysync(nodeConfig, d, that) { //配置项同步
+  cientitysync(nodeConfig, d, that) {
+    //配置项同步
     let validList = [];
     //20210518_这里的数据结构：原来nodeConfig.config的数据都变成nodeConfig.stepConfig里的数据
     let nodeData = nodeConfig.stepConfig || {};
@@ -246,7 +256,8 @@ let valid = {
     }
     return validList;
   },
-  cmdbsync(nodeConfig, d, that) { //cmdb
+  cmdbsync(nodeConfig, d, that) {
+    //cmdb
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
     let ciEntityConfig = nodeData.ciEntityConfig || {};
@@ -266,7 +277,8 @@ let valid = {
     }
     return validList;
   },
-  autoexec(nodeConfig, d, that) { //自动化节点
+  autoexec(nodeConfig, d, that) {
+    //自动化节点
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
     let autoexecConfig = nodeData.autoexecConfig || {};
@@ -279,14 +291,15 @@ let valid = {
       }
       if (that.$utils.isEmpty(autoexecConfig.configList)) {
         validList.push({
-          name: $t('form.validate.leastonetarget', { 'target': $t('term.autoexec.job') }),
+          name: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
           href: '#autoexecCombop'
         });
       }
     }
     return validList;
   },
-  timer(nodeConfig, d, that) { //定时节点
+  timer(nodeConfig, d, that) {
+    //定时节点
     let validList = [];
     let validObj = {
       name: $t('form.validate.required', { target: $t('term.process.circulationtime') }),
@@ -313,7 +326,8 @@ let valid = {
 };
 
 let setInitData = {
-  changehandle(nodeConfig, d, that) { //变更处理的校验
+  changehandle(nodeConfig, d, that) {
+    //变更处理的校验
     // 变更处理，关联变更自动填充变更创建//特殊处理变更创建和处理(第一次保存不点击节点)--------------------------
     if (!nodeConfig.stepConfig.linkedChange) {
       let allNode = d.getAllPrevNodes();
@@ -329,4 +343,3 @@ let setInitData = {
   }
 };
 export { valid, setInitData };
-
