@@ -11,6 +11,21 @@
       :tableComponentAttrList="tableComponentAttrList"
       :subFormComponentList="subFormComponentList"
     ></TargetCi>
+    <!-- 子模型 -->
+    <ChildrenCi
+      v-if="ciEntityData.isStart && ciEntityData.isAbstract"
+      :ciId="ciData.ciId"
+      :ciEntityData="ciEntityData"
+      @newCiEntity="(data)=>{
+        $emit('new', data);
+      }"
+      @editNewRelEntity="(data)=>{
+        $emit('edit', data);
+      }"
+      @remove="(relentity)=>{
+        $delete(saveCiEntityMap, relentity.ciEntityUuid);
+      }"
+    ></ChildrenCi>
     <div>
       <TsFormItem :label="$t('term.cmdb.attrmapping')" labelPosition="top">
         <div class="pt-sm">
@@ -283,7 +298,8 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
     TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader.vue'], resolve),
-    TargetCi: resolve => require(['./target-ci.vue'], resolve)
+    TargetCi: resolve => require(['./target-ci.vue'], resolve),
+    ChildrenCi: resolve => require(['./children-ci.vue'], resolve)
   },
   props: {
     ciData: Object,
@@ -295,7 +311,8 @@ export default {
       }
     },
     subFormComponentList: Array,
-    tableComponentAttrList: Array
+    tableComponentAttrList: Array,
+    saveCiEntityMap: Object
   },
   data() {
     return {
@@ -402,11 +419,15 @@ export default {
         }
         //存在抽象模型和子模型的标识
         let abstractCiList = this.ciEntityData.relEntityData['rel' + config.direction + '_' + config.id]['valueList'] || [];
-        if (abstractCiList && abstractCiList.length > 1 && data.ciId === data._rootId) {
-          let subCiList = abstractCiList.filter((item) => {
-            return item.ciId !== data._rootId;
-          });
-          data.subCiUuidList = this.$utils.mapArray(subCiList, 'ciEntityUuid');
+        if (abstractCiList && abstractCiList.length > 1) {
+          if (data.ciId === data._rootId) {
+            let subCiList = abstractCiList.filter((item) => {
+              return item.ciId !== data._rootId;
+            });
+            data.subCiUuidList = this.$utils.mapArray(subCiList, 'ciEntityUuid');
+          } else if (data.ciId != data._rootId) {
+            data._rootUuid = abstractCiList[0].ciEntityUuid;
+          }
         }
         this.$emit('edit', data);
       }
@@ -456,7 +477,16 @@ export default {
       } else {
         rel._rootId = rel.fromCiId;
       }
-      this.$emit('new', 'rel', rel);
+      //存在抽象模型和子模型的标识
+      if (this.ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]) {
+        let abstractCiList = this.ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'] || [];
+        if (abstractCiList && abstractCiList.length > 0) {
+          if (ciId != rel._rootId) {
+            rel._rootUuid = abstractCiList[0].ciEntityUuid;
+          }
+        }
+      }
+      this.$emit('new', rel);
     },
     //删除选中的属性
     deleteAttrEntity(key, attrentity) {
