@@ -191,7 +191,8 @@
     "startci": "Select the starting model first",
     "writeci": "Write model",
     "writecitip": "Select constants or specify the model for data writing through form mapping. If the parent model is an abstract model and does not support adding configuration items, data needs to be written into the child model.",
-    "abstractcireltip": "Firstly, configure the parent model, complete the mapping of common attributes in the parent model, and specify the model for data writing. After completing the configuration of the parent model, return to the current interface before clicking on the sub model to configure the mapping of non-public (non inherited) attributes in the sub model."
+    "abstractcireltip": "Firstly, configure the parent model, complete the mapping of common attributes in the parent model, and specify the model for data writing. After completing the configuration of the parent model, return to the current interface before clicking on the sub model to configure the mapping of non-public (non inherited) attributes in the sub model.",
+    "subci": "Submodel"
   },
   "process": {
     "workordercenter": "Work Center",
