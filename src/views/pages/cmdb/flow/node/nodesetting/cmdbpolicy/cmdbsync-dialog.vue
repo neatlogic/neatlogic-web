@@ -676,6 +676,11 @@ export default {
         this.updateSubCiData(cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
+        if (!this.$utils.isEmpty(cientity.children)) {
+          //初始模型为抽象模型
+          this.subCiUuidList = this.$utils.mapArray(cientity.children, 'ciEntityUuid');
+          this.updateSubCiData(cientity);
+        }
         this.saveCiEntityMap[cientity.uuid] = cientity;
         const ciEntityList = [];
         for (let uuid in this.saveCiEntityMap) {
