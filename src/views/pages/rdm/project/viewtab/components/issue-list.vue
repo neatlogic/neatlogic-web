@@ -199,12 +199,7 @@
       :hasFooter="false"
       :isScrollbar="true"
       :hasContentPadding="false"
-      @on-close="
-        isIssueDetailShow = false;
-        currentIssue = null;
-        searchIssue();
-        $emit('refresh');
-      "
+      @on-close="closeIssueDetail"
     >
       <template v-slot>
         <div>
@@ -367,6 +362,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeIssueDetail() {
+      this.isIssueDetailShow = false;
+      this.currentIssue = null;
+      this.searchIssue();
+      this.$emit('refresh');
+    },
     changeLabel(attr, text, selectedList, textConfig) {
       if (attr.isPrivate) {
         if (text?.length > 0) {

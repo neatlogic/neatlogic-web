@@ -309,7 +309,8 @@ export default {
     }
   },
   destroyed() {
-    this.onRemove();
+    //注释掉，否则会重复调用两次
+    //this.onRemove();
   },
   methods: {
     onOk: function() {
