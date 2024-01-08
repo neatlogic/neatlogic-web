@@ -152,7 +152,7 @@ export default {
     async refresh(id) {
       //刷新列表统计数
       try {
-        await this.getAppByProjectId();
+        await this.getAppByProjectId(true);
       } catch (e) {
         console.error(e);
       }
@@ -171,11 +171,13 @@ export default {
         this.getProjectList();
       }
     },
-    getAppByProjectId() {
+    getAppByProjectId(muted) {
       if (!this.currentProjectId) {
         return;
       }
-      this.isReady = false;
+      if (!muted) {
+        this.isReady = false;
+      }
       return this.$api.rdm.project
         .getAppByProjectId(this.currentProjectId, {
           isActive: 1,
@@ -197,9 +199,11 @@ export default {
           }
         })
         .finally(() => {
-          this.$nextTick(() => {
-            this.isReady = true;
-          });
+          if (!muted) {
+            this.$nextTick(() => {
+              this.isReady = true;
+            });
+          }
         });
     }
   },
