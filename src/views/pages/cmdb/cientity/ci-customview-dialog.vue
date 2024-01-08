@@ -41,6 +41,7 @@
                     :render="renderName"
                     :load-data="loadData"
                     :multiple="false"
+                    class="ts-tree"
                     @on-select-change="selectNode"
                   ></Tree>
                 </div>
