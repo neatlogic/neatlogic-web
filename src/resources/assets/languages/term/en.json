@@ -523,7 +523,8 @@
     "eoadealwithusertip": "After setting the processor for the template, the processor cannot be modified during the editing process",
     "approvalstep": "Approval steps",
     "approvalprocess": "Approval process",
-    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node"
+    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node",
+    "matchmapping": "Matching mapping"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

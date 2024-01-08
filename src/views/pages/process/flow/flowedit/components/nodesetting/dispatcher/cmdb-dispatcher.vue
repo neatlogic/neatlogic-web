@@ -84,27 +84,7 @@ export default {
     value: {
       type: Object,
       default: () => {
-        return {
-          'type': 'ci',
-          'ciId': 1044706589786112,
-          'workerList': [
-            1044706589786112,
-            441190910533632
-          ],
-          'filterList': [
-            {
-              'key': 441190910533632,
-              'formAttributeUuid': 'ca04365ff49c4c80b39cf802e857eeaa'
-            },
-            {
-              'key': 507682339217408,
-              'formAttributeUuid': 'ba8b942b44ab4e29ba9a589f52a24807'
-            }],
-          'priorityList': [
-            1044706589786112, 
-            441190910533632
-          ]
-        };
+        return {};
       }
     }
   },
@@ -160,7 +140,7 @@ export default {
             'required'
           ],
           url: 'api/rest/cmdb/ci/list',
-          label: '数据来源',
+          label: this.$t('page.datasources'),
           type: 'select',
           textName: 'text',
           valueName: 'value',
@@ -175,7 +155,7 @@ export default {
             'required'
           ],
           url: 'api/rest/cmdb/ci/list',
-          label: '匹配映射',
+          label: this.$t('term.process.matchmapping'),
           type: 'slot'
         },
         {
