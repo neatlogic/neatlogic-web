@@ -8,6 +8,7 @@
     style="width: 100%"
   >
     <template v-slot:filterList>
+    
       <div
         v-for="(item, index) in filterList"
         :key="item.uuid"
@@ -39,7 +40,7 @@
         ></TsFormSelect>
         <span v-if="index != 0" class="text-action tsfont-trash-o pl-xs" @click.stop="deleteFilter(index)"></span>
       </div>
-      <span class="tsfont-plus text-href" @click="addFilter">添加映射</span>
+      <span class="tsfont-plus text-href" @click="() => addFilter()">{{ $t('dialog.title.addtarget',{'target':$t('page.mapping')}) }}</span>
     </template>
     <template v-slot:priorityList>
       <div v-if="$utils.isEmpty(priorityList)" style="height: 30px"></div>
@@ -94,20 +95,7 @@ export default {
         type: 'ci'
       },
       priorityList: [],
-      filterList: [
-        {
-          key: '',
-          keyConfig: {
-            url: 'api/rest/cmdb/ci/list',
-            textName: 'text',
-            valueName: 'value',
-            rootName: ''
-          },
-          formAttributeUuid: '',
-          formAttributeDataList: this.allFormitemList,
-          uuid: this.$utils.setUuid()
-        }
-      ],
+      filterList: [],
       cmdbDispatcherList: [
         {
           name: 'type',
@@ -135,7 +123,7 @@ export default {
           }
         },
         {
-          name: 'ciId',
+          name: 'dataSource',
           validateList: [
             'required'
           ],
@@ -147,14 +135,46 @@ export default {
           rootName: '',
           transfer: true,
           border: 'border',
-          firstSelect: false
-        },
+          firstSelect: false,
+          onChange: (value) => {
+            // 数据来源改变的时候
+            if (value) {
+              this.cmdbDispatcherList.push(...this.otherAttrFormList);
+              this.addFilter('', '', value); 
+              this.cmdbDispatcherList.forEach((item) => {
+                if (item.name == 'workerList') {
+                  // 处理人
+                  if (this.cmdbConfig.type == 'ci') {
+                    item.url = 'api/rest/cmdb/ci/listattr';
+                    item.textName = 'label';
+                    item.valueName = 'id';
+                    item.params = {ciId: value};
+                  } else if (this.cmdbConfig.type == 'customView') {
+                    item.url = 'api/rest/cmdb/customview/attr/get';
+                    item.textName = 'label';
+                    item.valueName = 'uuid';
+                    item.params = {id: this.value};
+                  }
+                }
+              });
+            } else {
+              this.cmdbDispatcherList.splice(2, this.cmdbDispatcherList.length);
+              let keyList = ['type', 'dataSource'];
+              for (let key in this.cmdbConfig) {
+                if (!keyList.includes(key)) {
+                  delete this.cmdbConfig[key];
+                }
+              }
+            }
+          }
+        }
+      ],
+      otherAttrFormList: [
         {
           name: 'filterList',
           validateList: [
             'required'
           ],
-          url: 'api/rest/cmdb/ci/list',
           label: this.$t('term.process.matchmapping'),
           type: 'slot'
         },
@@ -168,15 +188,17 @@ export default {
           value: '',
           border: 'border',
           multiple: true,
-          url: 'api/rest/cmdb/ci/list',
-          textName: 'text',
-          valueName: 'value',
+          url: '',
+          textName: '',
+          valueName: '',
           rootName: '',
           transfer: true,
           firstSelect: false,
           onChange: (selectedItem, item, itemList) => {
-            let nodeList = this.$utils.deepClone(itemList);// 深拷贝，不影响原有数据
-            this.priorityList = nodeList.map((item) => ({text: item.text, value: item.value}));
+            console.log('返回的值', item);
+            this.priorityList = [];
+            let nodeList = this.$utils.deepClone(item) || [];// 深拷贝，不影响原有数据
+            this.priorityList = nodeList;
           }
         },
         {
@@ -186,7 +208,8 @@ export default {
           ],
           label: this.$t('page.priority'),
           type: 'slot'
-        }]
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -208,21 +231,24 @@ export default {
       }
       this.filterList.splice(index, 1);
     },
-    addFilter(key = '', formAttributeUuid = '') {
+    addFilter(key = '', formAttributeUuid = '', dataSource = '') {
       let keyConfig;
       if (this.cmdbConfig.type == 'ci') {
         keyConfig = {
-          url: 'api/rest/cmdb/ci/list',
-          textName: 'text',
-          valueName: 'value',
-          rootName: ''
+          dynamicUrl: 'api/rest/cmdb/ci/listattr',
+          textName: 'label',
+          valueName: 'id',
+          params: {
+            ciId: dataSource || this.cmdbConfig.dataSource
+          }
         };
       } else if (this.cmdbConfig.type == 'customView') {
         keyConfig = {
-          url: 'api/rest/cmdb/customview/public/search',
+          dynamicUrl: 'api/rest/cmdb/customview/attr/get',
           textName: 'name',
           valueName: 'id',
-          rootName: 'tbodyList'
+          rootName: 'tbodyList',
+          params: {id: dataSource || this.cmdbConfig.dataSource}
         };
       }
       this.filterList.push({
@@ -281,29 +307,33 @@ export default {
         }
       };
       const selectedOption = options[selectedValue] || options.ci;
-      const filterCriteria = item => item && (item.name === 'ciId' || item.name === 'workerList');
+      const filterCriteria = item => item && (item.name === 'dataSource');
       this.cmdbDispatcherList.filter(filterCriteria)
         .forEach(item => Object.assign(item, selectedOption));
     },
     handleKeyDealDataByUrl(nodeList) {
       // 过滤模型属性被选中属性
+      let key = {
+        ci: 'id',
+        customView: 'uuid'
+      };
       let filterList = this.filterList.map((item) => item.key);
       nodeList.forEach((item) => {
-        if (item && item.value && filterList.includes(item.value)) {
+        if (item && item[key[this.cmdbConfig.type]] && filterList.includes(item[key[this.cmdbConfig.type]])) {
           item._disabled = true;
         }
       });
       return nodeList;
     },
-    filterFormAttributeDataList(nodeList, currentFormAttributeUuid) {
-      const filterListSet = new Set(this.filterList
-        .filter(item => item.formAttributeUuid && item.formAttributeUuid !== currentFormAttributeUuid)
-        .map(item => item.formAttributeUuid)
-      ); // new Set 去重唯一
-
+    filterFormAttributeDataList(nodeList) {
+      const filterListSet = this.filterList
+        .filter(item => item.formAttributeUuid)
+        .map(item => item.formAttributeUuid); // new Set 去重唯一
+      console.log('返回的内容', filterListSet);
       nodeList.forEach(item => {
-        if (item && item.uuid) {
-          item['_disabled'] = item['_disabled'] || filterListSet.has(item.uuid); // has对象中是否有一个值
+        if (item && item.uuid && filterListSet.includes(item.uuid)) {
+          item['_disabled'] = item['_disabled'] || filterListSet.includes(item.uuid); // has对象中是否有一个值
+          console.log('filterListSet.includes(item.uuid)', filterListSet.includes(item.uuid), item.uuid);
         }
       });
     },
@@ -311,8 +341,8 @@ export default {
       // 提供给外部使用
       let saveData = {
         ...this.cmdbConfig,
-        ciId: this.cmdbConfig.type === 'ci' ? this.cmdbConfig.ciId : '',
-        customViewId: this.cmdbConfig.type === 'customView' ? this.cmdbConfig.ciId : '',
+        ciId: this.cmdbConfig.type === 'ci' ? this.cmdbConfig.dataSource : '',
+        customViewId: this.cmdbConfig.type === 'customView' ? this.cmdbConfig.dataSource : '',
         filterList: this.filterList
           .filter((item) => item.key && item.formAttributeUuid)
           .map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
@@ -322,7 +352,7 @@ export default {
       if (saveData.type === 'ci') {
         delete saveData.customViewId;
       } else if (saveData.type === 'customView') {
-        delete saveData.ciId;
+        delete saveData.dataSource;
       }
 
       return saveData;
