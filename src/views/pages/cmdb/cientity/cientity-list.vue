@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="needCondition">
+    <div v-if="needCondition && !ciEntityData.error">
       <div class="clearfix mb-nm">
         <div v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" class="batch">
           <Dropdown trigger="click">
@@ -100,7 +100,9 @@
             </Col>
             <Col v-for="attr in globalAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey"><span class="tsfont-internet">{{ attr.label }}</span></Col>
+                <Col span="6" class="search-label text-grey">
+                  <span class="tsfont-internet">{{ attr.label }}</span>
+                </Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -345,8 +347,11 @@
     <div v-if="!ciEntityData.error && (!ciEntityData.tbodyList || ciEntityData.tbodyList.length == 0)">
       <NoData v-if="!isLoading"></NoData>
     </div>
-    <div v-else-if="ciEntityData.error" class="text-grey">
-      {{ ciEntityData.error }}
+    <div v-else-if="ciEntityData.error">
+      <Alert show-icon type="error">
+        {{ $t('page.exception') }}
+        <span slot="desc">{{ ciEntityData.error }}</span>
+      </Alert>
     </div>
     <RelCiEntityDialog
       v-if="isRelCientityDialogShow"
@@ -828,7 +833,7 @@ export default {
       });
     },
     async getGlobalAttrList() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
+      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
         this.globalAttrList = res.Return.tbodyList;
       });
     },

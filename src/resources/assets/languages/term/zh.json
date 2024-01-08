@@ -182,7 +182,18 @@
     "directoryname": "目录名称",
     "noaddcidirectory": "未添加模型目录，",
     "currentcatalogcitenodeletedescrition": "当前目录节点已被引用，请解除引用后删除",
-    "autoexec": "自动化操作"
+    "autoexec": "自动化操作",
+    "abstractciallowextend": "被继承模型只能是抽象模型",
+    "asyncpolicy": "同步策略",
+    "globaleditmodetip": "全局模式，不给属性代表删除",
+    "partialeditmodetip": "局部模式，不给属性则不改",
+    "treedraginfo": "拖动模型可以改变模型的顺序和从属关系，处于搜索状态时不可拖动",
+    "startci": "先选择起始模型",
+    "writeci": "写入模型",
+    "writecitip": "选择常量或通过表单映射的方式，指定数据写入的模型。若父模型为抽象模型，不支持添加配置项，需将数据写入子模型。",
+    "abstractcireltip": "首先配置父模型，完成父模型中公共属性的映射，并指定数据写入的模型。完成父模型配置后，返回当前界面，才可点击子模型，配置子模型中的非公共（非继承）属性映射。",
+    "subci": "子模型",
+    "selectrelpath": "选择关系路径"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1171,7 +1182,8 @@
     "formsubassembly": "表单子组件",
     "globalreadonly": "全局只读",
     "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态",
-    "iscannotdeletenode": "存在子节点不可删除"
+    "iscannotdeletenode": "存在子节点不可删除",
+    "requiredselectedtips": "若当前组件设置为必填，且过滤后仅剩余一个选项，系统会自动选中该选项"
   },
   "knowledge": {
     "document": "文档",

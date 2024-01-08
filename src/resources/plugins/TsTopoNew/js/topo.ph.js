@@ -411,9 +411,9 @@
                 d.removeEl.raise();
               }
               d.removeEl
-                .transition()
-                .duration(200)
-                .ease(d3.easeLinear)
+                //.transition()
+                //.duration(200)
+                //.ease(d3.easeLinear)
                 .attr('opacity', 1)
                 .attr('transform', `translate(${d.getWidth() + 8}, -8) scale(1)`);
             }
@@ -426,7 +426,7 @@
               }
               d.resetDeleteHandler = setTimeout(() => {
                 if (d.removeEl) {
-                  d.removeEl
+                  /*d.removeEl
                     .transition()
                     .duration(200)
                     .ease(d3.easeLinear)
@@ -437,9 +437,11 @@
                         d.removeEl.remove();
                         d.removeEl = null;
                       }
-                    });
+                    });*/
+                    d.removeEl.remove();
+                    d.removeEl = null;
                 }
-              }, 1000);
+              }, 3000);
             }
           });
       } else {
@@ -778,7 +780,7 @@
                 if (d.removeEl) {
                   d.removeEl.attr('opacity', '0');
                 }
-              }, 1000); //延时1000毫秒消失，方便点中删除按钮
+              }, 3000); //延时1000毫秒消失，方便点中删除按钮
             });
         }
       }

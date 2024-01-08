@@ -48,6 +48,7 @@
     <TsTable
       v-if="hasColumn"
       v-bind="tableData"
+      :loading="loading"
       :multiple="true"
       :fixedHeader="false"
       :canDrag="!disabled && !readonly && config.isCanDrag"
@@ -115,7 +116,8 @@ export default {
       rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
       maxSize: 1024 * 10,
       isShowExportExcelTemplate: true,
-      isShowExportExcel: true
+      isShowExportExcel: true,
+      loading: false
     };
   },
   beforeCreate() {},
@@ -527,20 +529,22 @@ export default {
         desc: `${file.name}`
       });
     },
-    async handleBeforeUpload(file) {
+    handleBeforeUpload(file) {
       const workbook = new ExcelJS.Workbook();
       workbook.xlsx.load(file).then((workbook) => {
         workbook?.eachSheet((sheet, id) => {
-          sheet?.eachRow((row, rowIndex) => {
+          sheet?.eachRow(async(row, rowIndex) => {
             if (rowIndex != 1) {
               let rowValue = {};
               let rowValuesList = this.$utils.deepClone(row.values);
               rowValuesList.splice(0, 1); // 删除excel第一列的序号
-              this.tableData.theadList.forEach((item, tIndex) => {
-                if (item.key != 'selection' && item.key != 'number') {
-                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(item.key, rowValuesList[tIndex - 2]));
+              for (let tIndex = 0; tIndex < this.tableData.theadList.length; tIndex++) {
+                if (this.tableData.theadList[tIndex] && this.tableData.theadList[tIndex].key != 'selection' && this.tableData.theadList[tIndex].key != 'number') {
+                  let value = await this.byComponentTypeSetValue(this.tableData.theadList[tIndex].key, rowValuesList[tIndex - 2]);
+                  this.loading = false;
+                  this.$set(rowValue, [this.tableData.theadList[tIndex].key], value);
                 }
-              });
+              }
               let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
               if (!this.$utils.isEmpty(this.tableData.tbodyList[rowIndex - 2])) {
                 // 不为空时，修改数组对象里面的值
@@ -552,29 +556,40 @@ export default {
             }
           });
         });
-        this.$Message.success(this.$t('message.importsuccess'));
       });
     },
-    byComponentTypeSetValue(uuid, value) {
+    async byComponentTypeSetValue(uuid, value) {
       // 根据组件的类型，设置回显值
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
       let {config = {}, handler = ''} = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
-        let {dataSource = '', isMultiple = false} = config || {};
+        let {dataSource = '', isMultiple = false, matrixUuid = '', mapping = {}} = config || {};
         if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
         // 矩阵
           resultValue = [];
-          let valueList = [];
-          if (typeof value == 'string') {
-            valueList = value.split(',');
-            valueList.forEach((valueItem) => {
-              if (valueItem) {
-                resultValue.push({text: valueItem, value: valueItem});
+          if (matrixUuid && !this.$utils.isEmpty(mapping) && mapping.text && mapping.value) {
+            this.loading = true;
+            let params = {
+              searchParamList: [
+                {
+                  matrixUuid: matrixUuid,
+                  textField: mapping.text,
+                  valueField: mapping.value,
+                  defaultValue: value instanceof Array ? value : typeof value == 'string' ? value.split(',') : [value] // 逗号处理多个选项时传递的值
+                }
+              ]
+            };
+            await this.$api.framework.form.searchMatrixColumnData(params).then((res) => {
+              if (res && res.Status == 'OK') {
+                let tbodyList = res.Return && res.Return.tbodyList || [];
+                tbodyList.forEach((item) => {
+                  if (item && item.dataList) {
+                    resultValue.push(...item.dataList);
+                  }
+                });
               }
             });
-          } else {
-            resultValue.push({text: valueItem, value: valueItem});
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];

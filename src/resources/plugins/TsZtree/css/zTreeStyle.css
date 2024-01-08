@@ -81,7 +81,8 @@
 
 .ztree li a {
 	display: inline-block;
-	width: calc(100% - 30px);
+	/* width: calc(100% - 30px); */
+	/* 解决超出不隐藏，把鼠标经过删除图标放在最后 */
 	height: 26px;
 	line-height: 26px;
 	padding: 0 3px 0 0;
@@ -477,13 +478,13 @@ ul.ztree.zTreeDragUL>li a {
 }
 
 .ztree.hoverDom a[id^="ztree_"]>span[id^="ztree_"] {
-	max-width: 80%;
+	/* max-width: 80%; */
+	/* 解决鼠标经过后，删除图标放在最后问题 */
 }
 
 .ztree a[id^="ztree_"]>span[id^="ztree_"] {
 	display: inline-block;
-	overflow: hidden;
-	/* 把注释打开，解决超出隐藏，没有生效的问题 */
+	/*overflow: hidden;*/
 	text-overflow: ellipsis;
 	word-break: break-all;
 	white-space: nowrap;

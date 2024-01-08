@@ -4,7 +4,7 @@
 
 <script>
 import '@/resources/assets/js/jquery-1.11.1.js';
-import '@/resources/plugins/TsZtree/js/jquery.ztree.all.min.js';
+import '@/resources/plugins/TsZtree/js/jquery.ztree.all.js';
 export default {
   name: 'TsZtree',
   components: {},
@@ -19,12 +19,17 @@ export default {
     hoverDomList: { type: Array },
     onClick: { type: Function }, //点击事件
     onDrop: { type: Function }, //拖放事件
+    beforeExpand: { type: Function }, //展开前
+    onExpand: { type: Function }, //展开事件
     value: { type: [String, Number] }, //默认选择节点
     enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
     beforeDrop: { type: Function }, // 拖放之前事件
+    beforeDrag: { type: Function },
     urlKey: { type: String, default: 'url' }, //节点链接的目标URL的属性名称, 特殊用途：当后台数据只能生成 url 属性，又不想实现点击节点跳转的功能时，可以直接修改此属性为其他不存在的属性名称,
     nodeClasses: { type: Function }, // 使用 className 设置文字样式，只针对 zTree 在节点上显示的<A>对象。便于 css 与 js 解耦 默认值：{add: [], remove: []} add表示新增类名，remove表示移除类名
-    beforeClick: {type: Function} //返回true或者false，判断是否可以点击
+    beforeClick: { type: Function }, //返回true或者false，判断是否可以点击
+    renderName: { type: Function }, //自定义名称
+    renderTitle: { type: Function } //自定义title
   },
   data() {
     return {
@@ -70,19 +75,26 @@ export default {
           },
           key: {
             url: this.urlKey
+          },
+          render: {
+            name: this.renderName,
+            title: this.renderTitle
           }
         },
         callback: {
           beforeDrop: this.beforeDrop,
+          beforeDrag: this.beforeDrag,
+          beforeExpand: this.beforeExpand,
+          onExpand: this.onExpand,
           onDrop: (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
             if (this.onDrop) {
               this.onDrop(this.zTreeObj, treeNodes, targetNode, moveType, isCopy);
             }
           },
           beforeClick: (treeId, treeNode, clickFlag) => {
-            if(this.beforeClick) {
-               return this.beforeClick(this.zTreeObj, treeNode);
-            }else {
+            if (this.beforeClick) {
+              return this.beforeClick(this.zTreeObj, treeNode);
+            } else {
               const selectedList = this.zTreeObj.getSelectedNodes();
               if (!selectedList.includes(treeNode)) {
                 return true;
@@ -151,9 +163,13 @@ export default {
             console.error(error);
           });
       }
-      this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), this.defaultSetting, nodes);
+      this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), Object.assign(this.defaultSetting, this.setting), nodes);
       this.zTreeObj.expandAll(true);
       this.value && this.selectedNodeById(this.value);
+      this.$emit('ready', this.zTreeObj);
+    },
+    toggleExpand(flag) {
+      this.zTreeObj.expandAll(flag);
     },
     selectedNodeById(id) {
       if (id != null && typeof id != 'undefined' && this.zTreeObj) {

@@ -182,7 +182,18 @@
     "directoryname": "Catalog Name",
     "noaddcidirectory": "No model directory added,",
     "currentcatalogcitenodeletedescrition": "The current directory node has been referenced. Please remove the reference and delete it",
-    "autoexec": "Automated operations"
+    "autoexec": "Automated operations",
+    "abstractciallowextend": "Inherited models can only be abstract models",
+    "asyncpolicy": "Synchronization strategy",
+    "globaleditmodetip": "Global mode, do not delete attribute representatives",
+    "partialeditmodetip": "Local mode, do not change if attribute is not given",
+    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode",
+    "startci": "Select the starting model first",
+    "writeci": "Write model",
+    "writecitip": "Select constants or specify the model for data writing through form mapping. If the parent model is an abstract model and does not support adding configuration items, data needs to be written into the child model.",
+    "abstractcireltip": "Firstly, configure the parent model, complete the mapping of common attributes in the parent model, and specify the model for data writing. After completing the configuration of the parent model, return to the current interface before clicking on the sub model to configure the mapping of non-public (non inherited) attributes in the sub model.",
+    "subci": "Submodel",
+    "selectrelpath": "Select relationship path"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1172,7 +1183,8 @@
     "formsubassembly": "List subcomponents",
     "globalreadonly": "Global read-only",
     "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state",
-    "iscannotdeletenode": "There are child nodes that cannot be deleted"
+    "iscannotdeletenode": "There are child nodes that cannot be deleted",
+    "requiredselectedtips": "If the current component is set as mandatory and only one option remains after filtering, the system will automatically select that option"
   },
   "knowledge": {
     "document": "Document",

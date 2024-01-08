@@ -117,6 +117,31 @@ export default {
         }
       }
       return errorList;
+    },
+    validConfig() {
+      const errorList = [];
+      if (this.$refs) {
+        for (let name in this.$refs) {
+          if (this.$refs[name]) {
+            let formitem = this.$refs[name];
+            if (this.$refs[name] instanceof Array) {
+              formitem = this.$refs[name][0];
+            } else {
+              formitem = this.$refs[name];
+            }
+            if (formitem) {
+              const err = formitem.validConfig();
+              if (err && err.length > 0) {
+                errorList.push({
+                  uuid: formitem.formItem.uuid,
+                  errorList: err
+                });
+              }
+            }
+          }
+        }
+      }
+      return errorList;
     }
   },
   filter: {},

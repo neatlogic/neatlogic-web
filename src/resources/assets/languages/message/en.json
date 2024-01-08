@@ -40,7 +40,7 @@
   "cmdb": {
     "keytype": "The key type will be displayed in the leftmost menu",
     "topotype": "This type will be displayed in the topology map after it is turned on",
-    "editrelpath": "Click on the model to edit the relationship path",
+    "editrelpath": "Click the blue node to set whether the data of this node is displayed.",
     "selectci": "Please select the associated model",
     "topoerror": "The current model data cannot use {target} to generate a topology map, please change to another layout.",
     "notopo": "The topology map cannot be displayed, please check whether the model type of the current configuration item allows displaying the topology.",

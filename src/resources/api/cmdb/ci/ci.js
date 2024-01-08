@@ -159,6 +159,15 @@ const ci = {
   },
   rebuildRelativeRel(relId) {
     return axios.post('/api/rest/cmdb/rel/relative/rebuild', { relId: relId });
+  },
+  getCiTree() {
+    return axios.post('/api/rest/cmdb/ci/tree', {});
+  },
+  saveCiTreeItem(params) {
+    return axios.post('/api/rest/cmdb/ci/tree/save', params);
+  },
+  getCiForprocessmapping(params) { //获取模型信息（流程图cmdb节点关系映射专用）
+    return axios.post('/api/rest/cmdb/ci/get/forprocessmapping', params);
   }
 };
 

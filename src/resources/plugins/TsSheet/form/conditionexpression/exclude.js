@@ -15,7 +15,7 @@ export default (currentValue, oldValue, conditionValue) => {
       if (conditionValue.filter(item => valueList.some(c => c === item)).length == 0) {
         isExclude = true;
       }
-    } else if (typeof currentValue == 'string' && conditionValue.indexOf(currentValue) == -1) {
+    } else if ((typeof currentValue == 'string' || typeof currentValue == 'number') && conditionValue.indexOf(currentValue) == -1) {
       isExclude = true;
     } else if (typeof currentValue === 'object' && conditionValue.indexOf(currentValue.value) == -1) {
       isExclude = true;
