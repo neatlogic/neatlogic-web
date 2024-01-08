@@ -330,15 +330,9 @@ export default {
     valid() {
       // 校验
       let isValid = true;
-      let keyFormList = this.$refs.keyForm;
-      let formAttributeList = this.$refs.formAttribute;
-      for (let key = 0; key < keyFormList.length; key++) {
-        if (keyFormList[key] && keyFormList[key].valid && !keyFormList[key].valid()) {
-          isValid = false;
-        }
-      }
-      for (let key = 0; key < formAttributeList.length; key++) {
-        if (formAttributeList[key] && formAttributeList[key].valid && !formAttributeList[key].valid()) {
+      let formList = [this.$refs.keyForm, this.$refs.formAttribute];
+      for (let key = 0; key < formList.length; key++) {
+        if (formList[key] && formList[key].valid && !formList[key].valid()) {
           isValid = false;
         }
       }
