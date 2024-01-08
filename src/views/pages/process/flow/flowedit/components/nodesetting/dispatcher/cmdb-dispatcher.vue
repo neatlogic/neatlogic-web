@@ -45,9 +45,9 @@
       <div v-if="$utils.isEmpty(priorityList)" style="height: 30px"></div>
       <VueDraggable
         v-else
-        :list="priorityList"
+        v-model="priorityList"
         handle=".tsfont-option-vertical"
-        @change="handleChangeDrag($event)"
+        animation="300"
       >
         <transition-group>
           <div
@@ -57,13 +57,11 @@
             style="width: 100%"
           >
             <span class="bg-grey radius-xs overflow" style="max-width: 100%;display: inline-block;">
-              <span class="tsfont-option-vertical"></span>
-              {{ item.text }}
+              <span class="tsfont-option-vertical">{{ item.text }}</span>
             </span>
           </div>
         </transition-group>
       </VueDraggable>
-     
     </template>
   </TsForm>
 </template>
@@ -307,10 +305,6 @@ export default {
       this.cmdbDispatcherList.filter(filterCriteria)
         .forEach(item => Object.assign(item, selectedOption));
     },
-    handleChangeDrag(event) {
-      event.stopPropagation();
-      return false;
-    },
     handleKeyDealDataByUrl(nodeList) {
       // 过滤模型属性被选中属性
       let filterList = this.filterList.map((item) => item.key);
@@ -342,7 +336,7 @@ export default {
         filterList: this.filterList
           .filter((item) => item.key && item.formAttributeUuid)
           .map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
-        priorityList: this.priorityList.map((item) => { item.value; }) // 只存储值给后端
+        priorityList: this.priorityList.filter((item) => !this.$utils.isEmpty(item.value)).map((item) => item.value) // 只存储值给后端
       };
 
       if (saveData.type === 'ci') {
