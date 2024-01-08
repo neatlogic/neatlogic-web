@@ -336,6 +336,9 @@ export default {
         }
         if (this.isEdit) {
           this.$set(data, 'id', this.scriptId);
+          if (!this.$utils.isEmpty(this.scriptConfig.versionVo) && this.scriptConfig.versionVo.id) {
+            this.$set(data, 'versionId', this.scriptConfig.versionVo.id);
+          }
         } else {
           this.$set(data, 'versionId', this.versionId);
         }
@@ -576,9 +579,9 @@ export default {
       paramList.push(...inputParamList, ...outputParamList);
       let lineList = [];
       if (this.versionVo.lineList && this.versionVo.lineList.length > 0) {
-        lineList = this.versionVo.lineList.map(i => {
-          return { content: i.content };
-        });
+        lineList = this.versionVo.lineList
+          .filter(item => !this.$utils.isEmpty(item.content)) // 过滤content内容不为空的数据
+          .map(item => ({ content: item.content })); // 提取content字段的值
       }
       if (inputParamList.length > 0) {
         inputParamList.forEach(i => {
@@ -604,13 +607,15 @@ export default {
         execMode: this.scriptConfig.execMode,
         typeId: this.scriptConfig.typeId,
         riskId: this.scriptConfig.riskId,
+        isLib: this.scriptConfig.isLib,
+        useLib: this.scriptConfig.useLib,
+        id: this.scriptConfig.id,
         title: this.title,
         paramList: paramList,
         // encoding: this.versionVo.encoding,
         parser: this.versionVo.parser,
         lineList: lineList,
         catalogId: this.scriptConfig.catalogId // 工具目录Id
-       
       };
       //自由参数
       if (this.versionVo.argument && !this.$utils.isEmpty(this.versionVo.argument)) {
@@ -645,6 +650,9 @@ export default {
   beforeRouteLeave(to, from, next, url) {
     let data = this.saveData();
     if (data) {
+      console.log('xxx', this.isEdit, this.$utils.isSame(this.initData, data), this.typeDialog);
+      console.log('初始值', JSON.stringify(this.initData));
+      console.log('之后值', JSON.stringify(data));
       if (!this.isEdit || this.$utils.isSame(this.initData, data) || this.typeDialog == 'delete') {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
