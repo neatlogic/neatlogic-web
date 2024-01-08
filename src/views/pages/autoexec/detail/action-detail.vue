@@ -364,14 +364,14 @@ export default {
         },
         opType: {
           type: 'radio',
-          label: this.$t('term.autoexec.combop.optype'),
+          label: this.$t('page.actiontype'),
           value: '',
           dataList: [],
           validateList: ['required'],
           onChange: (value, opt) => {
             _this.opTypeName = opt.text;
           },
-          tooltip: this.$t('term.autoexec.combop.editinfo.optypetip'),
+          tooltip: this.$t('page.autoexeccombopeditinfooptypetip'),
           isHidden: true
         },
         typeId: {

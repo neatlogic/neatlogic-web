@@ -220,7 +220,7 @@ export default {
         },
         opType: {
           type: 'radio',
-          label: this.$t('page.combop.optype'),
+          label: this.$t('page.actiontype'),
           value: '',
           dataList: [],
           validateList: ['required']

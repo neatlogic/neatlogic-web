@@ -53,7 +53,7 @@ export default {
           name: 'opTypeName',
           value: '',
           maxlength: 50,
-          label: this.$t('page.combop.optype'),
+          label: this.$t('page.actiontype'),
           width: '100%',
           readonly: true,
           isHidden: this.isResourcecenterAuth
