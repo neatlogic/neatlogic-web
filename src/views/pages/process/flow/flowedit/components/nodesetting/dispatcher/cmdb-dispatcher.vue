@@ -8,7 +8,7 @@
       v-else
       ref="form"
       v-model="cmdbConfig"
-      :item-list="cmdbDispatcherList"
+      :item-list="formItemList"
       labelPosition="left"
       :labelWidth="80"
       style="width: 100%"
@@ -104,7 +104,7 @@ export default {
       },
       priorityList: [],
       filterList: [],
-      cmdbDispatcherList: [
+      formItemList: [
         {
           name: 'type',
           validateList: ['required'],
@@ -128,7 +128,7 @@ export default {
             this.filterList = [];
             this.handleTypeById(selectedValue);
             let keyList = ['type', 'dataSource'];
-            this.cmdbDispatcherList = this.cmdbDispatcherList.filter(item => {
+            this.formItemList = this.formItemList.filter(item => {
               return item && item.name && keyList.includes(item.name);
             });
           }
@@ -151,7 +151,7 @@ export default {
               this.handleWorkerList(value);
               this.addFilter('', '', value);
             } else {
-              this.cmdbDispatcherList.splice(1, this.cmdbDispatcherList.length - 1);
+              this.formItemList.splice(1, this.formItemList.length - 1);
               let keyList = ['type', 'dataSource'];
               for (let key in this.cmdbConfig) {
                 if (!keyList.includes(key)) {
@@ -183,10 +183,8 @@ export default {
           rootName: '',
           transfer: true,
           firstSelect: false,
-          onChange: (selectedItem, item, itemList) => {
-            this.priorityList = [];
-            let nodeList = this.$utils.deepClone(item) || []; // 深拷贝，不影响原有数据
-            this.priorityList = nodeList;
+          onChange: (selectedItem, itemList) => {
+            this.priorityList = this.$utils.deepClone(itemList) || []; // 深拷贝，不影响原有数据
           }
         },
         {
@@ -262,7 +260,7 @@ export default {
         workerList: workerList || [],
         dataSource: ciId || customViewId
       };
-      if (this.cmdbConfig.type == 'ci') {
+      if (this.cmdbConfig.type == 'ci' && !this.$utils.isEmpty(priorityList)) {
         await this.$api.cmdb.ci.searchCiListAttr({ defaultValue: priorityList || [], ciId: this.cmdbConfig.dataSource }).then(res => {
           tbodyList = res.Return || [];
           tbodyList.forEach((item) => {
@@ -274,7 +272,7 @@ export default {
             }
           });
         });
-      } else if (this.cmdbConfig.type == 'customView') {
+      } else if (this.cmdbConfig.type == 'customView' && !this.$utils.isEmpty(priorityList)) {
         await this.$api.cmdb.customview.searchCustomAttrData({ defaultValue: priorityList || [], id: this.cmdbConfig.dataSource }).then(res => {
           tbodyList = res.Return?.attrList || [];
           tbodyList.forEach((item) => {
@@ -296,12 +294,12 @@ export default {
         }
       });
       // 根据优先级idList拿到对应的text，然后根据优先级排序，设置用户拖拽前的数据
-      this.priorityList = filterPriorityList.sort((a, b) => priorityList.indexOf(a.value) - priorityList.indexOf(b.value))
+      this.priorityList = this.$utils.isEmpty(workerList) ? [] : filterPriorityList.sort((a, b) => priorityList.indexOf(a.value) - priorityList.indexOf(b.value))
         .map(item => ({ ...item })); // 采用浅拷贝的方式，避免 filterPriorityList 中的元素被修改
       this.loadingShow = false;
     },
     handleWorkerList(value) {
-      let formItemList = [...this.cmdbDispatcherList, ...this.otherAttrFormList];
+      let formItemList = [...this.formItemList, ...this.otherAttrFormList];
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
@@ -319,7 +317,7 @@ export default {
           }
         }
       });
-      this.cmdbDispatcherList = formItemList;
+      this.formItemList = formItemList;
     },
     handleTypeById(selectedValue) {
       // 根据配置项类型选择不同的数据来源
@@ -339,7 +337,7 @@ export default {
       };
       const selectedOption = options[selectedValue] || options.ci;
       const filterCriteria = item => item && item.name === 'dataSource';
-      this.cmdbDispatcherList.filter(filterCriteria).forEach(item => Object.assign(item, selectedOption));
+      this.formItemList.filter(filterCriteria).forEach(item => Object.assign(item, selectedOption));
     },
     handleKeyDealDataByUrl(nodeList) {
       // 过滤模型属性被选中属性
