@@ -42,7 +42,6 @@
                 <TsFormRadio
                   v-model="ciData.editMode"
                   :dataList="editModeList"
-                  :disabled="isInherit"
                   @on-change="(val)=>{
                     changeEditMode(val)
                   }"
@@ -68,14 +67,13 @@
                   <TsFormRadio
                     v-model="ciData.createPolicy"
                     :dataList="ciEntityQueue.length <= 1?createPolicyDataList:createRelDataList"
-                    :disabled="isInherit"
                     @on-change="(val)=>{
                       changePolicy(val)
                     }"
                   ></TsFormRadio>
                 </TsFormItem>
                 <TsFormItem
-                  v-if="ciEntityQueue.length > 1 && !currentCiEntity.isChildren"
+                  v-if="ciEntityQueue.length > 1"
                   :label="$t('term.cmdb.relaction')"
                   labelPosition="left"
                   required
@@ -83,7 +81,6 @@
                   <TsFormRadio
                     :dataList="actionDataList"
                     :value="ciData.action"
-                    :disabled="isInherit"
                     @on-change="(val)=>{
                       setConfig(val,'action')
                     }"
@@ -98,7 +95,7 @@
                           :value="ciData.batchDataSource && ciData.batchDataSource.type"
                           :dataList="batchComponentList"
                           :validateList="validateList"
-                          :disabled="isDisabledType || isInherit"
+                          :disabled="isDisabledType"
                           transfer
                           @on-change="(val)=>{
                             setBatchDataSource(val,'type')
@@ -116,7 +113,6 @@
                           :firstSelect="false"
                           transfer
                           border="border"
-                          :disabled="isInherit"
                           @on-change="(val)=>{
                             setBatchDataSource(val,'attributeUuid')
                           }"
@@ -129,7 +125,6 @@
                       ref="filterList"
                       :defaultFilterList="ciData.batchDataSource && ciData.batchDataSource.filterList"
                       :dataList="getAttrList(ciData.batchDataSource)"
-                      :disabled="isInherit"
                       @setConfig="(val)=> setBatchDataSource(val,'filterList')"
                     ></FilterList>
                   </TsFormItem>
@@ -142,7 +137,6 @@
                   :ciData="ciData"
                   :subFormComponentList="getTreeSubFormComponent()"
                   :tableComponentAttrList="getTableAttrList()"
-                  :saveCiEntityMap="saveCiEntityMap"
                   @new="addNewCiEntity"
                   @edit="editNewCiEntity"
                   @remove="removeNewCiEntity"
@@ -271,9 +265,7 @@ export default {
           value: 'partial',
           description: this.$t('term.cmdb.partialeditmodetip')
         }
-      ],
-      isInherit: false, //判断子模型需要继承根模型的策略
-      subCiUuidList: [] //子模型临时数据(标识)
+      ]
     };
   },
   beforeCreate() {},
@@ -303,9 +295,7 @@ export default {
         this.currentFormItemList = this.$utils.deepClone(this.allFormitemList);
       }
     },
-    initValue(cientity, preCiEntity, rel) {
-      this.subCiUuidList = rel && rel.subCiUuidList || [];
-      this.isInherit = false;
+    initValue(cientity, preCiEntity) {
       let findItem = this.saveCiEntityMap[cientity.uuid];
       if (findItem) {
         Object.keys(findItem).forEach(key => {
@@ -341,29 +331,6 @@ export default {
             this.$set(cientity.allAttrEntityData[key], 'valueList', []);
           }
         });
-      }
-      //子模型
-      if (rel && rel._rootId) {
-        if (rel.isChildren) {
-          //初始模型是抽象模型
-          let rootConfig = this.ciEntityQueue[0];
-          if (rootConfig) {
-            this.$set(cientity, 'action', rootConfig.action);
-            this.$set(cientity, 'batchDataSource', rootConfig.batchDataSource);
-            this.$set(cientity, 'editMode', rootConfig.editMode);
-            this.$set(cientity, 'createPolicy', rootConfig.createPolicy);
-          }
-          this.isInherit = true;
-        } else if (rel._rootId != cientity.ciId) {
-          if (this.saveCiEntityMap[rel._rootUuid]) {
-            let rootConfig = this.saveCiEntityMap[rel._rootUuid];
-            this.$set(cientity, 'action', rootConfig.action);
-            this.$set(cientity, 'batchDataSource', rootConfig.batchDataSource);
-            this.$set(cientity, 'editMode', rootConfig.editMode);
-            this.$set(cientity, 'createPolicy', rootConfig.createPolicy);
-          }
-          this.isInherit = true;
-        }
       }
     },
     okDialog() {
@@ -406,9 +373,6 @@ export default {
               allAttrEntityData: {},
               isAbstract: ci.isAbstract
             };
-            if (ci.isAbstract) {
-              this.$set(cientity, 'children', []);
-            }
             cientity['_elementList'] = this.getElementByCiId(ci);
             cientity['_uniqueAttrList'] = ci.uniqueAttrIdList;
             cientity['_description'] = this.descriptionConfig;
@@ -456,44 +420,43 @@ export default {
       });
       return elementList;
     },
-    addNewCiEntity(item) {
+    addNewCiEntity(type, item) {
       if (!this.valid()) {
         return;
       }
       this.loadingShow = true;
-      const rel = item;
-      const ciId = rel.ciId;
-      const relId = rel._relId;
-      const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
-      const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
-      const rootId = rel._rootId || null;
-      this.$api.cmdb.ci.getCiForprocessmapping({id: ciId, rootId: rootId}).then(res => {
-        if (res.Return) {
-          const ci = res.Return;
-          //获取当前配置项数据
-          const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
-          const newCiEntity = {
-            uuid: uuid,
-            _relId: relId, //记录来自哪个关系，自动填上配置项
-            _direction: rel.direction, //记录关系方向
-            ciId: ciId,
-            ciName: ci.name,
-            ciLabel: ci.label,
-            ciIcon: ci.icon,
-            editMode: 'global',
-            createPolicy: 'single',
-            batchDataSource: {},
-            action: 'append',
-            relEntityData: {},
-            _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
-            allAttrEntityData: {}, //所有的属性
-            isAbstract: ci.isAbstract,
-            isChildren: !!rel.isChildren
-          };
-          newCiEntity['_elementList'] = this.getElementByCiId(ci);
-          newCiEntity['_uniqueAttrList'] = ci.uniqueAttrIdList;
-          newCiEntity['_description'] = this.descriptionConfig;
-          if (!rel.isChildren) {
+      if (type === 'rel') {
+        const rel = item;
+        const ciId = rel.ciId;
+        const relId = rel._relId;
+        const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
+        const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
+        this.$api.cmdb.ci.getCiForprocessmapping({id: ciId}).then(res => {
+          if (res.Return) {
+            const ci = res.Return;
+            //获取当前配置项数据
+            const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+            const newCiEntity = {
+              uuid: uuid,
+              _relId: relId, //记录来自哪个关系，自动填上配置项
+              _direction: rel.direction, //记录关系方向
+              ciId: ciId,
+              rootCiId: this.propRootCiId,
+              ciName: ci.name,
+              ciLabel: ci.label,
+              ciIcon: ci.icon,
+              editMode: 'global',
+              createPolicy: 'single',
+              batchDataSource: {},
+              action: 'append',
+              relEntityData: {},
+              _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
+              allAttrEntityData: {}, //所有的属性
+              isAbstract: ci.isAbstract
+            };
+            newCiEntity['_elementList'] = this.getElementByCiId(ci);
+            newCiEntity['_uniqueAttrList'] = ci.uniqueAttrIdList;
+            newCiEntity['_description'] = this.descriptionConfig;
             newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
               valueList: [
                 {
@@ -504,17 +467,15 @@ export default {
                 }
               ]
             };
+            this.initValue(newCiEntity, currentCiEntity);
+            this.ciData = newCiEntity;
+            this.ciEntityQueue.push(newCiEntity);
+            this.updateCurrentFormItemList();
           }
-          this.initValue(newCiEntity, currentCiEntity, rel);
-          this.ciData = newCiEntity;
-          this.ciEntityQueue.push(newCiEntity);
-          if (!rel.isChildren) {
-            this.updateCurrentFormItemList(rel);
-          }
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+        }).finally(() => {
+          this.loadingShow = false;
+        });
+      } 
     },
     removeNewCiEntity(item) {
       if (item._relId) { //关系删除
@@ -525,7 +486,6 @@ export default {
       }
     },
     back() {
-      this.isInherit = false;
       const cientity = this.ciEntityQueue.pop();
       if (cientity._isnew) {
         this.$set(this.saveCiEntityMap, cientity.uuid, this.tmpCiEntityData);
@@ -557,7 +517,7 @@ export default {
           this.updateCurrentFormItemList();
         } else {
           //需要通过接口获取数据回显
-          this.addNewCiEntity(rel);
+          this.addNewCiEntity('rel', rel);
         }
       }
     },
@@ -638,7 +598,6 @@ export default {
       if (!this.valid()) {
         return false; 
       }
-      this.isInherit = false;
       //队列只剩一个配置项时才写入数据库
       if (this.ciEntityQueue.length > 1) {
         const cientity = this.ciEntityQueue.pop();
@@ -660,12 +619,6 @@ export default {
               currentCiEntity['relEntityData']['rel' + cientity._direction + '_' + cientity._relId] = { valueList: [] };
             }
             currentCiEntity['relEntityData']['rel' + cientity._direction + '_' + cientity._relId]['valueList'].push(newRelEntity);
-          } else if (this.currentCiEntity.children) {
-            currentCiEntity.children.push({
-              ciEntityUuid: cientity.uuid,
-              ciEntityName: cientity.ciLabel,
-              ciId: cientity.ciId
-            });
           }
         }
         //标记为已保存的新配置项，用于点击“取消”后判断是否需要删除数据
@@ -673,14 +626,8 @@ export default {
         this.saveCiEntityMap[cientity.uuid] = cientity;
         this.ciData = this.ciEntityQueue[this.ciEntityQueue.length - 1];
         this.updateCurrentFormItemList();
-        this.updateSubCiData(cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
-        if (!this.$utils.isEmpty(cientity.children)) {
-          //初始模型为抽象模型
-          this.subCiUuidList = this.$utils.mapArray(cientity.children, 'ciEntityUuid');
-          this.updateSubCiData(cientity);
-        }
         this.saveCiEntityMap[cientity.uuid] = cientity;
         const ciEntityList = [];
         for (let uuid in this.saveCiEntityMap) {
@@ -707,10 +654,6 @@ export default {
         };
         if (item.hasOwnProperty('isStart')) {
           config.isStart = item.isStart;
-          //抽象模型的子模型
-          if (item.hasOwnProperty('children')) {
-            config.children = item.children;
-          }
         }
         if (item.hasOwnProperty('action')) {
           config.action = item.action;
@@ -755,7 +698,7 @@ export default {
       if (this.currentCiEntity) {
         if (this.currentCiEntity.batchDataSource) {
           if (this.currentCiEntity.batchDataSource.type === 'formTableComponent') {
-            if (!this.isInherit && this.preCiEntity && this.preCiEntity.batchDataSource && this.preCiEntity.batchDataSource.attributeUuid) {
+            if (this.preCiEntity && this.preCiEntity.batchDataSource && this.preCiEntity.batchDataSource.attributeUuid) {
               let findTable = this.allFormitemList.find(item => item.uuid === this.preCiEntity.batchDataSource.attributeUuid);
               if (findTable && findTable.config && findTable.config.dataConfig) {
                 findTable.config.dataConfig.forEach(d => {
@@ -973,36 +916,6 @@ export default {
       let ciEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
       if (ciEntity) {
         this.$set(ciEntity, 'editMode', val);
-      }
-    },
-    updateSubCiData(cientity) { 
-      //抽象模型修改遍历对象的时候，子模型，映射到旧的遍历对象的哪些属性，全部清空
-      if (!this.$utils.isEmpty(this.subCiUuidList)) {
-        this.subCiUuidList.forEach(uuid => {
-          if (this.saveCiEntityMap[uuid]) {
-            this.$set(this.saveCiEntityMap[uuid], 'editMode', cientity.editMode);
-            this.$set(this.saveCiEntityMap[uuid], 'action', cientity.action);
-            if (cientity.createPolicy != this.saveCiEntityMap[uuid].createPolicy ||
-            (!this.$utils.isEmpty(cientity.batchDataSource) && (cientity.batchDataSource.type != this.saveCiEntityMap[uuid].batchDataSource.type) || (cientity.batchDataSource.attributeUuid != this.saveCiEntityMap[uuid].batchDataSource.attributeUuid))
-            ) {
-              if (!this.$utils.isEmpty(this.saveCiEntityMap[uuid].allAttrEntityData)) {
-                Object.keys(this.saveCiEntityMap[uuid].allAttrEntityData).forEach(key => {
-                  let config = this.saveCiEntityMap[uuid].allAttrEntityData[key];
-                  if (config.mappingMode === 'formTableComponent' || config.mappingMode === 'formSubassemblyComponent') {
-                    this.$set(config, 'valueList', []);
-                  }
-                });
-              } else if (!this.$utils.isEmpty(this.saveCiEntityMap[uuid].mappingList)) {
-                let mappingList = this.saveCiEntityMap[uuid].mappingList.filter(item => {
-                  return item.mappingMode !== 'formTableComponent' && item.mappingMode !== 'formSubassemblyComponent';
-                });
-                this.$set(this.saveCiEntityMap[uuid], 'mappingList', mappingList);
-              }
-            }
-            this.$set(this.saveCiEntityMap[uuid], 'createPolicy', cientity.createPolicy);
-            this.$set(this.saveCiEntityMap[uuid], 'batchDataSource', cientity.batchDataSource);
-          }
-        });
       }
     }
   },

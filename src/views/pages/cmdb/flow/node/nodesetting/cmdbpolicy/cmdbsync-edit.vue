@@ -11,21 +11,6 @@
       :tableComponentAttrList="tableComponentAttrList"
       :subFormComponentList="subFormComponentList"
     ></TargetCi>
-    <!-- 子模型 -->
-    <ChildrenCi
-      v-if="ciEntityData.isStart && ciEntityData.isAbstract"
-      :ciId="ciData.ciId"
-      :ciEntityData="ciEntityData"
-      @newCiEntity="(data)=>{
-        $emit('new', data);
-      }"
-      @editNewRelEntity="(data)=>{
-        $emit('edit', data);
-      }"
-      @remove="(relentity)=>{
-        $delete(saveCiEntityMap, relentity.ciEntityUuid);
-      }"
-    ></ChildrenCi>
     <div>
       <TsFormItem :label="$t('term.cmdb.attrmapping')" labelPosition="top">
         <div class="pt-sm">
@@ -104,14 +89,13 @@
                             </Poptip>
                           </div>
                           <div v-if="ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']">
-                           
                             <Tag
                               v-for="(relentity, reindex) in ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']"
                               :key="reindex"
                               :color="getTagType(relentity)"
                               type="dot"
                               size="large"
-                              :closable="!disabledFn('rel' + e.element.direction + '_' + e.element.id) && ((relentity.ciEntityId || relentity.type == 'new') ? true : false ) && isClosableCi(ciEntityData.relEntityData, e.element, relentity)"
+                              :closable="!disabledFn('rel' + e.element.direction + '_' + e.element.id) && (relentity.ciEntityId || relentity.type == 'new') ? true : false"
                               :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
                               @click.native="
                                 element => {
@@ -298,8 +282,7 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
     TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader.vue'], resolve),
-    TargetCi: resolve => require(['./target-ci.vue'], resolve),
-    ChildrenCi: resolve => require(['./children-ci.vue'], resolve)
+    TargetCi: resolve => require(['./target-ci.vue'], resolve)
   },
   props: {
     ciData: Object,
@@ -311,8 +294,7 @@ export default {
       }
     },
     subFormComponentList: Array,
-    tableComponentAttrList: Array,
-    saveCiEntityMap: Object
+    tableComponentAttrList: Array
   },
   data() {
     return {
@@ -412,23 +394,6 @@ export default {
       if (this.getTagType(rel) == 'success') {
         let data = this.$utils.deepClone(rel);
         data.direction = config.direction;
-        if (config.direction === 'from') {
-          data._rootId = config.toCiId;
-        } else {
-          data._rootId = config.fromCiId;
-        }
-        //存在抽象模型和子模型的标识
-        let abstractCiList = this.ciEntityData.relEntityData['rel' + config.direction + '_' + config.id]['valueList'] || [];
-        if (abstractCiList && abstractCiList.length > 1) {
-          if (data.ciId === data._rootId) {
-            let subCiList = abstractCiList.filter((item) => {
-              return item.ciId !== data._rootId;
-            });
-            data.subCiUuidList = this.$utils.mapArray(subCiList, 'ciEntityUuid');
-          } else if (data.ciId != data._rootId) {
-            data._rootUuid = abstractCiList[0].ciEntityUuid;
-          }
-        }
         this.$emit('edit', data);
       }
     },
@@ -472,21 +437,7 @@ export default {
       rel.ciId = ciId;
       rel._relId = rel.id;
       this.isRelPopShow[rel.id + '_' + rel.direction] = false;
-      if (rel.direction === 'from') {
-        rel._rootId = rel.toCiId;
-      } else {
-        rel._rootId = rel.fromCiId;
-      }
-      //存在抽象模型和子模型的标识
-      if (this.ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]) {
-        let abstractCiList = this.ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'] || [];
-        if (abstractCiList && abstractCiList.length > 0) {
-          if (ciId != rel._rootId) {
-            rel._rootUuid = abstractCiList[0].ciEntityUuid;
-          }
-        }
-      }
-      this.$emit('new', rel);
+      this.$emit('new', 'rel', rel);
     },
     //删除选中的属性
     deleteAttrEntity(key, attrentity) {
@@ -695,33 +646,24 @@ export default {
           if (relEntityData && relEntityData['valueList'] && relEntityData['valueList'].length > 0) {
             relValueList = relEntityData['valueList'];
           }
+          //设置了父模型(抽象模型)，就不能设置子模型。设置了子模型，就不可以设置父模型，但是还可以设置其他子模型。
           if (!this.$utils.isEmpty(relValueList)) {
-            findItem = relValueList.find(item => item.ciId === relCi.id); //保存的抽象模型
-          }
-          if (findItem) {
-            isDisabled = true;
-          } else if (!relCi.isAbstract) {
             let findAbstractCi = abstractCi && relValueList.find(item => item.ciId === abstractCi.id);
-            if (!findAbstractCi) { //存在抽象模型，其他子模型才能编辑
+            if (findAbstractCi) {
               isDisabled = true;
+            } else {
+              findItem = relValueList.find(item => item.ciId === relCi.id);
+              if (relCi.isAbstract) {
+                isDisabled = true;
+              } else {
+                if (findItem) {
+                  isDisabled = true;
+                }
+              }
             }
           }
         }
         return isDisabled;
-      };
-    },
-    isClosableCi() { //存在子模型，抽象模型不能删除
-      return (relEntityData, rel, subRel) => {
-        let isCan = true;
-        if (relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'] && 
-        relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'].length > 1
-        ) {
-          if ((rel.direction === 'from' && rel['toCiId'] === subRel.ciId) || 
-          (rel.direction === 'to' && rel['formCiId'] === subRel.ciId)) {
-            isCan = false;
-          }
-        }
-        return isCan;
       };
     }
   },
