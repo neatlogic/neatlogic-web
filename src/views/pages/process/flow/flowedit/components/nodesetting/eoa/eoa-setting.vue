@@ -115,6 +115,26 @@ export default {
       this.$api.process.eoa.searchEoaTemplate({defaultValue: this.templateIdList}).then(res => {
         if (res.Status === 'OK') {
           let tbodyList = res.Return.tbodyList || [];
+          if (tbodyList.length > 0) {
+            tbodyList.forEach(item => {
+              let findItem = this.eoaTemplateList.find(e => e.id === item.id);
+              let mappingList = [];
+              if (findItem) {
+                if (item.config && item.config.stepList) {
+                  let list = item.config.stepList.filter(s => {
+                    return this.$utils.isEmpty(s.userList);
+                  });
+                  if (!this.$utils.isEmpty(list)) {
+                    let idList = this.$utils.mapArray(list, 'id');
+                    mappingList = findItem.mappingList.filter(m => {
+                      return idList.includes(m.id);
+                    });
+                  }
+                }
+                this.$set(findItem, 'mappingList', mappingList);
+              }
+            });
+          }
         }
       });
     },

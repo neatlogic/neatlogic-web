@@ -12,7 +12,7 @@
         <div class="template-main">
           <Timeline>
             <TimelineItem class="template-list">
-              <div class="name owerflow">{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
+              <div :title="$t('dialog.title.createtarget',{'target':$t('term.process.signreport')})" class="name overflow">{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
               <div slot="dot" class="text-tip icon-index border-color">1</div>
               <div class="user pl-sm">EOA{{ $t('term.process.stepuser') }}</div>
             </TimelineItem>
@@ -21,58 +21,63 @@
               :key="index"
               class="template-list"
             >
-              <div class="name owerflow">{{ item.name }}</div>
+              <div :title="item.name" class="name owerflow">{{ item.name }}</div>
               <div slot="dot" class="text-tip icon-index border-color">{{ index + 2 }}</div>
               <div class="user pl-sm">
-                <div v-if="!item.mappingMode && !$utils.isEmpty(item.valueList)" class="flex-start">
-                  <span class="text-title pr-sm">{{ item.policyName }}</span>
-                  <div class="tsform-readonly">
-                    <UserCard
-                      v-for="(u,uindex) in item.valueList"
-                      :key="uindex"
-                      :uuid="u"
-                      :hideAvatar="false"
-                      class="pr-sm"
-                    ></UserCard>
-                  </div>
-                </div>
-                <TsRow v-else :gutter="8">
-                  <Col span="4">{{ item.policyName }}</Col>
-                  <Col span="8">
-                    <TsFormSelect
-                      v-model="item.mappingMode"
-                      :dataList="dataList"
-                      transfer
-                      border="border"
-                    ></TsFormSelect>
+                <TsRow :gutter="8">
+                  <Col span="2">
+                    <div :title="item.policyName" class="text-title overflow">{{ item.policyName }}</div>
                   </Col>
-                  <Col span="12">
-                    <template v-if="item.mappingMode === 'form'">
+                  <template v-if="!item.mappingMode && !$utils.isEmpty(item.valueList)">
+                    <Col span="22">
+                      <div class="tsform-readonly">
+                        <UserCard
+                          v-for="(u,uindex) in item.valueList"
+                          :key="uindex"
+                          :uuid="u"
+                          :hideAvatar="false"
+                          class="pr-sm"
+                        ></UserCard>
+                      </div>
+                    </Col>
+                  </template>
+                  <template v-else>
+                    <Col span="5">
                       <TsFormSelect
-                        :value="currenValue(item)"
-                        :dataList="formList"
-                        textName="label"
-                        valueName="uuid"
-                        border="border"
+                        v-model="item.mappingMode"
+                        :dataList="dataList"
                         transfer
-                      ></TsFormSelect>
-                    </template>
-                    <template v-else-if="item.mappingMode === 'custom'">
-                      <UserSelect
-                        :value="currenValue(item)"
-                        :multiple="item.policy !== 'onePerson'"
-                        :transfer="true"
-                        :groupList="['user']"
                         border="border"
-                        @change="(val)=>{
-                          changeValueList(val, item);
-                        }"
-                      ></UserSelect>
-                    </template>
-                    <template v-else>
-                      <TsFormSelect border="border"></TsFormSelect>
-                    </template>
-                  </Col>
+                      ></TsFormSelect>
+                    </Col>
+                    <Col span="16">
+                      <template v-if="item.mappingMode === 'form'">
+                        <TsFormSelect
+                          :value="currenValue(item)"
+                          :dataList="formList"
+                          textName="label"
+                          valueName="uuid"
+                          border="border"
+                          transfer
+                        ></TsFormSelect>
+                      </template>
+                      <template v-else-if="item.mappingMode === 'custom'">
+                        <UserSelect
+                          :value="currenValue(item)"
+                          :multiple="item.policy !== 'onePerson'"
+                          :transfer="true"
+                          :groupList="['user']"
+                          border="border"
+                          @change="(val)=>{
+                            changeValueList(val, item);
+                          }"
+                        ></UserSelect>
+                      </template>
+                      <template v-else>
+                        <TsFormSelect border="border"></TsFormSelect>
+                      </template>
+                    </Col>
+                  </template>
                 </TsRow>
               </div>
             </TimelineItem>
