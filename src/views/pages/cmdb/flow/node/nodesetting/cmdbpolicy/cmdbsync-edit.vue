@@ -64,7 +64,7 @@
                               <a></a>
                               <div slot="content">
                                 <div v-if="relCiList" :style="'overflow:auto;max-height:300px;'">
-                                  <Alert show-icon>{{ $t('term.cmdb.abstractcireltip') }}</Alert>
+                                  <Alert show-icon>{{ $t('term.cmdb.relciconfigtip') }}</Alert>
                                   <div
                                     v-for="relci in relCiList"
                                     :key="relci.id"
