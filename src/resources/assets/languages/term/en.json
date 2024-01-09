@@ -193,7 +193,10 @@
     "writecitip": "Select constants or specify the model for data writing through form mapping. If the parent model is an abstract model and does not support adding configuration items, data needs to be written into the child model.",
     "subci": "Submodel",
     "selectrelpath": "Select relationship path",
-    "relciconfigtip": "After configuring the parent model, child models cannot be configured; After configuring the sub model, the parent model cannot be configured, but other sub models can be configured"
+    "relciconfigtip": "After configuring the parent model, child models cannot be configured; After configuring the sub model, the parent model cannot be configured, but other sub models can be configured",
+    "topotemplate": "Topology template",
+    "selectagain": "Re select",
+    "topotype": "Unfolding method"
   },
   "process": {
     "workordercenter": "Work Center",

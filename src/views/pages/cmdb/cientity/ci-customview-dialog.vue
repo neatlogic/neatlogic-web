@@ -35,15 +35,7 @@
                   <a v-else>{{ $t('term.cmdb.selectrelpath') }}</a>
                 </div>
                 <div slot="content">
-                  <Tree
-                    :data="relList"
-                    :empty-text="$t('term.cmdb.startci')"
-                    :render="renderName"
-                    :load-data="loadData"
-                    :multiple="false"
-                    class="ts-tree"
-                    @on-select-change="selectNode"
-                  ></Tree>
+                  <CiRelTree :ciId="ciId" @select="selectNode"></CiRelTree>
                 </div>
               </Poptip>
             </div>
@@ -68,7 +60,8 @@ export default {
   name: '',
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    CiCustomviewEdit: resolve => require(['./ci-customview-edit.vue'], resolve)
+    CiCustomviewEdit: resolve => require(['./ci-customview-edit.vue'], resolve),
+    CiRelTree: resolve => require(['@/views/pages/cmdb/components/ci/ci-rel-list-tree.vue'], resolve)
   },
   props: {
     ciId: { type: Number },
@@ -108,15 +101,12 @@ export default {
       },
       searchParam: {
         ciId: this.ciId
-      },
-      relList: []
+      }
     };
   },
   beforeCreate() {},
   created() {
-    if (!this.viewId) {
-      this.getRelByCiId();
-    } else {
+    if (this.viewId) {
       this.getCustomViewById();
     }
   },
@@ -135,180 +125,6 @@ export default {
       } else {
         this.ciRelList = [];
       }
-    },
-    renderName(h, { data }) {
-      if (data.direction === 'from') {
-        return h(
-          'div',
-          {
-            on: {
-              click: () => {}
-            }
-          },
-          [
-            h('span', {
-              class: {
-                'text-grey': true,
-                fz10: true,
-                'tsfont-minus': true
-              }
-            }),
-            h(
-              'span',
-              {
-                class: {
-                  'text-grey': true,
-                  fz10: true
-                }
-              },
-              data.toLabel
-            ),
-            h('span', {
-              class: {
-                'text-grey': true,
-                fz10: true,
-                'tsfont-arrow-right': true
-              }
-            }),
-            h('span', data.toCiLabel + '(' + data.toCiName + ')')
-          ]
-        );
-      } else {
-        return h(
-          'div',
-          {
-            on: {
-              click: () => {}
-            }
-          },
-          [
-            h('span', {
-              class: {
-                'text-grey': true,
-                fz10: true,
-                'tsfont-arrow-left': true
-              }
-            }),
-            h(
-              'span',
-              {
-                class: {
-                  'text-grey': true,
-                  fz10: true
-                }
-              },
-              data.fromLabel
-            ),
-            h('span', {
-              class: {
-                'text-grey': true,
-                fz10: true,
-                'tsfont-minus': true
-              }
-            }),
-            h('span', data.fromCiLabel + '(' + data.fromCiName + ')')
-          ]
-        );
-      }
-    },
-    loadData(item, callback) {
-      if (item) {
-        let ciId, excludeCiId;
-        if (item.direction === 'from') {
-          ciId = item.toCiId;
-          excludeCiId = item.fromCiId;
-        } else {
-          ciId = item.fromCiId;
-          excludeCiId = item.toCiId;
-        }
-        const excludeCiIdList = item.excludeCiIdList || [];
-        excludeCiIdList.push(excludeCiId);
-        this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
-          //排除掉来源关系，避免产生回环
-          const relList = res.Return.filter(d => d.id !== item.id && ((d.direction === 'from' && !excludeCiIdList.includes(d.toCiId)) || (d.direction === 'to' && !excludeCiIdList.includes(item.fromCiId))));
-          if (relList.length === 0) {
-            this.$delete(item, 'children');
-            this.$delete(item, 'loading');
-          } else {
-            relList.forEach(rel => {
-              const path = this.$utils.deepClone(item.path || []);
-              rel.children = [];
-              rel.loading = false;
-              rel.selected = false;
-              rel.excludeCiIdList = excludeCiIdList;
-
-              let relData = {
-                relId: rel.id,
-                direction: rel.direction
-              };
-              if (rel.direction === 'from') {
-                ciId = rel.toCiId;
-                excludeCiId = rel.fromCiId;
-
-                relData.relName = rel.toName;
-                relData.relLabel = rel.toLabel;
-                relData.ciName = rel.fromCiName;
-                relData.ciLabel = rel.fromCiLabel;
-                relData.ciId = rel.fromCiId;
-                relData.targetCiId = rel.toCiId;
-                relData.targetCiName = rel.toCiName;
-                relData.targetCiLabel = rel.toCiLabel;
-              } else {
-                ciId = rel.fromCiId;
-                excludeCiId = rel.toCiId;
-
-                relData.relName = rel.fromName;
-                relData.relLabel = rel.fromLabel;
-                relData.ciName = rel.toCiName;
-                relData.ciLabel = rel.toCiLabel;
-                relData.ciId = rel.toCiId;
-                relData.targetCiId = rel.fromCiId;
-                relData.targetCiName = rel.fromCiName;
-                relData.targetCiLabel = rel.fromCiLabel;
-              }
-              path.push(relData);
-              rel.path = path;
-            });
-            callback(relList);
-          }
-        });
-      }
-    },
-    getRelByCiId() {
-      this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
-        const relList = res.Return;
-        relList.forEach(rel => {
-          rel.children = [];
-          rel.loading = false;
-          rel.selected = false;
-
-          let relData = {
-            relId: rel.id,
-            direction: rel.direction
-          };
-          if (rel.direction === 'from') {
-            relData.relName = rel.toName;
-            relData.relLabel = rel.toLabel;
-            relData.ciName = rel.fromCiName;
-            relData.ciLabel = rel.fromCiLabel;
-            relData.ciId = rel.fromCiId;
-            relData.targetCiId = rel.toCiId;
-            relData.targetCiName = rel.toCiName;
-            relData.targetCiLabel = rel.toCiLabel;
-          } else {
-            relData.relName = rel.fromName;
-            relData.relLabel = rel.fromLabel;
-            relData.ciName = rel.toCiName;
-            relData.ciLabel = rel.toCiLabel;
-            relData.ciId = rel.toCiId;
-            relData.targetCiId = rel.fromCiId;
-            relData.targetCiName = rel.fromCiName;
-            relData.targetCiLabel = rel.fromCiLabel;
-          }
-          rel.path = [relData];
-        });
-        this.relList = relList;
-      });
     },
     getCustomViewById() {
       if (this.viewId) {

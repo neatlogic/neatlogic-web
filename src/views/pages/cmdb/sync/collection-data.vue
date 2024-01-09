@@ -11,8 +11,8 @@
               clearable
               width="300px"
               :hideAction="false"
-              @on-enter="searchCollectionData"
-              @on-clear="searchCollectionData"
+              @on-enter="searchCollectionData()"
+              @on-clear="searchCollectionData()"
             ></TsFormInput>
           </div>
           <TsTable
