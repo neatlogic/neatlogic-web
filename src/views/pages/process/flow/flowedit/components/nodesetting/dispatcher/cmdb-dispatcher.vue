@@ -148,7 +148,7 @@ export default {
           onChange: value => {
             // 数据来源改变的时候
             if (value) {
-              this.handleWorkerList(value, true);
+              this.handleWorkerList(value);
               this.addFilter('', '', value);
             } else {
               this.cmdbDispatcherList.splice(1, this.cmdbDispatcherList.length - 1);
@@ -301,8 +301,8 @@ export default {
       this.loadingShow = false;
     },
     handleWorkerList(value) {
-      this.cmdbDispatcherList.push(...this.otherAttrFormList);
-      this.cmdbDispatcherList.forEach(item => {
+      let formItemList = [...this.cmdbDispatcherList, ...this.otherAttrFormList];
+      formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
           if (this.cmdbConfig.type == 'ci') {
@@ -319,6 +319,7 @@ export default {
           }
         }
       });
+      this.cmdbDispatcherList = formItemList;
     },
     handleTypeById(selectedValue) {
       // 根据配置项类型选择不同的数据来源
