@@ -440,7 +440,6 @@ export default {
             _relId: relId, //记录来自哪个关系，自动填上配置项
             _direction: rel.direction, //记录关系方向
             ciId: ciId,
-            rootCiId: this.propRootCiId,
             ciName: ci.name,
             ciLabel: ci.label,
             ciIcon: ci.icon,
