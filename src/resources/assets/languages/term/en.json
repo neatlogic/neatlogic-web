@@ -191,9 +191,9 @@
     "startci": "Select the starting model first",
     "writeci": "Write model",
     "writecitip": "Select constants or specify the model for data writing through form mapping. If the parent model is an abstract model and does not support adding configuration items, data needs to be written into the child model.",
-    "abstractcireltip": "Firstly, configure the parent model, complete the mapping of common attributes in the parent model, and specify the model for data writing. After completing the configuration of the parent model, return to the current interface before clicking on the sub model to configure the mapping of non-public (non inherited) attributes in the sub model.",
     "subci": "Submodel",
     "selectrelpath": "Select relationship path",
+    "relciconfigtip": "After configuring the parent model, child models cannot be configured; After configuring the sub model, the parent model cannot be configured, but other sub models can be configured",
     "topotemplate": "Topology template",
     "selectagain": "Re select",
     "topotype": "Unfolding method"
@@ -527,7 +527,8 @@
     "eoadealwithusertip": "After setting the processor for the template, the processor cannot be modified during the editing process",
     "approvalstep": "Approval steps",
     "approvalprocess": "Approval process",
-    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node"
+    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node",
+    "matchmapping": "Matching mapping"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

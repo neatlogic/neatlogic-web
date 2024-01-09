@@ -191,9 +191,9 @@
     "startci": "先选择起始模型",
     "writeci": "写入模型",
     "writecitip": "选择常量或通过表单映射的方式，指定数据写入的模型。若父模型为抽象模型，不支持添加配置项，需将数据写入子模型。",
-    "abstractcireltip": "首先配置父模型，完成父模型中公共属性的映射，并指定数据写入的模型。完成父模型配置后，返回当前界面，才可点击子模型，配置子模型中的非公共（非继承）属性映射。",
     "subci": "子模型",
     "selectrelpath": "选择关系路径",
+    "relciconfigtip": "配置父模型后，不可配置子模型；配置子模型后，不可配置父模型，但可配置其他子模型",
     "topotemplate": "拓扑模板",
     "selectagain": "重新选择",
     "topotype": "展开方式"
@@ -526,7 +526,8 @@
     "eoadealwithusertip": "模板设置处理人后，编辑流程时中不可修改处理人",
     "approvalstep": "审批步骤",
     "approvalprocess": "审批流",
-    "approvalprocesstip": "在【创建签报】节点之外，至少要添加一个节点"
+    "approvalprocesstip": "在【创建签报】节点之外，至少要添加一个节点",
+    "matchmapping": "匹配映射"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
