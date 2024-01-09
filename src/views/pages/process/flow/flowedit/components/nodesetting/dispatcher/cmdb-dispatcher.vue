@@ -7,7 +7,7 @@
     <TsForm
       v-else
       ref="form"
-      v-model="cmdbConfig"
+      v-model="formData"
       :item-list="formItemList"
       labelPosition="left"
       :labelWidth="80"
@@ -28,7 +28,7 @@
             width="84px"
             border="border"
             :validateList="[{name: 'required', message: ''}]"
-            :dealDataByUrl="handleKeyDealDataByUrl"
+            :dealDataByUrl="dealDataByUrl"
             :isNowrap="true"
           ></TsFormSelect>
           <span class="tsfont-arrow-right" style="padding: 0 4px"></span>
@@ -44,6 +44,7 @@
             :validateList="[{name: 'required', message: ''}]"
             :isNowrap="true"
             @on-focus="handleFormAttributeDataListDisabled()"
+            @change="handleFormAttributeDataListDisabled()"
           ></TsFormSelect>
           <span
             v-if="index != 0"
@@ -69,7 +70,7 @@
               class="mb-xs"
               style="width: 100%"
             >
-              <span class="bg-grey radius-sm overflow pr-xs" style="max-width: 100%; display: inline-block">
+              <span class="bg-grey radius-sm overflow pr-xs" style="max-width: 100%; display: inline-block;cursor:move;">
                 <span class="tsfont-option-vertical">{{ item.text }}</span>
               </span>
             </div>
@@ -105,11 +106,11 @@ export default {
   data() {
     return {
       loadingShow: true, // 编辑分派器时，需要重组formItemList，需要等重组完再渲染组件
-      cmdbConfig: {
+      formData: {
         type: 'ci'
       },
-      priorityList: [],
-      filterList: [],
+      priorityList: [], // 优先级
+      filterList: [], // 匹配映射
       formItemList: [
         {
           name: 'type',
@@ -127,12 +128,12 @@ export default {
           label: this.$t('term.report.datatype.name'),
           type: 'radio',
           onChange: selectedValue => {
-            this.cmdbConfig = {
+            this.formData = {
               type: selectedValue
             };
             this.priorityList = [];
             this.filterList = [];
-            this.handleTypeById(selectedValue);
+            this.handleDataSourceByType(selectedValue);
             let keyList = ['type', 'dataSource'];
             this.formItemList = this.formItemList.filter(item => {
               return item && item.name && keyList.includes(item.name);
@@ -159,9 +160,9 @@ export default {
             } else {
               this.formItemList.splice(1, this.formItemList.length - 1);
               let keyList = ['type', 'dataSource'];
-              for (let key in this.cmdbConfig) {
+              for (let key in this.formData) {
                 if (!keyList.includes(key)) {
-                  delete this.cmdbConfig[key];
+                  delete this.formData[key];
                 }
               }
             }
@@ -222,22 +223,22 @@ export default {
     },
     addFilter(key = '', formAttributeUuid = '', dataSource = '') {
       let keyConfig;
-      if (this.cmdbConfig.type == 'ci') {
+      if (this.formData.type == 'ci') {
         keyConfig = {
           url: 'api/rest/cmdb/ci/listattr',
           textName: 'label',
           valueName: 'id',
           params: {
-            ciId: dataSource || this.cmdbConfig.dataSource
+            ciId: dataSource || this.formData.dataSource
           }
         };
-      } else if (this.cmdbConfig.type == 'customView') {
+      } else if (this.formData.type == 'customView') {
         keyConfig = {
           url: 'api/rest/cmdb/customview/attr/get',
           textName: 'alias',
           valueName: 'uuid',
           rootName: 'attrList',
-          params: { id: dataSource || this.cmdbConfig.dataSource }
+          params: { id: dataSource || this.formData.dataSource }
         };
       }
       this.filterList.push({
@@ -258,15 +259,15 @@ export default {
       let filterPriorityList = [];
       let tbodyList = [];
       this.filterList = [];
-      this.cmdbConfig = {
+      this.formData = {
         type: type,
         ciId: type == 'ci' ? ciId : '',
         customViewId: type == 'customView' ? customViewId : '',
         workerList: workerList || [],
         dataSource: ciId || customViewId
       };
-      if (this.cmdbConfig.type == 'ci' && !this.$utils.isEmpty(priorityList)) {
-        await this.$api.cmdb.ci.searchCiListAttr({ defaultValue: priorityList || [], ciId: this.cmdbConfig.dataSource }).then(res => {
+      if (this.formData.type == 'ci' && !this.$utils.isEmpty(priorityList)) {
+        await this.$api.cmdb.ci.searchCiListAttr({ defaultValue: priorityList || [], ciId: this.formData.dataSource }).then(res => {
           tbodyList = res.Return || [];
           tbodyList.forEach((item) => {
             if (item.label && item.id) {
@@ -277,8 +278,8 @@ export default {
             }
           });
         });
-      } else if (this.cmdbConfig.type == 'customView' && !this.$utils.isEmpty(priorityList)) {
-        await this.$api.cmdb.customview.searchCustomAttrData({ defaultValue: priorityList || [], id: this.cmdbConfig.dataSource }).then(res => {
+      } else if (this.formData.type == 'customView' && !this.$utils.isEmpty(priorityList)) {
+        await this.$api.cmdb.customview.searchCustomAttrData({ defaultValue: priorityList || [], id: this.formData.dataSource }).then(res => {
           tbodyList = res.Return?.attrList || [];
           tbodyList.forEach((item) => {
             if ((item.alias || (item.attrVo && item.attrVo.label)) && item.uuid) {
@@ -291,7 +292,7 @@ export default {
         });
       }
       this.handleWorkerList(ciId || customViewId);
-      this.handleTypeById(type);
+      this.handleDataSourceByType(type);
       filterList.forEach(item => {
         // 处理映射关系回显
         if (item && item.key && item.formAttributeUuid) {
@@ -308,12 +309,12 @@ export default {
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
-          if (this.cmdbConfig.type == 'ci') {
+          if (this.formData.type == 'ci') {
             item.url = 'api/rest/cmdb/ci/listattr';
             item.textName = 'label';
             item.valueName = 'id';
             item.params = { ciId: value };
-          } else if (this.cmdbConfig.type == 'customView') {
+          } else if (this.formData.type == 'customView') {
             item.url = 'api/rest/cmdb/customview/attr/get';
             item.textName = 'alias';
             item.valueName = 'uuid';
@@ -324,8 +325,8 @@ export default {
       });
       this.formItemList = formItemList;
     },
-    handleTypeById(selectedValue) {
-      // 根据配置项类型选择不同的数据来源
+    handleDataSourceByType(selectedValue) {
+      // 处理数据来源根据数据类型
       const options = {
         ci: {
           url: 'api/rest/cmdb/ci/list',
@@ -344,18 +345,18 @@ export default {
       const filterCriteria = item => item && item.name === 'dataSource';
       this.formItemList.filter(filterCriteria).forEach(item => Object.assign(item, selectedOption));
     },
-    handleKeyDealDataByUrl(nodeList) {
-      // 过滤模型属性被选中属性
+    dealDataByUrl(nodeList) {
+      // 已被选择的属性禁用
       let key = {
         ci: 'id',
         customView: 'uuid'
       };
       let filterList = this.filterList.map(item => item.key);
       nodeList.forEach(item => {
-        if (item && item[key[this.cmdbConfig.type]] && filterList.includes(item[key[this.cmdbConfig.type]])) {
+        if (item && item[key[this.formData.type]] && filterList.includes(item[key[this.formData.type]])) {
           item._disabled = true;
         }
-        if (this.cmdbConfig.type == 'customView') {
+        if (this.formData.type == 'customView') {
           item.alias = item.alias ? item.alias : item.attrVo && item.attrVo.label && item.attrVo.label;
         }
       });
@@ -379,9 +380,9 @@ export default {
     saveData() {
       // 提供给外部使用
       let saveData = {
-        ...this.cmdbConfig,
-        ciId: this.cmdbConfig.type === 'ci' ? this.cmdbConfig.dataSource : '',
-        customViewId: this.cmdbConfig.type === 'customView' ? this.cmdbConfig.dataSource : '',
+        ...this.formData,
+        ciId: this.formData.type === 'ci' ? this.formData.dataSource : '',
+        customViewId: this.formData.type === 'customView' ? this.formData.dataSource : '',
         filterList: this.filterList.filter(item => item.key && item.formAttributeUuid).map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
         priorityList: this.priorityList.filter(item => !this.$utils.isEmpty(item.value)).map(item => item.value) // 只存储值给后端
       };
