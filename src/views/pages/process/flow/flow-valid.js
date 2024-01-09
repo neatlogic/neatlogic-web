@@ -105,7 +105,7 @@ let valid = {
                   for (let key in row) {
                     if (row.hasOwnProperty(key)) {
                       let val = row[key];
-                      if (that.$utils.isEmpty(val)) {
+                      if (that.$utils.isEmpty(val) || this.validCmdbDispatcher(policyList[i].config.handler, key, val)) {
                         isChecked = 0;
                         errorText = $t('term.process.assignconfigvalid');
                         break;
@@ -322,6 +322,19 @@ let valid = {
       }
     }
     return validList;
+  },
+  handleDispatcherName(dispatcherName) {
+    // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
+    const arr = (dispatcherName && dispatcherName.split('.')) || [];
+    return arr[arr.length - 1];
+  },
+  validCmdbDispatcher(handler, key, filterList) {
+    // 验证cmdb分派器，匹配映射，两个数组时，有一个为空时，数据校验不通过问题
+    // [{"formAttributeUuid": "ca04365ff49c4c80b39cf802e857eeaa","key": 441733552807936},{key: '441733846409216', formAttributeUuid: ''}]
+    if (key !== 'filterList' || this.handleDispatcherName(handler) !== 'CmdbDispatcher') {
+      return false;
+    }
+    return filterList.some(item => !item.formAttributeUuid || !item.key);
   }
 };
 

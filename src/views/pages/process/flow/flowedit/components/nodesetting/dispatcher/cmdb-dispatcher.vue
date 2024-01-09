@@ -91,6 +91,7 @@ export default {
   },
   props: {
     allFormitemList: {
+      // 表单数据
       type: Array,
       default: () => {
         return [];
@@ -109,6 +110,7 @@ export default {
       formData: {
         type: 'ci'
       },
+      formNameList: ['type', 'dataSource'],
       priorityList: [], // 优先级
       filterList: [], // 匹配映射
       formItemList: [
@@ -134,9 +136,8 @@ export default {
             this.priorityList = [];
             this.filterList = [];
             this.handleDataSourceByType(selectedValue);
-            let keyList = ['type', 'dataSource'];
             this.formItemList = this.formItemList.filter(item => {
-              return item && item.name && keyList.includes(item.name);
+              return item && item.name && this.formNameList.includes(item.name);
             });
           }
         },
@@ -159,9 +160,8 @@ export default {
               this.addFilter('', '', value);
             } else {
               this.formItemList.splice(1, this.formItemList.length - 1);
-              let keyList = ['type', 'dataSource'];
               for (let key in this.formData) {
-                if (!keyList.includes(key)) {
+                if (!this.formNameList.includes(key)) {
                   delete this.formData[key];
                 }
               }
@@ -169,7 +169,7 @@ export default {
           }
         }
       ],
-      otherAttrFormList: [
+      otherFormItemList: [
         {
           name: 'filterList',
           validateList: ['required'],
@@ -223,13 +223,14 @@ export default {
     },
     addFilter(key = '', formAttributeUuid = '', dataSource = '') {
       let keyConfig;
+      let id = dataSource || this.formData.dataSource;
       if (this.formData.type == 'ci') {
         keyConfig = {
           url: 'api/rest/cmdb/ci/listattr',
           textName: 'label',
           valueName: 'id',
           params: {
-            ciId: dataSource || this.formData.dataSource
+            ciId: id
           }
         };
       } else if (this.formData.type == 'customView') {
@@ -238,7 +239,7 @@ export default {
           textName: 'alias',
           valueName: 'uuid',
           rootName: 'attrList',
-          params: { id: dataSource || this.formData.dataSource }
+          params: { id: id}
         };
       }
       this.filterList.push({
@@ -266,7 +267,7 @@ export default {
         workerList: workerList || [],
         dataSource: ciId || customViewId
       };
-      if (this.formData.type == 'ci' && !this.$utils.isEmpty(priorityList)) {
+      if (type == 'ci' && !this.$utils.isEmpty(priorityList)) {
         await this.$api.cmdb.ci.searchCiListAttr({ defaultValue: priorityList || [], ciId: this.formData.dataSource }).then(res => {
           tbodyList = res.Return || [];
           tbodyList.forEach((item) => {
@@ -278,7 +279,7 @@ export default {
             }
           });
         });
-      } else if (this.formData.type == 'customView' && !this.$utils.isEmpty(priorityList)) {
+      } else if (type == 'customView' && !this.$utils.isEmpty(priorityList)) {
         await this.$api.cmdb.customview.searchCustomAttrData({ defaultValue: priorityList || [], id: this.formData.dataSource }).then(res => {
           tbodyList = res.Return?.attrList || [];
           tbodyList.forEach((item) => {
@@ -304,8 +305,9 @@ export default {
         .map(item => ({ ...item })); // 采用浅拷贝的方式，避免 filterPriorityList 中的元素被修改
       this.loadingShow = false;
     },
-    handleWorkerList(value) {
-      let formItemList = [...this.formItemList, ...this.otherAttrFormList];
+    handleWorkerList(id) {
+      // 根据不同的类型，处理处理人
+      let formItemList = [...this.formItemList, ...this.otherFormItemList];
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
@@ -313,19 +315,19 @@ export default {
             item.url = 'api/rest/cmdb/ci/listattr';
             item.textName = 'label';
             item.valueName = 'id';
-            item.params = { ciId: value };
+            item.params = { ciId: id };
           } else if (this.formData.type == 'customView') {
             item.url = 'api/rest/cmdb/customview/attr/get';
             item.textName = 'alias';
             item.valueName = 'uuid';
             item.rootName = 'attrList';
-            item.params = { id: value };
+            item.params = { id: id };
           }
         }
       });
       this.formItemList = formItemList;
     },
-    handleDataSourceByType(selectedValue) {
+    handleDataSourceByType(type) {
       // 处理数据来源根据数据类型
       const options = {
         ci: {
@@ -341,12 +343,14 @@ export default {
           rootName: 'tbodyList'
         }
       };
-      const selectedOption = options[selectedValue] || options.ci;
-      const filterCriteria = item => item && item.name === 'dataSource';
-      this.formItemList.filter(filterCriteria).forEach(item => Object.assign(item, selectedOption));
+      const selectedOption = options[type] || options.ci;
+      let formItem = this.formItemList.find(item => item.name === 'dataSource');
+      if (formItem) {
+        Object.assign(formItem, selectedOption);
+      }
     },
     dealDataByUrl(nodeList) {
-      // 已被选择的属性禁用
+      // 已选择属性设置禁用
       let key = {
         ci: 'id',
         customView: 'uuid'
@@ -363,6 +367,7 @@ export default {
       return nodeList;
     },
     handleFormAttributeDataListDisabled() {
+      // 已选择的表单属性，禁用
       let uuidList = [];
       this.filterList.forEach(item => {
         if (item && item.formAttributeUuid) {
@@ -379,12 +384,14 @@ export default {
     },
     saveData() {
       // 提供给外部使用
+      // 注意:filterList字段,flow-valid.js文件里面有一个数据校验方法,主要用于校验[{"formAttributeUuid": "ca04365ff49c4c80b39cf802e857eeaa","key": 441733552807936},{key: '441733846409216', formAttributeUuid: ''}]
+      // key或者formAttributeUuid字段为空情况
       let saveData = {
         ...this.formData,
         ciId: this.formData.type === 'ci' ? this.formData.dataSource : '',
         customViewId: this.formData.type === 'customView' ? this.formData.dataSource : '',
-        filterList: this.filterList.filter(item => item.key && item.formAttributeUuid).map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
-        priorityList: this.priorityList.filter(item => !this.$utils.isEmpty(item.value)).map(item => item.value) // 只存储值给后端
+        filterList: this.filterList.map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
+        priorityList: this.priorityList.filter(item => !this.$utils.isEmpty(item.value)).map(item => item.value)
       };
 
       if (saveData.type === 'ci') {
@@ -396,7 +403,8 @@ export default {
       return saveData;
     },
     valid() {
-      // 校验
+      // 校验，提供给外部使用
+      // flow-valid.js还有一个数据校验的方法
       let isValid = true;
       let formList = [this.$refs.keyForm, this.$refs.formAttribute];
       for (let key = 0; key < formList.length; key++) {
