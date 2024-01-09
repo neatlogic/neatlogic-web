@@ -202,9 +202,9 @@
                       </div>
                     </div>
                     <CmdbDispatcher
-                      v-if="getDispatcherName(item.config.handler) == 'CiEntityFormDispatcher'"
+                      v-if="getDispatcherName(item.config.handler) == 'CmdbDispatcher'"
                       ref="cmdbDispatcher"
-                      v-model="item.config.handlerConfig[item.config.handler]"
+                      v-model="item.config.handlerConfig"
                       :allFormitemList="allFormitemList"
                     ></CmdbDispatcher>
                     <div v-else-if="automaticDeal.length > 0" class="text-list">
@@ -538,7 +538,7 @@ export default {
         if (item.type == 'form') {
           item.config.attributeUuidList = this.policyListAttributeUuidList;
         }
-        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'CiEntityFormDispatcher') {
+        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'CmdbDispatcher') {
           // cmdb分派器，单独处理值
           item.config.handlerConfig = this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].saveData() || {};
         }
@@ -577,7 +577,7 @@ export default {
             return p;
           });
         } else if (newObj && newObj.config) {
-          this.automaticDeal = newObj.config;
+          this.automaticDeal = this.getDispatcherName(handler) == 'CmdbDispatcher' ? [] : newObj.config;
           if (type != 'init') {
             this.$set(automaticObj.config, 'handlerConfig', {});
             this.automaticDeal.forEach(item => {

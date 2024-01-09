@@ -1,69 +1,77 @@
 <template>
-  <TsForm
-    ref="form"
-    v-model="cmdbConfig"
-    :item-list="cmdbDispatcherList"
-    labelPosition="left"
-    :labelWidth="80"
-    style="width: 100%"
-  >
-    <template v-slot:filterList>
-      <div
-        v-for="(item, index) in filterList"
-        :key="item.uuid"
-        class="flex-between"
-        :class="filterList.length > 1 ? 'mb-sm' : ''"
-      >
-        <TsFormSelect
-          v-bind="item.keyConfig"
-          ref="keyForm"
-          v-model="item.key"
-          transfer
-          width="84px"
-          border="border"
-          :validateList="['required']"
-          :dealDataByUrl="handleKeyDealDataByUrl"
-        ></TsFormSelect>
-        <span class="tsfont-arrow-right pl-xs pr-xs"></span>
-        <TsFormSelect
-          ref="formAttribute"
-          v-model="item.formAttributeUuid"
-          :dataList="item.formAttributeDataList"
-          textName="label"
-          valueName="uuid"
-          width="84px"
-          transfer
-          border="border"
-          :validateList="['required']"
-          @on-focus="filterFormAttributeDataList()"
-        ></TsFormSelect>
-        <span v-if="index != 0" class="text-action tsfont-trash-o pl-xs" @click.stop="deleteFilter(index)"></span>
-      </div>
-      <span class="tsfont-plus text-href" @click="() => addFilter()">{{ $t('dialog.title.addtarget', { target: $t('page.mapping') }) }}</span>
-    </template>
-    <template v-slot:priorityList>
-      <div v-if="$utils.isEmpty(priorityList)" style="height: 30px"></div>
-      <VueDraggable
-        v-else
-        v-model="priorityList"
-        handle=".tsfont-option-vertical"
-        animation="300"
-      >
-        <transition-group>
-          <div
-            v-for="item in priorityList"
-            :key="item.value"
-            class="mb-xs"
-            style="width: 100%"
-          >
-            <span class="bg-grey radius-sm overflow pr-xs" style="max-width: 100%; display: inline-block">
-              <span class="tsfont-option-vertical">{{ item.text }}</span>
-            </span>
-          </div>
-        </transition-group>
-      </VueDraggable>
-    </template>
-  </TsForm>
+  <div>
+    <Loading
+      v-if="loadingShow"
+      :loadingShow="loadingShow"
+    ></Loading>
+    <TsForm
+      v-else
+      ref="form"
+      v-model="cmdbConfig"
+      :item-list="cmdbDispatcherList"
+      labelPosition="left"
+      :labelWidth="80"
+      style="width: 100%"
+    >
+      <template v-slot:filterList>
+        <div
+          v-for="(item, index) in filterList"
+          :key="item.uuid"
+          class="flex-between"
+          :class="filterList.length > 1 ? 'mb-sm' : ''"
+        >
+          <TsFormSelect
+            v-bind="item.keyConfig"
+            ref="keyForm"
+            v-model="item.key"
+            transfer
+            width="84px"
+            border="border"
+            :validateList="['required']"
+            :dealDataByUrl="handleKeyDealDataByUrl"
+          ></TsFormSelect>
+          <span class="tsfont-arrow-right pl-xs pr-xs"></span>
+          <TsFormSelect
+            ref="formAttribute"
+            v-model="item.formAttributeUuid"
+            :dataList="item.formAttributeDataList"
+            textName="label"
+            valueName="uuid"
+            width="84px"
+            transfer
+            border="border"
+            :validateList="['required']"
+            @on-focus="filterFormAttributeDataList()"
+          ></TsFormSelect>
+          <span v-if="index != 0" class="text-action tsfont-trash-o pl-xs" @click.stop="deleteFilter(index)"></span>
+        </div>
+        <span class="tsfont-plus text-href" @click="() => addFilter()">{{ $t('dialog.title.addtarget', { target: $t('page.mapping') }) }}</span>
+      </template>
+      <template v-slot:priorityList>
+        <div v-if="$utils.isEmpty(priorityList)" style="height: 30px"></div>
+        <VueDraggable
+          v-else
+          v-model="priorityList"
+          handle=".tsfont-option-vertical"
+          animation="300"
+        >
+          <transition-group>
+            <div
+              v-for="item in priorityList"
+              :key="item.value"
+              class="mb-xs"
+              style="width: 100%"
+            >
+              <span class="bg-grey radius-sm overflow pr-xs" style="max-width: 100%; display: inline-block">
+                <span class="tsfont-option-vertical">{{ item.text }}</span>
+              </span>
+            </div>
+          </transition-group>
+        </VueDraggable>
+      </template>
+    </TsForm>
+  </div>
+ 
 </template>
 <script>
 import VueDraggable from 'vuedraggable';
@@ -84,27 +92,13 @@ export default {
     value: {
       type: Object,
       default: () => {
-        return {
-          type: 'customView',
-          workerList: ['a9c8fef4e07b44009712bfa4e202821b', 'e74f1e0cc4904e108273131ff97225e3'],
-          customViewId: 796844493692928,
-          filterList: [
-            {
-              key: '52f461255e284cd983d17c7383458a66',
-              formAttributeUuid: 'ca04365ff49c4c80b39cf802e857eeaa'
-            },
-            {
-              key: 'e74f1e0cc4904e108273131ff97225e3',
-              formAttributeUuid: 'ba8b942b44ab4e29ba9a589f52a24807'
-            }
-          ],
-          priorityList: ['e74f1e0cc4904e108273131ff97225e3', 'a9c8fef4e07b44009712bfa4e202821b']
-        };
+        return {};
       }
     }
   },
   data() {
     return {
+      loadingShow: true, // 编辑分派器时，需要重组formItemList，需要等重组完再渲染组件
       cmdbConfig: {
         type: 'ci'
       },
@@ -190,7 +184,6 @@ export default {
           transfer: true,
           firstSelect: false,
           onChange: (selectedItem, item, itemList) => {
-            console.log('返回的值', item);
             this.priorityList = [];
             let nodeList = this.$utils.deepClone(item) || []; // 深拷贝，不影响原有数据
             this.priorityList = nodeList;
@@ -255,48 +248,59 @@ export default {
     async handleInitData() {
       // 处理回显初始值
       if (this.$utils.isEmpty(this.value)) {
+        this.loadingShow = false;
         return false;
       }
-      let priorityList = [];
+      let {type = '', ciId = '', customViewId = '', priorityList = [], workerList = []} = this.$utils.deepClone(this.value) || {};
+      let filterPriorityList = [];
       let tbodyList = [];
       this.filterList = [];
-   
       this.cmdbConfig = {
-        type: this.value.type,
-        ciId: this.value.type == 'ci' ? this.value.ciId : '',
-        customViewId: this.value.type == 'customView' ? this.value.customViewId : '',
-        workerList: this.value.workerList || [],
-        dataSource: this.value.ciId || this.value.customViewId
+        type: type,
+        ciId: type == 'ci' ? ciId : '',
+        customViewId: type == 'customView' ? customViewId : '',
+        workerList: workerList || [],
+        dataSource: ciId || customViewId
       };
       if (this.cmdbConfig.type == 'ci') {
-        await this.$api.cmdb.ci.getCiList({ idList: this.value.priorityList || [] }).then(res => {
-          priorityList = res.Return || [];
-        });
-      } else if (this.cmdbConfig.type == 'customView') {
-        await this.$api.cmdb.customview.searchPublicCustomView({ defaultValue: this.value.priorityList || [] }).then(res => {
-          tbodyList = res.Return?.tbodyList || [];
+        await this.$api.cmdb.ci.searchCiListAttr({ defaultValue: priorityList || [], ciId: this.cmdbConfig.dataSource }).then(res => {
+          tbodyList = res.Return || [];
           tbodyList.forEach((item) => {
-            if (item.name && item.id) {
-              priorityList.push({
-                text: item.name,
+            if (item.label && item.id) {
+              filterPriorityList.push({
+                text: item.label,
                 value: item.id
               });
             }
           });
         });
+      } else if (this.cmdbConfig.type == 'customView') {
+        await this.$api.cmdb.customview.searchCustomAttrData({ defaultValue: priorityList || [], id: this.cmdbConfig.dataSource }).then(res => {
+          tbodyList = res.Return?.attrList || [];
+          tbodyList.forEach((item) => {
+            if ((item.alias || (item.attrVo && item.attrVo.label)) && item.uuid) {
+              filterPriorityList.push({
+                text: item.alias || (item.attrVo && item.attrVo.label),
+                value: item.uuid
+              });
+            }
+          });
+        });
       }
-      this.handleWorkerList(this.value.ciId || this.value.customViewId);
-      this.handleTypeById(this.value.type);
+      this.handleWorkerList(ciId || customViewId);
+      this.handleTypeById(type);
       this.value?.filterList?.forEach(item => {
         // 处理映射关系回显
         if (item && item.key && item.formAttributeUuid) {
-          this.addFilter(item.key, item.formAttributeUuid, this.value.ciId || this.value.customViewId);
+          this.addFilter(item.key, item.formAttributeUuid, ciId || customViewId);
         }
       });
-
-      this.priorityList = priorityList || [];
+      // 根据优先级idList拿到对应的text，然后根据优先级排序，设置用户拖拽前的数据
+      this.priorityList = filterPriorityList.sort((a, b) => priorityList.indexOf(a.value) - priorityList.indexOf(b.value))
+        .map(item => ({ ...item })); // 采用浅拷贝的方式，避免 filterPriorityList 中的元素被修改
+      this.loadingShow = false;
     },
-    handleWorkerList(value, isNeed = false) {
+    handleWorkerList(value) {
       this.cmdbDispatcherList.push(...this.otherAttrFormList);
       this.cmdbDispatcherList.forEach(item => {
         if (item.name == 'workerList') {
