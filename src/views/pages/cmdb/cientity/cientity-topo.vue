@@ -4,6 +4,62 @@
       <div class="grid">
         <div class="action-group">
           <div class="action-item">
+            <Dropdown placement="bottom-start">
+              <a v-if="!currentTemplate" href="javascript:void(0)">
+                {{ $t('term.cmdb.extendlevel') }}
+                <b class="ml-xs">{{ searchParam.level }}</b>
+                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
+              </a>
+              <a v-else>
+                {{ $t('page.scene') }}
+                <b class="ml-xs">{{ currentTemplate.name }}</b>
+                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>按场景展开</DropdownItem>
+                <DropdownItem v-for="(topoTemplate, index) in filterCiTopoTemplateList" :key="index" :selected="searchParam.templateId === topoTemplate.id">
+                  <span :class="{ 'text-grey': !topoTemplate.isActive }" @click="showTopoTemplate(topoTemplate)">{{ topoTemplate.name }}</span>
+                  <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-edit" @click="editTopoTemplate(topoTemplate)"></span>
+                  <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-trash-o" @click="deleteTopoTemplate(topoTemplate)"></span>
+                </DropdownItem>
+                <DropdownItem v-if="ciTopoTemplateList && ciTopoTemplateList.length > 0" divided disabled>按层数展开</DropdownItem>
+                <DropdownItem
+                  v-for="i in maxLevel"
+                  :key="i"
+                  :name="i"
+                  :selected="searchParam.level === i"
+                  @click.native="changeLevel(i)"
+                >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
+                <DropdownItem :divided="ciTopoTemplateList && ciTopoTemplateList.length > 0" @click.native="editTopoTemplate()">
+                  <span class="tsfont-plus">{{ $t('dialog.title.addtarget', { target: $t('page.scene') }) }}</span>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <div class="action-item">
+            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeLayout">
+              <a href="javascript:void(0)">
+                <span v-if="currentLayout">
+                  {{ layoutList.find(d => d.engine === currentLayout).name }}
+                  <Icon type="ios-arrow-down"></Icon>
+                </span>
+                <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
+              </a>
+              <DropdownMenu slot="list">
+                <template>
+                  <DropdownItem
+                    v-for="(layout, index) in layoutList"
+                    :key="index"
+                    :name="layout.engine"
+                    :selected="currentLayout === layout.engine"
+                  >
+                    {{ layout.name }}
+                  </DropdownItem>
+                </template>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <div v-if="!searchParam.templateId" class="action-item">
             <TsFormSwitch
               :trueName="1"
               :falseName="0"
@@ -14,8 +70,8 @@
               @on-change="changeIsBackbone"
             ></TsFormSwitch>
           </div>
-          <div class="action-item">
-            <Dropdown placement="bottom-start" @on-click="changeLevel">
+          <!--<div class="action-item">
+            <Dropdown placement="bottom-start">
               <a href="javascript:void(0)">
                 {{ $t('term.cmdb.extendlevel') }}
                 <b style="margin-left: 3px">{{ searchParam.level }}</b>
@@ -27,11 +83,12 @@
                   :key="i"
                   :name="i"
                   :selected="searchParam.level == i"
+                  @click.native="changeLevel(i)"
                 >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>
-          <div v-if="relTypeList && relTypeList.length > 0" class="action-item">
+          </div>-->
+          <!--<div v-if="relTypeList && relTypeList.length > 0" class="action-item">
             <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
               <a href="javascript:void(0)">
                 {{ $t('term.cmdb.showrel') }}
@@ -59,30 +116,7 @@
                 </template>
               </DropdownMenu>
             </Dropdown>
-          </div>
-          <div class="action-item">
-            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeLayout">
-              <a href="javascript:void(0)">
-                <span v-if="currentLayout">
-                  {{ layoutList.find(d => d.engine === currentLayout).name }}
-                  <Icon type="ios-arrow-down"></Icon>
-                </span>
-                <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
-              </a>
-              <DropdownMenu slot="list">
-                <template>
-                  <DropdownItem
-                    v-for="(layout, index) in layoutList"
-                    :key="index"
-                    :name="layout.engine"
-                    :selected="currentLayout === layout.engine"
-                  >
-                    {{ layout.name }}
-                  </DropdownItem>
-                </template>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
+          </div>-->
         </div>
         <div>
           <TsFormInput
@@ -94,7 +128,7 @@
           ></TsFormInput>
         </div>
       </div>
-      <div v-if="globalAttrList && globalAttrList.length > 0">
+      <div v-if="globalAttrList && globalAttrList.length > 0" class="mb-md">
         <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
           <span class="mr-md">
             <b class="text-grey">{{ attr.label }}</b>
@@ -111,6 +145,26 @@
         </span>
       </div>
       <div style="position: relative">
+        <div v-if="currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
+          <span v-for="(p, pindex) in currentTemplate.config.ciRelList" :key="pindex">
+            <span v-if="pindex === 0">
+              <Tag color="success">{{ p.ciLabel }}({{ p.ciName }})</Tag>
+            </span>
+            <span v-if="p.direction === 'from'" class="text-grey fz10 tsfont-minus"></span>
+            <span v-else-if="p.direction === 'to'" class="text-grey fz10 tsfont-arrow-left"></span>
+            <span class="text-grey fz10">
+              {{ p.relLabel }}
+            </span>
+            <span v-if="p.direction === 'from'" class="text-grey fz10 tsfont-arrow-right"></span>
+            <span v-else-if="p.direction === 'to'" class="text-grey fz10 tsfont-minus"></span>
+            <span>
+              <Tag v-if="pindex === currentTemplate.config.ciRelList.length - 1" color="success">{{ p.targetCiLabel }}({{ p.targetCiName }})</Tag>
+              <Tag v-else :color="!p.isHidden ? 'primary' : 'default'">
+                <span :class="!p.isHidden ? 'tsfont-eye' : 'tsfont-eye-off'">{{ p.targetCiLabel }}({{ p.targetCiName }})</span>
+              </Tag>
+            </span>
+          </span>
+        </div>
         <div ref="graph" class="clearfix graph"></div>
         <D3Tooltip
           v-if="isTooltipShow"
@@ -129,6 +183,12 @@
         </div>
       </div>
       <Loading :loadingShow="isloading" type="fix"></Loading>
+      <CiTopoTemplateEdit
+        v-if="isCiTopoTemplateEditShow"
+        :id="currentTopoTemplateId"
+        :ciId="ciId"
+        @close="closeTopoTemplateDialog"
+      ></CiTopoTemplateEdit>
     </div>
   </div>
 </template>
@@ -143,7 +203,8 @@ export default {
   components: {
     D3Tooltip: resolve => require(['../asset/d3/d3-tooltip.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
+    CiTopoTemplateEdit: resolve => require(['@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue'], resolve)
   },
   props: {
     ciEntityId: { type: Number },
@@ -152,7 +213,7 @@ export default {
   data() {
     return {
       keyword: '',
-      maxLevel: 10,
+      maxLevel: 5,
       isloading: false,
       currentLayout: 'dot',
       layoutList: [
@@ -171,7 +232,6 @@ export default {
         isBackbone: 1,
         ciEntityId: this.ciEntityId,
         ciId: this.ciId,
-        level: 3,
         disableRelList: [],
         globalAttrFilterList: []
       },
@@ -188,15 +248,26 @@ export default {
       tooltipCiEntityId: null,
       tooltipTimer: null, //关闭计时器
       nodeNameMap: {},
-      globalAttrList: []
+      globalAttrList: [],
+      ciTopoTemplateList: [],
+      isCiTopoTemplateEditShow: false,
+      currentTopoTemplateId: null
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
     this.searchGlobalAttr();
     this.initGraph();
+    await this.getCiTopoTemplateByCiId();
+    this.$set(this.searchParam, 'level', 3);
+    if (this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
+      const template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      if (template) {
+        this.showTopoTemplate(template);
+      }
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -205,6 +276,57 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    showTopoTemplate(template) {
+      this.$set(this.searchParam, 'templateId', template.id);
+      this.$delete(this.searchParam, 'level');
+    },
+    deleteTopoTemplate(template) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.ci.deleteCiTopoTemplateById(template.id).then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getCiTopoTemplateByCiId();
+              if (this.searchParam.templateId) {
+                this.$delete(this.searchParam, 'templateId');
+                this.$set(this.searchParam, 'level', 3);
+              }
+              vnode.isShow = false;
+            }
+          });
+        }
+      });
+    },
+    async closeTopoTemplateDialog(needRefresh) {
+      if (needRefresh) {
+        await this.getCiTopoTemplateByCiId();
+        if (this.currentTemplate) {
+          if (this.currentTemplate.isActive) {
+            this.renderGraph();
+          } else {
+            this.$delete(this.searchParam, 'templateId');
+          }
+        }
+      }
+      this.isCiTopoTemplateEditShow = false;
+      this.currentTopoTemplateId = null;
+    },
+    editTopoTemplate(template) {
+      this.isCiTopoTemplateEditShow = true;
+      if (template) {
+        this.currentTopoTemplateId = template.id;
+      } else {
+        this.currentTopoTemplateId = null;
+      }
+    },
+    async getCiTopoTemplateByCiId() {
+      await this.$api.cmdb.ci.getCiTopoTemplateByCiId(this.ciId).then(res => {
+        this.ciTopoTemplateList = res.Return;
+      });
+    },
     isAttrActive(attr, item) {
       if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
         return false;
@@ -237,7 +359,7 @@ export default {
         this.globalAttrList = res.Return.tbodyList;
       });
     },
-    isRelTypeSelected(relType) {
+    /*isRelTypeSelected(relType) {
       let isAllDisabled = true;
       for (let i = 0; i < relType.relList.length; i++) {
         if (!this.searchParam.disableRelList.includes(relType.relList[i].id)) {
@@ -246,7 +368,7 @@ export default {
         }
       }
       return !isAllDisabled;
-    },
+    },*/
     findNode() {
       //d3.selectAll('.selectednode').classed('selectednode', false);
       d3.selectAll('.selectedcircle').remove();
@@ -279,13 +401,14 @@ export default {
     changeLayout(layout) {
       this.currentLayout = layout;
     },
-    changeLevel(name) {
-      this.searchParam.level = name;
+    changeLevel(level) {
+      this.$set(this.searchParam, 'level', level);
+      this.$delete(this.searchParam, 'templateId');
     },
     changeIsBackbone(isBackbone) {
       this.searchParam.isBackbone = isBackbone;
     },
-    changeDisableRel(name) {
+    /*changeDisableRel(name) {
       if (name.startsWith('reltype_')) {
         name = parseInt(name.replace('reltype_', ''));
         const relType = this.relTypeList.find(d => d.id == name);
@@ -314,7 +437,7 @@ export default {
           this.searchParam.disableRelList.push(name);
         }
       }
-    },
+    },*/
     loadImage(nodesString) {
       (nodesString.match(/image=[^,]*(files\/\d*|png)/g) || [])
         .filter((value, index, self) => {
@@ -345,100 +468,100 @@ export default {
       }
     },
     initGraph() {
-      window.setTimeout(() => {
-        const graphEl = this.$refs['graph'];
-        if (graphEl) {
-          let graph = d3.select(graphEl);
-          const _this = this;
-          graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
-          this.graph.graphviz = graph
-            .graphviz()
-            .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
-            .width(graphEl.offsetWidth - 10)
-            .zoom(true)
-            .fit(false)
-            .tweenShapes(false)
-            .tweenPaths(false)
-            .convertEqualSidedPolygons(false)
-            .tweenPrecision('30%')
-            .attributer(function(d) {
-              if (d.attributes.class === 'edge') {
-                let keys = d.key.split('->');
-                let from = keys[0].trim();
-                let to = keys[1].trim();
-                d.attributes.from = from;
-                d.attributes.to = to;
+      //window.setTimeout(() => {
+      const graphEl = this.$refs['graph'];
+      if (graphEl) {
+        let graph = d3.select(graphEl);
+        const _this = this;
+        graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
+        this.graph.graphviz = graph
+          .graphviz()
+          .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+          .width(graphEl.offsetWidth - 10)
+          .zoom(true)
+          .fit(false)
+          .tweenShapes(false)
+          .tweenPaths(false)
+          .convertEqualSidedPolygons(false)
+          .tweenPrecision('30%')
+          .attributer(function(d) {
+            if (d.attributes.class === 'edge') {
+              let keys = d.key.split('->');
+              let from = keys[0].trim();
+              let to = keys[1].trim();
+              d.attributes.from = from;
+              d.attributes.to = to;
+            }
+            if (d.tag === 'text') {
+              let key = d.children[0].text;
+              d3.select(this).attr('text-key', key);
+            }
+            if (d.tag == 'a') {
+              d._this = this;
+              if (_this.nodeNameMap[d.attributes['xlink:title']]) {
+                _this.nodeNameMap[d.attributes['xlink:title']].push(d); //d3.select(this);
+              } else {
+                _this.nodeNameMap[d.attributes['xlink:title']] = [d];
               }
-              if (d.tag === 'text') {
-                let key = d.children[0].text;
-                d3.select(this).attr('text-key', key);
-              }
-              if (d.tag == 'a') {
-                d._this = this;
-                if (_this.nodeNameMap[d.attributes['xlink:title']]) {
-                  _this.nodeNameMap[d.attributes['xlink:title']].push(d); //d3.select(this);
-                } else {
-                  _this.nodeNameMap[d.attributes['xlink:title']] = [d];
-                }
-              }
-            })
-            .on('end', () => {
-              //console.log('done');
-            });
-          this.renderGraph();
-          d3.select(window).on('resize', this.resizeSVG);
-        }
-      }, 0);
+            }
+          })
+          .on('end', () => {
+            //console.log('done');
+          });
+        d3.select(window).on('resize', this.resizeSVG);
+      }
+      //}, 0);
     },
     renderGraph() {
-      this.isloading = true;
-      const graphEl = this.$refs['graph'];
-      const param = this.searchParam;
-      param.layout = this.currentLayout;
-      this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
-        if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
-          this.error = '';
-          const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
-          this.relList = res.Return.relList || [];
-          this.loadImage(nodesString);
-          this.graph.graphviz
-            .transition()
-            .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
-            .width(graphEl.offsetWidth - 10)
-            .renderDot(nodesString);
+      if (this.graph) {
+        this.isloading = true;
+        const graphEl = this.$refs['graph'];
+        const param = this.searchParam;
+        param.layout = this.currentLayout;
+        this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
+          if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
+            this.error = '';
+            const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
+            this.relList = res.Return.relList || [];
+            this.loadImage(nodesString);
+            this.graph.graphviz
+              .transition()
+              .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+              .width(graphEl.offsetWidth - 10)
+              .renderDot(nodesString);
 
-          //let svg = d3.select('#graph').select('svg');
-          //svg.append('g').lower();
-          addEvent('svg', 'mouseover', e => {
-            this.unColorNode();
-            e.preventDefault();
-            e.stopPropagation();
-          });
-          addEvent('.cinode', 'mouseenter', async e => {
-            e.preventDefault();
-            e.stopPropagation();
-            d3.selectAll('g').attr('cursor', 'pointer');
-            this.g = e.currentTarget;
-            this.nodeName = this.g.firstElementChild.textContent.trim();
-            this.colorNode(this.nodeName);
-            this.showTooltip(e.currentTarget);
-          });
-          addEvent('.cinode', 'mouseleave', async e => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.hideTooltip();
-          });
-          addEvent('.cinode', 'click', async e => {
-            const g = e.currentTarget;
-            const className = d3.select(g).attr('class');
-            if (className) {
-              const ids = className
-                .split(' ')
-                .find(d => d.indexOf('CiEntity_') == 0)
-                .split('_');
-              this.toCiEntityView(ids[1], ids[2]);
-            }
-          });
+            //let svg = d3.select('#graph').select('svg');
+            //svg.append('g').lower();
+            addEvent('svg', 'mouseover', e => {
+              this.unColorNode();
+              e.preventDefault();
+              e.stopPropagation();
+            });
+            addEvent('.cinode', 'mouseenter', async e => {
+              e.preventDefault();
+              e.stopPropagation();
+              d3.selectAll('g').attr('cursor', 'pointer');
+              this.g = e.currentTarget;
+              this.nodeName = this.g.firstElementChild.textContent.trim();
+              this.colorNode(this.nodeName);
+              this.showTooltip(e.currentTarget);
+            });
+            addEvent('.cinode', 'mouseleave', async e => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.hideTooltip();
+            });
+            addEvent('.cinode', 'click', async e => {
+              const g = e.currentTarget;
+              const className = d3.select(g).attr('class');
+              if (className) {
+                const ids = className
+                  .split(' ')
+                  .find(d => d.indexOf('CiEntity_') == 0)
+                  .split('_');
+                this.toCiEntityView(ids[1], ids[2]);
+              }
+            });
           /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
         let x = g.node().getBBox().x;
         let y = g.node().getBBox().y;
@@ -448,11 +571,12 @@ export default {
           .attr('x', x)
           .attr('y', y + 10)
           .text('abc');*/
-        } else {
-          this.error = this.$t('message.cmdb.notopo');
-        }
-        this.isloading = false;
-      });
+          } else {
+            this.error = this.$t('message.cmdb.notopo');
+          }
+          this.isloading = false;
+        });
+      }
     },
     clearTooltipTimer() {
       if (this.tooltipTimer) {
@@ -542,7 +666,23 @@ export default {
   },
   filter: {},
   computed: {
-    relTypeList() {
+    filterCiTopoTemplateList() {
+      if (this.ciTopoTemplateList) {
+        if (this.$AuthUtils.hasRole('CI_MODIFY')) {
+          return this.ciTopoTemplateList;
+        } else {
+          return this.ciTopoTemplateList.filter(d => !!d.isActive);
+        }
+      }
+      return [];
+    },
+    currentTemplate() {
+      if (this.searchParam.templateId && this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
+        return this.ciTopoTemplateList.find(d => d.id === this.searchParam.templateId);
+      }
+      return null;
+    },
+    /*relTypeList() {
       const relTypeList = [];
       this.relList.forEach(rel => {
         const relType = relTypeList.find(d => d.id === rel.typeId);
@@ -560,7 +700,7 @@ export default {
       } else {
         return this.relList.filter(r => !this.searchParam.includes(r.direction + '_' + r.id));
       }
-    },
+    },*/
     tooltipPosition() {
       let style = '';
       if (this.tooltipTop) {
