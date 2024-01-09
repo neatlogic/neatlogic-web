@@ -17,7 +17,7 @@
         <div
           v-for="(item, index) in filterList"
           :key="item.uuid"
-          class="flex-between"
+          class="flex-start"
           :class="filterList.length > 1 ? 'mb-sm' : ''"
         >
           <TsFormSelect
@@ -27,10 +27,11 @@
             transfer
             width="84px"
             border="border"
-            :validateList="['required']"
+            :validateList="[{name: 'required', message: ''}]"
             :dealDataByUrl="handleKeyDealDataByUrl"
+            :isNowrap="true"
           ></TsFormSelect>
-          <span class="tsfont-arrow-right pl-xs pr-xs"></span>
+          <span class="tsfont-arrow-right" style="padding: 0 4px"></span>
           <TsFormSelect
             ref="formAttribute"
             v-model="item.formAttributeUuid"
@@ -40,10 +41,16 @@
             width="84px"
             transfer
             border="border"
-            :validateList="['required']"
-            @on-focus="filterFormAttributeDataList()"
+            :validateList="[{name: 'required', message: ''}]"
+            :isNowrap="true"
+            @on-focus="handleFormAttributeDataListDisabled()"
           ></TsFormSelect>
-          <span v-if="index != 0" class="text-action tsfont-trash-o pl-xs" @click.stop="deleteFilter(index)"></span>
+          <span
+            v-if="index != 0"
+            class="text-action tsfont-trash-o"
+            style="padding-left: 4px;"
+            @click.stop="deleteFilter(index)"
+          ></span>
         </div>
         <span class="tsfont-plus text-href" @click="() => addFilter()">{{ $t('dialog.title.addtarget', { target: $t('page.mapping') }) }}</span>
       </template>
@@ -71,7 +78,6 @@
       </template>
     </TsForm>
   </div>
- 
 </template>
 <script>
 import VueDraggable from 'vuedraggable';
@@ -189,7 +195,6 @@ export default {
         },
         {
           name: 'priorityList',
-          validateList: ['required'],
           label: this.$t('page.priority'),
           type: 'slot'
         }
@@ -249,7 +254,7 @@ export default {
         this.loadingShow = false;
         return false;
       }
-      let {type = '', ciId = '', customViewId = '', priorityList = [], workerList = []} = this.$utils.deepClone(this.value) || {};
+      let {type = '', ciId = '', customViewId = '', priorityList = [], workerList = [], filterList = []} = this.$utils.deepClone(this.value) || {};
       let filterPriorityList = [];
       let tbodyList = [];
       this.filterList = [];
@@ -287,7 +292,7 @@ export default {
       }
       this.handleWorkerList(ciId || customViewId);
       this.handleTypeById(type);
-      this.value?.filterList?.forEach(item => {
+      filterList.forEach(item => {
         // 处理映射关系回显
         if (item && item.key && item.formAttributeUuid) {
           this.addFilter(item.key, item.formAttributeUuid, ciId || customViewId);
@@ -356,13 +361,12 @@ export default {
       });
       return nodeList;
     },
-    filterFormAttributeDataList() {
+    handleFormAttributeDataListDisabled() {
       let uuidList = [];
       this.filterList.forEach(item => {
         if (item && item.formAttributeUuid) {
           uuidList.push(item.formAttributeUuid);
         }
-
         item.formAttributeDataList.forEach((v, vIndex) => {
           const updatedV = { ...v, _disabled: false };
           if (v && v.uuid && uuidList.includes(v.uuid)) {
