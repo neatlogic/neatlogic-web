@@ -420,62 +420,60 @@ export default {
       });
       return elementList;
     },
-    addNewCiEntity(type, item) {
+    addNewCiEntity(item) {
       if (!this.valid()) {
         return;
       }
       this.loadingShow = true;
-      if (type === 'rel') {
-        const rel = item;
-        const ciId = rel.ciId;
-        const relId = rel._relId;
-        const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
-        const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
-        this.$api.cmdb.ci.getCiForprocessmapping({id: ciId}).then(res => {
-          if (res.Return) {
-            const ci = res.Return;
-            //获取当前配置项数据
-            const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
-            const newCiEntity = {
-              uuid: uuid,
-              _relId: relId, //记录来自哪个关系，自动填上配置项
-              _direction: rel.direction, //记录关系方向
-              ciId: ciId,
-              rootCiId: this.propRootCiId,
-              ciName: ci.name,
-              ciLabel: ci.label,
-              ciIcon: ci.icon,
-              editMode: 'global',
-              createPolicy: 'single',
-              batchDataSource: {},
-              action: 'append',
-              relEntityData: {},
-              _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
-              allAttrEntityData: {}, //所有的属性
-              isAbstract: ci.isAbstract
-            };
-            newCiEntity['_elementList'] = this.getElementByCiId(ci);
-            newCiEntity['_uniqueAttrList'] = ci.uniqueAttrIdList;
-            newCiEntity['_description'] = this.descriptionConfig;
-            newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
-              valueList: [
-                {
-                  ciEntityUuid: currentCiEntity.uuid,
-                  ciEntityName: currentCiEntity.ciLabel,
-                  ciId: ciId,
-                  type: 'from'
-                }
-              ]
-            };
-            this.initValue(newCiEntity, currentCiEntity);
-            this.ciData = newCiEntity;
-            this.ciEntityQueue.push(newCiEntity);
-            this.updateCurrentFormItemList();
-          }
-        }).finally(() => {
-          this.loadingShow = false;
-        });
-      } 
+      const rel = item;
+      const ciId = rel.ciId;
+      const relId = rel._relId;
+      const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
+      const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
+      this.$api.cmdb.ci.getCiForprocessmapping({id: ciId}).then(res => {
+        if (res.Return) {
+          const ci = res.Return;
+          //获取当前配置项数据
+          const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+          const newCiEntity = {
+            uuid: uuid,
+            _relId: relId, //记录来自哪个关系，自动填上配置项
+            _direction: rel.direction, //记录关系方向
+            ciId: ciId,
+            rootCiId: this.propRootCiId,
+            ciName: ci.name,
+            ciLabel: ci.label,
+            ciIcon: ci.icon,
+            editMode: 'global',
+            createPolicy: 'single',
+            batchDataSource: {},
+            action: 'append',
+            relEntityData: {},
+            _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
+            allAttrEntityData: {}, //所有的属性
+            isAbstract: ci.isAbstract
+          };
+          newCiEntity['_elementList'] = this.getElementByCiId(ci);
+          newCiEntity['_uniqueAttrList'] = ci.uniqueAttrIdList;
+          newCiEntity['_description'] = this.descriptionConfig;
+          newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
+            valueList: [
+              {
+                ciEntityUuid: currentCiEntity.uuid,
+                ciEntityName: currentCiEntity.ciLabel,
+                ciId: ciId,
+                type: 'from'
+              }
+            ]
+          };
+          this.initValue(newCiEntity, currentCiEntity);
+          this.ciData = newCiEntity;
+          this.ciEntityQueue.push(newCiEntity);
+          this.updateCurrentFormItemList();
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     },
     removeNewCiEntity(item) {
       if (item._relId) { //关系删除
@@ -517,7 +515,7 @@ export default {
           this.updateCurrentFormItemList();
         } else {
           //需要通过接口获取数据回显
-          this.addNewCiEntity('rel', rel);
+          this.addNewCiEntity(rel);
         }
       }
     },

@@ -103,7 +103,7 @@
                                   editNewRelEntity(relentity, e.element);
                                 }
                               "
-                              @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity, ciEntityData || '')"
+                              @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity)"
                             >
                               <span>{{ relentity.ciEntityName }}</span>
                             </Tag>
@@ -375,7 +375,7 @@ export default {
         }
       }
     },
-    ciEntityDatafn(key, relentity, rowdata) {
+    ciEntityDatafn(key, relentity) {
       if (this.ciEntityData.relEntityData[key] && this.ciEntityData.relEntityData[key]['valueList']) {
         for (let i = this.ciEntityData.relEntityData[key]['valueList'].length - 1; i >= 0; i--) {
           if (this.ciEntityData.relEntityData[key]['valueList'][i] == relentity) {
@@ -387,8 +387,8 @@ export default {
         }
       }
     },
-    delRelEntity(key, relentity, rowdata) {
-      this.ciEntityDatafn(key, relentity, rowdata);
+    delRelEntity(key, relentity) {
+      this.ciEntityDatafn(key, relentity);
     },
     editNewRelEntity(rel, config) {
       if (this.getTagType(rel) == 'success') {
@@ -437,7 +437,7 @@ export default {
       rel.ciId = ciId;
       rel._relId = rel.id;
       this.isRelPopShow[rel.id + '_' + rel.direction] = false;
-      this.$emit('new', 'rel', rel);
+      this.$emit('new', rel);
     },
     //删除选中的属性
     deleteAttrEntity(key, attrentity) {
