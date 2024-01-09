@@ -430,7 +430,8 @@ export default {
       this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
-        // this.sitemapTitle = '流程图';// + this.processConfig.process.processConfig.name;
+        this.sitemapTitle = this.processConfig.process.processConfig.name;
+        this.tsDialoglookSitemap.flowUuid = this.processConfig.process.processConfig.uuid;
         this.initTopo(data.Return);
       }
     },

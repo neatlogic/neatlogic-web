@@ -1,6 +1,30 @@
 import axios from '../../http';
 
 const ci = {
+  deleteCiTopoTemplateById(id) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/delete', {id: id});
+  },
+  saveTopoTemplate(params) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/save', params);
+  },
+  getCiTopoTemplateById(id, params) {
+    let param = {
+      id: id
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/get', param);
+  },
+  getCiTopoTemplateByCiId(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/list', param);
+  },
   //保存模型
   saveCi(params) {
     return axios.post('/api/rest/cmdb/ci/save', params);

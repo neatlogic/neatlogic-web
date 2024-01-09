@@ -30,7 +30,12 @@
               ></UserCard>
               <span>{{ item.title }}：</span>
               <span>
-                <Tooltip max-width="600" transfer theme="light">
+                <Tooltip
+                  max-width="600"
+                  transfer
+                  theme="light"
+                  placement="bottom-start"
+                >
                   <span v-html="item.content"></span>
                   <span slot="content">
                     <span v-html="item.content"></span>
