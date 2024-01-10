@@ -1082,7 +1082,6 @@ export default {
     },
     //获取分派器下拉列表
     getWorkerdispatcher() {
-      let _this = this;
       let data = {};
       this.$api.process.process
         .workerdispatcher(data)

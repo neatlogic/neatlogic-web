@@ -7,6 +7,7 @@
             :data="tree"
             :render="renderTreeNode"
             emptyText=""
+            class="ts-tree"
             @on-select-change="handleNodeSelect"
             @on-toggle-expand="handleNodeExpand"
           />

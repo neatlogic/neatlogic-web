@@ -963,5 +963,6 @@
   "userauthfailedpleaselogin": "认证失败，请重新登录",
   "partial": "局部",
   "rolerule": "登录认证的请求需要携带Header做规则表达式(注意表达式中header参数全小写)，如果表达式执行后的值为true则该角色生效，false和语法异常都不生效 。 如：\"${DATA.env}\"==\"sit\"&&(\"${DATA.test}\"==\"1\"||\"${DATA.test2}\"==\"aaa\")",
+  "datasources": "数据来源",
   "autoexeccombopeditinfooptypetip":"查询类：在配置管理，具备‘只读’权限的资产，才可以作为执行目标；\n操作类：在配置管理，团体管理中具备‘自动化操作’权限的资产，才可以作为执行目标；"
 }
