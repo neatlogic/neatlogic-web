@@ -65,7 +65,7 @@ export function initRouter(VueRouter, store) {
     document.title = $t(title);
     let usertoken = utils.getCookie('neatlogic_authorization');
     //如果是租户不存在，进路由前拦截统一外层404
-    if (SSOTICKETKEY && SSOTICKETVALUE) {
+    if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
       usertoken = 'Bearer_' + SSOTICKETVALUE;
     }
 

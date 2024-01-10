@@ -13,6 +13,7 @@ var BASELANGUAGES = getCookie('neatlogic_language') || 'zh';
 var MODULEID = '';
 var MENULIST = [];
 var MENUTYPE = {};
+var AUTHTYPE = ''; // 授权类型
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
 const COMMERCIAL_MODULES = []; //已激活的商业模块
@@ -68,7 +69,7 @@ function getDirectUrl() {
   // 获取页面重定向地址
   fetch(BASEURLPREFIX + '/api/rest/init/config/get', {
     headers: {
-      AuthType: SSOTICKETKEY,
+      AuthType: AUTHTYPE || SSOTICKETKEY,
       AuthValue: SSOTICKETVALUE || getCookie(SSOTICKETKEY)
     }
   })
@@ -115,13 +116,17 @@ function getSsoTokenKey() {
       }
     })
     .then(responseText => {
-      if (responseText && responseText.Status === 'OK' && responseText.ssoTicketKey) {
+      if (responseText && responseText.Status === 'OK') {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
+        AUTHTYPE = responseText.authType || '';
         if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
           const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
           if (queryString) {
             SSOTICKETVALUE = queryString.split('&')[0];
           }
+        }
+        if ((AUTHTYPE || SSOTICKETKEY) && (SSOTICKETVALUE || getCookie(SSOTICKETKEY))) {
+          getDirectUrl();
         }
       } else if (responseText && responseText.Status !== 'OK') {
         window.location.href = '/404.html';
@@ -132,4 +137,3 @@ function getSsoTokenKey() {
     });
 }
 getSsoTokenKey();
-getDirectUrl();

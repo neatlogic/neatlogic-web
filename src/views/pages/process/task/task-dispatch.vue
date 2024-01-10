@@ -82,6 +82,9 @@
       </template>
     </TsContain>
     <TsDialog :isShow.sync="isShowFlowmap" v-bind="flowmapConfig">
+      <template v-slot:header>
+        <span class="text-action" @click="openFlow()">{{ flowmapConfig.title }}</span>
+      </template>
       <div ref="topo" style="min-height: 480px; height: 100%;"></div>
     </TsDialog>
     <ValidDialog :isShow.sync="validCardOpen" :validList="validList" @validItem="validItem"></ValidDialog>
@@ -132,7 +135,6 @@ export default {
       validCardOpen: false,
       isShowFlowmap: false, //展示流程图
       flowmapConfig: {
-        title: this.$t('term.process.viewflowchart'),
         width: 'medium',
         height: '600px',
         fullscreen: true,
@@ -325,9 +327,12 @@ export default {
       this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
-        // this.flowmapConfig.title = '流程图' + this.processConfig.process.processConfig.name;
+        this.flowmapConfig.title = this.processConfig.process.processConfig.name;
         this.initTopo(data.Return);
       }
+    },
+    openFlow() {
+      window.open(HOME + '/process.html#/flow-edit?uuid=' + this.processConfig.process.processConfig.uuid, '_blank');
     },
     initTopo(data) { //获取流程图
       if (!data) return;
