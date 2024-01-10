@@ -16,6 +16,7 @@
             :defaultValue="filter"
             :readonly="true"
             :bgOp="false"
+            :opType="opType"
             class="nopadding filter-main overflow"
             @clickMoreBtn="moreVisible=true"
           ></Filters>
@@ -79,6 +80,7 @@
           :config="valueConfig"
           :canEdit="canEdit"
           :defaultSearchValue="filterSearchValue"
+          ：opType="opType"
         ></TargetDetail>
         <TargetView
           v-else
@@ -105,6 +107,7 @@
       :nodeList="valueConfig.selectNodeList?valueConfig.selectNodeList:[]"
       :isValid="true"
       :config="defaultConfig"
+      :opType="opType"
       @on-ok="onOkNode(true,...arguments)"
       @close="onOkUpdateList(false)"
       @validSetting="nodeValidSetting"
@@ -159,7 +162,8 @@ export default {
     filterSearchValue: { //节点搜索条件
       type: Object
     },
-    defaultTagFilter: Array
+    defaultTagFilter: Array,
+    opType: String
   },
   data() {
     return {

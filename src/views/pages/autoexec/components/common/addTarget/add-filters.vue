@@ -21,6 +21,7 @@
         :canEdit="canEdit"
         :defaultValue="searchVal"
         :defaultSearchValue="defaultSearchValue"
+        :opType="opType"
       ></Filters>
     </div>
   </div>
