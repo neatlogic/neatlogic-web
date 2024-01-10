@@ -309,9 +309,7 @@ export default {
       let newList = [];
       if (temList.length > 0) {
         temList.forEach(v => {
-          if (v) {
-            newList.push({content: v});
-          }
+          newList.push({content: v});
         });
       } else {
         this.isInfoCode = true;

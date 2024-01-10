@@ -133,9 +133,7 @@ export default {
       if (data) {
         data.defaultValue && (this.sourcDefaultValue = data.defaultValue);
         data.dataSource && (this.dataSource = data.dataSource);
-        if (this.sourcDefaultValue) {
-          config.defaultValue = this.sourcDefaultValue;
-        }
+        config.defaultValue = this.sourcDefaultValue;
         config.dataSource = this.dataSource;
         if (this.dataSource == 'matrix') {
           data.matrixUuid && (this.matrixconfig.matrixUuid = data.matrixUuid);

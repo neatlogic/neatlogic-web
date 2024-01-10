@@ -278,6 +278,7 @@ export default {
       this.title = this.name + '_' + this.$utils.getCurrenttime('MMdd');
       this.versionType = 'edit';
       this.$set(this.versionVo, 'status', 'draft');
+      this.$set(this.initData, 'title', this.title);
       this.versionId = null;
       this.isEdit = true;
     },
@@ -579,9 +580,9 @@ export default {
       paramList.push(...inputParamList, ...outputParamList);
       let lineList = [];
       if (this.versionVo.lineList && this.versionVo.lineList.length > 0) {
-        lineList = this.versionVo.lineList
-          .filter(item => !this.$utils.isEmpty(item.content)) // 过滤content内容不为空的数据
-          .map(item => ({ content: item.content })); // 提取content字段的值
+        lineList = this.versionVo.lineList.map(i => {
+          return { content: i.content };
+        });
       }
       if (inputParamList.length > 0) {
         inputParamList.forEach(i => {
@@ -650,9 +651,6 @@ export default {
   beforeRouteLeave(to, from, next, url) {
     let data = this.saveData();
     if (data) {
-      console.log('xxx', this.isEdit, this.$utils.isSame(this.initData, data), this.typeDialog);
-      console.log('初始值', JSON.stringify(this.initData));
-      console.log('之后值', JSON.stringify(data));
       if (!this.isEdit || this.$utils.isSame(this.initData, data) || this.typeDialog == 'delete') {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
