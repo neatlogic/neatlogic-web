@@ -161,8 +161,10 @@ export default {
               this.addFilter('', '', value);
             } else {
               this.formItemList.splice(2, this.formItemList.length);
+              this.priorityList = [];
               for (let key in this.formData) {
-                if (!this.formNameList.includes(key)) {
+                console.log('key', key);
+                if (key && !this.formNameList.includes(key)) {
                   delete this.formData[key];
                 }
               }
@@ -308,8 +310,9 @@ export default {
     },
     handleWorkerList(id) {
       // 根据不同的类型，处理处理人
-      this.formItemList.splice(2, this.formItemList.length);
-      let formItemList = [...this.formItemList, ...this.otherFormItemList];
+      let defaultFormItemList = this.$utils.deepClone(this.formItemList);
+      defaultFormItemList.splice(2, defaultFormItemList.length);
+      let formItemList = [...defaultFormItemList, ...this.otherFormItemList];
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
