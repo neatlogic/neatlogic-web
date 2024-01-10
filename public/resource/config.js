@@ -64,36 +64,6 @@ function getCookie(name) {
 function removeCookie(name) {
   setCookie(name, ' ', new Date(0).toUTCString());
 }
-
-async function getDirectUrl() {
-  try {
-    const response = await fetch(BASEURLPREFIX + '/api/rest/init/config/get', {
-      headers: {
-        AuthType: AUTHTYPE || SSOTICKETKEY,
-        AuthValue: SSOTICKETVALUE || getCookie(SSOTICKETKEY)
-      }
-    });
-
-    if (response.status === 522) {
-      const responseText = await response.json();
-      removeCookie('neatlogic_authorization');
-      if (responseText.Status === 'FAILED') {
-        HTTP_RESPONSE_STATUS_CODE = '522';
-        if (responseText.DirectUrl) {
-          const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
-          window.open(directUrl, '_self');
-        }
-      }
-    } else if (response.status === 200) {
-      const data = await response.json();
-      if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
-        COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
-      }
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
 function handleUrl(url, httpresponsestatuscode) {
   // 处理url是否带有参数
   if (url) {
@@ -101,6 +71,37 @@ function handleUrl(url, httpresponsestatuscode) {
   }
   return url;
 }
+function getDirectUrl() {
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
+
+    xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
+    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
+          COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+        }
+      } else if (xhr.status === 522) {
+        const responseText = JSON.parse(xhr.responseText);
+        removeCookie('neatlogic_authorization');
+        if (responseText.Status === 'FAILED' && responseText.DirectUrl) {
+          HTTP_RESPONSE_STATUS_CODE = '522';
+          const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
+          window.open(directUrl, '_self');
+        }
+      }
+    };
+
+    xhr.send();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function getSsoTokenKey() {
   const currentUrl = location.href;
   var xhr = new XMLHttpRequest();
@@ -119,7 +120,7 @@ async function getSsoTokenKey() {
           SSOTICKETVALUE = queryString.split('&')[0];
         }
       }
-      await getDirectUrl();
+      getDirectUrl();
     } else if (responseText && responseText.Status !== 'OK') {
       window.location.href = '/404.html';
     }
