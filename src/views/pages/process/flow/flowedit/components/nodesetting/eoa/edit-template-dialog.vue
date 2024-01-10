@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="title"
+      :title="currentTemplate.name"
       type="slider"
       :isShow="true"
       width="medium"
@@ -110,11 +110,11 @@ export default {
       list: [],
       dataList: [
         {
-          text: '自定义',
+          text: this.$t('page.custom'),
           value: 'custom'
         },
         {
-          text: '表单组件',
+          text: this.$t('page.formcomponents'),
           value: 'form'
         }
       ],

@@ -21,7 +21,7 @@
       <div class="flex-between text-grey pb-xs">
         <div class="require-label">{{ $t('router.process.eoatemplate') }}</div>
         <div v-if="!$utils.isEmpty(templateIdList)" class="action-group"> 
-          <span class="tsfont-edit" @click="editEoaTemplate()"></span>
+          <span class="text-tip-active tsfont-edit" @click="editEoaTemplate()"></span>
           <span class="action-item tsfont-refresh" @click="refreshEoaTemplate()"></span>
         </div>
       </div>
@@ -100,7 +100,9 @@ export default {
       if (!this.$utils.isEmpty(this.eoaTemplateList)) {
         list.forEach(item => {
           let findItem = this.eoaTemplateList.find(e => e.id === item.id);
-          this.$set(findItem, 'name', item.name);
+          if (findItem) {
+            this.$set(findItem, 'name', item.name);
+          }
         });
       }
       return list;
@@ -119,7 +121,8 @@ export default {
             tbodyList.forEach(item => {
               let findItem = this.eoaTemplateList.find(e => e.id === item.id);
               let mappingList = [];
-              if (findItem) {
+              //更新步骤处理人，流程中只能更改eoa模板中未设置的步骤处理人
+              if (findItem && !this.$utils.isEmpty(findItem.mappingList)) {
                 if (item.config && item.config.stepList) {
                   let list = item.config.stepList.filter(s => {
                     return this.$utils.isEmpty(s.userList);
