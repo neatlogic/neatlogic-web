@@ -157,9 +157,10 @@ export default {
             // 数据来源改变的时候
             if (value) {
               this.handleWorkerList(value);
+              this.filterList = [];
               this.addFilter('', '', value);
             } else {
-              this.formItemList.splice(1, this.formItemList.length - 1);
+              this.formItemList.splice(2, this.formItemList.length);
               for (let key in this.formData) {
                 if (!this.formNameList.includes(key)) {
                   delete this.formData[key];
@@ -307,6 +308,7 @@ export default {
     },
     handleWorkerList(id) {
       // 根据不同的类型，处理处理人
+      this.formItemList.splice(2, this.formItemList.length);
       let formItemList = [...this.formItemList, ...this.otherFormItemList];
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
