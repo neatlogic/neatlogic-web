@@ -65,37 +65,34 @@ function removeCookie(name) {
   setCookie(name, ' ', new Date(0).toUTCString());
 }
 
-function getDirectUrl() {
-  // 获取页面重定向地址
-  fetch(BASEURLPREFIX + '/api/rest/init/config/get', {
-    headers: {
-      AuthType: AUTHTYPE || SSOTICKETKEY,
-      AuthValue: SSOTICKETVALUE || getCookie(SSOTICKETKEY)
-    }
-  })
-    .then(response => {
-      if (response.status === 522) {
-        return response.json().then(responseText => {
-          removeCookie('neatlogic_authorization');
-          if (responseText.Status === 'FAILED') {
-            HTTP_RESPONSE_STATUS_CODE = '522';
-            if (responseText.DirectUrl) {
-              const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
-              window.open(directUrl, '_self');
-            }
-          }
-        });
-      } else if (response.status === 200) {
-        return response.json().then(data => {
-          if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
-            COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
-          }
-        });
+async function getDirectUrl() {
+  try {
+    const response = await fetch(BASEURLPREFIX + '/api/rest/init/config/get', {
+      headers: {
+        AuthType: AUTHTYPE || SSOTICKETKEY,
+        AuthValue: SSOTICKETVALUE || getCookie(SSOTICKETKEY)
       }
-    })
-    .catch(error => {
-      console.error(error);
     });
+
+    if (response.status === 522) {
+      const responseText = await response.json();
+      removeCookie('neatlogic_authorization');
+      if (responseText.Status === 'FAILED') {
+        HTTP_RESPONSE_STATUS_CODE = '522';
+        if (responseText.DirectUrl) {
+          const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
+          window.open(directUrl, '_self');
+        }
+      }
+    } else if (response.status === 200) {
+      const data = await response.json();
+      if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
+        COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 function handleUrl(url, httpresponsestatuscode) {
   // 处理url是否带有参数
@@ -104,36 +101,32 @@ function handleUrl(url, httpresponsestatuscode) {
   }
   return url;
 }
-function getSsoTokenKey() {
-  // 获取ssoTokenKey
+async function getSsoTokenKey() {
   const currentUrl = location.href;
-  fetch(BASEURLPREFIX + '/tenant/check')
-    .then(response => {
-      if (response.status === 200) {
-        return response.json();
-      } else if (response.status === 500) {
-        window.location.href = '/404.html';
-      }
-    })
-    .then(responseText => {
-      if (responseText && responseText.Status === 'OK') {
-        SSOTICKETKEY = responseText.ssoTicketKey || '';
-        AUTHTYPE = responseText.authType || '';
-        if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
-          const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
-          if (queryString) {
-            SSOTICKETVALUE = queryString.split('&')[0];
-          }
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', BASEURLPREFIX + '/tenant/check', false); // 第三个参数设置为 false 表示同步请求
+  xhr.send();
+
+  if (xhr.status === 200) {
+    var responseText = JSON.parse(xhr.responseText);
+
+    if (responseText && responseText.Status === 'OK') {
+      SSOTICKETKEY = responseText.ssoTicketKey || '';
+      AUTHTYPE = responseText.authType || '';
+      if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
+        const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
+        if (queryString) {
+          SSOTICKETVALUE = queryString.split('&')[0];
         }
-        if ((AUTHTYPE || SSOTICKETKEY) && (SSOTICKETVALUE || getCookie(SSOTICKETKEY))) {
-          getDirectUrl();
-        }
-      } else if (responseText && responseText.Status !== 'OK') {
-        window.location.href = '/404.html';
       }
-    })
-    .catch(error => {
-      console.error(error);
-    });
+      await getDirectUrl();
+    } else if (responseText && responseText.Status !== 'OK') {
+      window.location.href = '/404.html';
+    }
+  } else if (xhr.status === 500) {
+    window.location.href = '/404.html';
+  } else {
+    console.error(xhr.status + ' ' + xhr.statusText);
+  }
 }
 getSsoTokenKey();
