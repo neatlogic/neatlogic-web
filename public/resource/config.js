@@ -125,7 +125,9 @@ function getSsoTokenKey() {
             SSOTICKETVALUE = queryString.split('&')[0];
           }
         }
-        getDirectUrl();
+        if ((AUTHTYPE || SSOTICKETKEY) && (SSOTICKETVALUE || getCookie(SSOTICKETKEY))) {
+          getDirectUrl();
+        }
       } else if (responseText && responseText.Status !== 'OK') {
         window.location.href = '/404.html';
       }
