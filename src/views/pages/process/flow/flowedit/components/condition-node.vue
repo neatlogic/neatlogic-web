@@ -240,10 +240,10 @@ export default {
               value: 'always',
               text: this.$t('term.process.alwaystransfer')
             },
-            {
-              value: 'negative',
-              text: this.$t('term.process.nottransfer')
-            },
+            // {
+            //   value: 'negative',
+            //   text: this.$t('term.process.nottransfer')
+            // },
             {
               value: 'optional',
               text: this.$t('page.custom')
@@ -548,10 +548,33 @@ export default {
       return joinText;
     },
     getChildrenNode(targetStepList, type) {
+      let dataList = [];
+      if (!this.$utils.isEmpty(this.moveonConfigList)) {
+        let list = [];
+        this.moveonConfigList.forEach(item => {
+          list.push(...item.targetStepList);
+        });
+        this.newChildrenNode.forEach(item => {
+          let obj = this.$utils.deepClone(item);
+          if (list.includes(obj.uuid)) {
+            if (this.$utils.isEmpty(targetStepList)) {
+              this.$set(obj, '_disabled', true);
+            } else {
+              let findItem = targetStepList.find(t => t === obj.uuid);
+              if (!findItem) {
+                this.$set(obj, '_disabled', true);
+              }
+            }
+          }
+          dataList.push(obj);
+        });
+      } else {
+        dataList = this.$utils.deepClone(this.newChildrenNode);
+      }
       //获取子节点/type
       this.ruleFormData.forEach(item => {
         if (item.name == 'targetStepList') {
-          item.dataList = this.newChildrenNode;
+          item.dataList = dataList;
           item.value = targetStepList;
         }
         if (item.name == 'type') {

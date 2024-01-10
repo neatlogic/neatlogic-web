@@ -45,6 +45,10 @@ const customview = {
   },
   deleteCustomViewTemplate(id) {
     return axios.post('/api/rest/cmdb/customview/template/delete', { customViewId: id });
+  },
+  searchCustomAttrData(params) {
+    // 查询公共自定义视图属性接口
+    return axios.post('/api/rest/cmdb/customview/attr/get', params);
   }
 };
 
