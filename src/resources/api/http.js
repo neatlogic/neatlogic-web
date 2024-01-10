@@ -56,8 +56,8 @@ instance.defaults.headers.post['Content-Type'] = 'application/json'; //post请�
 instance.defaults.baseURL = BASEURLPREFIX; //默认接口前缀
 instance.CancelToken = axios.CancelToken;
 
-if (SSOTICKETKEY && SSOTICKETVALUE) {
-  instance.defaults.headers.post['AuthType'] = SSOTICKETKEY; //post请求头
+if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
+  instance.defaults.headers.post['AuthType'] = AUTHTYPE || SSOTICKETKEY; //post请求头
   instance.defaults.headers.post['AuthValue'] = SSOTICKETVALUE; //post请求头
 }
 
