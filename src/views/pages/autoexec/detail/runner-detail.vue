@@ -183,6 +183,7 @@
   </div>
 </template>
 <script>
+import { mutations } from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   provide() {
@@ -398,6 +399,7 @@ export default {
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
+            mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {

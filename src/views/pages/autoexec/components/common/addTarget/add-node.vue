@@ -81,6 +81,7 @@
 <script>
 import addtargetmixin from './addtargetmixin.js';
 import FilterSearch from '@/views/pages/autoexec/components/common/filter-search.vue';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -148,7 +149,8 @@ export default {
     searchNodeList(param) {
       let data = {
         currentPage: this.currentPage,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        cmdbGroupType: this.opType
       };
       if (param) {
         Object.assign(data, param);
@@ -165,7 +167,8 @@ export default {
       type == 'pageSize' && (this.pageSize = value);
       let param = {
         currentPage: type == 'currentPage' ? value : this.currentPage,
-        pageSize: type == 'pageSize' ? value : this.pageSize
+        pageSize: type == 'pageSize' ? value : this.pageSize,
+        cmdbGroupType: this.opType
       };
       param = Object.assign(param, this.searchVal);
       this.searchNodeList(param);
@@ -233,7 +236,7 @@ export default {
     },
     advancedModeSearch(searchVal) {
       // 复杂模式搜索
-      let params = Object.assign({currentPage: 1, pageSize: 10}, searchVal);
+      let params = Object.assign({currentPage: 1, pageSize: 10, cmdbGroupType: this.opType}, searchVal);
       this.loadingShow = true;
       this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
         if (res.Status == 'OK') {
@@ -259,6 +262,9 @@ export default {
       return data => {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
+    },
+    opType() { 
+      return mutations.getOpType();
     }
   },
   watch: {

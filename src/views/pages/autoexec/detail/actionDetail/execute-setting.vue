@@ -53,7 +53,11 @@
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtime'" class="execute-main">
           <div class="target-detail">
-            <Filters ref="runtimeFilter" :tipText="$t('term.autoexec.setfilterexecutelimitdesc')" :defaultValue="runtimeFilter"></Filters>
+            <Filters
+              ref="runtimeFilter"
+              :tipText="$t('term.autoexec.setfilterexecutelimitdesc')"
+              :defaultValue="runtimeFilter"
+            ></Filters>
           </div>
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
@@ -249,7 +253,8 @@ export default {
         executeUser: null,
         filter: executeNodeConfig.filter || {},
         selectNodeList: executeNodeConfig.selectNodeList || [],
-        inputNodeList: executeNodeConfig.inputNodeList || []
+        inputNodeList: executeNodeConfig.inputNodeList || [],
+        cmdbGroupType: this.opType
       };
       if (this.$refs.executeUser) {
         this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());

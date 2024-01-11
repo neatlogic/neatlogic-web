@@ -252,7 +252,7 @@ export default {
         type: {
           type: 'radio',
           label: this.$t('page.type'),
-          desc: '只读：查看配置项，可作为自动化中，【查询类】组合工具的执行目标。维护：在只读权限的基础上，增加对配置项进行修改。自动化操作：在只读权限基础上，增加可作为自动化中，【操作类】组合工具的执行目标',
+          desc: this.$t('term.cmdb.grouptypedescreadonly') + this.$t('term.cmdb.grouptypedescmaintain') + this.$t('term.cmdb.grouptypedescautoexec'),
           dataList: [
             { value: 'readonly', text: this.$t('page.readonly') },
             { value: 'maintain', text: this.$t('page.maintain') },
@@ -310,6 +310,14 @@ export default {
           this.isLoading = false;
           this.groupData = res.Return;
           for (let key in this.formConfig) {
+            //系统配置-》配置信息管理 is.resourcecenter.auth 控制是否显示 “操作类”
+            if (key === 'type' && this.groupData.isResourcecenterAuth !== '1') {
+              var typeDataList = this.formConfig[key].dataList.filter(item => {
+                return item.value !== 'autoexec';
+              });
+              this.formConfig[key].dataList = typeDataList;
+              this.formConfig[key].desc = this.$t('term.cmdb.grouptypedescreadonly') + this.$t('term.cmdb.grouptypedescmaintain');
+            }
             this.formConfig[key].value = this.groupData[key];
           }
           if (this.groupData.ciGroupList && this.groupData.ciGroupList.length > 0) {
