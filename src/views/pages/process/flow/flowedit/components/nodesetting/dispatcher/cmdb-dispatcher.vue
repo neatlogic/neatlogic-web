@@ -155,6 +155,11 @@ export default {
           firstSelect: false,
           onChange: value => {
             // 数据来源改变的时候
+            for (let key in this.formData) {
+              if (key && !this.formNameList.includes(key)) {
+                delete this.formData[key];
+              }
+            }
             if (value) {
               this.handleWorkerList(value);
               this.filterList = [];
@@ -162,12 +167,6 @@ export default {
             } else {
               this.formItemList.splice(2, this.formItemList.length);
               this.priorityList = [];
-              for (let key in this.formData) {
-                console.log('key', key);
-                if (key && !this.formNameList.includes(key)) {
-                  delete this.formData[key];
-                }
-              }
             }
           }
         }
@@ -229,7 +228,7 @@ export default {
       let id = dataSource || this.formData.dataSource;
       if (this.formData.type == 'ci') {
         keyConfig = {
-          url: 'api/rest/cmdb/ci/listattr',
+          dynamicUrl: 'api/rest/cmdb/ci/listattr',
           textName: 'label',
           valueName: 'id',
           params: {
