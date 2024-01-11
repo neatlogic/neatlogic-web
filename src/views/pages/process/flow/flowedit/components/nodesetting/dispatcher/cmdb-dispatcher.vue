@@ -155,16 +155,18 @@ export default {
           firstSelect: false,
           onChange: value => {
             // 数据来源改变的时候
+            for (let key in this.formData) {
+              if (key && !this.formNameList.includes(key)) {
+                delete this.formData[key];
+              }
+            }
             if (value) {
               this.handleWorkerList(value);
+              this.filterList = [];
               this.addFilter('', '', value);
             } else {
-              this.formItemList.splice(1, this.formItemList.length - 1);
-              for (let key in this.formData) {
-                if (!this.formNameList.includes(key)) {
-                  delete this.formData[key];
-                }
-              }
+              this.formItemList.splice(2, this.formItemList.length);
+              this.priorityList = [];
             }
           }
         }
@@ -226,7 +228,7 @@ export default {
       let id = dataSource || this.formData.dataSource;
       if (this.formData.type == 'ci') {
         keyConfig = {
-          url: 'api/rest/cmdb/ci/listattr',
+          dynamicUrl: 'api/rest/cmdb/ci/listattr',
           textName: 'label',
           valueName: 'id',
           params: {
@@ -307,7 +309,9 @@ export default {
     },
     handleWorkerList(id) {
       // 根据不同的类型，处理处理人
-      let formItemList = [...this.formItemList, ...this.otherFormItemList];
+      let defaultFormItemList = this.$utils.deepClone(this.formItemList);
+      defaultFormItemList.splice(2, defaultFormItemList.length);
+      let formItemList = [...defaultFormItemList, ...this.otherFormItemList];
       formItemList.forEach(item => {
         if (item.name == 'workerList') {
           // 处理人
