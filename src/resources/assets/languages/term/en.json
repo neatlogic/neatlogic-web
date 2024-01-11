@@ -196,7 +196,10 @@
     "relciconfigtip": "After configuring the parent model, child models cannot be configured; After configuring the sub model, the parent model cannot be configured, but other sub models can be configured",
     "topotemplate": "Topology template",
     "selectagain": "Re select",
-    "topotype": "Unfolding method"
+    "topotype": "Unfolding method",
+    "grouptypedescreadonly": "Read only: View configuration items, which can be used as the execution target for the query class combination tool in automation.",
+    "grouptypedescmaintain": "Maintenance: Add modifications to configuration items based on read-only permissions.",
+    "grouptypedescautoexec": "Automated operations: On the basis of read-only permissions, add execution targets that can be used as a combination tool for operations in automation"
   },
   "process": {
     "workordercenter": "Work Center",

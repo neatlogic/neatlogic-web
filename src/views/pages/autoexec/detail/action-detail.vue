@@ -171,6 +171,7 @@
             <div class="setting-main bg-op block-large">
               <BasicInfo
                 :dataConfig="basicInfo"
+                :isResourcecenterAuth="editBasicInfoForm.opType.isHidden"
               ></BasicInfo>
               <!-- 定时作业 -->
               <TimeJobClickText
@@ -334,6 +335,7 @@ export default {
       showBasicInfoEditDialog: false,
       editBasicInfo: {
         name: '',
+        opType: 'readonly',
         typeId: '',
         owner: '',
         viewAuthorityList: '',
@@ -357,6 +359,18 @@ export default {
           maxlength: 50,
           label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/autoexec/combop/basic/info/save', key: 'name' }]
+        },
+        opType: {
+          type: 'radio',
+          label: this.$t('page.actiontype'),
+          value: '',
+          dataList: [],
+          validateList: ['required'],
+          onChange: (value, opt) => {
+            _this.opTypeName = opt.text;
+          },
+          tooltip: this.$t('page.autoexeccombopeditinfooptypetip'),
+          isHidden: true
         },
         typeId: {
           type: 'select',
@@ -483,7 +497,8 @@ export default {
       loading: true,
       isShowTestDialog: false,
       configExpired: 0,
-      configExpiredReason: {}
+      configExpiredReason: {},
+      opType: 'readonly' //操作类型
     };
   },
   beforeCreate() {},
@@ -501,6 +516,7 @@ export default {
     if (this.$route.query.versionStatus) {
       this.versionStatus = this.$route.query.versionStatus;
     }
+    this.getOpType();
   },
   beforeMount() {},
   async mounted() {
@@ -560,8 +576,11 @@ export default {
           this.name = result.name;
           this.isActive = result.isActive;
           this.operationType = result.operationType;
+          this.isResourcecenterAuth = result.isResourcecenterAuth;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
           this.$set(this.basicInfo, 'name', result.name);
           this.$set(this.basicInfo, 'typeName', result.typeName);
+          this.$set(this.basicInfo, 'opTypeName', result.opTypeName);
           this.$set(this.basicInfo, 'owner', result.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -571,6 +590,8 @@ export default {
           this.activeVersionId = result.activeVersionId;
           this.versionName = result.name;
           this.versionId = result.specifyVersionId;
+          this.opType = result.opType;
+          mutations.setOpType(result.opType);
         }
       });
       if (this.versionId != null) {
@@ -1365,8 +1386,11 @@ export default {
       this.$api.autoexec.action.getActionBasicInfo(data).then(res => {
         if (res.Status == 'OK') {
           const result = res.Return;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
+          this.$set(this.editBasicInfo, 'name', result.isResourcecenterAuth);
           this.$set(this.editBasicInfo, 'name', result.name);
           this.$set(this.editBasicInfo, 'typeId', result.typeId);
+          this.$set(this.editBasicInfo, 'opType', result.opType);
           this.$set(this.editBasicInfo, 'owner', result.owner);
           this.$set(this.editBasicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.editBasicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -1388,6 +1412,7 @@ export default {
       }
       this.$set(this.editBasicInfo, 'id', this.id);
       this.$set(this.editBasicInfo, 'typeName', this.typeName);
+      this.$set(this.editBasicInfo, 'opTypeName', this.opTypeName);
       const notifyPolicyConfig = noticeSetting.getData();
       if (notifyPolicyConfig?.policyId) {
         this.editBasicInfo.config.invokeNotifyPolicyConfig = notifyPolicyConfig;
@@ -1396,8 +1421,10 @@ export default {
       }
       this.$api.autoexec.action.saveActionBasicInfo(this.editBasicInfo).then(res => {
         if (res.Status == 'OK') {
+          mutations.setOpType(this.editBasicInfo.opType);
           this.$set(this.basicInfo, 'name', this.editBasicInfo.name);
           this.$set(this.basicInfo, 'typeName', this.editBasicInfo.typeName);
+          this.$set(this.basicInfo, 'opTypeName', this.editBasicInfo.opTypeName);
           this.$set(this.basicInfo, 'owner', this.editBasicInfo.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', this.editBasicInfo.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', this.editBasicInfo.editAuthorityList);
@@ -1444,6 +1471,14 @@ export default {
         });
       }
       this.isShowTestDialog = false;
+    },
+    getOpType() {
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecCombopOpType' };
+      this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.editBasicInfoForm.opType.dataList = res.Return;
+        }
+      });
     }
   },
   computed: {

@@ -961,5 +961,6 @@
   "userauthfailedpleaselogin": "authentication failed, please log in",
   "partial": "local",
   "rolerule": "The request for login authentication needs to carry a header as a rule expression. If the value of the expression after execution is true, the role will take effect, otherwise it will not take effect. For example: \"${DATA.env}\"==\"sit\"ß&&(\"${DATA.test}\"=\"1\" | | \"${DATA.test2}\"==\"aaa\")",
-  "datasources": "data sources"
+  "datasources": "data sources",
+  "autoexeccombopeditinfooptypetip":"Query class: Only assets with read-only permissions in the resource center can be used as execution targets; Operations: Only assets with 'automated operations' permissions in the resource center and group management can be used as execution targets;"
 }
