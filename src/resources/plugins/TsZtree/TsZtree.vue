@@ -16,6 +16,7 @@ export default {
     idKey: { type: String, default: 'id' }, //id的名称，默认是id
     pIdKey: { type: String, default: 'parentId' }, //父节点id的名称，默认是parentId
     setting: { type: Object },
+    expandAll: { type: Boolean, default: true }, //默认全部展开
     hoverDomList: { type: Array },
     onClick: { type: Function }, //点击事件
     onDrop: { type: Function }, //拖放事件
@@ -164,7 +165,9 @@ export default {
           });
       }
       this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), Object.assign(this.defaultSetting, this.setting), nodes);
-      this.zTreeObj.expandAll(true);
+      if (this.expandAll) {
+        this.zTreeObj.expandAll(true);
+      }
       this.value && this.selectedNodeById(this.value);
       this.$emit('ready', this.zTreeObj);
     },

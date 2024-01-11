@@ -69,6 +69,7 @@
               :nodes="filterCiTreeList"
               idKey="id"
               pIdKey="parentCiId"
+              :expandAll="false"
               :value="ciId"
               :nodeClasses_bak="nodeClasses"
               :beforeDrag="
@@ -117,7 +118,7 @@ export default {
       ciName: 'ciCatalog',
       mode: 'level',
       treeId: '',
-      isExpandAll: true,
+      isExpandAll: false,
       catalogHeight: `calc(100vh - 80px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
     };
   },
