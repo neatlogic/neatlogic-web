@@ -63,6 +63,7 @@
 </template>
 <script>
 import FilterSearch from '../filter-search.vue';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -94,8 +95,7 @@ export default {
     bgOp: {
       type: Boolean,
       default: true
-    },
-    opType: String
+    }
   },
   data() {
     return {
@@ -204,7 +204,11 @@ export default {
       });
     }
   },
-  computed: {},
+  computed: {
+    opType() { 
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

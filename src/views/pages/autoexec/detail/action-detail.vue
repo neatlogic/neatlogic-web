@@ -221,7 +221,6 @@
       :isEditSetting="effectiveEditable"
       :paramsTypeList="paramsTypeList"
       :runtimeParamList="runtimeParamList"
-      :opType="opType"
       @close="isParamsSetting = false"
       @saveParams="getParamsList"
     ></ParamsSetting>
@@ -232,7 +231,6 @@
       :executeConfig="executeConfig"
       :runtimeParamList="runtimeParamList"
       :isEditSetting="effectiveEditable"
-      :opType="opType"
       @close="closeExecute"
     ></ExecuteSetting>
     <!-- 执行记录 -->
@@ -593,6 +591,7 @@ export default {
           this.versionName = result.name;
           this.versionId = result.specifyVersionId;
           this.opType = result.opType;
+          mutations.setOpType(result.opType);
         }
       });
       if (this.versionId != null) {
@@ -1422,6 +1421,7 @@ export default {
       }
       this.$api.autoexec.action.saveActionBasicInfo(this.editBasicInfo).then(res => {
         if (res.Status == 'OK') {
+          mutations.setOpType(this.editBasicInfo.opType);
           this.$set(this.basicInfo, 'name', this.editBasicInfo.name);
           this.$set(this.basicInfo, 'typeName', this.editBasicInfo.typeName);
           this.$set(this.basicInfo, 'opTypeName', this.editBasicInfo.opTypeName);

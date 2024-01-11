@@ -48,7 +48,6 @@
               :canEdit="isEditSetting"
               :type="settingConfig.whenToSpecify"
               :required="true"
-              :opType="opType"
             ></TargetDetail>
           </div>
         </div>
@@ -58,7 +57,6 @@
               ref="runtimeFilter"
               :tipText="$t('term.autoexec.setfilterexecutelimitdesc')"
               :defaultValue="runtimeFilter"
-              :opType="opType"
             ></Filters>
           </div>
         </div>
@@ -70,7 +68,6 @@
               :defaultValue="settingConfig.executeNodeConfig.paramList"
               :paramList="nodeTypeParamList"
               :canEdit="isEditSetting"
-              :opType="opType"
             ></Param>
           </div>
         </div>
@@ -114,8 +111,7 @@ export default {
       default: () => {}
     },
     runtimeParamList: Array,
-    isEditSetting: Boolean,
-    opType: String
+    isEditSetting: Boolean
   },
   data() {
     let _this = this;

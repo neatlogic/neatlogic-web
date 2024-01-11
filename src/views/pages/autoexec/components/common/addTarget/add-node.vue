@@ -81,6 +81,7 @@
 <script>
 import addtargetmixin from './addtargetmixin.js';
 import FilterSearch from '@/views/pages/autoexec/components/common/filter-search.vue';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -97,8 +98,7 @@ export default {
       //展示文件数
       type: Number,
       default: 4
-    },
-    opType: String
+    }
   },
   data() {
     return {
@@ -262,6 +262,9 @@ export default {
       return data => {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
+    },
+    opType() { 
+      return mutations.getOpType();
     }
   },
   watch: {

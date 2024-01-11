@@ -84,7 +84,6 @@
               :runtimeParamList="runtimeParamList"
               :needBorder="needExecuteUser|| needProtocol"
               :filterSearchValue="filterSearchValue"
-              :opType="opType"
             ></AddTarget>
           </div>
           <div v-else class="box-block text-tip">
@@ -184,6 +183,7 @@
   </div>
 </template>
 <script>
+import { mutations } from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   provide() {
@@ -234,7 +234,6 @@ export default {
       actionId: null,
       versionId: null,
       source: 'combop',
-      opType: null,
       showExecuteData: true, //是否需要显示执行相关的数据
       runtimeParamList: [],
       dataConfig: null,
@@ -400,7 +399,7 @@ export default {
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
-            this.opType = this.dataConfig.opType;
+            mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {

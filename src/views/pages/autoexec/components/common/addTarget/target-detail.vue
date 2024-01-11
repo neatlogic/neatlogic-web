@@ -25,7 +25,6 @@
       :defaultValue="executeNodeConfig.filter"
       :canEdit="canEdit"
       :defaultSearchValue="defaultSearchValue"
-      :opType="opType"
     ></AddFilters>
     <!-- 参数：添加阶段的时候可以选参数 -->
     <AddParam
@@ -46,7 +45,6 @@
       :defaultValue="executeNodeConfig.inputNodeList"
       :canEdit="canEdit"
       :defaultSearchValue="defaultSearchValue"
-      :opType="opType"
     ></InputTag>
     <!-- 节点 -->
     <AddNode
@@ -56,7 +54,6 @@
       :defaultValue="executeNodeConfig.selectNodeList"
       :canEdit="canEdit"
       :defaultSearchValue="defaultSearchValue"
-      :opType="opType"
     ></AddNode>
     <!-- 上游参数 -->
     <AddPrenode
@@ -117,8 +114,7 @@ export default {
       type: Boolean,
       default: false
     },
-    prevStepList: Array,
-    opType: String
+    prevStepList: Array
   },
   data() {
     return {

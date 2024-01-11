@@ -98,6 +98,7 @@
   </div>
 </template>
 <script>
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -127,8 +128,7 @@ export default {
     disabled: {
       type: Boolean,
       default: false
-    },
-    opType: String
+    }
   },
   data() {
     let _this = this;
@@ -306,6 +306,9 @@ export default {
       return data => {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
+    },
+    opType() { 
+      return mutations.getOpType();
     }
   },
   watch: {

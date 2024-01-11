@@ -75,6 +75,7 @@
 </template>
 <script>
 import addtargetmixin from './addtargetmixin.js';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -84,7 +85,6 @@ export default {
   filtes: {},
   mixins: [addtargetmixin],
   props: {
-    opType: String
   },
   data() {
     return {
@@ -222,7 +222,11 @@ export default {
       return textList.join('、');
     }
   },
-  computed: {},
+  computed: {
+    opType() { 
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

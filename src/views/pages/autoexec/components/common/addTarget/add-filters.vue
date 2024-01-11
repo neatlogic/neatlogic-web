@@ -21,7 +21,6 @@
         :canEdit="canEdit"
         :defaultValue="searchVal"
         :defaultSearchValue="defaultSearchValue"
-        :opType="opType"
       ></Filters>
     </div>
   </div>
@@ -38,7 +37,6 @@ export default {
   },
   mixins: [addtargetmixin],
   props: {
-    opType: String
   },
   data() {
     return {

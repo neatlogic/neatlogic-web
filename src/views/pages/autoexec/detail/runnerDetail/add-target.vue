@@ -16,7 +16,6 @@
             :defaultValue="filter"
             :readonly="true"
             :bgOp="false"
-            :opType="opType"
             class="nopadding filter-main overflow"
             @clickMoreBtn="moreVisible=true"
           ></Filters>
@@ -80,7 +79,6 @@
           :config="valueConfig"
           :canEdit="canEdit"
           :defaultSearchValue="filterSearchValue"
-          ：opType="opType"
         ></TargetDetail>
         <TargetView
           v-else
@@ -107,7 +105,6 @@
       :nodeList="valueConfig.selectNodeList?valueConfig.selectNodeList:[]"
       :isValid="true"
       :config="defaultConfig"
-      :opType="opType"
       @on-ok="onOkNode(true,...arguments)"
       @close="onOkUpdateList(false)"
       @validSetting="nodeValidSetting"
@@ -162,8 +159,7 @@ export default {
     filterSearchValue: { //节点搜索条件
       type: Object
     },
-    defaultTagFilter: Array,
-    opType: String
+    defaultTagFilter: Array
   },
   data() {
     return {
@@ -334,8 +330,7 @@ export default {
       //true不需要提示校验信息
       let data = {
         protocolId: this.executeValue.protocolId ? this.executeValue.protocolId : null,
-        executeUser: null,
-        cmdbGroupType: opType
+        executeUser: null
       };
       if (this.executeValue.executeUser && this.executeValue.executeUser.value) {
         if (this.executeValue.executeUser.mappingMode === 'constant') {

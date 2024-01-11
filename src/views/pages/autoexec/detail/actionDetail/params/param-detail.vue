@@ -77,7 +77,6 @@
                 :disabled="!isEdit"
                 :setValidComponentsList="setValidComponentsList"
                 :isRequired="item.isRequired && !item.editable"
-                :opType="opType"
                 @getConfig="(config)=>{getParamConfig(index,config)}"
               ></Items>
             </div>
@@ -152,8 +151,7 @@ export default {
       type: Boolean,
       default: true
     },
-    setValidComponentsList: Array,
-    opType: String
+    setValidComponentsList: Array
   },
   data() {
     return {
