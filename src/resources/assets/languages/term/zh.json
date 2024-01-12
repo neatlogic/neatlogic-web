@@ -733,6 +733,7 @@
     "notfoundassetstip": "未在资产清单中找到对应资产，执行时将跳过上述目标",
     "ignoretargettoassetpage": "执行时将跳过上述目标，可前往资产清单页面",
     "nousertoaccountpagesetting": "未找到“连接协议”:{protocol},执行用户:“{executeuser}”的账号，可前往账号管理页面",
+    "tagentnoexecuteusertoassetmanage": "未找到“连接协议”:{protocol}的账号，执行时可能导致异常，请前往‘系统配置->Tagent管理’核查tagent状态是否已连接",
     "noexecuteusertoassetmanage": "未找到“连接协议”:{protocol},“执行用户”:{executeUser}的账号，执行时可能导致异常，需要绑定账号,可前往资产清单页面",
     "publishcombinetool": "发布组合工具",
     "executecount": "执行次数",
