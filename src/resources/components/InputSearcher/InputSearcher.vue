@@ -6,6 +6,7 @@
       :class="currentValue ? 'input-box' : ''"
       :style="getStyle"
       :clearable="true"
+      :size="size"
       @on-enter="onSearchValue"
       @on-clear="onSearchValue"
       @on-change="changeValue"
@@ -20,6 +21,7 @@
 export default {
   name: 'InputSearcher',
   props: {
+    size: { type: String },
     value: {
       type: [String, Number],
       default: ''
@@ -82,7 +84,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .input-searcher-box {
- /deep/ .ivu-input {
+  /deep/ .ivu-input {
     padding: 0 26px 0 26px !important;
   }
   /deep/ .ivu-input-prefix {

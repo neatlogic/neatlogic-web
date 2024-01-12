@@ -63,6 +63,7 @@
 </template>
 <script>
 import FilterSearch from '../filter-search.vue';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -158,6 +159,7 @@ export default {
       if (!this.$utils.isEmpty(this.defaultSearchValue)) {
         Object.assign(data, this.defaultSearchValue);
       }
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -189,6 +191,7 @@ export default {
     advancedModeSearch(searchVal) {
       // 复杂模式搜索
       let params = Object.assign({currentPage: 1, pageSize: 10}, searchVal);
+      params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
       this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
@@ -201,7 +204,11 @@ export default {
       });
     }
   },
-  computed: {},
+  computed: {
+    opType() { 
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

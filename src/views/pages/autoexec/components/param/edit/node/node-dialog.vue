@@ -98,6 +98,7 @@
   </div>
 </template>
 <script>
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -210,6 +211,7 @@ export default {
     },
     searchNodeList() {
       let data = Object.assign({}, this.searchParams, this.searchVal);
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -304,6 +306,9 @@ export default {
       return data => {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
+    },
+    opType() { 
+      return mutations.getOpType();
     }
   },
   watch: {

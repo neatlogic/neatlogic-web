@@ -32,7 +32,8 @@ export default {
   },
   filters: {},
   props: {
-    dataConfig: {type: Object, default: () => {}}
+    dataConfig: {type: Object, default: () => {}},
+    isResourcecenterAuth: Boolean
   },
   data() {
     let _this = this;
@@ -46,6 +47,16 @@ export default {
           label: _this.$t('page.name'),
           width: '100%',
           readonly: true
+        },
+        opTypeName: {
+          type: 'text',
+          name: 'opTypeName',
+          value: '',
+          maxlength: 50,
+          label: this.$t('page.actiontype'),
+          width: '100%',
+          readonly: true,
+          isHidden: this.isResourcecenterAuth
         },
         typeName: {
           type: 'text',

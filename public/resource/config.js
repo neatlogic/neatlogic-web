@@ -16,6 +16,7 @@ var MENUTYPE = {};
 var AUTHTYPE = ''; // 授权类型
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
+var ISNEEDAUTH = false; //是否需要免登录认证。如果需要，则页面会在第一个接口请求走myAuth认证后，才请求后续的接口。
 const COMMERCIAL_MODULES = []; //已激活的商业模块
 var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 
@@ -114,13 +115,16 @@ async function getSsoTokenKey() {
     if (responseText && responseText.Status === 'OK') {
       SSOTICKETKEY = responseText.ssoTicketKey || '';
       AUTHTYPE = responseText.authType || '';
+      ISNEEDAUTH = responseText.isNeedAuth || false;
       if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
         const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
         if (queryString) {
           SSOTICKETVALUE = queryString.split('&')[0];
         }
       }
-      getDirectUrl();
+      if(ISNEEDAUTH){
+        getDirectUrl();
+      }
     } else if (responseText && responseText.Status !== 'OK') {
       window.location.href = '/404.html';
     }
