@@ -378,8 +378,8 @@ export default {
       this.$set(data, 'versionStatus', this.versionStatus);
       this.$api.autoexec.action.searchActionList(data).then(res => {
         if (res.Status == 'OK') {
-          this.getTheadList(this.versionStatus);
           this.tableData = res.Return;
+          this.getTheadList(this.versionStatus);
           this.$set(this.tableData, 'theadList', this.theadList);
           let versionStatusCountMap = res.Return.versionStatusCountMap;
           if (versionStatusCountMap) {
@@ -582,7 +582,10 @@ export default {
         this.theadList[index++] = { key: 'selection', multiple: true };
       }
       this.theadList[index++] = { title: this.$t('page.name'), key: 'name' };
-      this.theadList[index++] = { title: this.$t('page.type'), key: 'typeName' };
+      this.theadList[index++] = { title: this.$t('page.autoexeccomboptype'), key: 'typeName' };
+      if (this.tableData.isResourcecenterAuth === '1') {
+        this.theadList[index++] = { title: this.$t('page.actiontype'), key: 'opTypeName' };
+      }
       if (versionStatus == 'passed') {
         this.theadList[index++] = { title: this.$t('page.status'), key: 'isActive' };
       }
