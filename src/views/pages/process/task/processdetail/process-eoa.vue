@@ -189,8 +189,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >
@@ -215,15 +214,15 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
-                  defaultTabValue="eoa"
+                  :defaultTabValue="handlerStepInfo?'eoa':''"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
                   }"
                 >
-                  <template v-slot:eoa>
+                  <template v-if="handlerStepInfo" v-slot:eoa>
                     <!-- eoa -->
-                    <EoaDetail ref="eoaDetail"></EoaDetail>
+                    <EoaDetail ref="eoaDetail" :handlerStepInfo="handlerStepInfo"></EoaDetail>
                   </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
@@ -487,7 +486,7 @@ export default {
     getMessage() { 
       //初始化当前步骤:eoa
       if (this.processTaskStepConfig) {
-        this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || null;
+        this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || {};
       }
     },
     async completeTask() {
@@ -608,6 +607,9 @@ export default {
         validList = this.$refs.eoaDetail.valid();
       }
       return validList;
+    },
+    submitEoaData() {
+      let data = this.$refs.eoaDetail.getData();
     }
   },
   computed: {

@@ -528,7 +528,8 @@
     "approvalstep": "Approval steps",
     "approvalprocess": "Approval process",
     "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node",
-    "matchmapping": "Matching mapping"
+    "matchmapping": "Matching mapping",
+    "approvertip": "Fill in the approval process steps below by approver"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
