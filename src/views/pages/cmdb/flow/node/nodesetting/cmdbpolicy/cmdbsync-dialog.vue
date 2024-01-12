@@ -129,22 +129,18 @@
                     ></FilterList>
                   </TsFormItem>
                 </template>
-                <TsFormItem :label="$t('term.cmdb.attrmapping')" labelPosition="top">
-                  <div class="pt-sm">
-                    <CmdbsyncEdit
-                      v-if="!loadingShow"
-                      ref="cmdbsyncEdit"
-                      :allFormitemList="allFormitemList"
-                      :ciEntityQueue="ciEntityQueue"
-                      :ciData="ciData"
-                      :subFormComponentList="getTreeSubFormComponent()"
-                      :tableComponentAttrList="getTableAttrList()"
-                      @new="addNewCiEntity"
-                      @edit="editNewCiEntity"
-                      @remove="removeNewCiEntity"
-                    ></CmdbsyncEdit>
-                  </div>
-                </TsFormItem>
+                <CmdbsyncEdit
+                  v-if="!loadingShow"
+                  ref="cmdbsyncEdit"
+                  :allFormitemList="allFormitemList"
+                  :ciEntityQueue="ciEntityQueue"
+                  :ciData="ciData"
+                  :subFormComponentList="getTreeSubFormComponent()"
+                  :tableComponentAttrList="getTableAttrList()"
+                  @new="addNewCiEntity"
+                  @edit="editNewCiEntity"
+                  @remove="removeNewCiEntity"
+                ></CmdbsyncEdit>
               </div>
             </div>
           </div>
@@ -197,7 +193,6 @@ export default {
         url: 'api/rest/cmdb/ci/list',
         search: true,
         params: {
-          isAbstract: 0,
           isVirtual: 0
         },
         validateList: ['required'],
@@ -320,6 +315,8 @@ export default {
             }
           }
         });
+        //标记为已保存的，用于点击“取消”后判断是否需要删除数据
+        cientity._isnew = true;
       }
       if (preCiEntity && preCiEntity.batchDataSource && preCiEntity.batchDataSource.type && 
       cientity.batchDataSource && cientity.batchDataSource.type && 
@@ -358,10 +355,10 @@ export default {
     },
     getCiEntityById() {
       this.loadingShow = true;
-      this.$api.cmdb.ci.getCiById(this.ciData.ciId, true).then(async res => {
+      this.$api.cmdb.ci.getCiForprocessmapping({id: this.ciData.ciId}).then(res => {
         if (res.Return) {
           const ci = res.Return;
-          if (ci.isVirtual == 0 && ci.isAbstract == 0) {
+          if (ci.isVirtual == 0) {
             const cientity = {
               isStart: 1,
               uuid: this.ciData.uuid || this.$utils.setUuid(),
@@ -369,14 +366,15 @@ export default {
               ciName: ci.name,
               ciLabel: ci.label,
               ciIcon: ci.icon,
-              editMode: this.ciData.editMode || '',
+              editMode: this.ciData.editMode || 'global',
               createPolicy: 'single',
               batchDataSource: {},
               relEntityData: {},
-              allAttrEntityData: {}
+              allAttrEntityData: {},
+              isAbstract: ci.isAbstract
             };
-            cientity['_elementList'] = await this.getElementByCiId(this.ciData.ciId);
-            cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciData.ciId);
+            cientity['_elementList'] = this.getElementByCiId(ci);
+            cientity['_uniqueAttrList'] = ci.uniqueAttrIdList;
             cientity['_description'] = this.descriptionConfig;
             this.initValue(cientity);
             this.ciEntityQueue = [cientity];
@@ -384,8 +382,6 @@ export default {
           } else {
             if (ci.isVirtual == 1) {
               this.error = this.$t('message.cmdb.virtualmodel');
-            } else if (ci.isAbstract == 1) {
-              this.error = this.$t('message.cmdb.abstractmodel');
             }
           }
         }
@@ -393,18 +389,11 @@ export default {
         this.loadingShow = false;
       });
     },
-    async getCiUniqueByCiId(ciId) {
-      let uniqueList = [];
-      await this.$api.cmdb.ci.getCiUniqueByCiId(ciId).then(res => {
-        uniqueList = res.Return;
-      });
-      return uniqueList;
-    },
-    async getElementByCiId(ciId) {
-      const attrList = await this.getAttrByCiId(ciId);
-      const relList = await this.getRelByCiId(ciId);
-      const globalAttrList = await this.getGlobalAttr();
-      const ciViewList = await this.getCiViewByCiId(ciId);
+    getElementByCiId(data) {
+      const attrList = data.attrList || [];
+      const relList = data.relList || [];
+      const globalAttrList = data.globalAttrList || [];
+      const ciViewList = data.viewList || [];
       const elementList = [];
       ciViewList.forEach((e, index) => {
         if (e.type === 'attr') {
@@ -431,96 +420,59 @@ export default {
       });
       return elementList;
     },
-    async getGlobalAttr() {
-      let globalAttrList;
-      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
-        globalAttrList = res.Return.tbodyList;
-      });
-      return globalAttrList;
-    },
-    async getAttrByCiId(ciId) {
-      if (ciId) {
-        let attrList;
-        let allowEdit = 1;
-        await this.$api.cmdb.ci.getAttrByCiId(ciId, { allowEdit: allowEdit }).then(res => {
-          attrList = res.Return;
-        });
-        return attrList;
-      }
-    },
-    async getRelByCiId(ciId) {
-      if (ciId) {
-        let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true, allowEdit: 1}).then(res => {
-          relList = res.Return;
-        });
-        return relList;
-      }
-    },
-    async getCiViewByCiId(ciId) {
-      if (ciId) {
-        let ciViewList;
-        await this.$api.cmdb.ci.getCiViewByCiId(ciId).then(res => {
-          ciViewList = res.Return;
-        });
-        return ciViewList;
-      }
-    },
-    addNewCiEntity(type, item) {
+    addNewCiEntity(item) {
       if (!this.valid()) {
         return;
       }
       this.loadingShow = true;
-      if (type === 'rel') {
-        const rel = item;
-        const ciId = rel.ciId;
-        const relId = rel._relId;
-        const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
-        const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
-        this.$api.cmdb.ci.getCiById(ciId).then(async res => {
-          if (res.Return) {
-            const ci = res.Return;
-            //获取当前配置项数据
-            const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
-            const newCiEntity = {
-              uuid: uuid,
-              _relId: relId, //记录来自哪个关系，自动填上配置项
-              _direction: rel.direction, //记录关系方向
-              ciId: ciId,
-              rootCiId: this.propRootCiId,
-              ciName: ci.name,
-              ciLabel: ci.label,
-              ciIcon: ci.icon,
-              editMode: '',
-              createPolicy: 'single',
-              batchDataSource: {},
-              action: 'append',
-              relEntityData: {},
-              _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
-              allAttrEntityData: {} //所有的属性
-            };
-            newCiEntity['_elementList'] = await this.getElementByCiId(ciId);
-            newCiEntity['_uniqueAttrList'] = await this.getCiUniqueByCiId(ciId);
-            newCiEntity['_description'] = this.descriptionConfig;
-            newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
-              valueList: [
-                {
-                  ciEntityUuid: currentCiEntity.uuid,
-                  ciEntityName: this.$t('term.cmdb.fromcientity'),
-                  ciId: ciId,
-                  type: 'from'
-                }
-              ]
-            };
-            this.initValue(newCiEntity, currentCiEntity);
-            this.ciData = newCiEntity;
-            this.ciEntityQueue.push(newCiEntity);
-            this.updateCurrentFormItemList();
-          }
-        }).finally(() => {
-          this.loadingShow = false;
-        });
-      } 
+      const rel = item;
+      const ciId = rel.ciId;
+      const relId = rel._relId;
+      const direction = rel.direction == 'from' ? 'to' : 'from'; //目标关系需要取反
+      const uuid = rel.ciEntityUuid || this.$utils.setUuid(); //新的配置项标识
+      this.$api.cmdb.ci.getCiForprocessmapping({id: ciId}).then(res => {
+        if (res.Return) {
+          const ci = res.Return;
+          //获取当前配置项数据
+          const currentCiEntity = this.ciEntityQueue[this.ciEntityQueue.length - 1];
+          const newCiEntity = {
+            uuid: uuid,
+            _relId: relId, //记录来自哪个关系，自动填上配置项
+            _direction: rel.direction, //记录关系方向
+            ciId: ciId,
+            ciName: ci.name,
+            ciLabel: ci.label,
+            ciIcon: ci.icon,
+            editMode: 'global',
+            createPolicy: 'single',
+            batchDataSource: {},
+            action: 'append',
+            relEntityData: {},
+            _disableRel: 'rel' + direction + '_' + relId, //标记哪个关系不允许添加或选择
+            allAttrEntityData: {}, //所有的属性
+            isAbstract: ci.isAbstract
+          };
+          newCiEntity['_elementList'] = this.getElementByCiId(ci);
+          newCiEntity['_uniqueAttrList'] = ci.uniqueAttrIdList;
+          newCiEntity['_description'] = this.descriptionConfig;
+          newCiEntity['relEntityData']['rel' + direction + '_' + relId] = {
+            valueList: [
+              {
+                ciEntityUuid: currentCiEntity.uuid,
+                ciEntityName: currentCiEntity.ciLabel,
+                ciId: ciId,
+                type: 'from'
+              }
+            ]
+          };
+          this.initValue(newCiEntity, currentCiEntity);
+          this.ciData = newCiEntity;
+          this.ciEntityQueue.push(newCiEntity);
+          this.updateCurrentFormItemList();
+        }
+      }).finally(() => {
+        this.loadingShow = false;
+      });
     },
     removeNewCiEntity(item) {
       if (item._relId) { //关系删除
@@ -549,7 +501,7 @@ export default {
     editNewCiEntity(rel) {
       let uuid = rel.ciEntityUuid;
       if (this.saveCiEntityMap[uuid]) {
-        this.tmpCiEntityData = JSON.parse(JSON.stringify(this.saveCiEntityMap[uuid]));
+        this.tmpCiEntityData = this.$utils.deepClone((this.saveCiEntityMap[uuid]));
         let index = -1;
         for (let i = 0; i < this.ciEntityQueue.length; i++) {
           if (this.ciEntityQueue[i].uuid == uuid) {
@@ -562,7 +514,7 @@ export default {
           this.updateCurrentFormItemList();
         } else {
           //需要通过接口获取数据回显
-          this.addNewCiEntity('rel', rel);
+          this.addNewCiEntity(rel);
         }
       }
     },
@@ -653,7 +605,7 @@ export default {
             const newRelEntity = {
               _relId: cientity['_relId'],
               ciEntityUuid: cientity.uuid,
-              ciEntityName: this.$t('term.cmdb.newcientity'),
+              ciEntityName: cientity.ciLabel,
               ciId: cientity.ciId,
               type: 'new'
             };

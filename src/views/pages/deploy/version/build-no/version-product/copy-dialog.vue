@@ -20,6 +20,7 @@
             :check-strictly="true"
             :check-directly="true"
             show-checkbox
+            class="ts-tree"
             @on-check-change="treeChecked"
           ></Tree>
         </div>

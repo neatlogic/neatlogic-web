@@ -4,7 +4,7 @@
 
 <script>
 import '@/resources/assets/js/jquery-1.11.1.js';
-import '@/resources/plugins/TsZtree/js/jquery.ztree.all.min.js';
+import '@/resources/plugins/TsZtree/js/jquery.ztree.all.js';
 export default {
   name: 'TsZtree',
   components: {},
@@ -16,9 +16,12 @@ export default {
     idKey: { type: String, default: 'id' }, //id的名称，默认是id
     pIdKey: { type: String, default: 'parentId' }, //父节点id的名称，默认是parentId
     setting: { type: Object },
+    expandAll: { type: Boolean, default: true }, //默认全部展开
     hoverDomList: { type: Array },
     onClick: { type: Function }, //点击事件
     onDrop: { type: Function }, //拖放事件
+    beforeExpand: { type: Function }, //展开前
+    onExpand: { type: Function }, //展开事件
     value: { type: [String, Number] }, //默认选择节点
     enableToggleClick: { type: Boolean, default: false }, //是否激活反选功能（点击已选中节点取消点击)
     beforeDrop: { type: Function }, // 拖放之前事件
@@ -82,6 +85,8 @@ export default {
         callback: {
           beforeDrop: this.beforeDrop,
           beforeDrag: this.beforeDrag,
+          beforeExpand: this.beforeExpand,
+          onExpand: this.onExpand,
           onDrop: (event, treeId, treeNodes, targetNode, moveType, isCopy) => {
             if (this.onDrop) {
               this.onDrop(this.zTreeObj, treeNodes, targetNode, moveType, isCopy);
@@ -159,8 +164,10 @@ export default {
             console.error(error);
           });
       }
-      this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), this.defaultSetting, nodes);
-      this.zTreeObj.expandAll(true);
+      this.zTreeObj = $.fn.zTree.init($(this.$refs['treeDom']), Object.assign(this.defaultSetting, this.setting), nodes);
+      if (this.expandAll) {
+        this.zTreeObj.expandAll(true);
+      }
       this.value && this.selectedNodeById(this.value);
       this.$emit('ready', this.zTreeObj);
     },

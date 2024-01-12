@@ -27,7 +27,7 @@
           :value="item.matrixAttrUuid"
           valueName="uuid"
           textName="name"
-          :dataList="updateDataList(martixAttrList)"
+          :dataList="updateDataList(martixAttrList, item.matrixAttrUuid)"
           :validateList="validateList"
           @on-change="
             val => {
@@ -126,11 +126,11 @@ export default {
       return this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox'].includes(d.handler));
     },
     updateDataList() {
-      return (dataList) => {
+      return (dataList, value) => {
         let list = this.$utils.deepClone(dataList);
         list.forEach(item => {
           if (this.filter.ruleList) {
-            let findItem = this.filter.ruleList.find(f => f.matrixAttrUuid === item.uuid);
+            let findItem = this.filter.ruleList.find(f => f.matrixAttrUuid === item.uuid && f.matrixAttrUuid !== value);
             if (findItem) {
               this.$set(item, '_disabled', true);
             } else {

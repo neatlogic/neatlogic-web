@@ -58,6 +58,7 @@
   </TsDialog>
 </template>
 <script>
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -139,6 +140,7 @@ export default {
     },
     searchNodeList() {
       let data = Object.assign(this.searchParams, this.searchVal);
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -200,7 +202,11 @@ export default {
     }
 
   },
-  computed: {},
+  computed: {
+    opType() { 
+      return mutations.getOpType();
+    }
+  },
   watch: {
     value: {
       handler(val) {

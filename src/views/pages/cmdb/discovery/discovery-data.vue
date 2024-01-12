@@ -13,7 +13,7 @@
             :search="true"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
             clearable
-            @on-enter="searchCollectionData"
+            @on-enter="searchCollectionData()"
           ></TsFormInput>
         </div>
       </template>

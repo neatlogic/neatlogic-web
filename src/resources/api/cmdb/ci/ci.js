@@ -1,6 +1,30 @@
 import axios from '../../http';
 
 const ci = {
+  deleteCiTopoTemplateById(id) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/delete', {id: id});
+  },
+  saveTopoTemplate(params) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/save', params);
+  },
+  getCiTopoTemplateById(id, params) {
+    let param = {
+      id: id
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/get', param);
+  },
+  getCiTopoTemplateByCiId(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/list', param);
+  },
   //保存模型
   saveCi(params) {
     return axios.post('/api/rest/cmdb/ci/save', params);
@@ -165,6 +189,13 @@ const ci = {
   },
   saveCiTreeItem(params) {
     return axios.post('/api/rest/cmdb/ci/tree/save', params);
+  },
+  getCiForprocessmapping(params) {
+    //获取模型信息（流程图cmdb节点关系映射专用）
+    return axios.post('/api/rest/cmdb/ci/get/forprocessmapping', params);
+  },
+  searchCiListAttr(params) {
+    return axios.post('/api/rest/cmdb/ci/listattr', params);
   }
 };
 

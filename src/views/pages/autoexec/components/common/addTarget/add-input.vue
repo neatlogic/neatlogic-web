@@ -75,6 +75,7 @@
 </template>
 <script>
 import addtargetmixin from './addtargetmixin.js';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
@@ -83,7 +84,8 @@ export default {
   },
   filtes: {},
   mixins: [addtargetmixin],
-  props: {},
+  props: {
+  },
   data() {
     return {
       showNumber: 15,
@@ -198,7 +200,8 @@ export default {
     validinputnodelist(list) {
       let data = {
         filter: this.defaultSearchValue,
-        inputNodeList: list
+        inputNodeList: list,
+        cmdbGroupType: this.opType
       };
       return this.$api.autoexec.action.validinputnodelist(data).then(res => {
         if (res.Status == 'OK') {
@@ -219,7 +222,11 @@ export default {
       return textList.join('、');
     }
   },
-  computed: {},
+  computed: {
+    opType() { 
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

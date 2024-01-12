@@ -187,7 +187,19 @@
     "asyncpolicy": "Synchronization strategy",
     "globaleditmodetip": "Global mode, do not delete attribute representatives",
     "partialeditmodetip": "Local mode, do not change if attribute is not given",
-    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode"
+    "treedraginfo": "Dragging a model can change the order and affiliation of the model, and cannot be dragged when in search mode",
+    "startci": "Select the starting model first",
+    "writeci": "Write model",
+    "writecitip": "Select constants or specify the model for data writing through form mapping. If the parent model is an abstract model and does not support adding configuration items, data needs to be written into the child model.",
+    "subci": "Submodel",
+    "selectrelpath": "Select relationship path",
+    "relciconfigtip": "After configuring the parent model, child models cannot be configured; After configuring the sub model, the parent model cannot be configured, but other sub models can be configured",
+    "topotemplate": "Topology template",
+    "selectagain": "Re select",
+    "topotype": "Unfolding method",
+    "grouptypedescreadonly": "Read only: View configuration items, which can be used as the execution target for the query class combination tool in automation.",
+    "grouptypedescmaintain": "Maintenance: Add modifications to configuration items based on read-only permissions.",
+    "grouptypedescautoexec": "Automated operations: On the basis of read-only permissions, add execution targets that can be used as a combination tool for operations in automation"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -518,7 +530,8 @@
     "eoadealwithusertip": "After setting the processor for the template, the processor cannot be modified during the editing process",
     "approvalstep": "Approval steps",
     "approvalprocess": "Approval process",
-    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node"
+    "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node",
+    "matchmapping": "Matching mapping"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

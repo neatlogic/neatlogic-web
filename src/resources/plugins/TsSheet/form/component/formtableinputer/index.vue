@@ -562,7 +562,6 @@ export default {
       // 根据组件的类型，设置回显值
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
-      console.log('selectedItem', selectedItem);
       let {config = {}, handler = ''} = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
         let {dataSource = '', isMultiple = false, matrixUuid = '', mapping = {}} = config || {};

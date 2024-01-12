@@ -36,7 +36,8 @@ export default {
   filters: {
   },
   mixins: [addtargetmixin],
-  props: {},
+  props: {
+  },
   data() {
     return {
       searchVal: {}

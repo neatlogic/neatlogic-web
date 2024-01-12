@@ -4,6 +4,7 @@
       ref="handler"
       border="border"
       :value="value"
+      :clearable="true"
       @change="setData"
     ></TsFormInput>
   </div>

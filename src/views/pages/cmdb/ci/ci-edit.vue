@@ -3,6 +3,53 @@
     <TsDialog v-if="ciData" v-bind="ciDialogConfig" @on-close="close">
       <template v-slot>
         <TsForm ref="ciForm" :item-list="ciFormConfig">
+          <template v-slot:viewXml>
+            <Poptip
+              trigger="hover"
+              placement="right"
+              width="650"
+              :transfer="true"
+            >
+              <a href="javascript:void(0)">{{ $t('page.viewexample') }}</a>
+              <div slot="content" class="api">
+                <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;ci&gt;
+   &lt;!--模型属性定义，需要SQL语句返回对应列--&gt;
+  &lt;attrs&gt;
+    &lt;attr name="user_id" label="用户id"/&gt;
+    &lt;attr name="user_name" label="用户名"/&gt;
+    &lt;attr name="teamName" label="分组"/&gt;
+  &lt;/attrs&gt;
+  &lt;sql&gt;
+    SELECT
+    &lt;!--必须包含id字段，作为配置项主键--&gt;
+    `u`.`id` AS id,
+    &lt;!--必须包含uuid字段，数据类型是char(32)，作为配置项全局主键--&gt;
+    md5(`u`.`id`) AS uuid,
+    &lt;!--必须包含name字段，作为配置项名称--&gt;
+    `u`.`user_name` AS name,
+    &lt;!--属性列需要在上面attrs中定义才生效--&gt;
+    `u`.`user_id` as user_id,
+    `u`.`user_name` as user_name,
+    group_concat( `t`.`name`) AS teamName
+    FROM
+    `user` `u`
+    LEFT JOIN `user_team` `ut` 
+    ON `u`.`uuid` = `ut`.`user_uuid`
+    LEFT JOIN `team` `t` 
+    ON `t`.`uuid` = `ut`.`team_uuid`
+    GROUP BY u.uuid
+  &lt;/sql&gt;
+&lt;/ci&gt;
+                    </pre>
+              </div>
+            </Poptip>
+            <TsCodemirror
+              v-model="ciData.viewXml"
+              codeMode="xml"
+            ></TsCodemirror>
+          </template>
           <template v-slot:file>
             <div>
               <TsUpLoad
@@ -91,7 +138,8 @@ export default {
   components: {
     TsForm,
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve)
+    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve),
+    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
   },
   mixins: [menuMinix],
   props: {
@@ -188,17 +236,31 @@ export default {
           label: this.$t('term.cmdb.virtualci'),
           value: 0,
           isHidden: false,
-          onChange: function(name) {
-            _this.$set(_this.ciData, 'isVirtual', name);
+          onChange: (name) => {
+            this.$set(_this.ciData, 'isVirtual', name);
+            for (let k in this.ciFormConfig) {
+              if (this.ciFormConfig[k]._belong === 'realci') {
+                this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
+              } else if (this.ciFormConfig[k]._belong === 'virtualci') {
+                this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
+              }
+            }
           }
         },
         {
+          _belong: 'virtualci',
+          name: 'viewXml',
+          type: 'slot',
+          isHidden: false,
+          label: this.$t('page.config')
+        },
+        /*{
           _belong: 'virtualci',
           name: 'file',
           type: 'slot',
           isHidden: false,
           label: this.$t('term.cmdb.configfile')
-        },
+        },*/
         {
           name: 'parentCiId',
           _belong: 'realci',
@@ -242,6 +304,7 @@ export default {
         },
         {
           name: 'expiredDay',
+          _belong: 'realci',
           type: 'number',
           label: this.$t('term.cmdb.activedate'),
           suffix: this.$t('page.day'),
@@ -285,10 +348,6 @@ export default {
     saveCi: function() {
       const form = this.$refs['ciForm'];
       if (form.valid()) {
-        if (this.ciData.isVirtual == 1 && !this.ciData.fileId) {
-          this.showFileError = true;
-          return false;
-        }
         if (this.needCheckParentCi && !this.ciData.parentCiId) {
           this.$createDialog({
             title: this.$t('page.warning'),
@@ -335,8 +394,27 @@ export default {
               this.needCheckParentCi = true;
             }
             this.currentIcon = this.ciData.icon;
+            
             this.ciFormConfig.forEach(element => {
+              if (element._belong === 'realci') {
+                this.$set(element, 'isHidden', this.ciData.isVirtual === 1);
+              } else if (element._belong === 'virtualci') {
+                this.$set(element, 'isHidden', this.ciData.isVirtual !== 1);
+              }
               element.value = this.ciData[element.name];
+              //不允许修改唯一标识
+              if (element.name === 'name') {
+                this.$set(element, 'disabled', true);
+              } else if (element.name === 'isVirtual') {
+              //不允许再次上传配置文件和修改是否虚拟模型
+                this.$set(element, 'isHidden', true);
+              } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
+              //有数据不允许修改是否抽象模型和父模型
+                this.$set(element, 'isHidden', true);
+              } else if (element.name === 'isAbstract' && this.ciData.hasChildren) {
+              //已被继承不允许修改是否抽象模型
+                this.$set(element, 'isHidden', true);
+              }
             });
           }
         });
@@ -368,37 +446,6 @@ export default {
     }
   },
   watch: {
-    ciData: {
-      handler: function(newVal) {
-        if (newVal && !newVal.id) { 
-          for (let k in this.ciFormConfig) {
-            if (this.ciFormConfig[k]._belong === 'realci') {
-              this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
-            } else if (this.ciFormConfig[k]._belong === 'virtualci') {
-              this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
-            }
-          } 
-        } else if (newVal && newVal.id) {
-          this.ciFormConfig.forEach(element => {
-            //不允许修改唯一标识
-            if (element.name === 'name') {
-              this.$set(element, 'disabled', true);
-            } else if (element.name === 'isVirtual' || element.name === 'file') {
-              //不允许再次上传配置文件和修改是否虚拟模型
-              this.$set(element, 'isHidden', true);
-            } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
-              //有数据不允许修改是否抽象模型和父模型
-              this.$set(element, 'isHidden', true);
-            } else if (element.name === 'isAbstract' && this.ciData.hasChildren) {
-              //已被继承不允许修改是否抽象模型
-              this.$set(element, 'isHidden', true);
-            }
-          });
-        }
-      },
-      deep: true,
-      immediate: true
-    }
   }
 };
 </script>
