@@ -350,7 +350,7 @@ export default {
     //树节点删除
     nodeDelete(treeNode) {
       let {uuid = null, name = '', type = '', childrenCount = 0} = treeNode || {};
-      if (childrenCount > 0 && !type) {
+      if (childrenCount > 0 || !type) {
         return false;
       }
       let apiFunc = type == 'catalog' ? this.$api.process.service.deleteCatalog({uuid: uuid}) : this.$api.process.service.deleteChannel({uuid: uuid});

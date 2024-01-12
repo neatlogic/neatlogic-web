@@ -319,6 +319,7 @@ export default {
             item.url = 'api/rest/cmdb/ci/listattr';
             item.textName = 'label';
             item.valueName = 'id';
+            item.rootName = '';
             item.params = { ciId: id };
           } else if (this.formData.type == 'customView') {
             item.url = 'api/rest/cmdb/customview/attr/get';
