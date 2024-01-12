@@ -3436,5 +3436,11 @@
     "css": "tsfont-ts",
     "hexCodepoint": "0xea3d",
     "codepoint": 59965
+  },
+  {
+    "name": "paste",
+    "css": "tsfont-paste",
+    "hexCodepoint": "0xea3e",
+    "codepoint": 59966
   }
 ]

@@ -251,7 +251,7 @@ export default {
           _belong: 'virtualci',
           name: 'viewXml',
           type: 'slot',
-          isHidden: false,
+          isHidden: true,
           label: this.$t('page.config')
         },
         /*{
@@ -268,7 +268,6 @@ export default {
           label: this.$t('page.inherit'),
           desc: this.$t('term.cmdb.abstractciallowextend'),
           width: '100%',
-          isHidden: false,
           url: 'api/rest/cmdb/ci/list',
           params: { excludeCiId: _this.id, isVirtual: 0, isAbstract: 1 },
           transfer: true,
@@ -284,7 +283,6 @@ export default {
           _belong: 'realci',
           name: 'isAbstract',
           type: 'switch',
-          isHidden: false,
           label: this.$t('term.cmdb.abstractci'),
           desc: this.$t('message.cmdb.abstractmodelextend'),
           value: 0,
@@ -423,7 +421,6 @@ export default {
         this.ciData.typeId = this.ciTypeId;
         this.currentIcon = 'tsfont-ci';
         this.ciFormConfig.forEach(element => {
-          element.value = this.ciData[element.name];
           //添加时允许修改唯一标识
           if (element.name == 'name') {
             element.disabled = false;

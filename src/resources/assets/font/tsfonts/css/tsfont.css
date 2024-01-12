@@ -614,3 +614,4 @@
 .tsfont-double-arrow-down:before { content: '\ea3b'; } /* '' */
 .tsfont-top:before { content: '\ea3c'; } /* '' */
 .tsfont-ts:before { content: '\ea3d'; } /* '' */
+.tsfont-paste:before { content: '\ea3e'; } /* '' */
