@@ -107,7 +107,9 @@ export default {
             let resData = res.Return.tbodyList;
             let newData = [];
             resData.forEach(v => {
-              newData.push({text: v.name, value: v.label});
+              if (v.label) {
+                newData.push({text: v.name, value: v.label});
+              }
             });
             this.formSetting.showAttributeLabelList.dataList = newData;
           }

@@ -583,7 +583,7 @@ export default {
             let tbodyList = res.Return.tbodyList || [];
             let dataList = [];
             tbodyList.forEach(v => {
-              if (v.label && v.name) {
+              if (v.label) {
                 dataList.push({text: v.name, value: v.label});
               }
             });
