@@ -59,6 +59,9 @@
                           valueName="uuid"
                           border="border"
                           transfer
+                          @change="(val)=>{
+                            changeValueList(val, item);
+                          }"
                         ></TsFormSelect>
                       </template>
                       <template v-else-if="item.mappingMode === 'custom'">
