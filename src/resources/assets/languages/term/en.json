@@ -2627,6 +2627,7 @@
     "block": "block",
     "cross": "overlapping",
     "larger": "enlarge",
-    "smaller": "narrow"
+    "smaller": "narrow",
+    "importtemplate": "Import Template"
   }
 }

@@ -964,5 +964,8 @@
   "datasources": "data sources",
   "autoexeccombopeditinfooptypetip": "Query class: Only assets with read-only permissions in the resource center can be used as execution targets; Operations: Only assets with 'automated operations' permissions in the resource center and group management can be used as execution targets;",
   "autoexeccomboptype": "Tool classification",
-  "autoexecchecktagentstatus": "Confirm the connection status of the agent"
+  "autoexecchecktagentstatus": "Confirm the connection status of the agent",
+  "clicktoupload": "Click to upload",
+  "dragfilehere": "Please drag the attachment here",
+  "clickanddragfile": "Click or drag to upload"
 }

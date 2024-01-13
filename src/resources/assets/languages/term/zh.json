@@ -2626,6 +2626,7 @@
     "block": "块",
     "cross": "交叉",
     "larger": "放大",
-    "smaller": "缩小"
+    "smaller": "缩小",
+    "importtemplate": "导入模板"
   }
 }
