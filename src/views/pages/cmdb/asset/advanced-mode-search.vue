@@ -666,7 +666,7 @@ export default {
                 let childJoinType = v.conditionRelList && v.conditionRelList.find((item) => item.from == uu.uuid);
                 conditionList.push({
                   label: uu.label,
-                  text: (uu.expression == 'is-null' ? this.$t('term.expression.notempty') : (uu.expression == 'is-not-null' ? this.$t('term.expression.notempty') : '')) || (uu.text),
+                  text: (uu.expression == 'is-null' ? this.$t('term.expression.empty') : (uu.expression == 'is-not-null' ? this.$t('term.expression.notempty') : '')) || (uu.text),
                   childJoinType: (childJoinType ? childJoinType.joinType : 'or') || 'or',
                   childUuid: uu.uuid 
                 });
