@@ -216,7 +216,7 @@
         name="inputParameters"
         style="paddint-top:0px"
       >
-        <Param
+        <NodeParam
           v-if="tabValue == 'inputParameters'"
           :id="nodeData.id"
           :jobPhaseId="phaseData.id"
@@ -224,7 +224,7 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'input'"
-        ></Param>
+        ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('page.outputparam')"
@@ -233,7 +233,7 @@
         name="outputParameters"
         style="paddint-top:0px"
       >
-        <Param
+        <NodeParam
           v-if="tabValue == 'outputParameters'"
           :id="nodeData.id"
           :jobPhaseId="phaseData.id"
@@ -241,7 +241,7 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'output'"
-        ></Param>
+        ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('term.autoexec.runrecord')"
@@ -283,7 +283,7 @@ export default {
   components: {
     NodeLog: resolve => require(['@/views/pages/autoexec/detail/logcomponents/node-log.vue'], resolve),
     Record: resolve => require(['./record.vue'], resolve),
-    Param: resolve => require(['./param.vue'], resolve),
+    NodeParam: resolve => require(['./param.vue'], resolve),
     SqlContent: resolve => require(['@/views/pages/autoexec/detail/logcomponents/sql-content.vue'], resolve), // 脚本内容
     ScriptContentDialog: resolve => require(['@/views/pages/autoexec/detail/script-content-dialog.vue'], resolve),
     CustomTemplateViewer: resolve => require(['@/resources/components/customtemplate/customtemplate-viewer.vue'], resolve)
