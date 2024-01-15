@@ -188,9 +188,9 @@
           <TsContain
             :rightWidth="290"
             :hasContentPadding="false"
-            hideHeader
             :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
+            hideHeader
             @rightSiderToggle="rightSiderToggle"
           >
             <template v-slot:content>
@@ -222,7 +222,13 @@
                 >
                   <template v-if="handlerStepInfo" v-slot:eoa>
                     <!-- eoa -->
-                    <EoaDetail ref="eoaDetail" :handlerStepInfo="handlerStepInfo"></EoaDetail>
+                    <EoaDetail
+                      ref="eoaDetail"
+                      :processTaskId="processTaskId"
+                      :processTaskStepId="processTaskStepId"
+                      :handlerStepInfo="handlerStepInfo"
+                      @updateAllData="updateAllData"
+                    ></EoaDetail>
                   </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
@@ -600,16 +606,6 @@ export default {
     //评分前回退
     redoTask() {
       this.redoModel = true;
-    },
-    eoaValid() {
-      let validList = [];
-      if (this.$refs.eoaDetail) {
-        validList = this.$refs.eoaDetail.valid();
-      }
-      return validList;
-    },
-    submitEoaData() {
-      let data = this.$refs.eoaDetail.getData();
     }
   },
   computed: {

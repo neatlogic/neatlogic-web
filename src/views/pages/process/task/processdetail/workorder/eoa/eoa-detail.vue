@@ -1,6 +1,6 @@
 <template>
   <div id="eoaDetail">
-    <template v-if="handlerStepInfo">
+    <template v-if="!$utils.isEmpty(eoaTemplateList)">
       <TsForm
         ref="eoaForm"
         v-model="eoaData"
@@ -65,7 +65,7 @@
         >{{ $t('page.submit') }}</Button>
       </div>
     </template>
-    <template v-else-if="isApprover">
+    <template v-else>
       <div class="template-main pt-nm">
         <Timeline>
           <TimelineItem class="template-list">
@@ -73,7 +73,7 @@
             <div slot="dot" class="text-tip icon-index border-color">1</div>
             <div class="flex-start">
               <div class="text-title pr-sm">发起</div>
-              <UserCard uuid="user#fccf704231734072a1bf80d90b2d1de2"></UserCard>
+              <UserCard v-bind="eoaConfig.userVo"></UserCard>
             </div>
           </TimelineItem>
           <TimelineItem
@@ -90,7 +90,7 @@
               </div>
             </div>
             <div
-              v-for="(u,uindex) in item.user"
+              v-for="(u,uindex) in item.userList"
               :key="uindex"
               class="flex-start pb-sm"
             >
@@ -104,9 +104,9 @@
             </div>
             <div class="flex-start">
               <span class="text-title pr-sm">{{ $t('page.accessory') }}</span>
-              <div>999</div>
+              <div v-for="f in item.fileList" :key="f.id">{{ f.name }}</div>
             </div>
-            <div>
+            <div v-if="item.isEdit">
               <div class="text-right">
                 <TsUpLoad
                   ref="fileList"
@@ -122,10 +122,20 @@
               ></TsFormInput>
               <div class="flex-end pt-sm">
                 <div class="pl-sm">
-                  <Button icon="tsfont tsfont-arrow-up" size="small" type="warning">{{ $t('page.reject') }}</Button>
+                  <Button
+                    icon="tsfont tsfont-arrow-up"
+                    size="small"
+                    type="warning"
+                    @click="reject()"
+                  >{{ $t('page.reject') }}</Button>
                 </div>
                 <div class="pl-sm">
-                  <Button icon="tsfont tsfont-check" size="small" type="success">{{ $t('page.agree') }}</Button>
+                  <Button
+                    icon="tsfont tsfont-check"
+                    size="small"
+                    type="success"
+                    @click="agree()"
+                  >{{ $t('page.agree') }}</Button>
                 </div>
               </div>
             </div>
@@ -147,6 +157,8 @@ export default {
     UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
   },
   props: {
+    processTaskId: Number,
+    processTaskStepId: Number,
     handlerStepInfo: {
       type: Object,
       default: null
@@ -155,8 +167,6 @@ export default {
   data() {
     return {
       eoaData: {},
-      isStart: true,
-      isApprover: true,
       formConfig: {
         templateId: {
           label: this.$t('router.process.eoatemplate'),
@@ -173,25 +183,9 @@ export default {
           validateList: ['required']
         }
       },
-      stepList: [
-        {
-          name: '科室领导审批',
-          policy: 'onePerson',
-          policyName: '单人',
-          userList: ['user#fccf704231734072a1bf80d90b2d1de2', 'user#fccf704231734072a1bf80d90b2d1de2'],
-          commentTemplate: '同意',
-          _isEdit: false
-        },
-        {
-          name: '科室领导审批11',
-          policy: 'or',
-          policyName: '或签',
-          userList: [],
-          commentTemplate: '同意',
-          _isEdit: true
-        }
-      ],
-      eoaTemplateList: []
+      stepList: [],
+      eoaTemplateList: [],
+      eoaConfig: {}
     };
   },
   beforeCreate() {},
@@ -208,13 +202,40 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      // if (!this.$utils.isEmpty(this.handlerStepInfo)) {
-      this.eoaTemplateList = this.handlerStepInfo.eoaTemplateList || [{id: '123456789', name: '测试'}];
-      this.$set(this.formConfig.templateId, 'dataList', this.eoaTemplateList);
-      // }
+      if (!this.$utils.isEmpty(this.handlerStepInfo)) {
+        this.eoaTemplateList = this.handlerStepInfo.eoaTemplateList || [];
+        this.$set(this.formConfig.templateId, 'dataList', this.eoaTemplateList);
+      }
     },
     changeTemplate(val) {
-      console.log(val);
+      if (val) {
+        this.getEoaData(val);
+      }
+    },
+    getEoaData(templateId) {
+      this.stepList = [];
+      let data = {
+        templateId: templateId,
+        processTaskId: this.processTaskId,
+        processTaskStepId: this.processTaskStepId
+      };
+      this.$api.process.process.getEoaData(data).then(res => {
+        if (res.Status == 'OK') {
+          this.eoaConfig = res.Return || {};
+          let stepList = this.eoaConfig.stepList || [];
+          this.$set(this.formConfig.content, 'value', this.eoaConfig.content);
+          if (!this.$utils.isEmpty(stepList)) {
+            stepList.forEach(item => {
+              if (this.$utils.isEmpty(item.userList)) {
+                this.$set(item, '_isEdit', true);
+              } else {
+                this.$set(item, '_isEdit', false);
+              }
+              this.stepList.push(item);
+            });
+          }
+        }
+      });
     },
     changeUserList(val, item) {
       if (val) {
@@ -225,7 +246,6 @@ export default {
     },
     valid() {
       let isValid = true;
-      let validList = [];
       let userFormList = this.$refs.userForm;
       if (this.$refs.eoaForm && !this.$refs.eoaForm.valid()) {
         isValid = false;
@@ -237,39 +257,44 @@ export default {
           }
         });
       }
-      if (!isValid) {
-        validList.push({
-          focus: '#eoaDetail',
-          icon: 'tsfont-close-o',
-          iconColor: '#FF625A',
-          msg: this.$t('message.process.complete', { target: 'EOA' }),
-          type: 'error',
-          tabValue: 'eoa'
-        });
-      }
-      return validList;
+      return isValid;
     },
     getData() {
       let data = {
-        ...this.eoaData,
+        content: this.eoaData.content,
         stepList: []
       };
       this.stepList.forEach(item => {
         data.stepList.push({
           id: item.id,
+          name: item.name,
+          policy: item.policy,
+          policyName: item.policyName,
           userList: item.userList
         });
       });
       return data;
     },
     submitEoaData() {
-      let validList = this.valid();
-      if (!this.$utils.isEmpty(validList)) {
+      if (!this.valid()) {
         return;
       }
-      let data = this.getData();
-      console.log(data, 'data');
-    }
+      let data = {
+        processTaskId: this.processTaskId,
+        processTaskStepId: this.processTaskStepId,
+        ...this.getData()
+      };
+      this.$api.process.process.saveEoaData(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Notice.success({
+            title: this.$t('message.savesuccess')
+          });
+          this.$emit('updateAllData');
+        }
+      });
+    },
+    reject() {},
+    agree() {}
   },
   filter: {},
   computed: {

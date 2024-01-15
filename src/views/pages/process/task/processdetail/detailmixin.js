@@ -1137,15 +1137,6 @@ export default {
           }
         }
       }
-      //eoa节点
-      if (this.handler == 'eoa') {
-        let eoaValidList = this.eoaValid();
-        if (eoaValidList.length > 0) {
-          this.validList.push(...eoaValidList);
-          this.validCardOpen = true;
-          isComplete = false;
-        }
-      }
       this.completeValid();
       return isComplete;
     },
