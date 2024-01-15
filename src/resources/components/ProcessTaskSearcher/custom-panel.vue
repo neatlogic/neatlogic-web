@@ -242,6 +242,7 @@ export default {
         }
       }
       this.$set(condition, type, val);
+      this.$forceUpdate(); // 强制更新视图，切换表达式是为空或者不为空，数据没有更新，导致后面的文本框没有隐藏
     },
     changeJoinType(obj, val) {
       this.$set(obj, 'joinType', val);
