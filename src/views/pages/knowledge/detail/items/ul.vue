@@ -1,13 +1,10 @@
 <template>
-  <!-- eslint-disable -->
-  <div
-    :is="handler"
+  <ul
     ref="htmlContent"
     :data_id="uuid"
     :class="className()"
     v-html="content"
-  ></div>
-   <!-- eslint-disable -->
+  ></ul>
 </template>
 <script>
 export default {
@@ -15,11 +12,7 @@ export default {
   components: {},
   filters: {},
   props: {
-    handler: {
-      //序列的类型，[ol,ul]
-      type: String,
-      default: 'ul'
-    },
+    handler: String,
     uuid: String,
     content: String,
     config: Object,

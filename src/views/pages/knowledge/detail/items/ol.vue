@@ -1,13 +1,10 @@
 <template>
-  <!-- eslint-disable -->
-  <div
-    :is="handler"
+  <ol
     ref="htmlContent"
     :data_id="uuid"
     :class="className()"
     v-html="content"
-  ></div>
-   <!-- eslint-disable -->
+  ></ol>
 </template>
 <script>
 export default {
@@ -15,11 +12,7 @@ export default {
   components: {},
   filters: {},
   props: {
-    handler: {
-      //序列的类型，[ol,ul]
-      type: String,
-      default: 'ol'
-    },
+    handler: String,
     uuid: String,
     content: String,
     config: Object,
@@ -68,8 +61,8 @@ ol {
       list-style: cjk-ideographic;
     }
   }
-  /deep/span.line-through{
-    text-decoration:line-through;
+  /deep/span.line-through {
+    text-decoration: line-through;
     vertical-align: baseline;
   }
 }
