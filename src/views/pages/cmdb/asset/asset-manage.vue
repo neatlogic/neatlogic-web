@@ -703,12 +703,20 @@ export default {
     },
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
-      this.searchAssetData();
+      if (this.isSimpleMode) {
+        this.searchAssetData();
+      } else {
+        this.advancedModeSearch(this.searchVal);
+      }
     },
     changePageSize(pageSize) {
       this.tableConfig.currentPage = 1;
       this.tableConfig.pageSize = pageSize;
-      this.searchAssetData();
+      if (this.isSimpleMode) {
+        this.searchAssetData();
+      } else {
+        this.advancedModeSearch(this.searchVal);
+      }
     },
     formatTime(time) {
       let data = '-';
@@ -1047,12 +1055,14 @@ export default {
       this.$nextTick(() => {
         this.$refs.combineSearcher && this.$refs.combineSearcher.handleToggleOpen(); // 打开简单模式面板
       });
+      this.tableConfig.currentPage = 1; // 切换不同搜索模式时，页码设置为初始值
+      this.tableConfig.pageSize = 20;
     },
     advancedModeSearch(searchVal) {
       // 复杂模式搜索
       let params = {
-        currentPage: 1,
-        pageSize: 20,
+        currentPage: this.tableConfig.currentPage || 1,
+        pageSize: this.tableConfig.pageSize || 20,
         typeId: this.selectType.typeId,
         ...searchVal
       };
