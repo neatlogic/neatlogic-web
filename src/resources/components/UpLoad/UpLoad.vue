@@ -33,17 +33,17 @@
             {{ $t('page.uploadattachment') }}
           </span>
         </div>
-        <div v-else-if="!readonly">
+        <div v-else-if="!readonly" class="padding" :style="{ height: height ? height + 'px' : null }">
           <p class="title">{{ title }}</p>
           <div v-if="type == 'drag'" class="drag">
             <!-- <i class="icon-tip tsfont-plus"></i> -->
             <div class="upload-icon">
               <img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />
-              <p>{{ $t('page.uploadattachment') }}</p>
+              <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
             </div>
-          <!-- <p>上传附件</p> -->
+            <!-- <p>上传附件</p> -->
           </div>
-          <Button v-else :disabled="disabled">{{ $t('pgae.clicktoupload') }}</Button>
+          <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
         </div>
       </slot>
     </Upload>
@@ -56,11 +56,7 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <i
-              v-download="downurl(item)"
-              class="tsfont-download file_down text-action"
-              :title="$t('page.download')"
-            ></i>
+            <i v-download="downurl(item)" class="tsfont-download file_down text-action" :title="$t('page.download')"></i>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -93,7 +89,9 @@ export default {
       type: String,
       default: ''
     },
-    uniqueKey: {//如果不为空，代表附件名唯一，相同名称的附件只会保留最新的一个
+    height: { type: Number },
+    uniqueKey: {
+      //如果不为空，代表附件名唯一，相同名称的附件只会保留最新的一个
       type: String,
       default: null
     },
@@ -125,7 +123,8 @@ export default {
       }
     },
     //上传参数
-    dataType: { //用于后台文档管理，标识模块或者功能等
+    dataType: {
+      //用于后台文档管理，标识模块或者功能等
       type: String,
       default: ''
     },
@@ -139,7 +138,7 @@ export default {
       default: function(file) {
         this.$Notice.warning({
           title: this.$t('form.validate.fileformaterror'),
-          desc: this.$t('form.validate.fileformat', {target: file.name})
+          desc: this.$t('form.validate.fileformat', { target: file.name })
         });
       }
     },
@@ -170,21 +169,25 @@ export default {
       type: [String, Number],
       default: '12'
     },
-    isSumbit: {//是否立即提交文件，设置为false后只会返回一堆文件内容
+    isSumbit: {
+      //是否立即提交文件，设置为false后只会返回一堆文件内容
       type: Boolean,
-      default: true      
+      default: true
     },
-    uploadCount: { //上传文件数量
+    uploadCount: {
+      //上传文件数量
       type: Number,
       default: 5
     },
-    params: {//额外参数
+    params: {
+      //额外参数
       type: Object,
       default: function() {
         return {};
       }
     },
-    silent: {//静默模式不提示任何信息
+    silent: {
+      //静默模式不提示任何信息
       type: Boolean,
       default: false
     },
@@ -200,19 +203,23 @@ export default {
         return {};
       }
     },
-    fileDownurl: { //文件下载路径
+    fileDownurl: {
+      //文件下载路径
       type: String,
       default: '/api/binary/file/download'
     },
-    fileDownParam: { //文件下载参数
+    fileDownParam: {
+      //文件下载参数
       type: Object,
       default: null
     },
-    isDeleteRemote: {//删除附件时是否同时删除远程文件
+    isDeleteRemote: {
+      //删除附件时是否同时删除远程文件
       type: Boolean,
       default: false
     },
-    readonlyTextIsHighlight: { // 只读模式下，文件列表是否需要高亮显示
+    readonlyTextIsHighlight: {
+      // 只读模式下，文件列表是否需要高亮显示
       type: Boolean,
       default: false
     }
@@ -253,9 +260,9 @@ export default {
       this.fileStatus = 'normal';
       if (this.uploadCount == this.uploadList.length) {
         this.$Notice.warning({
-          title: this.$t('form.validate.filecount', {target: this.uploadCount})
-        }); 
-        
+          title: this.$t('form.validate.filecount', { target: this.uploadCount })
+        });
+
         return false;
       }
       return this.beforeUpload(file);
@@ -309,7 +316,7 @@ export default {
       if (this.isDeleteRemote) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.accessory')}),
+          content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.accessory') }),
           btnType: 'error',
           'on-ok': vnode => {
             let p = {};
@@ -343,7 +350,7 @@ export default {
       aLink.href = BASEURLPREFIX + '/api/binary/file/download' + '?id=' + item.id;
       document.body.appendChild(aLink);
       aLink.click();
-      aLink.remove();      
+      aLink.remove();
       // this.$api.common.downLoad(data).then(res => {
       //   this.download(res.data, item.name);
       // });
@@ -353,9 +360,11 @@ export default {
       if (!data) {
         return;
       }
-      let url = URL.createObjectURL(new Blob([data], {
-        type: 'application/octet-stream'
-      }));
+      let url = URL.createObjectURL(
+        new Blob([data], {
+          type: 'application/octet-stream'
+        })
+      );
       let link = document.createElement('a');
       link.style.display = 'none';
       link.href = url;
@@ -391,7 +400,7 @@ export default {
       return '.' + this.format.join(',.');
     },
     downurl() {
-      return (item) => {
+      return item => {
         let params = {
           id: item.id
         };
@@ -442,17 +451,17 @@ export default {
     padding-top: 20px;
   }
   .upload-icon {
-      width: 96px;
-      height: 95px;
-      margin: auto;
-      margin-top: 60px;
-      margin-bottom: 100px;
-    }
-    .text-btn{
-      display: inline-block;
-      width: auto;
-      white-space: nowrap;
-    }
+    //width: 96px;
+    //height: 95px;
+    margin: auto;
+    //margin-top: 60px;
+    //margin-bottom: 100px;
+  }
+  .text-btn {
+    display: inline-block;
+    width: auto;
+    white-space: nowrap;
+  }
   .drag {
     // padding: 20px 0;
     // color: @primary-color;
@@ -504,8 +513,8 @@ export default {
       width: 125px;
       height: 125px;
     }
-     /deep/ button{
-      margin:0 !important;
+    /deep/ button {
+      margin: 0 !important;
     }
     /deep/ .ivu-upload {
       width: auto;

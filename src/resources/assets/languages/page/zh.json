@@ -967,5 +967,9 @@
   "formcomponents": "表单组件",
   "agree": "同意",
   "autoexeccombopeditinfooptypetip": "查询类：在配置管理，具备‘只读’权限的资产，才可以作为执行目标；\n操作类：在配置管理，团体管理中具备‘自动化操作’权限的资产，才可以作为执行目标；",
-  "autoexeccomboptype": "工具分类"
+  "autoexeccomboptype": "工具分类",
+  "autoexecchecktagentstatus": "确认tagent连接状态",
+  "clicktoupload": "点击上传",
+  "dragfilehere": "请拖拽附件到这里",
+  "clickanddragfile": "点击或拖拽上传"
 }

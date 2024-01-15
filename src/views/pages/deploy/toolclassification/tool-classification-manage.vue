@@ -13,6 +13,7 @@
       </template>
       <template v-slot:content>
         <TsTable
+          :loading="loading"
           v-bind="tableConfig"
           :theadList="theadList"
           @changeCurrent="changeCurrent"
@@ -53,6 +54,7 @@ export default {
   props: {},
   data() {
     return {
+      loading: true,
       keyword: '',
       tableConfig: {
         tbodyList: [],
@@ -113,7 +115,7 @@ export default {
       });
     },
     searchToolClassification() {
-      this.loadingShow = true;
+      this.loading = true;
       let params = {
         keyword: this.keyword,
         currentPage: this.tableConfig.currentPage,
@@ -124,7 +126,7 @@ export default {
           this.tableConfig = res.Return;
         }
       }).finally(() => {
-        this.loadingShow = false;
+        this.loading = false;
       });
     },
     changeSwitch(id, isActive) {

@@ -21,7 +21,12 @@
               >{{ $t('dialog.title.createtarget', {target: $t('page.role')}) }}</Button>
             </div>
             <div v-else>
-              <Button type="primary" :loading="isLoading" @click="editSave()">{{ $t('page.save') }}</Button>
+              <Button
+                v-if="tabsName != 'adduser' && tabsName != 'addgroup'"
+                type="primary"
+                :loading="isLoading"
+                @click="editSave()"
+              >{{ $t('page.save') }}</Button>
             </div>
           </div>
         </div>

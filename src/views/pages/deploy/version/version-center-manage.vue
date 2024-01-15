@@ -37,6 +37,7 @@
       <template v-slot:content>
         <TsTable
           :theadList="theadList"
+          :loading="loading"
           :canEdit="true"
           v-bind="versionData"
           @changeCurrent="changeCurrent"
@@ -196,6 +197,7 @@ export default {
   props: {},
   data() {
     return {
+      loading: true,
       appModuleData: {},
       isShowVersionAddDialog: false,
       isShowBuildNoDialog: false,
@@ -368,10 +370,13 @@ export default {
       }
     },
     searchVersion() {
+      this.loading = true;
       this.$api.deploy.version.searchVersion(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.versionData = res.Return;
         }
+      }).finally(() => {
+        this.loading = false;
       });
     },
     changeCurrent(currentPage = 1) {

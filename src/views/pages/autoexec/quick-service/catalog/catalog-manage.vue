@@ -45,6 +45,7 @@
             :hoverDomList="hoverDomList"
             :onClick="clickNode"
             :onDrop="onDrop"
+            :beforeDrop="beforeDrop"
             :value="selectedTreeId"
           ></TsZtree>
         </div>
@@ -280,15 +281,19 @@ export default {
           this.disabledConfig.saving = false;
         });
     },
-    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
-      if (targetNode == null && moveType == null) {
-        return;
+    beforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+      if (targetNode == null && (treeNodes[0] && treeNodes[0].type == 'service')) {
+        // 不能将服务拖拽成为根节点
+        return false;
       }
+    },
+    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
+      // treeNodes 被拖拽json集合
       let {id = null} = treeNodes[0] || {};
       let data = {
         id: id,
         moveType: moveType,
-        targetId: targetNode.id
+        targetId: this.$utils.isEmpty(targetNode) ? 0 : targetNode.id // 将目录拖拽到根目录时，目标为0
       };
       this.$api.autoexec.catalogManage.moveCatalog(data).then(res => {
         if (res?.Status == 'OK') {
