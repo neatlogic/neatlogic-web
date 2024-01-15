@@ -6,6 +6,7 @@
     v-bind="issueData"
     :sortOrder="sortData"
     :sortList="sortList"
+    :fixedHeader="fixedHeader"
     multiple
     @changeCurrent="searchIssue"
     @changePageSize="changePageSize"
@@ -83,7 +84,11 @@ export default {
     canAction: { type: Boolean, default: false },
     parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
     fromId: { type: Number }, //来源任务id
-    toId: { type: Number } //目标任务id
+    toId: { type: Number }, //目标任务id
+    fixedHeader: { // 固定表头，默认true
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {};

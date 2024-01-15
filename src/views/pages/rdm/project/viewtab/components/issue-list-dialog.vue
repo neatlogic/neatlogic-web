@@ -9,6 +9,7 @@
             :canAppend="false"
             :canSearch="true"
             :needSearch="true"
+            :fixedHeader="false"
             :checkedIdList="relIssueIdList"
             :projectId="projectId"
             :app="app"

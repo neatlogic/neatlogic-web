@@ -121,6 +121,7 @@
         <IssueListTable
           v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
           :theadList="finalTheadList"
+          :fixedHeader="fixedHeader"
           :sortList="sortList"
           :issueData="issueData"
           :attrList="attrList"
@@ -279,7 +280,11 @@ export default {
         return ['story', 'testcase', 'bug', 'task'].includes(value);
       }
     },
-    catalog: { type: Number }
+    catalog: { type: Number },
+    fixedHeader: { // 固定表头，默认true
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
