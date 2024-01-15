@@ -47,7 +47,8 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
     IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve)
-  }, mixins: [upload],
+  },
+  mixins: [upload],
   props: {},
   data() {
     return {
@@ -77,7 +78,7 @@ export default {
           validateList: ['required'],
           valueName: 'id',
           textName: 'name',
-          onChange: (name) => {
+          onChange: name => {
             this.$set(this.ciData, 'typeId', name);
           }
         },
@@ -89,7 +90,7 @@ export default {
           desc: this.$t('message.cmdb.noedit'),
           maxlength: 25,
           validateList: ['required', 'key-special'],
-          onChange: (name) => {
+          onChange: name => {
             this.$set(this.ciData, 'name', name);
           }
         },
@@ -100,7 +101,7 @@ export default {
           label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required'],
-          onChange: (name) => {
+          onChange: name => {
             this.$set(this.ciData, 'label', name);
           }
         },
@@ -129,7 +130,10 @@ export default {
       this.$emit('close', needRefresh);
     },
     importCi() {
-      this.upload('/api/binary/cmdb/ci/import', this.ciData, {},
+      this.upload(
+        '/api/binary/cmdb/ci/import',
+        this.ciData,
+        {},
         res => {
           this.$Message.success(this.$t('message.importsuccess'));
           this.close(true);
@@ -139,10 +143,8 @@ export default {
             title: this.$t('message.importfailed'),
             desc: error.Message
           });
-        });
-    },
-    uploadSuccess(data) {
-      console.log(data);
+        }
+      );
     }
   },
   filter: {},

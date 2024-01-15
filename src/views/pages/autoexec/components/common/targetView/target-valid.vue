@@ -44,10 +44,17 @@
             </li>
           </ul>
         </template>
-        <span>
-          {{ $t('term.autoexec.noexecuteusertoassetmanage', {protocol: item.protocol , executeUser: item.executeUser }) }}
+        <span v-if="item.protocol !== 'tagent' && !item.protocol.startsWith('tagent.')">
+          <span>
+            {{ $t('term.autoexec.noexecuteusertoassetmanage', {protocol: item.protocol , executeUser: item.executeUser }) }}
+          </span>
+          <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
         </span>
-        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
+        <span v-if="item.protocol === 'tagent' || item.protocol.startsWith('tagent.')">
+          <span>{{ $t('term.autoexec.tagentnoexecuteusertoassetmanage', {protocol: item.protocol }) }}</span>
+          <span v-if="$AuthUtils.hasRole('TAGENT_BASE')" class="text-href" @click="gotoAssetManage('tagentManager', item.list)">{{ $t('page.autoexecchecktagentstatus') }}4567</span>
+        </span>
+        
       </template>
       <template v-if="item.type == 'resourceListWithoutAccountByProtocol'">
         <div class="title-tip">{{ $t('term.autoexec.thefollowingobjectives') }}</div>
@@ -67,8 +74,14 @@
             </li>
           </ul>
         </template>
-        <span>{{ $t('term.autoexec.noexecuteusertoassetmanage', {protocol: item.protocol , executeUser: item.executeUser||"null" }) }}</span>
-        <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
+        <span v-if="item.protocol !== 'tagent' && !item.protocol.startsWith('tagent.')">
+          <span>{{ $t('term.autoexec.noexecuteusertoassetmanage', {protocol: item.protocol , executeUser: item.executeUser||"null" }) }}</span>
+          <span class="text-href" @click="gotoAssetManage('addAccount', item.list)">{{ $t('term.autoexec.addbindaccount') }}</span>
+        </span>
+        <span v-if="item.protocol === 'tagent' || item.protocol.startsWith('tagent.')">
+          <span>{{ $t('term.autoexec.tagentnoexecuteusertoassetmanage', {protocol: item.protocol }) }}</span>
+          <span v-if="$AuthUtils.hasRole('TAGENT_BASE')" class="text-href" @click="gotoAssetManage('tagentManager', item.list)">{{ $t('page.autoexecchecktagentstatus') }}</span>
+        </span>
       </template>
       <template v-if="item.type == 'resourceIsNotFound'">
         <div class="title-tip">{{ $t('term.autoexec.thefollowingobjectives') }}</div>
@@ -146,7 +159,9 @@ export default {
     gotoAssetManage(type, list) { //资产绑定账号
       let assetIpList = JSON.stringify(list);
       list.length > 1 && sessionStorage.setItem('assetIpList', assetIpList);
-      if (type == 'addAccount' && list.length == 1) {
+      if (type == 'tagentManager') {
+        window.open(HOME + '/framework.html#/tagent-manage', '_blank');
+      } else if (type == 'addAccount' && list.length == 1) {
         window.open(HOME + '/cmdb.html#/asset-manage?isAddAccountShow=true', '_blank');
       } else {
         window.open(HOME + '/cmdb.html#/asset-manage', '_blank'); //添加资产,待定（功能还没有）

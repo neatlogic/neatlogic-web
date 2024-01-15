@@ -103,7 +103,7 @@
                 </Progress>
               </div>
             </template>
-            <template v-slot:sql="{ row }">
+            <template v-slot:sql="{ row, index }">
               <Poptip
                 v-if="row.sql"
                 trigger="hover"
@@ -120,8 +120,8 @@
                   class="fz10 scroll"
                   style="max-height:500px"
                 >
-                  <div :id="'sql_' + row.id.replace(/\./ig,'_')">{{ row.sql }}</div>
-                  <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_'))">{{ $t('page.copy') }}</Button></div>
+                  <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
+                  <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button></div>
                 </div>
               </Poptip>
             </template>
@@ -189,6 +189,7 @@ export default {
   destroyed() {},
   methods: {
     copySql(id) {
+      console.log(id, 'id');
       this.$utils.copyText(id);
     },
     openStatusDialog() {
