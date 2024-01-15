@@ -3,7 +3,7 @@
 ## about
 neatlogic-web is the front-end code of the neatlogic platform, and the front-end codes of all submodules are in neatlogic-web.
 
-neatlogic-web is based on vue2.7.0, and the UI framework has been adjusted on the basis of iView4.x source code.
+neatlogic-web is based on vue2.7.16, and the UI framework has been adjusted on the basis of iView4.x source code.
 
 ## Build Dependencies
 vue/cli 5.x, webpack 5.x
