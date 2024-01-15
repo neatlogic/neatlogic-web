@@ -140,7 +140,7 @@ let routerArr = [
       title: $t('router.cmdb.applicationlist'),
       ismenu: true,
       icon: 'tsfont-app',
-      authority: 'RESOURCECENTER_BASE'
+      authority: 'DEPLOY_BASE'
     }
   },
   {
@@ -152,7 +152,7 @@ let routerArr = [
       ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-ip-list',
-      authority: 'RESOURCECENTER_BASE'
+      authority: 'DEPLOY_BASE'
     }
   },
   {
