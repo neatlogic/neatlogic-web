@@ -11,28 +11,33 @@
           <div class="text-tip">{{ $t('term.process.approvertip') }}</div>
           <div class="template-main pt-nm">
             <Timeline>
-              <TimelineItem class="template-list">
-                <div :title="$t('dialog.title.createtarget',{'target':$t('term.process.signreport')})" class="name overflow">{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
-                <div slot="dot" class="text-tip icon-index border-color">1</div>
-                <div class="flex-start">
-                  <div class="text-title pr-sm">发起</div>
-                  <UserCard uuid="user#fccf704231734072a1bf80d90b2d1de2"></UserCard>
-                </div>
-              </TimelineItem>
               <TimelineItem
                 v-for="(item,index) in stepList"
                 :key="index"
-                class="template-list active"
+                class="template-list"
+                style="line-height: 32px;"
               >
                 <div class="name owerflow">{{ item.name }}</div>
-                <div slot="dot" class="text-tip icon-index border-color">{{ index + 2 }}</div>
-                <div class="flex-start">
-                  <div class="text-title pr-sm">{{ item.policyName }}</div>
-                  <div v-if="item._isEdit" class="tsform-readonly">
+                <div slot="dot" class="text-tip icon-index border-color">{{ index + 1 }}</div>
+                <div v-if="item.policyVo" class="flex-start align-start">
+                  <div class="text-title pr-sm">
+                    <span>{{ item.policyVo.text }}</span>
+                    <Tooltip
+                      v-if="item.policyVo.description"
+                      max-width="660"
+                      :content="item.policyVo.description"
+                      theme="light"
+                      placement="right"
+                      :transfer="true"
+                    >
+                      <span class="text-href tsfont-info-o"></span>
+                    </Tooltip>
+                  </div>
+                  <div v-if="item.isEditableUser" class="tsform-readonly">
                     <UserSelect
                       ref="userForm"
                       :value="currenUserList(item)"
-                      :multiple="item.policy !== 'onePerson'"
+                      :multiple="item.policyVo.value !== 'onePerson'"
                       :groupList="['user']"
                       :validateList="['required']"
                       style="width: 200px"
@@ -57,85 +62,100 @@
           </div>
         </TsFormItem>
       </div>
-      <div class="pt-nm">
+      <div v-if="!$utils.isEmpty(actionList)" class="pt-nm">
         <Button 
           icon="tsfont tsfont-check"
           type="primary"
-          @click="submitEoaData()"
-        >{{ $t('page.submit') }}</Button>
+          @click="eoastart()"
+        >{{ actionList[0].text }}</Button>
       </div>
     </template>
     <template v-else>
       <div class="template-main pt-nm">
         <Timeline>
-          <TimelineItem class="template-list">
-            <div :title="$t('dialog.title.createtarget',{'target':$t('term.process.signreport')})" class="name overflow">{{ $t('dialog.title.createtarget',{'target':$t('term.process.signreport')}) }}</div>
-            <div slot="dot" class="text-tip icon-index border-color">1</div>
-            <div class="flex-start">
-              <div class="text-title pr-sm">发起</div>
-              <UserCard v-bind="eoaConfig.userVo"></UserCard>
-            </div>
-          </TimelineItem>
           <TimelineItem
             v-for="(item,index) in stepList"
             :key="index"
-            class="template-list active"
+            class="template-list"
           >
             <div class="name owerflow">{{ item.name }}</div>
-            <div slot="dot" class="text-tip icon-index border-color">{{ index + 2 }}</div>
-            <div class="flex-start pb-sm">
-              <div class="pr-sm">{{ item.policyName }}</div>
+            <div slot="dot" class="text-tip icon-index border-color">{{ index + 1 }}</div>
+            <div class="flex-start pt-xs">
+              <div v-if="item.policyVo" class="pr-sm">
+                <span>{{ item.policyVo.text }}</span>
+                <Tooltip
+                  v-if="item.policyVo.description"
+                  max-width="660"
+                  :content="item.policyVo.description"
+                  theme="light"
+                  placement="right"
+                  :transfer="true"
+                >
+                  <span class="text-href tsfont-info-o"></span>
+                </Tooltip>
+              </div>
               <div class="text-tip">
-                时间区间
+                <span v-if="item.startTime" class="pl-sm text-tip">{{ item.startTime | formatDate }}</span>
+                <span v-if="item.endTime" class="text-tip"> - {{ item.endTime | formatDate }}</span>
               </div>
             </div>
             <div
-              v-for="(u,uindex) in item.userList"
+              v-for="(u,uindex) in item.userContentList"
               :key="uindex"
-              class="flex-start pb-sm"
+              class="pt-sm"
             >
-              <UserCard :uuid="u" class="pr-sm"></UserCard>
-              <div class="pr-sm">同意</div>
-              <div class="text-tip">时间区间</div>
-            </div>
-            <div class="pb-sm">
-              <span class="text-title pr-sm">审批意见</span>
-              <span>同意</span>
-            </div>
-            <div class="flex-start">
-              <span class="text-title pr-sm">{{ $t('page.accessory') }}</span>
-              <div v-for="f in item.fileList" :key="f.id">{{ f.name }}</div>
-            </div>
-            <div v-if="item.isEdit">
-              <div class="text-right">
-                <TsUpLoad
-                  ref="fileList"
-                  className="smallUpload"
-                  styleType="text"
-                  dataType="itsm"
-                  rowSpan="24"
-                  :multiple="true"
-                ></TsUpLoad>
-              </div>
-              <TsFormInput
-                type="textarea"
-              ></TsFormInput>
-              <div class="flex-end pt-sm">
-                <div class="pl-sm">
-                  <Button
-                    icon="tsfont tsfont-arrow-up"
-                    size="small"
-                    type="warning"
-                    @click="reject()"
-                  >{{ $t('page.reject') }}</Button>
+              <div class="flex-start">
+                <UserCard :uuid="u.fcu" class="pr-sm"></UserCard>
+                <div v-if="u.typeName" class="pr-sm">
+                  <span :class="u.type==='eoastepunactivated'?'text-tip':u.type==='eoastepreject'?'text-warning':'text-success'">{{ u.typeName }}</span> 
                 </div>
-                <div class="pl-sm">
-                  <Button
-                    icon="tsfont tsfont-check"
-                    size="small"
-                    type="success"
-                    @click="agree()"
-                  >{{ $t('page.agree') }}</Button>
+                <div class="text-tip">{{ u.fcd | formatDate }}</div>
+              </div>
+              <template v-if="$utils.isEmpty(u.actionList)">
+                <div v-if="u.content" class="content flex-start pt-sm">
+                  <span class="text-title pr-sm">{{ u.type==='eoastart'?$t('page.description'):$t('page.opinions') }}</span>
+                  <span>{{ u.content }}</span>
+                </div>
+                <div v-if="u.fileList" class="content flex-start pt-sm">
+                  <span class="text-title pr-sm">{{ $t('page.accessory') }}</span>
+                  <div v-for="f in u.fileList" :key="f.id">
+                    <span v-download="downurl('/api/binary/file/download',f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
+                  </div>
+                </div>
+              </template>
+              <div v-else>
+                <div class="text-right pt-sm pb-sm">
+                  <TsUpLoad
+                    ref="fileList"
+                    :defaultList="u.fileList"
+                    className="smallUpload"
+                    styleType="text"
+                    dataType="itsm"
+                    rowSpan="24"
+                    :multiple="true"
+                    @remove="(fileList)=>{
+                      remove(fileList, u)
+                    }"
+                    @getFileList="(fileList)=>{
+                      getFileList(fileList, u)
+                    }"
+                  ></TsUpLoad>
+                </div>
+                <TsFormInput
+                  ref="itemContent"
+                  v-model="u.content"
+                  type="textarea"
+                  :validateList="validateList"
+                ></TsFormInput>
+                <div class="flex-end pt-sm">
+                  <div v-for="(a, aIndex) in u.actionList" :key="aIndex" class="pl-sm">
+                    <Button
+                      icon="tsfont tsfont-arrow-up"
+                      size="small"
+                      :type="a.value==='eoastepreject'?'warning': 'success'"
+                      @click="operations(a.value, item.id, u)"
+                    >{{ a.text }}</Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -143,9 +163,11 @@
         </Timeline>
       </div>
     </template>
+    <RejectDialog v-if="showRejectDialog" :stepList="stepList" @close="closeRejectDialog"></RejectDialog>
   </div>
 </template>
 <script>
+import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
@@ -154,8 +176,10 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    RejectDialog: resolve => require(['./reject-dialog.vue'], resolve)
   },
+  directives: { download },
   props: {
     processTaskId: Number,
     processTaskStepId: Number,
@@ -179,21 +203,25 @@ export default {
         },
         content: {
           label: this.$t('page.description'),
-          type: 'ckeditor',
+          type: 'textarea',
           validateList: ['required']
         }
       },
       stepList: [],
       eoaTemplateList: [],
-      eoaConfig: {}
+      eoaConfig: {},
+      showRejectDialog: false,
+      actionList: [],
+      currenUserConfig: {},
+      validateList: ['required']
     };
   },
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
     this.init();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -203,8 +231,26 @@ export default {
   methods: {
     init() {
       if (!this.$utils.isEmpty(this.handlerStepInfo)) {
-        this.eoaTemplateList = this.handlerStepInfo.eoaTemplateList || [];
+        this.eoaConfig = this.$utils.deepClone(this.handlerStepInfo);
+        this.eoaTemplateList = this.eoaConfig.eoaTemplateList || [];
+        if (this.eoaConfig.templateId) {
+          this.$set(this.eoaData, 'templateId', this.eoaConfig.templateId);
+          this.$set(this.eoaData, 'content', this.eoaConfig.content);
+          this.actionList = this.eoaConfig.actionList || [];
+        }
         this.$set(this.formConfig.templateId, 'dataList', this.eoaTemplateList);
+        this.stepList = this.eoaConfig.stepList || [];
+        if (this.stepList.length > 0) {
+          this.stepList.forEach(item => {
+            if (item.commentTemplate && !this.$utils.isEmpty(item.userContentList)) {
+              item.userContentList.forEach(u => {
+                if (!this.$utils.isEmpty(u.actionList)) {
+                  this.$set(u, 'content', item.commentTemplate);
+                }
+              });
+            }
+          });
+        }
       }
     },
     changeTemplate(val) {
@@ -222,18 +268,9 @@ export default {
       this.$api.process.process.getEoaData(data).then(res => {
         if (res.Status == 'OK') {
           this.eoaConfig = res.Return || {};
-          let stepList = this.eoaConfig.stepList || [];
-          this.$set(this.formConfig.content, 'value', this.eoaConfig.content);
-          if (!this.$utils.isEmpty(stepList)) {
-            stepList.forEach(item => {
-              if (this.$utils.isEmpty(item.userList)) {
-                this.$set(item, '_isEdit', true);
-              } else {
-                this.$set(item, '_isEdit', false);
-              }
-              this.stepList.push(item);
-            });
-          }
+          this.stepList = this.eoaConfig.stepList || [];
+          this.actionList = this.eoaConfig.actionList || [];
+          this.$set(this.eoaData, 'content', this.eoaConfig.content);
         }
       });
     },
@@ -243,6 +280,12 @@ export default {
       } else {
         this.$set(item, 'userList', []);
       }
+    },
+    remove(fileList, item) {
+      this.$set(item, 'fileList', fileList);
+    },
+    getFileList(fileList, item) {
+      this.$set(item, 'fileList', fileList);
     },
     valid() {
       let isValid = true;
@@ -261,21 +304,22 @@ export default {
     },
     getData() {
       let data = {
-        content: this.eoaData.content,
-        stepList: []
+        stepList: [],
+        ...this.eoaData
       };
       this.stepList.forEach(item => {
         data.stepList.push({
           id: item.id,
           name: item.name,
           policy: item.policy,
-          policyName: item.policyName,
-          userList: item.userList
+          userList: item.userList,
+          isEditableUser: item.isEditableUser,
+          commentTemplate: item.commentTemplate
         });
       });
       return data;
     },
-    submitEoaData() {
+    eoastart() {
       if (!this.valid()) {
         return;
       }
@@ -286,15 +330,69 @@ export default {
       };
       this.$api.process.process.saveEoaData(data).then(res => {
         if (res.Status == 'OK') {
-          this.$Notice.success({
-            title: this.$t('message.savesuccess')
-          });
-          this.$emit('updateAllData');
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.$emit('update');
         }
       });
     },
-    reject() {},
-    agree() {}
+    operations(type, eoaStepId, item) {
+      if (type === 'eoastepreject') {
+        this.reject(type, eoaStepId, item);
+      } else if (type === 'eoasteppass') {
+        this.agree(type, eoaStepId, item);
+      }
+    },
+    reject(type, eoaStepId, item) {
+      if (this.$refs.itemContent && this.$refs.itemContent[0] && !this.$refs.itemContent[0].valid()) {
+        return;
+      }
+      this.currenUserConfig = item;
+      this.$set(this.currenUserConfig, '_type', type);
+      this.$set(this.currenUserConfig, '_eoaStepId', eoaStepId);
+      this.showRejectDialog = true;
+    },
+    agree(type, eoaStepId, item) {
+      if (this.$refs.itemContent && this.$refs.itemContent[0] && !this.$refs.itemContent[0].valid()) {
+        return;
+      }
+      let data = {
+        eoaStepId: eoaStepId,
+        action: type,
+        content: item.content
+      };
+      if (!this.$utils.isEmpty(item.fileList)) {
+        let fileIdList = this.$utils.mapArray(item.fileList, 'id');
+        this.$set(data, 'fileIdList', fileIdList);
+      }
+      this.$api.process.process.completeEoaStep(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.$emit('update');
+        }
+      });
+    },
+    closeRejectDialog(id) {
+      if (id) {
+        let data = {
+          nextStepId: id,
+          eoaStepId: this.currenUserConfig._eoaStepId,
+          action: this.currenUserConfig._type,
+          content: this.currenUserConfig.content
+        };
+        if (!this.$utils.isEmpty(this.currenUserConfig.fileList)) {
+          let fileIdList = this.$utils.mapArray(this.currenUserConfig.fileList, 'id');
+          this.$set(data, 'fileIdList', fileIdList);
+        }
+        this.$api.process.process.completeEoaStep(data).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.executesuccess'));
+            this.$emit('update');
+          }
+        });
+      }
+      this.currenUserConfig = {};
+      this.showRejectDialog = false;
+    }
   },
   filter: {},
   computed: {
@@ -303,12 +401,20 @@ export default {
         let value = '';
         if (!this.$utils.isEmpty(item.userList)) {
           if (item.policy !== 'onePerson') {
-            value = item.valueList;
+            value = item.userList;
           } else {
-            value = item.valueList[0];
+            value = item.userList[0];
           }
         }
         return value;
+      };
+    },
+    downurl() {
+      return function(url, param) {
+        return {
+          url: url,
+          params: { id: param }
+        };
       };
     }
   },
@@ -320,17 +426,16 @@ export default {
   padding-left: 140px;
   .template-list {
     position: relative;
-    line-height: 32px;
     .name {
       position: absolute;
       top: 2px;
       left: -140px;
       width: 110px;
       text-align: right;
+      line-height: 32px;
     }  
-    .user {
-      padding-bottom: 16px;
-      padding-right: 32px;
+    .content {
+      padding-left: 30px;
     }
   }
   /deep/ .ivu-timeline-item-tail {

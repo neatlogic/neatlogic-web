@@ -151,6 +151,9 @@ const process = {
   },
   saveEoaData(params) { //保存工单eoa节点
     return axios.post('/api/rest/eoa/save', params);
+  },
+  completeEoaStep(params) { //完成EOA步骤
+    return axios.post('/api/rest/eoa/step/complete', params);
   }
 };
 

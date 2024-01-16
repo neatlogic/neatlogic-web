@@ -165,13 +165,6 @@
                 </Button>
               </span>
               <!-- 流转_end -->
-              <!-- 评分前回退 -->
-              <span v-if="actionConfig.redo" class="action-item">
-                <Button
-                  icon="tsfont tsfont-reply"
-                  @click="redoTask"
-                >{{ actionConfig.redo }}</Button>
-              </span>
             </div>
           </div>
         </div>
@@ -227,7 +220,7 @@
                       :processTaskId="processTaskId"
                       :processTaskStepId="processTaskStepId"
                       :handlerStepInfo="handlerStepInfo"
-                      @updateAllData="updateAllData"
+                      @update="updateEoa()"
                     ></EoaDetail>
                   </template>
                   <div slot="replyBtn">
@@ -429,7 +422,6 @@
     </TsDialog>
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
-    <RedoDialog :isShow.sync="redoModel" :processTaskConfig="processTaskConfig"></RedoDialog>
   </div>
 </template>
 
@@ -472,7 +464,6 @@ export default {
   data() {
     return {
       ranferreportModel: false, // 转报弹框
-      redoModel: false, //评分工单回退
       transferStepList: [], //转交步骤列表
       transferId: null,
       handlerStepInfo: null,
@@ -603,9 +594,8 @@ export default {
         });
       }
     },
-    //评分前回退
-    redoTask() {
-      this.redoModel = true;
+    updateEoa() {
+      this.toTask(this.processTaskId, this.processTaskStepId);
     }
   },
   computed: {

@@ -969,5 +969,7 @@
   "autoexecchecktagentstatus": "Confirm the connection status of the agent",
   "clicktoupload": "Click to upload",
   "dragfilehere": "Please drag the attachment here",
-  "clickanddragfile": "Click or drag to upload"
+  "clickanddragfile": "Click or drag to upload",
+  "Initiate": "launch",
+  "opinions": "view"
 }
