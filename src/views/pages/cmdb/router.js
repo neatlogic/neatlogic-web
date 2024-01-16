@@ -140,7 +140,7 @@ let routerArr = [
       title: $t('router.cmdb.applicationlist'),
       ismenu: true,
       icon: 'tsfont-app',
-      authority: 'DEPLOY_BASE'
+      authority: 'DEPLOY_BASE' // 有发布基础权限才显示
     }
   },
   {
@@ -152,7 +152,7 @@ let routerArr = [
       ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-ip-list',
-      authority: 'DEPLOY_BASE'
+      authority: 'DEPLOY_BASE' // 有发布基础权限才显示
     }
   },
   {
