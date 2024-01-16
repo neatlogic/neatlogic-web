@@ -42,6 +42,7 @@ const actions = {
     const routerConfig = getRouterConfig();
     const menuConfigList = getAllMenuTypeList();
     let moduleList = [];
+    let userAuthList = [];
     state.gettingModuleList = menuApi.getModuleList();
     const res = await state.gettingModuleList;
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
@@ -51,16 +52,23 @@ const actions = {
     }
     res &&
       res.Return &&
+      res.Return.forEach(item => {
+        if (item && item.authList && item.authList.length > 0) {
+          userAuthList.push(...item.authList); // 拿到所有权限列表
+        }
+      });
+    res &&
+      res.Return &&
       res.Return.forEach(moduleGroup => {
         try {
           let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
           if (!description || !description.trim()) {
             description = `${moduleName}平台`;
           }
-          const authorizedMenuList = getMenuList(routerConfig[moduleId], authList, moduleId);
+          const authorizedMenuList = getMenuList(routerConfig[moduleId], userAuthList, moduleId);
           const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
           if (routerConfig[moduleId]) {
-            const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && authList.length > 0 && authList.includes(route.meta.authority));
+            const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && userAuthList.length > 0 && userAuthList.includes(route.meta.authority));
             if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
               //有权限菜单的模块才让显示
               moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
@@ -286,13 +294,15 @@ function getRouterConfig() {
   });
   let commercialRouterConfig = getCommercialRouter();
   Object.keys(commercialRouterConfig).forEach(key => {
-    if (!routerConfig[key]) { //模块引入
+    if (!routerConfig[key]) {
+      //模块引入
       routerConfig[key] = commercialRouterConfig[key];
     }
-  }); 
+  });
   return routerConfig;
 }
-function getCommercialRouter() { //商业版模块
+function getCommercialRouter() {
+  //商业版模块
   let routerConfig = {};
   let routerPathList = [];
   try {
