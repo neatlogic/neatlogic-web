@@ -206,7 +206,10 @@
     "leastoneselectattr": "请至少选择一个矩阵固有属性",
     "staticrepeat": "静态数据选项存在重复数据，请重新编辑",
     "syncsceneattrtip": "默认场景包含属性A、B、C，且当前场景不包含A、B、C，将A、B、C属性添加至当前场景",
-    "editwechattouser": "要与企业微信后台的用户管理中用户账号一致"
+    "editwechattouser": "要与企业微信后台的用户管理中用户账号一致",
+    "regex": "正则校验",
+    "regextip": "自定义正则表达式，校验文本框输入合法性；未填写时不校验",
+    "regularexpression": "正则表达式"
   },
   "dashboard": {
     "templatehelp": "模板需要符合vue模板语法规范，必须指定一个根标签，一般是div，支持所有iView组件。数据源结果以数组的形式返回，根属性为：dataList，访问数据时请直接迭代dataList获取需要的数据。",

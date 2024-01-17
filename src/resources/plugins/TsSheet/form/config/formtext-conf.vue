@@ -20,6 +20,17 @@
         }"
       ></TsFormInput>
     </TsFormItem>
+    <TsFormItem :label="$t('message.framework.regex')" labelPosition="top" :tooltip="$t('message.framework.regextip')">
+      <TsFormInput
+        :value="config.regex"
+        :disabled="disabled"
+        :validateList="regexValidateList"
+        @on-change="val => {
+          setConfig('regex', val);
+        }"
+      >
+      </TsFormInput>
+    </TsFormItem>
   </div>
 </template>
 <script>
@@ -35,6 +46,20 @@ export default {
   props: {},
   data() {
     return {
+      regexValidateList: [
+        {
+          name: 'tomore',
+          trigger: 'change',
+          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
+          validator: (rule, value) => {
+            if (this.$utils.isEmpty(value)) {
+              return true;
+            } else {
+              return this.isValidRegex(value);
+            }
+          }
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -47,7 +72,17 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    isValidRegex(regexString) {
+      try {
+        new RegExp(regexString); 
+        return true; 
+      } catch (error) {
+        console.log(error);
+        return false; 
+      }
+    }
+  },
   filter: {},
   computed: {},
   watch: {}

@@ -71,6 +71,13 @@ export default {
       if (this.config.validate) {
         validateList.push(this.config.validate);
       }
+     
+      if (!this.$utils.isEmpty(this.config.regex)) {
+        validateList.push({
+          name: 'regex', 
+          pattern: this.config.regex 
+        });
+      }
       return validateList; 
     }
   },

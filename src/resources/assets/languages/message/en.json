@@ -206,7 +206,10 @@
     "leastoneselectattr": "Please select at least one inherent attribute of the matrix",
     "staticrepeat": "There is duplicate data in the static data option, please edit again",
     "syncsceneattrtip": "The default scene contains attributes A, B, and C, and the current scene does not contain A, B, and C. Add the A, B, and C attributes to the current scene",
-    "editwechattouser": "To be consistent with the user account in the user management of the enterprise WeChat backend"
+    "editwechattouser": "To be consistent with the user account in the user management of the enterprise WeChat backend",
+    "regex": "Regular verification",
+    "regextip": "Customize regular expressions to verify the validity of text box input; Do not verify when not filled in",
+    "regularexpression": "regular expression"
   },
   "dashboard": {
     "templatehelp": "The template needs to comply with the vue template syntax specification, and must specify a root tag, typically a div, that supports all iView components. The data source results are returned in the form of an array, and the root attribute is: dataList. When accessing data, please directly iterate over the dataList to obtain the required data.",
