@@ -1,11 +1,10 @@
 <template>
-  <div
-    :is="handler"
+  <ol
     ref="htmlContent"
     :data_id="uuid"
     :class="config?config.className:''"
     v-html="content"
-  ></div>
+  ></ol>
 </template>
 <script>
 import editorMixins from './common/mixins.js';
@@ -16,11 +15,7 @@ export default {
   filters: {},
   mixins: [editorMixins],
   props: {
-    handler: {
-      //序列的类型，[ol,ul]
-      type: String,
-      default: 'ol'
-    },
+    handler: String,
     uuid: String,
     content: String,
     config: Object

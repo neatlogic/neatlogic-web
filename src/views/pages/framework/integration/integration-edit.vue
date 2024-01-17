@@ -28,15 +28,15 @@
                 <Authentication :integration="integrationData" @setAuthentication="setAuthentication"></Authentication>
               </TabPane>
               <TabPane :label="$t('page.paramdesc')" name="param" tab="integrationEditTabs">
-                <Param
+                <ParamEdit
                   :allow-edit-param="allowEditParam"
                   :integration="integrationData"
                   :handler-pattern="handlerPattern"
                   @setParam="setParam"
-                ></Param>
+                ></ParamEdit>
               </TabPane>
               <TabPane :label="$t('term.framework.head')" name="head" tab="integrationEditTabs">
-                <Header :integration="integrationData" @setHead="setHead"></Header>
+                <HeaderEdit :integration="integrationData" @setHead="setHead"></HeaderEdit>
               </TabPane>
               <TabPane :label="$t('term.framework.inputtrans')" name="input" tab="integrationEditTabs">
                 <InputTransform
@@ -85,12 +85,12 @@ import TsForm from '@/resources/plugins/TsForm/TsForm';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import Authentication from './authentication-edit.vue';
-import Header from './head-edit.vue';
+import HeaderEdit from './head-edit.vue';
 import Other from './other-edit.vue';
 import OutputTransform from './output-transform.vue';
 import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
-import Param from './param-edit.vue';
+import ParamEdit from './param-edit.vue';
 
 export default {
   components: {
@@ -100,10 +100,10 @@ export default {
     OutputTransform,
     InputTransform,
     Authentication,
-    Header,
+    HeaderEdit,
     Other,
     Test,
-    Param
+    ParamEdit
   },
   props: {
     uuid: { type: String },

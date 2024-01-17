@@ -290,13 +290,15 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
     this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
     this.ciEntityId = Math.floor(this.$route.params['id']) || this.propCiEntityId;
-    this.getCiEntityById();
+    await this.getCiEntityById();
     this.getAttrByCiId();
     this.getRelByCiId();
-    this.getGlobalAttr();
+    if (!this.ciEntityData.isVirtual) {
+      this.getGlobalAttr();
+    }
     this.getConstList();
     this.getCustomViewList();
     this.getUnCommitTransactionCount();
@@ -407,14 +409,14 @@ export default {
       return relEntityData.map(d => d.ciEntityId);
     },
     getConstList() {
-      this.$api.cmdb.ci.getViewConstList(this.ciId, 'detail').then(res => {
+      this.$api.cmdb.ci.getViewConstList(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.constList = res.Return;
       });
     },
-    getCiEntityById() {
+    async getCiEntityById() {
       if (this.ciEntityId) {
         this.isLoading = true;
-        this.$api.cmdb.cientity
+        await this.$api.cmdb.cientity
           .getCiEntityById(this.ciId, this.ciEntityId, true, true, true)
           .then(res => {
             this.ciEntityData = res.Return;
@@ -433,13 +435,13 @@ export default {
       }
     },
     getGlobalAttr() {
-      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail' }).then(res => {
+      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.globalAttrList = res.Return;
       });
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
           this.attrList = res.Return;
           this.attrGroupList = [];
           if (this.attrList && this.attrList.length > 0) {
@@ -454,7 +456,7 @@ export default {
     },
     getRelByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail', needAlias: 1 }).then(res => {
           this.relList = res.Return;
         });
       }

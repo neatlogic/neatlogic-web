@@ -108,27 +108,25 @@ export default {
     ...mapMutations({
       onChangeMenu: Types.UPDATE_MENU // this.onChangeMenu()映射为 `this.$store.commit('UPDATE_MENU')`
     }),
-    getMenuList: function() {
+    getMenuList() {
       let menulist = MENULIST;
-      let _this = this;
       let menugroup = null;
-      _this.menulist = {};
-      _this.menutype = MENUTYPE;
+      this.menulist = {};
+      this.menutype = MENUTYPE;
 
-      _this.$store.state.topMenu.gettingModuleList.then(res => {
+      this.$store.state.topMenu.gettingModuleList.then(res => {
         if (res && res.Status == 'OK') {
-          //这里还有个过滤当前模块的
-          let authlist = res.Return || [];
-          authlist = authlist
-            .filter(au => {
-              return au.group && au.group == MODULEID;
-            })
-            .map(m => m.authList);
-          //if (authlist[0] && authlist[0].length > 0) {
           menugroup = {};
-          let auth = authlist[0] && authlist[0].map(el => el.name);
+          let moduleList = res.Return || [];
+          let userAuthList = []; // 拿到用户所有权限
+          moduleList.forEach((item) => {
+            if (item && item.authList && !this.$utils.isEmpty(item.authList)) {
+              userAuthList.push(...item.authList);
+            }
+          });
+          let authList = userAuthList.filter(item => item && item.name).map(item => item.name);
           menulist
-            .filter(menu => menu.meta && menu.meta.ismenu && !menu.meta.istitle && ((auth && (typeof menu.meta.authority == 'string' ? auth.indexOf(menu.meta.authority) > -1 : this.$utils.checkHasSomeitem(auth, menu.meta.authority))) || !menu.meta.authority))
+            .filter(menu => menu.meta && menu.meta.ismenu && !menu.meta.istitle && ((authList && (typeof menu.meta.authority == 'string' ? authList.indexOf(menu.meta.authority) > -1 : this.$utils.checkHasSomeitem(authList, menu.meta.authority))) || !menu.meta.authority))
             .map(m => {
               if (m.meta.type) {
                 if (!menugroup[m.meta.type]) {
@@ -159,9 +157,9 @@ export default {
                 sortedMenuGroup[key] = menugroup[key];
               }
             }
-            _this.menulist = sortedMenuGroup;
+            this.menulist = sortedMenuGroup;
           } else {
-            _this.menulist = menugroup;
+            this.menulist = menugroup;
           }
         }
       });

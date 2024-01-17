@@ -173,7 +173,6 @@ export default {
           descType: 'error',
           dataList: [],
           onChange: val => {
-            console.log(val);
             this.updateCiNameAttrId(val);
           }
         },

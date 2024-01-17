@@ -51,13 +51,27 @@
                     }
                   }
                 }),
-                h('span', {
-                  class: {
-                    'tsfont-question-o': true,
-                    'text-grey': true
-                  },
-                  attrs: { title: $t('term.cmdb.treedraginfo') }
-                })
+                h('span', [
+                  h(
+                    'Tooltip',
+                    {
+                      props: {
+                        'max-width': 250,
+                        placement: 'right',
+                        transfer: true,
+                        content: $t('term.cmdb.treedraginfo')
+                      }
+                    },
+                    [
+                      h('span', {
+                        class: {
+                          'tsfont-question-o': true,
+                          'text-grey': true
+                        }
+                      })
+                    ]
+                  )
+                ])
               ]);
             }
           "

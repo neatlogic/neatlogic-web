@@ -29,7 +29,6 @@
           <div class="float-right" style="width:50%">
             <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getScriptList(1)"></CombineSearcher>
           </div>
-          
         </div>
         <div>
           <TsCard
@@ -330,7 +329,7 @@ export default {
   }
 };
 </script>
-<style lang="less" >
+<style lang="less">
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@warning-bg-color,@warning-color,@info-bg-color,@info-color){
   .tscard-container {
