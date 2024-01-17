@@ -341,8 +341,6 @@ export default {
           if (res.Status === 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
           } else throw res;
-        }).finally(() => {
-          this.getTableDataSearch(1);
         });
     }
   },
