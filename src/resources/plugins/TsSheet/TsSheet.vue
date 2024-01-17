@@ -287,7 +287,7 @@
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>
               </div>
-              <div v-else :style="{ width: mode==='edit' || isFormSubassembly? getCellWidth(cell) + 'px':tdWidth(null,cell), overflow: 'auto' }">
+              <div v-else :style="{ width: mode==='edit'? getCellWidth(cell) + 'px':mode==='read'?tdWidth(null,cell):'100%', overflow: 'auto' }">
                 <FormItem
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
@@ -863,11 +863,29 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
+          this.clearPrivateAttr(this.formData[key]);
           formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
         }
       }
       // console.log(JSON.stringify(formItemList, null, 2));
       return formItemList;
+    },
+    clearPrivateAttr(value) { //清除私有属性
+      if (!this.$utils.isEmpty(value)) {
+        if (Array.isArray(value)) {
+          value.forEach(fitem => {
+            if (!this.$utils.isEmpty(fitem)) {
+              for (let k in fitem) {
+                if (k.startsWith('_')) {
+                  delete fitem[k];
+                } else {
+                  this.clearPrivateAttr(fitem[k]);
+                }
+              }
+            }
+          });
+        }
+      }
     },
     //是否包含class
     hasClass(classname) {

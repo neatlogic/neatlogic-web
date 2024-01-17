@@ -532,7 +532,8 @@
     "approvalprocess": "Approval process",
     "approvalprocesstip": "At least one node must be added outside the [Create Sign off] node",
     "matchmapping": "Matching mapping",
-    "approvertip": "Fill in the approval process steps below by approver"
+    "approvertip": "Fill in the approval process steps below by approver",
+    "eoatemplate": "EOA template"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

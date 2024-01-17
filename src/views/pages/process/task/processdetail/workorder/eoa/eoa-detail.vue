@@ -82,7 +82,7 @@
             <div slot="dot" class="text-tip icon-index border-color">{{ index + 1 }}</div>
             <div class="flex-start pt-xs">
               <div v-if="item.policyVo" class="pr-sm">
-                <span>{{ item.policyVo.text }}</span>
+                <span class="pr-xs">{{ item.policyVo.text }}</span>
                 <Tooltip
                   v-if="item.policyVo.description"
                   max-width="660"
@@ -111,16 +111,24 @@
                 </div>
                 <div class="text-tip">{{ u.fcd | formatDate }}</div>
               </div>
-              <template v-if="$utils.isEmpty(u.actionList)">
-                <div v-if="u.content" class="content flex-start pt-sm">
+              <template v-if="$utils.isEmpty(u.actionList) || readonly">
+                <div v-if="u.content" class="content flex-start align-start pt-sm">
                   <span class="text-title pr-sm">{{ u.type==='eoastart'?$t('page.description'):$t('page.opinions') }}</span>
                   <span>{{ u.content }}</span>
                 </div>
-                <div v-if="u.fileList" class="content flex-start pt-sm">
+                <div v-if="u.fileList" class="content flex-start align-start pt-sm">
                   <span class="text-title pr-sm">{{ $t('page.accessory') }}</span>
-                  <div v-for="f in u.fileList" :key="f.id">
-                    <span v-download="downurl('/api/binary/file/download',f.id)" class="tsfont-attachment text-action">{{ f.name }}</span>
-                  </div>
+                  <div>
+                    <div
+                      v-for="f in u.fileList"
+                      :key="f.id"
+                      v-download="downurl('/api/binary/file/download',f.id)"
+                      class="text-action pb-xs"
+                    >
+                      <span>{{ f.name }}</span>
+                      <span class="tsfont-download"></span>
+                    </div>
+                  </div> 
                 </div>
               </template>
               <div v-else>
@@ -150,7 +158,7 @@
                 <div class="flex-end pt-sm">
                   <div v-for="(a, aIndex) in u.actionList" :key="aIndex" class="pl-sm">
                     <Button
-                      icon="tsfont tsfont-arrow-up"
+                      :icon="a.value==='eoastepreject'?'tsfont tsfont-arrow-up':'tsfont tsfont-check'"
                       size="small"
                       :type="a.value==='eoastepreject'?'warning': 'success'"
                       @click="operations(a.value, item.id, u)"
@@ -186,6 +194,10 @@ export default {
     handlerStepInfo: {
       type: Object,
       default: null
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -193,7 +205,7 @@ export default {
       eoaData: {},
       formConfig: {
         templateId: {
-          label: this.$t('router.process.eoatemplate'),
+          label: this.$t('term.process.eoatemplate'),
           type: 'select',
           dataList: [],
           textName: 'name',
@@ -448,7 +460,6 @@ export default {
     height: 24px;
     line-height: 24px;
     text-align: center;
-    border-radius: 50%;
     padding: 0;
   }
   .icon-index {

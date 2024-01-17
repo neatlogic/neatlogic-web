@@ -9,15 +9,19 @@
     >
       <template v-slot>
         <div class="pl-lg">
-          <div
-            v-for="(item,index) in currentStepList"
-            :key="index"
-            class="step-li cursor-pointer border-color"
-            @click="selectItem(item)"
-          >
-            <span class="stepindex border-primary" :class="item.id === id?'active':''"></span>
-            <span>{{ item.name }}</span>
-          </div>
+          <Timeline class="ts-dialog-timeline-item-head-bg">
+            <TimelineItem
+              v-for="(item,index) in currentStepList"
+              :key="index"
+              class="cursor-pointer"
+              @click.native="selectItem(item)"
+            >
+              <div slot="dot" class="icon-index border-primary" :class="item.id === id?'active':''"></div>
+              <div class="pl-sm">
+                {{ item.name }}
+              </div>
+            </TimelineItem>
+          </Timeline>
           <div v-if="validMessage" class="text-error">{{ validMessage }}</div>
         </div>
       </template>
@@ -83,42 +87,27 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.step-li{
-  position: relative;
-  display: block;
-  height: 60px;
-  padding-left: 30px;
-  &:not(:last-child){
+/deep/ .ivu-timeline-item-head-custom {
+  margin-top: 12px;
+  width: 20px;
+  height: 20px;
+  line-height: 19px;
+  text-align: center;
+  padding: 0;
+  left: -3px;
+  top: -5px;
+}
+.icon-index {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  &.active {
     &:before{
       content: '';
-      position: absolute;
-      width: 0;
-      top: 18px;
-      left: 8px;
-      border: 0 none;
-      border-left: 1px solid;
+      display: inline-block;
+      border-radius: 50%;
+      border: 5px solid;
       border-color: inherit;
-      bottom: -2px;
-    }
-  }
-  .stepindex{
-    position: absolute;
-    top: 1px;
-    width: 18px;
-    height: 18px;
-    left: 0;
-    border-radius: 50%;
-    border: 1px solid;
-    text-align: center;
-    line-height: 18px;
-    &.active {
-      &:before{
-        content: '';
-        display: inline-block;
-        border-radius: 50%;
-        border: 5px solid;
-        border-color: inherit;
-      }
     }
   }
 }
