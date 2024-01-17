@@ -513,8 +513,10 @@ export default {
     tbodyList: {
       handler: function(val) {
         let _this = this;
-        this.list = this.canDrag ? this.$utils.deepClone(val) : val;
-        //this.list = val;
+        this.list = [];
+        val && val.forEach((item) => {
+          this.list.push(item); // 可拖拽，使用插槽修改行数据，数据不更新由于tbodyList深拷贝导致
+        });
         if (_this.$el && _this.$el.rows && _this.$el.rows.length) {
           _this.$nextTick(() => {
             let cellWidthList = [];
