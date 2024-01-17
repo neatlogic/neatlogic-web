@@ -69,13 +69,13 @@ export default {
   destroyed() {},
   methods: {
     getConstList() {
-      this.$api.cmdb.ci.getViewConstList(this.ciId, 'detail').then(res => {
+      this.$api.cmdb.ci.getViewConstList(this.ciId, {showType: 'detail', needAlias: 1}).then(res => {
         this.constList = res.Return;
       });
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
           this.attrList = res.Return;
         });
       }

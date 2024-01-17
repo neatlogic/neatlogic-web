@@ -84,8 +84,14 @@ const ci = {
   getAttrByIdList(attrIdList) {
     return axios.post('/api/rest/cmdb/attr/getlist', { idList: attrIdList });
   },
-  getViewConstList(ciId, showType) {
-    return axios.post('/api/rest/cmdb/ciview/listconst', { ciId: ciId, showType: showType });
+  getViewConstList(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ciview/listconst', param);
   },
   getAttrByCiId(ciId, params) {
     let param = {
@@ -115,7 +121,6 @@ const ci = {
     return axios.post('/api/rest/cmdb/rel/get', { id: relId });
   },
   getRelByCiId(ciId, params) {
-    //原参数needAction, showType, allowEdit
     let param = {
       ciId: ciId
     };

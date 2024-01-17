@@ -409,7 +409,7 @@ export default {
       return relEntityData.map(d => d.ciEntityId);
     },
     getConstList() {
-      this.$api.cmdb.ci.getViewConstList(this.ciId, 'detail').then(res => {
+      this.$api.cmdb.ci.getViewConstList(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.constList = res.Return;
       });
     },
@@ -435,13 +435,13 @@ export default {
       }
     },
     getGlobalAttr() {
-      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail' }).then(res => {
+      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.globalAttrList = res.Return;
       });
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
           this.attrList = res.Return;
           this.attrGroupList = [];
           if (this.attrList && this.attrList.length > 0) {
@@ -456,7 +456,7 @@ export default {
     },
     getRelByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail', needAlias: 1 }).then(res => {
           this.relList = res.Return;
         });
       }

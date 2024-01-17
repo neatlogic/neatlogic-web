@@ -199,7 +199,8 @@
     "relciconfigtip": "配置父模型后，不可配置子模型；配置子模型后，不可配置父模型，但可配置其他子模型",
     "topotemplate": "拓扑模板",
     "selectagain": "重新选择",
-    "topotype": "展开方式"
+    "topotype": "展开方式",
+    "tooltipscope": "仅在配置项列表、编辑和详情页面生效"
   },
   "process": {
     "workordercenter": "工单中心",
