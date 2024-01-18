@@ -53,7 +53,7 @@ export default {
     propCiEntityData: { type: Object }, //表单编辑时通过此参数传入暂存的配置项数据
     propCiEntityId: { type: Number }, //资产修改时使用此参数传入配置项id，
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
-    isRequired: {type: Number}, //为true时只返回必填属性和关系，用于应用清单添加入口
+    isRequired: { type: Number }, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
     saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数
   },
@@ -386,7 +386,7 @@ export default {
               cientity['_elementList'] = await this.getElementByCiId(this.ciId);
               cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciId);
               this.mergePropCiEntityData(cientity);
-             
+
               this.ciEntityQueue = [cientity];
             } else {
               if (ci.isVirtual == 1) {
@@ -423,28 +423,46 @@ export default {
     },
     async getGlobalAttrByCiId(ciId) {
       let globalAttrList;
-      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, {isActive: 1, allowEdit: 1}).then(res => {
-        globalAttrList = res.Return;
-      });
+      await this.$api.cmdb.ci
+        .getGlobalAttrByCiId(ciId, {
+          isActive: 1,
+          allowEdit: 1,
+          needAlias: 1
+        })
+        .then(res => {
+          globalAttrList = res.Return;
+        });
       return globalAttrList;
     },
     async getAttrByCiId(ciId) {
       if (ciId) {
         let attrList;
-        let allowEdit = 1;
         // 兼容表单，所以要必须显示所有的字段
-        await this.$api.cmdb.ci.getAttrByCiId(ciId, { allowEdit: allowEdit, isRequired: this.isRequired }).then(res => {
-          attrList = res.Return;
-        });
+        await this.$api.cmdb.ci
+          .getAttrByCiId(ciId, {
+            allowEdit: 1,
+            isRequired: this.isRequired,
+            needAlias: 1
+          })
+          .then(res => {
+            attrList = res.Return;
+          });
         return attrList;
       }
     },
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true, allowEdit: 1, isRequired: this.isRequired}).then(res => {
-          relList = res.Return;
-        });
+        await this.$api.cmdb.ci
+          .getRelByCiId(ciId, {
+            needAction: true,
+            allowEdit: 1,
+            isRequired: this.isRequired,
+            needAlias: 1
+          })
+          .then(res => {
+            relList = res.Return;
+          });
         return relList;
       }
     },

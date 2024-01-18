@@ -70,53 +70,6 @@
               @on-change="changeIsBackbone"
             ></TsFormSwitch>
           </div>
-          <!--<div class="action-item">
-            <Dropdown placement="bottom-start">
-              <a href="javascript:void(0)">
-                {{ $t('term.cmdb.extendlevel') }}
-                <b style="margin-left: 3px">{{ searchParam.level }}</b>
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <DropdownItem
-                  v-for="i in maxLevel"
-                  :key="i"
-                  :name="i"
-                  :selected="searchParam.level == i"
-                  @click.native="changeLevel(i)"
-                >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>-->
-          <!--<div v-if="relTypeList && relTypeList.length > 0" class="action-item">
-            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
-              <a href="javascript:void(0)">
-                {{ $t('term.cmdb.showrel') }}
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <template v-for="relType in relTypeList">
-                  <DropdownItem :key="relType.id" :name="'reltype_' + relType.id" :selected="isRelTypeSelected(relType)">
-                    <span class="text-grey">{{ relType.name }}</span>
-                  </DropdownItem>
-                  <DropdownItem
-                    v-for="rel in relType.relList"
-                    :key="rel.id"
-                    :name="'rel_' + rel.id"
-                    :selected="!searchParam.disableRelList.includes(rel.id)"
-                  >
-                    <div>
-                      <span>{{ rel.fromCiLabel }}</span>
-                      <span class="text-grey">({{ rel.fromLabel }})</span>
-                      <span class="fz10 text-grey tsfont-arrow-right"></span>
-                      <span>{{ rel.toCiLabel }}</span>
-                      <span class="text-grey">({{ rel.toLabel }})</span>
-                    </div>
-                  </DropdownItem>
-                </template>
-              </DropdownMenu>
-            </Dropdown>
-          </div>-->
         </div>
         <div>
           <TsFormInput
@@ -159,7 +112,12 @@
             <span v-else-if="p.direction === 'to'" class="text-grey fz10 tsfont-minus"></span>
             <span>
               <Tag v-if="pindex === currentTemplate.config.ciRelList.length - 1" color="success">{{ p.targetCiLabel }}({{ p.targetCiName }})</Tag>
-              <Tag v-else :color="!p.isHidden ? 'primary' : 'default'">
+              <Tag
+                v-else
+                class="cursor"
+                :color="isRelShow(p) ? 'primary' : 'default'"
+                @click.native="toggleRelShow(p)"
+              >
                 <span :class="!p.isHidden ? 'tsfont-eye' : 'tsfont-eye-off'">{{ p.targetCiLabel }}({{ p.targetCiName }})</span>
               </Tag>
             </span>
@@ -233,7 +191,8 @@ export default {
         ciEntityId: this.ciEntityId,
         ciId: this.ciId,
         disableRelList: [],
-        globalAttrFilterList: []
+        globalAttrFilterList: [],
+        templateConfig: {}
       },
       currentZoomLevelId: [],
       tooltipTop: null,
@@ -276,6 +235,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleRelShow(p) {
+      const relId = p.relId.toString();
+      if (!this.searchParam.templateConfig[relId]) {
+        this.$set(this.searchParam.templateConfig, relId, {});
+      }
+      if (p.isHidden) {
+        this.$set(this.searchParam.templateConfig[relId], 'isShow', !this.searchParam.templateConfig[relId].isShow);
+      } else {
+        this.$set(this.searchParam.templateConfig[relId], 'isHidden', !this.searchParam.templateConfig[relId].isHidden);
+      }
+    },
+    isRelShow(p) {
+      const relId = p.relId.toString();
+      if (p.isHidden && !this.searchParam.templateConfig[relId]?.isShow) {
+        return false;
+      } else if (!p.isHidden && this.searchParam.templateConfig[relId]?.isHidden) {
+        return false;
+      } else {
+        return true;
+      }
+    },
     showTopoTemplate(template) {
       this.$set(this.searchParam, 'templateId', template.id);
       this.$delete(this.searchParam, 'level');
@@ -283,7 +263,7 @@ export default {
     deleteTopoTemplate(template) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.scene')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.scene') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.ci.deleteCiTopoTemplateById(template.id).then(res => {
@@ -359,16 +339,6 @@ export default {
         this.globalAttrList = res.Return.tbodyList;
       });
     },
-    /*isRelTypeSelected(relType) {
-      let isAllDisabled = true;
-      for (let i = 0; i < relType.relList.length; i++) {
-        if (!this.searchParam.disableRelList.includes(relType.relList[i].id)) {
-          isAllDisabled = false;
-          break;
-        }
-      }
-      return !isAllDisabled;
-    },*/
     findNode() {
       //d3.selectAll('.selectednode').classed('selectednode', false);
       d3.selectAll('.selectedcircle').remove();
@@ -408,36 +378,6 @@ export default {
     changeIsBackbone(isBackbone) {
       this.searchParam.isBackbone = isBackbone;
     },
-    /*changeDisableRel(name) {
-      if (name.startsWith('reltype_')) {
-        name = parseInt(name.replace('reltype_', ''));
-        const relType = this.relTypeList.find(d => d.id == name);
-        if (relType) {
-          if (this.isRelTypeSelected(relType)) {
-            relType.relList.forEach(rel => {
-              if (!this.searchParam.disableRelList.includes(rel.id)) {
-                this.searchParam.disableRelList.push(rel.id);
-              }
-            });
-          } else {
-            relType.relList.forEach(rel => {
-              const index = this.searchParam.disableRelList.findIndex(d => d == rel.id);
-              if (index > -1) {
-                this.searchParam.disableRelList.splice(index, 1);
-              }
-            });
-          }
-        }
-      } else if (name.startsWith('rel_')) {
-        name = parseInt(name.replace('rel_', ''));
-        const index = this.searchParam.disableRelList.findIndex(d => d == name);
-        if (index > -1) {
-          this.searchParam.disableRelList.splice(index, 1);
-        } else {
-          this.searchParam.disableRelList.push(name);
-        }
-      }
-    },*/
     loadImage(nodesString) {
       (nodesString.match(/image=[^,]*(files\/\d*|png)/g) || [])
         .filter((value, index, self) => {
@@ -562,7 +502,7 @@ export default {
                 this.toCiEntityView(ids[1], ids[2]);
               }
             });
-          /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
+            /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
         let x = g.node().getBBox().x;
         let y = g.node().getBBox().y;
         d3.select('#CiEntity_431579058937856_459181555458049')
@@ -682,25 +622,6 @@ export default {
       }
       return null;
     },
-    /*relTypeList() {
-      const relTypeList = [];
-      this.relList.forEach(rel => {
-        const relType = relTypeList.find(d => d.id === rel.typeId);
-        if (relType != null) {
-          relType.relList.push(rel);
-        } else {
-          relTypeList.push({ id: rel.typeId, name: rel.typeText, relList: [rel] });
-        }
-      });
-      return relTypeList;
-    },
-    showRelList() {
-      if (!this.searchParam.disableRelList || this.searchParam.disableRelList.length == 0) {
-        return this.relList;
-      } else {
-        return this.relList.filter(r => !this.searchParam.includes(r.direction + '_' + r.id));
-      }
-    },*/
     tooltipPosition() {
       let style = '';
       if (this.tooltipTop) {
