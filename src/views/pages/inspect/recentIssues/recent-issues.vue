@@ -36,23 +36,41 @@
           ref="combineSearcher"
           v-model="searchVal"
           v-bind="searchConfig"
-          @confirm="searchCondition"
-          @change-label="changeLabelCombineSearcher"
+          @change="searchCondition"
         >   
-          <template v-slot:batchSearchList="{valueConfig}">
+          <template v-slot:batchSearchList="{textConfig, valueConfig}">
             <div>
               <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
                 <TsFormRadio
                   v-model="valueConfig.searchField"
                   :dataList="[{value: 'ip',text: 'IP'},{value: 'name',text: $t('page.name')}]"
+                  @change="() => {
+                    $delete(valueConfig, 'batchSearchList');
+                    $delete(textConfig, 'batchSearchList');
+                  }"
                 ></TsFormRadio>
               </TsFormItem>
               <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
+                <!-- change-label主要用于存储的数据回显，value值回显不会触发@change方法 -->
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
                   :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                   :autoSize="{minRows: 4}"
+                  @change="(val) => {
+                    if(val) {
+                      $set(textConfig, 'batchSearchList', val.split('\n'));
+                    } else {
+                      $delete(textConfig, 'batchSearchList');
+                    }
+                  }"
+                  @change-label="(val) => {
+                    if(val) {
+                      $set(textConfig, 'batchSearchList', val.split('\n'));
+                    } else {
+                      $delete(textConfig, 'batchSearchList');
+                    }
+                  }"
                 >
                 </TsFormInput>
               </TsFormItem>
@@ -485,8 +503,7 @@ export default {
       });
     },
     searchTableData() {
-      this.$refs.combineSearcher.refreshTextConfig();
-      this.closeCombineSearchPanel();
+      this.$refs.combineSearcher.doSearch();
       this.getTableData(1);
     },
     searchCondition(searchVal) {
@@ -497,7 +514,7 @@ export default {
     },
     closeCombineSearchPanel() {
       // 关闭搜索面板
-      this.$refs.combineSearcher.handleToggleOpen(); // 关闭搜索面板
+      this.$refs.combineSearcher.handleCancel(); // 关闭搜索面板
     },
     dealInspectStatusDataByUrl(nodeList) {
       // 处理巡检状态下拉列表数据
@@ -813,11 +830,6 @@ export default {
     },
     closeRuleOfThresholdDialog() {
       this.isShowRuleThresholdDialog = false;
-    },
-    changeLabelCombineSearcher(val) {
-      if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
-        this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
-      }
     },
     gotoAssetManagePage() {
       window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
