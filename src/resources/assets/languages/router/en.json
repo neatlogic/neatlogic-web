@@ -77,9 +77,7 @@
     "eventsolutionedit": "Edit Event Solution",
     "changeedit": "Change Edit",
     "eoatemplate": "EOA template",
-    "eoatemplateedit": "EOA template editing",
-    "autostart": "Automatically create sign offs",
-    "autostarttip": "When the handler is unique, the approval template is unique, and each approval step in the approval template has a designated approver, a signature is automatically created"
+    "eoatemplateedit": "EOA template editing"
   },
   "autoexec": {
     "detail": "Automation is obvious",

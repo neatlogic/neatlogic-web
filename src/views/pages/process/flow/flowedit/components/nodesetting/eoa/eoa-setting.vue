@@ -2,10 +2,10 @@
   <div class="pl-nm pr-nm eoa-setting">
     <div class="flex-between setting">
       <div>
-        <span class="text-grey">{{ $t('router.process.autostart') }}</span>
+        <span class="text-grey">{{ $t('term.process.eoaautostart') }}</span>
         <Tooltip
           max-width="300"
-          :content="$t('router.process.autostarttip')"
+          :content="$t('term.process.eoaautostarttip')"
           theme="light"
           placement="bottom"
           :transfer="true"
