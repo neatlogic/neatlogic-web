@@ -48,14 +48,20 @@
             ref="combineSearcher"
             v-model="searchVal"
             v-bind="searchConfig"
-            @confirm="changeCombineSearcher"
-            @change-label="changeLabelCombineSearcher"
+            @change="changeCombineSearcher"
             @switchMode="switchMode"
           >
-            <template v-slot:batchSearchList="{ valueConfig }">
+            <template v-slot:batchSearchList="{valueConfig, textConfig}">
               <div>
                 <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
-                  <TsFormRadio v-model="valueConfig.searchField" :dataList="searchFieldRadioDataList"></TsFormRadio>
+                  <TsFormRadio
+                    v-model="valueConfig.searchField"
+                    :dataList="searchFieldRadioDataList"
+                    @change="() => {
+                      $set(valueConfig, 'batchSearchList', '')
+                      $delete(textConfig, 'batchSearchList');
+                    }"
+                  ></TsFormRadio>
                 </TsFormItem>
                 <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
                   <TsFormInput
@@ -63,6 +69,14 @@
                     type="textarea"
                     :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                     :autoSize="{ minRows: 4 }"
+                    @change="(val) => {
+                      if(val) {
+                        $set(textConfig, 'batchSearchList', val.split('\n'));
+                      } else {
+                        $delete(textConfig, 'batchSearchList');
+                        $delete(valueConfig, 'batchSearchList');
+                      }
+                    }"
                   ></TsFormInput>
                 </TsFormItem>
               </div>
@@ -803,11 +817,11 @@ export default {
         return;
       }
       let params = {
-        batchSearchList: [],
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
         ...this.searchVal,
-        ...this.selectType
+        ...this.selectType,
+        batchSearchList: this.searchVal.batchSearchList ? this.searchVal.batchSearchList : []
       };
       if (!this.$utils.isEmpty(params.batchSearchList)) {
         params.batchSearchList = params.batchSearchList.split('\n');
@@ -1030,11 +1044,6 @@ export default {
         this.$set(this.searchVal, 'searchField', 'ip');
       }
       this.changeCurrent();
-    },
-    changeLabelCombineSearcher(val) {
-      if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
-        this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
-      }
     },
     editTree() {
       this.isShowTreeEdit = true;
