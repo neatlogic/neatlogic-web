@@ -329,7 +329,6 @@ export default {
           let totalSearch = this.getFullSearch();
           this.$emit('remove-label');
           this.$emit('change', totalSearch);
-          this.$emit('confirm', totalSearch);
         });
       }
       //只有在搜索模式下才去匹配输入框的，如果是删除下拉的属性会在watch里触发，如果是删除关键词的还需要在这里触发一次change
@@ -339,7 +338,6 @@ export default {
         let totalSearch = this.getFullSearch();
         this.$emit('remove-label');
         this.$emit('change', totalSearch);
-        this.$emit('confirm', totalSearch);
       }
     },
     addKeyword() {
@@ -353,9 +351,6 @@ export default {
         this.isVisible = false;
         this.$emit('change', newValue);
         this.keyword = '';
-        if (this.searchMode == 'clickBtnSearch') {
-          this.$emit('confirm', newValue); // 非实时搜索模式下，需要分发值出去，否则关键字搜索无反应
-        }
       }
     },
     handleCancel() {
@@ -380,7 +375,7 @@ export default {
       if (this.searchMode == 'clickBtnSearch') {
         this.refreshTextConfig(); // 点击确认时，需要把搜索结果显示在搜索栏中
       }
-      this.$emit('confirm', fullSearch);
+      this.$emit('change', fullSearch);
     },
     clearSearch() {
       this.keyword = '';
@@ -390,17 +385,15 @@ export default {
       this.isVisible = false;
       this.$refs.form && this.$refs.form.clearFormInput(); // 解决input输入框清空失败的问题
       this.$forceUpdate();
-      this.$emit('change', {});// 非实时搜索，删除全部数据后，触发change
-      this.$emit('confirm', {});
+      this.$emit('change', {});
     },
     handleSearch() {
       this.$emit('change', this.getFullSearch());
-      this.$emit('confirm', this.getFullSearch());
     },
     getFullSearch() {
       let fullSearch = {};
       if (this.searchValue && Object.keys(this.searchValue).length) {
-        for (var s in this.searchValue) {
+        for (let s in this.searchValue) {
           if (this.searchValue[s] != null && this.searchValue[s] != '') {
             let newitem = {};
             newitem[s] = this.searchValue[s];
@@ -421,7 +414,7 @@ export default {
       //console.log(e);
     },
     updateVal(val) {
-      this.$nextTick(() => { 
+      this.$nextTick(() => {
         this.searchValue = this.$utils.deepClone(val);
         this.totalText = this.$utils.deepClone(val);
         //清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
@@ -564,13 +557,14 @@ export default {
   },
   watch: {
     searchValue: {
-      handler: function(val, oldval) {
-        let _this = this;
+      handler(val, oldval) {
         if (val) {
-          let totalSearch = _this.getFullSearch();
-          let isEmit = this.$utils.isSame(totalSearch, _this.value);
+          let totalSearch = this.getFullSearch();
+          let isEmit = this.$utils.isSame(totalSearch, this.value);
           if (!isEmit) {
-            this.$emit('change', totalSearch);
+            if (this.searchMode == 'realtimeSearch') {
+              this.$emit('change', totalSearch);
+            }
           }
         }
       },
@@ -609,14 +603,10 @@ export default {
     textConfig: {
       handler(val) {
         if (val && typeof val == 'object') {
-          if (this.searchMode == 'realtimeSearch') {
-            this.refreshTextConfig();
-          } else if (this.searchMode == 'clickBtnSearch' && !this.isCloseAutomaticSearch) {
-            // 非实时搜索
+          if (this.searchMode == 'realtimeSearch' || (this.searchMode == 'clickBtnSearch' && !this.isCloseAutomaticSearch)) {
             this.refreshTextConfig();
           }
         }
-        this.$emit('change-label', this.totalText);
       },
       deep: true,
       immediate: true
