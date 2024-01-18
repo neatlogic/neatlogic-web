@@ -1,73 +1,75 @@
 <template>
   <div id="eoaDetail">
     <template v-if="!$utils.isEmpty(eoaTemplateList)">
-      <TsForm
-        ref="eoaForm"
-        v-model="eoaData"
-        :item-list="formConfig"
-      ></TsForm>
-      <div v-if="eoaData.templateId" class="pt-nm">
-        <TsFormItem :label="$t('term.process.approvalprocess')" required>
-          <div class="text-tip">{{ $t('term.process.approvertip') }}</div>
-          <div class="template-main pt-nm">
-            <Timeline>
-              <TimelineItem
-                v-for="(item,index) in stepList"
-                :key="index"
-                class="template-list"
-                style="line-height: 32px;"
-              >
-                <div class="name owerflow">{{ item.name }}</div>
-                <div slot="dot" class="text-tip icon-index border-color">{{ index + 1 }}</div>
-                <div v-if="item.policyVo" class="flex-start align-start">
-                  <div class="text-title pr-sm">
-                    <span>{{ item.policyVo.text }}</span>
-                    <Tooltip
-                      v-if="item.policyVo.description"
-                      max-width="660"
-                      :content="item.policyVo.description"
-                      theme="light"
-                      placement="right"
-                      :transfer="true"
-                    >
-                      <span class="text-href tsfont-info-o"></span>
-                    </Tooltip>
+      <div v-if="!readonly">
+        <TsForm
+          ref="eoaForm"
+          v-model="eoaData"
+          :item-list="formConfig"
+        ></TsForm>
+        <div v-if="eoaData.templateId" class="pt-nm">
+          <TsFormItem :label="$t('term.process.approvalprocess')" required>
+            <div class="text-tip">{{ $t('term.process.approvertip') }}</div>
+            <div class="template-main pt-nm">
+              <Timeline>
+                <TimelineItem
+                  v-for="(item,index) in stepList"
+                  :key="index"
+                  class="template-list"
+                  style="line-height: 32px;"
+                >
+                  <div class="name owerflow">{{ item.name }}</div>
+                  <div slot="dot" class="text-tip icon-index border-color">{{ index + 1 }}</div>
+                  <div v-if="item.policyVo" class="flex-start align-start">
+                    <div class="text-title pr-sm">
+                      <span>{{ item.policyVo.text }}</span>
+                      <Tooltip
+                        v-if="item.policyVo.description"
+                        max-width="660"
+                        :content="item.policyVo.description"
+                        theme="light"
+                        placement="right"
+                        :transfer="true"
+                      >
+                        <span class="text-href tsfont-info-o"></span>
+                      </Tooltip>
+                    </div>
+                    <div v-if="item.isEditableUser" class="tsform-readonly">
+                      <UserSelect
+                        ref="userForm"
+                        :value="currenUserList(item)"
+                        :multiple="item.policyVo.value !== 'onePerson'"
+                        :groupList="['user']"
+                        :validateList="['required']"
+                        style="width: 200px"
+                        transfer
+                        @change="(val)=>{
+                          changeUserList(val, item);
+                        }"
+                      ></UserSelect>
+                    </div>
+                    <div v-else>
+                      <UserCard
+                        v-for="(u,uindex) in item.userList"
+                        :key="uindex"
+                        :uuid="u"
+                        :hideAvatar="false"
+                        class="pr-sm"
+                      ></UserCard>
+                    </div>
                   </div>
-                  <div v-if="item.isEditableUser" class="tsform-readonly">
-                    <UserSelect
-                      ref="userForm"
-                      :value="currenUserList(item)"
-                      :multiple="item.policyVo.value !== 'onePerson'"
-                      :groupList="['user']"
-                      :validateList="['required']"
-                      style="width: 200px"
-                      transfer
-                      @change="(val)=>{
-                        changeUserList(val, item);
-                      }"
-                    ></UserSelect>
-                  </div>
-                  <div v-else>
-                    <UserCard
-                      v-for="(u,uindex) in item.userList"
-                      :key="uindex"
-                      :uuid="u"
-                      :hideAvatar="false"
-                      class="pr-sm"
-                    ></UserCard>
-                  </div>
-                </div>
-              </TimelineItem>
-            </Timeline>
-          </div>
-        </TsFormItem>
-      </div>
-      <div v-if="!$utils.isEmpty(actionList)" class="pt-nm">
-        <Button 
-          icon="tsfont tsfont-check"
-          type="primary"
-          @click="eoastart()"
-        >{{ actionList[0].text }}</Button>
+                </TimelineItem>
+              </Timeline>
+            </div>
+          </TsFormItem>
+        </div>
+        <div v-if="!$utils.isEmpty(actionList)" class="pt-nm">
+          <Button 
+            icon="tsfont tsfont-check"
+            type="primary"
+            @click="eoastart()"
+          >{{ actionList[0].text }}</Button>
+        </div>
       </div>
     </template>
     <template v-else>
