@@ -212,7 +212,8 @@ export default {
       handler(val) {
         this.$emit('update:textConfig', val);
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
     dataConfig: {
       handler(currentval) {

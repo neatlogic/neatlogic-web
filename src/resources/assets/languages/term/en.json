@@ -2631,6 +2631,7 @@
     "cross": "overlapping",
     "larger": "enlarge",
     "smaller": "narrow",
-    "importtemplate": "Import Template"
+    "importtemplate": "Import Template",
+    "strictmode": "Strict box selection mode"
   }
 }

@@ -2630,6 +2630,7 @@
     "cross": "交叉",
     "larger": "放大",
     "smaller": "缩小",
-    "importtemplate": "导入模板"
+    "importtemplate": "导入模板",
+    "strictmode": "严格框选模式"
   }
 }
