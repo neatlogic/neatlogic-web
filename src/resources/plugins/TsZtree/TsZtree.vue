@@ -103,6 +103,7 @@ export default {
                 this.zTreeObj.cancelSelectedNode(treeNode);
                 if (this.onClick) {
                   this.onClick(this.zTreeObj, null);
+                  return false;
                 }
               }
             }
@@ -168,7 +169,12 @@ export default {
       if (this.expandAll) {
         this.zTreeObj.expandAll(true);
       }
-      this.value && this.selectedNodeById(this.value);
+      if (this.value) {
+        const node = this.selectedNodeById(this.value);
+        if (node && this.onClick) {
+          this.onClick(this.zTreeObj, node);
+        }
+      }
       this.$emit('ready', this.zTreeObj);
     },
     toggleExpand(flag) {
@@ -179,9 +185,10 @@ export default {
         const node = this.zTreeObj.getNodeByParam(this.idKey, id, null);
         if (node) {
           this.zTreeObj.selectNode(node);
-          this.onClick && this.onClick(this.zTreeObj, node);
+          return node;
         }
       }
+      return null;
     }
   },
   computed: {},
@@ -193,7 +200,7 @@ export default {
       deep: true
     },
     value: {
-      handler: function (id) {
+      handler: function (id, oldId) {
         this.selectedNodeById(id);
       },
       deep: true

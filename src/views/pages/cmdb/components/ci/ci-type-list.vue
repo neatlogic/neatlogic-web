@@ -24,7 +24,16 @@
                     class="text-default overflow treeList radius-sm pl-sm pr-xs"
                     :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
                     :title="ci.label + '(' + ci.name + ')'"
-                    @click="click(item, ci)"
+                    @click="
+                      if (ciId === ci.id) {
+                        if(toggleable){
+                          test('a');
+                          click(null);
+                        }
+                      } else {
+                        click(ci);
+                      }
+                    "
                   >
                     <span>{{ ci.label }}</span>
                     <span style="padding-left: 2px" class="text-grey">({{ ci.name }})</span>
@@ -86,6 +95,7 @@
               :expandAll="false"
               :value="ciId"
               :nodeClasses_bak="nodeClasses"
+              :enableToggleClick="toggleable"
               :beforeDrag="
                 () => {
                   return !keyword && $AuthUtils.hasRole('CI_MODIFY');
@@ -94,8 +104,8 @@
               :renderName="renderName"
               :onDrop="onDrop"
               :onClick="
-                (tree, node) => {
-                  click(null, node);
+                (tree, ci) => {
+                  click(ci);
                 }
               "
             ></TsZtree>
@@ -115,6 +125,7 @@ export default {
   filters: {},
   props: {
     ciId: { type: Number },
+    toggleable: {type: Boolean, default: true}, //允许反选
     ciFilter: { type: Array }, //过滤模型列表
     tree: {
       //如果有值就用传过来的,没有就用默认的
@@ -152,6 +163,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    test(m) {
+      console.log(m);
+    },
     renderName(name, treeNode) {
       return '<span class="' + treeNode.icon + '">' + treeNode.label + '</span><span class="text-grey">(' + treeNode.name + ')</span>';
     },
@@ -200,19 +214,13 @@ export default {
     nodeClasses(treeId, treeNode) {
       return { add: [treeNode.icon] };
     },
-    clickTreeNode(tree, node) {
-      let { type = '' } = node || {};
-      if (type == 'ci') {
-        this.click('', node);
-      }
-    },
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';
       }
     },
-    click(data, nodeData) {
-      this.$emit('click', data, nodeData);
+    click(nodeData) {
+      this.$emit('click', nodeData);
     },
     async searchCiTypeCi() {
       await this.$api.cmdb.ci.searchCiTypeCi().then(res => {
@@ -232,7 +240,7 @@ export default {
           if (this.ciTypeList.length > 0) {
             if (this.ciTypeList[0].ciList.length > 0) {
               //如果没有传入ciId,默认选中第一个模型
-              this.$emit('click', this.ciTypeList[0], this.ciTypeList[0].ciList[0]);
+              this.$emit('click', this.ciTypeList[0].ciList[0]);
             }
           }
         }

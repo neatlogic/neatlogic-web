@@ -32,7 +32,12 @@
       </template>
       <template v-slot:sider>
         <div>
-          <ciTypeList ref="ciTypeList" :ciId="ciId" @click="switchCi"></ciTypeList>
+          <ciTypeList
+            ref="ciTypeList"
+            :toggleable="false"
+            :ciId="ciId"
+            @click="switchCi"
+          ></ciTypeList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">
@@ -337,9 +342,9 @@ export default {
     },
     toParentCi(ciId) {
       const ci = { id: ciId };
-      this.switchCi(null, ci);
+      this.switchCi(ci);
     },
-    switchCi: function(ciType, ci) {
+    switchCi(ci) {
       this.isLoading = true;
       this.ciId = ci.id;
       this.init();

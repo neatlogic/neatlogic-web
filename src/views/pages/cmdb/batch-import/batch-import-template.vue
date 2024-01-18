@@ -2,7 +2,7 @@
   <div>
     <TsContain hideHeader :siderWidth="200" :hasContentPadding="false">
       <template slot="sider">
-        <ciTypeList :ciId="ciId" @click="getTemplate"></ciTypeList>
+        <ciTypeList :ciId="ciId" :toggleable="false" @click="getTemplate"></ciTypeList>
       </template>
       <template slot="content">
         <Loading :loadingShow="isLoading" type="fix"></Loading>
@@ -47,10 +47,15 @@ export default {
   },
   created() {},
   methods: {
-    async getTemplate(ciType, ci) {
-      this.ciId = ci.id;
+    async getTemplate(ci) {
+      console.log('ci', ci);
+      if (ci) {
+        this.ciId = ci.id;
+      } else {
+        this.ciId = null;
+      }
       this.isLoading = true;
-      const res = await this.$api.cmdb.batchImport.getImportFieldList(ci.id);
+      const res = await this.$api.cmdb.batchImport.getImportFieldList(this.ciId);
       this.isLoading = false;
       const { attrList, relList, globalAttrList } = res.Return;
       const glbalTbodyList = globalAttrList.map(attr => {

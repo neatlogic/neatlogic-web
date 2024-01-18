@@ -12,7 +12,7 @@
       </template>
       <template v-slot:sider>
         <div>
-          <ciTypeList :ciId="ciId && parseInt(ciId)" @click="switchCi"></ciTypeList>
+          <ciTypeList :ciId="ciId && parseInt(ciId)" :toggleable="false" @click="switchCi"></ciTypeList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">
@@ -164,10 +164,10 @@ export default {
     },
     toParentCi(ciId) {
       const ci = { id: ciId };
-      this.switchCi(null, ci);
+      this.switchCi(ci);
     },
-    switchCi(data, ciId) {
-      this.ciId = String(ciId.id);
+    switchCi(ci) {
+      this.ciId = String(ci.id);
       this.init();
     },
     addCiEntity() {
@@ -197,7 +197,7 @@ export default {
     restoreHistory(historyData) {
       if (historyData.ciId && this.ciId != historyData.ciId) {
         const ci = { id: historyData.ciId };
-        this.switchCi(null, ci);
+        this.switchCi(ci);
       }
     }
   },

@@ -240,7 +240,6 @@ export default {
       this.searchTransaction(1);
     },
     async recoverCiEntity(row) {
-      console.log(JSON.stringify(row, null, 2));
       if (!row.authData || !row.authData.cientityrecover) {
         return;
       }
@@ -336,22 +335,22 @@ export default {
           this.isLoading = false;
         });
     },
-    switchCi: function(ciType, ci) {
-      if (this.searchParam.ciId == ci.id) {
+    switchCi(ci) {
+      if (!ci) {
         this.$set(this.searchParam, 'ciId', null);
       } else {
         this.$set(this.searchParam, 'ciId', ci.id);
       }
       this.searchTransaction();
     },
-    getLeftHeight: function() {
+    getLeftHeight() {
       window.setTimeout(() => {
         if (this.$refs.lefter) {
           this.leftHeight = this.$refs.lefter.offsetHeight;
         }
       }, 500);
     },
-    toCiList: function() {
+    toCiList() {
       if (this.fromPath) {
         if (this.fromPath != '/ci-manage' && this.fromPath != '/cientity-manage') {
           this.fromPath = '';
