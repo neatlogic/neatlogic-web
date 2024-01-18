@@ -107,7 +107,7 @@
               <div class="flex-start">
                 <UserCard :uuid="u.fcu" class="pr-sm"></UserCard>
                 <div v-if="u.typeName" class="pr-sm">
-                  <span :class="u.type==='eoastepunactivated'?'text-tip':u.type==='eoastepreject'?'text-warning':'text-success'">{{ u.typeName }}</span> 
+                  <span :class="u.type==='eoastepunactivated'?'text-tip':u.type==='eoastepreject'?'text-warning':u.type==='eoasteprunning'?'text-info':'text-success'">{{ u.typeName }}</span> 
                 </div>
                 <div class="text-tip">{{ u.fcd | formatDate }}</div>
               </div>

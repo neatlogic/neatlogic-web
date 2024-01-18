@@ -108,7 +108,18 @@ export default {
       return list;
     },
     changeTemplateId(toValue, valueObject, selectItem) {
-      this.eoaTemplateList = selectItem;
+      let eoaTemplateList = [];
+      if (!this.$utils.isEmpty(selectItem)) {
+        selectItem.forEach(item => {
+          let findItem = this.eoaTemplateList.find(e => e.id === item.id);
+          if (findItem) {
+            eoaTemplateList.push(findItem);
+          } else {
+            eoaTemplateList.push(item);
+          }
+        });
+      }
+      this.eoaTemplateList = eoaTemplateList;
     },
     editEoaTemplate() {
       window.open(HOME + '/process.html#/eoa-template-manage', '_blank');
@@ -138,6 +149,7 @@ export default {
               }
             });
           }
+          this.$Message.success(this.$t('message.refreshsuccess'));
         }
       });
     },
