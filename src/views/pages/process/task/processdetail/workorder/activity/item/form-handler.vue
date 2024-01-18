@@ -26,7 +26,7 @@ export default {
   mixins: [dealFormMix],
   props: {
     config: Object,
-    formConfig: {
+    formConfig: { //主表单
       type: Object,
       default: function() {
         return {};

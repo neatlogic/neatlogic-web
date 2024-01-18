@@ -1,7 +1,7 @@
 <template>
   <form class="flowSetting setting-box">
     <div class="flow-panel name">
-      <p class="panel-title text-title">{{ $t('term.process.flowname') }}</p>
+      <p class="panel-title text-title require-label">{{ $t('term.process.flowname') }}</p>
       <div class="panel-contain input-border">
         <keep-alive>
           <TsFormInput

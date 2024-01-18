@@ -7,8 +7,8 @@ import changehandle from './changehandle-node';
 import event from './event-node';
 import autoexec from './autoexec-node';
 import timer from './timer-node';
-//cmdb
-import cmdb from '@/views/pages/cmdb/flow/node/index.js';
+import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
+import eoa from './eoa-node';
 
 export default {
   condition,
@@ -20,5 +20,6 @@ export default {
   event,
   autoexec,
   ...cmdb,
-  timer
+  timer,
+  eoa  
 };

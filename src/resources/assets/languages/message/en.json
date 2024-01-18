@@ -109,7 +109,9 @@
     "recreatenewjobtip": "After the process is rolled back, when it flows back to the current step, recreate the automated job and execute it",
     "batchcreatejobpolicyvalid": "Batch creation of jobs, table components must be referenced by automation job parameters at least once",
     "batchjobpolicytip": "Loop through list data to create multiple jobs",
-    "jobpolicycolumn": "Loop through list data and merge into an array"
+    "jobpolicycolumn": "Loop through list data and merge into an array",
+    "eoahasonelink": "Approval nodes can only have one line connected!",
+    "eoanodenobacklink": "Approval nodes can only be rolled back to one node"
   },
   "autoexec": {
     "savedeadlinenolimit": "No setting means unlimited storage period",

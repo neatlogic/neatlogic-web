@@ -323,6 +323,20 @@ let valid = {
     }
     return validList;
   },
+  eoa(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let eoaConfig = nodeData.eoaConfig || {};
+    if (nodeConfig.handler === 'eoa') {
+      if (that.$utils.isEmpty(eoaConfig.eoaTemplateList)) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('page.template') }),
+          href: '#eoaSetting'
+        });
+      }
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];

@@ -28,7 +28,7 @@ export default {
       processTaskStepId: null, //步骤id
       processTaskConfig: {}, //所有基本信息
       processTaskStepConfig: null, //步骤基本信息
-      formConfig: {}, //表单数据
+      formConfig: {}, //场景表单数据
       sitemapTitle: this.$t('term.process.viewflowchart'), //流程图弹框名称
       processConfig: null, //流程图数据
       lookSitemapModel: false, //流程图显示隐藏
@@ -283,10 +283,9 @@ export default {
       }
       if (this.processTaskConfig.formConfig) {
         let formSceneUuid = this.processTaskConfig.currentProcessTaskStep ? this.processTaskConfig.currentProcessTaskStep.formSceneUuid : null;
-        let formConfig = this.processTaskConfig.formConfig;
-        this.formConfig = formConfig;
+        this.formConfig = this.processTaskConfig.formConfig; //主表单
         if (this.formConfig._type == 'new' && !this.$utils.isEmpty(this.processTask.currentProcessTaskStep)) {
-          //步骤进行中展示设置的节点场景或者默认场景
+          //场景表单：步骤进行中展示设置的节点场景或者默认场景
           this.formConfig = this.initNewFormConfig(formSceneUuid, this.formConfig);
         }
       }
@@ -810,7 +809,12 @@ export default {
     },
     validItemClick(selector, tabValue) {
       this.$refs.TaskCenterDetail.tabValue = tabValue;
-      selector && selector == '#form' && (this.$refs.TaskCenterDetail.isShowForm = true);
+      if (selector && selector == '#form') {
+        this.$refs.TaskCenterDetail.isShowForm = false;
+        this.$nextTick(() => {
+          this.$refs.TaskCenterDetail.isShowForm = true;
+        });
+      }
       if (this.$el.querySelector(selector)) {
         // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); 
         document.querySelector(selector).scrollIntoView();
@@ -1139,7 +1143,7 @@ export default {
     completeValid() { //流转时定位必填项
       for (let i = 0; i < this.validList.length; i++) {
         if (this.validList[i].type == 'error') {
-          this.validItemClick(this.validList[i].focus);
+          this.validItemClick(this.validList[i].focus, this.validList[i].tabValue);
           break;
         }
       }
