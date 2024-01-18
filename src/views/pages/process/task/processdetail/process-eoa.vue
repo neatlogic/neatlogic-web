@@ -483,7 +483,7 @@ export default {
     getMessage() { 
       //初始化当前步骤:eoa
       if (this.processTaskStepConfig) {
-        this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || {};
+        this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || null;
       }
     },
     async completeTask() {
@@ -595,7 +595,7 @@ export default {
       }
     },
     updateEoa() {
-      this.toTask(this.processTaskId, this.processTaskStepId);
+      this.toTask(this.processTaskId);
     }
   },
   computed: {

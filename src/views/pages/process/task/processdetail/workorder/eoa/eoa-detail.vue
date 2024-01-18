@@ -171,7 +171,6 @@
         </Timeline>
       </div>
     </template>
-    <RejectDialog v-if="showRejectDialog" :stepList="stepList" @close="closeRejectDialog"></RejectDialog>
   </div>
 </template>
 <script>
@@ -184,8 +183,7 @@ export default {
     UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    RejectDialog: resolve => require(['./reject-dialog.vue'], resolve)
+    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
   },
   directives: { download },
   props: {
@@ -222,7 +220,6 @@ export default {
       stepList: [],
       eoaTemplateList: [],
       eoaConfig: {},
-      showRejectDialog: false,
       actionList: [],
       currenUserConfig: {},
       validateList: ['required']
@@ -348,22 +345,6 @@ export default {
       });
     },
     operations(type, eoaStepId, item) {
-      if (type === 'eoastepreject') {
-        this.reject(type, eoaStepId, item);
-      } else if (type === 'eoasteppass') {
-        this.agree(type, eoaStepId, item);
-      }
-    },
-    reject(type, eoaStepId, item) {
-      if (this.$refs.itemContent && this.$refs.itemContent[0] && !this.$refs.itemContent[0].valid()) {
-        return;
-      }
-      this.currenUserConfig = item;
-      this.$set(this.currenUserConfig, '_type', type);
-      this.$set(this.currenUserConfig, '_eoaStepId', eoaStepId);
-      this.showRejectDialog = true;
-    },
-    agree(type, eoaStepId, item) {
       if (this.$refs.itemContent && this.$refs.itemContent[0] && !this.$refs.itemContent[0].valid()) {
         return;
       }
@@ -382,28 +363,6 @@ export default {
           this.$emit('update');
         }
       });
-    },
-    closeRejectDialog(id) {
-      if (id) {
-        let data = {
-          nextStepId: id,
-          eoaStepId: this.currenUserConfig._eoaStepId,
-          action: this.currenUserConfig._type,
-          content: this.currenUserConfig.content
-        };
-        if (!this.$utils.isEmpty(this.currenUserConfig.fileList)) {
-          let fileIdList = this.$utils.mapArray(this.currenUserConfig.fileList, 'id');
-          this.$set(data, 'fileIdList', fileIdList);
-        }
-        this.$api.process.process.completeEoaStep(data).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.$emit('update');
-          }
-        });
-      }
-      this.currenUserConfig = {};
-      this.showRejectDialog = false;
     }
   },
   filter: {},

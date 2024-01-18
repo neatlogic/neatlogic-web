@@ -19,8 +19,8 @@
     </div>
     <div class="pb-sm">
       <div class="flex-between text-grey pb-xs">
-        <div class="require-label">{{ $t('router.process.eoatemplate') }}</div>
-        <div v-if="!$utils.isEmpty(templateIdList)" class="action-group"> 
+        <div class="require-label">{{ $t('term.process.eoatemplate') }}</div>
+        <div v-if="$AuthUtils.hasRole('EOA_BASE') && !$utils.isEmpty(templateIdList)" class="action-group"> 
           <span class="text-tip-active tsfont-edit" @click="editEoaTemplate()"></span>
           <span class="action-item tsfont-refresh" @click="refreshEoaTemplate()"></span>
         </div>
@@ -71,7 +71,7 @@ export default {
         textName: 'name',
         dealDataByUrl: this.dealDataByUrl,
         multiple: true,
-        firstLi: true,
+        firstLi: !!this.$AuthUtils.hasRole('EOA_BASE'),
         firstText: '模板',
         firstSelect: false,
         transfer: true,
