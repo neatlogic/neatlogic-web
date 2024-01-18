@@ -27,7 +27,6 @@
                     @click="
                       if (ciId === ci.id) {
                         if(toggleable){
-                          test('a');
                           click(null);
                         }
                       } else {
@@ -163,9 +162,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    test(m) {
-      console.log(m);
-    },
     renderName(name, treeNode) {
       return '<span class="' + treeNode.icon + '">' + treeNode.label + '</span><span class="text-grey">(' + treeNode.name + ')</span>';
     },
