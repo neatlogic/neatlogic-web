@@ -838,7 +838,7 @@ export default {
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, {needAlias: 1}).then(res => {
         this.attrList = res.Return;
         if (this.attrList && this.attrList.length > 0) {
           this.attrList.forEach(attr => {
