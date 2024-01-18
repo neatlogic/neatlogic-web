@@ -833,12 +833,12 @@ export default {
       });
     },
     async getGlobalAttrList() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
-        this.globalAttrList = res.Return.tbodyList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { isActive: 1, needAlias: 1 }).then(res => {
+        this.globalAttrList = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, {needAlias: 1}).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1 }).then(res => {
         this.attrList = res.Return;
         if (this.attrList && this.attrList.length > 0) {
           this.attrList.forEach(attr => {
@@ -848,7 +848,7 @@ export default {
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1 }).then(res => {
         this.relList = res.Return;
       });
     },
