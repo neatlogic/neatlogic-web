@@ -32,6 +32,11 @@ import {$t} from '@/resources/init.js';
           if (sourceNode.getConfig().handler == 'timer') { //定时节点不能连回退线
             ViewUI.Message.warning({ content: $t('message.process.timernodenobacklink'), duration: 3, closable: true });
             return false;
+          } else if (sourceNode.getConfig().handler == 'eoa') {
+            if (this.getNextNodes('backward') && this.getNextNodes('backward').length > 0) {
+              ViewUI.Message.warning({ content: $t('message.process.eoanodenobacklink'), duration: 3, closable: true });
+              return false;
+            }
           }
           const backwardSet = new Set(this.getNextNodes('backward'));
           if (!backwardSet.has(targetNode) && targetNode.isAllowConnected(this)) {
@@ -51,9 +56,15 @@ import {$t} from '@/resources/init.js';
           //判断是否有连线
           const forwardSet = new Set(this.getNextNodes('forward'));
           if (!forwardSet.has(targetNode) && targetNode.isAllowConnected(this)) {
-            if (sourceNode.getConfig().handler == 'timer' && this.getNextNodes('forward') && this.getNextNodes('forward').length > 0) { //定时节点只能有一个后置节点
-              ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
-              return false;
+            if (this.getNextNodes('forward') && this.getNextNodes('forward').length > 0) { 
+              //定时节点和审批节点只能有一个后置节点
+              if (sourceNode.getConfig().handler == 'timer') {
+                ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
+                return false;
+              } else if (sourceNode.getConfig().handler == 'eoa') {
+                ViewUI.Message.warning({ content: $t('message.process.eoahasonelink'), duration: 3, closable: true });
+                return false;
+              }
             }
             this.canvas.addLink({
               type: 'forward',
@@ -67,7 +78,7 @@ import {$t} from '@/resources/init.js';
       }
     }
     specialConnect(targetNode, sourceNode) {
-      if (targetNode.getType() === 'end' && sourceNode.getConfig().handler === 'changecreate') { //穿件变革节点不能在结束节点前面
+      if (targetNode.getType() === 'end' && sourceNode.getConfig().handler === 'changecreate') { //变更创建节点不能在结束节点前面
         ViewUI.Message.warning({
           content: $t('message.process.changecrenotendnode'),
           duration: 3,

@@ -1,12 +1,13 @@
 export default {
   methods: {
     initNewFormConfig(formSceneUuid, formConfig) {
-      let data = this.$utils.deepClone(formConfig);
+      let data = this.$utils.deepClone(formConfig);//主表单
       let formItemList = [];
-      let currentSceneUuid = formSceneUuid || formConfig.defaultSceneUuid || this.formConfig.uuid;
-      if (currentSceneUuid && currentSceneUuid != this.formConfig.uuid) {
+      let currentSceneUuid = formSceneUuid || formConfig.defaultSceneUuid || formConfig.uuid;
+      if (currentSceneUuid && currentSceneUuid != formConfig.uuid) {
         let sceneConfig = this.formConfig.sceneList.find(item => item.uuid === currentSceneUuid);
         if (sceneConfig) {
+          //场景表单
           if (formConfig.tableList) {
             formConfig.tableList.forEach(item => {
               if (item.component) {

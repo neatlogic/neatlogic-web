@@ -24,7 +24,7 @@
           v-if="canSearch && isShowCombineSearcher"
           v-model="searchValue"
           v-bind="searchConfig"
-          @confirm="searchIssue(1)"
+          @change="searchIssue(1)"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
             <TsFormDatePicker

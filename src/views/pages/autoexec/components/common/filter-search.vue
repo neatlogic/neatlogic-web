@@ -31,7 +31,7 @@
       :isRequired="isRequired"
       :readonly="readonly"
       :showSearchNumber="showSearchNumber"
-      @confirm="simpleModeSearch"
+      @change="simpleModeSearch"
       @switchMode="switchMode"
     >
     </CombineSearcher>

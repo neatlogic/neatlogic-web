@@ -61,7 +61,7 @@
               :key="rindex"
               class="mr-md"
               href="javascript:void(0)"
-              @click="toCiEntity(relentity.ciEntityId, relentity)"
+              @click="toCiEntity(relentity)"
             >
               <span class="tsfont-ci"></span>
               <span>{{ relentity.ciEntityName }}</span>
@@ -157,9 +157,9 @@ export default {
       this.currentTransactionId = null;
       this.isHistoryDetailShow = false;
     },
-    toCiEntity(data, relentity) {
+    toCiEntity(relentity) {
       relentity.id = relentity.ciId;
-      this.$emit('toCiEntity', data, relentity);
+      this.$emit('toCiEntity', relentity);
     },
     searchCiEntity(current) {
       //this.isLoading = true;

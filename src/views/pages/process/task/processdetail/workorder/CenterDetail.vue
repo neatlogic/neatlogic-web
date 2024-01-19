@@ -42,6 +42,7 @@
         class="block-tabs"
         :animated="false"
         name="tab1"
+        @on-click="clickTabValue"
       >
         <TabPane
           v-if="hasForm"
@@ -51,18 +52,21 @@
           tab="tab1"
         >
           <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig) && (!tabValue || tabValue == 'report')" class="pt-nm pb-nm">
+          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
             <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-              <template v-if="formConfig._type == 'new'">
+              <template v-if="processTaskConfig.formConfig._type == 'new'">
                 <TsSheet
+                  v-if="isShowForm"
                   ref="formSheet"
                   mode="read"
                   :value="formConfig"
                   :data="processTaskConfig.formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit || formConfig.readOnly"
                   class="pl-sm pr-sm"
+                  style="width:100%"
                   @emit="formSheetEmitData"
                   @updateHiddenComponentList="updateHiddenComponentList"
+                  @setValue="setFormAttributeDataMap"
                 ></TsSheet>
               </template>
               <template v-else>
@@ -140,6 +144,19 @@
             <!--cmdb同步s -->
             <slot name="cmdbsync"></slot>
             <!-- cmdb同步end -->
+          </div>
+        </TabPane>
+        <TabPane
+          v-if="fixedPageTab.eoa && $slots.eoa"
+          :label="render => renderTabPaneLabel(render, 'eoa', 'EOA')"
+          name="eoa"
+          class="tab-content"
+          tab="tab1"
+        >
+          <div class="padding">
+            <!--eoa -->
+            <slot name="eoa"></slot>
+            <!-- eoa -->
           </div>
         </TabPane>
         <template v-for="subStep in taskConfigList">
@@ -333,6 +350,15 @@
           <slot name="cmdbsync"></slot>
         </div>
       </template>
+      <template v-else-if="item.tabValue == 'eoa'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot name="eoa"></slot>
+        </div>
+      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -467,7 +493,8 @@ export default {
         changeDetails: true,
         autoexec: true,
         automatic: true, // 自动处理节点
-        cmdbsync: true
+        cmdbsync: true,
+        eoa: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -525,7 +552,8 @@ export default {
       stepSortIcon: false, // 步骤排序(true正序，false倒序)
       taskConfigList: [], //子任务策略
       autoexechandlerStepInfo: null, // 自动化信息
-      lastFormConfig: null
+      lastFormConfig: null,
+      isShowForm: true
     };
   },
   created() {
@@ -1164,6 +1192,7 @@ export default {
       return arr;
     },
     formSheetEmitData(data) {
+      console.log(data, 'data');
       let defaultPriorityConfig = null;
       let messageConfig = {
         content: '',
@@ -1216,6 +1245,22 @@ export default {
         formValue: formValue,
         hidecomponentList: hidecomponentList
       };
+    },
+    setFormAttributeDataMap(val) { //表单改变时更新formAttributeDataMap
+      if (!this.$utils.isSame(val, this.processTaskConfig.formAttributeDataMap)) {
+        this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+      }
+    },
+    clickTabValue(name) {
+      if (name === 'report') {
+        if (this.hasForm) {
+          //重现渲染表单组件，避免表单宽度为0
+          this.isShowForm = false;
+          this.$nextTick(() => {
+            this.isShowForm = true;
+          });
+        }
+      }
     }
   },
   computed: {

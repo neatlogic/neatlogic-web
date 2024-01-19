@@ -145,6 +145,15 @@ const process = {
   },
   deleteTaskFile(params) { //子任务策略：删除附件
     return axios.post('/api/rest/processtask/step/task/file/delete', params);
+  },
+  getEoaData(params) { //工单eoa节点
+    return axios.post('/api/rest/eoa/get', params);
+  },
+  saveEoaData(params) { //保存工单eoa节点
+    return axios.post('/api/rest/eoa/save', params);
+  },
+  completeEoaStep(params) { //完成EOA步骤
+    return axios.post('/api/rest/eoa/step/complete', params);
   }
 };
 

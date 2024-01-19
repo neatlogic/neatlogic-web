@@ -531,7 +531,11 @@
     "approvalstep": "审批步骤",
     "approvalprocess": "审批流",
     "approvalprocesstip": "在【创建签报】节点之外，至少要添加一个节点",
-    "matchmapping": "匹配映射"
+    "matchmapping": "匹配映射",
+    "approvertip": "在下方审批流填写步骤审批人",
+    "eoatemplate": "EOA模板",
+    "eoaautostart": "自动创建签报",
+    "eoaautostarttip": "当处理人唯一、审批模板唯一，且审批模板中的每个审批步骤均已指定审批人时，自动创建签报"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

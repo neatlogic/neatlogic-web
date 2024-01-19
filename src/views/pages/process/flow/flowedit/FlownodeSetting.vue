@@ -2,7 +2,7 @@
   <div class="flownodeSetting setting-box">
     <!-- 名称 -->
     <div class="name">
-      <div id="nodeName" class="title">{{ $t('term.process.nodename') }}</div>
+      <div id="nodeName" class="title require-label">{{ $t('term.process.nodename') }}</div>
       <TsFormInput
         ref="nodeName"
         v-model="nodeConfig.name"

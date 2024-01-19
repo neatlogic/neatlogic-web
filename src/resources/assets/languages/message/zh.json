@@ -109,7 +109,9 @@
     "recreatenewjobtip": "流程回退后，再次流转至当前步骤时，重新创建自动化作业并执行",
     "batchcreatejobpolicyvalid": "批量创建作业，表格组件至少要被自动化作业参数引用一次",
     "batchjobpolicytip": "循环遍历列表数据，创建多个作业",
-    "jobpolicycolumn": "循环遍历列表数据，合并为数组"
+    "jobpolicycolumn": "循环遍历列表数据，合并为数组",
+    "eoahasonelink": "审批节点只能有一根线连出！",
+    "eoanodenobacklink": "审批节点只能回退到一个节点"
   },
   "autoexec": {
     "savedeadlinenolimit": "不设置代表保存期限不限制",

@@ -148,6 +148,9 @@ export default {
       for (let key in this.activeSetting) {
         if (key == 'actionSetting' && this.activeSetting[key] == 0) {
           // 动作设置
+          if (!stepConfigs.actionConfig) {
+            this.$set(stepConfigs, 'actionConfig', {});
+          }
           this.$set(stepConfigs.actionConfig, 'actionList', []);
           break;
         }

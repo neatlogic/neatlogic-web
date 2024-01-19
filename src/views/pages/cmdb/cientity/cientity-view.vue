@@ -52,7 +52,9 @@
               <span>{{ $t('term.cmdb.basicattribute') }}</span>
             </div>
           </div>
-          <Divider v-if="relGroupList" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('page.relation') }}</Divider>
+          <div class="pl-md pr-lg">
+            <Divider v-if="relGroupList" orientation="start" style="margin: 3px 0px; font-size: 12px">{{ $t('page.relation') }}</Divider>
+          </div>
           <div v-for="(group, index) in relGroupList" :key="index" class="margin-sm">
             <div v-if="group.name" class="text-type border-color mb-sm">
               <span class="text-grey">{{ group.name }}</span>
@@ -77,7 +79,9 @@
               </div>
             </div>
           </div>
-          <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('term.cmdb.customview') }}</Divider>
+          <div class="pl-md pr-lg">
+            <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin: 3px 0px; font-size: 12px">{{ $t('term.cmdb.customview') }}</Divider>
+          </div>
           <div class="margin-sm">
             <div
               v-for="(customView, index) in customViewList"
