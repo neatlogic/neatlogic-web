@@ -270,13 +270,16 @@ export default {
         this.isValidPass = true;
       }
     },
-    validateList() {
-      this.currentValidList = this.filterValid(this.validateList) || [];
-      if (this.$utils.isEmpty(this.currentValidList)) {
-        // 修复传递errorMessage错误提示文案没有显示问题
-        this.validMesage = '';
-        this.isValidPass = true;
-      }
+    validateList: {
+      handler() {
+        this.currentValidList = this.filterValid(this.validateList) || [];
+        if (this.$utils.isEmpty(this.currentValidList)) {
+          // 修复传递errorMessage错误提示文案没有显示问题
+          this.validMesage = '';
+          this.isValidPass = true;
+        }
+      },
+      deep: true
     }
   }
 };

@@ -863,11 +863,29 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
+          this.clearPrivateAttr(this.formData[key]);
           formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
         }
       }
       // console.log(JSON.stringify(formItemList, null, 2));
       return formItemList;
+    },
+    clearPrivateAttr(value) { //清除私有属性
+      if (!this.$utils.isEmpty(value)) {
+        if (Array.isArray(value)) {
+          value.forEach(fitem => {
+            if (!this.$utils.isEmpty(fitem)) {
+              for (let k in fitem) {
+                if (k.startsWith('_')) {
+                  delete fitem[k];
+                } else {
+                  this.clearPrivateAttr(fitem[k]);
+                }
+              }
+            }
+          });
+        }
+      }
     },
     //是否包含class
     hasClass(classname) {
