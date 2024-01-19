@@ -279,7 +279,7 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(res => {
         this.ciData = Object.assign({}, res.Return);
         this.attrFormConfig.uniqueRule.value = this.ciData.uniqueAttrIdList;
         this.attrFormConfig.nameAttrId.value = this.ciData.nameAttrId;

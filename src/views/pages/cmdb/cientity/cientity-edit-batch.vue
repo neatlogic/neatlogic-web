@@ -372,7 +372,7 @@ export default {
       this.elementList = await this.getElementByCiId(this.ciId);
     },
     async getCiById(ciId) {
-      await this.$api.cmdb.ci.getCiById(ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(ciId, { needAction: true }).then(res => {
         this.ciData = res.Return;
       });
     },

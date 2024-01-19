@@ -31,11 +31,7 @@
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span
-            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0 && ciData.authData && ciData.authData.cientityinsert"
-            class="action-item tsfont-plus"
-            @click="addAsset"
-          >
+          <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0 && ciData.authData && ciData.authData.cientityinsert" class="action-item tsfont-plus" @click="addAsset">
             {{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}
           </span>
           <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
@@ -51,16 +47,18 @@
             @change="changeCombineSearcher"
             @switchMode="switchMode"
           >
-            <template v-slot:batchSearchList="{valueConfig, textConfig}">
+            <template v-slot:batchSearchList="{ valueConfig, textConfig }">
               <div>
                 <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
                   <TsFormRadio
                     v-model="valueConfig.searchField"
                     :dataList="searchFieldRadioDataList"
-                    @change="() => {
-                      $set(valueConfig, 'batchSearchList', '')
-                      $delete(textConfig, 'batchSearchList');
-                    }"
+                    @change="
+                      () => {
+                        $set(valueConfig, 'batchSearchList', '');
+                        $delete(textConfig, 'batchSearchList');
+                      }
+                    "
                   ></TsFormRadio>
                 </TsFormItem>
                 <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
@@ -69,14 +67,16 @@
                     type="textarea"
                     :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                     :autoSize="{ minRows: 4 }"
-                    @change="(val) => {
-                      if(val) {
-                        $set(textConfig, 'batchSearchList', val.split('\n'));
-                      } else {
-                        $delete(textConfig, 'batchSearchList');
-                        $delete(valueConfig, 'batchSearchList');
+                    @change="
+                      val => {
+                        if (val) {
+                          $set(textConfig, 'batchSearchList', val.split('\n'));
+                        } else {
+                          $delete(textConfig, 'batchSearchList');
+                          $delete(valueConfig, 'batchSearchList');
+                        }
                       }
-                    }"
+                    "
                   ></TsFormInput>
                 </TsFormItem>
               </div>
@@ -89,13 +89,12 @@
             :searchList="searchList"
             @search="advancedModeSearch"
             @switchMode="switchMode"
-          >
-          </AdvancedModeSearch>
+          ></AdvancedModeSearch>
         </div>
       </template>
       <template v-slot:sider>
         <span v-if="$utils.isEmpty(treeData) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
-        <Tree 
+        <Tree
           v-if="!$utils.isEmpty(treeData)"
           :data="treeData"
           :render="renderContent"
@@ -230,11 +229,7 @@
       :exportCondition="searchVal"
       @close="isExportAssetDialog = false"
     ></ExportAsset>
-    <TreeEdit 
-      v-if="isShowTreeEdit"
-      :ciId="treeTypeRootCiId"
-      @close="closeTreeEdit"
-    ></TreeEdit>
+    <TreeEdit v-if="isShowTreeEdit" :ciId="treeTypeRootCiId" @close="closeTreeEdit"></TreeEdit>
   </div>
 </template>
 <script>
@@ -562,7 +557,7 @@ export default {
           multiple: true,
           dealDataByUrl: 'getAppForselect',
           dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'appModuleIdList',
@@ -575,7 +570,7 @@ export default {
           multiple: true,
           dealDataByUrl: 'getAppForselect',
           dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'envIdList',
@@ -590,7 +585,7 @@ export default {
           multiple: true,
           className: 'block-span',
           url: '/api/rest/resourcecenter/appenv/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           type: 'checkbox',
@@ -605,14 +600,14 @@ export default {
           name: 'ip',
           type: 'input',
           label: this.$t('page.ip'),
-          validateList: [{name: 'required', message: ''}],
+          validateList: [{ name: 'required', message: '' }],
           maxlength: 256
         },
         {
           name: 'name',
           type: 'input',
           label: this.$t('page.name'),
-          validateList: [{name: 'required', message: ''}],
+          validateList: [{ name: 'required', message: '' }],
           maxlength: 256
         },
         {
@@ -630,7 +625,7 @@ export default {
           params: {
             needPage: false
           },
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'tagIdList',
@@ -644,7 +639,7 @@ export default {
           rootName: 'tbodyList',
           multiple: true,
           dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'protocolIdList',
@@ -658,7 +653,7 @@ export default {
           dealDataByUrl: 'getProtocolDataList',
           className: 'block-span',
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'stateIdList',
@@ -673,18 +668,19 @@ export default {
           multiple: true,
           className: 'block-span',
           params: {
-            'needPage': false
+            needPage: false
           },
           url: '/api/rest/resourcecenter/state/list/forselect',
-          validateList: [{name: 'required', message: ''}]
-        }]
+          validateList: [{ name: 'required', message: '' }]
+        }
+      ]
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   async mounted() {
-    let {resourceId = ''} = this.$route.query || {};
+    let { resourceId = '' } = this.$route.query || {};
     this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
     await this.getTreeType();
     await this.initData();
@@ -873,7 +869,7 @@ export default {
       }
     },
     getCiById(ciId) {
-      this.$api.cmdb.ci.getCiById(ciId, true).then(res => {
+      this.$api.cmdb.ci.getCiById(ciId, { needAction: true }).then(res => {
         this.ciData = res.Return;
       });
     },
@@ -924,11 +920,12 @@ export default {
       this.isDeleteDialogShow = true;
     },
     delSelectedAsset() {
-      this.ciEntityList = this.selectedCiEntityList?.map((item) => ({
-        ciId: item.typeId,
-        ciEntityId: item.id, 
-        ciEntityName: item.name
-      })) || [];
+      this.ciEntityList =
+        this.selectedCiEntityList?.map(item => ({
+          ciId: item.typeId,
+          ciEntityId: item.id,
+          ciEntityName: item.name
+        })) || [];
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
@@ -1076,13 +1073,16 @@ export default {
         ...searchVal
       };
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
-        if (res.Status == 'OK') {
-          this.tableConfig = Object.assign(this.tableConfig, res.Return || {});
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.$api.autoexec.action
+        .searchResourceCustomList(params)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.tableConfig = Object.assign(this.tableConfig, res.Return || {});
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     }
   },
   computed: {
