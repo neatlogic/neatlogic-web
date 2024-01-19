@@ -25,8 +25,24 @@
         :value="config.regex"
         :disabled="disabled"
         :validateList="regexValidateList"
+        prepend="/"
+        append="/"
+        class="regex-input"
         @on-change="val => {
           setConfig('regex', val);
+        }"
+      >
+      </TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('message.framework.validtip')" labelPosition="top" :tooltip="$t('message.framework.regexvalidtip')">
+      <TsFormInput
+        ref="regexMessage"
+        :value="config.regexMessage"
+        :disabled="disabled"
+        :validateList="!$utils.isEmpty(config.regex)? validateList:[]"
+        :placeholder="$t('message.framework.regexvalidplaceholder')"
+        @on-change="val => {
+          setConfig('regexMessage', val);
         }"
       >
       </TsFormInput>
@@ -59,7 +75,8 @@ export default {
             }
           }
         }
-      ]
+      ],
+      validateList: ['required']
     };
   },
   beforeCreate() {},
@@ -78,13 +95,41 @@ export default {
         new RegExp(regexString); 
         return true; 
       } catch (error) {
-        console.log(error);
         return false; 
       }
+    },
+    configValid() {
+      this.$nextTick(() => {
+        if (this.$refs.regexMessage) {
+          this.$refs.regexMessage.valid();
+        }
+      });
     }
   },
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    regexMessageConfig() {
+      return this.validClass('regexMessage');
+    }
+  },
+  watch: {
+    regexMessageConfig: {
+      handler(val) {
+        if (val && val['bg-error-grey']) {
+          this.configValid();
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
+<style lang="less" scoped>
+/deep/ .regex-input {
+  .ivu-input {
+    border-radius: 0px !important;
+  }
+}
+
+</style>

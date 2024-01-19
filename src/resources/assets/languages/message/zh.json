@@ -211,7 +211,10 @@
     "editwechattouser": "要与企业微信后台的用户管理中用户账号一致",
     "regex": "正则校验",
     "regextip": "自定义正则表达式，校验文本框输入合法性；未填写时不校验",
-    "regularexpression": "正则表达式"
+    "regularexpression": "正则表达式",
+    "regexvalidtip": "输入校验失败后，用户可根据此校验提示重新输入",
+    "regexvalidplaceholder": "正则表达式具体含义，如：仅包含数字",
+    "validtip": "校验提示"
   },
   "dashboard": {
     "templatehelp": "模板需要符合vue模板语法规范，必须指定一个根标签，一般是div，支持所有iView组件。数据源结果以数组的形式返回，根属性为：dataList，访问数据时请直接迭代dataList获取需要的数据。",
