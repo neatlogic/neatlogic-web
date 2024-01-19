@@ -54,20 +54,24 @@
                 :attrConfig="attr"
                 :value="attr.isPrivate ? valueConfig[attr.name] : valueConfig['attr_' + attr.id]"
                 mode="search"
-                @changeLabel="(text, selectedList) => changeLabel(attr, text, selectedList, textConfig)"
+                @changeLabel="(text) => changeLabel(attr, text, textConfig)"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
                       if (val != null) {
                         $set(valueConfig, attr.name, val);
+                        $set(textConfig, attr.name, text);
                       } else {
                         $delete(valueConfig, attr.name);
+                        $delete(textConfig, attr.name);
                       }
                     } else {
                       if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
+                        $set(valueConfig, 'attr_' + attr.id, text);
                       } else {
                         $delete(valueConfig, 'attr_' + attr.id);
+                        $delete(textConfig, 'attr_' + attr.id);
                       }
                     }
                   }
@@ -373,7 +377,7 @@ export default {
       this.searchIssue();
       this.$emit('refresh');
     },
-    changeLabel(attr, text, selectedList, textConfig) {
+    changeLabel(attr, text, textConfig) {
       if (attr.isPrivate) {
         if (text?.length > 0) {
           this.$set(textConfig, attr.name, text?.length > 0 ? text : '');
