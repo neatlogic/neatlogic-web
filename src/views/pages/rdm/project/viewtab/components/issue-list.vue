@@ -68,7 +68,7 @@
                     } else {
                       if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
-                        $set(valueConfig, 'attr_' + attr.id, text);
+                        $set(textConfig, 'attr_' + attr.id, text);
                       } else {
                         $delete(valueConfig, 'attr_' + attr.id);
                         $delete(textConfig, 'attr_' + attr.id);
