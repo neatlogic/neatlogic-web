@@ -115,6 +115,24 @@
       :versionId="versionId"
       @saveData="saveUpdate"
     ></DataDialog>
+    <TsDialog
+      :title="$t('page.save') + $t('page.versions')"
+      type="modal"
+      :isShow.sync="isShowVersionDialog"
+      :okText="$t('page.save')"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <TsForm
+            ref="versionForm"
+            v-model="versionFormData"
+            :item-list="formConfig"
+          ></TsForm>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -122,6 +140,7 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ScriptDetail',
   components: {
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     VersionDetail: resolve => require(['./scriptDetail/edit/version-detail'], resolve),
     BasicDetail: resolve => require(['./scriptDetail/edit/basic-detail'], resolve),
     VersionStatus: resolve => require(['./scriptDetail/common/version-status.vue'], resolve),
@@ -136,6 +155,10 @@ export default {
   props: {},
   data() {
     return {
+      isShowVersionDialog: false,
+      versionFormData: {
+        version: ''
+      },
       fromPath: '',
       isLoading: true,
       scriptId: null,
@@ -206,7 +229,15 @@ export default {
       initData: null, //初始数据，用于对比
       isTipShow: false,
       typeDialog: 'delete',
-      tipText: null
+      tipText: null,
+      formConfig: {
+        version: {
+          type: 'text',
+          label: this.$t('term.framework.pkgversion'),
+          maxlength: 50,
+          validateList: ['required']
+        }
+      }
     };
   },
   beforeCreate() {},
@@ -229,6 +260,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async okDialog() {
+      if (!this.$refs.versionForm.valid()) {
+        return false;
+      }
+      this.isShowVersionDialog = false;
+      await this.saveUpdate(this.typeDialog);
+    },
+    closeDialog() {
+      this.isShowVersionDialog = false;
+    },
     getDetail(id, type) {
       //根据id获取详情
       this.isLoading = true;
@@ -275,11 +316,15 @@ export default {
         return;
       }
       this.typeDialog = '';
-      this.title = this.name + '_' + this.$utils.getCurrenttime('MMdd');
       this.versionType = 'edit';
       this.$set(this.versionVo, 'status', 'draft');
       this.versionId = null;
       this.isEdit = true;
+      if (this.isEdit) {
+        this.$set(this.initData, 'id', this.scriptId);
+      } else {
+        this.$set(this.initData, 'versionId', this.versionId);
+      }
     },
     cancel() {
       this.isEdit = false;
@@ -290,6 +335,12 @@ export default {
       if (item && item.disabled) {
         return;
       }
+      if (this.isEdit) {
+        this.typeDialog = 'test';
+        this.isShowVersionDialog = true;
+        this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+        return false;
+      } 
       this.typeDialog = 'test';
       let data = this.saveData();
       if (this.$utils.isSame(this.initData, data)) {
@@ -326,7 +377,7 @@ export default {
           typeId: this.scriptConfig.typeId,
           isLib: this.scriptConfig.isLib,
           catalogId: this.scriptConfig.catalogId, // 工具目录
-          title: this.title,
+          title: this.versionFormData.version || this.title,
           ...this.$refs.versionDetail.save()
         };
         //isLib（是否库文件）标识为1时，标识该脚本是库文件，保存时不需要执行方式、风险等级、自定义模板
@@ -503,8 +554,14 @@ export default {
       if (item && item.disabled) {
         return;
       }
+      if (this.isEdit) {
+        this.typeDialog = 'compare';
+        this.isShowVersionDialog = true;
+        this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+        return false;
+      }
       this.typeDialog = 'compare';
-      let data = this.saveData();
+      let saveData = this.saveData();
       let initData = this.$utils.deepClone(this.initData);
       // 兼容老数据，默认的话，会加一个 \n 所以在比较的时候，要把这个去掉,不然只要一对比就会数据不一样
       initData.lineList.forEach(v => {
@@ -515,7 +572,7 @@ export default {
           }
         }
       });
-      if (!this.isEdit || this.$utils.isSame(initData, data)) {
+      if (!this.isEdit || this.$utils.isSame(initData, saveData)) {
         this.isCompareShow = true;
       } else {
         this.tipText = this.$t('term.autoexec.nosavetip');
@@ -609,7 +666,9 @@ export default {
         // encoding: this.versionVo.encoding,
         parser: this.versionVo.parser,
         lineList: lineList,
-        catalogId: this.scriptConfig.catalogId // 工具目录Id
+        catalogId: this.scriptConfig.catalogId, // 工具目录Id
+        isLib: this.scriptConfig.isLib,
+        useLib: this.scriptConfig.useLib
        
       };
       //自由参数
@@ -621,11 +680,6 @@ export default {
           description: this.versionVo.argument.description,
           isRequired: this.versionVo.argument.isRequired
         });
-      }
-      if (this.isEdit) {
-        this.$set(initData, 'id', this.scriptId);
-      } else {
-        this.$set(initData, 'versionId', this.versionId);
       }
       this.initData = initData;
     }
@@ -643,9 +697,9 @@ export default {
   },
   watch: {},
   beforeRouteLeave(to, from, next, url) {
-    let data = this.saveData();
-    if (data) {
-      if (!this.isEdit || this.$utils.isSame(this.initData, data) || this.typeDialog == 'delete') {
+    let saveData = this.saveData();
+    if (saveData) {
+      if (!this.isEdit || this.$utils.isSame(this.initData, saveData) || this.typeDialog == 'delete') {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
         let _this = this;
