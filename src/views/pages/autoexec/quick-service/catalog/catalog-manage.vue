@@ -282,8 +282,17 @@ export default {
         });
     },
     beforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
-      if (targetNode == null && (treeNodes[0] && treeNodes[0].type == 'service')) {
-        // 不能将服务拖拽成为根节点
+      const firstTreeNode = treeNodes && treeNodes[0];
+      const isTargetNodeService = targetNode && targetNode.type === 'service';
+      const isFirstTreeNodeService = firstTreeNode && firstTreeNode.type === 'service';
+      const isTargetNodeCatalog = targetNode && targetNode.type === 'catalog';
+      if (
+        (targetNode == null && isFirstTreeNodeService) ||
+        (isTargetNodeService && isFirstTreeNodeService && moveType === 'inner') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'prev') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'next')
+      ) {
+        // 不能将服务拖拽成为根节点, 不能将服务拖拽到服务，不能将服务拖拽到目录节点前面，不能将服务拖拽到目录节点后面
         return false;
       }
     },
@@ -298,7 +307,6 @@ export default {
       this.$api.autoexec.catalogManage.moveCatalog(data).then(res => {
         if (res?.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          this.getTreeList();
         }
       });
     },
