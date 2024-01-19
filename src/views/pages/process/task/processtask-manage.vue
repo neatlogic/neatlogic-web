@@ -112,7 +112,7 @@
       :isShow.sync="isShowModal"
       :okBtnDisable="okBtnDisable"
       @on-ok="okDialog"
-      @on-close="closeDialog"
+      @on-close="() => closeDialog(false)"
     >
       <template v-slot>
         <div>
@@ -225,7 +225,6 @@ export default {
       if (currentPage) {
         this.tableConfig.currentPage = currentPage;
       }
-      //console.log(JSON.stringify(workcenterConditionData, null, 2));
       this.$set(this.workcenterData, 'conditionConfig', workcenterConditionData);
       this.searchProcessTask();
     },
@@ -578,11 +577,13 @@ export default {
         }
       }
     },
-    closeDialog() {
+    closeDialog(isClearValue = true) {
       this.reasonForm.content.value = '';
       this.okBtnDisable = false;
       this.isShowModal = false;
-      this.selectedWorkList = [];
+      if (isClearValue) {
+        this.selectedWorkList = [];
+      }
     },
     filtertheadList(theadList) {
       let list = theadList.filter(item => {
