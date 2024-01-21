@@ -274,16 +274,21 @@ export default {
         });
     },
     beforeDrop(tree, treeNodes, targetNode, moveType) {
-      // 不允许将服务拖拽为根目录
-      if (targetNode == null && (treeNodes[0] && treeNodes[0]?.type && treeNodes[0]?.type != 'catalog')) {
+      const firstTreeNode = treeNodes && treeNodes[0];
+      const isTargetNodeService = targetNode && targetNode.type === 'channel';
+      const isFirstTreeNodeService = firstTreeNode && firstTreeNode.type === 'channel';
+      const isTargetNodeCatalog = targetNode && targetNode.type === 'catalog';
+      if (
+        (targetNode == null && isFirstTreeNodeService) ||
+        (isTargetNodeService && isFirstTreeNodeService && moveType === 'inner') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'prev') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'next')
+      ) {
+        // 不能将服务拖拽成为根节点, 不能将服务拖拽到服务，不能将服务拖拽到目录节点前面，不能将服务拖拽到目录节点后面
         return false;
       }
     },
     onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
-      if (targetNode == null) {
-        // 服务不可以拖拽为根目录
-        return false;
-      }
       let treeNode = treeNodes[0];
       let parentId = null;
       let keyId = 'uuid';
@@ -305,16 +310,12 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
             }
-          }).finally(() => {
-            this.getTreeList();
           });
         } else if (treeNode.type == 'channel') {
           this.$api.process.service.moveChannel(data).then(res => {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
             }
-          }).finally(() => {
-            this.getTreeList();
           });
         }
       }
