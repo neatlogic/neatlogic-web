@@ -1,17 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import VueI18n from 'vue-i18n';
 import Knowledge from './knowledge.vue';
 import routers from './router.js';
 import store from '@/resources/store';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
-import { $t } from '@/resources/init.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
-
-import VueI18n from 'vue-i18n';
-//公共的全局组件、样式等
 import '@/resources/base.js';
-import { initRouter, initI18n } from '@/resources/init.js';
+import { initRouter, initI18n, $t } from '@/resources/init.js';
 
 Vue.use(VueRouter);
 Vue.use(VueI18n);
@@ -30,11 +27,6 @@ Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$localStore = new LocalStore('knowledge', router);
 
-//知识库的路由拦截有自己逻辑，因此需要覆盖公共方法
-const gettingUserInfo = store.dispatch('getUserInfo');
-const gettingModuleList = store.dispatch('getModuleList');
-const gettingKnowledgeTypeMenu = store.dispatch('leftMenu/getKnowledgeTypeMenu');
-
 // eslint-disable-next-line space-before-function-paren
 router.beforeEach(async (to, from, next) => {
   let title = to.meta.title ? to.meta.title : to.name || to.path;
@@ -48,8 +40,6 @@ router.beforeEach(async (to, from, next) => {
       window.location.href = HOME + '/login.html?tenant=' + TENANT + '&redirect=' + MODULEID + '.html#';
     }
   } else {
-    await gettingUserInfo;
-    await gettingKnowledgeTypeMenu;
     const auth = to.meta ? to.meta.authority : null;
     if (!auth || store.getters.userAuthList.includes(auth)) {
       next();
