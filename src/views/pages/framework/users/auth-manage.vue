@@ -4,13 +4,15 @@
     <TsContain>
       <template slot="topRight">
         <TsRow class="search-item">
-          <Col span="6"><TsFormSelect
-            :dataList="authGroupList"
-            :value="selectedModuleName"
-            :clearable="false"
-            border="border"
-            @on-change="changeSelect"
-          ></TsFormSelect> </Col>
+          <Col span="6">
+            <TsFormSelect
+              :dataList="authGroupList"
+              :value="selectedModuleName"
+              :clearable="false"
+              border="border"
+              @on-change="changeSelect"
+            ></TsFormSelect>
+          </Col>
           <Col span="18">
             <InputSearcher
               v-model="keyword"
@@ -95,7 +97,7 @@
                 </Col>
                 <Col span="2" class="action">
                   <ul class="tstable-action-ul">
-                    <li class="tsfont-permission text-action" @click="adduser(item.name)">{{ $t('page.auth') }}</li>
+                    <li class="tsfont-permission text-action" @click="toAuthAdduser(item)">{{ $t('page.auth') }}</li>
                   </ul>
                 </Col>
               </TsRow>

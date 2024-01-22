@@ -43,6 +43,7 @@ const actions = {
     const menuConfigList = getAllMenuTypeList();
     let moduleList = [];
     let userAuthList = [];
+    console.log('topmenujs');
     state.gettingModuleList = menuApi.getModuleList();
     const res = await state.gettingModuleList;
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
