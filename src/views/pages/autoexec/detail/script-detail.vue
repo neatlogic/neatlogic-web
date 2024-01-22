@@ -159,6 +159,7 @@ export default {
       versionFormData: {
         version: ''
       },
+      currentBtnConfig: {}, // 选中当前按钮的对象
       fromPath: '',
       isLoading: true,
       scriptId: null,
@@ -244,13 +245,17 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.$route.query.scriptId && (this.scriptId = parseInt(this.$route.query.scriptId));
-    this.$route.query.versionId && (this.versionId = this.$route.query.versionId);
-    this.$route.query.status && (this.versionStatus = this.$route.query.status);
-    if (this.versionId) {
-      this.getDetail(parseInt(this.versionId), 'versionId');
-    } else if (this.scriptId) {
+    const { scriptId = '', versionId = '', status = '' } = this.$route.query || {};
+    if (scriptId) {
+      this.scriptId = parseInt(scriptId);
       this.getDetail(this.scriptId);
+    }
+    if (versionId) {
+      this.versionId = versionId;
+      this.getDetail(parseInt(this.versionId), 'versionId');
+    }
+    if (status) {
+      this.versionStatus = status;
     }
   },
   beforeUpdate() {},
@@ -265,7 +270,13 @@ export default {
         return false;
       }
       this.isShowVersionDialog = false;
-      await this.saveUpdate(this.typeDialog);
+      if (this.typeDialog == 'save') {
+        this.handleSave(this.currentBtnConfig);
+      } else if (this.typeDialog == 'submit') {
+        this.submitData(this.currentBtnConfig);
+      } else {
+        await this.saveUpdate(this.typeDialog);
+      }
     },
     closeDialog() {
       this.isShowVersionDialog = false;
@@ -274,33 +285,25 @@ export default {
       //根据id获取详情
       this.isLoading = true;
       this.scriptConfig = null;
-      let param = {};
-      if (type && type == 'versionId') {
-        param = {
-          versionId: id
-        };
-      } else {
-        param = {
-          id: id,
-          status: this.versionStatus
-        };
-      }
+      let param = type && type === 'versionId' ? { versionId: id } : { id: id, status: this.versionStatus };
       this.$api.autoexec.script
         .getScriptDetail(param)
         .then(res => {
           if (res.Status == 'OK' && res.Return) {
             this.scriptConfig = res.Return.script;
-            this.scriptId = this.scriptConfig.id;
-            this.versionVo = this.scriptConfig.versionVo;
-            this.title = this.versionVo.title || '';
-            this.name = this.scriptConfig.name;
-            this.currentVersionVo = this.scriptConfig.currentVersionVo;
-            this.versionId = this.scriptConfig.versionVo.id;
-            this.versionOperateList = this.scriptConfig.versionVo.operateList || null;
-            this.versionType = this.versionVo.status;
+            const { id = '', versionVo = {}, name = '', currentVersionVo = {}, isLib = ''} = this.scriptConfig || {};
+            const { title = '', status, id: versionId, operateList = null } = versionVo || {};
+            this.scriptId = id;
+            this.versionVo = versionVo;
+            this.title = title;
+            this.name = name;
+            this.currentVersionVo = currentVersionVo;
+            this.versionId = versionId;
+            this.versionOperateList = operateList;
+            this.versionType = status;
 
             //isLib（是否库文件）标识为1时，标识该脚本是库文件，不支持使用测试功能，需要隐藏测试按钮
-            this.updateIsLib(res.Return.script.isLib);
+            this.updateIsLib(isLib);
             this.getDefaultConfig();
           }
         })
@@ -309,6 +312,7 @@ export default {
         });
     },
     doAction(methods, item) {
+      this.currentBtnConfig = item || {};
       this[methods](item);
     },
     edit(item) {
@@ -335,13 +339,12 @@ export default {
       if (item && item.disabled) {
         return;
       }
+      this.typeDialog = 'test';
       if (this.isEdit) {
-        this.typeDialog = 'test';
         this.isShowVersionDialog = true;
         this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
         return false;
-      } 
-      this.typeDialog = 'test';
+      }
       let data = this.saveData();
       if (this.$utils.isSame(this.initData, data)) {
         this.$router.push({
@@ -393,8 +396,13 @@ export default {
         return data;
       }
     },
-    async save(item, isLeave) {
+    save() {
       //编辑保存
+      this.typeDialog = 'save';
+      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.isShowVersionDialog = true;
+    },
+    async handleSave(item, isLeave) {
       if (item && item.disabled) {
         return;
       }
@@ -420,7 +428,12 @@ export default {
         }
       });
     },
-    async submit(item) {
+    submit() {
+      this.typeDialog = 'submit';
+      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.isShowVersionDialog = true;
+    },
+    async submitData(item) {
       if (item.disabled) {
         return;
       }
@@ -527,7 +540,7 @@ export default {
       this.download(param);
     },
     async saveUpdate(type) {
-      await this.save(null, true);
+      await this.handleSave(null, true);
       if (type == 'compare') {
         let isValid = await this.validate();
         if (!isValid) {
@@ -702,13 +715,12 @@ export default {
       if (!this.isEdit || this.$utils.isSame(this.initData, saveData) || this.typeDialog == 'delete') {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
-        let _this = this;
         this.$utils.jumpDialog.call(
           this,
           {
             save: {
               fn: async vnode => {
-                return await _this.save(null, true);
+                return await this.handleSave(null, true);
               }
             }
           },
