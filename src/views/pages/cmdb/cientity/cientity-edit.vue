@@ -365,7 +365,7 @@ export default {
           this.ciEntityQueue = [cientity];
         });
       } else {
-        this.$api.cmdb.ci.getCiById(this.ciId, true).then(async res => {
+        this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(async res => {
           if (res.Return) {
             const ci = res.Return;
             if (ci.isVirtual == 0 && ci.isAbstract == 0) {

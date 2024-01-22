@@ -324,8 +324,10 @@ export default {
           this.formConfig.uniqueAttrIdList.dataList = [];
           if (this.attrList && this.attrList.length > 0) {
             this.attrList.forEach(attr => {
-              this.formConfig.uniqueAttrIdList.dataList.push({ value: attr.id, text: attr.label + '(' + attr.name + ')' });
-              if (attr.inputType == 'at' || attr.isCiUnique) {
+              if (attr.type !== 'expression') {
+                this.formConfig.uniqueAttrIdList.dataList.push({ value: attr.id, text: attr.label + '(' + attr.name + ')' });
+              }
+              if (attr.inputType === 'at' || attr.isCiUnique) {
                 hasAttr = true;
                 let attrObj = null;
                 if (this.syncCiCollectionData.mappingList) {
