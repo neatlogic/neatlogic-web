@@ -72,8 +72,14 @@ const ci = {
   getRelativeRelList(params) {
     return axios.post('/api/rest/cmdb/relative/rel/list', params);
   },
-  getCiById(ciId, needAction) {
-    return axios.post('/api/rest/cmdb/ci/get', { id: ciId, needAction: !!needAction });
+  getCiById(ciId, params) {
+    let param = {
+      id: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/get', param);
   },
   getCiListForTree() {
     return axios.post('/api/rest/cmdb/ci/listtree', {});

@@ -279,7 +279,7 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(res => {
         this.ciData = Object.assign({}, res.Return);
         this.attrFormConfig.uniqueRule.value = this.ciData.uniqueAttrIdList;
         this.attrFormConfig.nameAttrId.value = this.ciData.nameAttrId;
@@ -320,7 +320,9 @@ export default {
         this.attrFormConfig.nameAttrId.dataList = [];
         if (attrList && attrList.length > 0) {
           attrList.forEach(attr => {
-            this.attrFormConfig.uniqueRule.dataList.push({ value: attr.id, text: attr.label });
+            if (attr.type !== 'expression') {
+              this.attrFormConfig.uniqueRule.dataList.push({ value: attr.id, text: attr.label });
+            }
             this.attrFormConfig.nameAttrId.dataList.push({ value: attr.id, text: attr.label });
           });
           if (this.$refs['formCi']) {

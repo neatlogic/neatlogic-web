@@ -5,7 +5,7 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
-        <div v-if="ciData.authData" class="dashboard-action action-group" style="text-align:right">
+        <div v-if="ciData.authData" class="dashboard-action action-group" style="text-align: right">
           <span v-if="ciData.authData['cimanage']" class="action-item tsfont-edit" @click="editCi()">{{ $t('term.cmdb.editci') }}</span>
           <span v-if="!ciData.isVirtual && !ciData.isAbstract && ciData.authData['cientityinsert']" class="action-item tsfont-plus pad0" @click="addCiEntity()">{{ $t('term.cmdb.cientity') }}</span>
         </div>
@@ -30,11 +30,20 @@
               <div class="fz10 text-grey">{{ ciData.id }}</div>
               <div class="text-grey fz10">
                 <span v-if="ciData.isVirtual">{{ $t('term.cmdb.virtualci') }}</span>
-                <span v-else-if="ciData.isAbstract">{{ $t('term.cmdb.abstractci') }}</span>
-                <span v-else-if="ciData.parentCiId">
+                <span v-if="ciData.isAbstract">{{ $t('term.cmdb.abstractci') }}</span>
+                <span v-if="ciData.parentCiId">
                   {{ $t('term.cmdb.extendto') }}
                   <a href="javascript:void(0)" @click="toParentCi(ciData.parentCiId)">{{ ciData.parentCiLabel }}</a>
                 </span>
+                <!--<span v-if="childrenList && childrenList.length > 0">
+                  子模型
+                  <a
+                    v-for="(child, cindex) in childrenList"
+                    :key="cindex"
+                    class="mr-xs"
+                    @click="toParentCi(child.id)"
+                  >{{ child.label }}</a>
+                </span>-->
               </div>
               <div v-if="ciData.description" class="ci-description text-grey overflow fz10" :title="ciData.description">{{ ciData.description }}</div>
             </div>
@@ -184,7 +193,7 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true, needChildren: true }).then(res => {
         if (res.Status == 'OK') {
           this.ciData = res.Return;
           this.isLoading = false;
@@ -205,6 +214,12 @@ export default {
   computed: {
     fromPageName() {
       return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : '模型列表';
+    },
+    childrenList() {
+      if (this.ciData && this.ciData.children && this.ciData.children.length > 0) {
+        return this.ciData.children.length > 5 ? this.ciData.children.slice(0, 5) : this.ciData.children;
+      }
+      return [];
     }
   },
   watch: {},

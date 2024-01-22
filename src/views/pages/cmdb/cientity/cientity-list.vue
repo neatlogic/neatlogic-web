@@ -735,6 +735,7 @@ export default {
           searchParam.relFilterList.push(obj);
         }
       }
+      searchParam.globalAttrStrictMode = true;
       return {
         url: 'api/binary/cmdb/cientity/export',
         params: searchParam,
@@ -806,6 +807,7 @@ export default {
       this.$addHistoryData('sortConfig', this.sortConfig);
       this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
       this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
+      this.searchParam['globalAttrStrictMode'] = true;
 
       await this.$api.cmdb.cientity.searchCiEntity(this.searchParam).then(res => {
         this.searchParam.currentPage = res.Return.currentPage;
