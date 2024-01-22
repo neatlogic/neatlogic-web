@@ -181,10 +181,11 @@ export default {
       this.selectedModuleName = val;
       this.getAuthList();
     },
-    adduser: function(val) {
+    toAuthAdduser(item) {
+      let {name = '', authGroup = ''} = item || {};
       this.$router.push({
         path: `auth-adduser`,
-        query: { name: val, groupName: this.selectedModuleName }
+        query: { name: name, groupName: authGroup }
       });
     }
   },
