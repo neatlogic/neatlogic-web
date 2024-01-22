@@ -456,21 +456,16 @@ export default {
       this.isReviewShow = true;
     },
     validDelete() {
-      let _this = this;
-      return new Promise((resolve, reject) => {
-        _this.$api.autoexec.script
-          .validDelete({ id: this.scriptId })
-          .then(res => {
-            if (res.Status == 'OK') {
-              _this.tipText = null;
-            }
-            resolve();
-          })
-          .catch(error => {
-            _this.tipText = this.$t('term.autoexec.deletelastversiontip');
-            resolve();
-          });
-      });
+      return this.$api.autoexec.script
+        .validDelete({ id: this.scriptId })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.tipText = null;
+          }
+        })
+        .catch(() => {
+          this.tipText = this.$t('term.autoexec.deletelastversiontip');
+        });
     },
     async delete(item) {
       if (item.disabled) {
