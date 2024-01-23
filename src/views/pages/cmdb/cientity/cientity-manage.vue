@@ -237,15 +237,19 @@ export default {
       });
     },
     searchCiTypeCi: function() {
+      this.ciTypeList = [];
       this.isLoading = true;
       this.$addHistoryData('searchParam', this.searchParam);
       this.$api.cmdb.ci.searchCiTypeCi(this.searchParam).then(res => {
         if (res.Status == 'OK') {
-          this.ciTypeList = res.Return;
           this.isLoading = false;
-          this.ciTypeList.forEach(citype => {
-            citype.cardList = citype.ciList;
-          });
+          let ciTypeList = res.Return || [];
+          this.ciTypeList = ciTypeList
+            .filter(citype => citype && !this.$utils.isEmpty(citype.ciList))
+            .map(citype => ({
+              ...citype,
+              cardList: citype.ciList
+            }));
         }
       });
     },
