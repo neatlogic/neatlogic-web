@@ -25,6 +25,7 @@
         :value="config.regex"
         :disabled="disabled"
         :validateList="regexValidateList"
+        :placeholder="$t('message.framework.regularexpression')"
         prepend="/"
         append="/"
         class="regex-input"
