@@ -38,6 +38,9 @@
                 :dataList="dataSourceList"
                 transfer
                 border="border"
+                @on-change="(val)=>{
+                  changeDataSource(val);
+                }"
               ></TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'static'" :label="$t('page.dropdownoption')">
@@ -515,11 +518,16 @@ export default {
     },
     changeMatrixUuid(val) {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
+      this.$set(this.propertyLocal.config, 'mapping', {});
       if (val) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+    },
+    changeDataSource() {
+      this.$set(this.propertyLocal.config, 'matrixUuid', null);
+      this.$delete(this.propertyLocal.reaction, 'filter');
     }
   },
   filter: {},
