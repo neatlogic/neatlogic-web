@@ -76,15 +76,11 @@ export default {
       },
       searchParam: {
         keyword: null,
-        isActive: null,
-        currentPage: 1,
-        pageSize: 20,
-        timestamp: null
+        isActive: null
       },
       isActiveSelectSetting: {
         name: 'isActive',
         search: true,
-        value: '',
         label: this.$t('page.status'),
         valueName: 'value',
         textName: 'text',
@@ -94,9 +90,7 @@ export default {
           { value: 0, text: this.$t('page.disable') }
         ],
         onChange: (value) => {
-          Object.assign(this.searchParam, {
-            isActive: value === '' ? null : value
-          });
+          this.searchParam.isActive = value;
           this.changeCurrent();
         }
       },
@@ -119,9 +113,9 @@ export default {
     searchData() {
       this.loadingShow = true;
       let params = {
-        currentPage: this.searchParam.currentPage,
-        pageSize: this.searchParam.pageSize,
-        timestamp: new Date().getTime()
+        ...this.searchParam,
+        currentPage: this.tableData.currentPage || 1, 
+        pageSize: this.tableData.pageSize || 20
       };
       this.$api.process.channeltype
         .search(params)
@@ -134,12 +128,12 @@ export default {
         });
     },
     changeCurrent(currentPage = 1) {
-      this.searchParam.currentPage = currentPage;
+      this.tableData.currentPage = currentPage;
       this.searchData();
     },
     changePageSize(pageSize) {
-      this.searchParam.currentPage = 1;
-      this.searchParam.pageSize = pageSize;
+      this.tableData.currentPage = 1;
+      this.tableData.pageSize = pageSize;
       this.searchData();
     },
     addChannelType() {

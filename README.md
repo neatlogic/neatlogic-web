@@ -29,18 +29,18 @@ sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
 
 ## 打包项目代码
 ```
-npm run build
+cnpm run build
 ```
 
 ## 更新某个依赖
 ```
-npm update 依赖包名字
+cnpm update 依赖包名字
 
-eg:npm update neatlogic-ui
+eg:cnpm update neatlogic-ui
 ```
 ## 自动纠正文件里不符合eslint的语法
 ```
-npm run lint
+cnpm run lint
 ```
 
 ## 设置自动eslintrc
@@ -132,4 +132,10 @@ EsLint、vetur、Prettier - Code formatter、i18nhelper(自动进行i18n键值�
     "eslint.codeActionsOnSave.rules": null
 } 
 
+```
+
+## FAQ常见问题
+### npm ERR! request to https://registry.npm.taobao.org/cnpm failed, reason: certificate has expired
+```
+npm config set strict-ssl false
 ```

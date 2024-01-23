@@ -7,6 +7,7 @@
       border="none"
       :siderWidth="246"
       :clearStyle="true"
+      :isSiderHide="hideDispatchTaskList"
       @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
@@ -155,11 +156,16 @@ export default {
         content: true,
         file: true,
         handlerStepInfo: true
-      }
+      },
+      hideDispatchTaskList: false //隐藏工单上报页左侧任务列表
     };
   },
   beforeCreate() {},
   async created() {
+    let hideDispatchTaskList = localStorage.getItem('hideDispatchTaskList');
+    if (hideDispatchTaskList) {
+      this.hideDispatchTaskList = JSON.parse(hideDispatchTaskList);
+    }
     await this.getProfile();
     this.channelUuid = this.$route.query.uuid || null;
     this.processTaskId = this.$route.query.processTaskId || sessionStorage.getItem('processTaskId') || null;
@@ -584,8 +590,9 @@ export default {
       clearInterval(this.timer);
       this.timer = null;
     },
-    toggleSiderHide() {
+    toggleSiderHide(isSiderHide) {
       this.updateFormWidth();
+      localStorage.setItem('hideDispatchTaskList', isSiderHide);
     },
     updateFormWidth() { //更新表单宽度
       setTimeout(() => {
