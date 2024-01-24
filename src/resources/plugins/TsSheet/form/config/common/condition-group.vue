@@ -150,7 +150,7 @@ export default {
           value: 'or'
         }
       ],
-      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
