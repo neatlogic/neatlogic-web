@@ -259,7 +259,8 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      if (newValue != this.currentValue) {
+      let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
+      if (!isSame) {
         this.currentValue = this.handleCurrentValue(newValue);
         this.validMesage = '';
         this.setSelectList();
