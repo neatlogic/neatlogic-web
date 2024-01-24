@@ -544,7 +544,7 @@ export default [
       title: $t('router.framework.auditmanage'),
       ismenu: true,
       icon: 'tsfont-center',
-      authority: 'API_AUDIT_VIEW',
+      authority: 'INTERFACE_MODIFY',
       type: 'others'
     }
   },
