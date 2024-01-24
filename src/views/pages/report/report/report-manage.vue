@@ -19,7 +19,7 @@
         <div>
           <InputSearcher
             v-model="keyword"
-            @change="searchReport()"
+            @change="() => updatePagesize()"
           ></InputSearcher>
         </div>
       </template>
@@ -40,6 +40,7 @@
         <TsTable
           v-if="reportData"
           v-bind="reportData"
+          :theadList="theadList"
           selectedRemain
           keyName="id"
           :canSelectRow="true"
@@ -110,7 +111,6 @@ export default {
   directives: { download },
   props: {},
   data() {
-    let _this = this;
     return {
       keyword: '',
       actionUrl: BASEURLPREFIX + '/api/binary/report/import', //导入地址
@@ -202,27 +202,19 @@ export default {
       };
       this.$api.report.report.searchReport(params).then(res => {
         this.reportData = res.Return;
-        this.reportData.theadList = this.theadList;
       });
     },
     addReport: function() {
       this.reportId = null;
       this.reportDislogShow = true;
     },
-    updatePagesize: function(pageSize) {
-      if (pageSize) {
-        this.searchParam.pageSize = pageSize;
-      } else {
-        this.searchParam.pageSize = 20;
-      }
+    updatePagesize(pageSize) {
+      this.searchParam.currentPage = 1;
+      this.searchParam.pageSize = pageSize || 20; 
       this.searchReport();
     },
-    updatePage: function(currentPage) {
-      if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      } else {
-        this.searchParam.currentPage = 1;
-      }
+    updatePage(currentPage) {
+      this.searchParam.currentPage = currentPage || 1;
       this.searchReport();
     },
     toggleReportActive: function(report) {
@@ -284,6 +276,7 @@ export default {
       } else {
         this.searchParam.type = name;
       }
+      this.selectList = [];
       this.searchReport();
     },
     showReport: function(id) {
