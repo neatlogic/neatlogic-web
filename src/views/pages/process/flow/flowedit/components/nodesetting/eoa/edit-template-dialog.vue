@@ -28,20 +28,7 @@
                   <Col span="2">
                     <div :title="item.policyName" class="text-title overflow">{{ item.policyName }}</div>
                   </Col>
-                  <template v-if="!item.mappingMode && !$utils.isEmpty(item.valueList)">
-                    <Col span="22">
-                      <div class="tsform-readonly">
-                        <UserCard
-                          v-for="(u,uindex) in item.valueList"
-                          :key="uindex"
-                          :uuid="u"
-                          :hideAvatar="false"
-                          class="pr-sm"
-                        ></UserCard>
-                      </div>
-                    </Col>
-                  </template>
-                  <template v-else>
+                  <template v-if="item.isEdit">
                     <Col span="5">
                       <TsFormSelect
                         v-model="item.mappingMode"
@@ -79,6 +66,19 @@
                       <template v-else>
                         <TsFormSelect border="border"></TsFormSelect>
                       </template>
+                    </Col>
+                  </template>
+                  <template v-else>
+                    <Col span="22">
+                      <div class="tsform-readonly">
+                        <UserCard
+                          v-for="(u,uindex) in item.valueList"
+                          :key="uindex"
+                          :uuid="u"
+                          :hideAvatar="false"
+                          class="pr-sm"
+                        ></UserCard>
+                      </div>
                     </Col>
                   </template>
                 </TsRow>
@@ -162,6 +162,7 @@ export default {
               if (!this.$utils.isEmpty(item.userList)) {
                 obj.valueList = item.userList;
               } else {
+                this.$set(obj, 'isEdit', true);
                 this.$set(obj, 'mappingMode', ''); 
                 if (this.currentTemplate && !this.$utils.isEmpty(this.currentTemplate.mappingList)) {
                   let findItem = this.currentTemplate.mappingList.find(c => c.id === item.id);
