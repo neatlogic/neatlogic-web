@@ -5,9 +5,7 @@
   </div>
 </template>
 <script>
-import 'github-markdown-css';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
 import {marked} from 'marked';
 import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
@@ -119,4 +117,6 @@ export default {
 };
 </script>
 <style lang="less">
+@import 'github-markdown-css';
+@import 'highlight.js/styles/atom-one-light.css'; //引入一种语法的高亮
 </style>
