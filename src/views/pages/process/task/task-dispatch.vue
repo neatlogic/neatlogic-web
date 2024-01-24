@@ -157,7 +157,7 @@ export default {
         file: true,
         handlerStepInfo: true
       },
-      hideDispatchTaskList: false //隐藏工单上报页左侧任务列表
+      hideDispatchTaskList: true //隐藏工单上报页左侧任务列表
     };
   },
   beforeCreate() {},
