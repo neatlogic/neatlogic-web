@@ -35,7 +35,6 @@ export default {
       location.assign(HOME + '/' + this.defaultModuleId + '.html');
     }
   },
-  
   computed: {
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
