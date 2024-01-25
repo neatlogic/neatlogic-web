@@ -5,7 +5,15 @@
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addReportDataSource()">{{ $t('page.datasource') }}</span>
           <span class="tsfont-upload action-item" @click="uploadAction()">{{ $t('page.import') }}</span>
-          <span :class="{ 'text-disabled': !selectList || selectList.length == 0 }" class="tsfont-download action-item" @click="exportList()">{{ $t('page.export') }}</span>
+          <span
+            v-if="!isExportDataWareHouse"
+            :class="{ 'text-disabled': !selectList || selectList.length == 0 }"
+            class="tsfont-download action-item"
+            @click="exportList()"
+          >{{ $t('page.export') }}</span>
+          <span v-else class="action-item">
+            <Icon type="ios-loading" size="16" class="loading">{{ $t('term.codehub.exporting') }}</Icon>
+          </span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig :title="$t('term.framework.saveexpire')" auditName="DATAWAREHOUSE-AUDIT"></AuditConfig></span>
         </div>
       </template>
@@ -95,6 +103,7 @@ export default {
   props: {},
   data() {
     return {
+      isExportDataWareHouse: false,
       doingIdList: [],
       currentDataSourceId: null,
       reportDataSourceData: {},
@@ -278,6 +287,13 @@ export default {
         url: 'api/binary/datawarehouse/datasource/export',
         params: {
           idList: this.selectList
+        },
+        changeStatus: status => {
+          if (status == 'start') {
+            this.isExportDataWareHouse = true;
+          } else if (status == 'success' || status == 'error') {
+            this.isExportDataWareHouse = false;
+          }
         }
       };
       this.download(param);
