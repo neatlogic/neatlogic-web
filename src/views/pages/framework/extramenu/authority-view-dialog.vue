@@ -191,23 +191,23 @@ export default {
       }
     },
     searchKeyword(keyword) {
-      this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
-      if (!this.$utils.isEmpty(keyword)) {
-        if (this.moduleName) {
-          this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-            item.moduleName.indexOf(this.moduleName) != -1 && (item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1) 
-          );
-        } else {
-          this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-            item.moduleName.indexOf(keyword) != -1 || item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1
-          );
-        }
-      } else {
+      if (this.$utils.isEmpty(keyword)) {
+        this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
         if (this.moduleName) {
           this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
             item.moduleName.indexOf(this.moduleName) != -1 
           );
         }
+        return false;
+      }
+      if (this.moduleName) {
+        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
+          item.moduleName.indexOf(this.moduleName) != -1 && (item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1) 
+        );
+      } else {
+        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
+          item.moduleName.indexOf(keyword) != -1 || item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1
+        );
       }
     }
   },
