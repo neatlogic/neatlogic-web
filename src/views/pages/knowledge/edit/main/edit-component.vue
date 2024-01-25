@@ -93,8 +93,7 @@ export default {
   methods: {
     addComponent(component, topUuid) {
       //添加组件 topUuid:需要在哪个组件下面添加，需要添加的组件
-      let focusCom = null;
-      topUuid = topUuid || this.focusUuid || this.newdataList[this.newdataList.length - 1].uuid;
+      topUuid = topUuid || this.focusUuid || (!this.$utils.isEmpty(this.newdataList) && this.newdataList[this.newdataList.length - 1].uuid);
       let $insertDom = document.querySelector(`#rightSider [data_id="${topUuid}"]`);
       if (!$insertDom) {
         return;
