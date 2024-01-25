@@ -27,17 +27,29 @@ export default {
       home: HOME
     };
   },
-  async created() {
-    await this.$store.state.topMenu.gettingModuleList;
-    if (this.defaultModuleId === 'index') {
-      this.moduleList = this.$store.state.topMenu.moduleList;
-    } else {
-      location.assign(HOME + '/' + this.defaultModuleId + '.html');
-    }
+  created() {},
+  mounted() {
+  
   },
   computed: {
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
+    },
+    topMenuModuleList() {
+      return this.$store.state.topMenu.moduleList;
+    }
+  },
+  watch: {
+    topMenuModuleList: {
+      handler(moduleList) {
+        if (this.defaultModuleId === 'index') {
+          this.moduleList = moduleList;
+        } else {
+          location.assign(HOME + '/' + this.defaultModuleId + '.html');
+        }
+      },
+      deep: true,
+      immediate: true
     }
   }
 };

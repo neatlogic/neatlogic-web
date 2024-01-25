@@ -1,4 +1,5 @@
 import commonApi from '@/resources/api/common';
+import commonStore from '@/resources/store/index.js';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
@@ -45,16 +46,15 @@ const actions = {
     let userAuthList = [];
     state.gettingModuleList = commonApi.getModuleList();
     const res = await state.gettingModuleList;
-    const userRes = await commonApi.getUser();
+    const userInfo = commonStore.state.userInfo;
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
     if (process.env.VUE_APP_PAGE_LIST && JSON.parse(process.env.VUE_APP_PAGE_LIST)) {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
       showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
     }
-
-    userRes &&
-      userRes.Return &&
-      userRes.Return.userAuthList.forEach(item => {
+    userInfo &&
+      userInfo.userAuthList &&
+      userInfo.userAuthList.forEach(item => {
         if (item && item.auth) {
           userAuthList.push(item.auth); // 拿到所有权限列表
         }
