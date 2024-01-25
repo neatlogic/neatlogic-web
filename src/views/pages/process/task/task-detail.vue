@@ -9,7 +9,7 @@
     </div>
     <div v-if="pocesstaskview">
       <nodeDetail
-        :is="handler"
+        :is="handlerType(handler)"
         v-if="!loadingShow"
         ref="nodeDatas"
         :isShowTaskList="isShowTaskList"
@@ -375,6 +375,17 @@ export default {
         let nowDate = this.$store.state.now;
         const time = expireTime - nowDate; //时效：截止时间减去当前时间
         return time;
+      };
+    },
+    handlerType() {
+      return (handler) => {
+        let type = '';
+        if (!nodeDetail[handler]) {
+          type = 'omnipotent';
+        } else {
+          type = handler;
+        }
+        return type; 
       };
     }
   },

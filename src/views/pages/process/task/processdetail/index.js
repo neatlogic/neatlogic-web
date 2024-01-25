@@ -6,7 +6,22 @@ import event from './process-event'; //事件
 import autoexec from './process-autoexec'; 
 import timer from './process-timer';
 import cmdbsync from './process-cmdbsync';
-import eoa from './process-eoa';
+let importComponentConfig = {};
+try {
+  // 导入自定义组件
+  const componentConfig = require.context('@/commercial-module', true, /processTaskStep.js$/);
+  componentConfig
+    .keys()
+    .filter(path => {
+      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
+      return moduleName === 'process';
+    })
+    .forEach(path => {
+      importComponentConfig = componentConfig(path).default || {};
+    });
+} catch (error) {
+  console.error('form/component/index.js异常', error);
+}
 export default {
   omnipotent,
   automatic,
@@ -16,5 +31,5 @@ export default {
   autoexec,
   timer,
   cmdbsync,
-  eoa
+  ...importComponentConfig
 };
