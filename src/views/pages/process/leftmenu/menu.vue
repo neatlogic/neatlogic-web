@@ -7,9 +7,9 @@
         </a>
       </li>
     </ul>
-    <div class="title text-grey">{{ $t('router.process.workordercenter') }}</div>
-    <div v-if="workcenterList">
-      <ul v-if="workcenterList.length > 0" class="navlist-ul">
+    <template v-if="!$utils.isEmpty(workcenterList)">
+      <div class="title text-grey">{{ $t('router.process.workordercenter') }}</div>
+      <ul class="navlist-ul">
         <li v-for="ditem in workcenterList" :key="ditem.uuid">
           <div v-if="ditem.catalogName" :title="ditem.catalogName" class="overflow title text-grey subtitle-padding">{{ ditem.catalogName }}</div>
           <draggable
@@ -61,10 +61,7 @@
           </draggable>
         </li>
       </ul>
-      <div v-else>
-        <NoData></NoData>
-      </div>
-    </div>
+    </template>
     <div v-else>
       <Loading loadingShow></Loading>
     </div>
@@ -300,7 +297,7 @@ export default {
       return this.$store.dispatch('leftMenu/getWorkCenterMenuData');
     },
     async initData(action) {
-      if (action) {
+      if (action && this.$AuthUtils.hasRole('PROCESS_BASE')) {
         await this.getWorkCenterTypeMenu();
       }
       // let workCenterMenuData = this.workCenterMenuData || {};
