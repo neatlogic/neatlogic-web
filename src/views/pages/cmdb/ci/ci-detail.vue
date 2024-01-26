@@ -76,7 +76,7 @@
                 ></CiDetailAttrList>
                 <Divider v-if="!ciData.isVirtual && attrList && attrList.length > 0" />
                 <TsForm
-                  v-if="!ciData.isVirtual && attrList && attrList.length > 0"
+                  v-if="!ciData.isVirtual && attrList && attrList.length > 0 && !isLoading"
                   ref="formCi"
                   style="margin-top: 10px"
                   :item-list="attrFormConfig"
