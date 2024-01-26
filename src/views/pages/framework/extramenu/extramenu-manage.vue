@@ -6,6 +6,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
+          <span class="action-item tsfont-circulation-o" @click="openAuthorityViewDialog">{{ $t('page.viewauthority') }}</span>
           <span :class="{ disable: saving }" class="action-item tsfont-save" @click="save()">{{ $t('page.save') }}</span>
         </div>
       </template>
@@ -46,6 +47,7 @@
         </div>
       </template>
     </TsContain>
+    <AuthorityViewDialog v-if="isShowAuthorityViewDialog" @close="isShowAuthorityViewDialog = false"></AuthorityViewDialog>
   </div>
 </template>
 <script>
@@ -53,11 +55,13 @@ export default {
   name: '',
   components: {
     TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    MenuEdit: resolve => require(['./menu-edit'], resolve)
+    MenuEdit: resolve => require(['./menu-edit'], resolve),
+    AuthorityViewDialog: resolve => require(['./authority-view-dialog'], resolve)
   },
   props: {},
   data() {
     return {
+      isShowAuthorityViewDialog: false,
       loadingShow: true,
       saving: false,
       selectedTreeId: null,
@@ -282,6 +286,9 @@ export default {
       }).finally(() => {
         this.getTreeList();
       });
+    },
+    openAuthorityViewDialog() {
+      this.isShowAuthorityViewDialog = true;
     }
   },
   filter: {},

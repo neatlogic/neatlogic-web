@@ -1450,7 +1450,7 @@ export default {
   watch: {
     value: {
       handler(newValue, oldValue) {
-        let isSame = this.$utils.isSame(newValue, this.currentValue);
+        let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
         // if ((this.multiple && JSON.stringify(newValue) == JSON.stringify(this.currentValue)) || (!this.multiple && newValue === this.currentValue)) {
         //   isSame = true;
         // }

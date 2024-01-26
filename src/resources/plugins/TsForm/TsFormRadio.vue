@@ -190,7 +190,7 @@ export default {
       }
     },
     onChangeValue() {
-      let isSame = this.value == this.currentValue;
+      let isSame = this.$utils.isSame(this.value, this.currentValue); // 使用isSame比较两个字符串是否一致，避免 '' == 0 为true情况，导致没有emit on-change方法，form表单获取不到值问题
       let value = this.currentValue;
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
       let selectedItem = [];
@@ -259,7 +259,8 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      if (newValue != this.currentValue) {
+      let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
+      if (!isSame) {
         this.currentValue = this.handleCurrentValue(newValue);
         this.validMesage = '';
         this.setSelectList();

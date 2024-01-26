@@ -261,7 +261,8 @@ export default {
   },
   watch: {
     value(newValue, oldValue) {
-      if (JSON.stringify(newValue) != JSON.stringify(this.currentValue)) {
+      let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
+      if (!isSame) {
         this.currentValue = this.handleCurrentValue(this.$utils.deepClone(newValue)) || [];
         this.validMesage = '';
         this.setSelectList();

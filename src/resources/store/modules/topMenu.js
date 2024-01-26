@@ -1,4 +1,4 @@
-import menuApi from '@/resources/api/common';
+import commonApi from '@/resources/api/common';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
@@ -43,25 +43,27 @@ const actions = {
     const menuConfigList = getAllMenuTypeList();
     let moduleList = [];
     let userAuthList = [];
-    state.gettingModuleList = menuApi.getModuleList();
+    state.gettingModuleList = commonApi.getModuleList();
     const res = await state.gettingModuleList;
+    const userRes = await commonApi.getUser();
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
     if (process.env.VUE_APP_PAGE_LIST && JSON.parse(process.env.VUE_APP_PAGE_LIST)) {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
       showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
     }
-    res &&
-      res.Return &&
-      res.Return.forEach(item => {
-        if (item && item.authList && item.authList.length > 0) {
-          userAuthList.push(...item.authList); // 拿到所有权限列表
+
+    userRes &&
+      userRes.Return &&
+      userRes.Return.userAuthList.forEach(item => {
+        if (item && item.auth) {
+          userAuthList.push(item.auth); // 拿到所有权限列表
         }
       });
     res &&
       res.Return &&
       res.Return.forEach(moduleGroup => {
         try {
-          let { group: moduleId, groupName: moduleName, authList = [], description, isDefault, defaultPage } = moduleGroup;
+          let { group: moduleId, groupName: moduleName, description, isDefault, defaultPage } = moduleGroup;
           if (!description || !description.trim()) {
             description = `${moduleName}平台`;
           }
@@ -69,7 +71,7 @@ const actions = {
           const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
           if (routerConfig[moduleId]) {
             const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && userAuthList.length > 0 && userAuthList.includes(route.meta.authority));
-            if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && authList.length > 0)) {
+            if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && userAuthList.length > 0)) {
               //有权限菜单的模块才让显示
               moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
             }
@@ -98,7 +100,7 @@ const actions = {
     const processModule = state.moduleList.find(item => item.moduleId === 'process');
     if (!processModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('process')) return;
-    const res = await menuApi.updateProcessMenu({ isAll: 0 });
+    const res = await commonApi.updateProcessMenu({ isAll: 0 });
     if (!res.Return || !res.Return.workcenterList || res.Return.workcenterList.length === 0) return;
     const processType = res.Return.workcenterList.map(type => ({
       name: type.name,
@@ -121,7 +123,7 @@ const actions = {
     const knowledgeModule = state.moduleList.find(item => item.moduleId === 'knowledge');
     if (!knowledgeModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('knowledge')) return;
-    const res = await menuApi.updateKnowledgeMenu();
+    const res = await commonApi.updateKnowledgeMenu();
     if (!res.Return || res.Return.length === 0) return;
     const knowledgeType = res.Return.map(type => ({
       name: type.text,
@@ -146,7 +148,7 @@ const actions = {
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('dashboard')) {
       return;
     }
-    const res = await menuApi.updateDashboardMenu({ limit: 6 });
+    const res = await commonApi.updateDashboardMenu({ limit: 6 });
     if (!res.Return.tbodyList || res.Return.tbodyList.length === 0) {
       return;
     }
@@ -171,7 +173,7 @@ const actions = {
     const reportModule = state.moduleList.find(item => item.moduleId === 'report');
     if (!reportModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('report')) return;
-    const res = await menuApi.updateReportMenu({ pageSize: 6 });
+    const res = await commonApi.updateReportMenu({ pageSize: 6 });
     if (res.Return.tbodyList.length === 0) return;
     const reportInstanceList = res.Return.tbodyList.map(item => ({
       name: item.name,
@@ -194,7 +196,7 @@ const actions = {
     const cmdbModule = state.moduleList.find(item => item.moduleId === 'cmdb');
     if (!cmdbModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('cmdb')) return;
-    state.gettingCmdbMenu = menuApi.updateCmdbMenu();
+    state.gettingCmdbMenu = commonApi.updateCmdbMenu();
     const res = await state.gettingCmdbMenu;
     if (res.Return.length === 0) return;
     let newMenuGroup = [];
@@ -227,7 +229,7 @@ const actions = {
     const inspectModule = state.moduleList.find(item => item.moduleId === 'inspect');
     if (!inspectModule) return;
     if (!forceUpdate && state.dynamicMenu.hasOwnProperty('inspect')) return;
-    const res = await menuApi.updateInspectMenu();
+    const res = await commonApi.updateInspectMenu();
     let recentIssuesRouteList = []; // 最新问题路由列表
     if (res.Return && res.Return.length > 0) {
       recentIssuesRouteList = res.Return.map(type => ({
@@ -359,13 +361,13 @@ function isAuthMenu(route, authList = []) {
     } else if (
       typeof route.meta.authority == 'string' &&
       authList.some(auth => {
-        return route.meta.authority === auth.name;
+        return route.meta.authority === auth;
       })
     ) {
       return true;
     } else if (typeof route.meta.authority == 'object') {
       let isSame = authList.filter(a => {
-        let repeatItem = route.meta.authority.indexOf(a.name) > -1;
+        let repeatItem = route.meta.authority.indexOf(a) > -1;
         return repeatItem;
       });
       if (isSame && isSame.length) {
@@ -382,13 +384,13 @@ function hasAuthNoMenu(route, authList = []) {
     route.meta &&
     typeof route.meta.authority == 'string' &&
     authList.some(auth => {
-      return route.meta.authority === auth.name;
+      return route.meta.authority === auth;
     })
   ) {
     return true;
   } else if (route.meta && typeof route.meta.authority == 'object') {
     let isSame = authList.filter(a => {
-      let repeatItem = route.meta.authority.indexOf(a.name) > -1;
+      let repeatItem = route.meta.authority.indexOf(a) > -1;
       return repeatItem;
     });
     if (isSame && isSame.length) {
