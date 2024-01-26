@@ -171,7 +171,6 @@ export default {
       ciId: parseInt(this.$route.params['id']),
       attrFormConfig: {
         nameAttrId: {
-          name: 'nameAttrId',
           type: 'radio',
           label: this.$t('term.cmdb.nameattribute'),
           tooltip: this.$t('form.help.nameattribute'),
@@ -248,10 +247,13 @@ export default {
         }
       });
     },
-    updateCiNameAttrId: function(attrId) {
+    updateCiNameAttrId(attrId) {
       this.$api.cmdb.ci.updateCiNameAttrId(this.ciId, attrId).then(res => {
-        if (res.Status == 'OK') {
+        if (res.Status === 'OK') {
           this.$set(this.ciData, 'nameAttrId', attrId);
+          this.$set(this.attrFormConfig.nameAttrId, 'value', attrId);
+          //必须要有，否则radio无法更新value
+          this.$refs['formCi'].$forceUpdate();
           this.$Message.success(this.$t('message.savesuccess'));
         }
       });
