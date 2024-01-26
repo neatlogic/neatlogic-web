@@ -71,7 +71,7 @@ const actions = {
           const authorizedMenuList = getMenuList(routerConfig[moduleId], userAuthList, moduleId);
           const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
           if (routerConfig[moduleId]) {
-            const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && userAuthList.length > 0 && userAuthList.includes(route.meta.authority));
+            const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && userAuthList.length > 0 && hasAuthNoMenu(route, userAuthList));
             if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && userAuthList.length > 0)) {
               //有权限菜单的模块才让显示
               moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
@@ -104,7 +104,7 @@ const actions = {
     }
     const res = await commonApi.updateProcessMenu({ isAll: 0 });
     if (!res.Return || !res.Return.workcenterList || res.Return.workcenterList.length === 0) return;
-    const processType = res.Return.workcenterList.map(type => ({
+    const processType = res.Return.workcenterList.slice(0, 6).map(type => ({
       name: type.name,
       path: `/task-overview-${type.uuid}`,
       url: `/task-overview-${type.uuid}`,
@@ -178,8 +178,8 @@ const actions = {
       return;
     }
     const res = await commonApi.updateReportMenu({ pageSize: 6 });
-    if (res.Return.tbodyList.length === 0) return;
-    const reportInstanceList = res.Return.tbodyList.map(item => ({
+    if (res.Return && res.Return.length === 0) return;
+    const reportInstanceList = res.Return.slice(0, 6).map(item => ({
       name: item.name,
       path: '/reportinstance-show/' + item.id,
       icon: 'tsfont-report'
