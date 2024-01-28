@@ -140,7 +140,7 @@ export default {
                 module: key,
                 moduleName: this.handleModuleName(key),
                 menuName: item.name ? (item.meta.title ? `${item.meta.title}(${item.name})` : item.name) : '',
-                authority: item.meta.authority
+                authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
               });
             }
           });

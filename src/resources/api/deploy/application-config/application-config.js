@@ -46,7 +46,7 @@ const applicationConfig = {
   },
   getAppInfo(params) {
     // 获取应用层信息
-    return axios.post('/api/rest/deploy/app/config/app/system/info/get', params);
+    return axios.post('/api/rest/app/system/simple/get', params);
   },
   delEnvExample(params) {
     // 删除环境实例差异

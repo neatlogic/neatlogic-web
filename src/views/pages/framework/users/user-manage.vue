@@ -7,8 +7,8 @@
           <span v-if="select && select.length > 0" class="action-item tsfont-trash-o" @click="deleteData(select)">{{ $t('page.batchdelete') }}</span>
         </div>
       </template>
-      <div slot="topCenter" style="text-align:right" class="pr-md">
-        <Button :type="vipLevel?'primary':'default'" @click="changeVipLevel">VIP</Button>
+      <div slot="topCenter" class="pr-md text-right">
+        <Button v-if="$AuthUtils.hasRole('VIP_VIEW')" :type="vipLevel?'primary':'default'" @click="changeVipLevel">VIP</Button>
       </div>
       <template slot="topRight">
         <InputSearcher
