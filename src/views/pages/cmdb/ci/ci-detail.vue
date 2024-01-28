@@ -93,7 +93,7 @@
                 ></CiDetailRelList>
               </TabPane>
               <TabPane
-                v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0"
+                v-if="!ciData.isVirtual && globalAttrData && globalAttrData && globalAttrData.length > 0"
                 name="global"
                 class="pt-nm pl-nm pr-nm"
                 :label="$t('term.cmdb.globalattr')"
@@ -309,12 +309,12 @@ export default {
       });
     },
     async getGlobalAttr() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.globalAttrData = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.$set(this.attrData, 'tbodyList', res.Return);
         this.attrList = res.Return;
         const attrList = res.Return;
@@ -334,7 +334,7 @@ export default {
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         const relMap = new Map();
         this.$set(
           this.relData,

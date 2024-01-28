@@ -438,8 +438,8 @@
                         d.removeEl = null;
                       }
                     });*/
-                    d.removeEl.remove();
-                    d.removeEl = null;
+                  d.removeEl.remove();
+                  d.removeEl = null;
                 }
               }, 3000);
             }
@@ -476,7 +476,7 @@
     if (d.iconEl) {
       d.iconEl.remove();
     }
-    if (value) {
+    if (value && node) {
       const isIcon = value.startsWith('#');
       if (isIcon) {
         // eslint-disable-next-line no-eval

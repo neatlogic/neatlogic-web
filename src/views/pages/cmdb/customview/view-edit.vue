@@ -16,7 +16,7 @@
           :width="350"
           border="border"
           :validateList="[{ name: 'required', message: '' }]"
-          style="display:inline-block"
+          style="display: inline-block"
           :maxlength="50"
         ></TsFormInput>
       </template>
@@ -48,7 +48,7 @@
               @on-change="searchCi"
             ></TsFormInput>
           </div>
-          <div style="height:calc(100vh - 176px);overflow-y:auto">
+          <div style="height: calc(100vh - 176px); overflow-y: auto">
             <div v-for="(ciType, index) in filterCiTypeList" :key="index">
               <div v-if="ciType.ciList && ciType.ciList.length > 0">
                 <div class="mb-xs">
@@ -65,9 +65,9 @@
                         @dragstart="drag($event, row)"
                       >
                         <div class="bg-op radius-md padding-xs">
-                          <div style="cursor:move;display:grid;grid-template-columns:35px auto;line-height:1.6">
-                            <div style="text-align:center">
-                              <i :class="row.icon" class="text-primary" style="font-size:20px;"></i>
+                          <div style="cursor: move; display: grid; grid-template-columns: 35px auto; line-height: 1.6">
+                            <div style="text-align: center">
+                              <i :class="row.icon" class="text-primary" style="font-size: 20px"></i>
                             </div>
                             <div class="overflow">
                               <div :title="row.label">{{ row.label }}</div>
@@ -88,7 +88,7 @@
         <div ref="divTopo" class="bg-block radius-md" :style="{ height: height + 'px' }">
           <div
             ref="topo"
-            style="height:100%"
+            style="height: 100%"
             @drop="drop"
             @dragover.prevent
           ></div>
@@ -164,24 +164,24 @@
                   </colgroup>
                   <tbody>
                     <tr v-for="(constattr, cindex) in currentCi.constList" :key="'constattr_' + cindex">
-                      <td style="vertical-align:top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
-                      <td style="vertical-align:top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
+                      <td style="vertical-align: top"><Checkbox v-model="constattr.isChecked" @on-change="checkConst(constattr)"></Checkbox></td>
+                      <td style="vertical-align: top"><i :title="$t('term.cmdb.innerproperty')" class="tsfont-type"></i></td>
                       <td>
                         <div>{{ constattr.label }}</div>
                         <div class="text-grey">{{ constattr.name }}</div>
                       </td>
                     </tr>
                     <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
-                      <td style="vertical-align:top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
-                      <td style="vertical-align:top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
+                      <td style="vertical-align: top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
+                      <td style="vertical-align: top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
                       <td>
-                        <div>{{ attr.label }}</div>
+                        <div><span>{{ attr.label }}</span><span class="ml-xs" :class="{ 'tsfont-bind': attr.isSearchAble && attr.canSearch }"></span></div>
                         <div class="text-grey">{{ attr.name }}</div>
                       </td>
                     </tr>
                     <tr v-for="(rel, rindex) in currentCi.ciRelList" :key="'rel_' + rindex">
-                      <td style="vertical-align:top"><Checkbox v-model="rel.isChecked" @on-change="checkRel(rel)"></Checkbox></td>
-                      <td style="vertical-align:top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
+                      <td style="vertical-align: top"><Checkbox v-model="rel.isChecked" @on-change="checkRel(rel)"></Checkbox></td>
+                      <td style="vertical-align: top"><i :title="rel.direction == 'from' ? $t('term.cmdb.downside') : $t('term.cmdb.upside')" :class="rel.direction == 'from' ? 'tsfont-arrow-down' : 'tsfont-arrow-up'"></i></td>
                       <td v-if="rel.direction == 'from'">
                         <div>{{ rel.toLabel }}</div>
                         <div class="text-grey">{{ rel.toName }}</div>
@@ -561,7 +561,7 @@ export default {
     deleteView() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.cmdb.view')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.cmdb.view') }),
         cancelText: this.$t('page.cancel'),
         btnType: 'error',
         okText: this.$t('page.confirm'),
@@ -705,6 +705,7 @@ export default {
             config: {
               attrId: attr.id,
               attrLabel: attr.label,
+              canLink: attr.isSearchAble && attr.canSearch,
               alias: attr.label,
               isHidden: 0,
               isPrimary: 0,
