@@ -1,112 +1,61 @@
 <template>
-  <div class="auth-setting">
+  <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topRight">
-        <TsRow class="search-item">
-          <Col span="6">
-            <TsFormSelect
-              :dataList="authGroupList"
-              :value="selectedModuleName"
-              :clearable="false"
-              border="border"
-              @on-change="changeSelect"
-            ></TsFormSelect>
-          </Col>
-          <Col span="18">
-            <InputSearcher
-              v-model="keyword"
-              :placeholder="$t('page.keyword')"
-              @change="search()"
-            ></InputSearcher>
+        <TsRow>
+          <Col span="24">
+            <CombineSearcher
+              v-if="!$utils.isEmpty(defaultMenuList)"
+              v-model="searchVal"
+              v-bind="searchConfig"
+              @change="searchAuthData()"
+            >
+              <template v-slot:defaultValue="{valueConfig, textConfig}">
+                <TsFormSelect
+                  v-model="valueConfig.defaultValue"
+                  v-bind="defaultValueConfig"
+                  @change="(val) => {
+                    $set(valueConfig, 'defaultValue', null)
+                    if(val) {
+                      $set(valueConfig, 'defaultValue', val)
+                    }
+                  }"
+                  @change-label="(label) => {
+                    if(label) {
+                      $set(textConfig, 'defaultValue', label);
+                    } else {
+                      $delete(textConfig, 'defaultValue')
+                    }
+                  }"
+                >
+                  <template v-slot:option="{item}">
+                    <Tooltip placement="right">
+                      <span>{{ item.text }}</span>
+                      <div slot="content">
+                        {{ getMenuName(item) }}
+                      </div>
+                    </Tooltip>
+                  </template>
+                </TsFormSelect>
+              </template>
+            </CombineSearcher>
           </Col>
         </TsRow>
       </template>
-      <div slot="content" class="content">
-        <div class="card-wrapper">
-          <div v-if="authList && authList.length > 0">
-            <div class="card-top text-grey">
-              <TsRow>
-                <Col span="6">
-                  {{ $t('term.framework.authname') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.belongmodule') }}
-                </Col>
-                <Col span="10">
-                  {{ $t('term.framework.authdesc') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.usercount') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.rolecount') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('page.action') }}
-                </Col>
-              </TsRow>
+      <div slot="content">
+        <TsTable
+          v-bind="tableConfig"
+          :theadList="theadList"
+        >
+          <template slot="action" slot-scope="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-permission" @click="toAuthAdduserPage(row)">{{ $t('page.auth') }}</li>
+              </ul>
             </div>
-            <div v-for="(item, index) in authList" :key="index" class="card-item bg-op radius-lg card-hover-shadow">
-              <TsRow>
-                <Col span="6">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.displayName"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.displayName }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="2">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.authGroupName"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.authGroupName }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="10">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.description"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.description }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="2">
-                  <li class="tsfont-userinfo count text-left" :title="$t('term.framework.usercount')">
-                    <span>{{ item.userCount }}</span>
-                  </li>
-                </Col>
-                <Col span="2">
-                  <li class="tsfont-team count text-left" :title="$t('term.framework.rolecount')">
-                    <span>{{ item.roleCount }}</span>
-                  </li>
-                </Col>
-                <Col span="2" class="action">
-                  <ul class="tstable-action-ul">
-                    <li class="tsfont-permission text-action" @click="toAuthAdduser(item)">{{ $t('page.auth') }}</li>
-                  </ul>
-                </Col>
-              </TsRow>
-            </div>
-          </div>
-          <div v-else>
-            <NoData v-show="!loadingShow"></NoData>
-          </div>
-        </div>
+          </template>
+        </TsTable>
       </div>
     </TsContain>
   </div>
@@ -116,160 +65,209 @@
 export default {
   name: 'AuthManage',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
-  props: [''],
+  props: {},
   data() {
     return {
-      keyword: null,
-      authList: [], //权限列表
-      authGroupList: [], //权限组列表
-      selectedModuleName: '',
-      loadingShow: true
+      groupName: '',
+      loadingShow: true,
+      defaultMenuList: [],
+      authGroupList: [],
+      searchVal: {},
+      defaultValueConfig: {
+        dataList: [],
+        search: true,
+        multiple: true,
+        transfer: true
+      },
+      searchConfig: {
+        search: true,
+        placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
+        searchList: [
+          {
+            label: this.$t('term.framework.belongmodule'),
+            type: 'select',
+            name: 'groupName',
+            url: '/api/rest/auth/group',
+            clearable: false,
+            search: true,
+            defaultValueIsFirst: true,
+            transfer: true,
+            rootName: 'groupList',
+            onChange: (groupName) => {
+              this.searchVal.defaultValue = null;
+              if (this.$utils.isEmpty(groupName) || groupName == 'all') {
+                this.defaultValueConfig.dataList = this.defaultMenuList;
+              } else {
+                this.defaultValueConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+              }
+            }
+          },
+          {
+            type: 'slot',
+            name: 'defaultValue',
+            label: this.$t('page.menuname')
+          }
+        ]
+      },
+      tableConfig: {
+        tbodyList: []
+      },
+      theadList: [
+        {
+          title: this.$t('term.framework.authname'),
+          key: 'displayName'
+        },
+        {
+          title: this.$t('term.framework.belongmodule'),
+          key: 'authGroupName'
+        },
+        {
+          title: this.$t('term.framework.authdesc'),
+          key: 'description',
+          width: 500
+        },
+        {
+          title: this.$t('term.framework.usercount'),
+          key: 'userCount'
+        },
+        {
+          title: this.$t('term.framework.rolecount'),
+          key: 'roleCount'
+        },
+        {
+          key: 'action'
+        }
+      ]
     };
   },
-
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    this.getAuthGrouplist();
+  async created() {
+    await this.getAuthGrouplist();
+    this.getRouterConfig();
+    this.searchAuthData();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    //获取权限组列表
     getAuthGrouplist() {
-      let data = {};
-      this.$api.common.getAuthGroup(data).then(res => {
+      return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
-          this.authGroupList = res.Return.groupList;
-          this.selectedModuleName = this.selectedModuleName || (this.authGroupList[0] ? this.authGroupList[0].value : null); // 下榻页面返回，选中对应模块
-          this.getAuthList();
+          this.authGroupList = res.Return.groupList || [];
         }
       });
     },
     //获取权限列表
-    getAuthList() {
+    searchAuthData() {
+      let defaultValueList = [];
+      this.defaultMenuList.forEach((item) => {
+        if (item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority) {
+          defaultValueList.push(...item.authority.split(','));
+        }
+      });
       let data = {
-        groupName: this.selectedModuleName,
-        keyword: this.keyword
+        ...this.searchVal,
+        defaultValue: this.$utils.uniqueArr(defaultValueList)
       };
       this.loadingShow = true;
-      this.$addHistoryData('keyword', this.keyword);
-      this.$addHistoryData('selectedModuleName', this.selectedModuleName);
+      this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
-        this.authList = res.Return;
+        this.tableConfig.tbodyList = res.Return || [];
       }).finally(() => {
         this.loadingShow = false;
       });
     },
     restoreHistory(historyData) {
-      this.keyword = historyData['keyword'];
-      this.selectedModuleName = historyData['selectedModuleName'];
+      this.searchVal = historyData['searchVal'];
     },
-    //搜索
-    search() {
-      this.getAuthList();
-    },
-    //切换权限组
-    changeSelect(val) {
-      this.selectedModuleName = val;
-      this.getAuthList();
-    },
-    toAuthAdduser(item) {
+    toAuthAdduserPage(item) {
       let {name = '', authGroup = ''} = item || {};
       this.$router.push({
         path: `auth-adduser`,
         query: { name: name, groupName: authGroup }
       });
+    },
+    getRouterConfig() {
+      let routerConfig = {};
+      let menuList = [];
+      let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+      routerPathList.forEach(item => {
+        if (item && item.keys()) {
+          item.keys().forEach(routerPath => {
+            const moduleNames = routerPath.split('/')[1];
+            const lastValue = moduleNames.split('-');
+            const moduleName = lastValue?.pop() || moduleNames;
+            const routeList = item(routerPath).default || [];
+            routerConfig[moduleName] = routeList;
+          });
+        }
+      });
+      let commercialRouterConfig = this.getCommercialRouter();
+      Object.keys(commercialRouterConfig).forEach(key => {
+        if (!routerConfig[key]) {
+          //模块引入
+          routerConfig[key] = commercialRouterConfig[key];
+        }
+      });
+      for (let key in routerConfig) {
+        if (key) {
+          routerConfig[key].forEach((item) => {
+            if (item.name && item.meta && item.meta.ismenu && item.meta.authority) {
+              menuList.push({
+                text: `${item.meta.title}`,
+                value: `${item.name}_${item.path}_${key}`,
+                groupName: key,
+                authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+              });
+            }
+          });
+        }
+      }
+      this.defaultMenuList = this.$utils.deepClone(menuList);
+      this.defaultValueConfig.dataList = menuList;
+    },
+    getCommercialRouter() {
+      //商业版模块
+      let routerConfig = {};
+      let routerPathList = [];
+      try {
+        routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
+      } catch {
+        // 模块找不到
+      }
+      routerPathList.forEach(item => {
+        if (item && item.keys()) {
+          item.keys().forEach(routerPath => {
+            const moduleNames = routerPath.split('/')[1];
+            const lastValue = moduleNames.split('-');
+            const moduleName = lastValue?.pop() || moduleNames;
+            const routeList = item(routerPath).default || [];
+            routerConfig[moduleName] = routeList;
+          });
+        }
+      });
+      return routerConfig;
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getMenuName() {
+      return (item) => {
+        let groupName = this.authGroupList.find((v) => v.value == item.groupName);
+        return groupName && groupName.text ? `${item.text}(${groupName.text})` : item.text; 
+      };
+    }
+  },
   watch: {}
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/framework/manage.less';
-.auth-setting {
-  .top {
-    .bar-top {
-      .select {
-        width: 200px;
-      }
-      .search {
-        width: 400px;
-      }
-    }
-  }
-  .content {
-    .card-wrapper {
-      .card-top {
-        padding: 0 20px 8px 20px;
-        .action {
-          text-align: center;
-        }
-      }
-      .card-item {
-        height: 56px;
-        line-height: 56px;
-        padding: 0 20px;
-        margin-bottom: 8px;
-        // &:hover {
-        //   .action {
-        //     display: block;
-        //   }
-        // }
-        // .action {
-        //   display: none;
-        //   cursor: pointer;
-        // }
-        .count {
-          > span {
-            margin-left: 5px;
-          }
-        }
-        .tstable-action-ul {
-          li {
-            display: inline-block;
-            padding: 0 @space-xs;
-            &:not(:last-of-type) {
-              position: relative;
-              &::after {
-                content: '|';
-                width: 1px;
-                height: 14px;
-                color: @dividing-color;
-                right: 0px;
-                position: absolute;
-              }
-            }
-            &::before {
-              margin-right: 4px;
-            }
-            // &:first-of-type {
-            //   padding-right: @space-xs;
-            // }
-            // &:hover {
-            //   color: @primary-color;
-            // }
-          }
-        }
-      }
-    }
-  }
-}
-</style>
-<style lang="less" scoped>
-/deep/.des-tip {
-  max-width: 100%;
-  .ivu-poptip-rel {
-    width: 100%;
-  }
-}
 </style>
