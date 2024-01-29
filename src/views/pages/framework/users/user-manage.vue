@@ -219,7 +219,7 @@ export default {
       this.loadingShow = true;
       let data = {
         keyword: this.keyword,
-        vipLevel: this.vipLevel,
+        vipLevel: this.$AuthUtils.hasRole('VIP_VIEW') ? this.vipLevel : 0,
         currentPage: this.searchParams.currentPage,
         pageSize: this.searchParams.pageSize
       };
