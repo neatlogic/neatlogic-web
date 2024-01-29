@@ -48,6 +48,14 @@
           v-bind="tableConfig"
           :theadList="theadList"
         >
+          <template slot="displayName" slot-scope="{ row }">
+            <Tooltip placement="top" :transfer="true">
+              <span>{{ row.displayName }}</span>
+              <div slot="content">
+                {{ row.displayName }}{{ row.name ? `(${row.name})` : '' }}
+              </div>
+            </Tooltip>
+          </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
