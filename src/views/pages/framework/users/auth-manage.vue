@@ -1,6 +1,7 @@
 <template>
   <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
+    {{ searchVal }}
     <TsContain>
       <template slot="topRight">
         <TsRow>
@@ -11,29 +12,18 @@
               v-bind="searchConfig"
               @change="searchAuthData()"
             >
-              <template v-slot:defaultValue="{valueConfig, textConfig}">
+              <template v-slot:menuName="{valueConfig, textConfig}">
                 <TsFormSelect
-                  v-model="valueConfig.defaultValue"
-                  v-bind="defaultValueConfig"
-                  @change="(val) => {
-                    $set(valueConfig, 'defaultValue', null)
-                    if(val) {
-                      $set(valueConfig, 'defaultValue', val)
-                    }
-                  }"
-                  @change-label="(label) => {
-                    if(label) {
-                      $set(textConfig, 'defaultValue', label);
-                    } else {
-                      $delete(textConfig, 'defaultValue')
-                    }
-                  }"
+                  v-model="valueConfig.menuName"
+                  v-bind="menuNameConfig"
+                  @change="(val) => changeDefault(valueConfig, textConfig, val)"
+                  @change-label="(label) => changeLabel(valueConfig, textConfig, label)"
                 >
                   <template v-slot:option="{item}">
                     <Tooltip placement="right">
                       <span>{{ item.text }}</span>
                       <div slot="content">
-                        {{ getMenuName(item) }}
+                        {{ item.text }}
                       </div>
                     </Tooltip>
                   </template>
@@ -85,7 +75,7 @@ export default {
       defaultMenuList: [],
       authGroupList: [],
       searchVal: {},
-      defaultValueConfig: {
+      menuNameConfig: {
         dataList: [],
         search: true,
         multiple: true,
@@ -102,21 +92,20 @@ export default {
             url: '/api/rest/auth/group',
             clearable: false,
             search: true,
-            defaultValueIsFirst: true,
             transfer: true,
             rootName: 'groupList',
             onChange: (groupName) => {
-              this.searchVal.defaultValue = null;
               if (this.$utils.isEmpty(groupName) || groupName == 'all') {
-                this.defaultValueConfig.dataList = this.defaultMenuList;
+                this.menuNameConfig.dataList = this.defaultMenuList;
               } else {
-                this.defaultValueConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+                this.menuNameConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
               }
+              console.log('groupName', groupName, this.searchVal, this.menuNameConfig.dataList);
             }
           },
           {
             type: 'slot',
-            name: 'defaultValue',
+            name: 'menuName',
             label: this.$t('page.menuname')
           }
         ]
@@ -154,7 +143,7 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    await this.getAuthGrouplist();
+    // await this.getAuthGrouplist();
     this.getRouterConfig();
     this.searchAuthData();
   },
@@ -166,6 +155,26 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeDefault(valueConfig, textConfig, val) {
+      console.log(valueConfig, textConfig, this.searchVal.groupName);
+      if (!this.$utils.isEmpty(val)) {
+        this.$set(textConfig, 'menuName', val);
+      } else {
+        this.$delete(textConfig, 'menuName');
+      }
+    },
+    changeLabel(valueConfig, textConfig, label) {
+      console.log('label', valueConfig, textConfig, label);
+      if (this.$utils.isEmpty(this.searchVal.groupName)) {
+        this.$delete(this.searchVal, 'menuName');
+        return false;
+      }
+      if (!this.$utils.isEmpty(label)) {
+        this.$set(textConfig, 'menuName', label);
+      } else {
+        this.$delete(textConfig, 'menuName');
+      }
+    },
     getAuthGrouplist() {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
@@ -177,12 +186,13 @@ export default {
     searchAuthData() {
       let defaultValueList = [];
       this.defaultMenuList.forEach((item) => {
-        if (item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority) {
+        if (item && item.value && this.searchVal.menuName && this.searchVal.menuName.includes(item.value) && item.authority) {
           defaultValueList.push(...item.authority.split(','));
         }
       });
+      console.log('搜索', this.searchVal);
       let data = {
-        ...this.searchVal,
+        groupName: this.searchVal.groupName,
         defaultValue: this.$utils.uniqueArr(defaultValueList)
       };
       this.loadingShow = true;
@@ -240,7 +250,7 @@ export default {
         }
       }
       this.defaultMenuList = this.$utils.deepClone(menuList);
-      this.defaultValueConfig.dataList = menuList;
+      this.menuNameConfig.dataList = menuList;
     },
     getCommercialRouter() {
       //商业版模块
@@ -267,12 +277,12 @@ export default {
   },
   filter: {},
   computed: {
-    getMenuName() {
-      return (item) => {
-        let groupName = this.authGroupList.find((v) => v.value == item.groupName);
-        return groupName && groupName.text ? `${item.text}(${groupName.text})` : item.text; 
-      };
-    }
+    // getMenuName() {
+    //   return (item) => {
+    //     let groupName = this.authGroupList.find((v) => v.value == item.groupName);
+    //     return groupName && groupName.text ? `${item.text}(${groupName.text})` : item.text; 
+    //   };
+    // }
   },
   watch: {}
 };

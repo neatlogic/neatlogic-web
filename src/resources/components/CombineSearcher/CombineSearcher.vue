@@ -428,7 +428,7 @@ export default {
               if (this.totalText[k].length == 0) {
                 this.$delete(this.totalText, k);
               }
-            } else if (k && typeof this.totalText[k].toString() == 'string' && this.$utils.isEmpty(this.totalText[k])) {
+            } else if (k && this.totalText[k] && typeof this.totalText[k].toString() == 'string' && this.$utils.isEmpty(this.totalText[k])) {
             // 清除为空的字符串，避免回显为空情况
               this.$delete(this.totalText, k);
             }  
@@ -563,6 +563,7 @@ export default {
           let isEmit = this.$utils.isSame(totalSearch, this.value);
           if (!isEmit) {
             if (this.searchMode == 'realtimeSearch') {
+              console.log('searchValue', totalSearch);
               this.$emit('change', totalSearch);
             }
           }
