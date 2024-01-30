@@ -207,15 +207,16 @@ export default {
     },
     setJsonValue(value) {
       let j = null;
-      try {
-        j = JSON.parse(value);
-      } catch (e) {
-        e;
-      }
-      if (j) {
-        for (const k in j) {
-          this.$set(this.testData.param, k, j[k]);
+      if (this.rowData.type !== 'raw') {
+        try {
+          j = JSON.parse(value);
+          this.$set(this.testData, 'param', j);
+          this.$forceUpdate();
+        } catch (e) {
+          e;
         }
+      } else {
+        this.$set(this.testData, 'param', value);
         this.$forceUpdate();
       }
     },
@@ -272,7 +273,7 @@ export default {
       this.testData.authData = authData;
     },
     async executeTest() {
-      let header = null;
+      let header = {};
       if (this.rowData.apiType == 'custom') {
         //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
         const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
@@ -283,6 +284,9 @@ export default {
         if (this.testData.authData.method == 'get') {
           header.type = 'get';
         }
+      }
+      if (this.rowData.type === 'raw') {
+        header['Content-Type'] = 'text/plain';
       }
       this.$api.framework.apiManage
         .test(this.testData.token, this.testData.param, header)
