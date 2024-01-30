@@ -44,18 +44,18 @@ const apiManage = {
       const re = /\{([^\}]+)?\}/g;
       let match;
       // eslint-disable-next-line no-cond-assign
-      while (match = re.exec(token)) {
+      while ((match = re.exec(token))) {
         token = token.replace(match[0], params[match[1]]);
       }
     }
-    return axios.post(token, params, {headers: header || {}, responseType: 'blob', contentType: 'multipart/form-data'});
+    return axios.post(token, params, { headers: header || {}, responseType: 'blob', contentType: 'multipart/form-data' });
   },
   test(token, params, header) {
     if (token.indexOf('{') > -1) {
       const re = /\{([^\}]+)?\}/g;
       let match;
       // eslint-disable-next-line no-cond-assign
-      while (match = re.exec(token)) {
+      while ((match = re.exec(token))) {
         token = token.replace(match[0], params[match[1]]);
       }
     }
@@ -77,9 +77,9 @@ const apiManage = {
           url = token;
         }
 
-        return axios.get(url, {headers: header});
+        return axios.get(url, { headers: header });
       } else {
-        return axios.post(token, params, {headers: header});
+        return axios.post(token, params, { headers: header });
       }
     }
     return axios.post(token, params);
