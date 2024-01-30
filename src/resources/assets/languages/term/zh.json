@@ -200,7 +200,13 @@
     "topotemplate": "拓扑模板",
     "selectagain": "重新选择",
     "topotype": "展开方式",
-    "tooltipscope": "仅在配置项列表、编辑和详情页面生效"
+    "tooltipscope": "仅在配置项列表、编辑和详情页面生效",
+    "dataconversionsetting": "转换配置",
+    "appendrel": "追加关系",
+    "replacerel": "替换关系",
+    "relationaltable": "关联表格",
+    "relationalcondition": "关联条件",
+    "relationalpretable": "关联上层表格"
   },
   "process": {
     "workordercenter": "工单中心",

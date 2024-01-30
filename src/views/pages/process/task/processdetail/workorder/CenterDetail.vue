@@ -159,6 +159,19 @@
             <!-- eoa -->
           </div>
         </TabPane>
+        <TabPane
+          v-if="fixedPageTab.dataconversion && $slots.dataconversion"
+          :label="render => renderTabPaneLabel(render, 'dataconversion', '数据转换')"
+          name="dataconversion"
+          class="tab-content"
+          tab="tab1"
+        >
+          <div class="padding">
+            <!--数据转换 -->
+            <slot name="dataconversion"></slot>
+            <!-- 数据转换 -->
+          </div>
+        </TabPane>
         <template v-for="subStep in taskConfigList">
           <TabPane
             v-if="fixedPageTab[`subTask${subStep.id}`]"
@@ -359,6 +372,15 @@
           <slot name="eoa"></slot>
         </div>
       </template>
+      <template v-else-if="item.tabValue == 'dataconversion'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot name="dataconversion"></slot>
+        </div>
+      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -494,7 +516,8 @@ export default {
         autoexec: true,
         automatic: true, // 自动处理节点
         cmdbsync: true,
-        eoa: true
+        eoa: true,
+        dataconversion: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],

@@ -200,7 +200,13 @@
     "grouptypedescreadonly": "Read only: View configuration items, which can be used as the execution target for the query class combination tool in automation.",
     "grouptypedescmaintain": "Maintenance: Add modifications to configuration items based on read-only permissions.",
     "grouptypedescautoexec": "Automated operations: On the basis of read-only permissions, add execution targets that can be used as a combination tool for operations in automation",
-    "tooltipscope": "Only effective on configuration item list, editing, and detail pages"
+    "tooltipscope": "Only effective on configuration item list, editing, and detail pages",
+    "dataconversionsetting": "Conversion Configuration",
+    "appendrel": "Append relationship",
+    "replacerel": "Replace Relationship",
+    "relationaltable": "Associated Table",
+    "relationalcondition": "Associated conditions",
+    "relationalpretable": "Associate with upper level table"
   },
   "process": {
     "workordercenter": "Work Center",
