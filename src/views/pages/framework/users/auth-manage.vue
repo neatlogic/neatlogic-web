@@ -170,7 +170,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
- 
     getAuthGrouplist() {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
@@ -188,8 +187,13 @@ export default {
       });
       let data = {
         groupName: this.searchVal.groupName,
-        defaultValue: this.$utils.uniqueArr(defaultValueList)
+        defaultValue: this.$utils.uniqueArr(defaultValueList),
+        keyword: this.searchVal.keyword
       };
+      if (this.$utils.isEmpty(this.searchVal)) {
+        // 全部删除后，设置默认所有
+        this.handleDefaultValueConfig();
+      }
       this.loadingShow = true;
       this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
