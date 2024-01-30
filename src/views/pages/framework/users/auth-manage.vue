@@ -11,25 +11,25 @@
               v-bind="searchConfig"
               @change="(val) => searchAuthData(val)"
             >
-              <template v-slot:menuName="{valueConfig, textConfig}">
+              <template v-slot:defaultValue="{valueConfig, textConfig}">
                 <TsFormSelect
-                  v-model="valueConfig.menuName"
-                  v-bind="menuNameConfig"
+                  v-model="valueConfig.defaultValue"
+                  v-bind="defaultValueConfig"
                   @change="(val, selectedList) => {
                     if (!$utils.isEmpty(selectedList)) {
-                      $set(textConfig, 'menuName', selectedList.map(item => item.text));
+                      $set(textConfig, 'defaultValue', selectedList.map(item => item.text));
                     } else {
-                      $delete(textConfig, 'menuName');
-                      $delete(valueConfig, 'menuName');
+                      $delete(textConfig, 'defaultValue');
+                      $delete(valueConfig, 'defaultValue');
                     }
                     isFlag = false;
                   }"
                   @change-label="(label) => {
-                    if ($utils.isEmpty(label) || ($utils.isEmpty(valueConfig.groupName) && valueConfig.menuName && isFlag)) {
-                      $delete(textConfig, 'menuName');
-                      $delete(valueConfig, 'menuName');
+                    if ($utils.isEmpty(label) || ($utils.isEmpty(valueConfig.groupName) && valueConfig.defaultValue && isFlag)) {
+                      $delete(textConfig, 'defaultValue');
+                      $delete(valueConfig, 'defaultValue');
                     } else {
-                      $set(textConfig, 'menuName', label);
+                      $set(textConfig, 'defaultValue', label);
                     }
                   }"
                 >
@@ -90,7 +90,7 @@ export default {
       defaultMenuList: [],
       authGroupList: [],
       searchVal: {},
-      menuNameConfig: {
+      defaultValueConfig: {
         dataList: [],
         search: true,
         multiple: true,
@@ -113,14 +113,14 @@ export default {
             onChange: (groupName) => {
               this.handleDefaultValueConfig(groupName);
               this.isFlag = true;
-              if (!this.$utils.isEmpty(this.searchVal.menuName)) {
-                this.$delete(this.searchVal, 'menuName');
+              if (!this.$utils.isEmpty(this.searchVal.defaultValue)) {
+                this.$delete(this.searchVal, 'defaultValue');
               }
             }
           },
           {
             type: 'slot',
-            name: 'menuName',
+            name: 'defaultValue',
             label: this.$t('page.menuname')
           }
         ]
@@ -182,7 +182,7 @@ export default {
     searchAuthData() {
       let defaultValueList = [];
       this.defaultMenuList.forEach((item) => {
-        if (item && item.value && this.searchVal.menuName && this.searchVal.menuName.includes(item.value) && item.authority) {
+        if (item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority) {
           defaultValueList.push(...item.authority.split(','));
         }
       });
@@ -250,9 +250,9 @@ export default {
     },
     handleDefaultValueConfig(groupName) {
       if (this.$utils.isEmpty(groupName) || groupName == 'all') {
-        this.menuNameConfig.dataList = this.defaultMenuList;
+        this.defaultValueConfig.dataList = this.defaultMenuList;
       } else {
-        this.menuNameConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+        this.defaultValueConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
       }
     },
     getCommercialRouter() {
