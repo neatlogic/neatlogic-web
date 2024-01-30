@@ -1,7 +1,6 @@
 <template>
   <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    {{ searchVal }}
     <TsContain>
       <template slot="topRight">
         <TsRow>
@@ -16,14 +15,29 @@
                 <TsFormSelect
                   v-model="valueConfig.menuName"
                   v-bind="menuNameConfig"
-                  @change="(val, selectedList) => changeDefault(valueConfig, textConfig, selectedList)"
-                  @change-label="(label) => changeLabel(valueConfig, textConfig, label)"
+                  @change="(val, selectedList) => {
+                    if (!$utils.isEmpty(selectedList)) {
+                      $set(textConfig, 'menuName', selectedList.map(item => item.text));
+                    } else {
+                      $delete(textConfig, 'menuName');
+                      $delete(valueConfig, 'menuName');
+                    }
+                    isFlag = false;
+                  }"
+                  @change-label="(label) => {
+                    if ($utils.isEmpty(label) || ($utils.isEmpty(valueConfig.groupName) && valueConfig.menuName && isFlag)) {
+                      $delete(textConfig, 'menuName');
+                      $delete(valueConfig, 'menuName');
+                    } else {
+                      $set(textConfig, 'menuName', label);
+                    }
+                  }"
                 >
                   <template v-slot:option="{item}">
                     <Tooltip placement="right">
                       <div>{{ item.text }}</div>
                       <div slot="content">
-                        {{ item.text }}
+                        {{ item.menuName }}
                       </div>
                     </Tooltip>
                   </template>
@@ -70,6 +84,7 @@ export default {
   props: {},
   data() {
     return {
+      isFlag: false, // 作为标识，联动改变时，是否需要删除对应联动的值
       groupName: '',
       loadingShow: true,
       defaultMenuList: [],
@@ -96,13 +111,11 @@ export default {
             transfer: true,
             rootName: 'groupList',
             onChange: (groupName) => {
-              if (this.$utils.isEmpty(groupName) || groupName == 'all') {
-                this.menuNameConfig.dataList = this.defaultMenuList;
-              } else {
-                this.menuNameConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+              this.handleDefaultValueConfig(groupName);
+              this.isFlag = true;
+              if (!this.$utils.isEmpty(this.searchVal.menuName)) {
+                this.$delete(this.searchVal, 'menuName');
               }
-              this.$set(this.searchVal, 'menuName', []);
-              console.log('groupName', groupName, this.searchVal);
             }
           },
           {
@@ -157,22 +170,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeDefault(valueConfig, textConfig, selectedList) {
-      console.log('change', valueConfig, textConfig, selectedList);
-      if (!this.$utils.isEmpty(selectedList)) {
-        this.$set(textConfig, 'menuName', selectedList.map(item => item.text));
-      } else {
-        this.$delete(textConfig, 'menuName');
-      }
-    },
-    changeLabel(valueConfig, textConfig, label) {
-      console.log('label', valueConfig, textConfig, label);
-      if (this.$utils.isEmpty(label)) {
-        this.$delete(textConfig, 'menuName');
-      } else if (!this.$utils.isEmpty(label)) {
-        this.$set(textConfig, 'menuName', label);
-      }
-    },
+ 
     getAuthGrouplist() {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
@@ -192,7 +190,6 @@ export default {
         groupName: this.searchVal.groupName,
         defaultValue: this.$utils.uniqueArr(defaultValueList)
       };
-      console.log('搜索接口', data);
       this.loadingShow = true;
       this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
@@ -240,6 +237,7 @@ export default {
               menuList.push({
                 text: `${item.meta.title}`,
                 value: `${item.name}_${item.path}_${key}`,
+                menuName: this.getMenuName(key, item.meta.title),
                 groupName: key,
                 authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
               });
@@ -248,7 +246,14 @@ export default {
         }
       }
       this.defaultMenuList = this.$utils.deepClone(menuList);
-      this.menuNameConfig.dataList = menuList;
+      this.handleDefaultValueConfig(this.searchVal.groupName);
+    },
+    handleDefaultValueConfig(groupName) {
+      if (this.$utils.isEmpty(groupName) || groupName == 'all') {
+        this.menuNameConfig.dataList = this.defaultMenuList;
+      } else {
+        this.menuNameConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+      }
     },
     getCommercialRouter() {
       //商业版模块
@@ -275,12 +280,12 @@ export default {
   },
   filter: {},
   computed: {
-    // getMenuName() {
-    //   return (item) => {
-    //     let groupName = this.authGroupList.find((v) => v.value == item.groupName);
-    //     return groupName && groupName.text ? `${item.text}(${groupName.text})` : item.text; 
-    //   };
-    // }
+    getMenuName() {
+      return (groupName, text) => {
+        let menuName = this.authGroupList.find((v) => v.value == groupName);
+        return menuName && menuName.text ? `${text}(${menuName.text})` : text; 
+      };
+    }
   },
   watch: {}
 };
