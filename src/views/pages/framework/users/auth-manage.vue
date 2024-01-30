@@ -10,18 +10,18 @@
               v-if="!$utils.isEmpty(defaultMenuList)"
               v-model="searchVal"
               v-bind="searchConfig"
-              @change="searchAuthData()"
+              @change="(val) => searchAuthData(val)"
             >
               <template v-slot:menuName="{valueConfig, textConfig}">
                 <TsFormSelect
                   v-model="valueConfig.menuName"
                   v-bind="menuNameConfig"
-                  @change="(val) => changeDefault(valueConfig, textConfig, val)"
+                  @change="(val, selectedList) => changeDefault(valueConfig, textConfig, selectedList)"
                   @change-label="(label) => changeLabel(valueConfig, textConfig, label)"
                 >
                   <template v-slot:option="{item}">
                     <Tooltip placement="right">
-                      <span>{{ item.text }}</span>
+                      <div>{{ item.text }}</div>
                       <div slot="content">
                         {{ item.text }}
                       </div>
@@ -83,6 +83,7 @@ export default {
       },
       searchConfig: {
         search: true,
+        searchMode: 'clickBtnSearch',
         placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
         searchList: [
           {
@@ -100,7 +101,8 @@ export default {
               } else {
                 this.menuNameConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
               }
-              console.log('groupName', groupName, this.searchVal, this.menuNameConfig.dataList);
+              this.$set(this.searchVal, 'menuName', []);
+              console.log('groupName', groupName, this.searchVal);
             }
           },
           {
@@ -143,7 +145,7 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    // await this.getAuthGrouplist();
+    await this.getAuthGrouplist();
     this.getRouterConfig();
     this.searchAuthData();
   },
@@ -155,24 +157,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeDefault(valueConfig, textConfig, val) {
-      console.log(valueConfig, textConfig, this.searchVal.groupName);
-      if (!this.$utils.isEmpty(val)) {
-        this.$set(textConfig, 'menuName', val);
+    changeDefault(valueConfig, textConfig, selectedList) {
+      console.log('change', valueConfig, textConfig, selectedList);
+      if (!this.$utils.isEmpty(selectedList)) {
+        this.$set(textConfig, 'menuName', selectedList.map(item => item.text));
       } else {
         this.$delete(textConfig, 'menuName');
       }
     },
     changeLabel(valueConfig, textConfig, label) {
       console.log('label', valueConfig, textConfig, label);
-      if (this.$utils.isEmpty(this.searchVal.groupName)) {
-        this.$delete(this.searchVal, 'menuName');
-        return false;
-      }
-      if (!this.$utils.isEmpty(label)) {
-        this.$set(textConfig, 'menuName', label);
-      } else {
+      if (this.$utils.isEmpty(label)) {
         this.$delete(textConfig, 'menuName');
+      } else if (!this.$utils.isEmpty(label)) {
+        this.$set(textConfig, 'menuName', label);
       }
     },
     getAuthGrouplist() {
@@ -190,11 +188,11 @@ export default {
           defaultValueList.push(...item.authority.split(','));
         }
       });
-      console.log('搜索', this.searchVal);
       let data = {
         groupName: this.searchVal.groupName,
         defaultValue: this.$utils.uniqueArr(defaultValueList)
       };
+      console.log('搜索接口', data);
       this.loadingShow = true;
       this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
