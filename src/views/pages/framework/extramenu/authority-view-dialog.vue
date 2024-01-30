@@ -11,7 +11,6 @@
     >
       <template v-slot>
         <div>
-          <Loading :loadingShow="loadingShow" type="fix"></Loading>
           <TsContain>
             <template slot="topRight">
               <TsRow>
@@ -21,7 +20,7 @@
                     :dataList="groupList"
                     :placeholder="$t('form.placeholder.pleaseselect',{'target':$t('page.module')})"
                     border="border"
-                    @change="changeGroup"
+                    @change="searchKeyword"
                   ></TsFormSelect>
                 </Col>
                 <Col span="18">
@@ -57,7 +56,6 @@ export default {
   props: {},
   data() {
     return {
-      loadingShow: false,
       isShow: true,
       moduleName: '',
       keyword: '',
@@ -142,7 +140,7 @@ export default {
                 module: key,
                 moduleName: this.handleModuleName(key),
                 menuName: item.name ? (item.meta.title ? `${item.meta.title}(${item.name})` : item.name) : '',
-                authority: item.meta.authority
+                authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
               });
             }
           });
@@ -172,41 +170,27 @@ export default {
       });
       return routerConfig;
     },
-    changeGroup(groupName) {
-      this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
-      if (!this.$utils.isEmpty(groupName)) {
-        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.module === groupName
-        );
-      } else if (!this.$utils.isEmpty(this.keyword)) {
-        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.moduleName.indexOf(this.keyword) != -1 || item.menuName.indexOf(this.keyword) != -1 || item.authority.indexOf(this.keyword) != -1
-        );
-      }
-    },
     handleModuleName(module) {
       let moduleConfig = this.groupList.find((item) => item.value == module);
       if (moduleConfig) {
         return `${moduleConfig.text}(${moduleConfig.value})`;
       }
     },
-    searchKeyword(keyword) {
-      if (this.$utils.isEmpty(keyword)) {
-        this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
-        if (this.moduleName) {
-          this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-            item.moduleName.indexOf(this.moduleName) != -1 
-          );
-        }
+    searchKeyword() {
+      let keyword = this.keyword ? this.keyword.toUpperCase() : '';
+      this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
+      if (this.$utils.isEmpty(keyword) && !this.$utils.isEmpty(this.moduleName)) {
+        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
+          item.moduleName.indexOf(this.moduleName) != -1 
+        );
         return false;
       }
+      this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
+        item.moduleName.indexOf(keyword) != -1 || item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1
+      );
       if (this.moduleName) {
         this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.moduleName.indexOf(this.moduleName) != -1 && (item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1) 
-        );
-      } else {
-        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.moduleName.indexOf(keyword) != -1 || item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1
+          item.moduleName.indexOf(this.moduleName) != -1
         );
       }
     }

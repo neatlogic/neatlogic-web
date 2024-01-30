@@ -76,7 +76,7 @@
                 ></CiDetailAttrList>
                 <Divider v-if="!ciData.isVirtual && attrList && attrList.length > 0" />
                 <TsForm
-                  v-if="!ciData.isVirtual && attrList && attrList.length > 0"
+                  v-if="!ciData.isVirtual && attrList && attrList.length > 0 && !isLoading"
                   ref="formCi"
                   style="margin-top: 10px"
                   :item-list="attrFormConfig"
@@ -93,7 +93,7 @@
                 ></CiDetailRelList>
               </TabPane>
               <TabPane
-                v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0"
+                v-if="!ciData.isVirtual && globalAttrData && globalAttrData && globalAttrData.length > 0"
                 name="global"
                 class="pt-nm pl-nm pr-nm"
                 :label="$t('term.cmdb.globalattr')"
@@ -171,7 +171,6 @@ export default {
       ciId: parseInt(this.$route.params['id']),
       attrFormConfig: {
         nameAttrId: {
-          name: 'nameAttrId',
           type: 'radio',
           label: this.$t('term.cmdb.nameattribute'),
           tooltip: this.$t('form.help.nameattribute'),
@@ -248,10 +247,13 @@ export default {
         }
       });
     },
-    updateCiNameAttrId: function(attrId) {
+    updateCiNameAttrId(attrId) {
       this.$api.cmdb.ci.updateCiNameAttrId(this.ciId, attrId).then(res => {
-        if (res.Status == 'OK') {
+        if (res.Status === 'OK') {
           this.$set(this.ciData, 'nameAttrId', attrId);
+          this.$set(this.attrFormConfig.nameAttrId, 'value', attrId);
+          //必须要有，否则radio无法更新value
+          this.$refs['formCi'].$forceUpdate();
           this.$Message.success(this.$t('message.savesuccess'));
         }
       });
@@ -307,12 +309,12 @@ export default {
       });
     },
     async getGlobalAttr() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.globalAttrData = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.$set(this.attrData, 'tbodyList', res.Return);
         this.attrList = res.Return;
         const attrList = res.Return;
@@ -332,7 +334,7 @@ export default {
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         const relMap = new Map();
         this.$set(
           this.relData,

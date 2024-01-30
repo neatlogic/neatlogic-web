@@ -15,6 +15,9 @@ const mq = {
   listTopic() {
     return axios.post('/api/rest/mq/topic/list', {});
   },
+  saveTopic(params) {
+    return axios.post('/api/rest/mq/topic/save', params);
+  },
   toggleTopicActive(param) {
     return axios.post('/api/rest/mq/topic/toggleactive', param);
   },

@@ -23,7 +23,7 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
   props: {
-    attrData: { type: Object }
+    attrData: { type: Array }
   },
   data() {
     return {};
@@ -43,7 +43,7 @@ export default {
   filter: {},
   computed: {
     attrDataList: function() {
-      let tmp = this.attrData;
+      let tmp = {};
       tmp.theadList = [
         {
           title: this.$t('page.uniquekey'),
@@ -54,10 +54,15 @@ export default {
           key: 'label'
         },
         {
+          title: this.$t('page.alias'),
+          key: 'alias'
+        },
+        {
           title: this.$t('page.option'),
           key: 'itemList'
         }
       ];
+      tmp.tbodyList = this.attrData;
       return tmp;
     }
   },

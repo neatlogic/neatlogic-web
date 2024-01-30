@@ -100,8 +100,8 @@
             </Col>
             <Col v-for="attr in globalAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">
-                  <span class="tsfont-internet">{{ attr.label }}</span>
+                <Col span="6" class="search-label text-grey tsfont-internet">
+                  {{ attr.label }}
                 </Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
@@ -1207,7 +1207,7 @@ export default {
       }
       return list;
     },
-    finalHeaderList: function() {
+    finalHeaderList() {
       let finalList = [];
       if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
         this.ciEntityData.theadList.forEach(element => {
@@ -1218,11 +1218,9 @@ export default {
       }
       return finalList;
     },
-    searchAttrList: function() {
+    searchAttrList() {
       if (this.attrList && this.attrList.length > 0) {
-        return this.attrList.filter(attr => {
-          return attr.canSearch == 1;
-        });
+        return this.attrList.filter(attr => attr.canSearch && attr.isSearchAble);
       } else {
         return null;
       }

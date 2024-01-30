@@ -1,15 +1,16 @@
 <template>
   <div class="OverviewMenu menu_link">
-    <ul>
+    <ul v-if="$AuthUtils.hasRole('PROCESS_BASE')">
       <li class="link">
         <a href="javascript:void(0)" class="tsfont-plus text-primary" @click="openWorkOrderDialog">
           <span class="text-primary">{{ $t('page.build') }}</span>
         </a>
       </li>
     </ul>
-    <div class="title text-grey">{{ $t('router.process.workordercenter') }}</div>
-    <div v-if="workcenterList">
-      <ul v-if="workcenterList.length > 0" class="navlist-ul">
+    <Loading v-if="loadingShow" :loadingShow="loadingShow"></Loading>
+    <template v-if="!$utils.isEmpty(workcenterList)">
+      <div class="title text-grey">{{ $t('router.process.workordercenter') }}</div>
+      <ul class="navlist-ul">
         <li v-for="ditem in workcenterList" :key="ditem.uuid">
           <div v-if="ditem.catalogName" :title="ditem.catalogName" class="overflow title text-grey subtitle-padding">{{ ditem.catalogName }}</div>
           <draggable
@@ -61,13 +62,7 @@
           </draggable>
         </li>
       </ul>
-      <div v-else>
-        <NoData></NoData>
-      </div>
-    </div>
-    <div v-else>
-      <Loading loadingShow></Loading>
-    </div>
+    </template>
     <AuthDialog v-if="editAuthorizationDialog" :uuid="currentWorkcenterUuid" @close="closeAuthorizationDialog"></AuthDialog>
     <RenameDialog v-if="editRenameDialog" :uuid="currentWorkcenterUuid" @close="closeRenameDialog"></RenameDialog>
     <WorkOrderDialog v-if="isShowWorkOrderDialog" @close="closeWorkOrderDialog"></WorkOrderDialog>
@@ -90,11 +85,10 @@ export default {
   extends: LeftMenu,
   props: {},
   data() {
-    let _this = this;
     return {
+      loadingShow: true,
       isShowWorkOrderDialog: false,
       showMode: 'table',
-      timer: null, //定时器
       workcenterList: null, //左侧列表
       editRenameDialog: false, //重命名弹框
       editAuthorizationDialog: false, //授权弹框
@@ -104,10 +98,8 @@ export default {
       defaultSupport: null, // 默认使用范围
       menuUuid: '', //弹框uuid
       currentWorkcenterUuid: '', //当前编辑的工单中心Uuid
-      selectLi: 0,
       uuid: '',
       selectedUuid: null, //标志实际选中哪一个，用于做选中效果
-      refreshTimer: 5, //定时刷新时间，单位：秒 ,之前是30
       menuCatalogList: [], // 编辑菜单类型列表
       catalogId: null, // 编辑菜单类型id
       catalogName: '' // 编辑菜单类型名称
@@ -300,7 +292,7 @@ export default {
       return this.$store.dispatch('leftMenu/getWorkCenterMenuData');
     },
     async initData(action) {
-      if (action) {
+      if (action && this.$AuthUtils.hasRole('PROCESS_BASE')) {
         await this.getWorkCenterTypeMenu();
       }
       // let workCenterMenuData = this.workCenterMenuData || {};
@@ -309,6 +301,7 @@ export default {
       this.workcenterList.forEach(function(d, i) {
         d.index = i;
       });
+      this.loadingShow = false;
       if (action === 'first') {
         this.$router.push({ name: 'task-overview', params: { taskTypeid: workcenterList[0].uuid } });
       }

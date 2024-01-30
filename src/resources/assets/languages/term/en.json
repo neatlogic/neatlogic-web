@@ -206,7 +206,11 @@
     "replacerel": "Replace Relationship",
     "relationaltable": "Associated Table",
     "relationalcondition": "Associated conditions",
-    "relationalpretable": "Associate with upper level table"
+    "relationalpretable": "Associate with upper level table",
+    "searchable": "Allow search",
+    "pushmqhelp": "Publish this property to MQ when configuration items change",
+    "searchablehelp": "Allowed search attributes can be used as filter conditions in advanced searches or connected to other model's searchable attributes in custom data views",
+    "topicci": "Subscription model"
   },
   "process": {
     "workordercenter": "Work Center",

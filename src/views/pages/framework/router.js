@@ -544,7 +544,7 @@ export default [
       title: $t('router.framework.auditmanage'),
       ismenu: true,
       icon: 'tsfont-center',
-      authority: 'INTERFACE_MODIFY',
+      authority: 'API_AUDIT_VIEW',
       type: 'others'
     }
   },
@@ -676,7 +676,7 @@ export default [
       title: $t('router.framework.licensemanage'),
       ismenu: true,
       icon: 'tsfont-plugin',
-      authority: 'ADMIN',
+      authority: 'LICENSE_MODIFY',
       type: 'license'
     }
   },
