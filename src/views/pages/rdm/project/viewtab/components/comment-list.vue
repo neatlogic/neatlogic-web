@@ -188,7 +188,7 @@ export default {
 <style lang="less" scoped>
 .comment-grid {
   display: grid;
-  grid-template-columns: 50px auto;
+  grid-template-columns: 50px calc(100% - 50px - 20px); // auto时，由内容撑开，不受父级元素的影响，导致图片没有自适应宽度
   grid-gap: 20px;
 }
 .comment-content {
