@@ -575,3 +575,4 @@
 .tsfont-top:before { content: '\ea3c'; } /* '' */
 .tsfont-ts:before { content: '\ea3d'; } /* '' */
 .tsfont-paste:before { content: '\ea3e'; } /* '' */
+.tsfont-dataconversion:before { content: '\ea3f'; } /* '' */
