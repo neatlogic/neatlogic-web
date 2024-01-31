@@ -971,5 +971,7 @@
   "dragfilehere": "Please drag the attachment here",
   "clickanddragfile": "Click or drag to upload",
   "Initiate": "launch",
-  "opinions": "view"
+  "opinions": "view",
+  "menuname": "Menu Name",
+  "acolumn": "One column"
 }

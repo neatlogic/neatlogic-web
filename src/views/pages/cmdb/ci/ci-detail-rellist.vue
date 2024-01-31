@@ -72,7 +72,8 @@
                 <i :class="row.fromCiIcon"></i>
               </div>
               <div class="overflow">
-                {{ row.fromCiLabel }}
+                <span>{{ row.fromCiLabel }}</span>
+                <span v-if="row.direction === 'to'" class="text-grey">({{ row.alias }})</span>
               </div>
               <div class="overflow text-grey" style="font-size: 12px">{{ row.fromGroupName }}</div>
             </div>
@@ -87,7 +88,8 @@
                 <i :class="row.toCiIcon"></i>
               </div>
               <div class="overflow">
-                {{ row.toCiLabel }}
+                <span>{{ row.toCiLabel }}</span>
+                <span v-if="row.direction === 'from'" class="text-grey">({{ row.alias }})</span>
               </div>
               <div class="overflow text-grey" style="font-size: 12px">{{ row.toGroupName }}</div>
             </div>
@@ -156,8 +158,7 @@ export default {
     finalRelList() {
       const relList = [];
       this.relData.cardList.forEach(rel => {
-        if ((!this.noExtended || (this.noExtended && !rel.isExtended)) &&
-        (!this.directionType || this.directionType === rel.direction)) {
+        if ((!this.noExtended || (this.noExtended && !rel.isExtended)) && (!this.directionType || this.directionType === rel.direction)) {
           relList.push(rel);
         }
       });

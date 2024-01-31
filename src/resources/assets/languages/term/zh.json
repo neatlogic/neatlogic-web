@@ -200,7 +200,17 @@
     "topotemplate": "拓扑模板",
     "selectagain": "重新选择",
     "topotype": "展开方式",
-    "tooltipscope": "仅在配置项列表、编辑和详情页面生效"
+    "tooltipscope": "仅在配置项列表、编辑和详情页面生效",
+    "dataconversionsetting": "转换配置",
+    "appendrel": "追加关系",
+    "replacerel": "替换关系",
+    "relationaltable": "关联表格",
+    "relationalcondition": "关联条件",
+    "relationalpretable": "关联上层表格",
+    "searchable": "允许搜索",
+    "pushmqhelp": "配置项发生变化时发布此属性到MQ",
+    "searchablehelp": "允许搜索的属性可以在高级搜索中作为过滤条件，也能在自定义数据视图中连接其他模型的可搜索属性",
+    "topicci": "订阅模型"
   },
   "process": {
     "workordercenter": "工单中心",

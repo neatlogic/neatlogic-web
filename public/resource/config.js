@@ -82,9 +82,17 @@ function getDirectUrl() {
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        const data = JSON.parse(xhr.responseText);
-        if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
-          COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+        const responseText = xhr.responseText;
+        if (responseText) {
+          // 空判断，判断字符串是否为空
+          try {
+            const data = JSON.parse(responseText);
+            if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
+              COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+            }
+          } catch (error) {
+            console.error('JSON 解析出错:', error.message);
+          }
         }
       } else if (xhr.status === 522) {
         const responseText = JSON.parse(xhr.responseText);
@@ -99,7 +107,7 @@ function getDirectUrl() {
 
     xhr.send();
   } catch (error) {
-    console.error(error);
+    console.error('JSON解析出错', error);
   }
 }
 
@@ -110,23 +118,26 @@ async function getSsoTokenKey() {
   xhr.send();
 
   if (xhr.status === 200) {
-    var responseText = JSON.parse(xhr.responseText);
-
-    if (responseText && responseText.Status === 'OK') {
-      SSOTICKETKEY = responseText.ssoTicketKey || '';
-      AUTHTYPE = responseText.authType || '';
-      ISNEEDAUTH = responseText.isNeedAuth || false;
-      if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
-        const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
-        if (queryString) {
-          SSOTICKETVALUE = queryString.split('&')[0];
+    try {
+      var responseText = JSON.parse(xhr.responseText);
+      if (responseText && responseText.Status === 'OK') {
+        SSOTICKETKEY = responseText.ssoTicketKey || '';
+        AUTHTYPE = responseText.authType || '';
+        ISNEEDAUTH = responseText.isNeedAuth || false;
+        if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
+          const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
+          if (queryString) {
+            SSOTICKETVALUE = queryString.split('&')[0];
+          }
         }
+        if (ISNEEDAUTH) {
+          getDirectUrl();
+        }
+      } else if (responseText && responseText.Status !== 'OK') {
+        window.location.href = '/404.html';
       }
-      if(ISNEEDAUTH){
-        getDirectUrl();
-      }
-    } else if (responseText && responseText.Status !== 'OK') {
-      window.location.href = '/404.html';
+    } catch (error) {
+      console.error('configjs', error);
     }
   } else if (xhr.status === 500) {
     window.location.href = '/404.html';

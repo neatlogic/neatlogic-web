@@ -84,6 +84,7 @@ export function initRouter(VueRouter, store) {
        *
        */
       await gettingUserInfo;
+      await gettingModuleList;
       let auth = to.meta ? to.meta.authority : [];
       auth = typeof auth == 'string' ? (auth.trim() ? [auth.trim()] : []) : auth; //字符串转数组，主要是兼容string array两种情况的数据
       if (!auth || !auth.length || utils.checkHasSomeitem(store.getters.userAuthList, auth)) {

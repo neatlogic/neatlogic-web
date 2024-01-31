@@ -337,6 +337,27 @@ let valid = {
     }
     return validList;
   },
+  dataconversion(nodeConfig, d, that) {
+    //dataconversion
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let dataConversionConfig = nodeData.dataConversionConfig || {};
+    if (nodeConfig.handler === 'dataconversion') {
+      if (!dataConversionConfig.failPolicy) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
+          href: '#dataConversionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(dataConversionConfig.configList)) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('term.cmdb.modemapping') }),
+          href: '#dataConversionConfig'
+        });
+      }
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];

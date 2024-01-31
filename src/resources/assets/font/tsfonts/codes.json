@@ -3442,5 +3442,11 @@
     "css": "tsfont-paste",
     "hexCodepoint": "0xea3e",
     "codepoint": 59966
+  },
+  {
+    "name": "dataconversion",
+    "css": "tsfont-dataconversion",
+    "hexCodepoint": "0xea3f",
+    "codepoint": 59967
   }
 ]

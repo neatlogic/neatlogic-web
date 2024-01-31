@@ -16,9 +16,6 @@ export default {
   getUser(data) {
     return axios.post('/api/rest/user/get', data);
   },
-  getUserCopy(data) {
-    return axios.post('/api/rest/user/get', data);
-  },
   //删除用户Api
   deleteUser(data) {
     return axios.post('/api/rest/user/delete', data);

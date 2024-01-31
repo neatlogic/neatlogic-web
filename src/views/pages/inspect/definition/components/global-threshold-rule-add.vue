@@ -263,7 +263,7 @@ export default {
         }
       );
     },
-    delRow(index) {
+    delRow(item, index) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('term.inspect.deleteglobalruleconfirm'),

@@ -109,7 +109,7 @@ export default {
       };
     },
     initExtramenu() {
-      this.$api.framework.extramenu.getMenuList().then(res => {
+      this.$api.framework && this.$api.framework.extramenu.getMenuList().then(res => { // 修复用户权限加载快，$api没有挂载好，extramenu拿不到问题
         if (res.Status === 'OK') {
           this.extramenu = res.Return || {};
         }

@@ -22,10 +22,12 @@
                 @on-change="toggleTopicActive(row)"
               ></TsFormSwitch>
             </li>
+            <li @click="editTopic(row)">{{ $t('page.edit') }}</li>
           </ul>
         </div>
       </template>
     </TsTable>
+    <MqTopicEdit v-if="isShowEdit" :topic="currentTopic" @close="closeTopicEdit"></MqTopicEdit>
   </div>
 </template>
 <script>
@@ -33,11 +35,14 @@ export default {
   name: '',
   components: { 
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve), 
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve) 
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
+    MqTopicEdit: resolve => require(['@/views/pages/framework/mq/mq-topic-edit.vue'], resolve)
   },
   props: {},
   data() {
     return {
+      isShowEdit: false,
+      currentTopic: null,
       topicData: {
         theadList: [
           { key: 'name', title: this.$t('page.uniquekey') },
@@ -62,6 +67,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    editTopic(topic) {
+      this.isShowEdit = true;
+      this.currentTopic = topic;
+    },
+    closeTopicEdit(needRefresh) {
+      this.isShowEdit = false;
+      this.currentTopic = null;
+      if (needRefresh) {
+        this.listTopic();
+      }
+    },
     toggleTopicActive(topic) {
       this.$api.framework.mq.toggleTopicActive(topic).then(res => {
         if (res.Status == 'OK') {

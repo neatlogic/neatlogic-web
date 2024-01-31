@@ -26,9 +26,7 @@ Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$localStore = new LocalStore('knowledge', router);
-
-// eslint-disable-next-line space-before-function-paren
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   let title = to.meta.title ? to.meta.title : to.name || to.path;
   document.title = $t(title);
   let usertoken = Vue.prototype.$utils.getCookie('neatlogic_authorization');

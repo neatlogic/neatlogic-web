@@ -4,18 +4,36 @@
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
           <template v-slot:isRequired>
-            <div>
-              <i-switch v-model="attrData.isRequired" :true-value="1" :false-value="0"></i-switch>
-            </div>
+            <TsFormSwitch
+              v-model="attrData.isRequired"
+              :true-value="1"
+              :false-value="0"
+            ></TsFormSwitch>
           </template>
           <template v-slot:isUnique>
+            <TsFormSwitch
+              v-model="attrData.isUnique"
+              :true-value="1"
+              :false-value="0"
+            ></TsFormSwitch>
+          </template>
+          <template v-slot:isSearchAble>
             <div>
-              <i-switch v-model="attrData.isUnique" :true-value="1" :false-value="0"></i-switch>
+              <TsFormSwitch
+                v-model="attrData.isSearchAble"
+                :true-value="1"
+                :false-value="0"
+              ></TsFormSwitch>
+              <div class="text-grey">{{ $t('term.cmdb.searchablehelp') }}</div>
             </div>
           </template>
           <template v-slot:inputType>
             <div>
-              <i-switch v-model="attrData.inputType" :true-value="'at'" :false-value="'mt'"></i-switch>
+              <TsFormSwitch
+                v-model="attrData.inputType"
+                :true-value="'at'"
+                :false-value="'mt'"
+              ></TsFormSwitch>
               <div class="text-tip tips">{{ $t('message.cmdb.autoattr') }}</div>
             </div>
           </template>
@@ -60,15 +78,14 @@
 </template>
 <script>
 import * as handlers from './attrhandler/config';
-import TsForm from '@/resources/plugins/TsForm/TsForm';
-import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 
 export default {
   name: '',
   components: {
     ...handlers,
-    TsForm,
-    TsFormInput
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
   },
   props: {
     id: {
@@ -164,6 +181,12 @@ export default {
           type: 'slot',
           label: this.$t('page.autocollect')
         },
+        isSearchAble: {
+          _belong: 'normal',
+          type: 'slot',
+          isHidden: false,
+          label: this.$t('term.cmdb.searchable')
+        },
         groupName: {
           type: 'text',
           label: this.$t('page.attributegroup'),
@@ -214,7 +237,7 @@ export default {
   methods: {
     toggleNormalField(isHidden) {
       for (let k in this.formConfig) {
-        if (this.formConfig[k]._belong == 'normal') {
+        if (this.formConfig[k]._belong === 'normal') {
           this.$set(this.formConfig[k], 'isHidden', isHidden);
         }
       }
@@ -226,18 +249,19 @@ export default {
         });
       }
     },
-    toggleAttrType: function(data) {
+    toggleAttrType(data) {
       this.$set(this.attrData, 'type', data);
       this.isTypeError = false;
       this.attrTypeList.forEach(item => {
         if (item.name === data) {
           this.attrData.needTargetCi = item.needTargetCi;
           this.attrData.needConfig = item.needConfig;
+          this.attrData.canSearch = item.canSearch;
         }
       });
       this.initForm();
     },
-    getAttrTypeList: function() {
+    getAttrTypeList() {
       this.$api.cmdb.ci.getAttrTypeList().then(res => {
         this.attrTypeList = res.Return;
         let newData = [];
@@ -281,7 +305,7 @@ export default {
         });
       }
     },
-    initForm: function() {
+    initForm() {
       const id = this.formConfig.id.value;
       //不允许修改唯一标识
       if (id) {
@@ -307,6 +331,12 @@ export default {
       } else {
         this.toggleNormalField(false);
       }
+      if (!this.attrData.canSearch) {
+        this.$set(this.formConfig.isSearchAble, 'isHidden', true);
+        this.attrData.isSearchAble = 0;
+      } else {
+        this.$set(this.formConfig.isSearchAble, 'isHidden', false);
+      }
     },
     getDataById() {
       if (this.id) {
@@ -321,11 +351,11 @@ export default {
           }
         });
       } else {
-        this.attrData = {};
+        /* this.attrData = {};
         for (let key in this.formConfig) {
           const element = this.formConfig[key];
           element.value = this.attrData[key];
-        }
+        }*/
         this.initForm();
       }
     },

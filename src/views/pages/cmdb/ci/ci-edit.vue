@@ -337,13 +337,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    setFile: function(fileList) {
+    setFile(fileList) {
       this.ciData.fileId = null;
       fileList.forEach(file => {
         this.ciData.fileId = file.id;
       });
     },
-    saveCi: function() {
+    saveCi() {
       const form = this.$refs['ciForm'];
       if (form.valid()) {
         if (this.needCheckParentCi && !this.ciData.parentCiId) {

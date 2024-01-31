@@ -160,7 +160,7 @@ const common = {
   },
   // 获取报表实例列表
   updateReportMenu(params) {
-    return axios.post('/api/rest/reportinstance/search', params);
+    return axios.post('/api/rest/reportinstance/list', params);
   },
   // 获取CMDB的模型类型和模型列表
   updateCmdbMenu(params) {

@@ -198,7 +198,7 @@ export default {
         let data = {
           userUuid: userId
         };
-        return this.$api.framework.user.getUserCopy(data).then(res => {
+        return this.$api.framework.user.getUser(data).then(res => {
           if (res.Status == 'OK') {
             this.userDetail = res.Return;
           }
