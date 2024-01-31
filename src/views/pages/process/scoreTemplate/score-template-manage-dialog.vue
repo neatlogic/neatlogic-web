@@ -106,6 +106,7 @@ export default {
           type: 'switch',
           label: this.$t('page.enable'),
           value: 1,
+          disabled: false,
           onChange(isActive) {
             vm.scoreTemplate.isActive = isActive;
           }
@@ -148,9 +149,11 @@ export default {
         .get(params)
         .then(res => {
           if (res.Status === 'OK') {
+            let {name = '', isActive = 0, processCount = 0} = res.Return || {};
             this.scoreTemplate = res.Return;
-            this.formConfig.isActive.value = res.Return.isActive;
-            this.formConfig.name.value = res.Return.name;
+            this.formConfig.isActive.value = isActive;
+            this.formConfig.isActive.disabled = processCount > 0;
+            this.formConfig.name.value = name;
           }
         });
     },
