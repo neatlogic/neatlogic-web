@@ -1215,7 +1215,6 @@ export default {
       return arr;
     },
     formSheetEmitData(data) {
-      console.log(data, 'data');
       let defaultPriorityConfig = null;
       let messageConfig = {
         content: '',
