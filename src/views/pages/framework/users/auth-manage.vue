@@ -268,7 +268,6 @@ export default {
       return routerConfig;
     },
     changeGroupName(groupName) {
-      console.log(groupName);
       this.handleDefaultValueConfig(groupName);
       if (!this.$utils.isEmpty(this.searchVal.defaultValue)) {
         this.$delete(this.searchVal, 'defaultValue'); // 切换不同模块，清空模块下的菜单
