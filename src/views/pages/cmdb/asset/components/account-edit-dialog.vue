@@ -427,7 +427,7 @@ export default {
         let reasonObj = {
           0: '成功',
           1: '失败，连接错误',
-          2: '失败，协议不支持',
+          2: '失败，暂时不支持该协议测试连接，请创建作业测试。',
           3: '失败，节点信息错误，node的json缺少属性'
         };
         return reasonObj[value];
