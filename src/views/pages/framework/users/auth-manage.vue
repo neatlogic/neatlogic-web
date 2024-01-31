@@ -4,30 +4,39 @@
     <TsContain>
       <template slot="topRight">
         <TsRow>
-          <Col span="24">
+          <Col span="8">
+            <TsFormSelect
+              v-model="groupName"
+              :dataList="groupList"
+              :defaultValueIsFirst="true"
+              :search="true"
+              :clearable="false"
+              transfer
+              border="border"
+              @change="changeGroupName"
+            ></TsFormSelect>
+          </Col>
+          <Col span="16">
             <CombineSearcher
-              v-if="!$utils.isEmpty(defaultMenuList)"
+              v-if="!$utils.isEmpty(defaultValueList)"
               v-model="searchVal"
               v-bind="searchConfig"
-              @change="(val) => searchAuthData(val)"
+              @change="searchAuthData()"
             >
               <template v-slot:defaultValue="{valueConfig, textConfig}">
                 <TsFormSelect
                   v-model="valueConfig.defaultValue"
                   v-bind="defaultValueConfig"
                   @change="(val, selectedList) => {
-                    if (!$utils.isEmpty(selectedList)) {
-                      $set(textConfig, 'defaultValue', selectedList.map(item => item.text));
-                    } else {
+                    if ($utils.isEmpty(selectedList)) {
                       $delete(textConfig, 'defaultValue');
-                      $delete(valueConfig, 'defaultValue');
+                    } else {
+                      $set(textConfig, 'defaultValue', selectedList.map(item => item.text));
                     }
-                    isFlag = false;
                   }"
                   @change-label="(label) => {
-                    if ($utils.isEmpty(label) || ($utils.isEmpty(valueConfig.groupName) && valueConfig.defaultValue && isFlag)) {
+                    if ($utils.isEmpty(label)) {
                       $delete(textConfig, 'defaultValue');
-                      $delete(valueConfig, 'defaultValue');
                     } else {
                       $set(textConfig, 'defaultValue', label);
                     }
@@ -84,12 +93,14 @@ export default {
   props: {},
   data() {
     return {
-      isFlag: false, // 作为标识，联动改变时，是否需要删除对应联动的值
       groupName: '',
       loadingShow: true,
-      defaultMenuList: [],
-      authGroupList: [],
+      defaultValueList: [],
+      groupList: [],
       searchVal: {},
+      tableConfig: {
+        tbodyList: []
+      },
       defaultValueConfig: {
         dataList: [],
         search: true,
@@ -98,35 +109,14 @@ export default {
       },
       searchConfig: {
         search: true,
-        searchMode: 'clickBtnSearch',
         placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
         searchList: [
-          {
-            label: this.$t('term.framework.belongmodule'),
-            type: 'select',
-            name: 'groupName',
-            url: '/api/rest/auth/group',
-            clearable: false,
-            search: true,
-            transfer: true,
-            rootName: 'groupList',
-            onChange: (groupName) => {
-              this.handleDefaultValueConfig(groupName);
-              this.isFlag = true;
-              if (!this.$utils.isEmpty(this.searchVal.defaultValue)) {
-                this.$delete(this.searchVal, 'defaultValue');
-              }
-            }
-          },
           {
             type: 'slot',
             name: 'defaultValue',
             label: this.$t('page.menuname')
           }
         ]
-      },
-      tableConfig: {
-        tbodyList: []
       },
       theadList: [
         {
@@ -158,7 +148,7 @@ export default {
   },
   beforeCreate() {},
   async created() {
-    await this.getAuthGrouplist();
+    await this.searchGroupNameData();
     this.getRouterConfig();
     this.searchAuthData();
   },
@@ -170,31 +160,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getAuthGrouplist() {
+    searchGroupNameData() {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
-          this.authGroupList = res.Return.groupList || [];
+          this.groupList = res.Return.groupList || [];
         }
       });
     },
     //获取权限列表
     searchAuthData() {
-      let defaultValueList = [];
-      this.defaultMenuList.forEach((item) => {
-        if (item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority) {
-          defaultValueList.push(...item.authority.split(','));
-        }
-      });
-      let data = {
-        groupName: this.searchVal.groupName,
-        defaultValue: this.$utils.uniqueArr(defaultValueList),
+      this.loadingShow = true;
+      const defaultValueList = this.defaultValueList
+        .filter(item => 
+          item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority
+        )
+        .flatMap(item => item.authority.split(',')); // flatMap扁平化数组
+      const data = {
+        groupName: this.groupName,
+        defaultValue: [...new Set(defaultValueList)], // new set 数组去重
         keyword: this.searchVal.keyword
       };
-      if (this.$utils.isEmpty(this.searchVal)) {
-        // 全部删除后，设置默认所有
-        this.handleDefaultValueConfig();
-      }
-      this.loadingShow = true;
+      this.$addHistoryData('groupName', this.groupName);
       this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
         this.tableConfig.tbodyList = res.Return || [];
@@ -204,6 +190,7 @@ export default {
     },
     restoreHistory(historyData) {
       this.searchVal = historyData['searchVal'];
+      this.groupName = historyData['groupName'];
     },
     toAuthAdduserPage(item) {
       let {name = '', authGroup = ''} = item || {};
@@ -213,27 +200,26 @@ export default {
       });
     },
     getRouterConfig() {
-      let routerConfig = {};
-      let menuList = [];
-      let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+      const routerConfig = {};
+      const menuList = [];
+
+      const routerPathList = [require.context('@/views/pages', true, /router.js$/)];
       routerPathList.forEach(item => {
-        if (item && item.keys()) {
-          item.keys().forEach(routerPath => {
-            const moduleNames = routerPath.split('/')[1];
-            const lastValue = moduleNames.split('-');
-            const moduleName = lastValue?.pop() || moduleNames;
-            const routeList = item(routerPath).default || [];
-            routerConfig[moduleName] = routeList;
-          });
-        }
+        item.keys().forEach(routerPath => {
+          const moduleNames = routerPath.split('/')[1];
+          const moduleName = moduleNames.split('-').pop() || moduleNames;
+          const routeList = item(routerPath).default || [];
+          routerConfig[moduleName] = routeList;
+        });
       });
-      let commercialRouterConfig = this.getCommercialRouter();
-      Object.keys(commercialRouterConfig).forEach(key => {
-        if (!routerConfig[key]) {
-          //模块引入
+
+      const commercialRouterConfig = this.getCommercialRouter();
+      Object.keys(commercialRouterConfig)
+        .filter(key => !routerConfig[key])
+        .forEach(key => {
           routerConfig[key] = commercialRouterConfig[key];
-        }
-      });
+        });
+
       for (let key in routerConfig) {
         if (key) {
           routerConfig[key].forEach((item) => {
@@ -249,14 +235,15 @@ export default {
           });
         }
       }
-      this.defaultMenuList = this.$utils.deepClone(menuList);
+
+      this.defaultValueList = this.$utils.deepClone(menuList);
       this.handleDefaultValueConfig(this.searchVal.groupName);
     },
     handleDefaultValueConfig(groupName) {
       if (this.$utils.isEmpty(groupName) || groupName == 'all') {
-        this.defaultValueConfig.dataList = this.defaultMenuList;
+        this.defaultValueConfig.dataList = this.defaultValueList;
       } else {
-        this.defaultValueConfig.dataList = this.defaultMenuList.filter((item) => item.groupName == groupName);
+        this.defaultValueConfig.dataList = this.defaultValueList.filter((item) => item.groupName == groupName);
       }
     },
     getCommercialRouter() {
@@ -272,21 +259,28 @@ export default {
         if (item && item.keys()) {
           item.keys().forEach(routerPath => {
             const moduleNames = routerPath.split('/')[1];
-            const lastValue = moduleNames.split('-');
-            const moduleName = lastValue?.pop() || moduleNames;
-            const routeList = item(routerPath).default || [];
+            const moduleName = moduleNames.split('-').pop() || moduleNames;
+            const routeList = (item(routerPath).default || []);
             routerConfig[moduleName] = routeList;
           });
         }
       });
       return routerConfig;
+    },
+    changeGroupName(groupName) {
+      console.log(groupName);
+      this.handleDefaultValueConfig(groupName);
+      if (!this.$utils.isEmpty(this.searchVal.defaultValue)) {
+        this.$delete(this.searchVal, 'defaultValue'); // 切换不同模块，清空模块下的菜单
+      }
+      this.searchAuthData();
     }
   },
   filter: {},
   computed: {
     getMenuName() {
       return (groupName, text) => {
-        let menuName = this.authGroupList.find((v) => v.value == groupName);
+        let menuName = this.groupList.find((v) => v.value == groupName);
         return menuName && menuName.text ? `${text}(${menuName.text})` : text; 
       };
     }
