@@ -10,7 +10,7 @@
     <div v-if="pocesstaskview">
       <nodeDetail
         :is="handlerType(handler)"
-        v-if="!loadingShow"
+        v-if="!loadingShow && processTask"
         ref="nodeDatas"
         :isShowTaskList="isShowTaskList"
         :defaultStartList="defaultStartList"
