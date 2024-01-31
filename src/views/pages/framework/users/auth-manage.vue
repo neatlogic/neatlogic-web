@@ -13,45 +13,16 @@
               :clearable="false"
               transfer
               border="border"
-              @change="changeGroupName"
+              @change="searchAuthData()"
             ></TsFormSelect>
           </Col>
           <Col span="16">
             <CombineSearcher
-              v-if="!$utils.isEmpty(defaultValueList)"
+              v-if="searchConfig.searchList[0].dataList.length > 0"
               v-model="searchVal"
               v-bind="searchConfig"
               @change="searchAuthData()"
             >
-              <template v-slot:defaultValue="{valueConfig, textConfig}">
-                <TsFormSelect
-                  v-model="valueConfig.defaultValue"
-                  v-bind="defaultValueConfig"
-                  @change="(val, selectedList) => {
-                    if ($utils.isEmpty(selectedList)) {
-                      $delete(textConfig, 'defaultValue');
-                    } else {
-                      $set(textConfig, 'defaultValue', selectedList.map(item => item.text));
-                    }
-                  }"
-                  @change-label="(label) => {
-                    if ($utils.isEmpty(label)) {
-                      $delete(textConfig, 'defaultValue');
-                    } else {
-                      $set(textConfig, 'defaultValue', label);
-                    }
-                  }"
-                >
-                  <template v-slot:option="{item}">
-                    <Tooltip placement="right">
-                      <div>{{ item.text }}</div>
-                      <div slot="content">
-                        {{ item.menuName }}
-                      </div>
-                    </Tooltip>
-                  </template>
-                </TsFormSelect>
-              </template>
             </CombineSearcher>
           </Col>
         </TsRow>
@@ -95,26 +66,26 @@ export default {
     return {
       groupName: '',
       loadingShow: true,
-      defaultValueList: [],
       groupList: [],
+      defaultValueList: [],
       searchVal: {},
       tableConfig: {
         tbodyList: []
-      },
-      defaultValueConfig: {
-        dataList: [],
-        search: true,
-        multiple: true,
-        transfer: true
       },
       searchConfig: {
         search: true,
         placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
         searchList: [
           {
-            type: 'slot',
+            type: 'cascader',
+            dataList: [],
             name: 'defaultValue',
-            label: this.$t('page.menuname')
+            label: this.$t('page.menuname'),
+            transfer: true,
+            filterable: true,
+            onChange: (val, selectedList) => {
+              this.defaultValueList = selectedList.filter(item => item.authority).map((v) => v.authority);
+            }
           }
         ]
       },
@@ -170,14 +141,15 @@ export default {
     //获取权限列表
     searchAuthData() {
       this.loadingShow = true;
-      const defaultValueList = this.defaultValueList
-        .filter(item => 
-          item && item.value && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(item.value) && item.authority
-        )
-        .flatMap(item => item.authority.split(',')); // flatMap扁平化数组
+      let defaultValue = [];
+      this.defaultValueList.forEach((item) => {
+        if (item) {
+          defaultValue.push(...item.split(','));
+        }
+      });
       const data = {
         groupName: this.groupName,
-        defaultValue: [...new Set(defaultValueList)], // new set 数组去重
+        defaultValue: [...new Set(defaultValue)], // new set 数组去重
         keyword: this.searchVal.keyword
       };
       this.$addHistoryData('groupName', this.groupName);
@@ -201,7 +173,7 @@ export default {
     },
     getRouterConfig() {
       const routerConfig = {};
-      const menuList = [];
+      const dataList = [];
 
       const routerPathList = [require.context('@/views/pages', true, /router.js$/)];
       routerPathList.forEach(item => {
@@ -219,32 +191,33 @@ export default {
         .forEach(key => {
           routerConfig[key] = commercialRouterConfig[key];
         });
-
       for (let key in routerConfig) {
-        if (key) {
+        let groupItem = this.groupList.find((item) => item.value == key); 
+        if (key && !this.$utils.isEmpty(groupItem) && !this.$utils.isEmpty(groupItem.text)) {
+          dataList.push({
+            text: groupItem.text,
+            value: key,
+            children: []
+          });
           routerConfig[key].forEach((item) => {
             if (item.name && item.meta && item.meta.ismenu && item.meta.authority) {
-              menuList.push({
-                text: `${item.meta.title}`,
-                value: `${item.name}_${item.path}_${key}`,
-                menuName: this.getMenuName(key, item.meta.title),
-                groupName: key,
-                authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
-              });
+              let childrenItem = dataList.find((item) => item.value == key);
+              if (!this.$utils.isEmpty(childrenItem)) {
+                childrenItem.children.push({
+                  text: `${item.meta.title}`,
+                  value: `${item.name}_${item.path}_${key}`,
+                  authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+                });
+              }
             }
           });
         }
       }
-
-      this.defaultValueList = this.$utils.deepClone(menuList);
-      this.handleDefaultValueConfig(this.searchVal.groupName);
-    },
-    handleDefaultValueConfig(groupName) {
-      if (this.$utils.isEmpty(groupName) || groupName == 'all') {
-        this.defaultValueConfig.dataList = this.defaultValueList;
-      } else {
-        this.defaultValueConfig.dataList = this.defaultValueList.filter((item) => item.groupName == groupName);
-      }
+      this.searchConfig.searchList.forEach((item) => {
+        if (item.name == 'defaultValue') {
+          item.dataList = dataList;
+        }
+      });
     },
     getCommercialRouter() {
       //商业版模块
@@ -266,24 +239,10 @@ export default {
         }
       });
       return routerConfig;
-    },
-    changeGroupName(groupName) {
-      this.handleDefaultValueConfig(groupName);
-      if (!this.$utils.isEmpty(this.searchVal.defaultValue)) {
-        this.$delete(this.searchVal, 'defaultValue'); // 切换不同模块，清空模块下的菜单
-      }
-      this.searchAuthData();
     }
   },
   filter: {},
-  computed: {
-    getMenuName() {
-      return (groupName, text) => {
-        let menuName = this.groupList.find((v) => v.value == groupName);
-        return menuName && menuName.text ? `${text}(${menuName.text})` : text; 
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

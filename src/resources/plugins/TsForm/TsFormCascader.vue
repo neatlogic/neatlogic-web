@@ -129,7 +129,7 @@ export default {
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
         this.$emit('on-change', value, selectedData);
-        typeof this.onChange == 'function' && this.onChange(value);
+        typeof this.onChange == 'function' && this.onChange(value, selectedData || []);
       }
       if (!isSame) {
         if (this.currentValidList.length > 0) {
@@ -139,6 +139,7 @@ export default {
         this.validMesage = '';
         this.isValidPass = true;
       }
+      this.$emit('change-label', (selectedData || []).filter(obj => obj.__label).map(obj => obj.__label));
     },
     renderFormat(labels, selectedData) {
       let data = labels.join(' / ');
@@ -148,14 +149,13 @@ export default {
       this.labels = data;
       return data;
     },
-    getLabel(i, value, list) {
-      let _this = this;
-      let finditem = list.find(l => l.value == value[i]);
+    getLabel(index, value, list) {
+      let finditem = list.find(l => l.value == value[index]);
       if (finditem) {
-        _this.labeList.push(finditem.label);
-        _this.selectedData.push(finditem);
-        if (i < value.length && !_this.$utils.isEmpty(finditem.children)) {
-          _this.getLabel(i + 1, value, finditem.children);
+        this.labeList.push(finditem.text || finditem.label);
+        this.selectedData.push(finditem);
+        if (index < value.length - 1 && !this.$utils.isEmpty(finditem.children)) {
+          this.getLabel(index + 1, value, finditem.children);
         }
       }
     },
@@ -219,7 +219,9 @@ export default {
           this.$nextTick(() => {
             this.currentValue = this.$utils.isEmpty(newValue) ? [] : [].concat(newValue);
             if (!this.$utils.isEmpty(this.currentValue) && !this.$utils.isEmpty(this.dataList)) {
+              this.labeList = []; // 切换不同的级联，上一个值没有清空
               this.getLabel(0, this.currentValue, this.dataList);
+              this.$emit('change-label', this.labeList);
             }
           });
         }
