@@ -220,6 +220,11 @@ export default {
           item.dataList = dataList;
         }
       });
+      this.defaultValueList = dataList.flatMap(item =>
+        (item.children || []).flatMap(v =>
+          (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority) ? [v.authority] : []
+        )
+      ); // flatMap 将结果展开一级
     },
     getCommercialRouter() {
       //商业版模块
