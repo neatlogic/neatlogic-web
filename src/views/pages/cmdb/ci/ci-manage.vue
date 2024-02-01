@@ -141,7 +141,7 @@ export default {
   data() {
     const _this = this;
     return {
-      showMode: 'card',
+      showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         { key: 'name', title: this.$t('page.name') },
         { key: 'typeName', title: this.$t('page.type') },
@@ -375,6 +375,7 @@ export default {
     showMode: {
       handler: function(val) {
         this.$addHistoryData('showMode', val);
+        this.$localStore.set('showMode', val);
       }
     }
   }
