@@ -65,7 +65,8 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formItemList="extraList"
+            :formData="row"
+            :formItemList="$utils.deepClone(extraList)"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
@@ -73,7 +74,7 @@
             :isClearEchoFailedDefaultValue="true"
             :isCustomValue="true"
             style="min-width:130px"
-            @change="(val)=>changeRow(val,extra.uuid,row,index)"
+            @change="changeRow(row,index)"
           ></FormItem>
         </div>
       </template>
@@ -94,7 +95,6 @@ import validmixin from '../common/validate-mixin.js';
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
-import reactionMix from './reaction.js';
 
 export default {
   name: '',
@@ -103,7 +103,7 @@ export default {
     FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
   },
   extends: base,
-  mixins: [validmixin, reactionMix],
+  mixins: [validmixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -117,8 +117,7 @@ export default {
       maxSize: 1024 * 10,
       isShowExportExcelTemplate: true,
       isShowExportExcel: true,
-      loading: false,
-      isFormData: false
+      loading: false
     };
   },
   beforeCreate() {},
@@ -225,7 +224,6 @@ export default {
       if (this.disabled || this.readonly) {
         this.$set(formItem.config, 'isDisabled', true);
       }
-      this.$set(row, '_formItem', formItem);
       return formItem;
     },
     validConfig() {
@@ -282,10 +280,8 @@ export default {
       }
       return errorList;
     },
-    changeRow(val, uuid, row, index) {
-      this.isFormData = false;
-      this.$set(row, uuid, val);
-      // this.$set(this.tableData.tbodyList, index, row);
+    changeRow(row, index) {
+      this.$set(this.tableData.tbodyList, index, row);
     },
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
@@ -628,24 +624,20 @@ export default {
         if (!dataConfig) {
           dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
         }
-        if (dataConfig) {
-          if (dataConfig.config) {
-            const defaultValue = dataConfig.config.defaultValue;
-            if (dataConfig.config.defaultValueType === 'custom') {
-              return defaultValue;
-            } else if (dataConfig.config.defaultValueType === 'matrix') {
-              if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
-                const defaultValueField = dataConfig.config.defaultValueField;
-                const defaultTextField = dataConfig.config.defaultTextField;
-                return {text: row[defaultValueField], value: row[defaultTextField]};
-              } else {
-                return row[defaultValue];
-              }
+        if (dataConfig && dataConfig.config) {
+          const defaultValue = dataConfig.config.defaultValue;
+          if (dataConfig.config.defaultValueType === 'custom') {
+            return defaultValue;
+          } else if (dataConfig.config.defaultValueType === 'matrix') {
+            if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
+              const defaultValueField = dataConfig.config.defaultValueField;
+              const defaultTextField = dataConfig.config.defaultTextField;
+              return {text: row[defaultValueField], value: row[defaultTextField]};
             } else {
-              return defaultValue;
+              return row[defaultValue];
             }
-          } else if (dataConfig[uuid]) {
-            return this.$utils.deepClone(dataConfig[uuid]);
+          } else {
+            return defaultValue;
           }
         }
         return null;
@@ -653,9 +645,6 @@ export default {
     },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
-    },
-    formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
     }
   },
   watch: {
@@ -698,15 +687,6 @@ export default {
       },
       deep: true,
       immediate: true
-    },
-    formDataForWatch: {
-      handler(val, oldVal) {
-        this.isFormData = false;
-        if (!this.$utils.isSame(val, oldVal)) {
-          this.initReactionWatch();
-        }
-      },
-      deep: true
     }
   }
 };
