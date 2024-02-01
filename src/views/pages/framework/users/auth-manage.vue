@@ -142,11 +142,13 @@ export default {
     searchAuthData() {
       this.loadingShow = true;
       let defaultValue = [];
-      this.defaultValueList.forEach((item) => {
-        if (item) {
-          defaultValue.push(...item.split(','));
-        }
-      });
+      if (this.searchVal && !this.$utils.isEmpty(this.searchVal.defaultValue)) {
+        this.defaultValueList.forEach((item) => {
+          if (item) {
+            defaultValue.push(...item.split(','));
+          }
+        });
+      }
       const data = {
         groupName: this.groupName,
         defaultValue: [...new Set(defaultValue)], // new set 数组去重
