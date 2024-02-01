@@ -6,7 +6,7 @@ import cmdbsync from './cmdbsync.vue';
 let importComponentConfig = {};
 try {
   // 导入自定义组件
-  const componentConfig = require.context('@/commercial-module', true, /processTaskAudit.js$/);
+  const componentConfig = require.context('@/commercial-module', true, /processTaskStepLog.js$/);
   componentConfig
     .keys()
     .filter(path => {

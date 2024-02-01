@@ -128,9 +128,6 @@
                       {{ actionConfig.copyprocesstask }}
                     </DropdownItem>
                     <!-- 复制上报 -->
-                    <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="createKnowledge">
-                      转为知识文档
-                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </span>
@@ -274,7 +271,6 @@
                 :actionConfig="actionConfig"
                 :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
-                :knowledgeConfig="knowledgeConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
                 :priorityList="priorityList"
@@ -470,7 +466,6 @@
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
     <RedoDialog :isShow.sync="redoModel" :processTaskConfig="processTaskConfig"></RedoDialog>
-    <KnowledgeDialog :isShow.sync="knowledgeModel" :processTaskConfig="processTaskConfig"></KnowledgeDialog>
   </div>
 </template>
 
@@ -516,8 +511,6 @@ export default {
     return {
       ranferreportModel: false, // 转报弹框
       redoModel: false, //评分工单回退
-      knowledgeModel: false,
-      knowledgeConfig: null,
       transferStepList: [], //转交步骤列表
       transferId: null,
       handlerStepInfo: null,
@@ -532,7 +525,6 @@ export default {
   },
   mounted() {
     this.getAllData();
-    this.getKnowledgeDetail(); //转知识权限
     Vm = this;
   },
   beforeDestroy() {
@@ -662,28 +654,6 @@ export default {
     //评分前回退
     redoTask() {
       this.redoModel = true;
-    },
-    createKnowledge() {
-      //创建知识
-      this.knowledgeModel = true;
-    },
-    getKnowledgeDetail() {
-      //获取工单知识信息
-      let moduleList = JSON.parse(localStorage.getItem('moduleList'));
-      let find = moduleList.find(d => d.moduleId == 'knowledge');
-      if (find && (this.processTask.status == 'succeed' || this.processTask.status == 'scored')) {
-        //工单：完成或者评分状态时，都需要调知识接口
-        let data = {
-          invokeId: this.processTaskId,
-          source: 'processtask'
-        };
-        this.$api.process.processtask.knowledgeDetail(data).then(res => {
-          if (res.Status == 'OK') {
-            let obj = res.Return;
-            this.knowledgeConfig = obj;
-          }
-        });
-      }
     }
   },
   computed: {
@@ -691,7 +661,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask || (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1)) {
+      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;
