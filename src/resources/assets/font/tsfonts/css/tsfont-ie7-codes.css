@@ -575,3 +575,4 @@
 .tsfont-top { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea3c;&nbsp;'); }
 .tsfont-ts { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea3d;&nbsp;'); }
 .tsfont-paste { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea3e;&nbsp;'); }
+.tsfont-dataconversion { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea3f;&nbsp;'); }

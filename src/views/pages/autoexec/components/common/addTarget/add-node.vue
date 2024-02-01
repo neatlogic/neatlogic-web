@@ -30,7 +30,7 @@
               :defaultValue="defaultSearchValue"
               :defaultSearchValue="defaultSearchValue"
               @changeValue="changeValue"
-              @advancedModeSearch="advancedModeSearch"
+              @advancedModeSearch="(value) => advancedModeSearch(value, 1, 10)"
             ></FilterSearch>
           </div>
           <template v-if="!loadingShow">
@@ -44,8 +44,8 @@
               height="500"
               multiple
               @getSelected="getSelected"
-              @changeCurrent="getDataList('currentPage',...arguments)"
-              @changePageSize="getDataList('pageSize',...arguments)"
+              @changeCurrent="changeCurrent"
+              @changePageSize="changePageSize"
             >
               <template v-slot:appModuleName="{row}">
                 <span v-if="row.appModuleName || row.appModuleAbbrName">
@@ -137,7 +137,11 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.searchNodeList(this.defaultSearchValue);
+    if (!this.$utils.isEmpty(this.defaultSearchValue) && this.defaultSearchValue.hasOwnProperty('conditionGroupList')) {
+      this.advancedModeSearch(this.defaultSearchValue);
+    } else {
+      this.searchNodeList();
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -146,15 +150,36 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchNodeList(param) {
+    changeCurrent(currentPage = 1) {
+      this.currentPage = currentPage;
+      this.handlePageChange();
+    },
+    changePageSize(pageSize = 10) {
+      this.currentPage = 1;
+      this.pageSize = pageSize;
+      this.handlePageChange();
+    },
+    handlePageChange() {
+      const hasConditionGroupList = 
+    (!this.$utils.isEmpty(this.defaultSearchValue) &&
+      this.defaultSearchValue.hasOwnProperty('conditionGroupList')) ||
+    (!this.$utils.isEmpty(this.searchVal) &&
+      this.searchVal.hasOwnProperty('conditionGroupList'));
+
+      if (hasConditionGroupList) {
+        this.advancedModeSearch(this.searchVal);
+      } else {
+        this.searchNodeList();
+      }
+    },
+    searchNodeList() {
       let data = {
         currentPage: this.currentPage,
         pageSize: this.pageSize,
-        cmdbGroupType: this.opType
+        cmdbGroupType: this.opType,
+        ...this.searchVal,
+        ...this.defaultSearchValue
       };
-      if (param) {
-        Object.assign(data, param);
-      }
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -162,16 +187,6 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
-    },
-    getDataList(type, value) {
-      type == 'pageSize' && (this.pageSize = value);
-      let param = {
-        currentPage: type == 'currentPage' ? value : this.currentPage,
-        pageSize: type == 'pageSize' ? value : this.pageSize,
-        cmdbGroupType: this.opType
-      };
-      param = Object.assign(param, this.searchVal);
-      this.searchNodeList(param);
     },
     getSelected(indexList, itemList) {
       if (itemList && itemList.length > 0) {
@@ -232,11 +247,17 @@ export default {
     },
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
-      this.getDataList('currentPage', 1);
+      this.changePageSize();
     },
-    advancedModeSearch(searchVal) {
+    advancedModeSearch(searchVal, currentPage = 1, pageSize = 10) {
       // 复杂模式搜索
-      let params = Object.assign({currentPage: 1, pageSize: 10, cmdbGroupType: this.opType}, searchVal);
+      let params = {
+        currentPage: currentPage || this.currentPage,
+        pageSize: pageSize || this.pageSize,
+        cmdbGroupType: this.opType,
+        ...this.defaultSearchValue,
+        ...searchVal
+      };
       this.loadingShow = true;
       this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
         if (res.Status == 'OK') {
