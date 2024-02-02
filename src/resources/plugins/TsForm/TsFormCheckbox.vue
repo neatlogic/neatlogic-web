@@ -260,13 +260,16 @@ export default {
     }
   },
   watch: {
-    value(newValue, oldValue) {
-      let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
-      if (!isSame) {
-        this.currentValue = this.handleCurrentValue(this.$utils.deepClone(newValue)) || [];
-        this.validMesage = '';
-        this.setSelectList();
-      }
+    value: {
+      handler(newValue, oldValue) {
+        let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
+        if (!isSame) {
+          this.currentValue = this.handleCurrentValue(this.$utils.deepClone(newValue)) || [];
+          this.validMesage = '';
+          this.setSelectList();
+        }
+      },
+      deep: true
     },
     dataList: {
       handler(newValue) {

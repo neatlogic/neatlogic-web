@@ -56,7 +56,7 @@
       @updateRowSort="updateRowSort"
       @getSelected="getSelectedItem"
     >
-      <template v-if="config.isShowNumber" v-slot:number="{ index}">
+      <template v-if="config.isShowNumber" v-slot:number="{ index }">
         {{ index+1 }}
       </template>
       <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
@@ -66,7 +66,7 @@
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
             :formData="row"
-            :formItemList="$utils.deepClone(extraList)"
+            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
@@ -74,7 +74,7 @@
             :isClearEchoFailedDefaultValue="true"
             :isCustomValue="true"
             style="min-width:130px"
-            @change="changeRow(row,index)"
+            @change="(val)=>changeRow(val,extra.uuid,row)"
           ></FormItem>
         </div>
       </template>
@@ -117,12 +117,17 @@ export default {
       maxSize: 1024 * 10,
       isShowExportExcelTemplate: true,
       isShowExportExcel: true,
-      loading: false
+      loading: false,
+      conditionFormItemUuidList: [], //外部组件参与联动条件的uuid列表
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
+      initExternalData: {}, //用于对比外部组件值变换
+      initFormData: this.$utils.deepClone(this.formData)
     };
   },
   beforeCreate() {},
   created() {
     this.init();
+    this.getConditionFormItemList();
   },
   beforeMount() {},
   mounted() {},
@@ -157,10 +162,6 @@ export default {
         }
         if (value.length > 0) {
           this.tableData.tbodyList.push(...value);
-          if (!this.$utils.isSame(this.value, value)) {
-            //如果值发生变化，则重新设置值
-            this.setValue(value);
-          }
         }
       } else if (this.config.lineNumber) { 
         //默认展示行
@@ -200,6 +201,7 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
+      Object.assign(data, this.initExternalData);
       this.tableData.tbodyList.push(data);
     },
     //从表格选择列表行数据中获取指定字段作为扩展字段的过滤值
@@ -280,8 +282,8 @@ export default {
       }
       return errorList;
     },
-    changeRow(row, index) {
-      this.$set(this.tableData.tbodyList, index, row);
+    changeRow(val, uuid, row) {
+      this.$set(row, uuid, val);
     },
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
@@ -599,6 +601,34 @@ export default {
         }
       }
       return resultValue;
+    },
+    getConditionFormItemList() { //获取外部可以作为联动的条件的组件
+      this.conditionFormItemUuidList = [];
+      let allFormItem = this.formItemList.concat(this.formItem.config.dataConfig);
+      let formItemList = allFormItem.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      if (formItemList && formItemList.length > 0) {
+        this.conditionFormItemUuidList = this.$utils.mapArray(formItemList, 'uuid');
+      }
+      this.conditionFormItemUuidList.push('uuid');
+    },
+    updateConditionData() {
+      let obj = {};
+      Object.keys(this.formDataForWatch).forEach(key => {
+        if (this.conditionFormItemUuidList.includes(key)) {
+          obj[key] = this.formDataForWatch[key];
+        }
+      });
+      if (!this.$utils.isSame(obj, this.initExternalData)) {
+        this.initExternalData = this.$utils.deepClone(obj);
+        this.tableData.tbodyList.forEach(item => {
+          Object.keys(item).forEach(key => {
+            if (!this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+              this.$delete(item, key);
+            }
+          });
+          Object.assign(item, obj);
+        });
+      }
     }
   },
   filter: {},
@@ -624,20 +654,22 @@ export default {
         if (!dataConfig) {
           dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
         }
-        if (dataConfig && dataConfig.config) {
-          const defaultValue = dataConfig.config.defaultValue;
-          if (dataConfig.config.defaultValueType === 'custom') {
-            return defaultValue;
-          } else if (dataConfig.config.defaultValueType === 'matrix') {
-            if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
-              const defaultValueField = dataConfig.config.defaultValueField;
-              const defaultTextField = dataConfig.config.defaultTextField;
-              return {text: row[defaultValueField], value: row[defaultTextField]};
+        if (dataConfig) {
+          if (dataConfig.config) {
+            const defaultValue = dataConfig.config.defaultValue;
+            if (dataConfig.config.defaultValueType === 'custom') {
+              return defaultValue;
+            } else if (dataConfig.config.defaultValueType === 'matrix') {
+              if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
+                const defaultValueField = dataConfig.config.defaultValueField;
+                const defaultTextField = dataConfig.config.defaultTextField;
+                return {text: row[defaultValueField], value: row[defaultTextField]};
+              } else {
+                return row[defaultValue];
+              }
             } else {
-              return row[defaultValue];
+              return defaultValue;
             }
-          } else {
-            return defaultValue;
           }
         }
         return null;
@@ -645,6 +677,9 @@ export default {
     },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
+    },
+    formDataForWatch() {
+      return JSON.parse(JSON.stringify(this.formData));
     }
   },
   watch: {
@@ -687,6 +722,14 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    formDataForWatch: {
+      handler(val) {
+        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
+          this.updateConditionData();
+        }
+      },
+      deep: true
     }
   }
 };

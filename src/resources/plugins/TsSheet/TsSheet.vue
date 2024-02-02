@@ -863,6 +863,7 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
+          this.clearFormInputTableAttr(formitem, this.formData[key]);
           this.clearPrivateAttr(this.formData[key]);
           formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
         }
@@ -885,6 +886,18 @@ export default {
             }
           });
         }
+      }
+    },
+    clearFormInputTableAttr(formitem, valueList) { //清除表单输入组件非表头属性
+      if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
+        let uuidList = this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
+        valueList.forEach(item => {
+          Object.keys(item).forEach(key => {
+            if (!uuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+              delete item[key];
+            }
+          });
+        });
       }
     },
     //是否包含class
