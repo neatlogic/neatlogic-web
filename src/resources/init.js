@@ -51,7 +51,8 @@ export function initRouter(VueRouter, store) {
     base: '/' + TENANT + '/' + MODULEID + '.html',
     routes: MENULIST
   });
-
+  const gettingUserInfo = store.dispatch('getUserInfo');
+  const gettingModuleList = store.dispatch('getModuleList');
   // 返回的路由(包含所有模块)
   let routerFromPageConfig = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
   let fromPageList = []; //历史页面记录
@@ -63,10 +64,6 @@ export function initRouter(VueRouter, store) {
     let title = to.meta.title ? to.meta.title : to.name || to.path;
     document.title = $t(title);
     let usertoken = utils.getCookie('neatlogic_authorization');
-    if (store.getters && store.getters.userAuthList && store.getters.userAuthList.length == 0) {
-      await store.dispatch('getUserInfo');
-      await store.dispatch('getModuleList');
-    }
     //如果是租户不存在，进路由前拦截统一外层404
     if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
       usertoken = 'Bearer_' + SSOTICKETVALUE;
@@ -86,6 +83,8 @@ export function initRouter(VueRouter, store) {
        * 直接从localstrage调出fromPageList,后续访问使用场景一的处理方式。
        *
        */
+      await gettingUserInfo;
+      await gettingModuleList;
       let auth = to.meta ? to.meta.authority : [];
       auth = typeof auth == 'string' ? (auth.trim() ? [auth.trim()] : []) : auth; //字符串转数组，主要是兼容string array两种情况的数据
       if (!auth || !auth.length || utils.checkHasSomeitem(store.getters.userAuthList, auth)) {
