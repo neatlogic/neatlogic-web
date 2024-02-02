@@ -213,7 +213,6 @@ export default {
         this.$emit('update:textConfig', val);
       },
       deep: true
-      // immediate: true // 影响只读回显值
     },
     dataConfig: {
       handler(currentval) {

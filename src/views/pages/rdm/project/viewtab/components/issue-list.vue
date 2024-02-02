@@ -36,14 +36,18 @@
               @change="
                 val => {
                   if (val != null) {
-                    $set(valueConfig, 'createDate', val);
                     $set(textConfig, 'createDate', val);
                   } else {
-                    $delete(valueConfig, 'createDate');
                     $delete(textConfig, 'createDate');
                   }
+                }"
+              @change-label="val => {
+                if(val) {
+                  $set(textConfig, 'createDate', val);
+                } else {
+                  $delete(textConfig, 'createDate');
                 }
-              "
+              }"
             ></TsFormDatePicker>
           </template>
           <template v-for="(attr) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">

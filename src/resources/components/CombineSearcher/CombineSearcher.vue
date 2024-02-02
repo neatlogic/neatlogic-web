@@ -414,27 +414,8 @@ export default {
       //console.log(e);
     },
     updateVal(val) {
-      this.$nextTick(() => {
-        this.searchValue = this.$utils.deepClone(val);
-        this.totalText = this.$utils.deepClone(val);
-        //清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
-        if (this.totalText) {
-          for (let k in this.totalText) {
-            if (!this.searchList.find(s => s.name == k) && k != this.keywordName) {
-              this.$delete(this.totalText, k);
-            } else if (k && this.totalText[k] instanceof Array) {
-              // 清除为空的数组，避免回显为空情况
-              this.totalText[k] = this.totalText[k].filter(d => d && d.toString().trim() != '');
-              if (this.totalText[k].length == 0) {
-                this.$delete(this.totalText, k);
-              }
-            } else if (k && typeof this.totalText[k].toString() == 'string' && this.$utils.isEmpty(this.totalText[k])) {
-            // 清除为空的字符串，避免回显为空情况
-              this.$delete(this.totalText, k);
-            }  
-          }
-        }
-      });
+      console.log('updateVal', val);
+      this.searchValue = this.$utils.deepClone(val);
     },
     delLast(e) {
       if (e && e.key == 'Backspace') {
@@ -485,28 +466,33 @@ export default {
       }
     },
     refreshTextConfig() {
-      // 提供给外部使用，非实时搜索时，点击搜索按钮，需要把条件显示在搜索栏中
       if (this.textConfig && typeof this.textConfig == 'object') {
         if (Object.keys(this.textConfig).length) {
           Object.entries(this.textConfig).forEach(([key, val]) => {
             this.$set(this.totalText, key, val);
           });
-          Object.keys(this.totalText).forEach(k => {
-            if ((k != this.keywordName || (k == this.keywordName && !this.search)) && !Object.keys(this.textConfig).includes(k)) {
-              // (k == this.keywordName && !this.search) 修复关键字搜索，放到searchList里时，关键字删除不了的问题
-              this.$delete(this.totalText, k);
-            }
-          });
-        } else {
-          Object.keys(this.totalText).length &&
-            Object.keys(this.totalText).forEach(k => {
-              if (k != this.keywordName || (k == this.keywordName && !this.search)) {
-                // (k == this.keywordName && !this.search) 修复关键字搜索，放到searchList里时，关键字删除不了的问题
-                this.$delete(this.totalText, k);
-              }
-            });
         }
       }
+      //清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
+      // if (this.totalText) {
+      //   for (let k in this.totalText) {
+      //     if (!this.searchList.find(s => s.name == k) && k != this.keywordName) {
+      //       this.$delete(this.totalText, k);
+      //     } else if (k && this.totalText[k] instanceof Array) {
+      //       // 清除为空的数组，避免回显为空情况
+      //       this.totalText[k] = this.totalText[k].filter(d => d && d.toString().trim() != '');
+      //       if (this.totalText[k].length == 0) {
+      //         this.$delete(this.totalText, k);
+      //       }
+      //     } else if (k && typeof this.totalText[k].toString() == 'string' && this.$utils.isEmpty(this.totalText[k])) {
+      //     // 清除为空的字符串，避免回显为空情况
+      //       this.$delete(this.totalText, k);
+      //     } else if (!Object.keys(this.searchValue).includes(k)) {
+      //       // 处理自定义插槽textConfig没有更新到TsForm导致自定义插槽值回显不出来问题
+      //       this.$delete(this.totalText, k);
+      //     }
+      //   }
+      // }
       this.$emit('change-label', this.totalText);
     }
   },
@@ -602,6 +588,7 @@ export default {
     },
     textConfig: {
       handler(val) {
+        console.log('textConfig', JSON.stringify(val), val);
         if (val && typeof val == 'object') {
           if (this.searchMode == 'realtimeSearch' || (this.searchMode == 'clickBtnSearch' && !this.isCloseAutomaticSearch)) {
             this.refreshTextConfig();
