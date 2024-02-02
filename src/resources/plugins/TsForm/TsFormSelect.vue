@@ -647,7 +647,7 @@ export default {
       if (this.readonly || this.disabled || this.nodeList.length <= 0) {
         return;
       }
-      if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1)) {
+      if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled)) {
         if (this.mode == 'normal') {
           this.selectedList = [this.nodeList[0]];
         } /*else {
