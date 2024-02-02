@@ -8,7 +8,6 @@
             <TsFormSelect
               v-model="groupName"
               :dataList="groupList"
-              :defaultValueIsFirst="true"
               :search="true"
               :clearable="false"
               transfer
@@ -118,13 +117,13 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {
+  created() {},
+  beforeMount() {},
+  async mounted() {
     await this.searchGroupNameData();
     this.getRouterConfig();
     this.searchAuthData();
   },
-  beforeMount() {},
-  mounted() {},
   beforeUpdate() {},
   updated() {},
   deactivated() {},
@@ -135,6 +134,9 @@ export default {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
           this.groupList = res.Return.groupList || [];
+          if (this.$utils.isEmpty(this.groupName)) {
+            this.groupName = !this.$utils.isEmpty(this.groupList) ? this.groupList[0].value : ''; 
+          } 
         }
       });
     },
