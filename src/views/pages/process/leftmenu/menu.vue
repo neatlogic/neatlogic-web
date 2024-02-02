@@ -292,7 +292,7 @@ export default {
       return this.$store.dispatch('leftMenu/getWorkCenterMenuData');
     },
     async initData(action) {
-      if (action && this.$AuthUtils.hasRole('PROCESS_BASE')) {
+      if (action) {
         await this.getWorkCenterTypeMenu();
       }
       // let workCenterMenuData = this.workCenterMenuData || {};
