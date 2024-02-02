@@ -1,112 +1,53 @@
 <template>
-  <div class="auth-setting">
+  <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topRight">
-        <TsRow class="search-item">
-          <Col span="6">
+        <TsRow>
+          <Col span="8">
             <TsFormSelect
-              :dataList="authGroupList"
-              :value="selectedModuleName"
+              v-model="groupName"
+              :dataList="groupList"
+              :defaultValueIsFirst="true"
+              :search="true"
               :clearable="false"
+              transfer
               border="border"
-              @on-change="changeSelect"
+              @change="searchAuthData()"
             ></TsFormSelect>
           </Col>
-          <Col span="18">
-            <InputSearcher
-              v-model="keyword"
-              :placeholder="$t('page.keyword')"
-              @change="search()"
-            ></InputSearcher>
+          <Col span="16">
+            <CombineSearcher
+              v-if="searchConfig.searchList[0].dataList.length > 0"
+              v-model="searchVal"
+              v-bind="searchConfig"
+              @change="searchAuthData()"
+            >
+            </CombineSearcher>
           </Col>
         </TsRow>
       </template>
-      <div slot="content" class="content">
-        <div class="card-wrapper">
-          <div v-if="authList && authList.length > 0">
-            <div class="card-top text-grey">
-              <TsRow>
-                <Col span="6">
-                  {{ $t('term.framework.authname') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.belongmodule') }}
-                </Col>
-                <Col span="10">
-                  {{ $t('term.framework.authdesc') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.usercount') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('term.framework.rolecount') }}
-                </Col>
-                <Col span="2">
-                  {{ $t('page.action') }}
-                </Col>
-              </TsRow>
+      <div slot="content">
+        <TsTable
+          v-bind="tableConfig"
+          :theadList="theadList"
+        >
+          <template slot="displayName" slot-scope="{ row }">
+            <Tooltip placement="top" :transfer="true">
+              <span>{{ row.displayName }}</span>
+              <div slot="content">
+                {{ row.displayName }}{{ row.name ? `(${row.name})` : '' }}
+              </div>
+            </Tooltip>
+          </template>
+          <template slot="action" slot-scope="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-permission" @click="toAuthAdduserPage(row)">{{ $t('page.auth') }}</li>
+              </ul>
             </div>
-            <div v-for="(item, index) in authList" :key="index" class="card-item bg-op radius-lg card-hover-shadow">
-              <TsRow>
-                <Col span="6">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.displayName"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.displayName }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="2">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.authGroupName"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.authGroupName }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="10">
-                  <Poptip
-                    trigger="hover"
-                    :content="item.description"
-                    class="des-tip"
-                    transfer
-                  >
-                    <div>
-                      <div class="overflow">{{ item.description }}</div>
-                    </div>
-                  </Poptip>
-                </Col>
-                <Col span="2">
-                  <li class="tsfont-userinfo count text-left" :title="$t('term.framework.usercount')">
-                    <span>{{ item.userCount }}</span>
-                  </li>
-                </Col>
-                <Col span="2">
-                  <li class="tsfont-team count text-left" :title="$t('term.framework.rolecount')">
-                    <span>{{ item.roleCount }}</span>
-                  </li>
-                </Col>
-                <Col span="2" class="action">
-                  <ul class="tstable-action-ul">
-                    <li class="tsfont-permission text-action" @click="toAuthAdduser(item)">{{ $t('page.auth') }}</li>
-                  </ul>
-                </Col>
-              </TsRow>
-            </div>
-          </div>
-          <div v-else>
-            <NoData v-show="!loadingShow"></NoData>
-          </div>
-        </div>
+          </template>
+        </TsTable>
       </div>
     </TsContain>
   </div>
@@ -116,77 +57,195 @@
 export default {
   name: 'AuthManage',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
-  props: [''],
+  props: {},
   data() {
     return {
-      keyword: null,
-      authList: [], //权限列表
-      authGroupList: [], //权限组列表
-      selectedModuleName: '',
-      loadingShow: true
+      groupName: '',
+      loadingShow: true,
+      groupList: [],
+      defaultValueList: [],
+      searchVal: {},
+      tableConfig: {
+        tbodyList: []
+      },
+      searchConfig: {
+        search: true,
+        placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
+        searchList: [
+          {
+            type: 'cascader',
+            dataList: [],
+            name: 'defaultValue',
+            label: this.$t('page.menuname'),
+            transfer: true,
+            filterable: true,
+            onChange: (val, selectedList) => {
+              this.defaultValueList = selectedList.filter(item => item.authority).map((v) => v.authority);
+            }
+          }
+        ]
+      },
+      theadList: [
+        {
+          title: this.$t('term.framework.authname'),
+          key: 'displayName'
+        },
+        {
+          title: this.$t('term.framework.belongmodule'),
+          key: 'authGroupName'
+        },
+        {
+          title: this.$t('term.framework.authdesc'),
+          key: 'description',
+          width: 500
+        },
+        {
+          title: this.$t('term.framework.usercount'),
+          key: 'userCount'
+        },
+        {
+          title: this.$t('term.framework.rolecount'),
+          key: 'roleCount'
+        },
+        {
+          key: 'action'
+        }
+      ]
     };
   },
-
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    this.getAuthGrouplist();
+  async created() {
+    await this.searchGroupNameData();
+    this.getRouterConfig();
+    this.searchAuthData();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    //获取权限组列表
-    getAuthGrouplist() {
-      let data = {};
-      this.$api.common.getAuthGroup(data).then(res => {
+    searchGroupNameData() {
+      return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
-          this.authGroupList = res.Return.groupList;
-          this.selectedModuleName = this.selectedModuleName || (this.authGroupList[0] ? this.authGroupList[0].value : null); // 下榻页面返回，选中对应模块
-          this.getAuthList();
+          this.groupList = res.Return.groupList || [];
         }
       });
     },
     //获取权限列表
-    getAuthList() {
-      let data = {
-        groupName: this.selectedModuleName,
-        keyword: this.keyword
-      };
+    searchAuthData() {
       this.loadingShow = true;
-      this.$addHistoryData('keyword', this.keyword);
-      this.$addHistoryData('selectedModuleName', this.selectedModuleName);
+      let defaultValue = [];
+      if (this.searchVal && !this.$utils.isEmpty(this.searchVal.defaultValue)) {
+        this.defaultValueList.forEach((item) => {
+          if (item) {
+            defaultValue.push(...item.split(','));
+          }
+        });
+      }
+      const data = {
+        groupName: this.groupName,
+        defaultValue: [...new Set(defaultValue)], // new set 数组去重
+        keyword: this.searchVal.keyword
+      };
+      this.$addHistoryData('groupName', this.groupName);
+      this.$addHistoryData('searchVal', this.searchVal);
       this.$api.framework.auth.getAuthList(data).then(res => {
-        this.authList = res.Return;
+        this.tableConfig.tbodyList = res.Return || [];
       }).finally(() => {
         this.loadingShow = false;
       });
     },
     restoreHistory(historyData) {
-      this.keyword = historyData['keyword'];
-      this.selectedModuleName = historyData['selectedModuleName'];
+      this.searchVal = historyData['searchVal'];
+      this.groupName = historyData['groupName'];
     },
-    //搜索
-    search() {
-      this.getAuthList();
-    },
-    //切换权限组
-    changeSelect(val) {
-      this.selectedModuleName = val;
-      this.getAuthList();
-    },
-    toAuthAdduser(item) {
+    toAuthAdduserPage(item) {
       let {name = '', authGroup = ''} = item || {};
       this.$router.push({
         path: `auth-adduser`,
         query: { name: name, groupName: authGroup }
       });
+    },
+    getRouterConfig() {
+      const routerConfig = {};
+      const dataList = [];
+
+      const routerPathList = [require.context('@/views/pages', true, /router.js$/)];
+      routerPathList.forEach(item => {
+        item.keys().forEach(routerPath => {
+          const moduleNames = routerPath.split('/')[1];
+          const moduleName = moduleNames.split('-').pop() || moduleNames;
+          const routeList = item(routerPath).default || [];
+          routerConfig[moduleName] = routeList;
+        });
+      });
+
+      const commercialRouterConfig = this.getCommercialRouter();
+      Object.keys(commercialRouterConfig)
+        .filter(key => !routerConfig[key])
+        .forEach(key => {
+          routerConfig[key] = commercialRouterConfig[key];
+        });
+      for (let key in routerConfig) {
+        let groupItem = this.groupList.find((item) => item.value == key); 
+        if (key && !this.$utils.isEmpty(groupItem) && !this.$utils.isEmpty(groupItem.text)) {
+          dataList.push({
+            text: groupItem.text,
+            value: key,
+            children: []
+          });
+          routerConfig[key].forEach((item) => {
+            if (item.name && item.meta && item.meta.ismenu && item.meta.authority) {
+              let childrenItem = dataList.find((item) => item.value == key);
+              if (!this.$utils.isEmpty(childrenItem)) {
+                childrenItem.children.push({
+                  text: `${item.meta.title}`,
+                  value: `${item.name}_${item.path}_${key}`,
+                  authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+                });
+              }
+            }
+          });
+        }
+      }
+      this.searchConfig.searchList.forEach((item) => {
+        if (item.name == 'defaultValue') {
+          item.dataList = dataList;
+        }
+      });
+      this.defaultValueList = dataList.flatMap(item =>
+        (item.children || []).flatMap(v =>
+          (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority) ? [v.authority] : []
+        )
+      ); // flatMap 将结果展开一级
+    },
+    getCommercialRouter() {
+      //商业版模块
+      let routerConfig = {};
+      let routerPathList = [];
+      try {
+        routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
+      } catch {
+        // 模块找不到
+      }
+      routerPathList.forEach(item => {
+        if (item && item.keys()) {
+          item.keys().forEach(routerPath => {
+            const moduleNames = routerPath.split('/')[1];
+            const moduleName = moduleNames.split('-').pop() || moduleNames;
+            const routeList = (item(routerPath).default || []);
+            routerConfig[moduleName] = routeList;
+          });
+        }
+      });
+      return routerConfig;
     }
   },
   filter: {},
@@ -195,81 +254,4 @@ export default {
 };
 </script>
 <style lang="less">
-@import '~@/resources/assets/css/framework/manage.less';
-.auth-setting {
-  .top {
-    .bar-top {
-      .select {
-        width: 200px;
-      }
-      .search {
-        width: 400px;
-      }
-    }
-  }
-  .content {
-    .card-wrapper {
-      .card-top {
-        padding: 0 20px 8px 20px;
-        .action {
-          text-align: center;
-        }
-      }
-      .card-item {
-        height: 56px;
-        line-height: 56px;
-        padding: 0 20px;
-        margin-bottom: 8px;
-        // &:hover {
-        //   .action {
-        //     display: block;
-        //   }
-        // }
-        // .action {
-        //   display: none;
-        //   cursor: pointer;
-        // }
-        .count {
-          > span {
-            margin-left: 5px;
-          }
-        }
-        .tstable-action-ul {
-          li {
-            display: inline-block;
-            padding: 0 @space-xs;
-            &:not(:last-of-type) {
-              position: relative;
-              &::after {
-                content: '|';
-                width: 1px;
-                height: 14px;
-                color: @dividing-color;
-                right: 0px;
-                position: absolute;
-              }
-            }
-            &::before {
-              margin-right: 4px;
-            }
-            // &:first-of-type {
-            //   padding-right: @space-xs;
-            // }
-            // &:hover {
-            //   color: @primary-color;
-            // }
-          }
-        }
-      }
-    }
-  }
-}
-</style>
-<style lang="less" scoped>
-/deep/.des-tip {
-  max-width: 100%;
-  .ivu-poptip-rel {
-    width: 100%;
-  }
-}
 </style>

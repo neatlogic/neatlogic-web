@@ -117,7 +117,7 @@ export default {
   props: {},
   data() {
     return {
-      showMode: 'card',
+      showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         {
           key: 'name',
@@ -306,6 +306,7 @@ export default {
     showMode: {
       handler: function(val) {
         this.$addHistoryData('showMode', val);
+        this.$localStore.set('showMode', val);
       }
     }
   }

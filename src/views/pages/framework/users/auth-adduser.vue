@@ -218,11 +218,8 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>
