@@ -43,6 +43,7 @@ const inspectStatusDetail = () => import('./application/inspect-status-detail.vu
 const graphEdit = () => import('./graph/graph-edit.vue');
 const graphData = () => import('./graph/graph-data.vue');
 const alertLevelManage = () => import('./alertlevel/alertlevel-manage.vue');
+const objManage = () => import('./discovery/obj-manage.vue');
 import { $t } from '@/resources/init.js';
 let routerArr = [
   {
@@ -212,6 +213,18 @@ let routerArr = [
       ismenu: true,
       type: 'discovery',
       icon: 'tsfont-cluster',
+      authority: 'SYNC_MODIFY'
+    }
+  },
+  {
+    path: '/obj-manage',
+    name: 'obj-manage',
+    component: objManage,
+    meta: {
+      title: $t('router.cmdb.objmanage'),
+      ismenu: true,
+      type: 'discovery',
+      icon: 'tsfont-block',
       authority: 'SYNC_MODIFY'
     }
   },

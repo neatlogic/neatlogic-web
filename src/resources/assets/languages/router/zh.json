@@ -52,7 +52,8 @@
     "customview": "自定义视图",
     "resourcecenter": "资源中心",
     "discovery": "自动发现",
-    "cmdbmanage": "系统管理"
+    "cmdbmanage": "系统管理",
+    "objmanage": "对象管理"
   },
   "process": {
     "workordercenter": "工单中心",
