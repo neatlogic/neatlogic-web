@@ -21,7 +21,6 @@
       </template>
       <template v-slot:content>
         <TsCard
-          v-if="objData && objData.tbodyList && objData.tbodyList.length > 0"
           v-bind="objData"
           :sm="8"
           :lg="6"
