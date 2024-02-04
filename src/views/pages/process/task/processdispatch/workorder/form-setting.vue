@@ -228,6 +228,7 @@ export default {
         formData.hidecomponentList = this.$refs.formSheet.getHiddenComponents();
         formData.readcomponentList = this.$refs.formSheet.getReadComponents();
       }
+      this.$forceUpdate();
       return formData;
     },
     async valid() {

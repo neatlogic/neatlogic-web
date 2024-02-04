@@ -112,8 +112,8 @@ export default {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
         const params = { matrixUuid: this.config.matrixUuid, filterList: []};
-        if (!this.$utils.isEmpty(this.initFilter)) {
-          params.filterList = this.$utils.deepClone(this.initFilter);
+        if (!this.$utils.isEmpty(this.filter)) {
+          params.filterList = this.filter;
         }
         if (this.config.mapping) {
           params.keywordColumn = this.config.mapping.text;
@@ -159,7 +159,8 @@ export default {
         this.initFilter = this.$utils.deepClone(val);
         this.isFirst = false;
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   }
 };
