@@ -120,8 +120,7 @@ export default {
       loading: false,
       conditionFormItemUuidList: [], //外部组件参与联动条件的uuid列表
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
-      initExternalData: {}, //用于对比外部组件值变换
-      initFormData: this.$utils.deepClone(this.formData)
+      initExternalData: {} //用于对比外部组件值变换
     };
   },
   beforeCreate() {},
@@ -724,8 +723,8 @@ export default {
       immediate: true
     },
     formDataForWatch: {
-      handler(val) {
-        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
+      handler(val, oldVal) {
+        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, oldVal)) {
           this.updateConditionData();
         }
       },

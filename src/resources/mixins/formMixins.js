@@ -238,9 +238,8 @@ export default {
       let value;
       return currentValue => {
         if (this.multiple || this.$options.name == 'TsFormCheckbox') {
-          if (this.$utils.isEmpty(currentValue)) {
-            value = [];
-          } else {
+          value = [];
+          if (!this.$utils.isEmpty(currentValue)) {
             if (this.isCustomValue) {
               // 返回的是对象处理需要处理成['value1', 'value2']
               if (currentValue instanceof Array) {
