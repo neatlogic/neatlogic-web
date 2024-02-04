@@ -52,7 +52,8 @@
     "customview": "Custom View",
     "resourcecenter": "Resource Center",
     "discovery": "Auto Discovery",
-    "cmdbmanage": "System Management"
+    "cmdbmanage": "System Management",
+    "objmanage": "Object Management"
   },
   "process": {
     "workordercenter": "Work Center",

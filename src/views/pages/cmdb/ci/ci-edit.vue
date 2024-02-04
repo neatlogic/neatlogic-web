@@ -269,7 +269,7 @@ export default {
           desc: this.$t('term.cmdb.abstractciallowextend'),
           width: '100%',
           url: 'api/rest/cmdb/ci/list',
-          params: { excludeCiId: _this.id, isVirtual: 0, isAbstract: 1 },
+          params: { excludeCiIdList: [_this.id], isVirtual: 0, isAbstract: 1 },
           transfer: true,
           onChange: name => {
             if (name) {

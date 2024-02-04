@@ -71,7 +71,7 @@ export default {
           const { id, toName: name, toLabel: label, toRule: rule, toIsRequired: isRequired } = rel;
           return { id, name, label, typeText: this.$t('page.relation'), isRequired, rowType: 'rel' };
         } else if (rel.direction === 'to') {
-          const { id, toName: name, fromLabel: label, fromRule: rule, fromIsRequired: isRequired } = rel;
+          const { id, fromName: name, fromLabel: label, fromRule: rule, fromIsRequired: isRequired } = rel;
           return { id, name, label, typeText: this.$t('page.relation'), isRequired, rowType: 'rel' };
         }
       });

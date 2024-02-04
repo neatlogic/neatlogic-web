@@ -31,19 +31,39 @@
               <div class="text-grey fz10">
                 <span v-if="ciData.isVirtual">{{ $t('term.cmdb.virtualci') }}</span>
                 <span v-if="ciData.isAbstract">{{ $t('term.cmdb.abstractci') }}</span>
+                <Divider v-if="ciData.isAbstract && ciData.parentCiId" type="vertical" />
                 <span v-if="ciData.parentCiId">
                   {{ $t('term.cmdb.extendto') }}
                   <a href="javascript:void(0)" @click="toParentCi(ciData.parentCiId)">{{ ciData.parentCiLabel }}</a>
                 </span>
-                <!--<span v-if="childrenList && childrenList.length > 0">
-                  子模型
+                <Divider v-if="childrenList && childrenList.length > 0" type="vertical" />
+                <span v-if="childrenList && childrenList.length > 0">
+                  {{ $t('term.cmdb.subci') }}
                   <a
                     v-for="(child, cindex) in childrenList"
                     :key="cindex"
                     class="mr-xs"
                     @click="toParentCi(child.id)"
                   >{{ child.label }}</a>
-                </span>-->
+                  <Poptip
+                    v-if="childrenList.length < ciData.children.length"
+                    word-wrap
+                    width="500"
+                    placement="bottom"
+                    :transform="true"
+                    trigger="hover"
+                  >
+                    <a class="tsfont-option-horizontal"></a>
+                    <div slot="content" class="api">
+                      <a
+                        v-for="(child, cindex) in ciData.children.slice(3)"
+                        :key="cindex"
+                        class="mr-xs"
+                        @click="toParentCi(child.id)"
+                      >{{ child.label }}</a>
+                    </div>
+                  </Poptip>
+                </span>
               </div>
               <div v-if="ciData.description" class="ci-description text-grey overflow fz10" :title="ciData.description">{{ ciData.description }}</div>
             </div>
@@ -217,7 +237,7 @@ export default {
     },
     childrenList() {
       if (this.ciData && this.ciData.children && this.ciData.children.length > 0) {
-        return this.ciData.children.length > 5 ? this.ciData.children.slice(0, 5) : this.ciData.children;
+        return this.ciData.children.length > 3 ? this.ciData.children.slice(0, 3) : this.ciData.children;
       }
       return [];
     }
