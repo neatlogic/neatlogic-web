@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!loadingShow">
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
@@ -110,6 +110,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
       tableData: { theadList: [], tbodyList: [] },
@@ -130,7 +131,12 @@ export default {
     this.getConditionFormItemList();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      //避免初始化数据，联动过滤清空表格内数据
+      this.loadingShow = false;
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
