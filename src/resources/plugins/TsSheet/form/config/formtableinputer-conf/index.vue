@@ -106,6 +106,7 @@
       v-if="isAttrConfigDialogShow && currentProperty"
       :formItemConfig="config"
       :property="currentProperty"
+      :formItemList="formItemList"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
@@ -198,17 +199,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    componentList() {
-      const componentList = [];
-      this.formItemList.forEach(d => {
-        if (d.uuid != this.formItem.uuid && (d.handler === 'formselect' || d.handler === 'formradio' || d.handler === 'checkbox')) {
-          componentList.push({ value: d.uuid, text: d.label });
-        }
-      });
-      return componentList;
-    }
-  },
+  computed: {},
   watch: {
   }
 };

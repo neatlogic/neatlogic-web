@@ -199,7 +199,7 @@
                   v-if="key !== 'filter'"
                   :ref="'condition_' + key"
                   :value="r"
-                  :formItemList="formItemList"
+                  :formItemList="allFormItemList"
                   :formItem="propertyLocal"
                   @input="
                     rule => {
@@ -229,7 +229,7 @@
                     :value="r"
                     :martixAttrList="mappingDataList"
                     :formItem="propertyLocal"
-                    :formItemList="formItemList"
+                    :formItemList="allFormItemList"
                     @input="
                       rule => {
                         setReaction(key, rule);
@@ -275,6 +275,10 @@ export default {
     isNeedReaction: {
       type: Boolean,
       default: true
+    },
+    formItemList: { //表格外部的组件
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -532,9 +536,9 @@ export default {
   },
   filter: {},
   computed: {
-    formItemList() {
-      //所有表单组件列表
-      return this.formItemConfig.dataConfig;
+    allFormItemList() {
+      //表格输入组件和表格外组件
+      return this.formItemConfig.dataConfig.concat(this.formItemList);
     },
     //表格选择组件矩阵的字段
     tableMatrixColumnList() {

@@ -604,28 +604,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {},
-  beforeRouteUpdate(to, from, next, url) {
-    if (!this.beforeLeaveCompare(this.initData)) {
-      let _this = this;
-      this.$utils.jumpDialog.call(
-        this,
-        {
-          save: {
-            fn: async vnode => {
-              return await _this.save();
-            }
-          }
-        },
-        to,
-        from,
-        next,
-        url
-      );
-    } else {
-      next();
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

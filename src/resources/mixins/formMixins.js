@@ -243,7 +243,16 @@ export default {
           } else {
             if (this.isCustomValue) {
               // 返回的是对象处理需要处理成['value1', 'value2']
-              value = currentValue instanceof Array ? currentValue.filter(item => item?.[this.valueName]).map(item => item[this.valueName]) : [];
+              if (currentValue instanceof Array) {
+                value = [];
+                currentValue.forEach(item => {
+                  if (typeof item === 'object' && item[this.valueName]) {
+                    value.push(item[this.valueName]);
+                  } else if (!this.$utils.isEmpty(item)) {
+                    value.push(item);
+                  }
+                });
+              }
             } else {
               value = [].concat(currentValue);
             }

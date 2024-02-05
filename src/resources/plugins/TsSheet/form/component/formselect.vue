@@ -43,7 +43,8 @@ export default {
   },
   data() {
     return {
-      isFirst: true
+      isFirst: true,
+      initFilter: this.$utils.deepClone(this.filter)
     };
   },
   beforeCreate() {},
@@ -111,8 +112,8 @@ export default {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
         const params = { matrixUuid: this.config.matrixUuid, filterList: []};
-        if (this.filter) {
-          params.filterList = this.$utils.deepClone(this.filter);
+        if (!this.$utils.isEmpty(this.filter)) {
+          params.filterList = this.filter;
         }
         if (this.config.mapping) {
           params.keywordColumn = this.config.mapping.text;
@@ -150,11 +151,12 @@ export default {
   },
   watch: {
     filter: {
-      handler(val, oldVal) {
-        if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, oldVal)) {
+      handler(val) {
+        if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, this.initFilter)) {
           //改变过滤条件，清空选项
           this.setValue(null);
         }
+        this.initFilter = this.$utils.deepClone(val);
         this.isFirst = false;
       },
       deep: true,
