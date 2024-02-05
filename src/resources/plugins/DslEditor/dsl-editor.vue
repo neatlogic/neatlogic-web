@@ -10,13 +10,14 @@
         @input="input"
       ></DslExpression>
       <!--<pre v-else class="expression-original text-grey">{{ valueLocal }}</pre>-->
-      <div v-else><Input
+      <textarea
+        v-show="!expressionData"
         ref="input-textarea"
         v-model="valueLocal"
-        :autosize="{ minRows: 1 }"
         type="textarea"
+        :autosize="{ minRows: 1 }"
         class="text-grey inputer-textarea"
-      /></div>
+      />
       <!--<div v-if="expressionData" class="inputer-container"><input
         ref="input"
         class="inputer"
@@ -53,8 +54,6 @@
         @click.native="chooseAttr(suggest)"
       >{{ suggest.text }}</Tag>
     </div>
-
-    <div></div>
   </div>
 </template>
 <script>
@@ -109,7 +108,7 @@ export default {
     },
     chooseAttr(op) {
       if (this.valueLocal.endsWith(' ')) {
-        this.valueLocal += (typeof op === 'object' ? op.value : op);
+        this.valueLocal += typeof op === 'object' ? op.value : op;
       } else {
         this.valueLocal += ' ' + (typeof op === 'object' ? op.value : op);
       }
@@ -138,7 +137,7 @@ export default {
           }
         } catch (e) {
           this.expressionData = null;
-        //console.error('解释异常', e);
+          //console.error('解释异常', e);
         }
       } else {
         this.$emit('input', '');
@@ -223,7 +222,17 @@ export default {
     }*/
   },
   filter: {},
-  computed: {},
+  computed: {
+    lastToken() {
+      if (!this.expressionData && this.valueLocal) {
+        const tokens = this.valueLocal.split(/\s+/);
+        if (tokens && tokens.length > 0) {
+          return tokens[tokens.length - 1];
+        }
+      }
+      return null;
+    }
+  },
   watch: {
     valueLocal: {
       handler: function(val) {
@@ -234,13 +243,14 @@ export default {
     },
     expressionData: {
       handler: function(val) {
-        this.$nextTick(() => {
+        //需要延迟等待组件重新渲染
+        setTimeout(() => {
           if (val) {
             this.$refs['input'] && this.$refs['input'].focus();
           } else {
             this.$refs['input-textarea'] && this.$refs['input-textarea'].focus();
           }
-        });
+        }, 200);
       }
     }
   }
@@ -255,11 +265,12 @@ export default {
   background: transparent;
 }
 .inputer-textarea {
-  /deep/.ivu-input {
-    outline: none;
-    border-width: 0px !important;
-    background: transparent;
-  }
+  outline: none;
+  width: 100%;
+  overflow-y: hidden;
+  resize: none;
+  border-width: 0px !important;
+  background: transparent;
 }
 .expression-container {
   border-bottom: 1px solid #ccc;

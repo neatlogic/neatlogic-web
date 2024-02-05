@@ -36,8 +36,8 @@
       </div>
       <div v-if="isAdvancedSearch">
         <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
-          <TabPane label="综合条件" name="condition"></TabPane>
-          <TabPane label="表达式" name="dsl"></TabPane>
+          <TabPane :label="$t('term.cmdb.condition')" name="condition"></TabPane>
+          <TabPane label="表达式(beta)" name="dsl"></TabPane>
         </Tabs>
         <Card
           v-if="advencedSearchMode == 'condition'"
@@ -48,7 +48,7 @@
           <TsRow style="max-height: 250px; overflow-y: auto; overflow-x: hidden">
             <Col span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ $t('term.cmdb.group') }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ $t('term.cmdb.group') }}</Col>
                 <Col span="18" class="search-condition">
                   <TsFormSelect
                     :transfer="true"
@@ -67,7 +67,7 @@
             </Col>
             <Col v-for="attr in commonAttrList" :key="attr.name" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ attr.label }}</Col>
                 <Col span="18" class="search-condition">
                   <div v-if="attr.name == 'id'">
                     <TsFormInput
@@ -100,7 +100,7 @@
             </Col>
             <Col v-for="attr in globalAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey tsfont-internet">
+                <Col span="6" class="search-label text-grey tsfont-internet overflow">
                   {{ attr.label }}
                 </Col>
                 <Col span="6" class="search-expression">
@@ -135,7 +135,7 @@
             </Col>
             <Col v-for="attr in searchAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ attr.label }}</Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -164,7 +164,7 @@
             </Col>
             <Col v-for="rel in relList" :key="rel.id + '_' + rel.direction" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ rel.direction == 'from' ? rel.toLabel : rel.fromLabel }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ rel.direction == 'from' ? rel.toLabel : rel.fromLabel }}</Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -210,7 +210,7 @@
           </div>
         </Card>
         <div v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
-          <DslEditor :suggestList="suggestList"></DslEditor>
+          <DslEditor v-model="searchParam.dsl" :suggestList="suggestList"></DslEditor>
           <div style="text-align: right" class="mt-md">
             <Button
               type="primary"
@@ -830,8 +830,9 @@ export default {
         if (this.selectedData && this.selectedData.length > 0) {
           this.selectedIndexList = this.$utils.deepClone(this.selectedData);
         }
-        this.isLoading = false;
         this.selectedCiEntityList = [];
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     async getGlobalAttrList() {
@@ -844,7 +845,7 @@ export default {
         this.attrList = res.Return;
         if (this.attrList && this.attrList.length > 0) {
           this.attrList.forEach(attr => {
-            this.suggestList.push(attr.name);
+            this.suggestList.push({ value: attr.name, text: attr.name + '·' + attr.label });
           });
         }
       });
@@ -1308,9 +1309,30 @@ export default {
           this.searchParam['filterCiEntityId'] = null;
           this.searchParam['filterCiId'] = null;
           this.searchParam['groupId'] = null;
+          this.searchParam['dsl'] = null;
           this.searchCiEntity();
         } else {
           this.$set(this.searchParam, 'keyword', '');
+        }
+      }
+    },
+    advencedSearchMode: {
+      handler: function(val) {
+        if (val === 'condition') {
+          this.searchParam.dsl = null;
+          this.searchCiEntity();
+        } else {
+          if (this.attrList && this.attrList.length > 0) {
+            this.attrList.forEach(element => {
+              element.expression = null;
+            });
+          }
+          this.attrFilterList = [];
+          this.relFilterList = [];
+          this.searchParam['filterCiEntityId'] = null;
+          this.searchParam['filterCiId'] = null;
+          this.searchParam['groupId'] = null;
+          this.searchCiEntity();
         }
       }
     }

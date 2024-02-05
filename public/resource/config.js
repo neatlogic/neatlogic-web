@@ -119,7 +119,7 @@ async function getSsoTokenKey() {
 
   if (xhr.status === 200) {
     try {
-      var responseText = JSON.parse(xhr.responseText);
+      const responseText = JSON.parse(xhr.responseText);
       if (responseText && responseText.Status === 'OK') {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
@@ -129,6 +129,9 @@ async function getSsoTokenKey() {
           if (queryString) {
             SSOTICKETVALUE = queryString.split('&')[0];
           }
+        }
+        if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
+          COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
         if (ISNEEDAUTH) {
           getDirectUrl();

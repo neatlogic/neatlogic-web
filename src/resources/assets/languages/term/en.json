@@ -210,7 +210,8 @@
     "searchable": "Allow search",
     "pushmqhelp": "Publish this property to MQ when configuration items change",
     "searchablehelp": "Allowed search attributes can be used as filter conditions in advanced searches or connected to other model's searchable attributes in custom data views",
-    "topicci": "Subscription model"
+    "topicci": "Subscription model",
+    "condition": "Comprehensive conditions"
   },
   "process": {
     "workordercenter": "Work Center",
