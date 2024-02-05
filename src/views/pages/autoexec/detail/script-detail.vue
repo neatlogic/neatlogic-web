@@ -246,6 +246,9 @@ export default {
   beforeMount() {},
   mounted() {
     const { scriptId = '', versionId = '', status = '' } = this.$route.query || {};
+    if (status) {
+      this.versionStatus = status;
+    }
     if (scriptId) {
       this.scriptId = parseInt(scriptId);
       this.getDetail(this.scriptId);
@@ -253,9 +256,6 @@ export default {
     if (versionId) {
       this.versionId = versionId;
       this.getDetail(parseInt(this.versionId), 'versionId');
-    }
-    if (status) {
-      this.versionStatus = status;
     }
   },
   beforeUpdate() {},
