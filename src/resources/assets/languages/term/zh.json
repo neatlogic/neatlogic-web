@@ -211,7 +211,13 @@
     "pushmqhelp": "配置项发生变化时发布此属性到MQ",
     "searchablehelp": "允许搜索的属性可以在高级搜索中作为过滤条件，也能在自定义数据视图中连接其他模型的可搜索属性",
     "topicci": "订阅模型",
-    "condition": "综合条件"
+    "condition": "综合条件",
+    "automatch": "自动匹配",
+    "cancelautomatch": "撤销自动匹配",
+    "collection": "集合",
+    "parentattr": "父属性",
+    "initiativecollect": "主动采集",
+    "passivitycollect": "被动采集"
   },
   "process": {
     "workordercenter": "工单中心",

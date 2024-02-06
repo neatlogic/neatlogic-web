@@ -211,7 +211,13 @@
     "pushmqhelp": "Publish this property to MQ when configuration items change",
     "searchablehelp": "Allowed search attributes can be used as filter conditions in advanced searches or connected to other model's searchable attributes in custom data views",
     "topicci": "Subscription model",
-    "condition": "Comprehensive conditions"
+    "condition": "Comprehensive conditions",
+    "automatch": "Automatic matching",
+    "cancelautomatch": "Revoke automatic matching",
+    "collection": "aggregate",
+    "parentattr": "Parent attribute",
+    "initiativecollect": "Active collection",
+    "passivitycollect": "Passive collection"
   },
   "process": {
     "workordercenter": "Work Center",

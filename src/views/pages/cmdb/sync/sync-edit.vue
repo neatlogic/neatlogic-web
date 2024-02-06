@@ -2,15 +2,15 @@
   <div>
     <TsDialog v-if="syncCiCollectionData" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="syncCiCollectionData.id">编辑配置：{{ syncCiCollectionData.ciLabel }}({{ syncCiCollectionData.ciName }})</div>
-        <div v-if="!syncCiCollectionData.id">添加配置</div>
+        <div v-if="syncCiCollectionData.id">{{ $t('dialog.title.edittarget',{'target':$t('page.config')}) }}：{{ syncCiCollectionData.ciLabel }}({{ syncCiCollectionData.ciName }})</div>
+        <div v-if="!syncCiCollectionData.id">{{ $t('dialog.title.addtarget',{'target':$t('page.config')}) }}</div>
       </template>
       <template v-slot>
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
         <TsForm ref="ciForm" :item-list="formConfig">
           <template v-slot:attrMapping>
-            <span v-if="matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">自动匹配</span>
-            <span v-else class="mt-sm text-href" @click="resetAutoMatch">撤销自动匹配</span>
+            <span v-if="matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">{{ $t('term.cmdb.automatch') }}</span>
+            <span v-else class="mt-sm text-href" @click="resetAutoMatch">{{ $t('term.cmdb.cancelautomatch') }}</span>
             <TsTable
               v-if="attrData"
               ref="tableAttr"
@@ -74,8 +74,9 @@
                   :transfer="true"
                   :clearable="false"
                   :dataList="[
-                    { value: 'insert', text: '追加' },
-                    { value: 'replace', text: '替换' }
+                    { value: 'insert', text: $t('page.append') },
+                    { value: 'replace', text: $t('page.replace') },
+                    { value: 'update', text: $t('page.update') }
                   ]"
                 ></TsFormSelect>
               </template>
@@ -84,8 +85,8 @@
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close(false)">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close(false)">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -145,7 +146,7 @@ export default {
         },
         collectionName: {
           type: 'select',
-          label: '集合',
+          label: this.$t('term.cmdb.collection'),
           transfer: true,
           width: '100%',
           value: this.collection,
@@ -162,7 +163,7 @@ export default {
         },
         parentKey: {
           type: 'select',
-          label: '父属性',
+          label: this.$t('term.cmdb.parentattr'),
           transfer: true,
           width: '100%',
           onChange: value => {
@@ -174,8 +175,8 @@ export default {
           type: 'radio',
           label: '采集模式',
           dataList: [
-            { value: 'initiative', text: '主动采集' },
-            { value: 'passive', text: '被动采集' }
+            { value: 'initiative', text: this.$t('term.cmdb.initiativecollect') },
+            { value: 'passive', text: this.$t('term.cmdb.passivitycollect') }
           ],
           validateList: ['required'],
           width: '100%',
@@ -274,7 +275,7 @@ export default {
         theadList: [
           { key: 'relId', title: '关系', width: 200 },
           { key: 'field', title: '匹配字段' },
-          { key: 'actionType', title: '动作', tooltip: '追加：新关系追加到旧关系中；替换：新关系替换掉旧关系', width: 120 }
+          { key: 'actionType', title: '动作', tooltip: '追加：新关系追加到旧关系中；替换：不管新关系是否为空，都会用新关系替换掉旧关系；更新：如果新关系不为空，则用新关系替换掉旧关系', width: 120 }
         ],
         tbodyList: []
       },
