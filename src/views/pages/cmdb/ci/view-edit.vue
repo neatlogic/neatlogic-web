@@ -125,7 +125,7 @@ export default {
       },
       theadList: [
         { key: 'itemLabel', title: this.$t('page.field') },
-        { key: 'alias', title: this.$t('page.alias'), tooltip: this.$t('term.cmdb.tooltipscope') },
+        { key: 'alias', title: this.$t('page.alias') },
         { key: 'typeText', title: this.$t('page.type') },
         { key: 'showType', title: this.$t('term.cmdb.displaytype') },
         { key: 'allowEdit', title: this.$t('page.allowedit') }

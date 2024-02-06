@@ -3,23 +3,23 @@
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
         <div>
-          <div class="tsForm tsForm-border-border ivu-form-label-right ">
+          <div class="tsForm tsForm-border-border ivu-form-label-right">
             <div v-if="elementList && elementList.length > 0">
-              <div v-for="(e, index) in elementList" :key="index" style="margin:0 auto;width:80%;">
+              <div v-for="(e, index) in elementList" :key="index" style="margin: 0 auto; width: 80%">
                 <div v-if="e.type === 'attr'">
                   <div
                     v-if="e.element.canInput"
                     class="ivu-form-item tsform-item ivu-form-label-right"
                     :class="e.element.isRequired ? 'ivu-form-item-required' : ''"
-                    style="width: 100%;"
+                    style="width: 100%"
                   >
-                    <label class="ivu-form-item-label overflow" style="width: 120px;">
+                    <label class="ivu-form-item-label overflow" style="width: 120px">
                       <div>
                         {{ e.element.label }}
                         <Checkbox v-model="checkData['attr_' + e.element.id]" class="ml-md"></Checkbox>
                       </div>
                     </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important;">
+                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
                       <AttrInputer
                         ref="attrHandler"
                         :disabled="!checkData['attr_' + e.element.id] ? true : false"
@@ -37,17 +37,14 @@
                   </div>
                 </div>
                 <div v-else-if="e.type === 'global'">
-                  <div
-                    class="ivu-form-item tsform-item ivu-form-label-right"
-                    style="width: 100%;"
-                  >
-                    <label class="ivu-form-item-label overflow" style="width: 120px;">
+                  <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%">
+                    <label class="ivu-form-item-label overflow" style="width: 120px">
                       <div>
                         {{ e.element.label }}
                         <Checkbox v-model="checkData['global_' + e.element.id]" class="ml-md"></Checkbox>
                       </div>
                     </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important;">
+                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
                       <TsFormRadio
                         v-if="!e.element.isMultiple"
                         :disabled="!checkData['global_' + e.element.id] ? true : false"
@@ -77,8 +74,8 @@
                   </div>
                 </div>
                 <div v-if="e.type === 'rel'">
-                  <div class="ivu-form-item tsform-item ivu-form-label-right" :class="(e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired) ? 'ivu-form-item-required' : ''" style="width: 100%;">
-                    <label class="ivu-form-item-label overflow" style="width: 120px;">
+                  <div class="ivu-form-item tsform-item ivu-form-label-right" :class="(e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired) ? 'ivu-form-item-required' : ''" style="width: 100%">
+                    <label class="ivu-form-item-label overflow" style="width: 120px">
                       <div v-if="e.element.direction == 'from'">
                         {{ e.element.toLabel }}
                         <Checkbox v-model="checkData['relfrom_' + e.element.id]" class="ml-md"></Checkbox>
@@ -88,7 +85,7 @@
                         <Checkbox v-model="checkData['relto_' + e.element.id]" class="ml-md"></Checkbox>
                       </div>
                     </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important;">
+                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
                       <div v-if="isRelShow(e.element)">
                         <span>
                           <a href="javascript:void(0)" :class="!checkData['rel' + e.element.direction + '_' + e.element.id] ? 'text-disabled' : ''" @click="addRelEntity(e.element)">
@@ -109,11 +106,11 @@
                               <div
                                 v-for="relci in relCiList"
                                 :key="relci.id"
-                                style="text-align:center;margin-right:10px;float:left;cursor:pointer;width:80px;"
+                                style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
                                 @click="newCiEntity(e.element, relci.id)"
                               >
                                 <div>
-                                  <a href="javascript:void(0)"><i style="font-size:20px" :class="relci.icon"></i></a>
+                                  <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
                                 </div>
                                 <div>
                                   <a href="javascript:void(0)">{{ relci.label }}</a>
@@ -153,13 +150,13 @@
                 </div>
               </div>
               <Divider />
-              <div style="margin:0 auto;width:80%;">
+              <div style="margin: 0 auto; width: 80%">
                 <div>
-                  <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%;">
-                    <label class="ivu-form-item-label overflow" style="width: 120px;">
+                  <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%">
+                    <label class="ivu-form-item-label overflow" style="width: 120px">
                       <span>{{ $t('page.description') }}</span>
                     </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important;">
+                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
                       <TsFormInput v-model="ciEntityData.description" type="textarea" maxlength="500"></TsFormInput>
                     </div>
                   </div>
@@ -257,7 +254,7 @@ export default {
       if (this.ciEntityData.relEntityData['rel' + element.direction + '_' + element.id]) {
         this.$set(this.ciEntityData.relEntityData['rel' + element.direction + '_' + element.id], 'action', val);
       } else {
-        this.ciEntityData.relEntityData['rel' + element.direction + '_' + element.id] = {action: val};
+        this.ciEntityData.relEntityData['rel' + element.direction + '_' + element.id] = { action: val };
       }
     },
     save(needCommit) {
@@ -379,7 +376,7 @@ export default {
     async getAttrByCiId(ciId) {
       if (ciId) {
         let attrList;
-        await this.$api.cmdb.ci.getAttrByCiId(ciId).then(res => {
+        await this.$api.cmdb.ci.getAttrByCiId(ciId, { needAlias: 1 }).then(res => {
           attrList = res.Return;
         });
         return attrList;
@@ -388,7 +385,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true}).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, { needAction: true }).then(res => {
           relList = res.Return;
         });
         return relList;
@@ -396,7 +393,7 @@ export default {
     },
     async getGlobalAttrByCiId(ciId) {
       let globalAttrList;
-      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, {isActive: 1, allowEdit: 1}).then(res => {
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, { isActive: 1, allowEdit: 1 }).then(res => {
         globalAttrList = res.Return;
       });
       return globalAttrList;
