@@ -1,18 +1,19 @@
-<template>
-  <div v-if="expressionData" class="item-container">
-    <div v-if="expressionData.type === 'expression' && expressionData.attr" class="item-container">
-      <div class="item text-warning attr">
-        <Poptip :transfer="true">
+<template v-if="expressionData">
+  <span v-if="expressionData">
+    <span v-if="expressionData.type === 'expression' && expressionData.attr">
+      <span class="item text-warning attr">
+        <i class="text-href">{{ expressionData.attr }}</i>
+        <!--<Poptip :transfer="true">
           <a>{{ expressionData.attr }}</a>
           <div slot="title"><i>Custom title</i></div>
           <div slot="content">asdfasdfasfasfafdas</div>
-        </Poptip>
-      </div>
-      <div class="item text-grey expression">
+        </Poptip>-->
+      </span>
+      <span class="item text-grey expression">
         <b>{{ expressionData.connector }}</b>
-      </div>
-      <div class="item" :class="getValueClass(expressionData.valuetype)">{{ expressionData.value }}</div>
-      <div v-show="isNeedInputer" class="item">
+      </span>
+      <span class="item" :class="getValueClass(expressionData.valuetype)">{{ expressionData.value }}</span>
+      <span v-show="isNeedInputer" class="item">
         <input
           ref="focusinputer"
           class="inputer"
@@ -20,35 +21,35 @@
           @keydown="backspace"
           @input="input"
         />
-      </div>
-    </div>
-    <div v-else-if="expressionData.type === 'join' && expressionData.left && expressionData.right && isValid(expressionData.left) && isValid(expressionData.right)" class="item-container">
+      </span>
+    </span>
+    <span v-else-if="expressionData.type === 'join' && expressionData.left && expressionData.right && isValid(expressionData.left) && isValid(expressionData.right)">
       <DslExpression v-if="expressionData.left" :needInputer="false" :expressionData="expressionData.left"></DslExpression>
-      <div class="item text-grey expression">
+      <span class="item text-grey expression">
         <b>{{ expressionData.connector }}</b>
-      </div>
+      </span>
       <DslExpression
         v-if="expressionData.right"
-        :ref="nextNeedInputer?'focusinputer':'inputer'"
+        :ref="nextNeedInputer ? 'focusinputer' : 'inputer'"
         :needInputer="nextNeedInputer"
         :expressionData="expressionData.right"
         @input="input"
         @backspace="backspace"
       ></DslExpression>
-    </div>
-    <div v-else-if="expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0" class="item-container">
-      <div class="item text-grey expression"><b>(</b></div>
+    </span>
+    <span v-else-if="expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0">
+      <span class="item text-grey expression"><b>(</b></span>
       <DslExpression
         v-for="(child, index) in expressionData.children"
         :key="index"
-        :ref="nextNeedInputer?'focusinputer':'inputer'"
+        :ref="nextNeedInputer ? 'focusinputer' : 'inputer'"
         :needInputer="nextNeedInputer"
         :expressionData="child"
         @input="input"
         @backspace="backspace"
       ></DslExpression>
-      <div class="item text-grey expression"><b>)</b></div>
-      <div v-show="isNeedInputer" class="item">
+      <span class="item text-grey expression"><b>)</b></span>
+      <span v-show="isNeedInputer" class="item">
         <input
           ref="focusinputer"
           class="inputer"
@@ -56,11 +57,12 @@
           @keydown="backspace"
           @input="input"
         />
-      </div>
-    </div>
-  </div>
+      </span>
+    </span>
+  </span>
 </template>
 <script>
+
 export default {
   name: '',
   components: {

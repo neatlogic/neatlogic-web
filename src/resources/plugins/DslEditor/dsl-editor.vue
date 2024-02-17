@@ -14,9 +14,10 @@
         v-show="!expressionData"
         ref="input-textarea"
         v-model="valueLocal"
+        rows="1"
         type="textarea"
-        :autosize="{ minRows: 1 }"
         class="text-grey inputer-textarea"
+        @input="resize"
       />
       <!--<div v-if="expressionData" class="inputer-container"><input
         ref="input"
@@ -267,10 +268,13 @@ export default {
 .inputer-textarea {
   outline: none;
   width: 100%;
+  height: 25px;
   overflow-y: hidden;
   resize: none;
   border-width: 0px !important;
   background: transparent;
+  padding: 0px;
+  line-height: 1.5 !important;
 }
 .expression-container {
   border-bottom: 1px solid #ccc;
