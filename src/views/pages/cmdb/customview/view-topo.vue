@@ -28,8 +28,8 @@
 </template>
 <script>
 import * as d3 from 'd3-selection';
-import '@/resources/assets/font/tsfont.js';
-import '@/resources/assets/font/iconfont.js';
+import '@/resources/assets/font/tsfonts/tsfont.js';
+import '@/resources/assets/font/tsIconfont.js';
 import { graphviz } from 'd3-graphviz';
 import { addEvent } from './util/event.js';
 export default {
