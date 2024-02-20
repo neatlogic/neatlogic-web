@@ -75,7 +75,7 @@
                   v-if="currentTab == 'cientity'"
                   ref="CiEntityList"
                   :needCheck="true"
-                  :needDsl="false"
+                  :needDsl="true"
                   class="pt-nm pl-nm pr-nm"
                   :ciId="ciData.id"
                   :needExport="true"

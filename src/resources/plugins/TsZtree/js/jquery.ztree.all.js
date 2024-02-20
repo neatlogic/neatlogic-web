@@ -1941,7 +1941,7 @@
               view.expandCollapseParentNode(setting, node.getParentNode(), true, false, showNodeFocus);
             } else if (!isSilent) {
               try {
-                $$(node, setting).focus().blur();
+                // $$(node, setting).focus().blur(); // 注释，TsZTree搜索关键字，删除全部关键字值，导致光标失焦问题
               } catch (e) {}
             }
             view.selectNode(setting, node, addFlag);

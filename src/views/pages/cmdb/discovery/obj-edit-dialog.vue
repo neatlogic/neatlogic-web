@@ -45,8 +45,7 @@ export default {
           type: 'select',
           url: 'api/rest/cmdb/ci/list',
           params: {isVirtual: 0, isAbstract: 0 },
-          transfer: true,
-          validateList: ['required']
+          transfer: true
         }
       ]
     };
