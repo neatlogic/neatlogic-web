@@ -115,7 +115,12 @@
       </div>
     </div>
     <StatusEditDialog v-if="isStatusEditShow" :statusData="currentStatusData" @close="closeStatusEditDialog"></StatusEditDialog>
-    <AppStatusRelConfigDialog v-if="isStatusRelConfigEditShow" :statusrel="currentStatusRel" @close="closeStatusRelConfigDialog"></AppStatusRelConfigDialog>
+    <AppStatusRelConfigDialog
+      v-if="isStatusRelConfigEditShow"
+      :appType="appType"
+      :statusrel="currentStatusRel"
+      @close="closeStatusRelConfigDialog"
+    ></AppStatusRelConfigDialog>
   </div>
 </template>
 <script>
@@ -129,7 +134,13 @@ export default {
   },
   props: {
     statusList: { type: Array, default: () => { return []; } },
-    statusRelList: { type: Array }
+    statusRelList: { type: Array },
+    appType: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {

@@ -94,7 +94,13 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
   props: {
-    statusrel: { type: Object }
+    statusrel: { type: Object },
+    appType: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {
@@ -131,7 +137,7 @@ export default {
     if (this.statusrel.config) {
       this.config = this.statusrel.config;
     }
-    this.getAttrByAppId();
+    this.getPrivateAttrList();
   },
   beforeMount() {},
   mounted() {},
@@ -167,10 +173,16 @@ export default {
       const other = this.config.requiredAttrList.filter(d => d !== row);
       return this.attrList.filter(d => !other.find(dd => dd.attrId === d.id));
     },
-    getAttrByAppId() {
-      if (this.statusrel?.appId) {
-        this.$api.rdm.app.getAppById(this.statusrel.appId).then(res => {
-          this.attrList = res.Return.attrList;
+    getPrivateAttrList() {
+      if (this.appType?.appType) {
+        this.attrList = this.$utils.deepClone(this.appType?.config?.attrList || []);
+        this.$api.rdm.attr.getPrivateAttrList({ appType: this.appType.appType }).then(res => {
+          const privateAttrList = res.Return || [];
+          privateAttrList.forEach(attr => {
+            if (this.appType.config.attrList && !this.appType.config.attrList.find(d => d.type === attr.type)) {
+              this.attrList.push({ ...attr, isPrivate: 1 });
+            }
+          });
         });
       }
     },
