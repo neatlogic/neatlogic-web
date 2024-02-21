@@ -175,8 +175,10 @@ export default {
     },
     getPrivateAttrList() {
       if (this.appType?.appType) {
-        this.attrList = this.$utils.deepClone(this.appType?.config?.attrList || []);
-        this.$api.rdm.attr.getPrivateAttrList({ appType: this.appType.appType }).then(res => {
+        let {appType = '', config = {}} = this.appType || {};
+        let {attrList = []} = config || {};
+        this.attrList = this.$utils.deepClone(attrList || []);
+        this.$api.rdm.attr.getPrivateAttrList({ appType: appType }).then(res => {
           const privateAttrList = res.Return || [];
           privateAttrList.forEach(attr => {
             if (this.appType.config.attrList && !this.appType.config.attrList.find(d => d.type === attr.type)) {
