@@ -94,13 +94,7 @@ export default {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
   },
   props: {
-    statusrel: { type: Object },
-    appType: {
-      type: Object,
-      default: () => {
-        return {};
-      }
-    }
+    statusrel: { type: Object }
   },
   data() {
     return {
@@ -137,7 +131,7 @@ export default {
     if (this.statusrel.config) {
       this.config = this.statusrel.config;
     }
-    this.getPrivateAttrList();
+    this.getAttrByAppId();
   },
   beforeMount() {},
   mounted() {},
@@ -173,18 +167,10 @@ export default {
       const other = this.config.requiredAttrList.filter(d => d !== row);
       return this.attrList.filter(d => !other.find(dd => dd.attrId === d.id));
     },
-    getPrivateAttrList() {
-      if (this.appType?.appType) {
-        let {appType = '', config = {}} = this.appType || {};
-        let {attrList = []} = config || {};
-        this.attrList = this.$utils.deepClone(attrList || []);
-        this.$api.rdm.attr.getPrivateAttrList({ appType: appType }).then(res => {
-          const privateAttrList = res.Return || [];
-          privateAttrList.forEach(attr => {
-            if (this.appType.config.attrList && !this.appType.config.attrList.find(d => d.type === attr.type)) {
-              this.attrList.push({ ...attr, isPrivate: 1 });
-            }
-          });
+    getAttrByAppId() {
+      if (this.statusrel?.appId) {
+        this.$api.rdm.app.getAppById(this.statusrel.appId).then(res => {
+          this.attrList = res.Return.attrList;
         });
       }
     },

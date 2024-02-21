@@ -5,12 +5,7 @@
         <AttrEdit v-if="currentTab === 'attr'" :appType="appType"></AttrEdit>
       </TabPane>
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
-        <AppStatus
-          v-if="currentTab === 'objectstatus'"
-          :appType="appType"
-          :statusList="appType.config && appType.config.statusList"
-          :statusRelList="appType.config && appType.config.statusRelList"
-        ></AppStatus>
+        <AppStatus v-if="currentTab === 'objectstatus'" :statusList="appType.config && appType.config.statusList" :statusRelList="appType.config && appType.config.statusRelList"></AppStatus>
       </TabPane>
     </Tabs>
   </div>
