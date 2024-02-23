@@ -45,10 +45,7 @@
                     </pre>
               </div>
             </Poptip>
-            <TsCodemirror
-              v-model="ciData.viewXml"
-              codeMode="xml"
-            ></TsCodemirror>
+            <TsCodemirror v-model="ciData.viewXml" codeMode="xml"></TsCodemirror>
           </template>
           <template v-slot:file>
             <div>
@@ -107,7 +104,7 @@
                   </div>
                 </Poptip>
               </div>
-              <div v-if="showFileError" class="form-error-tip">{{ $t('form.placeholder.pleaseupload',{'target':$t('term.cmdb.configfile')}) }}</div>
+              <div v-if="showFileError" class="form-error-tip">{{ $t('form.placeholder.pleaseupload', { target: $t('term.cmdb.configfile') }) }}</div>
             </div>
           </template>
           <template v-slot:icon>
@@ -236,7 +233,7 @@ export default {
           label: this.$t('term.cmdb.virtualci'),
           value: 0,
           isHidden: false,
-          onChange: (name) => {
+          onChange: name => {
             this.$set(_this.ciData, 'isVirtual', name);
             for (let k in this.ciFormConfig) {
               if (this.ciFormConfig[k]._belong === 'realci') {
@@ -269,7 +266,11 @@ export default {
           desc: this.$t('term.cmdb.abstractciallowextend'),
           width: '100%',
           url: 'api/rest/cmdb/ci/list',
-          params: { excludeCiIdList: [_this.id], isVirtual: 0, isAbstract: 1 },
+          params: {
+            excludeCiIdList: _this.id ? [] : [_this.id],
+            isVirtual: 0,
+            isAbstract: 1
+          },
           transfer: true,
           onChange: name => {
             if (name) {
@@ -392,7 +393,7 @@ export default {
               this.needCheckParentCi = true;
             }
             this.currentIcon = this.ciData.icon;
-            
+
             this.ciFormConfig.forEach(element => {
               if (element._belong === 'realci') {
                 this.$set(element, 'isHidden', this.ciData.isVirtual === 1);
@@ -404,13 +405,13 @@ export default {
               if (element.name === 'name') {
                 this.$set(element, 'disabled', true);
               } else if (element.name === 'isVirtual') {
-              //不允许再次上传配置文件和修改是否虚拟模型
+                //不允许再次上传配置文件和修改是否虚拟模型
                 this.$set(element, 'isHidden', true);
               } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
-              //有数据不允许修改是否抽象模型和父模型
+                //有数据不允许修改是否抽象模型和父模型
                 this.$set(element, 'isHidden', true);
               } else if (element.name === 'isAbstract' && this.ciData.hasChildren) {
-              //已被继承不允许修改是否抽象模型
+                //已被继承不允许修改是否抽象模型
                 this.$set(element, 'isHidden', true);
               }
             });
@@ -442,8 +443,7 @@ export default {
       }
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
