@@ -366,10 +366,7 @@ export default {
     renderContent: function(h, { root, node, data }) {
       let _this = this;
       return h('span', {
-        class: {
-          // 'select-li': true,
-          // 'selected': data.selected
-        },
+        class: data.className,
         props: {
           data: data
         },

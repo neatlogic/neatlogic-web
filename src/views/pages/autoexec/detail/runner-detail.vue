@@ -28,6 +28,7 @@
               type="primary"
               icon="tsfont tsfont-run"
               :disabled="(!dataConfig.isActive || !dataConfig.executable) && source == 'combop'"
+              :loading="isCreating"
               @click="openExecuteSetting"
             >{{ $t('term.autoexec.immediateexecution') }}</Button>
           </span>
@@ -231,6 +232,7 @@ export default {
   data() {
     let _this = this;
     return {
+      isCreating: false,
       actionId: null,
       versionId: null,
       source: 'combop',
@@ -489,6 +491,7 @@ export default {
         combopVersionId: this.versionId,
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
+      this.isCreating = true;
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -497,6 +500,8 @@ export default {
             query: {id: res.Return.jobId}
           });
         }
+      }).finally(e => {
+        this.isCreating = false;
       });
     },
     scroll(top) {
