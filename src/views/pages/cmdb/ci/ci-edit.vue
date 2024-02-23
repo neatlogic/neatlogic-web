@@ -267,7 +267,7 @@ export default {
           width: '100%',
           url: 'api/rest/cmdb/ci/list',
           params: {
-            excludeCiIdList: _this.id ? [] : [_this.id],
+            excludeCiIdList: !_this.id ? [] : [_this.id],
             isVirtual: 0,
             isAbstract: 1
           },
