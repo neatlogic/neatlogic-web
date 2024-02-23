@@ -85,7 +85,8 @@
                   </span>
                 </div>
                 <div class="padding-sm" style="word-break: break-all; white-space: normal">
-                  <span class="tsfont-setting cursor text-href" @click="editStatusRelConfig(statusrel)">{{ $t('page.setting') }}</span>
+                  <!-- 设置先注释，因为属性下拉列表，迭代属性依赖项目Id才能获取数据， 目录属性依赖应用Id才能获取数据-->
+                  <!-- <span class="tsfont-setting cursor text-href" @click="editStatusRelConfig(statusrel)">{{ $t('page.setting') }}</span> -->
                   <span v-if="getRequiredAttrList(statusrel).length > 0">
                     <Divider type="vertical" />
                     <span class="text-grey mr-sm">{{ $t('term.rdm.requiredattribute') }}</span>

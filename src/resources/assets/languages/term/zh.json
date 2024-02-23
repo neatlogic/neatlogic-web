@@ -2568,7 +2568,9 @@
     "whathelp": "请问有什么能帮到您？",
     "problemdes": "问题描述",
     "relcurrclass": "关联当前分类",
-    "unlassifieddoc": "未分类文档"
+    "unlassifieddoc": "未分类文档",
+    "representmenupage": "表示菜单页面",
+    "representsubpages": "表示子页面"
   },
   "dr": {
     "assetconfig": "资产配置",
@@ -2650,6 +2652,7 @@
     "larger": "放大",
     "smaller": "缩小",
     "importtemplate": "导入模板",
-    "strictmode": "严格框选模式"
+    "strictmode": "严格框选模式",
+    "changestatusconfirm":  "是否确认将当前版本状态修改成：{target}？"
   }
 }

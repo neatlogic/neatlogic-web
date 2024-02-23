@@ -2570,7 +2570,9 @@
     "selectoneresource": "Please select at least one resource",
     "noaddauthresource": "There are currently no resources to add permissions to",
     "relcurrclass": "Associate with current classification",
-    "unlassifieddoc": "Unclassified documents"
+    "unlassifieddoc": "Unclassified documents",
+    "representmenupage": "Represent menu page",
+    "representsubpages": "Represent Subpages"
   },
   "dr": {
     "assetconfig": "Asset allocation",
@@ -2651,6 +2653,7 @@
     "larger": "enlarge",
     "smaller": "narrow",
     "importtemplate": "Import Template",
-    "strictmode": "Strict box selection mode"
+    "strictmode": "Strict box selection mode",
+    "changestatusconfirm":  "Are you sure to change current version to {target}?"
   }
 }
