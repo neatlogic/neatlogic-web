@@ -2568,7 +2568,9 @@
     "whathelp": "请问有什么能帮到您？",
     "problemdes": "问题描述",
     "relcurrclass": "关联当前分类",
-    "unlassifieddoc": "未分类文档"
+    "unlassifieddoc": "未分类文档",
+    "representmenupage": "表示菜单页面",
+    "representsubpages": "表示子页面"
   },
   "dr": {
     "assetconfig": "资产配置",

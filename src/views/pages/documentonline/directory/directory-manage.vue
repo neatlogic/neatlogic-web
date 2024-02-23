@@ -17,6 +17,16 @@
         </div>
       </template>
       <template v-slot:sider>
+        <Alert show-icon style="width: 204px;">
+          <div>
+            <span class="tsfont-bar icon-right"></span>
+            <span>{{ $t('term.documentonline.representmenupage') }} </span>
+          </div>
+          <div>
+            <span class="tsfont-ITfuwu icon-right"></span>
+            <span>{{ $t('term.documentonline.representsubpages') }}</span>
+          </div>
+        </Alert>
         <DirectoryTree
           ref="directoryTree"
           :isFile="isFile"
