@@ -1,6 +1,10 @@
-export default (currentValue, oldValue, conditionValue) => {
+export default (currentValue, oldValue, condition) => {
   let isEqual = false;
-  if (currentValue == conditionValue) {
+  let conditionValue = condition.valueList;
+  //处理隐藏属性过滤
+  let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
+  let uuid = uuidList[1] || 'value';
+  if (conditionValue && currentValue == conditionValue) {
     isEqual = true;
   } else if (currentValue == null && conditionValue != null) {
     isEqual = false;
@@ -11,20 +15,23 @@ export default (currentValue, oldValue, conditionValue) => {
       let valueList = [];
       currentValue.forEach(item => {
         if (typeof item === 'object') {
-          valueList.push(item.value);
+          item[uuid] != null && valueList.push(item[uuid]);
         } else {
           valueList.push(item);
         }
       });
-      if (valueList.every(cv => conditionValue.includes(cv)) && conditionValue.every(cv => valueList.includes(cv))) {
+      let conditionValueList = conditionValue.map(c => {
+        return c.value;
+      });
+      if (valueList.every(cv => conditionValueList.includes(cv)) && conditionValueList.every(cv => valueList.includes(cv))) {
         isEqual = true;
       }
     }
   } else {
-    if (conditionValue.length == 1) {
-      if (currentValue == conditionValue[0] || ((typeof currentValue === 'object') && currentValue.value == conditionValue[0])) {
-        isEqual = true;
-      }
+    if (currentValue == conditionValue) {
+      isEqual = true;
+    } else if (typeof currentValue === 'object' && currentValue[uuid] == conditionValue.value) {
+      isEqual = true;
     }
   }
   return isEqual;

@@ -49,6 +49,7 @@
                   :formItem="getFormItem(conItem.formItemUuid)"
                   :value="conItem.valueList"
                   mode="condition"
+                  isCustomValue
                   @change="
                     val => {
                       setAttrValue(conItem, val);
@@ -150,7 +151,7 @@ export default {
           value: 'or'
         }
       ],
-      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'] //过滤不参与规则的组件
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
@@ -174,7 +175,9 @@ export default {
           if (conditionGroup.conditionList && conditionGroup.conditionList.length > 0) {
             for (let cindex = conditionGroup.conditionList.length - 1; cindex >= 0; cindex--) {
               const condition = conditionGroup.conditionList[cindex];
-              const index = this.formItemList.findIndex(d => d.uuid === condition.formItemUuid);
+              let uuidList = condition.formItemUuid.split('#');
+              let uuid = uuidList[0];
+              const index = this.formItemList.findIndex(d => d.uuid === uuid);
               if (index < 0) {
                 conditionGroup.conditionList.splice(cindex, 1);
               }
@@ -312,14 +315,42 @@ export default {
       }
       return isValid;
     },
-    getFormItem(uuid) {
-      return this.formItemList.find(d => d.uuid === uuid);
+    getFormItem(formItemUuid) {
+      let list = formItemUuid.split('#');
+      let uuid = list[0];
+      let findItem = this.$utils.deepClone(this.formItemList.find(d => d.uuid === uuid));
+      if (list[1] && !this.$utils.isEmpty(findItem.config.mapping)) {
+        findItem.config.mapping.value = list[1];
+        findItem.config.mapping.text = list[1];
+      }          
+      return findItem;
     }
   },
   filter: {},
   computed: {
     hasValueFormItemList() {
-      return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let newList = [];
+      list.forEach(item => {
+        let obj = {
+          label: item.label,
+          uuid: item.uuid
+        };
+        let children = [];
+        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+          item.config.hiddenFieldList.forEach(a => {
+            children.push({
+              label: item.label + '.' + a.text,
+              uuid: item.uuid + '#' + a.value
+            });
+          });
+        }
+        newList.push(obj);
+        if (!this.$utils.isEmpty(children)) {
+          newList.push(...children);
+        }
+      });
+      return newList;
     },
     isNeedAttrValue() {
       return condition => {

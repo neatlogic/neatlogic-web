@@ -67,7 +67,7 @@
     <div v-if="sourceColumnList.length<dataList.length">
       <Button long :disabled="disabled" @click.native="addFilter">
         <i class="tsfont-plus"></i>
-        过滤条件
+        {{ $t('page.filtercondition') }}
       </Button>
     </div>
   </div>
@@ -260,6 +260,5 @@ export default {
   line-height: 32px;
   height: 32px;
   width: 50%;
-  font-size: 10px;
 }
 </style>
