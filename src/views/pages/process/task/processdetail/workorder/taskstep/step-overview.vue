@@ -340,13 +340,11 @@ export default {
     hasUnassigned() {
       // 是否有分配处理人
       return (item) => {
-        console.log(item.isView, 'item.isView');
         let hasHandlerMan = false;
         if (((item.majorUser && item.majorUser.userVo) || (item.workerList && item.workerList.length == 1)) || item.isView != 1) {
           // 没有分配处理或者没有当前步骤查看权限时
           hasHandlerMan = true;
         }
-        console.log(hasHandlerMan, 'hasHandlerMan');
         return hasHandlerMan;
       };
     }
