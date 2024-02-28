@@ -15,23 +15,28 @@
  */
 <template>
   <div class="timerNode">
-    <Loading :loading-show="loadingShow" type="fix"></Loading>
+    <!-- 表单场景 -->
+    <FormsceneSetting
+      :value="configData.stepConfig"
+      :formConfig="formConfig"
+      :toSetting="toSetting"
+      :nodeConfig="nodeConfig"
+      @updateScene="updateScene"
+    ></FormsceneSetting>
     <div class="permission-list require-label text-grey">
       {{ $t('term.process.circulationtime') }}
     </div>
     <div class="permission-list">
-      <template>
-        <TsFormSelect
-          ref="timerAttributeUuid"
-          v-model="timerConfig.attributeUuid"
-          :dataList="formDataList"
-          :validateList="validateList"
-          border="border"
-          textName="label"
-          valueName="uuid"
-          :firstSelect="false"
-        ></TsFormSelect>
-      </template>
+      <TsFormSelect
+        ref="timerAttributeUuid"
+        v-model="timerConfig.attributeUuid"
+        :dataList="formDataList"
+        :validateList="validateList"
+        border="border"
+        textName="label"
+        valueName="uuid"
+        :firstSelect="false"
+      ></TsFormSelect>
       <div class="fz10 tsfont-info-o text-tip tip-time">{{ $t('term.process.circulationtimetip') }}</div>
     </div>
     <!-- 初步处理人 -->
@@ -55,6 +60,7 @@ import {store} from '../floweditState.js';
 export default {
   name: 'Timer',
   components: {
+    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve), // 表单场景
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     AssignSetting
   },
@@ -66,8 +72,8 @@ export default {
   data() {
     let _this = this;
     return {
-      loadingShow: true,
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
+      configData: {stepConfig: {}}, //当前节点数据
       timerConfig: {
         type: 'form', //选择类型（暂时只有表单类型）
         value: '', //自定义的默认值
@@ -82,6 +88,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
+    this.keyList = ['workerPolicyConfig'];//stepConfig 需要包含的数据
     this.getNodeSetting();
   },
   beforeUpdate() {},
@@ -93,13 +100,13 @@ export default {
   methods: {
     getNodeSetting() {
       let defaultData = this.nodeConfig.stepConfig || {};
+      let config = this.configData = this.$utils.deepClone(this.nodeConfig);
+      this.initNodeData(config, this.keyList);//初始化数据
       if (!this.$utils.isEmptyObj(defaultData)) {
         Object.keys(defaultData).forEach(key => {
           this.timerConfig[key] = defaultData[key];
         });
-        this.workerPolicyConfig = defaultData.workerPolicyConfig;
       }
-      this.loadingShow = false;
     },
     saveNodeData() {
       let stepConfig = Object.assign({}, this.timerConfig);
@@ -107,6 +114,7 @@ export default {
       if (this.$refs.assignData) {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();
       } 
+      stepConfig['formSceneUuid'] = this.configData.stepConfig.formSceneUuid || '';
       return stepConfig;
     },
     nodeValid(href) {

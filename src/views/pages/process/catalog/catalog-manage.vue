@@ -65,7 +65,8 @@ export default {
   directives: {},
   props: [''],
   data() {
-    return { 
+    return {
+      isCancelSelected: false, // 从流程管理跳转过来选中对应节点，再次选中，取消从流程管理跳转过来节点
       firstTreeUuid: '', // 用于从流程编辑跳转到服务目录，新增服务，需要默认选中第一个目录，但是打开新增服务的页面
       currentUuid: null,
       treeUuid: null,
@@ -163,9 +164,6 @@ export default {
     this.getTreeList(true);
   },
   methods: {
-    verticals() {
-      this.isSiderHide = !this.isSiderHide;
-    },
     //获取服务目录服务树
     getTreeList(isFirst) {
       this.$api.process.service.searchTree().then(res => {
@@ -194,6 +192,13 @@ export default {
       });
     },
     beforeClick(zTreeObj, node) {
+      if (!this.isCancelSelected) {
+        this.isCancelSelected = true;
+      } else {
+        this.processUuid = null;
+        this.uuid = null;
+        this.firstTreeUuid = null;
+      }
       if (!this.currentUuid || this.currentUuid != node.uuid) {
         zTreeObj.cancelSelectedNode();
         return true;
@@ -204,7 +209,7 @@ export default {
     clickNode(tree, node) {
       // 节点选中
       if (node?.uuid && this.firstTreeUuid == node.uuid) {
-        // 从流程管理跳转到服务目录，有目录列表就打开新增服务的页面，没有就新增跟目录
+        // 从流程管理跳转到服务目录，有目录列表就打开新增服务的页面，没有就新增根目录
         if (this.$utils.isEmpty(this.nodeList)) {
           this.addRoot();
         } else {

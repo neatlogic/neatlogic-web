@@ -6,7 +6,17 @@
       @on-close="closeDialog"
     >
       <template v-slot>
-        <div>
+        <template v-if="!$utils.isEmpty(errorMessageList)">
+          <Alert type="error" show-icon>
+            {{ $t('message.importfailed') }}：
+            <div slot="desc">
+              <div v-for="(item, index) in errorMessageList" :key="index" class="mb-xs">
+                {{ item }}
+              </div>
+            </div>
+          </Alert>
+        </template>
+        <div v-else>
           <Alert show-icon>
             {{ $t('page.importoverdescrition') }}
           </Alert>
@@ -76,9 +86,11 @@ export default {
   data() {
     return {
       isEmit: false, // 二次弹窗，导入数据是不需要分发方法
+      errorMessageList: [],
       defaultSelectedConfig: {}, // 默认选中的config
       selectedConfig: {},
       configDialog: {
+        hasFooter: true,
         isShow: false,
         type: 'slider',
         width: 'large',
@@ -180,14 +192,22 @@ export default {
         contentType: 'multipart/form-data'
       }).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success(this.$t(this.$t('message.importsuccess')));
-          this.configDialog.isShow = false;
-          this.$emit('close', true);
+          let {messageList = []} = res.Return || {};
+          if (this.$utils.isEmpty(messageList)) {
+            this.$Message.success(this.$t(this.$t('message.importsuccess')));
+            this.configDialog.isShow = false;
+            this.$emit('close', true);
+          } else {
+            this.errorMessageList = messageList;
+            this.configDialog.hasFooter = false;
+          }
         }
       });
     },
     closeDialog() {
+      this.errorMessageList = [];
       this.configDialog.isShow = false;
+      this.configDialog.hasFooter = true;
       this.$emit('close');
     },
     closeUploadDialog() {
