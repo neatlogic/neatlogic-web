@@ -17,7 +17,7 @@
   <div class="autoexecNode">
     <!-- 表单场景 -->
     <FormsceneSetting
-      v-model="configData.stepConfig"
+      :value="configData.stepConfig"
       :formConfig="formConfig"
       :toSetting="toSetting"
       @updateScene="updateScene"
