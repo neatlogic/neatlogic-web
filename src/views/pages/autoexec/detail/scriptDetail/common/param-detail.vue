@@ -66,7 +66,7 @@
             </Col>
             <Col span="8">
               <div class="param-handler">
-                <div v-if="excludeTyptList.indexOf(item.type) > -1">-</div>
+                <div v-if="!isNeedDefaultValue || excludeTyptList.indexOf(item.type) > -1">-</div>
                 <Items
                   :is="handlerType(item.type)"
                   v-else
@@ -149,7 +149,11 @@ export default {
         return this.$t('page.inputparam');
       }
     },
-    setValidComponentsList: Array
+    setValidComponentsList: Array,
+    isNeedDefaultValue: { //是否需要设置默认值
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     let _this = this;
