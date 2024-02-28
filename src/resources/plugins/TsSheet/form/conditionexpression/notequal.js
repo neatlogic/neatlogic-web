@@ -4,9 +4,12 @@ export default (currentValue, oldValue, condition) => {
   //处理隐藏属性过滤
   let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
   let uuid = uuidList[1] || 'value';
-  let conditionValueList = conditionValue.map(c => {
-    return c && ((typeof c === 'object' && c.value) || c);
-  });
+  let conditionValueList = [];
+  if (conditionValue) {
+    conditionValueList = conditionValue.map(c => {
+      return c && ((typeof c === 'object' && c.value) || c);
+    });
+  }
   if (currentValue == conditionValue) {
     isNotEqual = false;
   } else if (currentValue == null && conditionValue != null) {
