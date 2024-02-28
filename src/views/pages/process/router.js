@@ -333,7 +333,7 @@ let routerList = [
     name: 'flow-demo',
     component: flowDemo,
     meta: {
-      title: $t('touter.process.flowdemo'),
+      title: '流程图demo',
       ismenu: false
     }
   },
