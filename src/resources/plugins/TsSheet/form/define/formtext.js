@@ -9,6 +9,7 @@ export default {
   'icon': 'tsfont-forminput',
   'hasValue': true,
   'override_config': {},
+  'isDynamicValue': true,
   'config': {
     'isRequired': false,
     'description': '',

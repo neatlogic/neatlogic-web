@@ -278,10 +278,28 @@ export default {
                   } else if (action === 'setvalue') {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (result) {
-                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid])) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
+                      let value = reaction.value;
+                      if (reaction.type == 'dynamic' && !this.$utils.isEmpty(reaction.value)) {
+                        const uuidList = reaction.value.split('#');
+                        const formItemUuid = uuidList[0];
+                        const formItemAttrUuid = uuidList[1] || 'value';
+                        let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
+                        if (!Array.isArray(dynamicVal)) {
+                          value = dynamicVal[formItemAttrUuid];
+                        } else {
+                          let list = [];
+                          dynamicVal.forEach(v => {
+                            if (!this.$utils.isEmpty(v[formItemAttrUuid])) {
+                              list.push(v[formItemAttrUuid]);
+                            }
+                          });
+                          value = list.join(',');
+                        }
+                      }
+                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid]) || (this.formData[this.formItem.uuid] && !this.$utils.isSame(value, this.formData[this.formItem.uuid]))) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
                         this.addExecuteCount('setvalue');
-                        this.$set(this.formData, this.formItem.uuid, reaction.value);
-                        this.$emit('change', reaction.value);
+                        this.$set(this.formData, this.formItem.uuid, value);
+                        this.$emit('change', value);
                       }
                     }
                   } else if (action === 'filter') {

@@ -175,7 +175,7 @@ export default {
           if (conditionGroup.conditionList && conditionGroup.conditionList.length > 0) {
             for (let cindex = conditionGroup.conditionList.length - 1; cindex >= 0; cindex--) {
               const condition = conditionGroup.conditionList[cindex];
-              let uuidList = condition.formItemUuid.split('#');
+              let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
               let uuid = uuidList[0];
               const index = this.formItemList.findIndex(d => d.uuid === uuid);
               if (index < 0) {
@@ -194,8 +194,8 @@ export default {
       }
     },
     setAttrValue(condition, value) {
-      if (value) {
-        if (typeof value == 'object') {
+      if (!this.$utils.isEmpty(value)) {
+        if (Array.isArray(value)) {
           this.$set(condition, 'valueList', value);
         } else {
           this.$set(condition, 'valueList', [value]);
@@ -207,6 +207,7 @@ export default {
     },
     setAttrExpression(condition, expression) {
       this.$set(condition, 'expression', expression);
+      this.$set(condition, 'valueList', null);
       this.updateRule();
     },
     setAttr(condition, id, option, item) {
@@ -322,7 +323,7 @@ export default {
       if (list[1] && !this.$utils.isEmpty(findItem.config.mapping)) {
         findItem.config.mapping.value = list[1];
         findItem.config.mapping.text = list[1];
-      }          
+      }     
       return findItem;
     }
   },

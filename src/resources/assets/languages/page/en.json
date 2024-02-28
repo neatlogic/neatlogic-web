@@ -974,5 +974,6 @@
   "opinions": "view",
   "menuname": "Menu Name",
   "acolumn": "One column",
-  "hiddenattr": "Hide Properties"
+  "hiddenattr": "Hide Properties",
+  "dynamicvalue": "Dynamic value"
 }
