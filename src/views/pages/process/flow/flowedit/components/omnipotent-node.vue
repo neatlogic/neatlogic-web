@@ -2,7 +2,7 @@
   <div class="omnipotentNode">
     <!-- 表单场景 -->
     <FormsceneSetting
-      v-model="configData.stepConfig"
+      :value="configData.stepConfig"
       :formConfig="formConfig"
       :toSetting="toSetting"
       :nodeConfig="nodeConfig"

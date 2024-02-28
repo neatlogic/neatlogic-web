@@ -176,7 +176,8 @@ export default {
     value: {
       handler(val) {
         this.formSceneUuid = (val && val.formSceneUuid) ? val.formSceneUuid : '';
-      }
+      },
+      deep: true
     }
   }
 };
