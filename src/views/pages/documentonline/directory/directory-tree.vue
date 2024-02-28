@@ -87,34 +87,29 @@ export default {
       return findItem && findItem.ismenu ? 'tsfont-bar icon-right' : 'tsfont-ITfuwu icon-right';
     },
     getRouterConfig() {
-      const configPathList = [  
-        require.context('@/views/pages', true, /router.js$/),  
-        require.context('@/commercial-module', true, /router.js$/)  
-      ];  
-      const routerConfigs = {};  
-      configPathList.forEach(requireRouter => {  
-        const routerKeys = requireRouter.keys();
-        routerKeys.forEach(routerPath => {  
-          const moduleId = routerPath.split('/')[1];  
-          const routeList = requireRouter(routerPath).default || [];  
-  
-          const menuList = routeList  
-            .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
-            .map(item => ({  
-              name: item.meta && item.meta.title ? (item.name ? `${item.meta.title}(${item.name})` : item.meta.title) : '',  
-              moduleGroup: moduleId,  
-              menu: item.name,  
-              configFathList: [moduleId, item.name],  
-              children: [],  
-              loading: false,
-              ismenu: item.meta?.ismenu || false
-            }));  
-  
-          if (menuList.length) {  
-            routerConfigs[moduleId] = menuList;  
-          }  
-        });  
-      });  
+      const routerConfig = require.context('@/views/pages', true, /router.js$/);
+      const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
+      const routerConfigs = {}; 
+      const routerConfigKeys = routerConfig.keys();
+      const commercialConfigKeys = commercialConfig.keys() || [];
+      routerConfigKeys.forEach(routerPath => {
+        const moduleId = routerPath.split('/')[1];
+        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...routerConfig(routerPath).default, ...commercialConfig[routerPath].default] : (routerConfig(routerPath).default || []);
+        const menuList = routeList  
+          .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
+          .map(item => ({  
+            name: item.meta && item.meta.title ? (item.name ? `${item.meta.title}(${item.name})` : item.meta.title) : '',  
+            moduleGroup: moduleId,  
+            menu: item.name,  
+            configFathList: [moduleId, item.name],  
+            children: [],  
+            loading: false,
+            ismenu: item.meta?.ismenu || false
+          }));
+        if (menuList.length) {  
+          routerConfigs[moduleId] = menuList;  
+        }  
+      });
       return routerConfigs;
     },
     getClassifiedList(moduleList) {

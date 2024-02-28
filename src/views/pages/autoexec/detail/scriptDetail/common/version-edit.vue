@@ -43,6 +43,7 @@
           :params="paramMode.output"
           :paramText="$t('page.outputparam')"
           :isEdit="isEdit"
+          :isNeedDefaultValue="false"
         ></ParamDetail>
       </div>
       <div v-if="!isEdit && versionVo.outputParamList.length == 0" class="line-2 text-tip">{{ $t('page.notarget', {target: $t('page.outputparam')}) }}</div>
