@@ -197,7 +197,7 @@ export default {
             list.forEach(l => {
               if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
                 l.config.phaseOperationList.forEach(p => {
-                  if (p.operation.outputParamList && p.operation.outputParamList.length) {
+                  if (!this.$utils.isEmpty(p.operation) && p.operation.outputParamList && p.operation.outputParamList.length) {
                     let item = p.operation.outputParamList;
                     item.forEach(i => {
                       allPrevOutputList.push({
