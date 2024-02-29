@@ -975,5 +975,6 @@
   "menuname": "Menu Name",
   "acolumn": "One column",
   "hiddenattr": "Hide Properties",
-  "dynamicvalue": "Dynamic value"
+  "dynamicvalue": "Dynamic value",
+  "exitedit": "Exit Editing"
 }

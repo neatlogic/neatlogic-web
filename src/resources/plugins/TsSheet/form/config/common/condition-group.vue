@@ -282,6 +282,9 @@ export default {
         this.$delete(rule, 'conditionGroupList');
         this.$delete(rule, 'conditionGroupRelList');
         this.$delete(rule, 'value');
+        if (rule.hasOwnProperty('type')) {
+          this.$delete(rule, 'type');
+        }
       }
       if (!rule.conditionGroupRelList || rule.conditionGroupRelList.length == 0) {
         this.$delete(rule, 'conditionGroupRelList');

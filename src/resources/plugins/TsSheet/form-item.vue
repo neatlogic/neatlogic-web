@@ -12,7 +12,7 @@
         word-wrap
         width="350"
         trigger="hover"
-        title="异常"
+        :title="$t('page.exception')"
         transfer
       >
         <span class="text-error tsfont-warning-s"></span>
@@ -330,7 +330,7 @@ export default {
                             });
                           } else {
                             let value = this.formData[formItemUuid];
-                            if (value) {
+                            if (!this.$utils.isEmpty(value)) {
                               let tmpText = value;
                               let tmpValue = value;
                               if (typeof value === 'object') {

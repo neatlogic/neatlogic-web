@@ -9,7 +9,7 @@ export default {
   'icon': 'tsfont-forminput',
   'hasValue': true,
   'override_config': {},
-  'isDynamicValue': true,
+  'isDynamicValue': true, //联动规则-赋值(setvalue)：是否需要动态赋值
   'config': {
     'isRequired': false,
     'description': '',
