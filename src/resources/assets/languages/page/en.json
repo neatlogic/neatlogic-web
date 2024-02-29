@@ -973,5 +973,6 @@
   "Initiate": "launch",
   "opinions": "view",
   "menuname": "Menu Name",
-  "acolumn": "One column"
+  "acolumn": "One column",
+  "exitedit": "Exit Editing"
 }
