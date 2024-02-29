@@ -78,31 +78,37 @@ export default {
     },
     toMenu(module, path = '/') {
       this.isShow = false;
+      this.moduleId = module;
       document.querySelector('.topnav-menu-list').style.display = 'none';
+      if (document.querySelector(`#tab_${module}`)) {
+        document.querySelector(`#tab_${module}`).setAttribute('href', 'javascript:void(0)');
+      }
       this.$route.meta.clearHistory = true;
       if (module === MODULEID) {
         this.$router.push(path);
       } else {
         let that = this.$root.$children[0] ? this.$root.$children[0].$refs.root : null;//获取router-view 的vue 对象
-        // console.log(module, path, '----', that, `${HOME}/${module}.html#${path}`);
         this.$utils.gotoHref(`${HOME}/${module}.html#${path}`, that);
       }
+      this.$nextTick(() => {
+        //出现数据保存弹框时，确保选中模块与当前模块保持一致
+        this.moduleId = MODULEID;
+      });
     },
     newTab(e, module) {
       //鼠标右键打开新标签页
-      let replaceStr = `<a href="${HOME}/${module.moduleId}.html#/" style="display:block;">${module.moduleName}</a>`;
+      let replaceStr = `<a href="${HOME}/${module.moduleId}.html#/" style="display:block;" id="tab_${module.moduleId}">${module.moduleName}</a>`;
       e.currentTarget.innerHTML = replaceStr;
     },
     renderLabel(module) {
       return h => {
         return h(
-          'a',
+          'div',
           {
-            domProps: {
-              href: HOME + '/' + module.moduleId + '.html#/'
-            },
-            style: {
-              display: 'block'
+            on: {
+              contextmenu: ($event) => {
+                this.newTab($event, module);
+              }
             }
           }, module.moduleName
         );
