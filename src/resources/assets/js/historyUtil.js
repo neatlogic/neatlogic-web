@@ -75,6 +75,14 @@ HistoryUtil.install = function (Vue, options) {
       sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
     }
   };
+  Vue.prototype.$removeHistoryData = function (key) {
+    if (key && this.$vnode && this.$vnode.tag) {
+      if (Storage[this.$vnode.tag] && Storage[this.$vnode.tag][key]) {
+        delete Storage[this.$vnode.tag][key];
+        sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
+      }
+    }
+  };
   Vue.prototype.$addHistoryData = function (key, value) {
     if (key && this.$vnode && this.$vnode.tag) {
       if (!Storage[this.$vnode.tag]) {

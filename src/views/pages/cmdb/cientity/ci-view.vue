@@ -77,6 +77,7 @@
                   :needCheck="true"
                   :needDsl="true"
                   class="pt-nm pl-nm pr-nm"
+                  :fixedHeader="false"
                   :ciId="ciData.id"
                   :needExport="true"
                 ></CiEntityList>

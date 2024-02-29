@@ -119,6 +119,7 @@
         v-bind="viewData"
         :showPager="false"
         :hideAction="false"
+        :fixedHeader="false"
         :height="tableHeight"
       >
         <template v-for="(head, index) in viewData.theadList" :slot="head.key" slot-scope="{ row }">
