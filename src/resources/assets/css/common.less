@@ -1820,13 +1820,18 @@ span {
 .ck-content {
   ul,
   ol {
-    text-indent: 1em;
+    // text-indent: 1em;
   }
   ul li {
     list-style: disc inside;
   }
   ol li {
     list-style: decimal inside;
+  }
+  &.ck-editor__editable {
+    .ck-list-bogus-paragraph {
+      display: inline; // 修复ckeditor升级后，无序有序列表图标和后面的内容换行问题
+    }
   }
 }
 .combinesearcher-drop {
