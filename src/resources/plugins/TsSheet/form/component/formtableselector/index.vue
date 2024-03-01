@@ -37,6 +37,7 @@
                 :formData="row"
                 :showStatusIcon="false"
                 mode="read"
+                isCustomValue
                 style="min-width:100px"
               ></FormItem>
             </div>

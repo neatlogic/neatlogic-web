@@ -12,7 +12,7 @@
         word-wrap
         width="350"
         trigger="hover"
-        title="异常"
+        :title="$t('page.exception')"
         transfer
       >
         <span class="text-error tsfont-warning-s"></span>
@@ -278,22 +278,43 @@ export default {
                   } else if (action === 'setvalue') {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (result) {
-                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid])) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
+                      let value = reaction.value;
+                      if (reaction.type == 'dynamic' && !this.$utils.isEmpty(reaction.value)) {
+                        const uuidList = reaction.value.split('#');
+                        const formItemUuid = uuidList[0];
+                        const formItemAttrUuid = uuidList[1] || 'value';
+                        let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
+                        if (!Array.isArray(dynamicVal)) {
+                          value = dynamicVal[formItemAttrUuid];
+                        } else {
+                          let list = [];
+                          dynamicVal.forEach(v => {
+                            if (!this.$utils.isEmpty(v[formItemAttrUuid])) {
+                              list.push(v[formItemAttrUuid]);
+                            }
+                          });
+                          value = list.join(',');
+                        }
+                      }
+                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid]) || (this.formData[this.formItem.uuid] && !this.$utils.isSame(value, this.formData[this.formItem.uuid]))) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
                         this.addExecuteCount('setvalue');
-                        this.$set(this.formData, this.formItem.uuid, reaction.value);
-                        this.$emit('change', reaction.value);
+                        this.$set(this.formData, this.formItem.uuid, value);
+                        this.$emit('change', value);
                       }
                     }
                   } else if (action === 'filter') {
                     this.filter = [];
                     if (!this.$utils.isEmpty(reaction.ruleList)) {
                       reaction.ruleList.forEach(r => {
-                        let formItem = this.formItemList.find(d => d.uuid === r.formItemUuid);
+                        let list = r.formItemUuid.split('#');
+                        let formItemUuid = list[0];
+                        let column = list[1] ? list[1] : 'value';
+                        let formItem = this.formItemList.find(d => d.uuid === formItemUuid);
                         if (formItem && formItem.config) {
                           let valueList = [];
                           let textList = [];
-                          if (this.formData[r.formItemUuid] instanceof Array) {
-                            this.formData[r.formItemUuid].forEach(value => {
+                          if (this.formData[formItemUuid] instanceof Array) {
+                            this.formData[formItemUuid].forEach(value => {
                               if (typeof value === 'string') {
                                 valueList.push(value);
                                 if (!this.$utils.isEmpty(formItem.config.dataList)) {
@@ -303,21 +324,21 @@ export default {
                                   textList.push(value);
                                 }
                               } else if (typeof value == 'object') {
-                                valueList.push(value.value);
+                                valueList.push(value[column]);
                                 textList.push(value.text);
                               }
                             });
                           } else {
-                            let value = this.formData[r.formItemUuid];
-                            if (value) {
+                            let value = this.formData[formItemUuid];
+                            if (!this.$utils.isEmpty(value)) {
                               let tmpText = value;
                               let tmpValue = value;
                               if (typeof value === 'object') {
                                 tmpText = value.text;
-                                tmpValue = value.value;
+                                tmpValue = value[column];
                               }
                               if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                const findData = formItem.config.dataList.find(f => f.value === tmpValue);
+                                const findData = formItem.config.dataList.find(f => f[column] === tmpValue);
                                 textList.push(findData.text);
                               } else {
                                 textList.push(tmpText);
@@ -384,7 +405,9 @@ export default {
               if (conditionList && conditionList.length > 0) {
                 for (let j = 0; j < conditionList.length; j++) {
                   const condition = conditionList[j];
-                  if (newFormData[condition['formItemUuid']] != oldFormData[condition['formItemUuid']]) {
+                  const uuidList = condition['formItemUuid'].split('#');
+                  const formItemUuid = uuidList[0];
+                  if (newFormData[formItemUuid] != oldFormData[formItemUuid]) {
                     return true;
                   } else if (this.isFirstLoad) {
                     this.isFirstLoad = false;
@@ -416,7 +439,9 @@ export default {
           if (ruleList && ruleList.length > 0) {
             for (let i = 0; i < reaction['ruleList'].length; i++) {
               const rule = reaction['ruleList'][i];
-              if (newFormData[rule['formItemUuid']] != oldFormData[rule['formItemUuid']]) {
+              let list = rule['formItemUuid'].split('#');
+              let ruleFormItemUuid = list[0];
+              if (!this.$utils.isSame(newFormData[ruleFormItemUuid], oldFormData[ruleFormItemUuid])) {
                 return true;
               } else if (this.isFirstLoad) {
                 this.isFirstLoad = false;
@@ -488,7 +513,7 @@ export default {
               reaction.conditionGroupList.forEach(cg => {
                 if (cg.conditionList) {
                   cg.conditionList.forEach(c => {
-                    conditionData[c.uuid] = c.valueList;
+                    conditionData[c.uuid] = c;
                   });
                 }
               });

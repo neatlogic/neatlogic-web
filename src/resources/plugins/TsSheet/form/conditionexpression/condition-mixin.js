@@ -39,8 +39,10 @@ export default {
                   }
                 }
                 const condition = conditionList[j];
+                const uuidList = condition['formItemUuid'].split('#');
+                const formItemUuid = uuidList[0];
                 cScript += '(';
-                cScript += 'this.EXPRESSIONS["' + condition['expression'] + '"](this.newFormData.hasOwnProperty("' + condition['formItemUuid'] + '")?this.newFormData["' + condition['formItemUuid'] + '"]:null, this.oldFormData.hasOwnProperty("' + condition['formItemUuid'] + '")?this.oldFormData["' + condition['formItemUuid'] + '"]:null, this.conditionData("' + condition['uuid'] + '"))';
+                cScript += 'this.EXPRESSIONS["' + condition['expression'] + '"](this.newFormData.hasOwnProperty("' + formItemUuid + '")?this.newFormData["' + formItemUuid + '"]:null, this.oldFormData.hasOwnProperty("' + formItemUuid + '")?this.oldFormData["' + formItemUuid + '"]:null, this.conditionData("' + condition['uuid'] + '"))';
                 cScript += ')';
               }
               script += cScript;

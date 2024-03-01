@@ -14,8 +14,8 @@
       border="border"
       search
       @change="
-        val => {
-          setValue(val);
+        (val, valueObject, selectItem) => {
+          setValue(selectItem);
         }
       "
     ></TsFormSelect>
@@ -130,6 +130,10 @@ export default {
               });
             }
           });
+        }
+        //隐藏属性过滤
+        if (!this.$utils.isEmpty(this.config.hiddenFieldList)) {
+          params.hiddenFieldList = this.$utils.mapArray(this.config.hiddenFieldList, 'value');
         }
         setting.params = params;
       } else {

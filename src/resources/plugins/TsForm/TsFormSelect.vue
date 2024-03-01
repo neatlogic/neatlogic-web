@@ -179,13 +179,13 @@
                       :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                       style="width:100%"
                     >
-                      <div class="overflow" v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"></div>
+                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                     </Tooltip>
                     <div
                       v-else
                       class="overflow"
-                      :title="dropdownMenuMaxWidth && (node.showtxt ? node.showtxt : node[showName ? showName : textName])"
-                      v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"
+                      :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
+                      v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
                     ></div>
                   </slot>
                 </li>
@@ -248,13 +248,13 @@
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                           style="width:100%"
                         >
-                          <div class="overflow" v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"></div>
+                          <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                         </Tooltip>
                         <div
                           v-else
                           class="overflow"
-                          :title="dropdownMenuMaxWidth && (node.showtxt ? node.showtxt : node[showName ? showName : textName])"
-                          v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"
+                          :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
+                          v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
                         ></div>
                       </slot>
                     </li>
@@ -854,13 +854,13 @@ export default {
         this.$set(item, '_isHidden', false);
         if (query) {
           let newtext = item[this.liHtml].replace(new RegExp('(' + query + ')', 'ig'), '<b class="text-primary">$1</b>');
-          this.$set(item, 'showtxt', newtext);
+          this.$set(item, '_showtxt', newtext);
         } else {
-          this.$set(item, 'showtxt', item[this.liHtml]);
+          this.$set(item, '_showtxt', item[this.liHtml]);
         }
       } else {
         this.$set(item, '_isHidden', true);
-        this.$set(item, 'showtxt', item[this.liHtml]);
+        this.$set(item, '_showtxt', item[this.liHtml]);
         this.hiddenLength++;
       }
     },

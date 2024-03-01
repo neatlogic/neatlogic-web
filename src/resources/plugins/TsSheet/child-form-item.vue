@@ -27,6 +27,7 @@
       :disabled="disabled"
       :readonly="readonly"
       :showStatusIcon="false"
+      isCustomValue
       @resize="$emit('resize')"
       @emit="
         val => {
