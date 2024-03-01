@@ -494,6 +494,11 @@ export default {
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.currentFormItem = this.$utils.deepClone(config);
+        this.formData.formConfig.tableList.forEach(d => {
+          if (d.component && d.component.uuid == uuid) {
+            this.$set(d, 'component', this.currentFormItem);
+          }
+        });
       });
     },
     saveForm(type) {
