@@ -95,7 +95,7 @@
     "cannotnodelist": "Failed to obtain node list data!",
     "notsaveflow": "The flow has not been saved yet!",
     "notinitdata": "Initialization failed to obtain data!",
-    "timernodenobacklink": "The timer node cannot be connected to the backlink!",
+    "nodenobacklink": "The timer node cannot be connected to the backlink!",
     "timerhasonelink": "The timer node can only have one line connected!",
     "nodeorphaned": "Node is orphaned",
     "nodenofrontnode": "Node has no front node",

@@ -95,7 +95,7 @@
     "cannotnodelist": "节点列表数据获取失败！",
     "notsaveflow": "该流程还未保存！",
     "notinitdata": "初始化获取数据失败！",
-    "timernodenobacklink": "定时节点不能连回退线！",
+    "nodenobacklink": "不能连回退线！",
     "timerhasonelink": "定时节点只能有一根线连出！",
     "nodeorphaned": "节点被孤立",
     "nodenofrontnode": "节点没有前置节点",

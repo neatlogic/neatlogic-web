@@ -15,7 +15,7 @@ import {$t} from '@/resources/init.js';
       const nodeList = this.getNextNodes('forward');
       let find = nodeList.find(item => item.getUuid() == sourceNode.getConfig().uuid);
       if (find || sourceNode.getType() == 'end') { //不能连回退线
-        ViewUI.Message.warning({ content: $t('message.process.timernodenobacklink'), duration: 3, closable: true });
+        ViewUI.Message.warning({ content: $t('message.process.nodenobacklink'), duration: 3, closable: true });
         return false;
       }
       return true;
