@@ -2207,7 +2207,7 @@
     "initstatus": "初始状态",
     "buildproject": "创建项目",
     "isstart": "是否开始状态",
-    "isend": "是否结束状态",
+    "isend": "是否结束",
     "goto": "流转到",
     "parentnode": "父节点",
     "request": "需求",
