@@ -111,7 +111,8 @@
     "batchjobpolicytip": "Loop through list data to create multiple jobs",
     "jobpolicycolumn": "Loop through list data and merge into an array",
     "eoahasonelink": "Approval nodes can only have one line connected!",
-    "eoanodenobacklink": "Approval nodes can only be rolled back to one node"
+    "eoanodenobacklink": "Approval nodes can only be rolled back to one node",
+    "eoalinkouttip": "At most, the approval node can only be connected by two lines"
   },
   "autoexec": {
     "savedeadlinenolimit": "No setting means unlimited storage period",

@@ -33,8 +33,8 @@ import {$t} from '@/resources/init.js';
             ViewUI.Message.warning({ content: $t('message.process.timernodenobacklink'), duration: 3, closable: true });
             return false;
           } else if (sourceNode.getConfig().handler == 'eoa') {
-            if (this.getNextNodes('backward') && this.getNextNodes('backward').length > 0) {
-              ViewUI.Message.warning({ content: $t('message.process.eoanodenobacklink'), duration: 3, closable: true });
+            if (this.getNextNodes('backward') && this.getNextNodes('backward').length > 0 || (this.getNextNodes('forward') && this.getNextNodes('backward').length > 1)) {
+              ViewUI.Message.warning({ content: $t('message.process.eoalinkouttip'), duration: 3, closable: true });
               return false;
             }
           }
@@ -62,8 +62,10 @@ import {$t} from '@/resources/init.js';
                 ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
                 return false;
               } else if (sourceNode.getConfig().handler == 'eoa') {
-                ViewUI.Message.warning({ content: $t('message.process.eoahasonelink'), duration: 3, closable: true });
-                return false;
+                if ((this.getNextNodes('forward') && this.getNextNodes('backward').length > 0) || this.getNextNodes('forward').length > 1) {
+                  ViewUI.Message.warning({ content: $t('message.process.eoalinkouttip'), duration: 3, closable: true });
+                  return false;
+                }
               }
             }
             this.canvas.addLink({
