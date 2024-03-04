@@ -47,7 +47,7 @@
               <StaticDataEditor v-model="propertyLocal.config.dataList"></StaticDataEditor>
             </TsFormItem>
             <template v-else-if="propertyLocal.config.dataSource === 'matrix'">
-              <TsFormItem :label="$t('page.matrix')">
+              <TsFormItem :label="$t('page.matrix')" required>
                 <TsFormSelect
                   ref="formitem_matrixuuid"
                   v-model="propertyLocal.config.matrixUuid"
