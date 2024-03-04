@@ -95,7 +95,6 @@
     "cannotnodelist": "Failed to obtain node list data!",
     "notsaveflow": "The flow has not been saved yet!",
     "notinitdata": "Initialization failed to obtain data!",
-    "timernodenobacklink": "The timer node cannot be connected to the backlink!",
     "timerhasonelink": "The timer node can only have one line connected!",
     "nodeorphaned": "Node is orphaned",
     "nodenofrontnode": "Node has no front node",
@@ -111,7 +110,9 @@
     "batchjobpolicytip": "Loop through list data to create multiple jobs",
     "jobpolicycolumn": "Loop through list data and merge into an array",
     "eoahasonelink": "Approval nodes can only have one line connected!",
-    "eoanodenobacklink": "Approval nodes can only be rolled back to one node"
+    "eoanodenobacklink": "Approval nodes can only be rolled back to one node",
+    "eoalinkouttip": "At most, the approval node can only be connected by two lines",
+    "nodenobacklink": "Cannot connect fallback line"
   },
   "autoexec": {
     "savedeadlinenolimit": "No setting means unlimited storage period",
