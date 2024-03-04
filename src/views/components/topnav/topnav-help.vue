@@ -6,7 +6,7 @@
     <Drawer
       v-model="isDrawerShow"
       :title="$t('page.help')"
-      width="350"
+      width="550"
       className="help-drawer"
     >
       <template v-slot:header>
@@ -222,7 +222,7 @@ export default {
     }
   }
   .help-center{
-    width: 320px;
+    width: 550px;
     position: fixed;
     bottom: 0;
     padding: 8px 0;

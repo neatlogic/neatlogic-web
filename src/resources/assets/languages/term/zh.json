@@ -552,7 +552,17 @@
     "approvertip": "在下方审批流填写步骤审批人",
     "eoatemplate": "EOA模板",
     "eoaautostart": "自动创建签报",
-    "eoaautostarttip": "当处理人唯一、审批模板唯一，且审批模板中的每个审批步骤均已指定审批人时，自动创建签报"
+    "eoaautostarttip": "当处理人唯一、审批模板唯一，且审批模板中的每个审批步骤均已指定审批人时，自动创建签报",
+    "formmap": "表单映射",
+    "subprocess": {
+      "waitdesc": "同步：所有子流程完成后父流程才允许继续流转",
+      "formmap": {
+        "parent": "父流程表单",
+        "sub": "子流程表单",
+        "catalogtitle": "服务目录-{target}"
+      },
+      "tab": "子流程"
+    }
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -2207,7 +2217,7 @@
     "initstatus": "初始状态",
     "buildproject": "创建项目",
     "isstart": "是否开始状态",
-    "isend": "是否结束状态",
+    "isend": "是否结束",
     "goto": "流转到",
     "parentnode": "父节点",
     "request": "需求",
@@ -2568,7 +2578,9 @@
     "whathelp": "请问有什么能帮到您？",
     "problemdes": "问题描述",
     "relcurrclass": "关联当前分类",
-    "unlassifieddoc": "未分类文档"
+    "unlassifieddoc": "未分类文档",
+    "representmenupage": "表示菜单页面",
+    "representsubpages": "表示子页面"
   },
   "dr": {
     "assetconfig": "资产配置",
@@ -2650,6 +2662,8 @@
     "larger": "放大",
     "smaller": "缩小",
     "importtemplate": "导入模板",
-    "strictmode": "严格框选模式"
+    "strictmode": "严格框选模式",
+    "changestatusconfirm": "是否确认将当前版本状态修改成：{target}？",
+    "editingversion": "编辑版本"
   }
 }

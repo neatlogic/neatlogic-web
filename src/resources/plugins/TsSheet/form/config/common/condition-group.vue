@@ -49,6 +49,7 @@
                   :formItem="getFormItem(conItem.formItemUuid)"
                   :value="conItem.valueList"
                   mode="condition"
+                  isCustomValue
                   @change="
                     val => {
                       setAttrValue(conItem, val);
@@ -150,7 +151,7 @@ export default {
           value: 'or'
         }
       ],
-      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'] //过滤不参与规则的组件
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
@@ -174,7 +175,9 @@ export default {
           if (conditionGroup.conditionList && conditionGroup.conditionList.length > 0) {
             for (let cindex = conditionGroup.conditionList.length - 1; cindex >= 0; cindex--) {
               const condition = conditionGroup.conditionList[cindex];
-              const index = this.formItemList.findIndex(d => d.uuid === condition.formItemUuid);
+              let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
+              let uuid = uuidList[0];
+              const index = this.formItemList.findIndex(d => d.uuid === uuid);
               if (index < 0) {
                 conditionGroup.conditionList.splice(cindex, 1);
               }
@@ -191,8 +194,8 @@ export default {
       }
     },
     setAttrValue(condition, value) {
-      if (value) {
-        if (typeof value == 'object') {
+      if (!this.$utils.isEmpty(value)) {
+        if (Array.isArray(value)) {
           this.$set(condition, 'valueList', value);
         } else {
           this.$set(condition, 'valueList', [value]);
@@ -204,6 +207,7 @@ export default {
     },
     setAttrExpression(condition, expression) {
       this.$set(condition, 'expression', expression);
+      this.$set(condition, 'valueList', null);
       this.updateRule();
     },
     setAttr(condition, id, option, item) {
@@ -278,6 +282,9 @@ export default {
         this.$delete(rule, 'conditionGroupList');
         this.$delete(rule, 'conditionGroupRelList');
         this.$delete(rule, 'value');
+        if (rule.hasOwnProperty('type')) {
+          this.$delete(rule, 'type');
+        }
       }
       if (!rule.conditionGroupRelList || rule.conditionGroupRelList.length == 0) {
         this.$delete(rule, 'conditionGroupRelList');
@@ -312,14 +319,42 @@ export default {
       }
       return isValid;
     },
-    getFormItem(uuid) {
-      return this.formItemList.find(d => d.uuid === uuid);
+    getFormItem(formItemUuid) {
+      let list = formItemUuid.split('#');
+      let uuid = list[0];
+      let findItem = this.$utils.deepClone(this.formItemList.find(d => d.uuid === uuid));
+      if (list[1] && !this.$utils.isEmpty(findItem.config.mapping)) {
+        findItem.config.mapping.value = list[1];
+        findItem.config.mapping.text = list[1];
+      }     
+      return findItem;
     }
   },
   filter: {},
   computed: {
     hasValueFormItemList() {
-      return this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let newList = [];
+      list.forEach(item => {
+        let obj = {
+          label: item.label,
+          uuid: item.uuid
+        };
+        let children = [];
+        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+          item.config.hiddenFieldList.forEach(a => {
+            children.push({
+              label: item.label + '.' + a.text,
+              uuid: item.uuid + '#' + a.value
+            });
+          });
+        }
+        newList.push(obj);
+        if (!this.$utils.isEmpty(children)) {
+          newList.push(...children);
+        }
+      });
+      return newList;
     },
     isNeedAttrValue() {
       return condition => {

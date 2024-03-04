@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import '@/resources/assets/font/tsfont.js';
-import '@/resources/assets/font/iconfont.js';
+import '@/resources/assets/font/tsfonts/tsfont.js';
+import '@/resources/assets/font/tsIconfont.js';
 import '@/resources/plugins/TsTopoNew/js/topo.watcher.js'; //属性双向绑定执行逻辑
 import '@/resources/plugins/TsTopoNew/js/topo.js'; //核心
 import '@/resources/plugins/TsTopoNew/js/topo.event.base.js'; //事件基类

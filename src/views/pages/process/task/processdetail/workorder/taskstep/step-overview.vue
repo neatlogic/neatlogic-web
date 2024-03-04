@@ -75,139 +75,140 @@
             </ButtonGroup>
           </div>
           <div v-show="item.expand">
-            <div v-show="!item.isShow" class="step-comment" :class="!isTabShow(item) ? 'mt-md' : '' ">
-              <div v-if="item.handler == 'autoexec' && item.handlerStepInfo" class="sub-description border-color">
-                <JobDetail :handlerStepInfo="item.handlerStepInfo"></JobDetail>
+            <div v-if="item.isView == 1">
+              <div v-show="!item.isShow" class="step-comment" :class="!isTabShow(item) ? 'mt-md' : '' ">
+                <div v-if="item.handler == 'autoexec' && item.handlerStepInfo" class="sub-description border-color">
+                  <JobDetail :handlerStepInfo="item.handlerStepInfo"></JobDetail>
+                </div>
+                <div v-else class="description step-auditList">
+                  <stepitems
+                    :is="getSteptype(item)"
+                    :item="item"
+                  ></stepitems>
+                </div>
               </div>
-              <div v-else class="description step-auditList">
-                <stepitems
-                  :is="getSteptype(item)"
-                  :item="item"
-                ></stepitems>
-              </div>
-            </div>
-            <!-- 子任务策略节点 -->
-            <div v-show="item.isShow == 1" class="sub-description border-color padding" :class="!isTabShow(item) ? 'mt-md' : '' ">
-              <div v-if="item.taskConfigList && getTaskConfigList(item.taskConfigList).length > 0">
-                <Tabs                  
-                  class="block-span"
-                  :animated="false"
-                  name="tab2"
-                >
-                  <TabPane      
-                    v-for="subStep in getTaskConfigList(item.taskConfigList)"
-                    :key="subStep.id"   
-                    :label="subStep.name"
-                    :name="'subTask' + subStep.id"
-                    tab="tab2"
+              <!-- 子任务策略节点 -->
+              <div v-show="item.isShow == 1" class="sub-description border-color padding" :class="!isTabShow(item) ? 'mt-md' : '' ">
+                <div v-if="item.taskConfigList && getTaskConfigList(item.taskConfigList).length > 0">
+                  <Tabs                  
+                    class="block-span"
+                    :animated="false"
+                    name="tab2"
                   >
-                    <StrategyDetailReadonly
-                      :processTaskId="processTaskId"
-                      :processTaskStepId="processTaskStepId"
-                      :config="subStep"
-                    ></StrategyDetailReadonly>
-                  </TabPane>
-                </Tabs>
+                    <TabPane      
+                      v-for="subStep in getTaskConfigList(item.taskConfigList)"
+                      :key="subStep.id"   
+                      :label="subStep.name"
+                      :name="'subTask' + subStep.id"
+                      tab="tab2"
+                    >
+                      <StrategyDetailReadonly
+                        :processTaskId="processTaskId"
+                        :processTaskStepId="processTaskStepId"
+                        :config="subStep"
+                      ></StrategyDetailReadonly>
+                    </TabPane>
+                  </Tabs>
+                </div>
               </div>
-            </div>
-            <div v-show="item.isShow == 2" class="sub-description border-color pb-sm" :class="!isTabShow(item) ? 'mt-md' : '' ">
-              <div v-if="item.handlerStepInfo && item.handlerStepInfo.changeStepList && item.handlerStepInfo.changeStepList.length>0">
-                <div v-for="change in item.handlerStepInfo.changeStepList" :key="change.id" class="step-auditList sub-list dividing-color">
-                  <div class="padding">
-                    <div class="pb-sm flex-between">
-                      <div>
-                        <span class="step-handler-icon" :class="item.handler =='changecreate'?'tsfont-addchange':'tsfont-changing'"></span>
-                        <span>{{ change.name }}</span>
-                        <span class="text-grey">.{{ change.code }}</span>
+              <div v-show="item.isShow == 2" class="sub-description border-color pb-sm" :class="!isTabShow(item) ? 'mt-md' : '' ">
+                <div v-if="item.handlerStepInfo && item.handlerStepInfo.changeStepList && item.handlerStepInfo.changeStepList.length>0">
+                  <div v-for="change in item.handlerStepInfo.changeStepList" :key="change.id" class="step-auditList sub-list dividing-color">
+                    <div class="padding">
+                      <div class="pb-sm flex-between">
+                        <div>
+                          <span class="step-handler-icon" :class="item.handler =='changecreate'?'tsfont-addchange':'tsfont-changing'"></span>
+                          <span>{{ change.name }}</span>
+                          <span class="text-grey">.{{ change.code }}</span>
+                        </div>
+                        <CommonStatus
+                          v-if="change.statusVo"
+                          :statusName="change.statusVo.text"
+                          :statusValue="change.statusVo.status"
+                        ></CommonStatus>
                       </div>
-                      <CommonStatus
-                        v-if="change.statusVo"
-                        :statusName="change.statusVo.text"
-                        :statusValue="change.statusVo.status"
-                      ></CommonStatus>
-                    </div>
-                    <div class="step-infor">
-                      <TsRow>
-                        <Col span="8">
-                          <span class="text-grey pr-sm">{{ $t('term.process.dealwithuser') }}</span>
-                          <span>
-                            <UserCard v-bind="change.workerVo" style="display: inline-block;" hideAvatar></UserCard>
-                          </span>
-                        </Col>
-                        <Col span="8">
-                          <span class="text-grey pr-sm">{{ $t('term.process.planstartdate') }}</span>
-                          <span>{{ change.planStartDate || '-' }}</span>
-                        </Col>
-                        <Col span="8">
-                          <span class="text-grey pr-sm">{{ $t('term.process.startTimeWindow') }}</span>
-                          <span v-if="change.startTimeWindow || change.endTimeWindow">{{ change.startTimeWindow || '~' }} - {{ change.endTimeWindow || '~' }}</span>
-                          <span v-else>-</span>
-                        </Col>
-                      </TsRow>
-                      <TsRow>
-                        <Col span="8">
-                          <span class="text-grey pr-sm">{{ $t('term.process.actualstarttime') }}</span>
-                          <span v-if="change.startTime">{{ change.startTime | formatDate }}</span>
-                          <span v-else>-</span>
-                        </Col>
-                        <Col span="8">
-                          <span class="text-grey pr-sm">{{ $t('term.process.actualendtime') }}</span>
-                          <span v-if="change.endTime">{{ change.endTime | formatDate }}</span>
-                          <span v-else>-</span>
-                        </Col>
-                      </TsRow>
-                      <div class="change-commet">
-                        <span class="change-commet-label text-grey pr-sm">{{ $t('page.accessory') }}</span>
-                        <div v-if="change.fileList && change.fileList.length>0">
-                          <div
-                            v-for="changeFile in change.fileList"
-                            :key="changeFile.id"
-                            v-download="downurl('/api/binary/file/download',changeFile.id)"
-                            class="text-action"
-                          >
-                            {{ changeFile.name }}
-                            <i class="tsfont-download text-padding"></i>
+                      <div class="step-infor">
+                        <TsRow>
+                          <Col span="8">
+                            <span class="text-grey pr-sm">{{ $t('term.process.dealwithuser') }}</span>
+                            <span>
+                              <UserCard v-bind="change.workerVo" style="display: inline-block;" hideAvatar></UserCard>
+                            </span>
+                          </Col>
+                          <Col span="8">
+                            <span class="text-grey pr-sm">{{ $t('term.process.planstartdate') }}</span>
+                            <span>{{ change.planStartDate || '-' }}</span>
+                          </Col>
+                          <Col span="8">
+                            <span class="text-grey pr-sm">{{ $t('term.process.startTimeWindow') }}</span>
+                            <span v-if="change.startTimeWindow || change.endTimeWindow">{{ change.startTimeWindow || '~' }} - {{ change.endTimeWindow || '~' }}</span>
+                            <span v-else>-</span>
+                          </Col>
+                        </TsRow>
+                        <TsRow>
+                          <Col span="8">
+                            <span class="text-grey pr-sm">{{ $t('term.process.actualstarttime') }}</span>
+                            <span v-if="change.startTime">{{ change.startTime | formatDate }}</span>
+                            <span v-else>-</span>
+                          </Col>
+                          <Col span="8">
+                            <span class="text-grey pr-sm">{{ $t('term.process.actualendtime') }}</span>
+                            <span v-if="change.endTime">{{ change.endTime | formatDate }}</span>
+                            <span v-else>-</span>
+                          </Col>
+                        </TsRow>
+                        <div class="change-commet">
+                          <span class="change-commet-label text-grey pr-sm">{{ $t('page.accessory') }}</span>
+                          <div v-if="change.fileList && change.fileList.length>0">
+                            <div
+                              v-for="changeFile in change.fileList"
+                              :key="changeFile.id"
+                              v-download="downurl('/api/binary/file/download',changeFile.id)"
+                              class="text-action"
+                            >
+                              {{ changeFile.name }}
+                              <i class="tsfont-download text-padding"></i>
+                            </div>
                           </div>
+                          <div v-else>-</div>
                         </div>
-                        <div v-else>-</div>
-                      </div>
-                      <div class="change-commet">
-                        <span class="change-commet-label text-grey pr-sm">{{ $t('page.description') }}</span>
-                        <div v-if="change.content">
-                          <div v-html="change.content"></div>
+                        <div class="change-commet">
+                          <span class="change-commet-label text-grey pr-sm">{{ $t('page.description') }}</span>
+                          <div v-if="change.content">
+                            <div v-html="change.content"></div>
+                          </div>
+                          <div v-else>-</div>
                         </div>
-                        <div v-else>-</div>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="ml-40">
-                    <Timeline>
-                      <TimelineItem
-                        v-for="scomment in change.commentList"
-                        :key="scomment.id"
-                        class="comment-list"
-                      >
-                        <div class="avatar-date-box ">
-                          <div class="avatar-box inb pb-xs">
-                            <UserCard v-bind="scomment.fcuVo" class="user-name parent" hideAvatar></UserCard>
-                            <UserCard
-                              v-bind="scomment.fcuVo"
-                              class="avatar child-avatar"
-                              :iconSize="24"
-                              hideName
-                            ></UserCard>
+                    <div class="ml-40">
+                      <Timeline>
+                        <TimelineItem
+                          v-for="scomment in change.commentList"
+                          :key="scomment.id"
+                          class="comment-list"
+                        >
+                          <div class="avatar-date-box ">
+                            <div class="avatar-box inb pb-xs">
+                              <UserCard v-bind="scomment.fcuVo" class="user-name parent" hideAvatar></UserCard>
+                              <UserCard
+                                v-bind="scomment.fcuVo"
+                                class="avatar child-avatar"
+                                :iconSize="24"
+                                hideName
+                              ></UserCard>
+                            </div>
+                            <div class="text-grey ml-md inb">{{ scomment.fcd | formatDate }}</div>
                           </div>
-                          <div class="text-grey ml-md inb">{{ scomment.fcd | formatDate }}</div>
-                        </div>
-                        <div style="margin-left:20px;" v-html="scomment.content"></div>
-                      </TimelineItem>
-                    </Timeline>
+                          <div style="margin-left:20px;" v-html="scomment.content"></div>
+                        </TimelineItem>
+                      </Timeline>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          
           </div>
         </TimelineItem>
       </Timeline>

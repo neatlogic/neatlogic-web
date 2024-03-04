@@ -553,7 +553,17 @@
     "approvertip": "Fill in the approval process steps below by approver",
     "eoatemplate": "EOA template",
     "eoaautostart": "Automatically create sign offs",
-    "eoaautostarttip": "When the handler is unique, the approval template is unique, and each approval step in the approval template has a designated approver, a signature is automatically created"
+    "eoaautostarttip": "When the handler is unique, the approval template is unique, and each approval step in the approval template has a designated approver, a signature is automatically created",
+    "formmap": "Form mapping",
+    "subprocess": {
+      "waitdesc": "Synchronization: Only after all sub processes are completed can the parent process continue to flow",
+      "formmap": {
+        "parent": "Parent Process Form",
+        "sub": "Subprocess form",
+        "catalogtitle": "Service directory - {target}"
+      },
+      "tab": "Subprocess"
+    }
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -2570,7 +2580,9 @@
     "selectoneresource": "Please select at least one resource",
     "noaddauthresource": "There are currently no resources to add permissions to",
     "relcurrclass": "Associate with current classification",
-    "unlassifieddoc": "Unclassified documents"
+    "unlassifieddoc": "Unclassified documents",
+    "representmenupage": "Represent menu page",
+    "representsubpages": "Represent Subpages"
   },
   "dr": {
     "assetconfig": "Asset allocation",
@@ -2651,6 +2663,8 @@
     "larger": "enlarge",
     "smaller": "narrow",
     "importtemplate": "Import Template",
-    "strictmode": "Strict box selection mode"
+    "strictmode": "Strict box selection mode",
+    "changestatusconfirm": "Are you sure to change current version to {target}?",
+    "editingversion": "Editing version"
   }
 }

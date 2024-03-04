@@ -181,6 +181,7 @@ export default {
         handler: 'formtext',
         isExtra: true,
         hasValue: true,
+        isDynamicValue: true,
         config: {
           isRequired: true
         }

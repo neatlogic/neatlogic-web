@@ -885,6 +885,12 @@ export default {
               }
             }
           });
+        } else if (typeof value === 'object') {
+          Object.keys(value).forEach(key => {
+            if (key.startsWith('_')) {
+              delete value[key];
+            } 
+          });
         }
       }
     },
@@ -1686,7 +1692,7 @@ export default {
                   reaction.conditionGroupList.forEach(cg => {
                     if (cg.conditionList) {
                       cg.conditionList.forEach(c => {
-                        conditionData[c.uuid] = c.valueList;
+                        conditionData[c.uuid] = c;
                       });
                     }
                   });

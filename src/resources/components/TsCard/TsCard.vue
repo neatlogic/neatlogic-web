@@ -703,7 +703,7 @@ export default {
       handler: function(val) {
         if (val) {
           this.list = val;
-        }
+        } 
       },
       immediate: true,
       deep: true

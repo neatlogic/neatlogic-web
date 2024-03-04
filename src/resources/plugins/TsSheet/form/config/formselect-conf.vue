@@ -56,44 +56,63 @@
         </div>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'matrix' && config.matrixUuid && mappingDataList.length > 0" labelPosition="top" :label="$t('page.fieldmapping')">
-      <div class="padding-md radius-md" :class="validClass('mapping')">
-        <Row :gutter="10">
-          <Col span="12">
-            <label class="text-grey require-label">{{ $t('page.value') }}</label>
-            <div class="formsetting-text">
-              <TsFormSelect
-                ref="mappingValue"
-                v-model="config.mapping.value"
-                type="text"
-                :validateList="['required']"
-                :dataList="mappingDataList"
-                valueName="uuid"
-                textName="name"
-                :transfer="true"
-                :disabled="disabled"
-              ></TsFormSelect>
-            </div>
-          </Col>
-          <Col span="12">
-            <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
-            <div class="formsetting-text">
-              <TsFormSelect
-                ref="mappingText"
-                v-model="config.mapping.text"
-                type="text"
-                :validateList="['required']"
-                valueName="uuid"
-                :dataList="mappingDataList"
-                textName="name"
-                :transfer="true"
-                :disabled="disabled"
-              ></TsFormSelect>
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </TsFormItem>
+    <template v-if="config.dataSource === 'matrix' && config.matrixUuid && mappingDataList.length > 0">
+      <TsFormItem labelPosition="top" :label="$t('page.fieldmapping')">
+        <div class="padding-md radius-md" :class="validClass('mapping')">
+          <Row :gutter="10">
+            <Col span="12">
+              <label class="text-grey require-label">{{ $t('page.value') }}</label>
+              <div class="formsetting-text">
+                <TsFormSelect
+                  ref="mappingValue"
+                  v-model="config.mapping.value"
+                  type="text"
+                  :validateList="['required']"
+                  :dataList="mappingDataList"
+                  valueName="uuid"
+                  textName="name"
+                  :transfer="true"
+                  :disabled="disabled"
+                  @on-change="(val)=>{
+                    changeMappingValue(val);
+                  }"
+                ></TsFormSelect>
+              </div>
+            </Col>
+            <Col span="12">
+              <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
+              <div class="formsetting-text">
+                <TsFormSelect
+                  ref="mappingText"
+                  v-model="config.mapping.text"
+                  type="text"
+                  :validateList="['required']"
+                  valueName="uuid"
+                  :dataList="mappingDataList"
+                  textName="name"
+                  :transfer="true"
+                  :disabled="disabled"
+                ></TsFormSelect>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </TsFormItem>
+      <TsFormItem :label="$t('page.hiddenattr')" labelPosition="top">
+        <TsFormSelect
+          ref="hiddenFieldList"
+          :value="config.hiddenFieldList || []"
+          :dataList="getAttrList(mappingDataList,config.mapping.value)"
+          :transfer="true"
+          :disabled="disabled"
+          multiple
+          isCustomValue
+          @change="(val)=>{
+            $set(config, 'hiddenFieldList', val);
+          }"
+        ></TsFormSelect>
+      </TsFormItem>
+    </template>
     <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig" labelPosition="top" :label="$t('page.filtercondition')">
       <div class="bg-block padding-md radius-md" :class="validClass('sourceColumnList')">
         <DataSourceFilter
@@ -180,28 +199,23 @@ export default {
         });
       }
     },
-    addSourceColumn() {
-      if (!this.config.sourceColumnList) {
-        this.$set(this.config, 'sourceColumnList', []);
-      }
-      this.config.sourceColumnList.push({ uuid: '', valueList: '' });
-    },
     removeSourceColumn(index) {
       this.config.sourceColumnList.splice(index, 1);
     },
     changDataSource() {
-      this.$set(this.config, 'defaultValue', '');
-      this.$set(this.config, 'dataList', []);
       this.$set(this.config, 'matrixUuid', '');
-      this.$set(this.config.mapping, 'value', '');
-      this.$set(this.config.mapping, 'text', '');
-      this.$set(this.config, 'sourceColumnList', []);
+      this.clearConfigData();
     },
     changeMatrixUuid() {
-      this.$set(this.config, 'defaultValue', null);
+      this.clearConfigData();
+    },
+    clearConfigData() {
+      this.$set(this.config, 'dataList', []);
       this.$set(this.config.mapping, 'value', '');
       this.$set(this.config.mapping, 'text', '');
       this.$set(this.config, 'sourceColumnList', []);
+      this.$set(this.config, 'hiddenFieldList', []);
+      this.$set(this.config, 'defaultValue', null);
     },
     getFilterList(val) {
       let filterList = [];
@@ -218,6 +232,13 @@ export default {
       }
       if (filterList.length > 0) {
         this.$set(this.config, 'defaultValue', null);
+      }
+    },
+    changeMappingValue(val) {
+      if (this.config.hiddenFieldList) {
+        this.config.hiddenFieldList = this.config.hiddenFieldList.filter(item => {
+          return item.uuid != val;
+        });
       }
     }
   },
@@ -280,6 +301,22 @@ export default {
         }
       });
       return componentList;
+    },
+    getAttrList() {
+      return (mappingDataList, value) => {
+        let list = [];
+        if (!this.$utils.isEmpty(mappingDataList)) {
+          list = mappingDataList.filter(item => {
+            return item.uuid != value;
+          }).map(i => {
+            return {
+              value: i.uuid,
+              text: i.name
+            };
+          });
+        }
+        return list;
+      };
     }
   },
   watch: {

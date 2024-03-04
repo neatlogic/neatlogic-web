@@ -142,11 +142,14 @@ export default {
     setConfig: function(data) {
       this.$set(this.attrData, 'config', data);
     },
-    changeAttrType(type) {
+    changeAttrType(type, item) {
       if (this.handlers[type + 'attr']) {
         this.formConfig.config.isHidden = false;
       } else {
         this.formConfig.config.isHidden = true;
+      }
+      if (item) {
+        this.attrData.typeText = item.text;
       }
     },
     close() {

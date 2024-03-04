@@ -95,7 +95,6 @@
     "cannotnodelist": "节点列表数据获取失败！",
     "notsaveflow": "该流程还未保存！",
     "notinitdata": "初始化获取数据失败！",
-    "timernodenobacklink": "定时节点不能连回退线！",
     "timerhasonelink": "定时节点只能有一根线连出！",
     "nodeorphaned": "节点被孤立",
     "nodenofrontnode": "节点没有前置节点",
@@ -111,7 +110,9 @@
     "batchjobpolicytip": "循环遍历列表数据，创建多个作业",
     "jobpolicycolumn": "循环遍历列表数据，合并为数组",
     "eoahasonelink": "审批节点只能有一根线连出！",
-    "eoanodenobacklink": "审批节点只能回退到一个节点"
+    "eoanodenobacklink": "审批节点只能回退到一个节点",
+    "eoalinkouttip": "审批节点至多只有两条线连出",
+    "nodenobacklink": "不能连回退线"
   },
   "autoexec": {
     "savedeadlinenolimit": "不设置代表保存期限不限制",

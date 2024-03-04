@@ -464,7 +464,7 @@ export default {
     },
     selectCell(cell, component) {
       this.disabled = false;
-      if (component && cell.component && cell.component.hasOwnProperty('inherit') && component.uuid !== cell.component.uuid) {
+      if (component && cell.component && cell.component.hasOwnProperty('inherit') && cell.component.inherit && component.uuid !== cell.component.uuid) {
         this.disabled = true;
       }
       if (!component) {
@@ -494,6 +494,11 @@ export default {
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.currentFormItem = this.$utils.deepClone(config);
+        this.formData.formConfig.tableList.forEach(d => {
+          if (d.component && d.component.uuid == uuid) {
+            this.$set(d, 'component', this.currentFormItem);
+          }
+        });
       });
     },
     saveForm(type) {
