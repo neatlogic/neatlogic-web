@@ -94,7 +94,7 @@ export default {
       const commercialConfigKeys = commercialConfig.keys() || [];
       routerConfigKeys.forEach(routerPath => {
         const moduleId = routerPath.split('/')[1];
-        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...routerConfig(routerPath).default, ...commercialConfig[routerPath].default] : (routerConfig(routerPath).default || []);
+        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...routerConfig(routerPath).default, ...(commercialConfig[routerPath] && commercialConfig[routerPath].default || [])] : (routerConfig(routerPath).default || []);
         const menuList = routeList  
           .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
           .map(item => ({  

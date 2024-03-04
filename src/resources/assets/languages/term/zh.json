@@ -2663,6 +2663,7 @@
     "smaller": "缩小",
     "importtemplate": "导入模板",
     "strictmode": "严格框选模式",
-    "changestatusconfirm": "是否确认将当前版本状态修改成：{target}？"
+    "changestatusconfirm": "是否确认将当前版本状态修改成：{target}？",
+    "editingversion": "编辑版本"
   }
 }

@@ -75,6 +75,7 @@
                       :formItem="formItem"
                       :formItemList="[formItem]"
                       mode="read"
+                      isCustomValue
                     ></FormItem>
                   </div>
                 </TabPane>

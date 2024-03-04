@@ -546,6 +546,7 @@ export default {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
             if (!this.id) {
+              this.$skipHistory();
               this.$router.push({ path: '/view-edit/' + this.viewData.type + '/' + res.Return });
             }
             // 刷新左侧菜单
@@ -555,7 +556,7 @@ export default {
           }
         });
       } else {
-        this.$Message.info('请输入视图名称');
+        this.$Message.info(this.$t('form.placeholder.pleaseinput', {'target': this.$t('term.cmdb.viewname')}));
       }
     },
     deleteView() {

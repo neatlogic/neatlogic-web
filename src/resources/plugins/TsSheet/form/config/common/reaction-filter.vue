@@ -125,7 +125,28 @@ export default {
   filter: {},
   computed: {
     otherFormItemList() {
-      return this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox'].includes(d.handler));
+      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox'].includes(d.handler));
+      let newList = [];
+      list.forEach(item => {
+        let obj = {
+          label: item.label,
+          uuid: item.uuid
+        };
+        let children = [];
+        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+          item.config.hiddenFieldList.forEach(a => {
+            children.push({
+              label: item.label + '.' + a.text,
+              uuid: item.uuid + '#' + a.value
+            });
+          });
+        }
+        newList.push(obj);
+        if (!this.$utils.isEmpty(children)) {
+          newList.push(...children);
+        }
+      });
+      return newList;
     },
     updateDataList() {
       return (dataList, value) => {

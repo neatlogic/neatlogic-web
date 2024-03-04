@@ -73,7 +73,7 @@
               </div>
               <div class="overflow">
                 <span>{{ row.fromCiLabel }}</span>
-                <span v-if="row.direction === 'to'" class="text-grey">({{ row.alias }})</span>
+                <span v-if="row.direction === 'to' && row.alias" class="text-grey">({{ row.alias }})</span>
               </div>
               <div class="overflow text-grey" style="font-size: 12px">{{ row.fromGroupName }}</div>
             </div>
@@ -89,7 +89,7 @@
               </div>
               <div class="overflow">
                 <span>{{ row.toCiLabel }}</span>
-                <span v-if="row.direction === 'from'" class="text-grey">({{ row.alias }})</span>
+                <span v-if="row.direction === 'from' && row.alias" class="text-grey">({{ row.alias }})</span>
               </div>
               <div class="overflow text-grey" style="font-size: 12px">{{ row.toGroupName }}</div>
             </div>

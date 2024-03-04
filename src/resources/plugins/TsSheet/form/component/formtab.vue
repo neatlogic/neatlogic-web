@@ -30,7 +30,7 @@
                 :formData="formData"
                 :formItemList="formItemList"
                 :mode="mode"
-                :disabled="disabled || !!formItem.hasOwnProperty('inherit')"
+                :disabled="disabled"
                 :readonly="readonly"
                 @resize="$emit('resize')"
                 @emit="
