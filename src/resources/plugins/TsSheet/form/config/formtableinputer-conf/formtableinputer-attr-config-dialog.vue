@@ -375,14 +375,7 @@ export default {
             { text: this.$t('page.date'), value: 'formdate' },
             { text: this.$t('page.time'), value: 'formtime' }
           ],
-          validateList: ['required'],
-          onChange: (val) => {
-            if (val === 'formtext' || val === 'formtextarea') {
-              this.$set(this.propertyLocal, 'isDynamicValue', true);
-            } else {
-              this.$set(this.propertyLocal, 'isDynamicValue', false);
-            }
-          }
+          validateList: ['required']
         },
         {
           name: 'isRequired',
@@ -574,6 +567,12 @@ export default {
       this.$nextTick(() => {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
         this.$set(this.propertyLocal, 'value', null);
+        if (val === 'formtext' || val === 'formtextarea') {
+          // 联动规则(赋值)：是否可以动态赋值
+          this.$set(this.propertyLocal, 'isDynamicValue', true);
+        } else {
+          this.$set(this.propertyLocal, 'isDynamicValue', false);
+        }
         if (val != 'formtable') {
           this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
