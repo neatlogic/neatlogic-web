@@ -33,7 +33,7 @@ import {$t} from '@/resources/init.js';
             ViewUI.Message.warning({ content: $t('message.process.nodenobacklink'), duration: 3, closable: true });
             return false;
           } else if (sourceNode.getConfig().handler == 'eoa') {
-            if (this.getNextNodes('backward') && this.getNextNodes('backward').length > 0 || (this.getNextNodes('forward') && this.getNextNodes('backward').length > 1)) {
+            if (this.getNextNodes('backward') && this.getNextNodes('backward').length > 0 || (this.getNextNodes('forward') && this.getNextNodes('forward').length > 1)) {
               ViewUI.Message.warning({ content: $t('message.process.eoalinkouttip'), duration: 3, closable: true });
               return false;
             }
