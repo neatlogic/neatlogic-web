@@ -15,7 +15,12 @@
             :disabled="disabledBtn"
             @click="saveSetting('save')"
           >{{ $t('page.save') }}</Button>
-          <Button type="primary" :disabled="disabledBtn" @click="saveSetting('execute')">{{ $t('term.autoexec.immediateexecution') }}</Button>
+          <Button
+            type="primary"
+            :disabled="disabledBtn"
+            :loading="isCreating"
+            @click="saveSetting('execute')"
+          >{{ $t('term.autoexec.immediateexecution') }}</Button>
         </div>
       </template>
       <template v-slot:content>
@@ -168,6 +173,7 @@ export default {
   props: {},
   data() {
     return {
+      isCreating: false,
       loadingShow: true,
       appSystemId: null,
       appModuleId: null,
@@ -410,10 +416,13 @@ export default {
     executeAction() {
       //执行
       let data = this.saveJobData();
+      this.isCreating = true;
       this.$api.deploy.job.createDeployJob(data).then(res => {
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return);
         }
+      }).finally(e => {
+        this.isCreating = false;
       });
     },
     okSave(val) { //保存
