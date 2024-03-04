@@ -47,6 +47,7 @@
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
+            isCustomValue
             @change="changeRow(row)"
           ></FormItem>
         </div>

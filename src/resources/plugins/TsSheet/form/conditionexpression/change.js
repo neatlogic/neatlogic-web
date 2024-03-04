@@ -1,6 +1,4 @@
-export default (currentValue, oldValue, conditionValue) => {
-  console.log(currentValue);
-  console.log(oldValue);
+export default (currentValue, oldValue, condition) => {
   if (currentValue != oldValue) {
     return true;
   }
