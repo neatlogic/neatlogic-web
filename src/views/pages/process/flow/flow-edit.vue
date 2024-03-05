@@ -207,10 +207,12 @@ let viewOpts = {
   'link.removeFn': (link) => { // 删除线之后的回调函数
     Vm.setPrevNodes();
     vm.setNodeAllLinksList();
+    vm.setNodeChildren(); 
   },
   'link.addafter': (link) => { // 新建连线之后回调函数
     Vm.setPrevNodes();
     vm.setNodeAllLinksList();
+    vm.setNodeChildren(); 
   }
 };
 // 起始节点和结束节点
@@ -1151,6 +1153,15 @@ export default {
             this.$set(item.stepConfig, 'formSceneUuid', '');
           }
         });
+      }
+    },
+    setNodeChildren() {
+      //更新选中节点的子节点
+      if (this.nodeConfig) {
+        this.nodeChildren.splice(0);
+        let nodeVm = this.$topoVm.getNodeByUuid(this.nodeConfig.uuid);
+        let nodeChildren = nodeVm.getNextNodes().map(d => this.stepList.find(item => item.uuid == d.getUuid()));
+        this.nodeChildren.push(...nodeChildren);
       }
     }
   },
