@@ -1233,7 +1233,10 @@
     "globalreadonly": "Global read-only",
     "globalreadonlytip": "The global read-only priority is higher than the internal read and write settings of the component. After turning on the global read-only switch, all components in the scene are in a read-only state",
     "iscannotdeletenode": "There are child nodes that cannot be deleted",
-    "requiredselectedtips": "If the current component is set as mandatory and only one option remains after filtering, the system will automatically select that option"
+    "requiredselectedtips": "If the current component is set as mandatory and only one option remains after filtering, the system will automatically select that option",
+    "internalmenu": "Internal menu",
+    "custommenu": "Custom menu",
+    "internalmenuoperationtips": "The internal menu can only be viewed with permission, and cannot add an editing menu"
   },
   "knowledge": {
     "document": "Document",
