@@ -217,7 +217,11 @@
     "collection": "集合",
     "parentattr": "父属性",
     "initiativecollect": "主动采集",
-    "passivitycollect": "被动采集"
+    "passivitycollect": "被动采集",
+    "selectedattr": "可选属性",
+    "scripthelp": "转换脚本语法使用javascript，点击可选属性可复制获取属性值的表达式，把新值赋值给变量$value即可完成转换",
+    "expression": "表达式",
+    "transformscript": "转换脚本"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1230,7 +1234,10 @@
     "iscannotdeletenode": "存在子节点不可删除",
     "requiredselectedtips": "若当前组件设置为必填，且过滤后仅剩余一个选项，系统会自动选中该选项",
     "formtableinputercomponent": "表格输入组件",
-    "tablecomponent": "表格组件"
+    "tablecomponent": "表格组件",
+    "internalmenu": "内部菜单",
+    "custommenu": "自定义菜单",
+    "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单"
   },
   "knowledge": {
     "document": "文档",

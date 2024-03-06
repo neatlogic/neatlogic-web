@@ -7,18 +7,27 @@
       <template v-slot:topRight>
         <div class="action-group">
           <span class="action-item tsfont-circulation-o" @click="openAuthorityViewDialog">{{ $t('page.viewauthority') }}</span>
-          <span :class="{ disable: saving }" class="action-item tsfont-save" @click="save()">{{ $t('page.save') }}</span>
+          <span
+            v-if="!menuType"
+            :class="{ disable: saving }"
+            class="action-item tsfont-save"
+            @click="save()"
+          >{{ $t('page.save') }}</span>
         </div>
       </template>
       <template v-slot:sider>
         <div class="pr-nm">
+          <Alert show-icon>
+            {{ $t('term.framework.internalmenuoperationtips') }}
+          </Alert>
           <TsZtree
-            v-if="!$utils.isEmpty(nodeList)"
+            v-if="!$utils.isEmpty(moduleList)"
             :value="selectedTreeId"
-            :nodes="nodeList"
+            :nodes="moduleList"
             :hoverDomList="hoverDomList"
             urlKey="xUrl"
             :beforeClick="beforeClick"
+            :expandAll="false"
             :onClick="clickNode"
             :beforeDrop="beforeDrop"
             :onDrop="onDrop"
@@ -29,21 +38,30 @@
       <template v-slot:content>
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <div class="content bg-op padding radius-lg">
-          <MenuEdit
-            v-if="!loadingShow"
-            ref="editComponent"
-            :isMenu="isMenu"
-            :data="selectData"
-            :parentId="parentId"
-          ></MenuEdit>
-          <div class="footer-btn">
-            <Button
-              class="save"
-              type="primary"
-              :disabled="saving"
-              @click="save()"
-            >{{ $t('page.save') }}</Button>
+          <div v-if="menuType == 'innerMenu'">
+            <TsTable
+              v-bind="tableConfig"
+              :theadList="theadList"
+            >
+            </TsTable>
           </div>
+          <template v-else>
+            <MenuEdit
+              v-if="!loadingShow"
+              ref="editComponent"
+              :isMenu="isMenu"
+              :data="selectData"
+              :parentId="parentId"
+            ></MenuEdit>
+            <div class="footer-btn">
+              <Button
+                class="save"
+                type="primary"
+                :disabled="saving"
+                @click="save()"
+              >{{ $t('page.save') }}</Button>
+            </div>
+          </template>
         </div>
       </template>
     </TsContain>
@@ -55,6 +73,7 @@ export default {
   name: '',
   components: {
     TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
+    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     MenuEdit: resolve => require(['./menu-edit'], resolve),
     AuthorityViewDialog: resolve => require(['./authority-view-dialog'], resolve)
   },
@@ -66,12 +85,34 @@ export default {
       saving: false,
       selectedTreeId: null,
       nodeList: [],
+      menuType: '',
+      routerAuth: {},
+      tableConfig: {
+        tbodyList: [],
+        currentPage: 1,
+        pageSize: 100,
+        fixedHeader: false
+      },
+      theadList: [
+        {
+          title: this.$t('page.menuname'),
+          key: 'menuName'
+        },
+        {
+          title: this.$t('term.framework.belongmodule'),
+          key: 'moduleName'
+        },
+        {
+          title: this.$t('page.authority'),
+          key: 'authority'
+        }
+      ],
       hoverDomList: [
         {
           icon: 'tsfont-plus',
           desc: this.$t('page.subdirectory'),
           isAddFn: (treeNode) => {
-            if (treeNode.type == 1) {
+            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu') {
               return false; //菜单不能添加目录
             } else {
               return true;
@@ -85,7 +126,7 @@ export default {
           icon: 'tsfont-putongjigui',
           desc: this.$t('dialog.title.addtarget', { target: this.$t('page.menu') }),
           isAddFn: (treeNode) => {
-            if (treeNode.type == 1) {
+            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu') {
               return false; //菜单不能添加菜单
             } else {
               return true;
@@ -99,14 +140,14 @@ export default {
           icon: 'tsfont-trash-o',
           desc: this.$t('page.delete'),
           isAddFn: treeNode => {
-            if (this.$utils.isEmpty(treeNode.parentId) || treeNode.parentId == 0) {
+            if (this.$utils.isEmpty(treeNode.parentId) || treeNode.parentId == 0 || treeNode.menuType == 'innerMenu') {
               return false; // 总的根节点不能删除
             } else {
               return true;
             }
           },
           initFn: (treeNode, $span) => {
-            if (treeNode.childCount > 0) {
+            if (treeNode.childCount > 0 || treeNode.menuType == 'innerMenu') {
               $span[0].classList.add('text-disabled');
               $span[0].title = this.$t('term.framework.iscannotdeletenode');
             }
@@ -126,6 +167,8 @@ export default {
   beforeCreate() {},
   created() {
     this.init(true);
+    this.updateMenu();
+    this.routerAuth = this.handleRouterAuth();
   },
   beforeMount() {},
   mounted() {},
@@ -183,19 +226,52 @@ export default {
         return false;
       }
     },
-    clickNode(tree, node) {
-      this.isMenu = node.type;
-      this.selectedTreeId = node.id;
-      this.selectSaveId = node.id;
-      this.parentId = node.parentId;
-      if (node.type == 0) {
-        // 编辑目录
-        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
-      } else if (node.type == 1) {
-        // 编辑菜单
-        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.menu')});
+    flattenArrayWithChildren(array) {
+      let result = [];
+      let _this = this;
+      function flatten(items) {
+        items && items.forEach(item => {
+          result.push(item);
+          if (!_this.$utils.isEmpty(item) && Array.isArray(item.children)) {
+            flatten(item.children); // 递归调用 flatten 函数  
+          }
+        });  
       }
-      this.getMenuTreeNode();
+      flatten(array); // 开始扁平化过程  
+      return result;
+    },
+    clickNode(tree, node) {
+      this.menuType = node.isMenu ? 'innerMenu' : '';
+      this.tableConfig.tbodyList = [];
+      if (node.isMenu || node.menuType == 'innerMenu') {
+        this.menuType = 'innerMenu';
+        this.catalogName = this.$t('page.viewauthority');
+        let childrenList = this.flattenArrayWithChildren(this.$utils.deepClone(Array.isArray(node.children) && !this.$utils.isEmpty(node.children) ? node.children : [node]));
+        let moduleAuthList = this.routerAuth[node.moduleId] && this.routerAuth[node.moduleId] || []; // 获取点击的模块菜单权限
+        childrenList.forEach((item) => {
+          let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
+          if (findItem) {
+            this.tableConfig.tbodyList.push({
+              menuName: item.name,
+              moduleName: node.moduleName,
+              authority: findItem.authority
+            });
+          }
+        });
+      } else {
+        this.isMenu = node.type;
+        this.selectedTreeId = node.id;
+        this.selectSaveId = node.id;
+        this.parentId = node.parentId;
+        if (node.type == 0) {
+        // 编辑目录
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
+        } else if (node.type == 1) {
+        // 编辑菜单
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.menu')});
+        }
+        this.getMenuTreeNode();
+      }
     },
     addTreeChildren(node) {
       this.loadingShow = true;
@@ -265,6 +341,9 @@ export default {
     beforeDrop(treeId, treeNodes, targetNode, moveType) {
       if (targetNode === null) {
         return;
+      } else if ((treeNodes && treeNodes[0] && treeNodes[0].menuType == 'innerMenu') || targetNode.menuType == 'innerMenu') {
+        // 内部菜单不可拖拽
+        return false;
       } else if (moveType === 'inner' && targetNode.type === 1) {
         return false;
       } else if ((moveType === 'prev' || moveType === 'next') && !targetNode.parentId) {
@@ -289,10 +368,100 @@ export default {
     },
     openAuthorityViewDialog() {
       this.isShowAuthorityViewDialog = true;
+    },
+    updateMenu() {
+      this.$store.dispatch('updateMenu');
+    },
+    handleChildren(moduleId, moduleName, menuGroupList) {
+      let list = [];
+      if (this.$utils.isEmpty(menuGroupList)) {
+        return list;
+      }
+      menuGroupList.forEach((item) => {
+        if (item.menuTypeName) {
+          list.push({
+            id: item.menuType || this.$utils.setUuid(),
+            name: item.menuTypeName,
+            menuType: 'innerMenu',
+            moduleId: moduleId,
+            moduleName: moduleName,
+            children: item.menuList.map((v) => ({
+              id: v.path,
+              name: v.name,
+              menuType: 'innerMenu',
+              isMenu: true,
+              moduleId: moduleId,
+              moduleName: moduleName
+            })
+            )
+          });
+        }
+      });
+      return list;
+    },
+    handleRouterAuth() {
+      const pageConfig = require.context('@/views/pages', true, /router.js$/);
+      const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
+      const routerConfig = {}; 
+      const routerConfigKeys = pageConfig.keys();
+      const commercialConfigKeys = commercialConfig.keys() || [];
+      routerConfigKeys.forEach(routerPath => {
+        const moduleId = routerPath.split('/')[1];
+        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...pageConfig(routerPath).default, ...(commercialConfig[routerPath] && commercialConfig[routerPath].default || [])] : (pageConfig(routerPath).default || []);
+        const menuList = routeList  
+          .filter(item => item.meta && item.meta.authority)  
+          .map(item => ({
+            title: item.meta.title,
+            name: item.name,
+            path: item.path,
+            authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+          }));
+        if (menuList.length) {  
+          routerConfig[moduleId] = menuList;  
+        }  
+      });
+      return routerConfig;
     }
   },
   filter: {},
-  computed: {},
+  computed: {  
+    moduleList() {
+      const moduleList = [];  
+      this.$store.state.topMenu.moduleList.forEach((item, index) => {
+        if (item.moduleId && item.moduleName) {  
+          moduleList.push({  
+            id: item.moduleId,
+            name: item.moduleName,
+            children: this.handleChildren(item.moduleId, item.moduleName, item.menuGroupList),
+            menuType: 'innerMenu',
+            moduleId: item.moduleId,
+            moduleName: item.moduleName
+          });  
+        }  
+      });
+      return [
+        {
+          id: 0,
+          name: this.$t('page.allofthem'),
+          menuType: 'innerMenu', // 用于判断不能新增和编辑菜单
+          children: [
+            {
+              id: this.$utils.setUuid(),
+              name: this.$t('term.framework.internalmenu'),
+              children: moduleList,
+              menuType: 'innerMenu'
+            },
+            {
+              id: 0,
+              name: this.$t('term.framework.custommenu'),
+              children: this.nodeList,
+              menuType: !this.$utils.isEmpty(this.nodeList) ? 'innerMenu' : '' //自定义菜单没有子菜单，可以新增一个目录，存在不能新增
+            }
+          ]
+        }
+      ];  
+    }  
+  },
   watch: {}
 };
 </script>

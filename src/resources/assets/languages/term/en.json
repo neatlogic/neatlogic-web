@@ -217,7 +217,11 @@
     "collection": "aggregate",
     "parentattr": "Parent attribute",
     "initiativecollect": "Active collection",
-    "passivitycollect": "Passive collection"
+    "passivitycollect": "Passive collection",
+    "selectedattr": "optional attribute ",
+    "scripthelp": "The conversion script syntax uses JavaScript. Click on the optional attribute to copy the expression that obtains the attribute value. Assign the new value to the variable $value to complete the conversion",
+    "expression": "expression",
+    "transformscript": "Conversion script"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1231,7 +1235,10 @@
     "iscannotdeletenode": "There are child nodes that cannot be deleted",
     "requiredselectedtips": "If the current component is set as mandatory and only one option remains after filtering, the system will automatically select that option",
     "formtableinputercomponent": "Table Input Component",
-    "tablecomponent": "Table component"
+    "tablecomponent": "Table component",
+    "internalmenu": "Internal menu",
+    "custommenu": "Custom menu",
+    "internalmenuoperationtips": "The internal menu can only be viewed with permission, and cannot add an editing menu"
   },
   "knowledge": {
     "document": "Document",
