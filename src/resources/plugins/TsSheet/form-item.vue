@@ -285,7 +285,11 @@ export default {
                         const formItemAttrUuid = uuidList[1] || 'value';
                         let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
                         if (!Array.isArray(dynamicVal)) {
-                          value = dynamicVal[formItemAttrUuid];
+                          if (!this.$utils.isEmpty(dynamicVal)) {
+                            value = dynamicVal[formItemAttrUuid];
+                          } else {
+                            value = null;
+                          }
                         } else {
                           let list = [];
                           dynamicVal.forEach(v => {

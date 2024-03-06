@@ -136,6 +136,26 @@ export default {
           params.hiddenFieldList = this.$utils.mapArray(this.config.hiddenFieldList, 'value');
         }
         setting.params = params;
+      } else if (this.config.dataSource === 'formtableinputer') {
+        setting.dataList = [];
+        let list = [];
+        if (this.config.formtableinputerUuid && !this.$utils.isEmpty(this.formData) && !this.$utils.isEmpty(this.formData[this.config.formtableinputerUuid])) {
+          list = this.$utils.deepClone(this.formData[this.config.formtableinputerUuid]);
+          if (!this.$utils.isEmpty(list)) {
+            list.forEach(item => {
+              if (this.config.mapping && !this.$utils.isEmpty(item) && item[this.config.mapping.value]) {
+                let findValue = setting.dataList.find(d => d.value === item[this.config.mapping.value]);
+                if (!findValue) {
+                  let obj = {
+                    value: item[this.config.mapping.value],
+                    text: item[this.config.mapping.text]
+                  };
+                  setting.dataList.push(this.$utils.deepClone(obj));
+                }
+              }
+            });
+          }
+        }
       } else {
         setting.showName = 'text';
         setting.dataList = this.validatedDataList;

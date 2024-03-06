@@ -254,6 +254,14 @@ export default {
               if (!config.mapping.text) {
                 errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.showtextfieldmapping')}) });
               }
+            } else if (config.dataSource === 'formtableinputer') {
+              //选择表单输入组件
+              let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+              if (!findItem) {
+                this.$set(config, 'formtableinputerUuid', null);
+                this.$set(config, 'mapping', {});
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage') });
+              }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {
             if (!config.format) {
