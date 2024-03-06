@@ -9,11 +9,14 @@
     }
   }
 }
-.ck-content{
-  min-height:130px;
+.ck-content {
+  min-height: 130px;
   // >p{
   //   margin-top: 0;
   // }
+}
+.ck.ck-sticky-panel .ck-sticky-panel__content_sticky {
+  position: static; // ckeditor计算top有问题，导致工具栏位置偏移
 }
 .theme(@op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow) {
   .ck.ck-reset_all,
@@ -65,7 +68,7 @@
   figure.table table {
     border-color: var(--border-color, @border-color-base) !important;
     border: 1px solid;
-    padding: .5em;
+    padding: 0.5em;
   }
 }
 .ck .ck-tooltip {
@@ -79,4 +82,3 @@ html {
     .theme(@dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @menu-background, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow);
   }
 }
-

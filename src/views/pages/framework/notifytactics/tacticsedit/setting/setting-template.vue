@@ -283,7 +283,7 @@ export default {
     },
     triggerList: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {

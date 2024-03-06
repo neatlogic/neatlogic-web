@@ -22,7 +22,7 @@
                 :key="index"
                 size="large"
                 color="success"
-              >{{ m.name }}·{{ m.id }}</Tag>
+              >{{ m.name || '' }}·{{ m.id || '' }}</Tag>
             </div>
           </TsFormItem>
         </div>
@@ -60,6 +60,9 @@ export default {
     getLicense() {
       this.$api.framework.license.getLicense().then(res => {
         this.licenseData = res.Return;
+        if (this.licenseData) {
+          this.licenseData.moduleList = this.licenseData.moduleList.filter(module => module !== null);
+        }
       });
     }
   },

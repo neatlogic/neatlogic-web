@@ -567,7 +567,12 @@
         "catalogtitle": "Service directory - {target}"
       },
       "tab": "Subprocess"
-    }
+    },
+    "manualcirculation": "Manual circulation",
+    "eoapassedforwardedto": "When approved, the flow will be forwarded to",
+    "eoanopassedforwardedto": "When approval fails, the flow will be forwarded to",
+    "eoapassedforwardedtonode": "Flow node upon approval",
+    "eoanopassedforwardedtonode": "Transfer nodes when approval fails"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
