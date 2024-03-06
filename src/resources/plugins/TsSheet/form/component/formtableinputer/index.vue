@@ -260,7 +260,22 @@ export default {
               if (!findItem) {
                 this.$set(config, 'formtableinputerUuid', null);
                 this.$set(config, 'mapping', {});
-                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage') });
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage')});
+              } else {
+                if (findItem.config && findItem.config.dataConfig) {
+                  let isValidMapping = true;
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                    this.$set(config.mapping, 'value', null);
+                    isValidMapping = false;
+                  }
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                    this.$set(config.mapping, 'text', null);
+                    isValidMapping = false;
+                  }
+                  if (!isValidMapping) {
+                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.fieldmapping')}) });
+                  }
+                }
               }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {

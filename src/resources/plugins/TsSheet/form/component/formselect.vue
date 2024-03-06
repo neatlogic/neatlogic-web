@@ -156,6 +156,25 @@ export default {
             });
           }
         }
+        if (!this.$utils.isEmpty(this.value)) {
+          if (this.$utils.isEmpty(setting.dataList)) {
+            this.setValue(null);
+          } else {
+            let newValue = null;
+            if (Array.isArray(this.value)) {
+              newValue = this.value.filter(v => {
+                return setting.dataList.find(d => d.value === v.value);
+              });
+              if (!this.$utils.isSame(this.value, newValue)) {
+                this.setValue(newValue);
+              }
+            } else {
+              if (!setting.dataList.find(d => d.value === this.value.value)) {
+                this.setValue(null);
+              }
+            }
+          }
+        }
       } else {
         setting.showName = 'text';
         setting.dataList = this.validatedDataList;

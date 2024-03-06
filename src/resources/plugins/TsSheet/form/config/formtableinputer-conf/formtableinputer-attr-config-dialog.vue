@@ -726,7 +726,7 @@ export default {
     },
     'propertyLocal.config.dataSource': {
       handler: function(val) {
-        if (val === 'matrix') {
+        if (val === 'matrix' || val === 'formtableinputer') {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
           }
