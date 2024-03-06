@@ -241,7 +241,8 @@ export default {
       return result;
     },
     clickNode(tree, node) {
-      this.menuType = node.isMenu ? 'innerMenu' : '';
+      this.menuType = '';
+      this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
       this.tableConfig.tbodyList = [];
       if (node.isMenu || node.menuType == 'innerMenu') {
         this.menuType = 'innerMenu';
@@ -400,16 +401,24 @@ export default {
       return list;
     },
     handleRouterAuth() {
-      const pageConfig = require.context('@/views/pages', true, /router.js$/);
+      let routerConfig = {};
+      let routerJsPathList = [];
+      const communityConfig = require.context('@/views/pages', true, /router.js$/);
       const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
-      const routerConfig = {}; 
-      const routerConfigKeys = pageConfig.keys();
-      const commercialConfigKeys = commercialConfig.keys() || [];
-      routerConfigKeys.forEach(routerPath => {
+      const commercialRouterPathList = commercialConfig.keys() || [];
+      const communityRouterPathList = communityConfig.keys() || [];
+      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
+      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
+      routerJsPathList.forEach(routerPath => {
         const moduleId = routerPath.split('/')[1];
-        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...pageConfig(routerPath).default, ...(commercialConfig[routerPath] && commercialConfig[routerPath].default || [])] : (pageConfig(routerPath).default || []);
+        let routeList = [];
+        if (!this.$utils.isEmpty(commercialRouterPathList) && commercialRouterPathList.indexOf(routerPath) != -1) {
+          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
+        } else {
+          routeList = (communityConfig(routerPath).default || []);
+        }
         const menuList = routeList  
-          .filter(item => item.meta && item.meta.authority)  
+          .filter(item => item.meta)  
           .map(item => ({
             title: item.meta.title,
             name: item.name,
@@ -454,8 +463,7 @@ export default {
             {
               id: 0,
               name: this.$t('term.framework.custommenu'),
-              children: this.nodeList,
-              menuType: !this.$utils.isEmpty(this.nodeList) ? 'innerMenu' : '' //自定义菜单没有子菜单，可以新增一个目录，存在不能新增
+              children: this.nodeList
             }
           ]
         }
