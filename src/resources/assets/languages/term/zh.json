@@ -562,7 +562,12 @@
         "catalogtitle": "服务目录-{target}"
       },
       "tab": "子流程"
-    }
+    },
+    "manualcirculation": "手动流转",
+    "eoapassedforwardedto": "审批通过时流转至",
+    "eoanopassedforwardedto": "审批不通过时流转至",
+    "eoapassedforwardedtonode": "审批通过时流转节点",
+    "eoanopassedforwardedtonode": "审批不通过时流转节点"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
