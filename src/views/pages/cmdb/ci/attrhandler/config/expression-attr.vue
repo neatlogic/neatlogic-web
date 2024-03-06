@@ -30,11 +30,11 @@
                         transfer
                         border="border"
                       ></TsFormSelect>
-                      <div v-if="hasAttrError" class="text-error">请选择属性</div>
+                      <div v-if="hasAttrError" class="text-error">{{ $t('form.placeholder.pleaseselect', { target: $t('page.attribute') }) }}</div>
                     </TabPane>
                     <TabPane :label="$t('page.constant')" name="const">
                       <TsFormInput v-model="currentConst" border="border"></TsFormInput>
-                      <div v-if="hasConstError" class="text-error">请填写常量</div>
+                      <div v-if="hasConstError" class="text-error">{{ $t('form.placeholder.pleaseinput', { target: $t('page.constant') }) }}</div>
                     </TabPane>
                   </Tabs>
                   <div style="text-align: right" class="mt-md">
@@ -47,16 +47,41 @@
           </span>
         </div>
       </template>
+      <template v-slot:script>
+        <div>
+          <div v-if="expressAttrList.length > 0">
+            <span class="fz10 text-grey mr-sm">{{ $t('term.cmdb.selectedattr') }}</span>
+            <Tag
+              v-for="(attr, index) in expressAttrList"
+              :key="index"
+              v-clipboard="'$attr[\'' + attr.value + '\']'"
+              v-clipboard:success="clipboardSuc"
+              class="cursor"
+              @click.stop
+            >{{ attr.text }}</Tag>
+          </div>
+          <div>
+            <span class="text-grey mr-sm fz10">{{ $t('page.help') }}</span>
+            <span class="text-grey fz10">{{ $t('term.cmdb.scripthelp') }}</span>
+            <div>
+              <TsCodemirror v-model="myConfig.script" codeMode="javascript"></TsCodemirror>
+            </div>
+          </div>
+        </div>
+      </template>
     </TsForm>
   </div>
 </template>
 <script>
+import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
+  directives: { clipboard },
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
   },
   props: {
     ciId: { type: Number },
@@ -72,7 +97,11 @@ export default {
       formConfig: {
         expression: {
           type: 'slot',
-          label: '表达式'
+          label: this.$t('term.cmdb.expression')
+        },
+        script: {
+          type: 'slot',
+          label: this.$t('term.cmdb.transformscript')
         }
       },
       currentAttr: null,
@@ -95,6 +124,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    clipboardSuc() {
+      this.$Message.success(this.$t('message.copysuccess'));
+    },
     addAttr() {
       this.type = 'attr';
       this.currentConst = null;
@@ -134,7 +166,7 @@ export default {
           return;
         }
         value = this.currentAttr;
-      } else {
+      } else if (this.type === 'const') {
         this.hasAttrError = false;
         if (!this.currentConst) {
           this.hasConstError = true;
@@ -171,7 +203,22 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    expressAttrList() {
+      const attrList = [];
+      if (this.myConfig.expression && this.myConfig.expression.length > 0) {
+        this.myConfig.expression.forEach(d => {
+          if (d.startsWith('{') && d.endsWith('}')) {
+            const data = this.dataList.find(dd => dd.value === d);
+            if (data) {
+              attrList.push(data);
+            }
+          }
+        });
+      }
+      return attrList;
+    }
+  },
   watch: {
     myConfig: {
       handler: function(val) {

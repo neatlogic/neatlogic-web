@@ -217,7 +217,11 @@
     "collection": "aggregate",
     "parentattr": "Parent attribute",
     "initiativecollect": "Active collection",
-    "passivitycollect": "Passive collection"
+    "passivitycollect": "Passive collection",
+    "selectedattr": "optional attribute ",
+    "scripthelp": "The conversion script syntax uses JavaScript. Click on the optional attribute to copy the expression that obtains the attribute value. Assign the new value to the variable $value to complete the conversion",
+    "expression": "expression",
+    "transformscript": "Conversion script"
   },
   "process": {
     "workordercenter": "Work Center",
