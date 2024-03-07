@@ -357,6 +357,7 @@ export default {
     formValid() {
       if (this.valid()) {
         this.$Notice.success({title: this.$t('message.validatesuccess') });
+        this.isShowValidList = false;
       }
     },
     valid() { //整个表单校验

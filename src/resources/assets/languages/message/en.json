@@ -215,7 +215,8 @@
     "regularexpression": "regular expression",
     "regexvalidtip": "After the input verification fails, the user can re-enter according to this verification prompt",
     "regexvalidplaceholder": "The specific meaning of regular expressions, such as containing only numbers",
-    "validtip": "Verification prompt"
+    "validtip": "Verification prompt",
+    "datasourceselectmessage": "The referenced table input component has been deleted. Please reconfigure the attribute data source"
   },
   "dashboard": {
     "templatehelp": "The template needs to comply with the vue template syntax specification, and must specify a root tag, typically a div, that supports all iView components. The data source results are returned in the form of an array, and the root attribute is: dataList. When accessing data, please directly iterate over the dataList to obtain the required data.",

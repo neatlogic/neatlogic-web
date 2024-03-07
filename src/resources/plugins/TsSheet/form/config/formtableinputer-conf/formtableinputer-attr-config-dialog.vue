@@ -35,7 +35,7 @@
                 ref="formitem_datasource"
                 v-model="propertyLocal.config.dataSource"
                 :validateList="validateList"
-                :dataList="dataSourceList"
+                :dataList="getDataSourceList(propertyLocal.handler)"
                 transfer
                 border="border"
                 @on-change="(val)=>{
@@ -139,6 +139,14 @@
                   <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
                 </div>
               </TsFormItem>
+            </template>
+            <template v-else-if="propertyLocal.config.dataSource === 'formtableinputer'">
+              <FormtableinputDataSource
+                ref="formitem_formtableinputsource"
+                :propertyLocal="propertyLocal"
+                :formItemUuid="formItemUuid"
+                :formItemList="formItemList"
+              ></FormtableinputDataSource>
             </template>
             <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
               <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
@@ -308,7 +316,8 @@ export default {
     ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
     TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve),
     FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve)
+    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve),
+    FormtableinputDataSource: resolve => require(['./formtableinput-data-source.vue'], resolve)
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -324,10 +333,10 @@ export default {
     formItemList: { //表格外部的组件
       type: Array,
       default: () => []
-    }
+    },
+    formItemUuid: String
   },
   data() {
-    const _this = this;
     return {
       propertyLocal: null,
       reactionName: {
@@ -351,7 +360,8 @@ export default {
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
-        { value: 'matrix', text: this.$t('page.matrix') }
+        { value: 'matrix', text: this.$t('page.matrix') },
+        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') }
       ],
       formConfig: [
         {
@@ -477,6 +487,27 @@ export default {
           isHide: false
         });
       }
+      if (this.propertyLocal.handler === 'formselect') {
+        const config = this.propertyLocal.config;
+        if (config.dataSource === 'formtableinputer') {
+          //选择表单输入组件
+          let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+          if (!findItem) {
+            this.$set(config, 'formtableinputerUuid', null);
+            this.$set(config, 'mapping', {});
+          } else {
+            if (findItem.config && findItem.config.dataConfig) {
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                this.$set(config.mapping, 'value', null);
+              }
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                this.$set(config.mapping, 'text', null);
+              }
+            }
+          }
+        }
+      }
+      
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
       }
@@ -593,6 +624,8 @@ export default {
     },
     changeDataSource() {
       this.$set(this.propertyLocal.config, 'matrixUuid', null);
+      this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
+      this.$set(this.propertyLocal.config, 'mapping', {});
       this.$delete(this.propertyLocal.reaction, 'filter');
     }
   },
@@ -687,6 +720,15 @@ export default {
         }
       });
       return newList;
+    },
+    getDataSourceList() {
+      return (handler) => {
+        let list = this.$utils.deepClone(this.dataSourceList);
+        if (handler && handler != 'formselect') {
+          list = list.filter(item => item.value != 'formtableinputer');
+        }
+        return list; 
+      };
     }
   },
   watch: {
@@ -705,7 +747,7 @@ export default {
     },
     'propertyLocal.config.dataSource': {
       handler: function(val) {
-        if (val === 'matrix') {
+        if (val === 'matrix' || val === 'formtableinputer') {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
           }
