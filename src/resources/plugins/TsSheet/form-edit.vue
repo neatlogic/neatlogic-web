@@ -964,6 +964,7 @@ export default {
     formValid() {
       if (this.valid()) {
         this.$Notice.success({ title: this.$t('message.validatesuccess') });
+        this.isShowValidList = false;
       }
     },
     valid() {
