@@ -487,6 +487,27 @@ export default {
           isHide: false
         });
       }
+      if (this.propertyLocal.handler === 'formselect') {
+        const config = this.propertyLocal.config;
+        if (config.dataSource === 'formtableinputer') {
+          //选择表单输入组件
+          let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+          if (!findItem) {
+            this.$set(config, 'formtableinputerUuid', null);
+            this.$set(config, 'mapping', {});
+          } else {
+            if (findItem.config && findItem.config.dataConfig) {
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                this.$set(config.mapping, 'value', null);
+              }
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                this.$set(config.mapping, 'text', null);
+              }
+            }
+          }
+        }
+      }
+      
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
       }

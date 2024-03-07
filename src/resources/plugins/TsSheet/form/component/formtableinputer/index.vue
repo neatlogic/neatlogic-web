@@ -258,18 +258,14 @@ export default {
               //选择表单输入组件
               let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
               if (!findItem) {
-                this.$set(config, 'formtableinputerUuid', null);
-                this.$set(config, 'mapping', {});
                 errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage')});
               } else {
                 if (findItem.config && findItem.config.dataConfig) {
                   let isValidMapping = true;
                   if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
-                    this.$set(config.mapping, 'value', null);
                     isValidMapping = false;
                   }
                   if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
-                    this.$set(config.mapping, 'text', null);
                     isValidMapping = false;
                   }
                   if (!isValidMapping) {
