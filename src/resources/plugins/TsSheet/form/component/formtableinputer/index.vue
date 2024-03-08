@@ -254,6 +254,25 @@ export default {
               if (!config.mapping.text) {
                 errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.showtextfieldmapping')}) });
               }
+            } else if (config.dataSource === 'formtableinputer') {
+              //选择表单输入组件
+              let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+              if (!findItem) {
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage')});
+              } else {
+                if (findItem.config && findItem.config.dataConfig) {
+                  let isValidMapping = true;
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                    isValidMapping = false;
+                  }
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                    isValidMapping = false;
+                  }
+                  if (!isValidMapping) {
+                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.fieldmapping')}) });
+                  }
+                }
+              }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {
             if (!config.format) {

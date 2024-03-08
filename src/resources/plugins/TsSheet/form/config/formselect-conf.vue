@@ -56,7 +56,7 @@
         </div>
       </div>
     </TsFormItem>
-    <template v-if="config.dataSource === 'matrix' && config.matrixUuid && mappingDataList.length > 0">
+    <template v-if="config.dataSource === 'matrix' && config.matrixUuid">
       <TsFormItem labelPosition="top" :label="$t('page.fieldmapping')">
         <div class="padding-md radius-md" :class="validClass('mapping')">
           <Row :gutter="10">
@@ -113,7 +113,7 @@
         ></TsFormSelect>
       </TsFormItem>
     </template>
-    <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig" labelPosition="top" :label="$t('page.filtercondition')">
+    <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig && mappingDataList.length > 0" labelPosition="top" :label="$t('page.filtercondition')">
       <div class="bg-block padding-md radius-md" :class="validClass('sourceColumnList')">
         <DataSourceFilter
           v-model="config.sourceColumnList"
@@ -327,6 +327,7 @@ export default {
             this.config.mapping.value = '';
             this.config.mapping.text = '';
           }
+          this.mappingDataList = [];
           this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: newVal }).then(res => {
             if (res.Status == 'OK') {
               this.mappingDataList = res.Return.tbodyList;

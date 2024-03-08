@@ -1515,7 +1515,7 @@ export default {
       if (this.multiple == true && typeof this.currentValue == 'string') {
         this.currentValue = [this.currentValue];
       } else if (this.multiple == false && typeof this.currentValue == 'object') {
-        this.currentValue = this.currentValue[0] || null;
+        this.currentValue = this.currentValue && this.currentValue[0] || null;
       }
       this.searchKeyWord = '';
     },

@@ -87,14 +87,22 @@ export default {
       return findItem && findItem.ismenu ? 'tsfont-bar icon-right' : 'tsfont-ITfuwu icon-right';
     },
     getRouterConfig() {
-      const routerConfig = require.context('@/views/pages', true, /router.js$/);
+      let routerConfig = {};
+      let routerJsPathList = [];
+      const communityConfig = require.context('@/views/pages', true, /router.js$/);
       const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
-      const routerConfigs = {}; 
-      const routerConfigKeys = routerConfig.keys();
-      const commercialConfigKeys = commercialConfig.keys() || [];
-      routerConfigKeys.forEach(routerPath => {
+      const commercialRouterPathList = commercialConfig.keys() || [];
+      const communityRouterPathList = communityConfig.keys() || [];
+      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
+      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
+      routerJsPathList.forEach(routerPath => {
         const moduleId = routerPath.split('/')[1];
-        const routeList = (!this.$utils.isEmpty(commercialConfigKeys) && commercialConfigKeys.indexOf(routerPath) != -1) ? [...routerConfig(routerPath).default, ...(commercialConfig[routerPath] && commercialConfig[routerPath].default || [])] : (routerConfig(routerPath).default || []);
+        let routeList = [];
+        if (!this.$utils.isEmpty(commercialRouterPathList) && commercialRouterPathList.indexOf(routerPath) != -1) {
+          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
+        } else {
+          routeList = (communityConfig(routerPath).default || []);
+        }
         const menuList = routeList  
           .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
           .map(item => ({  
@@ -107,10 +115,10 @@ export default {
             ismenu: item.meta?.ismenu || false
           }));
         if (menuList.length) {  
-          routerConfigs[moduleId] = menuList;  
+          routerConfig[moduleId] = menuList;  
         }  
       });
-      return routerConfigs;
+      return routerConfig;
     },
     getClassifiedList(moduleList) {
       this.classifiedList = [];

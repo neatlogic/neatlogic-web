@@ -107,6 +107,7 @@
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
+      :formItemUuid="formItem.uuid"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
