@@ -563,8 +563,9 @@ export default {
         const fieldList = [];
         const collection = this.collectionList.find(c => c.name == this.currentCollection);
         if (collection && collection.fields) {
-          this.getAttrFieldList(collection.fields, fieldList, null, false);
-          if (attr.targetCiId) {
+          if (!attr.targetCiId) {
+            this.getAttrFieldList(collection.fields, fieldList, null, false);
+          } else {
             this.getRelFieldList(collection.fields, fieldList, null);
           }
         }
