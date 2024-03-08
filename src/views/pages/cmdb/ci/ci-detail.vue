@@ -131,7 +131,7 @@
 </template>
 <script>
 import ciTypeList from '../components/ci/ci-type-list.vue';
-import menuMinix from '../mixins/index';
+//import menuMinix from '../mixins/index';
 import TsForm from '@/resources/plugins/TsForm/TsForm';
 import download from '@/resources/mixins/download.js';
 export default {
@@ -151,7 +151,10 @@ export default {
     // HelloWorld,
     ciTypeList
   },
-  mixins: [menuMinix, download],
+  mixins: [
+    //menuMinix,
+    download
+  ],
   props: {},
   data() {
     return {
@@ -301,7 +304,7 @@ export default {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.$router.push({ path: '/ci-manage' });
-              this.getMenuList();
+              //this.getMenuList();
               vnode.isShow = false;
             }
           });
