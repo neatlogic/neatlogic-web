@@ -53,7 +53,7 @@
                 <tbody v-if="collectionData.subTheadData[key].length > 1 || (collectionData.subTheadData[key].length == 1 && collectionData.subTheadData[key][0]['key'])">
                   <tr v-for="(tbody, tindex) in row[key]" :key="tindex" class="t1">
                     <td v-for="(thead, index) in collectionData.subTheadData[key]" :key="index" style="vertical-align: top">
-                      <div v-if="tbody[thead.key]">
+                      <div v-if="typeof tbody === 'object' && tbody[thead.key]">
                         <div v-if="typeof tbody[thead.key] === 'object'">
                           <JsonViewer v-if="(!Array.isArray(tbody[thead.key]) && Object.keys(tbody[thead.key]).length) || (Array.isArray(tbody[thead.key]) && tbody[thead.key].length > 0)" :show-array-index="false" :value="tbody[thead.key]"></JsonViewer>
                           <div v-else>-</div>
@@ -61,6 +61,7 @@
 
                         <div v-else>{{ tbody[thead.key] }}</div>
                       </div>
+                      <div v-else-if="tbody">{{ tbody }}</div>
                       <div v-else>-</div>
                     </td>
                   </tr>

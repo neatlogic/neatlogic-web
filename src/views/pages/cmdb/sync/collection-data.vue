@@ -38,8 +38,17 @@
                 </thead>
                 <tbody v-if="collectionData.subTheadData[key].length > 1 || (collectionData.subTheadData[key].length == 1 && collectionData.subTheadData[key][0]['key'])">
                   <tr v-for="(tbody, tindex) in row[key]" :key="tindex" class="t1">
-                    <td v-for="(thead, index) in collectionData.subTheadData[key]" :key="index">
-                      {{ tbody[thead.key] || '-' }}
+                    <td v-for="(thead, index) in collectionData.subTheadData[key]" :key="index" style="vertical-align: top">
+                      <div v-if="typeof tbody === 'object' && tbody[thead.key]">
+                        <div v-if="typeof tbody[thead.key] === 'object'">
+                          <JsonViewer v-if="(!Array.isArray(tbody[thead.key]) && Object.keys(tbody[thead.key]).length) || (Array.isArray(tbody[thead.key]) && tbody[thead.key].length > 0)" :show-array-index="false" :value="tbody[thead.key]"></JsonViewer>
+                          <div v-else>-</div>
+                        </div>
+
+                        <div v-else>{{ tbody[thead.key] }}</div>
+                      </div>
+                      <div v-else-if="tbody">{{ tbody }}</div>
+                      <div v-else>-</div>
                     </td>
                   </tr>
                 </tbody>
@@ -53,6 +62,13 @@
               </table>
               <div v-if="!row[key] || row[key].length == 0" :key="key"></div>
             </template>
+            <template v-slot:action="{ row }">
+              <div class="tstable-action">
+                <ul class="tstable-action-ul">
+                  <li class="tsfont-edit" @click="viewData(row)">{{ $t('page.detail') }}</li>
+                </ul>
+              </div>
+            </template>
           </TsTable>
         </div>
       </template>
@@ -60,6 +76,7 @@
         <Button @click="close">{{ $t('page.close') }}</Button>
       </template>
     </TsDialog>
+    <DiscoveryDataDetail v-if="isDetailShow" :data="currentData" @close="closeDetail"></DiscoveryDataDetail>
   </div>
 </template>
 <script>
@@ -67,7 +84,9 @@ export default {
   name: '',
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
+    DiscoveryDataDetail: resolve => require(['@/views/pages/cmdb/discovery/discovery-data-detail.vue'], resolve)
   },
   props: {
     collection: { type: String }
@@ -76,6 +95,8 @@ export default {
     return {
       searchParam: { pageSize: 10 },
       collectionData: {},
+      isDetailShow: false,
+      currentData: null,
       dialogConfig: {
         title: this.$t('term.cmdb.collectiondata'),
         type: 'modal',
@@ -99,6 +120,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeDetail() {
+      this.currentData = null;
+      this.isDetailShow = false;
+    },
+    viewData(row) {
+      this.currentData = row;
+      this.isDetailShow = true;
+    },
     checkshow(theadList, val) {
       this.$set(this.collectionData, 'theadList', theadList);
     },
@@ -117,6 +146,7 @@ export default {
           } else {
             element.isShow = 1;
           }
+          this.collectionData.theadList.push({ key: 'action' });
         });
       });
     },
@@ -150,6 +180,15 @@ export default {
 @import (reference) '~@/resources/assets/css/theme.less';
 .top {
   vertical-align: top;
+}
+/deep/.jv-light {
+  background: transparent !important;
+}
+/deep/.jv-code {
+  padding: 0px !important;
+}
+/deep/.top {
+  vertical-align: top !important;
 }
 .table td {
   padding: 5px !important;
