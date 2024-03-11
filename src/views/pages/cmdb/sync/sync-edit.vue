@@ -8,8 +8,36 @@
       <template v-slot>
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
         <TsForm ref="ciForm" :item-list="formConfig">
+          <template v-slot:globalAttrMapping>
+            <TsTable
+              v-if="globalAttrData"
+              ref="tableGlobalAttr"
+              :fixedHeader="false"
+              v-bind="globalAttrData"
+              :showPager="false"
+            >
+              <template slot="attrId" slot-scope="{ row }">
+                <div>
+                  {{ row.globalAttrLabel }}
+                </div>
+                <div style="font-size:12px" class="text-grey">
+                  {{ row.globalAttrName }}
+                </div>
+              </template>
+              <template slot="field" slot-scope="{ row }">
+                <TsFormSelect
+                  :ref="'sltMapping' + row.globalAttrId"
+                  v-model="row.field"
+                  :search="true"
+                  :width="270"
+                  :transfer="true"
+                  :dataList="attrFieldList(row)"
+                ></TsFormSelect>
+              </template>
+            </TsTable>
+          </template>
           <template v-slot:attrMapping>
-            <span v-if="matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">{{ $t('term.cmdb.automatch') }}</span>
+            <span v-if=" matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">{{ $t('term.cmdb.automatch') }}</span>
             <span v-else class="mt-sm text-href" @click="resetAutoMatch">{{ $t('term.cmdb.cancelautomatch') }}</span>
             <TsTable
               v-if="attrData"
@@ -108,6 +136,7 @@ export default {
     const _this = this;
     return {
       isLoading: false,
+      matchGlobalAttrList: [], ////记录自动匹配的全局属性，清理匹配时根据这个列表清理
       matchAttrList: [], //记录自动匹配的属性，清理匹配时根据这个列表清理
       matchRelList: [], //记录自动匹配的关系，清理匹配时根据这个列表清理
       currentCollection: this.collection || '',
@@ -246,36 +275,48 @@ export default {
         },
         description: {
           type: 'textarea',
-          label: '说明',
+          label: this.$t('page.explain'),
           maxlength: 500,
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'description', value);
           }
         },
+        globalAttrMapping: {
+          type: 'slot',
+          label: this.$t('term.cmdb.globalattrmapping'),
+          isHidden: true
+        },
         attrMapping: {
           type: 'slot',
-          label: '属性映射',
+          label: this.$t('term.cmdb.attrmapping'),
           isHidden: true
         },
         relMapping: {
           type: 'slot',
-          label: '关系映射',
+          label: this.$t('term.cmdb.relmapping'),
           isHidden: true
         }
       },
+      globalAttrData: {
+        theadList: [
+          { key: 'attrId', title: this.$t('page.attribute'), width: 200 },
+          { key: 'field', title: this.$t('term.cmdb.matchfield') }
+        ],
+        tbodyList: []
+      },
       attrData: {
         theadList: [
-          { key: 'attrId', title: '属性', width: 200 },
-          { key: 'field', title: '匹配字段' }
+          { key: 'attrId', title: this.$t('page.attribute'), width: 200 },
+          { key: 'field', title: this.$t('term.cmdb.matchfield') }
           //{ key: 'actionType', title: '空值覆盖', tooltip: '激活后如果采集数据的对应属性是空值，则会清空对应属性原有的数据', width: 120 }
         ],
         tbodyList: []
       },
       relData: {
         theadList: [
-          { key: 'relId', title: '关系', width: 200 },
-          { key: 'field', title: '匹配字段' },
-          { key: 'actionType', title: '动作', tooltip: '追加：新关系追加到旧关系中；替换：不管新关系是否为空，都会用新关系替换掉旧关系；更新：如果新关系不为空，则用新关系替换掉旧关系', width: 120 }
+          { key: 'relId', title: this.$t('page.relation'), width: 200 },
+          { key: 'field', title: this.$t('term.cmdb.matchfield') },
+          { key: 'actionType', title: this.$t('page.actions'), tooltip: '追加：新关系追加到旧关系中；替换：不管新关系是否为空，都会用新关系替换掉旧关系；更新：如果新关系不为空，则用新关系替换掉旧关系', width: 120 }
         ],
         tbodyList: []
       },
@@ -316,15 +357,50 @@ export default {
           this.$set(this.formConfig.collectionName, 'dataList', this.collectionList);
         });
     },
+    async getGlobalAttrByCiId(ciId) {
+      let hasGlobalAttr = false;
+      if (ciId) {
+        await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId).then(res => {
+          const globalAttrList = res.Return;
+          this.globalAttrData.tbodyList = [];
+          if (globalAttrList && globalAttrList.length > 0) {
+            hasGlobalAttr = true;
+            globalAttrList.forEach(attr => {
+              let attrObj = null;
+              if (this.syncCiCollectionData.mappingList) {
+                attrObj = this.syncCiCollectionData.mappingList.find(a => attr.id == a.globalAttrId);
+              }
+              if (!attrObj) {
+                attrObj = {
+                  globalAttrId: attr.id,
+                  globalAttrLabel: attr.label,
+                  globalAttrName: attr.name,
+                  field: ''
+                };
+              } else {
+                attrObj.globalAttrLabel = attr.label;
+                attrObj.globalAttrName = attr.name;
+              }
+              this.globalAttrData.tbodyList.push(attrObj);
+            });
+          }
+        });
+        if (hasGlobalAttr) {
+          this.formConfig.globalAttrMapping.isHidden = false;
+        } else {
+          this.formConfig.globalAttrMapping.isHidden = true;
+        }
+      }
+    },
     async getAttrByCiId(ciId) {
       let hasAttr = false;
       if (ciId) {
         await this.$api.cmdb.ci.getAttrByCiId(ciId).then(res => {
-          this.attrList = res.Return;
+          const attrList = res.Return;
           this.attrData.tbodyList = [];
           this.formConfig.uniqueAttrIdList.dataList = [];
-          if (this.attrList && this.attrList.length > 0) {
-            this.attrList.forEach(attr => {
+          if (attrList && attrList.length > 0) {
+            attrList.forEach(attr => {
               if (attr.type !== 'expression') {
                 this.formConfig.uniqueAttrIdList.dataList.push({ value: attr.id, text: attr.label + '(' + attr.name + ')' });
               }
@@ -377,10 +453,10 @@ export default {
       let hasRel = false;
       if (ciId) {
         await this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
-          this.relList = res.Return;
+          const relList = res.Return;
           this.relData.tbodyList = [];
-          if (this.relList && this.relList.length > 0) {
-            this.relList.forEach(rel => {
+          if (relList && relList.length > 0) {
+            relList.forEach(rel => {
               if (rel.inputType == 'at') {
                 hasRel = true;
                 let relObj = null;
@@ -474,6 +550,13 @@ export default {
       });
       if (form.valid() && isValid) {
         this.syncCiCollectionData.mappingList = [];
+        if (this.globalAttrData && this.globalAttrData.tbodyList && this.globalAttrData.tbodyList.length > 0) {
+          this.syncCiCollectionData.mappingList = this.syncCiCollectionData.mappingList.concat(
+            this.globalAttrData.tbodyList.filter(attr => {
+              return !!attr.field;
+            })
+          );
+        }
         if (this.attrData && this.attrData.tbodyList && this.attrData.tbodyList.length > 0) {
           this.syncCiCollectionData.mappingList = this.syncCiCollectionData.mappingList.concat(
             this.attrData.tbodyList.filter(attr => {
@@ -593,6 +676,7 @@ export default {
   watch: {
     currentCiId: {
       handler: function(val) {
+        this.getGlobalAttrByCiId(val);
         this.getAttrByCiId(val);
         this.getRelByCiId(val);
       },

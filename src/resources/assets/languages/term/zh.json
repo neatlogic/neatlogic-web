@@ -221,7 +221,10 @@
     "selectedattr": "可选属性",
     "scripthelp": "转换脚本语法使用javascript，点击可选属性可复制获取属性值的表达式，把新值赋值给变量$value即可完成转换",
     "expression": "表达式",
-    "transformscript": "转换脚本"
+    "transformscript": "转换脚本",
+    "relmapping": "关系映射",
+    "globalattrmapping": "全局属性映射",
+    "matchfield": "匹配字段"
   },
   "process": {
     "workordercenter": "工单中心",
