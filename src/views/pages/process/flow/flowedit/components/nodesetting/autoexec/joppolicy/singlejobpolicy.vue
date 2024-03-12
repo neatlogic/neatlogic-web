@@ -367,20 +367,22 @@
           class="item-list pb-sm"
         >
           <Col span="4">
-            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
-            <span>
-              <Tooltip
-                placement="right"
-                max-width="400"
-                theme="light"
-                transfer
-              >
-                <b class="tsfont-info-o text-href"></b>
-                <div slot="content">
-                  <p>{{ $t('特殊用法：使用工单号、步骤ID等工单信息，映射为作业参数<br>样例：输入${DATA.serialNumber}_${DATA.stepId}，表示将【工单号】【_】【步骤ID】拼接，映射为作业参数<br>可选参数：工单号-${DATA.serialNumber}<br>步骤ID-${DATA.stepId}<br>步骤处理人-${DATA.stepWorker}') }}</p>
-                </div>
-              </Tooltip>
-            </span>
+            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">
+              <span>{{ r.name }}</span>
+              <span v-if="r.type == 'text'">
+                <Tooltip
+                  placement="right"
+                  max-width="450"
+                  theme="light"
+                  transfer
+                >
+                  <b class="tsfont-info-o text-href"></b>
+                  <div slot="content">
+                    <p>{{ $t('特殊用法：使用工单号、步骤ID等工单信息，映射为作业参数<br>样例：输入${DATA.serialNumber}_${DATA.stepId}，表示将【工单号】【_】【步骤ID】拼接，映射为作业参数<br>可选参数：工单号-${DATA.serialNumber}<br>步骤ID-${DATA.stepId}<br>步骤处理人-${DATA.stepWorker}') }}</p>
+                  </div>
+                </Tooltip>
+              </span>
+            </div>
           </Col>
           <Col span="20">
             <TsRow :gutter="8">
