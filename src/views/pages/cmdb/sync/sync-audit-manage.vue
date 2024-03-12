@@ -23,17 +23,17 @@
         >
           <template slot-scope="{ row }">
             <div class="grid text-action">
-              <div style="text-align:center;" class="pt-xs">
+              <div style="text-align: center" class="pt-xs">
                 <span class="h3" :class="'tsfont-' + row.collectionName"></span>
               </div>
-              <div style="position:relative" class="overflow">
+              <div style="position: relative" class="overflow">
                 <div class="text-grey" :title="row.collectionName">
                   {{ row.collectionName }}
                 </div>
                 <div class="overflow">
                   <span :title="row.ciLabel + '(' + row.ciName + ')'">{{ row.ciLabel }}({{ row.ciName }})</span>
                 </div>
-                <div style="position:absolute;top:0px;right:0px;width:36px;text-align:center">
+                <div style="position: absolute; top: 0px; right: 0px; width: 36px; text-align: center">
                   <Badge v-if="row.execCount" :count="row.execCount" type="primary"></Badge>
                 </div>
               </div>
@@ -58,7 +58,7 @@
               <div v-if="row.status == 'done'" class="text-success">
                 {{ row.statusText }}
               </div>
-              <div v-else-if="row.status == 'doing'" style="width:42px">
+              <div v-else-if="row.status == 'doing'" style="width: 42px">
                 <Progress
                   :percent="99"
                   :stroke-width="10"
@@ -120,7 +120,24 @@ export default {
       pageSize: 20, //日志每页数量
       ciCollectionId: null, //左边选择的集合id
       doingIdList: [],
-      theadList: [{ key: 'status', title: '状态' }, { key: 'error', title: '异常' }, { key: 'inputFromText', title: '发起方式' }, { key: 'startTime', title: '开始时间', type: 'time' }, { key: 'endTime', title: '结束时间', type: 'time' }, { key: 'timeCost', title: '耗时' }, { key: 'dataCount', title: '处理数据量' }, { key: 'transactionCount', title: '更新配置项' }, { key: 'action' }],
+      theadList: [
+        {
+          key: 'status',
+          title: '状态'
+        },
+        {
+          key: 'ciCollectionName',
+          title: '集合'
+        },
+        { key: 'error', title: '异常' },
+        { key: 'inputFromText', title: '发起方式' },
+        { key: 'startTime', title: '开始时间', type: 'time' },
+        { key: 'endTime', title: '结束时间', type: 'time' },
+        { key: 'timeCost', title: '耗时' },
+        { key: 'dataCount', title: '处理数据量' },
+        { key: 'transactionCount', title: '更新配置项' },
+        { key: 'action' }
+      ],
       searchConfig: {
         timer: null,
         search: false,
