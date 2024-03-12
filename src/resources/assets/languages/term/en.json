@@ -221,7 +221,10 @@
     "selectedattr": "optional attribute ",
     "scripthelp": "The conversion script syntax uses JavaScript. Click on the optional attribute to copy the expression that obtains the attribute value. Assign the new value to the variable $value to complete the conversion",
     "expression": "expression",
-    "transformscript": "Conversion script"
+    "transformscript": "Conversion script",
+    "relmapping": "Relationship mapping",
+    "globalattrmapping": "Global attribute mapping",
+    "matchfield": "Matching Fields"
   },
   "process": {
     "workordercenter": "Work Center",

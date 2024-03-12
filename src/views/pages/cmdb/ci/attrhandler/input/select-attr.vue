@@ -53,7 +53,7 @@ export default {
         border: 'border',
         search: true,
         width: '100%',
-        dynamicUrl: '/api/rest/cmdb/attr/targetci/search?attrId=' + this.attrData.id,
+        dynamicUrl: '/api/rest/cmdb/attr/targetci/search?attrId=' + this.attrData.id + '&pageSize=40',
         textName: 'name',
         valueName: 'id',
         transfer: true,

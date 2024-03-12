@@ -129,7 +129,7 @@
 </template>
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm';
-import menuMinix from '../mixins/index';
+//import menuMinix from '../mixins/index';
 export default {
   name: '',
   components: {
@@ -138,7 +138,7 @@ export default {
     IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve),
     TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
   },
-  mixins: [menuMinix],
+  //mixins: [menuMinix],
   props: {
     id: {
       type: Number
@@ -291,7 +291,7 @@ export default {
             _this.$set(_this.ciData, 'isAbstract', name);
           }
         },
-        {
+        /*{
           name: 'isMenu',
           type: 'switch',
           label: this.$t('term.cmdb.keymodel'),
@@ -300,7 +300,7 @@ export default {
           onChange: function(name) {
             _this.$set(_this.ciData, 'isMenu', name);
           }
-        },
+        },*/
         {
           name: 'expiredDay',
           _belong: 'realci',
