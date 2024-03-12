@@ -1241,7 +1241,8 @@
     "tablecomponent": "Table component",
     "internalmenu": "Internal menu",
     "custommenu": "Custom menu",
-    "internalmenuoperationtips": "The internal menu can only be viewed with permission, and cannot add an editing menu"
+    "internalmenuoperationtips": "The internal menu can only be viewed with permission, and cannot add an editing menu",
+    "hidetab": "Hide Tabs"
   },
   "knowledge": {
     "document": "Document",
