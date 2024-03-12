@@ -1240,7 +1240,8 @@
     "tablecomponent": "表格组件",
     "internalmenu": "内部菜单",
     "custommenu": "自定义菜单",
-    "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单"
+    "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单",
+    "hidetab": "隐藏选项卡"
   },
   "knowledge": {
     "document": "文档",

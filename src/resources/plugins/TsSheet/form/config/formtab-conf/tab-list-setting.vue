@@ -56,15 +56,15 @@
                 v-if="dataListLocal.length <= 500"
                 class="tsfont-plus pb-xs text-action"
                 @click="addData(item, index)"
-              >添加选项卡</div>
+              >{{ $t('dialog.title.addtarget',{'target':$t('page.tab')}) }}</div>
               <div
                 v-if="dataListLocal.length > 1"
                 class="tsfont-minus pb-xs text-action"
                 @click="removeData(item, index)"
-              >删除选项卡</div>
+              >{{ $t('dialog.title.deletetarget',{'target':$t('page.tab')}) }}</div>
               <div class="tsfont-lightning border-base-bottom pb-xs text-action" @click="openReactionDialog(item, index)">联动设置</div>
               <div class="flex-start pt-xs">
-                <div class="pr-sm">隐藏选项卡</div>
+                <div class="pr-sm">{{ $t('term.framework.hidetab') }}</div>
                 <TsFormSwitch
                   v-model="item.isHide"
                   :falseValue="false"
