@@ -26,7 +26,7 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchTagentData()"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="changeCurrent(1)"></CombineSearcher>
       </template>
       <div slot="content">
         <Loading
