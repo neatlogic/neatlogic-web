@@ -52,7 +52,7 @@
       </div>
     </TsFormItem>
     <div v-if="autoexecConfig.scenarioParamList.length > 0">
-      <div class="pb-sm">{{ $t('工具场景') }}</div>
+      <div class="pb-sm">{{ $t('term.process.jobscenariovalue') }}</div>
       <div class="param-list">
         <TsRow
           v-for="(r,rindex) in autoexecConfig.scenarioParamList"
@@ -242,7 +242,7 @@
                 >
                   <b class="tsfont-info-o text-href"></b>
                   <div slot="content">
-                    <p>{{ $t('特殊用法：使用工单号、步骤ID等工单信息，映射为作业参数<br>样例：输入${DATA.serialNumber}_${DATA.stepId}，表示将【工单号】【_】【步骤ID】拼接，映射为作业参数<br>可选参数：工单号-${DATA.serialNumber}<br>步骤ID-${DATA.stepId}<br>步骤处理人-${DATA.stepWorker}') }}</p>
+                    <p v-html="$t('term.process.jobtextparamsvaluetip')"></p>
                   </div>
                 </Tooltip>
               </span>
