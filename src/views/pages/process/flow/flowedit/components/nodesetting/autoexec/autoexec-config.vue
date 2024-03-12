@@ -83,6 +83,8 @@ export default {
         createJobPolicy: 'single',
         runtimeParamList: [], //作业参数列表
         executeParamList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
+        scenarioList: [], // 场景列表
+        scenarioParamList: [], // 场景参数列表
         formAttributeList: []
       },
       formConfig: {
@@ -185,6 +187,8 @@ export default {
           let executeParamList = res.Return.executeParamList || [];
           let phaseList = res.Return.phaseList || [];
           let exportParamList = res.Return.exportParamList || [];
+          let scenarioList = res.Return.scenarioList || [];
+          let scenarioParamList = res.Return.scenarioParamList || [];
           runtimeParamList.forEach(item => {
             if (item.type == 'phase') {
               this.$set(item, 'config', {});
@@ -194,6 +198,8 @@ export default {
           this.autoexecConfig.runtimeParamList = runtimeParamList;
           this.autoexecConfig.executeParamList = executeParamList;
           this.autoexecConfig.exportParamList = exportParamList;
+          this.autoexecConfig.scenarioList = scenarioList;
+          this.autoexecConfig.scenarioParamList = scenarioParamList;
         }
       }).finally(() => {
         this.loadingShow = false;

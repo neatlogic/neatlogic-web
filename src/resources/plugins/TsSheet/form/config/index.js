@@ -20,7 +20,7 @@ import formaccounts from './formaccounts-conf.vue';
 import formupload from './formupload-conf.vue';
 import formdivider from './formdivider-conf.vue';
 import formcube from './formcube-conf.vue';
-import formtab from './formtab-conf.vue';
+import formtab from './formtab-conf';
 import formcollapse from './formcollapse-conf.vue';
 
 // import * as cmdbComponent from '@/views/pages/cmdb/form/config';

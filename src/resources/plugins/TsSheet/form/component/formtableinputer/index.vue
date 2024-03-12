@@ -81,7 +81,7 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li class="tsfont-trash-o" @click="deleteItem(row)">{{ $t('page.delete') }}</li>
+            <li v-if="!disabled && !readonly" class="tsfont-trash-o" @click="deleteItem(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
@@ -229,9 +229,8 @@ export default {
           }
         });
       }
-      if (this.disabled || this.readonly) {
-        this.$set(formItem.config, 'isDisabled', true);
-      }
+      this.$set(formItem.config, 'isDisabled', this.disabled || false);
+      this.$set(formItem.config, 'isReadOnly', this.readonly || false);
       return formItem;
     },
     validConfig() {

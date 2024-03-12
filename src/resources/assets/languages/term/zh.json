@@ -574,7 +574,9 @@
     "eoapassedforwardedto": "审批通过时流转至",
     "eoanopassedforwardedto": "审批不通过时流转至",
     "eoapassedforwardedtonode": "审批通过时流转节点",
-    "eoanopassedforwardedtonode": "审批不通过时流转节点"
+    "eoanopassedforwardedtonode": "审批不通过时流转节点",
+    "jobtextparamsvaluetip": "特殊用法：使用工单号、步骤ID等工单信息，映射为作业参数<br><br>样例：输入${DATA.serialNumber}_${DATA.stepId}，表示将【工单号】【_】【步骤ID】拼接，映射为作业参数<br><br>可选参数：<br>&nbsp;&nbsp;&nbsp;&nbsp;工单号-${DATA.serialNumber}<br>&nbsp;&nbsp;&nbsp;&nbsp;步骤ID-${DATA.stepId}<br>&nbsp;&nbsp;&nbsp;&nbsp;步骤处理人-${DATA.stepWorker}",
+    "jobscenariovalue": "工具场景"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -1240,7 +1242,8 @@
     "tablecomponent": "表格组件",
     "internalmenu": "内部菜单",
     "custommenu": "自定义菜单",
-    "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单"
+    "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单",
+    "hidetab": "隐藏选项卡"
   },
   "knowledge": {
     "document": "文档",
