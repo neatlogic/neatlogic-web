@@ -51,6 +51,79 @@
         </TsRow>
       </div>
     </TsFormItem>
+    <div v-if="autoexecConfig.scenarioParamList.length > 0">
+      <div class="pb-sm">{{ $t('term.process.jobscenariovalue') }}</div>
+      <div class="param-list">
+        <TsRow
+          v-for="(r,rindex) in autoexecConfig.scenarioParamList"
+          :key="'scenario_'+rindex"
+          :gutter="8"
+          class="item-list pb-sm"
+        >
+          <Col span="4">
+            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
+          </Col>
+          <Col span="6">
+            <TsFormSelect
+              ref="formValid"
+              v-model="r.mappingMode"
+              :dataList="mappingModeList"
+              :validateList="r.isRequired?validateList:[]"
+              :firstSelect="false"
+              transfer
+              border="border"
+              @on-change="(val)=>{changeMappingMode(r,val)}"
+            ></TsFormSelect>
+          </Col>
+          <Col span="14">
+            <template v-if="r.mappingMode === 'formCommonComponent'">
+              <TsFormSelect
+                ref="formValid"
+                v-model="r.value"
+                :dataList="getFormComponent('formCommonComponent')"
+                textName="label"
+                valueName="uuid"
+                :validateList="r.isRequired? validateList:[]"
+                :firstSelect="false"
+                transfer
+                border="border"
+              ></TsFormSelect>
+            </template>
+            <template v-else-if="r.mappingMode === 'formTableComponent'">
+              <div class="formTableComponent">
+                <TsFormSelect
+                  ref="formValid"
+                  v-model="r.column"
+                  :dataList="getAttrList(r.value,'batch')"
+                  :validateList="r.isRequired && r.value?validateList:[]"
+                  :firstSelect="false"
+                  transfer
+                  border="border"
+                ></TsFormSelect>
+              </div>
+            </template>
+            <template v-else-if="r.mappingMode == 'constant'">
+              <Edit
+                :is="paramType(r.type,'Handler')"
+                ref="formValid"
+                v-model="r.value"
+                :type="r.type"
+                :config="r.config?r.config:{}"
+                :isRequired="!!r.isRequired"
+              ></Edit>
+            </template>
+            <template v-else>
+              <TsFormInput
+                ref="formValid"
+                v-model="r.value"
+                :validateList="r.isRequired?validateList:[]"
+                border="border"
+              ></TsFormInput>
+            </template>
+          </Col>
+        </TsRow>
+      </div>
+    </div>
     <div v-if="autoexecConfig.executeParamList && autoexecConfig.executeParamList.length > 0">
       <div class="title pb-sm">
         <span>{{ $t('term.process.targetparamsvalue') }}</span>
@@ -158,7 +231,22 @@
           class="item-list pb-sm"
         >
           <Col span="4">
-            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">{{ r.name }}</div>
+            <div class="text-title overflow" :class="{'require-label':r.isRequired}" :title="r.name">
+              <span>{{ r.name }}</span>
+              <span v-if="r.type == 'text'">
+                <Tooltip
+                  placement="right"
+                  max-width="450"
+                  theme="light"
+                  transfer
+                >
+                  <b class="tsfont-info-o text-href"></b>
+                  <div slot="content">
+                    <p v-html="$t('term.process.jobtextparamsvaluetip')"></p>
+                  </div>
+                </Tooltip>
+              </span>
+            </div>
           </Col>
           <Col span="6">
             <TsFormSelect
@@ -358,6 +446,13 @@ export default {
           }
         });
       }
+      if (this.autoexecConfig.scenarioParamList && this.autoexecConfig.scenarioParamList.length > 0) {
+        this.autoexecConfig.scenarioParamList.forEach(item => {
+          if (item.mappingMode === 'formTableComponent') {
+            this.$set(item, 'value', val);
+          }
+        });
+      }
       this.$set(this.autoexecConfig, 'batchJobDataSource', this.batchJobDataSource);
     },
     changeActive(val) {
@@ -398,10 +493,11 @@ export default {
     },
     validTable() { //校验表格组件,参数至少需要选择一个表格组件
       let isValid = false;
-      if (this.autoexecConfig.autoexecCombopId && (this.autoexecConfig.runtimeParamList || this.autoexecConfig.executeParamList)) {
+      if (this.autoexecConfig.autoexecCombopId && (this.autoexecConfig.runtimeParamList || this.autoexecConfig.executeParamList || this.autoexecConfig.scenarioParamList)) {
         let runtimeParamList = this.autoexecConfig.runtimeParamList || [];
         let executeParamList = this.autoexecConfig.executeParamList || [];
-        let paramsList = runtimeParamList.concat(executeParamList);
+        let scenarioParamList = this.autoexecConfig.scenarioParamList || [];
+        let paramsList = runtimeParamList.concat(executeParamList).concat(scenarioParamList);
         if (paramsList.length > 0) {
           for (let i = 0; i < paramsList.length; i++) {
             if (paramsList[i].mappingMode === 'formTableComponent') {

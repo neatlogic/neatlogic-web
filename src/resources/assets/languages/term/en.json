@@ -575,7 +575,9 @@
     "eoapassedforwardedto": "When approved, the flow will be forwarded to",
     "eoanopassedforwardedto": "When approval fails, the flow will be forwarded to",
     "eoapassedforwardedtonode": "Flow node upon approval",
-    "eoanopassedforwardedtonode": "Transfer nodes when approval fails"
+    "eoanopassedforwardedtonode": "Transfer nodes when approval fails",
+    "jobtextparamsvaluetip": "Special usage: Use work order information such as work order number and step ID to map to job parameters. Example: Input$ {DATA.serialNumber}_ ${DATA. stepId} represents concatenating [work order number] [_] [step ID] and mapping it to job parameters.<br><br>Optional parameters:<br>&nbsp;&nbsp;&nbsp;&nbsp; Work Order Number - ${DATA. serialNumber}<br>&nbsp;&nbsp;&nbsp;&nbsp; Step ID - ${DATA. stepId}<br>&nbsp;&nbsp;&nbsp;&nbsp; Step handler - ${DATA. stepWorker}",
+    "jobscenariovalue": "Tool Scenarios"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
