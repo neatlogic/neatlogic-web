@@ -31,8 +31,8 @@
                 :formData="formData"
                 :formItemList="formItemList"
                 :mode="mode"
-                :disabled="disabled"
-                :readonly="readonly"
+                :disabled="disabled || tab.isDisabled"
+                :readonly="readonly || tab.isReadOnly"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
