@@ -22,7 +22,7 @@
           :disabled="disabled"
           v-bind="getSetting"
           border="border"
-          :maxlength="type==='textarea'? 4096:500"
+          :maxlength="config && config.maxlength ?config.maxlength : type==='textarea'? 4096:2048"
           @on-change="updateval"
         ></TsFormInput>
       </Col>
