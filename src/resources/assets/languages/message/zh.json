@@ -38,8 +38,8 @@
   "clearsuccess": "清除成功",
   "clearupsuccess": "清理成功",
   "cmdb": {
-    "keytype": "关键类型会显示在最左侧菜单中",
-    "topotype": "开启后此类型才会在拓扑图中显示",
+    "keylevel": "关键层级会显示在最左侧菜单中",
+    "topotype": "开启后此层级才会在拓扑图中显示",
     "editrelpath": "点击蓝色节点，可设置该节点数据是否显示",
     "selectci": "请选择关联模型",
     "topoerror": "当前模型数据无法使用{target}生成拓扑图，请换一种布局。",

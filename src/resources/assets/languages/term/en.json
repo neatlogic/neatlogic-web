@@ -12,7 +12,7 @@
     "cicount": "Number of models",
     "isshowintopo": "Whether to show in topology",
     "showintopo": "Show in Topology",
-    "keytype": "key type",
+    "keylevel": "key level",
     "levelnumber": "{level}",
     "showrel": "Show Relation",
     "extendlevel": "Expand Level",
