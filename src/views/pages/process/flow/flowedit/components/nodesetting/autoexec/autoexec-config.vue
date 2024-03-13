@@ -83,6 +83,7 @@ export default {
         createJobPolicy: 'single',
         runtimeParamList: [], //作业参数列表
         executeParamList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
+        exportParamList: [],
         scenarioList: [], // 场景列表
         scenarioParamList: [], // 场景参数列表
         formAttributeList: []
@@ -146,7 +147,9 @@ export default {
         }
       ],
       isFirst: true,
-      isValidTable: true //批量创建作业:是否存在表格组件
+      isValidTable: true, //批量创建作业:是否存在表格组件
+      autoexecCombop: {}, //组合工具数据,
+      includesKeyList: ['runtimeParamList', 'executeParamList', 'exportParamList', 'scenarioList', 'scenarioParamList'] //组合工具获取数据key
     };
   },
   beforeCreate() {},
@@ -162,14 +165,62 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    init() {
+    async init() {
       if (!this.$utils.isEmpty(this.config)) {
-        Object.keys(this.config).forEach(key => {
-          this.$set(this.autoexecConfig, key, this.config[key]);
-        });
+        if (this.config.autoexecCombopId) {
+          try {
+            await this.getAutoexecCombop(this.config.autoexecCombopId);
+            Object.keys(this.config).forEach(key => {
+              this.$set(this.autoexecConfig, key, this.config[key]);
+            });
+            //更新组合工具参数列表
+            Object.keys(this.autoexecConfig).forEach(key => {
+              if (this.includesKeyList.includes(key)) {
+                if (this.$utils.isEmpty(this.autoexecCombop[key])) {
+                  this.$set(this.autoexecConfig, key, []);
+                } else {
+                  if (['runtimeParamList', 'executeParamList', 'scenarioParamList'].includes(key)) {
+                    if (this.$utils.isEmpty(this.config[key])) {
+                      this.$set(this.autoexecConfig, key, this.autoexecCombop[key]);
+                    } else {
+                      let list = [];
+                      this.autoexecCombop[key].forEach(item => {
+                        if (key === 'runtimeParamList' && item.type == 'phase') {
+                          this.$set(item.config, 'dataList', this.autoexecCombop.phaseList || []);
+                        }
+                        let findItem = this.config[key].find(c => c.key === item.key);
+                        if (findItem) {
+                          list.push(findItem);
+                        } else {
+                          list.push(item);
+                        }
+                      });
+                      this.$set(this.autoexecConfig, key, list);
+                    }
+                  } else {
+                    this.$set(this.autoexecConfig, key, this.autoexecCombop[key]);
+                  }
+                }
+              }
+            });
+          } catch (e) {
+            this.$set(this.autoexecConfig, 'isShow', !!this.config.isShow);
+            this.isFirst = false;
+            this.loadingShow = false;
+          }
+        }
       }
-      this.isFirst = false;
-      this.loadingShow = false;
+      this.$nextTick(() => {
+        this.isFirst = false;
+        this.loadingShow = false;
+      });
+    },
+    getAutoexecCombop(combopId) {
+      return this.$api.process.process.getAutoexecCombop({combopId: combopId}).then(res => {
+        if (res.Status == 'OK') {
+          this.autoexecCombop = res.Return;
+        }
+      });
     },
     changeAutoexecCombopId(val) {
       this.autoexecConfig.jobNamePrefix = '';
