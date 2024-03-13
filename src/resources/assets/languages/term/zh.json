@@ -12,7 +12,7 @@
     "cicount": "模型数量",
     "isshowintopo": "是否在拓扑显示",
     "showintopo": "拓扑中显示",
-    "keytype": "关键类型",
+    "keylevel": "关键层级",
     "levelnumber": "{level}层",
     "showrel": "展示关系",
     "extendlevel": "展开层数",

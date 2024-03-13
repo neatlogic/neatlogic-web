@@ -38,8 +38,8 @@
   "clearsuccess": "Purge succeeded",
   "clearupsuccess": "Cleanup succeeded",
   "cmdb": {
-    "keytype": "The key type will be displayed in the leftmost menu",
-    "topotype": "This type will be displayed in the topology map after it is turned on",
+    "keylevel": "The key level will be displayed in the leftmost menu",
+    "topotype": "This level will be displayed in the topology map after it is turned on",
     "editrelpath": "Click the blue node to set whether the data of this node is displayed.",
     "selectci": "Please select the associated model",
     "topoerror": "The current model data cannot use {target} to generate a topology map, please change to another layout.",

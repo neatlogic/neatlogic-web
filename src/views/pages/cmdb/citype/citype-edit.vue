@@ -8,7 +8,7 @@
               <i-switch v-model="ciTypeData.isMenu" :true-value="1" :false-value="0"></i-switch>
               <!-- <span class="actionText" v-html="ciTypeData.isMenu == 1 ? '是' : '否'"></span> -->
               <div class="text-grey">
-                {{ $t('message.cmdb.keytype') }}
+                {{ $t('message.cmdb.keylevel') }}
               </div>
             </div>
           </template>
@@ -72,7 +72,7 @@ export default {
         {
           name: 'isMenu',
           type: 'slot',
-          label: this.$t('term.cmdb.keytype')
+          label: this.$t('term.cmdb.keylevel')
         },
         {
           name: 'isShowInTopo',
