@@ -1157,7 +1157,7 @@ export default {
           thList.push({ key: 'columnWidth' });
         }
         if (this.canDrag) {
-          thList.push({ key: 'dragWidth', width: 40 });
+          thList.push({ key: 'dragWidth', width: 30 });
         }
         if (list && list.length > 0) {
           showList = list.filter(th => {
@@ -1347,8 +1347,8 @@ export default {
   height: 100%;
 }
 .drag-container {
-  width: 40px;
-  min-width: 30px;
+  width: 30px;
+  min-width: 20px;
   text-align: center;
   padding-left: 0 !important;
   padding-right: 0 !important;
