@@ -235,7 +235,7 @@
             <td
               v-for="(cell, cindex) in rowCells(left.index)"
               :key="cindex"
-              :class="{ read: mode !== 'edit', selected: !!cell._selected || dropCell === cell, handler: !!cell._isHandler, ...cell.class }"
+              :class="{ read: mode !== 'edit' && mode !== 'editSubform', selected: (mode === 'edit' || mode === 'editSubform') && (!!cell._selected || dropCell === cell), handler: !!cell._isHandler, ...cell.class }"
               :colspan="cell.colspan"
               :rowspan="getActualRowSpan(cell)"
               :style="cell.style"

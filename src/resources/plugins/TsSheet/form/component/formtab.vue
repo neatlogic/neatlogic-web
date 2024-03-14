@@ -91,16 +91,18 @@ export default {
   destroyed() {},
   methods: {
     dropFormItem(event, tab) {
-      if (this.formItem.hasOwnProperty('inherit')) {
-        return false;
-      }
-      const item = JSON.parse(event.dataTransfer.getData('item'));
-      if (tab && item) {
-        if (this.addComponent(item)) {
-          if (!tab.component) {
-            this.$set(tab, 'component', []);
+      if (this.mode === 'edit' && this.mode === 'editSubform') {
+        if (this.formItem.hasOwnProperty('inherit')) {
+          return false;
+        }
+        const item = JSON.parse(event.dataTransfer.getData('item'));
+        if (tab && item) {
+          if (this.addComponent(item)) {
+            if (!tab.component) {
+              this.$set(tab, 'component', []);
+            }
+            tab.component.push(item.uuid);
           }
-          tab.component.push(item.uuid);
         }
       }
     },
