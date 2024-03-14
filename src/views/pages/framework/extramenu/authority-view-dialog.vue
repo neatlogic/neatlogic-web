@@ -153,7 +153,7 @@ export default {
       let routerConfig = {};
       let routerPathList = [];
       try {
-        routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
+        routerPathList.push(require.context('@/commercial-module', true, /\.router\.js$/));
       } catch {
         // 模块找不到
       }

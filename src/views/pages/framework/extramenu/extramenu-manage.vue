@@ -345,7 +345,7 @@ export default {
     beforeDrop(treeId, treeNodes, targetNode, moveType) {
       if (targetNode === null) {
         return;
-      } else if ((treeNodes && treeNodes[0] && treeNodes[0].menuType == 'innerMenu') || targetNode.menuType == 'innerMenu') {
+      } else if ((treeNodes && treeNodes[0] && treeNodes[0].menuType == 'innerMenu') || targetNode.menuType == 'innerMenu' || targetNode.menuType == 'customMenu') {
         // 内部菜单不可拖拽
         return false;
       } else if (moveType === 'inner' && targetNode.type === 1) {
@@ -406,8 +406,8 @@ export default {
     handleRouterAuth() {
       let routerConfig = {};
       let routerJsPathList = [];
-      const communityConfig = require.context('@/views/pages', true, /router.js$/);
-      const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
+      const communityConfig = require.context('@/views/pages', true, /\.router\.js$/);
+      const commercialConfig = require.context('@/commercial-module', true, /\.router\.js$/);
       const commercialRouterPathList = commercialConfig.keys() || [];
       const communityRouterPathList = communityConfig.keys() || [];
       let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
