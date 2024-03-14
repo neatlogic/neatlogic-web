@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @keydown.stop>
     <div class="padding" style="position:relative">
       <span class="h3">{{ $t('dialog.title.edittarget',{'target':$t('page.component')}) }}</span>
       <div class="btn-closeedit tsfont-close text-tip-active" @click="closeEdit"></div>

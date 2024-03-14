@@ -112,7 +112,7 @@ export default {
           icon: 'tsfont-plus',
           desc: this.$t('page.subdirectory'),
           isAddFn: (treeNode) => {
-            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu') {
+            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu' || treeNode.menuType == 'customMenu') {
               return false; //菜单不能添加目录
             } else {
               return true;
@@ -126,7 +126,7 @@ export default {
           icon: 'tsfont-putongjigui',
           desc: this.$t('dialog.title.addtarget', { target: this.$t('page.menu') }),
           isAddFn: (treeNode) => {
-            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu') {
+            if (treeNode.type == 1 || treeNode.menuType == 'innerMenu' || treeNode.menuType == 'customMenu') {
               return false; //菜单不能添加菜单
             } else {
               return true;
@@ -140,7 +140,7 @@ export default {
           icon: 'tsfont-trash-o',
           desc: this.$t('page.delete'),
           isAddFn: treeNode => {
-            if (this.$utils.isEmpty(treeNode.parentId) || treeNode.parentId == 0 || treeNode.menuType == 'innerMenu') {
+            if (this.$utils.isEmpty(treeNode.parentId) || treeNode.parentId == 0 || treeNode.menuType == 'innerMenu' || treeNode.menuType == 'customMenu') {
               return false; // 总的根节点不能删除
             } else {
               return true;
@@ -219,6 +219,9 @@ export default {
       });
     },
     beforeClick(zTreeObj, node) {
+      if (node && node.menuType == 'customMenu') {
+        return false;
+      }
       if (!this.selectSaveId || this.selectSaveId != node.id) {
         zTreeObj.cancelSelectedNode();
         return true;
@@ -463,7 +466,8 @@ export default {
             {
               id: 0,
               name: this.$t('term.framework.custommenu'),
-              children: this.nodeList
+              children: this.nodeList,
+              menuType: 'customMenu'
             }
           ]
         }
