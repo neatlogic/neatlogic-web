@@ -56,6 +56,9 @@
       @updateRowSort="updateRowSort"
       @getSelected="getSelectedItem"
     >
+      <template v-slot:delete="{ row }">
+        <span class="tsfont-close-o text-action" @click.stop="deleteItem(row)"></span>
+      </template>
       <template v-if="config.isShowNumber" v-slot:number="{ index }">
         {{ index+1 }}
       </template>
@@ -76,13 +79,6 @@
             style="min-width:130px"
             @change="(val)=>changeRow(val,extra.uuid,row)"
           ></FormItem>
-        </div>
-      </template>
-      <template v-slot:action="{ row }">
-        <div class="tstable-action">
-          <ul class="tstable-action-ul">
-            <li v-if="!disabled && !readonly" class="tsfont-trash-o" @click="deleteItem(row)">{{ $t('page.delete') }}</li>
-          </ul>
         </div>
       </template>
     </TsTable>
@@ -712,6 +708,7 @@ export default {
         this.tableData.theadList = [];
         if (!this.disabled && !this.readonly) {
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
+            this.tableData.theadList.push({ key: 'delete', width: 20 });
             this.tableData.theadList.push({ key: 'selection' });
           }
         }
@@ -730,11 +727,6 @@ export default {
             this.tableData.theadList.push(item);
           }
         });
-        if (!this.disabled && !this.readonly) {
-          if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.tableData.theadList.push({ key: 'action' });
-          }
-        }
         this.$emit('resize');
       },
       deep: true,
