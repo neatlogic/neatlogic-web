@@ -85,6 +85,7 @@ export default {
       saving: false,
       selectedTreeId: null,
       nodeList: [],
+      menuAuthList: [],
       menuType: '',
       routerAuth: {},
       tableConfig: {
@@ -248,20 +249,7 @@ export default {
       this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
       this.tableConfig.tbodyList = [];
       if (node.isMenu || node.menuType == 'innerMenu') {
-        this.menuType = 'innerMenu';
-        this.catalogName = this.$t('page.viewauthority');
-        let childrenList = this.flattenArrayWithChildren(this.$utils.deepClone(Array.isArray(node.children) && !this.$utils.isEmpty(node.children) ? node.children : [node]));
-        let moduleAuthList = this.routerAuth[node.moduleId] && this.routerAuth[node.moduleId] || []; // 获取点击的模块菜单权限
-        childrenList.forEach((item) => {
-          let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
-          if (findItem) {
-            this.tableConfig.tbodyList.push({
-              menuName: item.name,
-              moduleName: node.moduleName,
-              authority: findItem.authority
-            });
-          }
-        });
+        this.handleMenuAuth(node);
       } else {
         this.isMenu = node.type;
         this.selectedTreeId = node.id;
@@ -275,6 +263,34 @@ export default {
           this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.menu')});
         }
         this.getMenuTreeNode();
+      }
+    },
+    getMenuAuthority(moduleId, menu) {
+      let authorityItem = moduleId && this.routerAuth[moduleId] && this.routerAuth[moduleId].find((v) => menu.indexOf(v.name) != -1);
+      return authorityItem && authorityItem.authority;
+    },
+    handleMenuAuth(node) {
+      this.menuType = 'innerMenu';
+      this.isMenu = 0;
+      this.selectedTreeId = node.id;
+      this.selectSaveId = node.id;
+      this.parentId = null;
+      this.catalogName = this.$t('page.viewauthority');
+      if (node && this.$utils.isEmpty(node.moduleId)) {
+        this.tableConfig.tbodyList = this.menuAuthList;
+      } else {
+        let childrenList = this.flattenArrayWithChildren(this.$utils.deepClone(Array.isArray(node.children) && !this.$utils.isEmpty(node.children) ? node.children : [node]));
+        let moduleAuthList = this.routerAuth[node.moduleId] && this.routerAuth[node.moduleId] || []; // 获取点击的模块菜单权限
+        childrenList.forEach((item) => {
+          let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
+          if (findItem) {
+            this.tableConfig.tbodyList.push({
+              menuName: item.name,
+              moduleName: node.moduleName,
+              authority: findItem.authority
+            });
+          }
+        });
       }
     },
     addTreeChildren(node) {
@@ -406,8 +422,8 @@ export default {
     handleRouterAuth() {
       let routerConfig = {};
       let routerJsPathList = [];
-      const communityConfig = require.context('@/views/pages', true, /\.router\.js$/);
-      const commercialConfig = require.context('@/commercial-module', true, /\.router\.js$/);
+      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/); // 正则匹配/router.js文件
+      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
       const commercialRouterPathList = commercialConfig.keys() || [];
       const communityRouterPathList = communityConfig.keys() || [];
       let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
@@ -438,19 +454,36 @@ export default {
   filter: {},
   computed: {  
     moduleList() {
-      const moduleList = [];  
+      const moduleList = [];
+      let menuAuthList = [];
       this.$store.state.topMenu.moduleList.forEach((item, index) => {
         if (item.moduleId && item.moduleName) {  
-          moduleList.push({  
+          moduleList.push({
             id: item.moduleId,
             name: item.moduleName,
             children: this.handleChildren(item.moduleId, item.moduleName, item.menuGroupList),
             menuType: 'innerMenu',
             moduleId: item.moduleId,
             moduleName: item.moduleName
-          });  
+          });
+          // 获取菜单模块列表
+          item.menuGroupList && item.menuGroupList.forEach((v) => {
+            if (v.menuList && v.menuList.length > 0) {
+              v.menuList.forEach((n) => {
+                if (n && n.name && n.path) {
+                  menuAuthList.push({
+                    moduleId: item.moduleId,
+                    moduleName: item.moduleName,
+                    menuName: n.name,
+                    authority: this.getMenuAuthority(item.moduleId, n.path)
+                  });
+                }
+              });
+            }
+          }); 
         }  
       });
+      this.menuAuthList = menuAuthList;
       return [
         {
           id: 0,
@@ -458,13 +491,13 @@ export default {
           menuType: 'innerMenu', // 用于判断不能新增和编辑菜单
           children: [
             {
-              id: this.$utils.setUuid(),
+              id: 1,
               name: this.$t('term.framework.internalmenu'),
               children: moduleList,
               menuType: 'innerMenu'
             },
             {
-              id: 0,
+              id: 2,
               name: this.$t('term.framework.custommenu'),
               children: this.nodeList,
               menuType: 'customMenu'
