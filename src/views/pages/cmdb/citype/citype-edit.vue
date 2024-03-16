@@ -3,15 +3,14 @@
     <TsDialog v-if="ciTypeData" v-bind="ciTypeDialogConfig" @on-close="close">
       <template v-slot>
         <TsForm ref="ciTypeForm" :item-list="ciTypeFormConfig">
-          <template v-slot:isMenu>
+          <!--<template v-slot:isMenu>
             <div>
               <i-switch v-model="ciTypeData.isMenu" :true-value="1" :false-value="0"></i-switch>
-              <!-- <span class="actionText" v-html="ciTypeData.isMenu == 1 ? '是' : '否'"></span> -->
               <div class="text-grey">
                 {{ $t('message.cmdb.keylevel') }}
               </div>
             </div>
-          </template>
+          </template>-->
           <template v-slot:isShowInTopo>
             <div>
               <i-switch v-model="ciTypeData.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
@@ -69,11 +68,11 @@ export default {
             _this.ciTypeData.name = name;
           }
         },
-        {
+        /* {
           name: 'isMenu',
           type: 'slot',
           label: this.$t('term.cmdb.keylevel')
-        },
+        },*/
         {
           name: 'isShowInTopo',
           type: 'slot',

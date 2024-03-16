@@ -6,7 +6,7 @@
           <div class="card-head">
             <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
             <div class="block-name text-grey">{{ $t('page.name') }}</div>
-            <div class="block-key text-grey">{{ $t('term.cmdb.keylevel') }}</div>
+            <!--<div class="block-key text-grey">{{ $t('term.cmdb.keylevel') }}</div>-->
             <div class="block-topo text-grey">{{ $t('term.cmdb.showintopo') }}</div>
             <div class="block-type text-grey">{{ $t('term.cmdb.cicount') }}</div>
             <div class="block-showtype text-grey"></div>
@@ -37,11 +37,11 @@
                 </div>
                 <div v-else style="text-decoration:line-through" class="text-grey">{{ item.name }}</div>
               </div>
-              <div class="block-key">
+              <!--<div class="block-key">
                 <div v-if="!item.isDeleted">
                   <i-switch v-model="item.isMenu" :true-value="1" :false-value="0"></i-switch>
                 </div>
-              </div>
+              </div>-->
               <div class="block-topo">
                 <div v-if="!item.isDeleted">
                   <i-switch v-model="item.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
@@ -171,13 +171,13 @@ export default {
     position: absolute;
     left: 60px;
   }
-  .block-key {
+  /*.block-key {
     position: absolute;
     left: 280px;
-  }
+  }*/
   .block-topo {
     position: absolute;
-    left: 350px;
+    left: 300px;
   }
   .block-type {
     position: absolute;
@@ -209,7 +209,7 @@ export default {
   }
   .block-topo {
     position: absolute;
-    left: 350px;
+    left: 300px;
   }
   .block-type {
     position: absolute;
