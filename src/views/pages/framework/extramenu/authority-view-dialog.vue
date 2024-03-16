@@ -20,14 +20,12 @@
                     :dataList="groupList"
                     :placeholder="$t('form.placeholder.pleaseselect',{'target':$t('page.module')})"
                     border="border"
-                    @change="searchKeyword"
                   ></TsFormSelect>
                 </Col>
                 <Col span="18">
                   <InputSearcher
                     v-model="keyword"
                     :placeholder="$t('page.keyword')"
-                    @change="searchKeyword"
                   ></InputSearcher>
                 </Col>
               </TsRow>
@@ -36,6 +34,7 @@
               <TsTable
                 v-bind="tableConfig"
                 :theadList="theadList"
+                :tbodyList="menuAuthList"
               >
               </TsTable>
             </div>
@@ -59,15 +58,13 @@ export default {
       isShow: true,
       moduleName: '',
       keyword: '',
+      routerConfig: {},
       moduleList: [],
-      menuList: [],
       groupList: [],
       tableConfig: {
-        tbodyList: [],
         currentPage: 1,
         pageSize: 20
       },
-      defaultTbodyList: [],
       theadList: [
         {
           title: this.$t('page.menuname'),
@@ -89,6 +86,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.searchModule();
+    this.updateMenu();
     this.getRouterConfig();
   },
   beforeUpdate() {},
@@ -98,6 +96,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    updateMenu() {
+      // 获取自定义菜单
+      this.$store.dispatch('updateMenu');
+    },
     closeDialog() {
       this.$emit('close');
     },
@@ -111,92 +113,83 @@ export default {
       });
     },
     getRouterConfig() {
-      this.tableConfig.tbodyList = [];
       let routerConfig = {};
-      let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
-      routerPathList.forEach(item => {
-        if (item && item.keys()) {
-          item.keys().forEach(routerPath => {
-            const moduleNames = routerPath.split('/')[1];
-            const lastValue = moduleNames.split('-');
-            const moduleName = lastValue?.pop() || moduleNames;
-            const routeList = item(routerPath).default || [];
-            routerConfig[moduleName] = routeList;
-          });
+      let routerJsPathList = [];
+      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/); // 正则匹配/router.js文件
+      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
+      const commercialRouterPathList = commercialConfig.keys() || [];
+      const communityRouterPathList = communityConfig.keys() || [];
+      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
+      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
+      routerJsPathList.forEach(routerPath => {
+        const moduleId = routerPath.split('/')[1];
+        let routeList = [];
+        if (!this.$utils.isEmpty(commercialRouterPathList) && commercialRouterPathList.indexOf(routerPath) != -1) {
+          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
+        } else {
+          routeList = (communityConfig(routerPath).default || []);
         }
+        const menuList = routeList  
+          .filter(item => item.meta)  
+          .map(item => ({
+            menuName: item.meta.title,
+            menu: item.name,
+            moduleName: '',
+            module: moduleId,
+            authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+          }));
+        if (menuList.length) {  
+          routerConfig[moduleId] = menuList;  
+        }  
       });
-      let commercialRouterConfig = this.getCommercialRouter();
-      Object.keys(commercialRouterConfig).forEach(key => {
-        if (!routerConfig[key]) {
-          //模块引入
-          routerConfig[key] = commercialRouterConfig[key];
-        }
-      });
-      for (let key in routerConfig) {
-        if (key) {
-          routerConfig[key].forEach((item) => {
-            if (item.name && item.meta && item.meta.ismenu) {
-              this.tableConfig.tbodyList.push({
-                module: key,
-                moduleName: this.handleModuleName(key),
-                menuName: item.name ? (item.meta.title ? `${item.meta.title}(${item.name})` : item.name) : '',
-                authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
-              });
-            }
-          });
-        }
-      }
-      this.defaultTbodyList = this.tableConfig.tbodyList; 
+      this.routerConfig = routerConfig;
     },
-    getCommercialRouter() {
-      //商业版模块
-      let routerConfig = {};
-      let routerPathList = [];
-      try {
-        routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
-      } catch {
-        // 模块找不到
-      }
-      routerPathList.forEach(item => {
-        if (item && item.keys()) {
-          item.keys().forEach(routerPath => {
-            const moduleNames = routerPath.split('/')[1];
-            const lastValue = moduleNames.split('-');
-            const moduleName = lastValue?.pop() || moduleNames;
-            const routeList = item(routerPath).default || [];
-            routerConfig[moduleName] = routeList;
-          });
-        }
-      });
-      return routerConfig;
-    },
-    handleModuleName(module) {
-      let moduleConfig = this.groupList.find((item) => item.value == module);
-      if (moduleConfig) {
-        return `${moduleConfig.text}(${moduleConfig.value})`;
-      }
-    },
-    searchKeyword() {
-      let keyword = this.keyword ? this.keyword.toUpperCase() : '';
-      this.tableConfig.tbodyList = this.$utils.deepClone(this.defaultTbodyList);
-      if (this.$utils.isEmpty(keyword) && !this.$utils.isEmpty(this.moduleName)) {
-        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.moduleName.indexOf(this.moduleName) != -1 
-        );
-        return false;
-      }
-      this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-        item.moduleName.indexOf(keyword) != -1 || item.menuName.indexOf(keyword) != -1 || item.authority.indexOf(keyword) != -1
-      );
-      if (this.moduleName) {
-        this.tableConfig.tbodyList = this.tableConfig.tbodyList.filter((item) => 
-          item.moduleName.indexOf(this.moduleName) != -1
-        );
-      }
+    getMenuAuthority(moduleId, menu) {
+      let authorityItem = moduleId && this.routerConfig[moduleId] && this.routerConfig[moduleId].find((v) => menu.indexOf(v.menu) != -1);
+      return authorityItem && authorityItem.authority;
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    menuAuthList() {
+      let menuAuthList = [];
+      this.$store.state.topMenu.moduleList.forEach((item) => {
+        if (item.moduleId && item.moduleName) {
+          item.menuGroupList && item.menuGroupList.forEach((v) => {
+            if (v.menuList && v.menuList.length > 0) {
+              v.menuList.forEach((n) => {
+                if (n && n.name && n.path) {
+                  menuAuthList.push({
+                    moduleId: item.moduleId,
+                    moduleName: item.moduleName,
+                    menuName: n.name,
+                    authority: this.getMenuAuthority(item.moduleId, n.path)
+                  });
+                }
+              });
+            }
+          });
+        }  
+      });
+      // 根据搜索条件，过滤菜单权限列表数据
+      let keyword = this.keyword ? this.keyword.toUpperCase() : '';
+      if (this.$utils.isEmpty(keyword) && !this.$utils.isEmpty(this.moduleName)) {
+        menuAuthList = menuAuthList.filter((item) => 
+          item.moduleId && item.moduleId.indexOf(this.moduleName) != -1 
+        );
+        return menuAuthList;
+      }
+      menuAuthList = menuAuthList.filter((item) => 
+        (item.moduleName && item.moduleName.indexOf(keyword) != -1) || (item.menuName && item.menuName.indexOf(keyword) != -1) || (item.authority && item.authority.indexOf(keyword) != -1)
+      );
+      if (this.moduleName) {
+        menuAuthList = menuAuthList.filter((item) => 
+          item.moduleId && item.moduleId.indexOf(this.moduleName) != -1
+        );
+      }
+      return menuAuthList;
+    }
+  },
   watch: {}
 };
 </script>

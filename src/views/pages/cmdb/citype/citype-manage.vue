@@ -6,7 +6,7 @@
           <div class="card-head">
             <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
             <div class="block-name text-grey">{{ $t('page.name') }}</div>
-            <div class="block-key text-grey">{{ $t('term.cmdb.keytype') }}</div>
+            <div class="block-key text-grey">{{ $t('term.cmdb.keylevel') }}</div>
             <div class="block-topo text-grey">{{ $t('term.cmdb.showintopo') }}</div>
             <div class="block-type text-grey">{{ $t('term.cmdb.cicount') }}</div>
             <div class="block-showtype text-grey"></div>

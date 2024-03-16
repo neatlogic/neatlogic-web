@@ -1,10 +1,10 @@
 <!--静态数据源编辑组件-->
 <template>
   <div>
-    <div class="item-grid">
+    <div class="flex-between">
       <div></div>
-      <div class="text-grey">{{ $t('page.value') }}</div>
-      <div class="text-grey">{{ $t('page.name') }}</div>
+      <div class="text-grey flex-1">{{ $t('page.value') }}</div>
+      <div class="text-grey flex-1">{{ $t('page.name') }}</div>
       <div v-if="needBatchEdit" class="btn-style"><span :class="disabled?'text-disabled':'text-href'" @click="openBatchEdit()">{{ $t('page.batchedit') }}</span></div>
     </div>
     <draggable
@@ -15,16 +15,15 @@
       handle=".tsfont-bar"
       ghost-class="item-selected"
     >
-      <div v-for="(item, index) in dataListLocal" :key="index" class="item-grid">
-        <div>
+      <div v-for="(item, index) in dataListLocal" :key="index" class="flex-between tab-item">
+        <div v-if="dataListLocal.length > 1 && !disabled" class="pr-xs">
           <span
-            v-if="dataListLocal.length > 1 && !disabled"
             class="tsfont-bar"
             style="cursor:move"
             :title="$t('page.move')"
           ></span>
         </div>
-        <div>
+        <div class="pr-xs flex-1">
           <TsFormInput
             v-model="item.value"
             border="border"
@@ -34,7 +33,7 @@
             @on-blur="autocompleteText(item, index)"
           ></TsFormInput>
         </div>
-        <div>
+        <div class="pr-xs flex-1">
           <TsFormInput
             v-model="item.text"
             border="border"
@@ -43,26 +42,17 @@
             :disabled="disabled"
           ></TsFormInput>
         </div>
-        <div class="btn-style">
+        <div class="text-right">
           <Poptip
             v-model="item._visible"
             transfer
             :disabled="disabled"
             placement="bottom-end"
           >
-            <span class="tsfont-setting" :class="disabled?'text-disabled':'text-href'" @click="clickSetting()"></span>
+            <span class="tsfont-setting" :class="disabled?'text-disabled':'text-action'" @click="clickSetting()"></span>
             <div slot="content">
-              <div
-                v-if="dataListLocal.length <= 500"
-                class="tsfont-plus pb-xs text-action"
-                @click="addData(item, index)"
-              >{{ $t('dialog.title.addtarget',{'target':$t('page.tab')}) }}</div>
-              <div
-                v-if="dataListLocal.length > 1"
-                class="tsfont-minus pb-xs text-action"
-                @click="removeData(item, index)"
-              >{{ $t('dialog.title.deletetarget',{'target':$t('page.tab')}) }}</div>
-              <div class="tsfont-lightning border-base-bottom pb-xs text-action" @click="openReactionDialog(item, index)">联动设置</div>
+             
+              <div class="tsfont-lightning border-base-bottom pb-xs text-action" @click="openReactionDialog(item, index)">{{ $t('term.framework.reactionsetting') }}</div>
               <div class="flex-start pt-xs">
                 <div class="pr-sm">{{ $t('term.framework.hidetab') }}</div>
                 <TsFormSwitch
@@ -74,6 +64,19 @@
               </div>
             </div>
           </Poptip>
+          <span
+            v-if="dataListLocal.length <= 500"
+            class="tsfont-plus-o"
+            :class="disabled?'text-disabled':'text-action'"
+            style="padding:0px 4px"
+            @click="addData(item, index)"
+          ></span>
+          <span
+            v-if="dataListLocal.length > 1"
+            class="tsfont-minus-o"
+            :class="disabled?'text-disabled':'text-action'"
+            @click="removeData(item, index)"
+          ></span>
         </div>
       </div>
     </draggable>
@@ -368,9 +371,6 @@ export default {
         this.$emit('input', val);
       },
       deep: true
-    },
-    visible(val) {
-      console.log(val);
     }
   }
 };
@@ -390,19 +390,12 @@ function getDefaultValue(list, value, index) {
 }
 </script>
 <style lang="less" scoped>
-.item-grid {
-  position: relative;
-  display: grid;
-  column-gap: 6px;
-  width: 100%;
-  grid-template-columns: 20px 40% 40%;
-  padding-right: 20px;
+.flex-1 {
+  flex: 1;
+}
+.tab-item {
   &:not(:last-child) {
     padding-bottom: 10px;
-  }
-  .btn-style{
-    position: absolute;
-    right: 10px;
   }
 }
 </style>

@@ -101,14 +101,15 @@
                   </TsRow>
                 </template>
                 <template v-else-if="r.mappingMode == 'constant'">
-                  <Edit
-                    :is="paramType(r.type,'Handler')"
+                  <TsFormSelect
                     ref="formValid"
                     v-model="r.value"
-                    :type="r.type"
-                    :config="r.config?r.config:{}"
-                    :isRequired="!!r.isRequired"
-                  ></Edit>
+                    :dataList="autoexecConfig.scenarioList"
+                    :validateList="r.isRequired? validateList:[]"
+                    :firstSelect="false"
+                    transfer
+                    border="border"
+                  ></TsFormSelect>
                 </template>
                 <template v-else>
                   <TsFormInput
