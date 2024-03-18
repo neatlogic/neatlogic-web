@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="content-main">
     <Tabs
