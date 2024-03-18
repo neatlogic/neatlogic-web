@@ -563,8 +563,6 @@ export default {
         content: null,
         fileList: null
       },
-      fileIdList: null, //回复文件上传列表
-      taskFileUuidList: null, //工单文件上传
       processTaskId: this.defaultProcessTaskId, //工单id
       processTaskStepId: this.defaultProcessTaskStepId, //步骤id
       auditId: null, //活动id
@@ -834,9 +832,15 @@ export default {
           formAttributeDataList: formData,
           hidecomponentList: hidecomponentList || [],
           content: this.commentObj.content || '',
-          fileIdList: this.fileIdList,
+          fileIdList: [],
           readcomponentList: readcomponentList || []
         };
+        if (!this.$utils.isEmpty(this.commentObj.fileList)) {
+          let fileIdList = this.commentObj.fileList.map(item => {
+            return item.id;
+          });
+          this.$set(data, 'fileIdList', fileIdList);
+        }
         if (this.handler == 'changecreate') {
           if (this.$refs.taskReport) {
             let changecreateInfo = this.$refs.taskReport.getChangecreateData();
@@ -847,7 +851,13 @@ export default {
             Object.assign(handlerStepInfo, stepData);
           }
           this.$set(data, 'handlerStepInfo', handlerStepInfo);
+        } else if (this.handler == 'event') {
+          if (this.$refs.replyContent) {
+            let eventConfig = this.$refs.replyContent.getEventData();
+            Object.assign(data, eventConfig);
+          }
         }
+        
         this.rightsettingVue = this.rightsettingVue || getParent(this);
         this.rightsettingVue && (data.priorityUuid = this.rightsettingVue.$refs.RightSetting ? this.rightsettingVue.$refs.RightSetting.priorityUuid : this.processTaskConfig.priorityUuid);
         return data;
@@ -898,7 +908,6 @@ export default {
             this.$refs.replyContent && this.$refs.replyContent.clearReplyValue();
             this.$set(this.commentObj, 'content', '');
             this.$set(this.commentObj, 'fileList', []);
-            this.fileIdList = [];
             this.isDisableCommet = true;
             resolve(this.isDisableCommet);
           }
