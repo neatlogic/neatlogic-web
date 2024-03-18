@@ -1,5 +1,3 @@
-
-
 import Vue from 'vue';
 import axios from 'axios';
 import ViewUI from 'neatlogic-ui/iview/index.js';

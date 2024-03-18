@@ -124,7 +124,7 @@ export default {
 </style>
 <style lang="less">
 .content img {
-  width: 100%;
+  // width: 100%; // 在非编辑模式下，图片被放大变形问题
   cursor: pointer;
 }
 </style>

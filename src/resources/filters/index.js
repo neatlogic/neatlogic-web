@@ -1,4 +1,4 @@
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 const formatDate = (value, format) => {
   let result = '';
   if (value) {
@@ -20,7 +20,7 @@ const formatDate = (value, format) => {
       result = `${y}-${m < 10 ? '0' + m : m}`;
     }
     if (format == 'mm-dd') {
-      result = ` ${mm < 10 ? '0' + mm : mm}:${ddmin < 10 ? '0' + dd : dd}`;
+      result = ` ${m < 10 ? '0' + m : m}:${d < 10 ? '0' + d : d}`;
     }
     if (format == 'hh:mm') {
       result = ` ${h < 10 ? '0' + h : h}:${min < 10 ? '0' + min : min}`;
@@ -52,24 +52,27 @@ const unescapeHtml = html => {
 };
 
 //处理耗时
-const formatTimeCost = (value, {
-  language = 'zh', // 时间单位的语言，默认是中文
-  unit = 'second', // 时间单位，默认是秒
-  isMillisecond = true, // 时间戳是否为毫秒，默认是
-  unitNumber = 5, // 显示多少个时间单位，默认全部显示
-  separator = '', // 每个时间单位的分隔符，默认不分隔
-  maxUnit = 'day' //展示的最大单位，默认天(目前支持：day/hour)
-} = {}) => {
+const formatTimeCost = (
+  value,
+  {
+    language = 'zh', // 时间单位的语言，默认是中文
+    unit = 'second', // 时间单位，默认是秒
+    isMillisecond = true, // 时间戳是否为毫秒，默认是
+    unitNumber = 5, // 显示多少个时间单位，默认全部显示
+    separator = '', // 每个时间单位的分隔符，默认不分隔
+    maxUnit = 'day' //展示的最大单位，默认天(目前支持：day/hour)
+  } = {}
+) => {
   if (!isMillisecond) {
     value = value * 1000;
   }
   value = value > 0 ? value : -value;
   let unitConfig = {
-    'day': language == 'en' ? 'd' : $t('page.day'),
-    'hour': language == 'en' ? 'h' : $t('page.hour'),
-    'minute': language == 'en' ? 'min' : $t('page.minute'),
-    'second': language == 'en' ? 's' : $t('page.second'),
-    'millisecond': language == 'en' ? 'ms' : $t('page.ms')
+    day: language == 'en' ? 'd' : $t('page.day'),
+    hour: language == 'en' ? 'h' : $t('page.hour'),
+    minute: language == 'en' ? 'min' : $t('page.minute'),
+    second: language == 'en' ? 's' : $t('page.second'),
+    millisecond: language == 'en' ? 'ms' : $t('page.ms')
   };
   let unitList = Object.keys(unitConfig);
   let unitIndex = unitList.indexOf(unit);
