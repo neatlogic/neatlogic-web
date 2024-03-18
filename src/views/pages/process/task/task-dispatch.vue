@@ -128,6 +128,7 @@ export default {
       fromProcessTaskId: null, //来源工单id(转报)
       channelTypeRelationId: null, // 关系类型id（转报）
       copyProcessTaskId: null, //复制上报工单
+      parentProcessTaskStepId: null, //父工单步骤id
       draftData: {},
       disabledConfig: {
         submiting: false,
@@ -172,6 +173,8 @@ export default {
     this.fromProcessTaskId = this.$route.query.fromProcessTaskId || null;
     this.channelTypeRelationId = this.$route.query.channelTypeRelationId || null;
     this.copyProcessTaskId = this.$route.query.copyProcessTaskId || null;
+    this.parentProcessTaskStepId = this.$route.query.parentProcessTaskStepId || null;
+    this.invoke = this.$route.query.invoke || null;
     await this.getChannel();
     this.getChannelInfo();
     this.$nextTick(() => {
@@ -243,6 +246,12 @@ export default {
       });
       this.copyProcessTaskId && Object.assign(param, {
         copyProcessTaskId: this.copyProcessTaskId
+      });
+      this.parentProcessTaskStepId && Object.assign(param, {
+        parentProcessTaskStepId: this.parentProcessTaskStepId
+      });
+      this.invoke && Object.assign(param, {
+        invoke: this.invoke
       });
       this.$api.process.process.getDraft(param).then(res => {
         if (res.Status == 'OK') {
@@ -413,7 +422,12 @@ export default {
       if (this.channelTypeRelationId) {
         this.$set(workdata, 'channelTypeRelationId', this.channelTypeRelationId);
       }
-      
+      if (this.parentProcessTaskStepId) {
+        this.$set(workdata, 'parentProcessTaskStepId', this.parentProcessTaskStepId);
+      }
+      if (this.invoke) {
+        this.$set(workdata, 'invoke', this.invoke);
+      }
       return new Promise((resolve, reject) => {
         if (!this.disabledConfig.saving) {
           this.disabledConfig.saving = true;
