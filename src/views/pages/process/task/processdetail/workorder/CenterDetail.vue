@@ -121,6 +121,19 @@
           </div>
         </TabPane>
         <TabPane
+          v-if="fixedPageTab.subProcess && $slots.subProcess"
+          :label="render => renderTabPaneLabel(render, 'subProcess', $t('term.process.subprocess.tab'))"
+          name="subProcess"
+          class="tab-content"
+          tab="tab1"
+        >
+          <div class="padding">
+            <!-- 子流程 -->
+            <slot name="subProcess"></slot>
+            <!-- 子流程end -->
+          </div>
+        </TabPane>
+        <TabPane
           v-if="fixedPageTab.automatic && $slots.automatic"
           :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
           name="automatic"
@@ -381,6 +394,15 @@
           <slot name="dataconversion"></slot>
         </div>
       </template>
+      <template v-else-if="item.tabValue == 'subProcess'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot name="subProcess"></slot>
+        </div>
+      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -517,7 +539,8 @@ export default {
         automatic: true, // 自动处理节点
         cmdbsync: true,
         eoa: true,
-        dataconversion: true
+        dataconversion: true,
+        subProcess: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
