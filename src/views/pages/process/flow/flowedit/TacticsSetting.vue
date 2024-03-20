@@ -168,11 +168,15 @@
               <div v-show="slaData.calculatePolicyList && slaData.calculatePolicyList.length > 0" class="slatime_wrapper">
                 <vuedraggable v-model="slaData.calculatePolicyList" :options="{ chosenClass: 'choose', animation: '150', handle: '.move' }">
                   <transition-group>
-                    <div v-for="(item, index) in slaData.calculatePolicyList" :key="item.uuid" class="slaTime">
+                    <div
+                      v-for="(item, index) in slaData.calculatePolicyList"
+                      :key="item.uuid"
+                      class="slaTime"
+                      :content-data="$t('term.framework.or')"
+                    >
                       <span
                         v-show="slaData.calculatePolicyList && slaData.calculatePolicyList.length > 1"
                         class="tsfont-close-s btn-removerule text-tip"
-                        :content-data="$t('term.framework.or')"
                         @click="slaDel(index)"
                       ></span>
                       <div class="block_top">
@@ -304,7 +308,7 @@
                                     v-model="item.conditionGroupRelList[groupIndex].joinType"
                                     :dataList="relList"
                                     :clearable="false"
-                                    border="nobg"
+                                    border="nobdbg"
                                     size="small"
                                   ></TsFormSelect>
                                 </div>
