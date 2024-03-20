@@ -273,6 +273,19 @@ export default {
             this.$refs['tableAttr'].$forceUpdate();
           }
         },
+        isAllowMultiple: {
+          type: 'radio',
+          label: '多数据兼容',
+          dataList: [
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
+          ],
+          validateList: ['required'],
+          onChange: value => {
+            this.$set(this.syncCiCollectionData, 'isAllowMultiple', value);
+          },
+          desc: '在唯一规则查到多条数据的情况下，是：更新第一条；否：停止同步'
+        },
         description: {
           type: 'textarea',
           label: this.$t('page.explain'),

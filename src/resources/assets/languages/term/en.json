@@ -2685,6 +2685,7 @@
     "importtemplate": "Import Template",
     "strictmode": "Strict box selection mode",
     "changestatusconfirm": "Are you sure to change current version to {target}?",
-    "editingversion": "Editing version"
+    "editingversion": "Editing version",
+    "createuser": "Creator"
   }
 }
