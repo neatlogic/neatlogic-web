@@ -581,12 +581,6 @@ export default {
       let data = _this.$refs.TaskCenterDetail.getData();
       return new Promise((resolve, reject) => {
         let isTime = val || false;
-        if (_this.$refs.eventConfig) {
-          let eventConfig = _this.$refs.eventConfig.getEventData();
-          _this.$set(data, 'content', eventConfig.content);
-          _this.$set(data, 'fileIdList', eventConfig.fileIdList);
-          _this.$set(data, 'handlerStepInfo', eventConfig.handlerStepInfo);
-        }
         if (_this.startHandler != 'changecreate' && _this.handler == 'changecreate') {
           let handlerStepInfo = {};
           if (_this.$refs.changecreateData) {
