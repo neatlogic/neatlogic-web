@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ mode }}
     <Tabs
       v-if="tabList.length > 0"
       :value="currentTab"
