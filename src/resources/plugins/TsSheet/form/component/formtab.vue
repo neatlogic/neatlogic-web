@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ mode }}
     <Tabs
       v-if="tabList.length > 0"
       :value="currentTab"
@@ -91,7 +92,7 @@ export default {
   destroyed() {},
   methods: {
     dropFormItem(event, tab) {
-      if (this.mode === 'edit' && this.mode === 'editSubform') {
+      if (this.mode === 'edit' || this.mode === 'editSubform') {
         if (this.formItem.hasOwnProperty('inherit')) {
           return false;
         }
