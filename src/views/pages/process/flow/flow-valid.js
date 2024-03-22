@@ -373,6 +373,18 @@ let valid = {
     }
     return validList;
   },
+  subprocess(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let subProcessConfig = nodeData.subProcessConfig || {};
+    if (that.$utils.isEmpty(subProcessConfig.channelList)) {
+      validList.push({
+        name: $t('form.validate.required', { target: $t('term.process.catalogmanage') }),
+        href: '#subprocessSetting'
+      });
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];

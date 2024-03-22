@@ -81,17 +81,17 @@
                   </Tooltip>
                 </Tag>
                 <span
-                  v-if="selectedList.length <= 0 && !currentSearch"
-                  :placeholder="!currentSearch ? getPlaceholder : ''"
+                  v-if="selectedList.length <= 0 && (!currentSearch || !isShowInput)"
+                  :placeholder="!currentSearch || !isShowInput? getPlaceholder : ''"
                   class="empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '']"
                   style="line-height: 30px;"
                 ></span>
               </template>
-              <template v-else-if="disabled || readonly || !currentSearch || (!multiple && currentSearch && !isSquare)">
+              <template v-else-if="disabled || readonly || !currentSearch || !isShowInput || (!multiple && currentSearch && !isSquare)">
                 <span
                   v-if="selectedList[0]"
-                  :placeholder="!currentSearch ? getPlaceholder : ''"
+                  :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
                   class="overflow empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '', !(!multiple && currentSearch && !isSquare) ? 'single-span' : '']"
                 >
@@ -121,7 +121,7 @@
                   </Tooltip>
                   <span
                     v-else
-                    :placeholder="!currentSearch ? getPlaceholder : ''"
+                    :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
                     class="empty-placeholder"
                     :class="[disabled ? 'empty-placeholder-disable' : '']"
                   ></span>
@@ -530,7 +530,8 @@ export default {
         [this.valueName]: 'moreSearchFlag',
         _disabled: true
       },
-      isValidPass: true
+      isValidPass: true,
+      isShowInput: false //是否显示搜索框
     };
   },
   beforeCreate() {},
@@ -598,13 +599,16 @@ export default {
       if (this.disabled || this.readonly) {
         return;
       }
+      this.isShowInput = true;
       this.currentPage = 1;
       this.reachPage = 0;
       this.focussing = true;
       this.isVisible = !this.isVisible;
-      this.$refs.input && this.$refs.input.focus();
       this.isVisible && this.updatePosition();
       !this.isVisible ? (this.firstOutside = false) : ''; //当下拉框通过点击select框关闭时，需要做标记，在失去焦点时回显正确值
+      this.$nextTick(() => {
+        this.$refs.input && this.$refs.input.focus();
+      });
     },
     async getDataByAjax(params, url, cancel) {
       //调用接口的统一处理
@@ -882,7 +886,7 @@ export default {
       params[this.idListName] = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios1').then(res => {
         let nodeList = res.nodeList || [];
-        if (((this.multiple && this.currentValue.length) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && nodeList.length) {
+        if (((this.multiple && !this.$utils.isEmpty(this.currentValue)) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && nodeList.length) {
           let selectedList = nodeList.filter(r => {
             return this.multiple ? this.ArrIndexOf(this.currentValue, r[this.valueName]) > -1 : this.handleObjectValue(r[this.valueName]);
           });
@@ -1137,6 +1141,7 @@ export default {
     },
     hideOption(isEnterSearch) {
       this.isVisible = false;
+      this.isShowInput = false;  
       if (!isEnterSearch) {
         !this.multiple ? (this.searchKeyWord = '') : (this.searchKeyWord = '');
       }
@@ -1426,6 +1431,11 @@ export default {
     setInputwidth() {
       return (keyword) => {
         let style = {};
+        if (this.isShowInput) {
+          style.display = 'inline-block';
+        } else {
+          style.display = 'none';
+        }
         if (!this.multiple) {
           if (keyword || this.getPlaceholder || (this.isSingel && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
