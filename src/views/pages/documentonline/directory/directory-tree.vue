@@ -89,8 +89,8 @@ export default {
     getRouterConfig() {
       let routerConfig = {};
       let routerJsPathList = [];
-      const communityConfig = require.context('@/views/pages', true, /router.js$/);
-      const commercialConfig = require.context('@/commercial-module', true, /router.js$/);
+      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/);
+      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
       const commercialRouterPathList = commercialConfig.keys() || [];
       const communityRouterPathList = communityConfig.keys() || [];
       let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
@@ -98,7 +98,7 @@ export default {
       routerJsPathList.forEach(routerPath => {
         const moduleId = routerPath.split('/')[1];
         let routeList = [];
-        if (!this.$utils.isEmpty(commercialRouterPathList) && commercialRouterPathList.indexOf(routerPath) != -1) {
+        if (!this.$utils.isEmpty(uniqueToCommercialList) && uniqueToCommercialList.indexOf(routerPath) != -1) {
           routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
         } else {
           routeList = (communityConfig(routerPath).default || []);
