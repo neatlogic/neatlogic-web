@@ -221,6 +221,7 @@ export default {
             { value: 1, text: '是' },
             { value: 0, text: '否' }
           ],
+          value: 1,
           validateList: ['required'],
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'isAutoCommit', value);
@@ -231,6 +232,7 @@ export default {
           type: 'radio',
           label: '匹配模式',
           width: '100%',
+          value: 'key',
           dataList: [
             { value: 'key', text: '节点' },
             { value: 'level', text: '层级' }
@@ -276,6 +278,7 @@ export default {
         isAllowMultiple: {
           type: 'radio',
           label: '多数据兼容',
+          value: 0,
           dataList: [
             { value: 1, text: this.$t('page.yes') },
             { value: 0, text: this.$t('page.no') }

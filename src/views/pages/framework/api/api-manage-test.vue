@@ -135,7 +135,7 @@ export default {
         title: this.$t('term.framework.apitest'),
         type: 'slider',
         isShow: true,
-        maskClose: true,
+        maskClose: false,
         width: 'large',
         hasFooter: false
       },
