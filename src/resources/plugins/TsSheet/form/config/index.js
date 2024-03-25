@@ -22,6 +22,7 @@ import formdivider from './formdivider-conf.vue';
 import formcube from './formcube-conf.vue';
 import formtab from './formtab-conf';
 import formcollapse from './formcollapse-conf.vue';
+import formmultipletables from './formmultipletables-conf.vue';
 
 // import * as cmdbComponent from '@/views/pages/cmdb/form/config';
 import * as autoexecComponent from '@/views/pages/autoexec/form/config';
@@ -66,6 +67,7 @@ export default {
   formcube,
   formtab,
   formcollapse,
+  formmultipletables,
   // ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig
