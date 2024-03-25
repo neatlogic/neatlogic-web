@@ -1,7 +1,11 @@
 <template>
   <div>
     <!-- 回复 -->
-    <div v-if="actionConfigs.complete || actionConfigs.comment" id="content" class="reply-box-margin-bottom order-list comment-box">
+    <div
+      v-if="actionConfigs.complete || actionConfigs.comment"
+      id="content"
+      class="reply-box-margin-bottom order-list comment-box"
+    >
       <div v-if="actionConfigs.complete || actionConfigs.comment" class="center-detail-upload-wrap">
         <TsUpLoad
           ref="uploadFileComment"
@@ -20,7 +24,10 @@
         <TsRow>
           <Col span="12">
             <div class="event-tip">
-              <span class="require-label" :class="validConfig.eventTypeId == false?'text-danger':'text-grey'">{{ $t('term.process.archivedtype') }}</span>
+              <span
+                class="require-label"
+                :class="validConfig.eventTypeId == false?'text-danger':'text-grey'"
+              >{{ $t('term.process.archivedtype') }}</span>
             </div>
             <div class="event-text">
               <TsFormTree
@@ -85,7 +92,7 @@
           </Col>
         </TsRow>
       </div>
-   
+
       <div v-if="actionConfigs.complete || actionConfigs.comment" class="reply-template-position-box">
         <div class="reply-template-position" @click.stop>
           <!--回复 关联知识库 -->
@@ -120,7 +127,7 @@
           </div>
         </div>
       </div>
-                     
+
       <div v-if="actionConfigs.complete || actionConfigs.comment">
         <div>
           <TsCkeditor
@@ -129,10 +136,12 @@
             :showIconToggle="!isShowProcessTaskStepCommentEditorToolbar"
             width="100%"
             :validateList="isRequiredContent? validateList : []"
+            :toolbar="$AuthUtils.hasRole('KNOWLEDGE_BASE') ? ['KnowledgeSelect'] : []"
             @change="changeCommentContent"
-          ></TsCkeditor>
+          >
+          </TsCkeditor>
         </div>
-      </div> 
+      </div>
     </div>
     <!-- 回复 end-->
   </div>
@@ -171,7 +180,8 @@ export default {
         return {};
       }
     },
-    isShowProcessTaskStepCommentEditorToolbar: { //是否展示富文本框工具栏
+    isShowProcessTaskStepCommentEditorToolbar: {
+      //是否展示富文本框工具栏
       type: Boolean,
       default: false
     }
@@ -197,18 +207,18 @@ export default {
       eventTypeId: null,
       knowledgeSelectConfig: {
         dynamicUrl: '/api/rest/knowledge/document/search',
-        params: { 
+        params: {
           knowledgeType: 'all',
           statusList: ['passed'],
           type: 'document'
         },
-        placeholder: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.knowledge.knowledge')}),
+        placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.knowledge.knowledge') }),
         rootName: 'dataList',
         valueName: 'knowledgeDocumentId',
         textName: 'title',
         transfer: true,
         search: true,
-        border: 'none' 
+        border: 'none'
       }
     };
   },
@@ -323,7 +333,7 @@ export default {
         this.validConfig.eventTypeId = false;
         let o = {
           focus: '#event',
-          msg: this.$t('form.validate.required', {target: this.$t('term.process.archivedtype') })
+          msg: this.$t('form.validate.required', { target: this.$t('term.process.archivedtype') })
         };
         validList.push(o);
       }
@@ -331,7 +341,7 @@ export default {
         if (!this.$refs.taskStepContent.valid()) {
           let o = {
             focus: '#event',
-            msg: this.$t('form.validate.required', {target: this.$t('page.content') })
+            msg: this.$t('form.validate.required', { target: this.$t('page.content') })
           };
           validList.push(o);
         }
@@ -384,14 +394,15 @@ export default {
   },
   filter: {},
   computed: {
-    isRequiredContent() { //回复必填判断
+    isRequiredContent() {
+      //回复必填判断
       let valid = false;
       if (this.isStepRequired) {
         if (!this.processTaskStepConfig.commentList.length) {
           valid = true;
         } else if (this.processTaskStepConfig.commentList.length) {
           let startTime = this.processTaskStepConfig.startTime;
-          let lcd = this.processTaskStepConfig.commentList[0].lcd; 
+          let lcd = this.processTaskStepConfig.commentList[0].lcd;
           startTime > lcd && (valid = true);
         }
       }
@@ -435,31 +446,31 @@ export default {
     align-items: center;
   }
 }
-.comment-box{
-  .content-template{
+.comment-box {
+  .content-template {
     position: relative;
-    /deep/ .template-pop{
-      position:absolute;
-      right:120px;
+    /deep/ .template-pop {
+      position: absolute;
+      right: 120px;
     }
   }
-  .comment-save{
+  .comment-save {
     width: 100%;
     text-align: right;
     padding-bottom: 16px;
-  > button {
+    > button {
       margin-left: 16px;
     }
   }
-  .reply-input{
+  .reply-input {
     padding: 7px 10px;
     width: 340px;
-    border:1px solid;
+    border: 1px solid;
     cursor: pointer;
     font-size: 12px;
   }
-  .comment-time{
-    padding-top: 10px
+  .comment-time {
+    padding-top: 10px;
   }
 }
 .eventEdit {
@@ -468,10 +479,10 @@ export default {
     cursor: pointer;
     border: none;
   }
-  .event-text{
+  .event-text {
     display: inline-block;
     min-width: 90px;
-    &.solution-select{
+    &.solution-select {
       padding-left: 10px;
     }
   }
