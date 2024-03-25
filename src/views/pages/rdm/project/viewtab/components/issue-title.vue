@@ -50,7 +50,8 @@ export default {
   data() {
     return {
       isEditing: false,
-      issueName: null
+      issueName: null,
+      isSaving: false
     };
   },
   beforeCreate() {},
@@ -78,12 +79,17 @@ export default {
     },
     saveIssue(event) {
       if ((!event || event.keyCode === 13) && this.$refs['input'].valid()) {
-        this.issueData.name = this.issueName;
-        this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
-          if (res.Status === 'OK') {
-            this.isEditing = false;
-          }
-        });
+        if (!this.isSaving) {
+          this.isSaving = true;
+          this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
+            if (res.Status === 'OK') {
+              this.isEditing = false;
+              this.issueData.name = this.issueName;
+            }
+          }).finally(() => {
+            this.isSaving = false;
+          });
+        }
       } else if (event && event.keyCode === 27) {
         this.isEditing = false;
       }
