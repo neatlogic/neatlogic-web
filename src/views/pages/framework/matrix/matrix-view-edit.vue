@@ -38,7 +38,7 @@
       </template>
     </TsContain>
     <CmdbEdit
-      v-if="isShow"
+      v-if="editTsDialogCmdb.isShow"
       :ciId="ciId"
       :typeView="typeView"
       :fileObj="fileObj"
@@ -47,6 +47,16 @@
       :editTsDialogCmdb="editTsDialogCmdb"
       @isOk="isOk"
     ></CmdbEdit>
+    <CmdbCustomViewEdit
+      v-if="editTsDialogCmdbCustomView.isShow"
+      :customViewId="customViewId"
+      :typeView="typeView"
+      :fileObj="fileObj"
+      :showAttributeLabelList="showAttributeLabelList"
+      :modelAttributeList="modelAttributeList"
+      :editTsDialogCmdbCustomView="editTsDialogCmdbCustomView"
+      @isOk="isOk"
+    ></CmdbCustomViewEdit>
     <ExternalEditDialog
       v-if="isShowExternalEditDialog"
       :matrixUuid="matrixUuid"
@@ -68,6 +78,7 @@ export default {
   name: 'MatrixExternal',
   components: {
     CmdbEdit: resolve => require(['./components/cmdb-edit'], resolve),
+    CmdbCustomViewEdit: resolve => require(['./components/cmdb-customview-edit'], resolve),
     navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
     ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
@@ -79,11 +90,11 @@ export default {
   data() {
     return {
       ciId: '',
+      customViewId: '',
       title: '',
       showAttributeLabelList: [],
       modelAttributeList: [], // 模型属性列表
       fileObj: {},
-      isShow: false,
       isShowExternalEditDialog: false,
       isShowViewEditDialog: false,
       viewEditDialogTitle: '',
@@ -91,7 +102,14 @@ export default {
         type: 'modal',
         title: '',
         maskClose: false,
-        isShow: true,
+        isShow: false,
+        width: 'medium'
+      },
+      editTsDialogCmdbCustomView: {
+        type: 'modal',
+        title: '',
+        maskClose: false,
+        isShow: false,
         width: 'medium'
       },
       typeView: '',
@@ -139,7 +157,6 @@ export default {
   destroyed() {},
   methods: {
     isOk() {
-      this.isShow = false;
       this.searchMatrixView();
     },
     //返回矩阵列表
@@ -182,9 +199,19 @@ export default {
               let dataInfo = res.Return;
               this.ciId = dataInfo.ciId;
               this.typeView = dataInfo.type;
-              this.isShow = true;
               this.editTsDialogCmdb.isShow = true;
               this.editTsDialogCmdb.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
+              if (res.Return.config) {
+                this.showAttributeLabelList = res.Return.config.showAttributeLabelList;
+                this.modelAttributeList = res.Return.config.showAttributeList || [];
+              }
+              this.fileObj = JSON.parse(JSON.stringify(res.Return));
+            } else if (type == 'cmdbcustomview') {
+              let dataInfo = res.Return;
+              this.customViewId = dataInfo.customViewId;
+              this.typeView = dataInfo.type;
+              this.editTsDialogCmdbCustomView.isShow = true;
+              this.editTsDialogCmdbCustomView.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
               if (res.Return.config) {
                 this.showAttributeLabelList = res.Return.config.showAttributeLabelList;
                 this.modelAttributeList = res.Return.config.showAttributeList || [];
