@@ -138,7 +138,7 @@ export default {
     this.matrixUuid = this.$route.query.uuid || null;
     this.matrixType = this.$route.query.type || null;
     if (this.$route.query.isAddMatrix) {
-      if (this.matrixType != 'cmdbci') {
+      if (this.matrixType == 'custom') {
         this.editMatrix();
       }
       this.viewEditDialogTitle = '';
