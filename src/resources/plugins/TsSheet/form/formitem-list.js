@@ -40,9 +40,9 @@ try {
   componentConfig.keys().forEach(path => {
     if (path) {
       const moduleName = path.split('/')[1]?.split('-')?.pop() || path.split('/')[1];
-      if (moduleName == 'framework') {
-        importComponentConfig = componentConfig(path).default || {};
-      }
+      // if (moduleName == 'framework') {
+      importComponentConfig = componentConfig(path).default || {};
+      // }
     }
   });
   for (let key in importComponentConfig) {
