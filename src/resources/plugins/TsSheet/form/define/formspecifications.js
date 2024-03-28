@@ -1,7 +1,7 @@
 import { $t } from '@/resources/init.js';
 export default {
-  handler: 'formmultipletables',
-  label: '多表格联动',
+  handler: 'formspecifications',
+  label: '应用系统资源规格',
   type: 'form',
   category: 'basic',
   icon: 'tsfont-chart-table',

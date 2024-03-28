@@ -22,7 +22,6 @@ import formdivider from './formdivider-conf.vue';
 import formcube from './formcube-conf.vue';
 import formtab from './formtab-conf';
 import formcollapse from './formcollapse-conf.vue';
-import formmultipletables from './formmultipletables-conf.vue';
 
 // import * as cmdbComponent from '@/views/pages/cmdb/form/config';
 import * as autoexecComponent from '@/views/pages/autoexec/form/config';
@@ -34,9 +33,9 @@ try {
   componentConfig.keys().forEach(path => {
     if (path) {
       const moduleName = path.split('/')[1].split('-').pop() || path.split('/')[1];
-      if (moduleName == 'framework') {
-        importComponentConfig = componentConfig(path).default || {};
-      }
+      // if (moduleName == 'framework') {
+      importComponentConfig = componentConfig(path).default || {};
+      // }
     }
   });
 } catch (error) {
@@ -67,7 +66,6 @@ export default {
   formcube,
   formtab,
   formcollapse,
-  formmultipletables,
   // ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig

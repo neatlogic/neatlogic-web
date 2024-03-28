@@ -25,7 +25,6 @@ import { default as formtab } from './define/formtab.js';
 import { default as formcollapse } from './define/formcollapse.js';
 // import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
 import { default as AUTOEXECITEMS } from '@/views/pages/autoexec/form/define';
-import { default as formmultipletables } from './define/formmultipletables.js';
 
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
@@ -41,9 +40,9 @@ try {
   componentConfig.keys().forEach(path => {
     if (path) {
       const moduleName = path.split('/')[1]?.split('-')?.pop() || path.split('/')[1];
-      if (moduleName == 'framework') {
-        importComponentConfig = componentConfig(path).default || {};
-      }
+      // if (moduleName == 'framework') {
+      importComponentConfig = componentConfig(path).default || {};
+      // }
     }
   });
   for (let key in importComponentConfig) {
@@ -54,4 +53,4 @@ try {
 } catch (error) {
   console.error('formitem-list.js抛出异常', error);
 }
-export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, formmultipletables, ...AUTOEXECITEMS, ...defineList];
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...defineList];

@@ -23,7 +23,6 @@ import formcube from './formcube.vue';
 import formtab from './formtab.vue';
 import formcollapse from './formcollapse.vue';
 import formtable from './formtable.vue';
-import formmultipletables from './formmultipletables.vue';
 
 // import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
@@ -34,10 +33,10 @@ try {
   const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
   componentConfig
     .keys()
-    .filter(path => {
-      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
-      return moduleName === 'framework';
-    })
+    // .filter(path => {
+    //   const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
+    //   return moduleName === 'framework';
+    // })
     .forEach(path => {
       importComponentConfig = componentConfig(path).default || {};
     });
@@ -71,7 +70,6 @@ export default {
   formtab,
   formcollapse,
   formtable,
-  formmultipletables,
   // ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig

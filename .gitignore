@@ -17,5 +17,5 @@ yarn.lock
 /.idea
 /.lh
 /.vscode
-/src/commercial-module/*
+# /src/commercial-module/*
 *.code-workspace

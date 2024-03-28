@@ -8,7 +8,6 @@
         textName="label"
         valueName="uuid"
         border="border"
-        @on-change="change"
       ></TsFormSelect>
     </TsFormItem>
   </div>
@@ -38,15 +37,11 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    change(val) {
-      console.log('返回的值', val);
-    }
-  },
+  methods: {},
   filter: {},
   computed: {
     dataList() {
-      let componentList = this.formItemList.filter((v) => v.handler != 'formmultipletables');
+      let componentList = this.formItemList.filter((v) => v.handler != 'formspecifications');
       return componentList;
     }
   },
