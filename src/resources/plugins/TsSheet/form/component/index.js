@@ -33,10 +33,10 @@ try {
   const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
   componentConfig
     .keys()
-    .filter(path => {
-      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
-      return moduleName === 'framework';
-    })
+    // .filter(path => {
+    //   const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
+    //   return moduleName === 'framework';
+    // })
     .forEach(path => {
       importComponentConfig = componentConfig(path).default || {};
     });
