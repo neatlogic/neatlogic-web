@@ -1,5 +1,5 @@
 <template>
-  <div class="form-li" :class="borderClass">
+  <div class="form-li" :class="borderClass" @keydown.stop>
     <!-- <input v-if="type == 'password'" type="text" class="hidden" />
     <input v-if="type == 'password'" type="password" class="hidden" /> -->
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="readonlyTitle">{{ currentValue || currentValue === 0 ? currentValue : '-' }}</span>

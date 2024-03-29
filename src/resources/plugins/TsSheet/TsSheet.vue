@@ -279,7 +279,7 @@
             >
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component)"
-                style="position:absolute;top:0px;left:0px;z-index:2;font-size:12px"
+                style="position:absolute;top:0px;left:0px;z-index:10;font-size:12px"
                 class="text-grey"
                 :class="cell.component.icon"
               ></div>
