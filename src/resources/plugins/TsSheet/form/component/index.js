@@ -33,12 +33,8 @@ try {
   const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
   componentConfig
     .keys()
-    .filter(path => {
-      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
-      return moduleName === 'framework';
-    })
     .forEach(path => {
-      importComponentConfig = componentConfig(path).default || {};
+      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
     });
 } catch (error) {
   console.error('form/component/index.js异常', error);

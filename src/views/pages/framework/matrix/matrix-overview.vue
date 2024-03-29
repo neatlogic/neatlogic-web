@@ -322,28 +322,7 @@ export default {
           width: '100%',
           label: this.$t('page.uniquekey'),
           validateList: ['required', 'char', { name: 'searchUrl', url: 'api/rest/matrix/save', message: this.$t('message.targetisexists', {'target': this.$t('term.framework.matrixuniquekey')}), key: 'label' }]
-        },
-        // cmdbId: {
-        //   type: 'radio',
-        //   label: '视图类型',
-        //   value: null,
-        //   transfer: true,
-        //   dataList: [{text: '视图', value: 1}, {text: '模型', value: 2}],
-        //   width: '100%',
-        //   validateList: ['required'],
-        //   onChange: val => {
-        //     let name = '';
-        //     if (val == 1) {
-        //       name = '视图数据源';
-        //       _this.customviewList();
-        //     } else {
-        //       name = '模型数据源';
-        //       _this.cmdbList();
-        //     }
-        //     _this.addAtrixForm.externalId.isHidden = false;
-        //     _this.addAtrixForm.externalId.label = name;
-        //   }
-        // },        
+        },     
         type: {
           type: 'radio',
           label: this.$t('page.type'),
@@ -401,7 +380,37 @@ export default {
           onChange: val => {
             _this.addAtrixForm.showAttributeLabelList.value = [];
             if (val) {
-              _this.showAttribute(val);
+              let data = {
+                'matrixUuid': null,
+                'type': 'cmdbci',
+                'ciId': val
+              };
+              _this.showAttribute(data);
+            } else {
+              _this.addAtrixForm.showAttributeLabelList.dataList = [];
+            }
+          }
+        },
+        customViewId: {
+          type: 'select',
+          label: this.$t('term.cmdb.customview'),
+          value: null,
+          transfer: true,
+          isHidden: true,
+          dataList: [],
+          width: '100%',
+          validateList: [
+            'required'
+          ],
+          onChange: val => {
+            _this.addAtrixForm.showAttributeLabelList.value = [];
+            if (val) {
+              let data = {
+                'matrixUuid': null,
+                'type': 'cmdbcustomview',
+                'customViewId': val
+              };
+              _this.showAttribute(data);
             } else {
               _this.addAtrixForm.showAttributeLabelList.dataList = [];
             }
@@ -409,7 +418,7 @@ export default {
         },
         showAttributeLabelList: {
           type: 'select',
-          label: this.$t('term.pbc.modelattribute'),
+          label: this.$t('page.attribute'),
           value: [],
           multiple: true,
           transfer: true,
@@ -431,20 +440,6 @@ export default {
             'required'
           ]
         }
-        // customViewId: {
-        //   type: 'select',
-        //   label: '自定义视图',
-        //   value: null,
-        //   transfer: true,
-        //   isHidden: true,
-        //   dataList: [],
-        //   width: '100%',
-        //   // valueName: 'id',
-        //   // textName: 'name',
-        //   validateList: [
-        //     'required'
-        //   ]
-        // }
       },
       matrixList: [], //矩阵列表
       matrixCardData: {
@@ -565,17 +560,15 @@ export default {
         if (newVal == 'ciId') {
           _this.addAtrixForm.showAttributeLabelList.isHidden = false;
           _this.cmdbList();
+        } else if (newVal == 'customViewId') {
+          _this.addAtrixForm.showAttributeLabelList.isHidden = false;
+          _this.cmdbCustomViewList();
         } else {
           _this.addAtrixForm.showAttributeLabelList.isHidden = true;
         }
       });
     },
-    showAttribute(val) {
-      let data = {
-        'matrixUuid': null,
-        'type': 'cmdbci',
-        'ciId': val
-      };
+    showAttribute(data) {
       this.$api.framework.matrix
         .getMatrixAttributeByUuid(data)
         .then(res => {
@@ -626,19 +619,15 @@ export default {
         }
       });
     },
-    async customviewList() {
-      let data = {
-        currentPage: 1,
-        isPrivate: 0    
-      };
-      await this.$https.post('/api/rest/cmdb/customview/public/search', data).then(res => {
+    async cmdbCustomViewList() {
+      await this.$https.post('/api/rest/cmdb/customview/search', {}).then(res => {
         if (res.Status == 'OK') {
           let resData = res.Return.tbodyList;
           let newData = [];
-          resData.forEach(j => {
-            newData.push({text: j.name, value: j.id});
+          resData.forEach(v => {
+            newData.push({text: v.name, value: v.id});
           });
-          this.addAtrixForm.externalId.dataList = newData;
+          this.addAtrixForm.customViewId.dataList = newData;
         }
       });
     },
@@ -819,7 +808,7 @@ export default {
         //校验未通过
         return;
       }
-      if (data.ciId) {
+      if (data.ciId || data.customViewId) {
         data.config = {
           showAttributeLabelList: data.showAttributeLabelList
         };
