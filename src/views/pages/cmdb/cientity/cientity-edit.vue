@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain :hideHeader="hideHeader" :mode="mode">
+    <TsContain :hideHeader="hideHeader" :mode="mode" :hasContentPadding="padding">
       <template v-if="mode != 'dialog'" v-slot:navigation>
         <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back('/ci-view/' + ciId)">{{ $getFromPage($t('term.cmdb.cientitylist')) }}</span>
       </template>
@@ -19,9 +19,11 @@
         <CiEntityEditCore
           v-if="!error"
           ref="CiEntityEditCore"
+          :padding="padding"
           :ciEntityQueue="ciEntityQueue"
           :saveMode="saveMode"
           :mode="mode"
+          :labelPosition="labelPosition"
           @new="addNewCiEntity"
           @edit="editNewCiEntity"
           @cancel="cancelNewCiEntity"
@@ -47,6 +49,7 @@ export default {
     CiEntityEditCore
   },
   props: {
+    padding: { type: Boolean, default: true }, //是否有白色底色和间距
     mode: { type: String, default: 'window' },
     propCiId: { type: Number }, //当前编辑的模型id
     propRootCiId: { type: Number }, //根模型id，用于ITSM回显时定位正确的模型位置
@@ -55,6 +58,7 @@ export default {
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
     isRequired: { type: Number }, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
+    labelPosition: { type: String, default: 'left' },
     saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数
   },
   data() {
@@ -526,6 +530,12 @@ export default {
         this.ciId = val;
         this.getCiEntityById();
       }
+    },
+    ciEntityQueue: {
+      handler: function(val) {
+        this.$emit('change', val);
+      },
+      deep: true
     }
   },
   beforeRouteEnter(to, from, next) {

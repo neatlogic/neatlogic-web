@@ -2685,6 +2685,7 @@
     "strictmode": "严格框选模式",
     "changestatusconfirm": "是否确认将当前版本状态修改成：{target}？",
     "editingversion": "编辑版本",
-    "createuser": "创建人"
+    "createuser": "创建人",
+    "cientityinfo": "配置项信息"
   }
 }
