@@ -2,8 +2,8 @@
   <div>
     <TsDialog v-if="syncCiCollectionData" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="syncCiCollectionData.id">{{ $t('dialog.title.edittarget',{'target':$t('page.config')}) }}：{{ syncCiCollectionData.ciLabel }}({{ syncCiCollectionData.ciName }})</div>
-        <div v-if="!syncCiCollectionData.id">{{ $t('dialog.title.addtarget',{'target':$t('page.config')}) }}</div>
+        <div v-if="syncCiCollectionData.id">{{ $t('dialog.title.edittarget', { target: $t('page.config') }) }}：{{ syncCiCollectionData.ciLabel }}({{ syncCiCollectionData.ciName }})</div>
+        <div v-if="!syncCiCollectionData.id">{{ $t('dialog.title.addtarget', { target: $t('page.config') }) }}</div>
       </template>
       <template v-slot>
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
@@ -20,7 +20,7 @@
                 <div>
                   {{ row.globalAttrLabel }}
                 </div>
-                <div style="font-size:12px" class="text-grey">
+                <div style="font-size: 12px" class="text-grey">
                   {{ row.globalAttrName }}
                 </div>
               </template>
@@ -37,7 +37,7 @@
             </TsTable>
           </template>
           <template v-slot:attrMapping>
-            <span v-if=" matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">{{ $t('term.cmdb.automatch') }}</span>
+            <span v-if="matchAttrList.length == 0 && matchRelList.length == 0" class="mt-sm text-href" @click="autoMatch">{{ $t('term.cmdb.automatch') }}</span>
             <span v-else class="mt-sm text-href" @click="resetAutoMatch">{{ $t('term.cmdb.cancelautomatch') }}</span>
             <TsTable
               v-if="attrData"
@@ -51,7 +51,7 @@
                   {{ row.attrLabel }}
                   <i v-if="row.isRequired" class="text-error">*</i>
                 </div>
-                <div style="font-size:12px" class="text-grey">
+                <div style="font-size: 12px" class="text-grey">
                   {{ row.attrName }}
                   <i v-if="row.targetCiId" class="tsfont-bind fz10" title="引用属性"></i>
                 </div>
@@ -68,11 +68,7 @@
                 ></TsFormSelect>
               </template>
               <template slot="actionType" slot-scope="{ row }">
-                <TsFormSwitch
-                  v-model="row.action"
-                  falseValue="replace"
-                  trueValue="delete"
-                ></TsFormSwitch>
+                <TsFormSwitch v-model="row.action" falseValue="replace" trueValue="delete"></TsFormSwitch>
               </template>
             </TsTable>
           </template>
@@ -85,7 +81,7 @@
             >
               <template slot="relId" slot-scope="{ row }">
                 <div>{{ row.relLabel }}</div>
-                <div style="font-size:12px" class="text-grey">{{ row.relName }}</div>
+                <div style="font-size: 12px" class="text-grey">{{ row.relName }}</div>
               </template>
               <template slot="field" slot-scope="{ row }">
                 <TsFormSelect
@@ -169,7 +165,7 @@ export default {
           onChange: value => {
             //重置match数据
             this.resetAutoMatch();
-            
+
             this.$set(this.syncCiCollectionData, 'ciId', value);
           }
         },
@@ -185,7 +181,7 @@ export default {
           onChange: value => {
             //重置match数据
             this.resetAutoMatch();
-            
+
             this.$set(this.syncCiCollectionData, 'collectionName', value);
             this.currentCollection = value;
           }
@@ -221,7 +217,7 @@ export default {
             { value: 1, text: '是' },
             { value: 0, text: '否' }
           ],
-          value: 1,
+          //value: 1,
           validateList: ['required'],
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'isAutoCommit', value);
@@ -232,7 +228,7 @@ export default {
           type: 'radio',
           label: '匹配模式',
           width: '100%',
-          value: 'key',
+          //value: 'key',
           dataList: [
             { value: 'key', text: '节点' },
             { value: 'level', text: '层级' }
@@ -336,7 +332,7 @@ export default {
         ],
         tbodyList: []
       },
-      syncCiCollectionData: { collectionName: this.collection }
+      syncCiCollectionData: { collectionName: this.collection, isAutoCommit: 1, matchMode: 'key' }
     };
   },
   beforeCreate() {},
@@ -524,15 +520,15 @@ export default {
       }
     },
     autoMatch() {
-      this.attrData.tbodyList.forEach((attr) => {
+      this.attrData.tbodyList.forEach(attr => {
         const matchAttrField = this.attrFieldList(attr).find(d => d.value.toLowerCase() === attr.attrName.toLowerCase());
         if (matchAttrField && !attr.field) {
           this.$set(attr, 'field', matchAttrField.value);
           this.matchAttrList.push(attr.attrName);
         }
       });
-     
-      this.relData.tbodyList.forEach((rel) => {
+
+      this.relData.tbodyList.forEach(rel => {
         const matchRelField = this.relFieldList.find(d => d.value.toLowerCase() === rel.relName.toLowerCase());
         if (matchRelField && !rel.field) {
           this.$set(rel, 'field', matchRelField.value);
@@ -602,7 +598,7 @@ export default {
       fieldList.forEach(f => {
         if (!f.subset && !onlyParentKey) {
           if (!parentList || parentList.length == 0) {
-            finalFieldList.push({ text: f.name + '-' + f.desc + '(' + f.type + ')', value: f.name });
+            finalFieldList.push({ text: f.name + '·' + f.desc + '(' + f.type + ')', value: f.name });
           } else {
             let ptext = '';
             let pname = '';
@@ -611,10 +607,10 @@ export default {
                 ptext += '->';
                 pname += '.';
               }
-              ptext += d.desc;
+              ptext += d.name + '·' + d.desc;
               pname += d.name;
             });
-            finalFieldList.push({ text: ptext + '->' + f.name + '-' + f.desc + '(' + f.type + ')', value: pname + '.' + f.name });
+            finalFieldList.push({ text: ptext + '->' + f.name + '·' + f.desc + '(' + f.type + ')', value: pname + '.' + f.name });
           }
         }
         if (f.subset) {
@@ -636,7 +632,7 @@ export default {
             pname += '.';
           }
           pname += parentList[i].name;
-          ptext += parentList[i].name + '-' + parentList[i].desc;
+          ptext += parentList[i].name + '·' + parentList[i].desc;
         }
         ptext += '(' + parentList[parentList.length - 1].type + ')';
         finalFieldList.push({ text: ptext, value: pname });
