@@ -143,7 +143,7 @@
     "thememanage": "主题配置",
     "batchupgrade": "批量升级",
     "packagemanage": "安装包管理",
-    "tagentadd": "执行器组管理",
+    "runnergroupmanage": "执行器组管理",
     "runnermanage": "Runner管理",
     "apimanage": "接口管理",
     "auditmanage": "操作审计",

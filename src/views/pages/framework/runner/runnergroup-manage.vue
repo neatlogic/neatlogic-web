@@ -79,9 +79,9 @@ export default {
   components: {
     InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    GroupAddDialog: resolve => require(['./runner/group-add-dialog.vue'], resolve),
-    GroupEditDialog: resolve => require(['./runner/group-edit-dialog.vue'], resolve),
-    RunnerRelate: resolve => require(['./runner/runner-relate.vue'], resolve)
+    GroupAddDialog: resolve => require(['./group-add-dialog.vue'], resolve),
+    GroupEditDialog: resolve => require(['./group-edit-dialog.vue'], resolve),
+    RunnerRelate: resolve => require(['./runner-relate.vue'], resolve)
   },
   filters: {},
   props: {
@@ -265,5 +265,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "./runner/src/common.less";
+@import "./src/common.less";
 </style>

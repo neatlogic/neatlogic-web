@@ -36,10 +36,10 @@ const mqOverview = () => import('./mq/mq-overview.vue');
 const fullTextIndexManage = () => import('./fulltextindex/fulltextindex-manage.vue');
 
 const tagentManage = () => import('./tagent/tagent-manage.vue'); // tagent 管理
-const tagentAdd = () => import('./tagent/tagent-add.vue'); // tagent组管理
+const runnerGroupManage = () => import('./runner/runnergroup-manage.vue'); // tagent组管理
 const BatchUpgrade = () => import('./tagent/tagent/batch-upgrade.vue'); // tagent管理/批量升级
 const InstallationPackage = () => import('./tagent/tagent/installation-package.vue'); // tagent管理/安装包管理
-const runnerManage = () => import('./tagent/runner/runner-manage.vue'); // runner管理
+const runnerManage = () => import('./runner/runner-manage.vue'); // runner管理
 
 const threaddump = () => import('./healthcheck/threaddump.vue');
 const sqldump = () => import('./healthcheck/sqldump.vue');
@@ -500,11 +500,11 @@ export default [
     }
   },
   {
-    path: '/tagent-add',
-    name: 'tagentAdd',
-    component: tagentAdd,
+    path: '/runnergroup-manage',
+    name: 'runnerGroupManage',
+    component: runnerGroupManage,
     meta: {
-      title: $t('router.framework.tagentadd'),
+      title: $t('router.framework.runnergroupmanage'),
       ismenu: true,
       icon: 'tsfont-ip-object',
       authority: 'RUNNER_MODIFY',
