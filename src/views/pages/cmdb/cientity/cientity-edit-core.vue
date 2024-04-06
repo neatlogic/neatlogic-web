@@ -51,7 +51,7 @@
                         v-if="e.element.canInput"
                         :label="e.element.label"
                         :labelPosition="labelPosition"
-                        :required="!!e.element.isRequired"
+                        :required="!!e.element.isRequired || !!e.element.isCiUnique"
                       ><AttrInputer
                         ref="attrHandler"
                         :allowBatchAdd="allowBatchAdd"
@@ -206,15 +206,15 @@
           >{{ $t('page.cancel') }}</Button>
           <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
           <Button
-            v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
+            v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
             style="margin-right: 10px"
             ghost
             type="primary"
             @click="save(false)"
           >{{ $t('page.savetransaction') }}</Button>
-          <Button v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
         </div>
       </template>
       <div v-if="ciEntityData && ciEntityData.id && saveMode == 'save'" slot="right" class="pl-nm">
@@ -255,6 +255,7 @@ export default {
     mode: { type: String, default: 'window' },
     saveMode: { type: String, default: 'save' }, //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数，如果是emit模式，保存按钮只会显示一个
     allowBatchAdd: { type: Boolean, default: true }, //是否允许批量创建新配置项
+    hideButton: { type: Boolean, default: false }, //隐藏按钮
     ciEntityQueue: {
       type: Array,
       default: () => {
@@ -354,10 +355,10 @@ export default {
       if (this.currentRel) {
         if (ciEntityList) {
           if (!this.ciEntityData.relEntityData) {
-            this.ciEntityData.relEntityData = {};
+            this.$set(this.ciEntityData, 'relEntityData', {});
           }
           if (!this.ciEntityData.relEntityData['rel' + this.currentRel.direction + '_' + this.currentRel.id]) {
-            this.ciEntityData.relEntityData['rel' + this.currentRel.direction + '_' + this.currentRel.id] = { valueList: [] };
+            this.$set(this.ciEntityData.relEntityData, 'rel' + this.currentRel.direction + '_' + this.currentRel.id, { valueList: [] });
           }
           ciEntityList.forEach(element => {
             const cientity = { ciId: element.ciId, ciEntityId: element.id, ciEntityName: element.name };
@@ -607,12 +608,12 @@ export default {
       }
       return typeList;
     },
-    uniqueElementList() {
+    /*uniqueElementList() {
       if (this.ciEntityData && this.ciEntityData['_uniqueAttrList'] && this.ciEntityData['_uniqueAttrList'].length > 0 && this.ciEntityData['_elementList'] && this.ciEntityData['_elementList'].length > 0) {
         return this.ciEntityData['_elementList'].filter(d => d.type === 'attr' && this.ciEntityData['_uniqueAttrList'].includes(d.element.id));
       }
       return [];
-    },
+    },*/
     ciEntityData() {
       return this.ciEntityQueue[this.ciEntityQueue.length - 1];
     },
@@ -647,7 +648,7 @@ export default {
 /deep/.ivu-collapse-content-box {
   padding-bottom: 0px;
 }
-/deep/.ivu-collapse-content{
-  padding:0px;
+/deep/.ivu-collapse-content {
+  padding: 0px;
 }
 </style>

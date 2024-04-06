@@ -3,7 +3,7 @@
     <TsForm :item-list="formConfig">
       <template v-slot:isMultiple>
         <i-switch v-model="myConfig.isMultiple" :true-value="1" :false-value="0"></i-switch>
-        <span v-html="myConfig.isMultiple == 1 ? '是' : '否'"></span>
+        <!--<span v-html="myConfig.isMultiple == 1 ? '是' : '否'"></span>-->
       </template>
     </TsForm>
   </div>

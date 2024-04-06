@@ -29,7 +29,7 @@ export default {
   beforeCreate() {},
   created() {
     if (this.attrData) {
-      if (this.attrData.isRequired === 1) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
         this.validateList.push('required');
       }
     }

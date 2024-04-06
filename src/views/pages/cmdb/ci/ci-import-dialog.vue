@@ -2,7 +2,7 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <div>
+        <div ref="main">
           <TsForm :itemList="formConfig">
             <template v-slot:file>
               <TsUpLoad
@@ -17,7 +17,7 @@
                   }
                 "
               ></TsUpLoad>
-              <div class="text-grey">帮助：支持同时导入多个模型文件</div>
+              <div class="text-grey">{{ $t('term.cmdb.supportmultimodelfile') }}</div>
               <div v-if="ciData.fileList.length > 0">
                 <Tag
                   v-for="(file, index) in ciData.fileList"
@@ -40,7 +40,7 @@
                       <span v-else class="text-warning">{{ $t('page.revise') }}</span>
                     </div>
                   </div>
-                  <ul v-if="ci.error.length > 0" class="text-error">
+                  <ul v-if="ci.error.length > 0" class="text-error error-info">
                     <li v-for="(error, eindex) in ci.error" :key="eindex">{{ error }}</li>
                   </ul>
                   <TsTable
@@ -76,7 +76,7 @@
                       </div>
                     </template>
                     <template v-slot:error="{ row }">
-                      <ul v-if="row.error.length > 0" class="text-error">
+                      <ul v-if="row.error.length > 0" class="text-error error-info">
                         <li v-for="(error, eindex) in row.error" :key="eindex">{{ error }}</li>
                       </ul>
                       <div v-else></div>
@@ -214,6 +214,11 @@ export default {
               }
             });
             this.allowImport = isValid;
+            if (!isValid) {
+              this.$nextTick(() => {
+                this.$utils.jumpTo('.error-info', 'smooth', this.$refs['main']);
+              });
+            }
           } else {
             this.allowImport = false;
           }

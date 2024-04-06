@@ -224,7 +224,8 @@
     "transformscript": "Conversion script",
     "relmapping": "Relationship mapping",
     "globalattrmapping": "Global attribute mapping",
-    "matchfield": "Matching Fields"
+    "matchfield": "Matching Fields",
+    "supportmultimodelfile": "Help: Supports importing multiple model files simultaneously"
   },
   "process": {
     "workordercenter": "Work Center",
