@@ -55,7 +55,7 @@ export default {
     propCiId: { type: Number }, //当前编辑的模型id
     propRootCiId: { type: Number }, //根模型id，用于ITSM回显时定位正确的模型位置
     propCiEntityData: { type: Object }, //表单编辑时通过此参数传入暂存的配置项数据
-    propCiEntityId: { type: Number }, //资产修改时使用此参数传入配置项id，
+    propCiEntityId: { type: Number }, //资产修改时使用此参数传入配置项id
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
     isRequired: { type: Number }, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
@@ -305,6 +305,7 @@ export default {
         cientity.uuid = this.propCiEntityData.uuid; //恢复原来的uuid，否则每次保存都会添加一条
         cientity.actionType = this.propCiEntityData.actionType;
         cientity.editableAttrRelIdList = this.propCiEntityData.editableAttrRelIdList;
+        cientity.disableAttrRelIdList = this.propCiEntityData.disableAttrRelIdList;
         cientity.maxAttrEntityCount = 9999999999; //必须定义，代表不限制引用属性数量，编辑时用这个覆盖从后台回来的maxAttrEntityCount
         cientity.maxRelEntityCount = 9999999999; //必须定义，代表不限制关系数量，编辑时用这个覆盖从后台回来的maxRelEntityCount
         if (!cientity.attrEntityData || Object.keys(cientity.attrEntityData).length === 0) {
@@ -374,6 +375,7 @@ export default {
         this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(async res => {
           if (res.Return) {
             const ci = res.Return;
+            let relEntityData = {};
             if (ci.isVirtual == 0 && ci.isAbstract == 0) {
               const cientity = {
                 uuid: this.$utils.setUuid(),

@@ -325,6 +325,8 @@ export default {
     disabledFn(elementId) {
       if (this.ciEntityData.editableAttrRelIdList && this.ciEntityData.editableAttrRelIdList.length > 0 && !this.ciEntityData.editableAttrRelIdList.includes(elementId)) {
         return true;
+      } else if (this.ciEntityData.disableAttrRelIdList && this.ciEntityData.disableAttrRelIdList.length > 0 && this.ciEntityData.disableAttrRelIdList.includes(elementId)) {
+        return true;
       }
       return false;
     },
