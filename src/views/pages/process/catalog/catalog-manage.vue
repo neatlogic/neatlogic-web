@@ -94,7 +94,7 @@ export default {
         search: true,
         dynamicUrl: '/api/rest/process/catalog/channel/search',
         rootName: 'treeList',
-        valueName: 'uuid',
+        valueName: 'typeAndUuid',
         textName: 'name',
         onChange: this.treeSelected,
         placeholder: this.$t('page.search'),
@@ -242,7 +242,9 @@ export default {
         }
       }
     },
-    treeSelected(uuid) {
+    treeSelected(typeAndUuid) {
+      let arr = typeAndUuid.split('#');
+      let uuid = arr[1];
       //树select选择中
       this.currentUuid = uuid;
       this.treeUuid = uuid;
@@ -256,8 +258,21 @@ export default {
       this.currentUuid = null;
     },
     //搜索服务点击
-    selectChannel(uuid) {
-      this.$set(this.channelData, 'uuid', uuid);
+    selectChannel(typeAndUuid) {
+      let arr = typeAndUuid.split('#');
+      let type = arr[0];
+      let uuid = arr[1];
+      if (type == 'catalog') {
+        // 编辑目录
+        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
+        this.catalogTypeName = type;
+        this.$set(this.catalogData, 'uuid', uuid);
+      } else if (type == 'channel') {
+        // 编辑服务
+        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
+        this.catalogTypeName = type;
+        this.$set(this.channelData, 'uuid', uuid);
+      }
     },
     handleSave() {
       if (this.disabledConfig.saving) {
