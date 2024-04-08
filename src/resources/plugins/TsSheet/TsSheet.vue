@@ -896,10 +896,10 @@ export default {
     },
     clearFormInputTableAttr(formitem, valueList) { //清除表单输入组件非表头属性
       if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
-        let uuidList = this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
+        let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
         valueList.forEach(item => {
           Object.keys(item).forEach(key => {
-            if (!uuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+            if (uuidList && !uuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
               delete item[key];
             }
           });
