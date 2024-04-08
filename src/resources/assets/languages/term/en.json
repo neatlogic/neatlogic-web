@@ -224,7 +224,8 @@
     "transformscript": "Conversion script",
     "relmapping": "Relationship mapping",
     "globalattrmapping": "Global attribute mapping",
-    "matchfield": "Matching Fields"
+    "matchfield": "Matching Fields",
+    "supportmultimodelfile": "Help: Supports importing multiple model files simultaneously"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2686,6 +2687,7 @@
     "strictmode": "Strict box selection mode",
     "changestatusconfirm": "Are you sure to change current version to {target}?",
     "editingversion": "Editing version",
-    "createuser": "Creator"
+    "createuser": "Creator",
+    "cientityinfo": "Configuration Item Information"
   }
 }

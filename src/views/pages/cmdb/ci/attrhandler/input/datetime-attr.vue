@@ -17,13 +17,12 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
   },
   props: {
-    disabled: {type: Boolean, default: false},
-    attrData: {type: Object},
-    valueList: {type: Array}
+    disabled: { type: Boolean, default: false },
+    attrData: { type: Object },
+    valueList: { type: Array }
   },
   data() {
     return {
@@ -32,13 +31,15 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    if (this.attrData && this.attrData.isRequired == 1) {
-      this.validateList.push('required');
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
     }
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -54,12 +55,7 @@ export default {
       const hour = d.getHours();
       const min = d.getMinutes();
       const sec = d.getSeconds();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
-        (day < 10 ? '0' + day : day) + ' ' + 
-        (hour < 10 ? '0' + hour : hour) + ':' + 
-        (min < 10 ? '0' + min : min) + ':' + 
-        (sec < 10 ? '0' + sec : sec);
+      return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day) + ' ' + (hour < 10 ? '0' + hour : hour) + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
     },
     setData(val) {
       if (val) {
@@ -72,7 +68,8 @@ export default {
         this.$emit('setValue', []);
       }
     },
-    valid() { //验证数据合法性
+    valid() {
+      //验证数据合法性
       const handler = this.$refs['handler'];
       return handler.valid();
     }
@@ -82,11 +79,12 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return null;
-    }},
+    }
+  },
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -96,9 +94,8 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    }*/
   }
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

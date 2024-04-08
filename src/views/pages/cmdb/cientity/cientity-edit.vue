@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain :hideHeader="hideHeader" :mode="mode">
+    <TsContain :hideHeader="hideHeader" :mode="mode" :hasContentPadding="padding">
       <template v-if="mode != 'dialog'" v-slot:navigation>
         <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back('/ci-view/' + ciId)">{{ $getFromPage($t('term.cmdb.cientitylist')) }}</span>
       </template>
@@ -19,9 +19,12 @@
         <CiEntityEditCore
           v-if="!error"
           ref="CiEntityEditCore"
+          :padding="padding"
           :ciEntityQueue="ciEntityQueue"
           :saveMode="saveMode"
           :mode="mode"
+          :labelPosition="labelPosition"
+          :hideButton="hideButton"
           @new="addNewCiEntity"
           @edit="editNewCiEntity"
           @cancel="cancelNewCiEntity"
@@ -47,6 +50,7 @@ export default {
     CiEntityEditCore
   },
   props: {
+    padding: { type: Boolean, default: true }, //是否有白色底色和间距
     mode: { type: String, default: 'window' },
     propCiId: { type: Number }, //当前编辑的模型id
     propRootCiId: { type: Number }, //根模型id，用于ITSM回显时定位正确的模型位置
@@ -55,6 +59,8 @@ export default {
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
     isRequired: { type: Number }, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
+    hideButton: {type: Boolean, default: false}, //隐藏按钮
+    labelPosition: { type: String, default: 'left' },
     saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数
   },
   data() {
@@ -252,10 +258,10 @@ export default {
         }
         //标记为已保存的新配置项，用于点击“取消”后判断是否需要删除数据
         cientity._isnew = true;
-        this.saveCiEntityMap[cientity.uuid] = cientity;
+        this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
-        this.saveCiEntityMap[cientity.uuid] = cientity;
+        this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
         const ciEntityList = [];
         for (let uuid in this.saveCiEntityMap) {
           ciEntityList.push(this.saveCiEntityMap[uuid]);
@@ -526,6 +532,25 @@ export default {
         this.ciId = val;
         this.getCiEntityById();
       }
+    },
+    ciEntityQueue: {
+      handler: function(val) {
+        if (this.ciEntityQueue.length === 1) {
+          const cientity = this.ciEntityQueue[0];
+          this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
+        }
+      },
+      deep: true
+    },
+    saveCiEntityMap: {
+      handler: function(val) {
+        const ciEntityList = [];
+        for (let uuid in this.saveCiEntityMap) {
+          ciEntityList.push(this.saveCiEntityMap[uuid]);
+        }
+        this.$emit('change', ciEntityList);
+      },
+      deep: true
     }
   },
   beforeRouteEnter(to, from, next) {

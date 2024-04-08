@@ -34,7 +34,7 @@
             </BreadcrumbItem>
           </Breadcrumb>
         </div>
-        <div class="bg-block radius-lg padding">
+        <div :class="padding ? 'bg-block radius-lg pt-lg pr-lg pl-lg pb-xs mb-lg' : ''">
           <div class="tsForm tsForm-border-border ivu-form-label-right">
             <Collapse v-model="openPanel" simple>
               <Panel v-for="elementType in elementTypeList" :key="elementType.type" :name="elementType.type">
@@ -42,7 +42,7 @@
                 <div
                   v-if="elementType.elementList.length > 0"
                   slot="content"
-                  style="margin: 0 auto; width: 80%"
+                  style="margin: 0 auto"
                   class="pt-lg"
                 >
                   <div v-for="(e, index) in elementType.elementList" :key="index">
@@ -50,8 +50,8 @@
                       <TsFormItem
                         v-if="e.element.canInput"
                         :label="e.element.label"
-                        labelPosition="left"
-                        :required="!!e.element.isRequired"
+                        :labelPosition="labelPosition"
+                        :required="!!e.element.isRequired || !!e.element.isCiUnique"
                       ><AttrInputer
                         ref="attrHandler"
                         :allowBatchAdd="allowBatchAdd"
@@ -67,7 +67,7 @@
                       ></AttrInputer></TsFormItem>
                     </div>
                     <div v-else-if="e.type === 'global'">
-                      <TsFormItem :label="e.element.label" labelPosition="left">
+                      <TsFormItem :label="e.element.label" :labelPosition="labelPosition">
                         <TsFormRadio
                           v-if="!e.element.isMultiple"
                           :allowToggle="true"
@@ -96,7 +96,7 @@
                       </TsFormItem>
                     </div>
                     <div v-else-if="e.type == 'rel'">
-                      <TsFormItem :label="e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel" labelPosition="left" :required="!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))">
+                      <TsFormItem :label="e.element.direction === 'from' ? e.element.toLabel : e.element.fromLabel" :labelPosition="labelPosition" :required="!!((e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired))">
                         <div v-if="isRelShow(e.element, ciEntityData) && !(ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList'].length > 0 && ((e.element.direction == 'to' && e.element.fromRule == 'O') || (e.element.direction == 'from' && e.element.toRule == 'O')))">
                           <a href="javascript:void(0)" :disabled="disabledFn('rel' + e.element.direction + '_' + e.element.id)" @click.stop="addRelEntity(e.element)">
                             <i class="tsfont-check"></i>
@@ -183,8 +183,8 @@
               </Panel>
               <Panel name="description">
                 {{ $t('term.cmdb.changememo') }}
-                <div slot="content" class="pt-lg" style="margin: 0 auto; width: 80%">
-                  <TsFormItem :label="$t('term.cmdb.changememo')" labelPosition="left">
+                <div slot="content" class="pt-lg" style="margin: 0 auto">
+                  <TsFormItem :label="$t('term.cmdb.changememo')" :labelPosition="labelPosition">
                     <TsFormInput
                       v-if="ciEntityData"
                       v-model="ciEntityData.description"
@@ -197,7 +197,7 @@
             </Collapse>
           </div>
         </div>
-        <div style="text-align: right" class="mt-md">
+        <div style="text-align: right">
           <Button
             v-if="ciEntityQueue && ciEntityQueue.length > 1"
             style="margin-right: 10px"
@@ -206,15 +206,15 @@
           >{{ $t('page.cancel') }}</Button>
           <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
           <Button
-            v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
+            v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
             style="margin-right: 10px"
             ghost
             type="primary"
             @click="save(false)"
           >{{ $t('page.savetransaction') }}</Button>
-          <Button v-if="saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
-          <Button v-if="saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
+          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
         </div>
       </template>
       <div v-if="ciEntityData && ciEntityData.id && saveMode == 'save'" slot="right" class="pl-nm">
@@ -250,9 +250,12 @@ export default {
     CiEntityChoose: resolve => require(['./cientity-choose.vue'], resolve)
   },
   props: {
+    padding: { type: Boolean, default: true }, //是否有白色底色和间距
+    labelPosition: { type: String, default: 'left' },
     mode: { type: String, default: 'window' },
     saveMode: { type: String, default: 'save' }, //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数，如果是emit模式，保存按钮只会显示一个
     allowBatchAdd: { type: Boolean, default: true }, //是否允许批量创建新配置项
+    hideButton: { type: Boolean, default: false }, //隐藏按钮
     ciEntityQueue: {
       type: Array,
       default: () => {
@@ -352,10 +355,10 @@ export default {
       if (this.currentRel) {
         if (ciEntityList) {
           if (!this.ciEntityData.relEntityData) {
-            this.ciEntityData.relEntityData = {};
+            this.$set(this.ciEntityData, 'relEntityData', {});
           }
           if (!this.ciEntityData.relEntityData['rel' + this.currentRel.direction + '_' + this.currentRel.id]) {
-            this.ciEntityData.relEntityData['rel' + this.currentRel.direction + '_' + this.currentRel.id] = { valueList: [] };
+            this.$set(this.ciEntityData.relEntityData, 'rel' + this.currentRel.direction + '_' + this.currentRel.id, { valueList: [] });
           }
           ciEntityList.forEach(element => {
             const cientity = { ciId: element.ciId, ciEntityId: element.id, ciEntityName: element.name };
@@ -605,12 +608,12 @@ export default {
       }
       return typeList;
     },
-    uniqueElementList() {
+    /*uniqueElementList() {
       if (this.ciEntityData && this.ciEntityData['_uniqueAttrList'] && this.ciEntityData['_uniqueAttrList'].length > 0 && this.ciEntityData['_elementList'] && this.ciEntityData['_elementList'].length > 0) {
         return this.ciEntityData['_elementList'].filter(d => d.type === 'attr' && this.ciEntityData['_uniqueAttrList'].includes(d.element.id));
       }
       return [];
-    },
+    },*/
     ciEntityData() {
       return this.ciEntityQueue[this.ciEntityQueue.length - 1];
     },
@@ -641,5 +644,11 @@ export default {
 }
 /deep/.ivu-collapse-header {
   border-bottom: 0px;
+}
+/deep/.ivu-collapse-content-box {
+  padding-bottom: 0px;
+}
+/deep/.ivu-collapse-content {
+  padding: 0px;
 }
 </style>

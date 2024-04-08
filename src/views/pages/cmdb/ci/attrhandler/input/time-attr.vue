@@ -34,8 +34,10 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.attrData && this.attrData.isRequired == 1) {
-      this.validateList.push('required');
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
     }
   },
   beforeUpdate() {},
@@ -68,7 +70,7 @@ export default {
       return null;
     }},
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -78,7 +80,7 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    }*/
   }
 };
 </script>

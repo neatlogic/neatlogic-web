@@ -88,7 +88,13 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
+    } 
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -106,7 +112,7 @@ export default {
         isValid = handler.valid();
       } 
       if (isValid) {
-        if (this.attrData && this.attrData.isRequired == 1) {
+        if (this.attrData && (this.attrData.isRequired || this.attrData.isCiUnique)) {
           if (this.selectValueList.length == 0 && this.extraDataList.length == 0) {
             isValid = false;
           }
@@ -173,7 +179,7 @@ export default {
     }
   },
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -184,6 +190,7 @@ export default {
       deep: true,
       immediate: true
     }
+    */
   }
 };
 </script>

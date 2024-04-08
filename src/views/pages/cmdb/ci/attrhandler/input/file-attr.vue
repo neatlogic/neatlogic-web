@@ -20,11 +20,11 @@ export default {
   components: {
     TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
   },
-  props: { 
-    disabled: {type: Boolean, default: false},
-    attrData: {type: Object},
-    attrEntity: {type: Object},
-    valueList: {type: Array}
+  props: {
+    disabled: { type: Boolean, default: false },
+    attrData: { type: Object },
+    attrEntity: { type: Object },
+    valueList: { type: Array }
   },
   data() {
     return {
@@ -33,11 +33,17 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.isRequired = true;
+      }
+    }
+  },
   beforeMount() {},
   mounted() {
     this.getFileByIdList();
-    this.fileList = this.attrEntity && this.attrEntity.actualValueList || [];
+    this.fileList = (this.attrEntity && this.attrEntity.actualValueList) || [];
   },
   beforeUpdate() {},
   updated() {},
@@ -45,8 +51,9 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: { 
-    valid() { //验证数据合法性
+  methods: {
+    valid() {
+      //验证数据合法性
       if (this.isRequired && (!this.fileList || this.fileList.length <= 0)) {
         this.$Message.warning('请上传附件：' + this.attrData.label);
         return false;
@@ -67,16 +74,16 @@ export default {
         if (this.isMultiple) {
           fileList.forEach(element => {
             if (!this.fileList.find(f => f.id == element.id)) {
-              this.fileList.push({id: element.id, name: element.name });
+              this.fileList.push({ id: element.id, name: element.name });
             }
           });
         } else {
-          const element = fileList[fileList.length - 1];//如果单选，只取最后一个附件
+          const element = fileList[fileList.length - 1]; //如果单选，只取最后一个附件
           if (!this.fileList.find(f => f.id == element.id)) {
             if (this.fileList.length > 0) {
               this.fileList = [];
             }
-            this.fileList.push({id: element.id, name: element.name });
+            this.fileList.push({ id: element.id, name: element.name });
           }
         }
       }
@@ -101,8 +108,8 @@ export default {
       return false;
     }
   },
-  watch: { 
-    attrData: {
+  watch: {
+    /*attrData: {
       handler: function() {
         this.isRequired = false;
         if (this.attrData && this.attrData.isRequired == 1) {
@@ -111,9 +118,8 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    }*/
   }
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
