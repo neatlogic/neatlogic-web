@@ -20,7 +20,7 @@
             </div>
           </div>
           <div v-show="item.isShow" class="autoexec-content border-color padding">
-            <AutoexecConfig ref="autoexecConfig" :config="item" @update="(config)=>{setConfig(config,index)}"></AutoexecConfig>
+            <AutoexecConfig ref="autoexecConfig" :config="item" @update="(config)=>{setConfig(item, config,index)}"></AutoexecConfig>
           </div>
         </div>
       </div>
@@ -115,8 +115,8 @@ export default {
     close() {
       this.$emit('close');
     },
-    setConfig(config, index) {
-      this.$set(this.configList, index, config);
+    setConfig(currentItem, config = {}, index) {
+      this.$set(this.configList, index, Object.assign(currentItem, config)); // 采用浅拷贝，解决config缺少isShow字段，导致选中组合工具后，组合工具被隐藏的问题
     }
   },
   filter: {},
