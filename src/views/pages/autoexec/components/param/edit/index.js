@@ -16,6 +16,7 @@ import filepathHandler from './filepath';
 import textareaHandler from './text';
 import switchHandler from './switch';
 import userselectHandler from './userselect';
+import runnergroupHandler from './runnergroup';
 export default {
   defaultInput,
   textHandler,
@@ -34,5 +35,6 @@ export default {
   filepathHandler,
   textareaHandler,
   switchHandler,
-  userselectHandler
+  userselectHandler,
+  runnergroupHandler
 };

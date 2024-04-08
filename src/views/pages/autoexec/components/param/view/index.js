@@ -17,6 +17,7 @@ import phaseHandler from './phase';
 import switchHandler from '../edit/switch.vue';
 import filepathHandler from '../edit/filepath.vue'; 
 import userselectHandler from './userselect.vue'; 
+import runnergroupHandler from '../edit/runnergroup';
 export default {
   defaultInput,
   textHandler,
@@ -36,5 +37,6 @@ export default {
   phaseHandler,
   switchHandler,
   filepathHandler,
-  userselectHandler
+  userselectHandler,
+  runnergroupHandler
 };

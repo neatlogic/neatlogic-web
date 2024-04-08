@@ -137,6 +137,10 @@ export default {
         userselect: {
           icon: 'tsfont-group',
           text: this.$t('page.userselector')
+        },
+        runnergroup: {
+          icon: 'tsfont-ip-object',
+          text: this.$t('term.deploy.actuatorgroup')
         }
       },
       multipleList: ['multiselect', 'checkbox'],

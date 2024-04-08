@@ -73,6 +73,29 @@
           </div>
         </div>
         <div>
+          <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
+          <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :readonly="true"
+              :runtimeParamList="runtimeParamList"
+            ></RunnerGroupSetting>
+          </div>
+          <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='constant'">
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :runtimeParamList="runtimeParamList"
+              :isCreateJob="true"
+              :disabled="false"
+            ></RunnerGroupSetting>
+          </div>
+          <div v-if="!dataConfig.existRunnerOrSqlExecMode" class="box-block text-tip">
+            {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
+          </div>
+        </div>
+        <div>
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
           <div v-if="needExecuteNode" class="box-block">
             <AddTarget
@@ -204,7 +227,8 @@ export default {
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
+    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve),
+    RunnerGroupSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'], resolve)
   },
   filters: {},
   props: {
@@ -289,6 +313,10 @@ export default {
           mappingMode: 'constant',
           value: ''
         }
+      },
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '-1'
       },
       needExecuteNode: false, //组合工具的执行目标
       needExecuteUser: false, //组合工具的执行用户
@@ -400,6 +428,7 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
+            this.runnerGroup = this.dataConfig.config.executeConfig.runnerGroup || this.runnerGroup;
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
             mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
@@ -585,6 +614,11 @@ export default {
         }
       } else if (this.config && this.config.executeConfig) {
         data = this.config; // 解决返回列表页面，数据对比不对问题
+      }
+      this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
+      //补充runnerGroup
+      if (this.dataConfig.existRunnerOrSqlExecMode) {
+        this.$set(data, 'runnerGroup', this.runnerGroup);
       }
       return data;
     },

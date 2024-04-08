@@ -122,7 +122,8 @@
     "emptyfiltervalue": "不在过滤器范围内",
     "notfoundsys": "在系统中未找到对应资产",
     "executerunnertip": "组合工具仅包含runner或者sql执行方式，无需设置执行目标",
-    "notsetexecutertip": "组合工具中，每个执行阶段均已预设执行目标，此处无需设置执行目标"
+    "notsetexecutertip": "组合工具中，每个执行阶段均已预设执行目标，此处无需设置执行目标",
+    "norunnerphaserunnergrouptips": "组合工具不包含runner或者sql执行方式的阶段，无需设置执行器组"
   },
   "knowledge": {
     "notcatalog": "无文本目录",

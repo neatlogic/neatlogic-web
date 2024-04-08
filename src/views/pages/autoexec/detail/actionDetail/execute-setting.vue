@@ -23,6 +23,14 @@
                 :runtimeParamList="runtimeParamList"
               ></ExecuteuserSetting>
             </template>
+            <template v-slot:runnerGroup>
+              <RunnerGroupSetting
+                ref="runnerGroup"
+                :config="settingConfig.runnerGroup"
+                :disabled="!isEditSetting"
+                :runtimeParamList="runtimeParamList"
+              ></RunnerGroupSetting>
+            </template>
           </TsForm>
         </div>
         <div v-if="settingConfig.whenToSpecify == 'now'" class="execute-main">
@@ -34,6 +42,7 @@
               :canEdit="isEditSetting"
               :type="settingConfig.whenToSpecify"
               :required="true"
+              :labelWidth="113"
             ></TargetDetail>
           </div>
         </div>
@@ -87,7 +96,8 @@ export default {
     ExecutionModeParam: resolve => require(['@/views/pages/autoexec/components/common/executionMode/param'], resolve),
     Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters'], resolve),
     TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve)
+    ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve),
+    RunnerGroupSetting: resolve => require(['./runnergroup-setting.vue'], resolve)
   },
   filters: {},
   props: {
@@ -121,11 +131,19 @@ export default {
           dealDataByUrl: this.$utils.getProtocolDataList,
           placeholder: this.$t('page.pleaseselect'),
           disabled: !_this.isEditSetting,
-          transfer: true
+          transfer: true,
+          labelWidth: '113'
         },
         executeUser: {
           type: 'slot',
-          label: this.$t('page.executeuser')
+          label: this.$t('page.executeuser'),
+          labelWidth: '113'
+        },
+        runnerGroup: {
+          type: 'slot',
+          label: this.$t('page.autoexeccomboprunnergrouplabel'),
+          labelWidth: '113',
+          tooltip: this.$t('page.autoexeccomboprunnergrouptips')
         },
         roundCount: {
           type: 'select',
@@ -134,7 +152,8 @@ export default {
           disabled: !_this.isEditSetting,
           label: this.$t('term.autoexec.batchquantity'),
           desc: this.$t('term.autoexec.batchcountdisabledesc'),
-          dataList: this.$utils.getRoundCountList()
+          dataList: this.$utils.getRoundCountList(),
+          labelWidth: '113'
         },
         whenToSpecify: {
           type: 'radio',
@@ -142,6 +161,7 @@ export default {
           value: '',
           dataList: [],
           disabled: !_this.isEditSetting,
+          labelWidth: '113',
           onChange: (val) => {
             _this.changeWhenToSpecify(val);
           }
@@ -151,6 +171,7 @@ export default {
         combopId: _this.id,
         protocolId: '',
         executeUser: null,
+        runnerGroup: null,
         roundCount: null,
         whenToSpecify: 'runtime',
         executeNodeConfig: {}
@@ -207,6 +228,7 @@ export default {
     },
     okSetting() {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
+      this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);

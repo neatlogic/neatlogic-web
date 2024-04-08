@@ -978,5 +978,8 @@
   "acolumn": "一列",
   "hiddenattr": "隐藏属性",
   "dynamicvalue": "动态值",
-  "exitedit": "退出编辑"
+  "exitedit": "退出编辑",
+  "autoexeccomboprunnergrouptips": "只对执行方式是“runner执行“的阶段生效,选择“随机分配”表示会从所有执行器组中随机选择runner执行器",
+  "autoexeccomboprunnergrouplabel": "runner执行组",
+  "autoexecradomrunnergroup": "随机分配"
 }
