@@ -428,7 +428,7 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
-            this.runnerGroup = this.dataConfig.config.executeConfig.runnerGroup || this.runnerGroup;
+            this.runnerGroup = this.executeConfig.runnerGroup || this.runnerGroup;
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
             mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
