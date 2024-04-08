@@ -88,9 +88,9 @@
         </div>
         <div v-show="modeType == 'list'">
           <TsTable
-            v-if="matrixTableList"
-            v-bind="matrixTableList"
+            v-bind="matrixTableConfig"
             keyName="uuid"
+            :theadList="matrixTableThead"
             @operation="operation"
             @changeCurrent="getPagedata"
             @changePageSize="changePageSize"
@@ -449,7 +449,12 @@ export default {
         pageSize: 24,
         pageCount: 1
       },
-      matrixTableList: [],
+      matrixTableConfig: {
+        currentPage: 1,
+        pageSize: 20,
+        rowNum: 0,
+        tbodyList: []
+      },
       matrixTableThead: [
         {
           title: 'ID',
@@ -494,13 +499,10 @@ export default {
       type: null, //矩阵类型
       currentPage: 1, //当前页数
       pageCount: 1, //总页数
-      modeType: 'block', //显示方式
-      tablePageSize: 20
+      modeType: 'block' //显示方式
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.$route.query.atrixFormDialogShow) {
       //跳转到这个页面时，需要进行新增
@@ -509,9 +511,7 @@ export default {
     this.policyList();
     // this.cmdbList();
   },
-
   beforeMount() {},
-
   mounted() {
     if (this.modeType == 'block') {
       this.getMatrixList();
@@ -519,19 +519,12 @@ export default {
       this.getPagedata();
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     allHidden(val) {
       let _this = this;
@@ -632,13 +625,17 @@ export default {
       });
     },
     //数据源矩阵检索
-    getMatrixList: function(page) {
+    getMatrixList: function(currentPage) {
       let data = {
         keyword: this.keyword,
         pageSize: this.matrixCardData.pageSize,
-        currentPage: page || this.currentPage
+        currentPage: currentPage || this.matrixCardData.currentPage
       };
       this.loadingShow = true;
+      this.$addHistoryData('modeType', this.modeType);
+      this.$addHistoryData('keyword', this.keyword);
+      this.$addHistoryData('currentPage', data.currentPage);
+      this.$addHistoryData('pageSize', data.pageSize);
       this.$api.framework.matrix.getMatrixList(data).then(res => {
         if (res.Status == 'OK') {
           const { tbodyList: cardList, currentPage, pageSize, pageCount, rowNum } = res.Return;
@@ -684,6 +681,18 @@ export default {
         }, 200);
       });
     },
+    restoreHistory(historyData) {
+      let modeType = historyData['modeType'];
+      this.keyword = historyData['keyword'];
+      if (this.modeType == 'block') {
+        this.matrixCardData.currentPage = historyData['currentPage'];
+        this.matrixCardData.pageSize = historyData['pageSize'];
+      } else {
+        this.matrixTableConfig.currentPage = historyData['currentPage'];
+        this.matrixTableConfig.pageSize = historyData['pageSize'];
+      }
+      this.modeType = modeType;
+    },
     action(row, value) {
       if (value == 'del') {
         if (row.type === 'private') {
@@ -701,38 +710,35 @@ export default {
       }
     },
     //表格形式展示数据
-    getMatrixTableList: function(param) {
-      let data = param || {};
+    getMatrixTableList(currentPage, pageSize) {
       this.loadingShow = true;
-      this.$api.framework.matrix.getMatrixList(data).then(res => {
+      this.$addHistoryData('modeType', this.modeType);
+      this.$addHistoryData('keyword', this.keyword);
+      this.$addHistoryData('currentPage', currentPage);
+      this.$addHistoryData('pageSize', pageSize);
+      this.$api.framework.matrix.getMatrixList({
+        keyword: this.keyword,
+        currentPage: currentPage,
+        pageSize: pageSize
+      }).then(res => {
         if (res.Status == 'OK') {
-          this.matrixTableList = res.Return;
-          this.matrixTableList.theadList = this.matrixTableThead;
+          this.matrixTableConfig = Object.assign(this.matrixTableConfig, res.Return || {});
           setTimeout(() => {
             this.loadingShow = false;
           }, 200);
         }
       });
     },
-    getPagedata(current) {
+    getPagedata(current = 1) {
       if (current) {
-        this.matrixTableList.currentPage = current;
+        this.matrixTableConfig.currentPage = current;
+        this.matrixTableConfig.pageSize = 20;
       }
-      let param = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: this.matrixTableList.currentPage ? this.matrixTableList.currentPage : 1
-      };
-      this.getMatrixTableList(param);
+      this.getMatrixTableList(this.matrixTableConfig.currentPage, this.matrixTableConfig.pageSize);
     },
-    changePageSize(size) {
-      this.tablePageSize = size;
-      let param = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: 1
-      };
-      this.getMatrixTableList(param);
+    changePageSize(pageSize = 20) {
+      this.matrixTableConfig.pageSize = pageSize;
+      this.getMatrixTableList(1, this.matrixTableConfig.pageSize);
     },
     //新建矩阵
     addMatrix: function() {
@@ -749,12 +755,7 @@ export default {
     //搜索矩阵
     searchMatrix: function() {
       this.getMatrixList();
-      let data = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: 1
-      };
-      this.getMatrixTableList(data);
+      this.getMatrixTableList(1, 20);
     },
     //删除矩阵
     delMatrix(row) {
@@ -772,7 +773,6 @@ export default {
           this.$api.framework.matrix.deleteMatrix(data).then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.currentPage = 1;
               this.searchMatrix();
               vnode.isShow = false;
             }
@@ -1032,11 +1032,8 @@ export default {
       } 
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     modeType: {
       handler: function(val) {
