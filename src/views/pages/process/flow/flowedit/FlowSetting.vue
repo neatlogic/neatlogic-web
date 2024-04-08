@@ -255,7 +255,7 @@ export default {
                 if (!this.$utils.isEmpty(item.component)) {
                   if (item.component.hasValue) {
                     controllerList.push(item.component);
-                  } else if (item.component.handler === 'formtab' || item.component.handler === 'formcollapse') {
+                  } else if (item.component.component && Array.isArray(item.component.component)) {
                     if (!this.$utils.isEmpty(item.component.component)) {
                       controllerList.push(...item.component.component);
                     }
