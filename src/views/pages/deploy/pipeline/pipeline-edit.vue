@@ -286,9 +286,11 @@ export default {
     },
     updateJobTemplate(jobTemplateData) {
       console.log(JSON.stringify(jobTemplateData, null, 2));
-      const index = this.currentGroup.jobTemplateList.findIndex(job => { job.id === jobTemplateData.id || job.uuid === jobTemplateData.uuid; });
-      if (index > -1) {
-        this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
+      if (!this.$utils.isEmpty(this.currentGroup)) {
+        const index = this.currentGroup.jobTemplateList.findIndex(job => { job.id === jobTemplateData.id || job.uuid === jobTemplateData.uuid; });
+        if (index > -1) {
+          this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
+        }
       }
       this.closeJobTemplateDialog();
     },

@@ -122,7 +122,8 @@
     "emptyfiltervalue": "Not within filter range",
     "notfoundsys": "The corresponding asset was not found in the system",
     "executerunnertip": "The combination tool only includes the runner or SQL execution method, and there is no need to set the execution target",
-    "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here"
+    "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here",
+    "norunnerphaserunnergrouptips": "The combination tool does not include a runner or SQL execution method, and there is no need to set an executor group"
   },
   "knowledge": {
     "notcatalog": "No text catalog",
