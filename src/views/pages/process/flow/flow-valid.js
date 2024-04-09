@@ -385,6 +385,35 @@ let valid = {
     }
     return validList;
   },
+  diagram(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let eoaConfig = nodeData.eoaConfig || {};
+    let nodeChildren = d.getNextNodes().map(d => that.stepList.find(item => item.uuid == d.getUuid()));
+    if (nodeConfig.handler === 'eoa') {
+      if (that.$utils.isEmpty(eoaConfig.eoaTemplateList)) {
+        validList.push({
+          name: $t('form.validate.required', { target: $t('page.template') }),
+          href: '#eoaSetting'
+        });
+      }
+      if (that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaSucceedToStepUuid))) {
+        that.$set(eoaConfig, 'eoaSucceedToStepUuid', '');
+        validList.push({
+          name: $t('form.validate.required', { target: $t('term.process.eoapassedforwardedtonode') }),
+          href: '#eoaSetting'
+        });
+      }
+      if (that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaFailedToStepUuid))) {
+        that.$set(eoaConfig, 'eoaFailedToStepUuid', '');
+        validList.push({
+          name: $t('form.validate.required', { target: $t('term.process.eoanopassedforwardedtonode') }),
+          href: '#eoaSetting'
+        });
+      }
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
