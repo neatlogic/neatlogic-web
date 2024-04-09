@@ -615,7 +615,9 @@ export default {
       } else if (this.config && this.config.executeConfig) {
         data = this.config; // 解决返回列表页面，数据对比不对问题
       }
-      this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
+      if (this.$refs.runnerGroup) {
+        this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
+      }
       //补充runnerGroup
       if (this.dataConfig.existRunnerOrSqlExecMode) {
         this.$set(data, 'runnerGroup', this.runnerGroup);
