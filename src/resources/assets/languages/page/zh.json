@@ -978,5 +978,6 @@
   "acolumn": "一列",
   "hiddenattr": "隐藏属性",
   "dynamicvalue": "动态值",
-  "exitedit": "退出编辑"
+  "exitedit": "退出编辑",
+  "notype": "无类型"
 }

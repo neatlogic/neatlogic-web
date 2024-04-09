@@ -56,12 +56,13 @@ export default {
     propRootCiId: { type: Number }, //根模型id，用于ITSM回显时定位正确的模型位置
     propCiEntityData: { type: Object }, //表单编辑时通过此参数传入暂存的配置项数据
     propCiEntityId: { type: Number }, //资产修改时使用此参数传入配置项id
+    propCiEntityList: { type: Array }, //创建配置项时，有可能会级联添加很多个配置项，这时候需要使用此参数用于回显，主要用在架构图添加配置项场景
     isForm: { type: Boolean, default: false }, // 解决表单兼容问题，显示所有字段
     isRequired: { type: Number }, //为true时只返回必填属性和关系，用于应用清单添加入口
     hideHeader: { type: Boolean, default: false },
-    hideButton: {type: Boolean, default: false}, //隐藏按钮
+    hideButton: { type: Boolean, default: false }, //隐藏按钮
     labelPosition: { type: String, default: 'left' },
-    saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，emit调用外部emit函数
+    saveMode: { type: String, default: 'save' } //有save和emit两种模式，save直接写入数据库，同时也会emit save方法返回ciEntityList，emit则直接emit save方法返回ciEntityList，由外部决定是否保存
   },
   data() {
     return {
@@ -84,7 +85,8 @@ export default {
   beforeMount() {},
   mounted() {
     this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
-    this.ciEntityId = (this.propCiEntityData && this.propCiEntityData.actionType == 'update' && this.propCiEntityData.id) || Math.floor(this.$route.params['id']) || this.propCiEntityId;
+    //window模式下才去url参数作为id，避免取错ID
+    this.ciEntityId = (this.propCiEntityData && this.propCiEntityData.actionType == 'update' && this.propCiEntityData.id) || (this.mode === 'window' && Math.floor(this.$route.params['id'])) || this.propCiEntityId;
     this.getCiEntityById();
   },
   beforeUpdate() {},
@@ -124,10 +126,12 @@ export default {
       this.tmpCiEntityData = null;
     },
     cancelNewCiEntity() {
-      if (this.saveMode == 'save' || this.ciEntityQueue.length > 1) {
+      if (this.ciEntityQueue.length > 1) {
         this.back();
-      } else {
-        this.$emit('cancel');
+      } else if (this.ciEntityQueue.length === 1) {
+        if (this.mode === 'dialog') {
+          this.$emit('cancel');
+        }
       }
     },
     //关系或引用属性添加一个新的配置项
@@ -258,14 +262,21 @@ export default {
         }
         //标记为已保存的新配置项，用于点击“取消”后判断是否需要删除数据
         cientity._isnew = true;
+        // 通过时间标记对象的设入顺序
+        cientity._lcd = new Date().getTime();
         this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
+        // 通过时间标记对象的设入顺序
+        cientity._lcd = new Date().getTime();
         this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
         const ciEntityList = [];
         for (let uuid in this.saveCiEntityMap) {
           ciEntityList.push(this.saveCiEntityMap[uuid]);
         }
+        //按照_lcd从小到大排序
+        ciEntityList.sort((a, b) => a._lcd - b._lcd);
+
         if (this.saveMode === 'save') {
           this.isLoading = true;
           this.$api.cmdb.cientity
@@ -273,10 +284,14 @@ export default {
             .then(res => {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.savesuccess'));
-                if (this.$route.meta.isBack) {
-                  history.go(-1);
-                } else {
-                  this.toCiEntityList();
+                if (this.mode === 'window') {
+                  if (this.$route.meta.isBack) {
+                    history.go(-1);
+                  } else {
+                    this.toCiEntityList();
+                  }
+                } else if (this.mode === 'dialog') {
+                  this.$emit('save', ciEntityList);
                 }
               }
             })
@@ -372,39 +387,45 @@ export default {
           this.ciEntityQueue = [cientity];
         });
       } else {
-        this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(async res => {
-          if (res.Return) {
-            const ci = res.Return;
-            let relEntityData = {};
-            if (ci.isVirtual == 0 && ci.isAbstract == 0) {
-              const cientity = {
-                uuid: this.$utils.setUuid(),
-                ciId: this.ciId,
-                rootCiId: this.propRootCiId,
-                ciName: ci.name,
-                ciLabel: ci.label,
-                ciIcon: ci.icon,
-                attrEntityData: {},
-                relEntityData: {},
-                globalAttrEntityData: {},
-                authData: ci.authData,
-                maxAttrEntityCount: 9999999999, //必须定义，代表不限制引用属性数量，否则会被ciEntityVo中的属性覆盖
-                maxRelEntityCount: 9999999999 //必须定义，代表不限制关系数量，否则会被ciEntityVo中的属性覆盖
-              };
-              cientity['_elementList'] = await this.getElementByCiId(this.ciId);
-              cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciId);
-              this.mergePropCiEntityData(cientity);
+        if (!this.propCiEntityList || this.propCiEntityList.length === 0) {
+          this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(async res => {
+            if (res.Return) {
+              const ci = res.Return;
+              if (ci.isVirtual == 0 && ci.isAbstract == 0) {
+                const cientity = {
+                  uuid: this.$utils.setUuid(),
+                  ciId: this.ciId,
+                  rootCiId: this.propRootCiId,
+                  ciName: ci.name,
+                  ciLabel: ci.label,
+                  ciIcon: ci.icon,
+                  attrEntityData: {},
+                  relEntityData: {},
+                  globalAttrEntityData: {},
+                  authData: ci.authData,
+                  maxAttrEntityCount: 9999999999, //必须定义，代表不限制引用属性数量，否则会被ciEntityVo中的属性覆盖
+                  maxRelEntityCount: 9999999999 //必须定义，代表不限制关系数量，否则会被ciEntityVo中的属性覆盖
+                };
+                cientity['_elementList'] = await this.getElementByCiId(this.ciId);
+                cientity['_uniqueAttrList'] = await this.getCiUniqueByCiId(this.ciId);
+                this.mergePropCiEntityData(cientity);
 
-              this.ciEntityQueue = [cientity];
-            } else {
-              if (ci.isVirtual == 1) {
-                this.error = this.$t('message.cmdb.virtualmodel');
-              } else if (ci.isAbstract == 1) {
-                this.error = this.$t('message.cmdb.abstractmodel');
+                this.ciEntityQueue = [cientity];
+              } else {
+                if (ci.isVirtual == 1) {
+                  this.error = this.$t('message.cmdb.virtualmodel');
+                } else if (ci.isAbstract == 1) {
+                  this.error = this.$t('message.cmdb.abstractmodel');
+                }
               }
             }
-          }
-        });
+          });
+        } else {
+          this.ciEntityQueue = [this.propCiEntityList[this.propCiEntityList.length - 1]];
+          this.propCiEntityList.forEach(cientity => {
+            this.saveCiEntityMap[cientity.uuid] = cientity;
+          });
+        }
       }
     },
     setAttrData(attr, value) {
@@ -534,8 +555,8 @@ export default {
         this.ciId = val;
         this.getCiEntityById();
       }
-    },
-    ciEntityQueue: {
+    }
+    /*ciEntityQueue: {
       handler: function(val) {
         if (this.ciEntityQueue.length === 1) {
           const cientity = this.ciEntityQueue[0];
@@ -543,8 +564,8 @@ export default {
         }
       },
       deep: true
-    },
-    saveCiEntityMap: {
+    }*/
+    /*saveCiEntityMap: {
       handler: function(val) {
         const ciEntityList = [];
         for (let uuid in this.saveCiEntityMap) {
@@ -553,7 +574,7 @@ export default {
         this.$emit('change', ciEntityList);
       },
       deep: true
-    }
+    }*/
   },
   beforeRouteEnter(to, from, next) {
     if (from && from.name) {

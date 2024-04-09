@@ -976,5 +976,6 @@
   "acolumn": "One column",
   "hiddenattr": "Hide Properties",
   "dynamicvalue": "Dynamic value",
-  "exitedit": "Exit Editing"
+  "exitedit": "Exit Editing",
+  "notype": "Typeless"
 }

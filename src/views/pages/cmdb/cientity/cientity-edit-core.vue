@@ -195,11 +195,11 @@
                 </div>
               </Panel>
             </Collapse>
-          </div>
+          </div>  
         </div>
         <div style="text-align: right">
           <Button
-            v-if="ciEntityQueue && ciEntityQueue.length > 1"
+            v-if="saveMode === 'save' && ((ciEntityQueue && ciEntityQueue.length > 1) || mode === 'dialog')"
             style="margin-right: 10px"
             type="default"
             @click="cancel()"
