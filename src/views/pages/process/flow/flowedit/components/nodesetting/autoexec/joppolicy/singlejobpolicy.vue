@@ -173,7 +173,7 @@
         class="item-list pb-sm"
       >
         <Col span="4">
-          <div class="text-title require-label">{{ '执行器组' }}</div>
+          <div class="text-title require-label">{{ $t('term.deploy.actuatorgroup') }}</div>
         </Col>
         <Col span="20">
           <TsRow :gutter="8">
