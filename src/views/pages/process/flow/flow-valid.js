@@ -388,27 +388,24 @@ let valid = {
   diagram(nodeConfig, d, that) {
     let validList = [];
     let nodeData = nodeConfig.stepConfig || {};
-    let eoaConfig = nodeData.eoaConfig || {};
-    let nodeChildren = d.getNextNodes().map(d => that.stepList.find(item => item.uuid == d.getUuid()));
-    if (nodeConfig.handler === 'eoa') {
-      if (that.$utils.isEmpty(eoaConfig.eoaTemplateList)) {
+    let diagramConfig = nodeData.diagramConfig || {};
+    if (nodeConfig.handler === 'diagram') {
+      if (that.$utils.isEmpty(diagramConfig.catalog)) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('page.template') }),
-          href: '#eoaSetting'
+          name: $t('form.validate.required', { target: '架构目录' }),
+          href: '#diagramSetting'
         });
       }
-      if (that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaSucceedToStepUuid))) {
-        that.$set(eoaConfig, 'eoaSucceedToStepUuid', '');
+      if (that.$utils.isEmpty(diagramConfig.associatedNodes)) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.eoapassedforwardedtonode') }),
-          href: '#eoaSetting'
+          name: $t('form.validate.required', { target: '架构图关联节点' }),
+          href: '#diagramSetting'
         });
       }
-      if (that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaFailedToStepUuid))) {
-        that.$set(eoaConfig, 'eoaFailedToStepUuid', '');
+      if (that.$utils.isEmpty(diagramConfig.statusList)) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.eoanopassedforwardedtonode') }),
-          href: '#eoaSetting'
+          name: $t('form.validate.required', { target: '架构图待审批状态' }),
+          href: '#diagramSetting'
         });
       }
     }
