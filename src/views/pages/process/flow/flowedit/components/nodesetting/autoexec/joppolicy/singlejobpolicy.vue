@@ -167,6 +167,68 @@
         </TsRow>
       </div>
     </div>
+    <div>
+      <TsRow
+        :gutter="8"
+        class="item-list pb-sm"
+      >
+        <Col span="4">
+          <div class="text-title require-label">{{ '执行器组' }}</div>
+        </Col>
+        <Col span="20">
+          <TsRow :gutter="8">
+            <template v-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
+              <Col span="10">
+                <TsFormSelect
+                  ref="runnerGroup"
+                  v-model="autoexecConfig.runnerGroup.mappingMode"
+                  :dataList="executeMappingModeList('runnerGroup')"
+                  :validateList="validateList"
+                  :firstSelect="false"
+                  transfer
+                  border="border"
+                  @on-change="changeMappingMode(autoexecConfig.runnerGroup)"
+                ></TsFormSelect>
+              </Col>
+            </template>
+            <Col span="14">
+              <template v-if="autoexecConfig.runnerGroup.mappingMode==='constant'">
+                <TsFormSelect
+                  ref="runnerGroup"
+                  v-model="autoexecConfig.runnerGroup.value"
+                  dynamicUrl="/api/rest/runnergroup/search"
+                  rootName="tbodyList"
+                  :dealDataByUrl="$utils.getRunnerGroupList"
+                  width="100%"
+                  :validateList="validateList"
+                  :firstSelect="false"
+                  transfer
+                  readonly
+                  border="border"
+                ></TsFormSelect> 
+              </template>
+              <template v-else-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
+                <TsFormSelect
+                  ref="runnerGroup"
+                  v-model="autoexecConfig.runnerGroup.value"
+                  :dataList="getFormComponent('formCommonComponent')"
+                  textName="label"
+                  valueName="uuid"
+                  :validateList="validateList"
+                  :firstSelect="false"
+                  transfer
+                  border="border"
+                ></TsFormSelect> 
+              </template>
+              <template v-else>
+                <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
+                <span>{{ getruntimeParamListText(autoexecConfig.runnerGroup.value) }}</span>
+              </template>
+            </Col>
+          </TsRow>
+        </Col>
+      </TsRow>
+    </div>
     <div v-if="autoexecConfig.executeParamList && autoexecConfig.executeParamList.length > 0">
       <div class="title pb-sm">
         <span>{{ $t('term.process.targetparamsvalue') }}</span>
@@ -615,6 +677,15 @@ export default {
   props: {},
   data() {
     return {
+      runnerGroupConfig: {
+        dynamicUrl: '/api/rest/runnergroup/search',
+        rootName: 'tbodyList',
+        dealDataByUrl: this.$utils.getRunnerGroupList,
+        search: true,
+        transfer: true,
+        border: 'border',
+        width: '100%'
+      },
       expressionList: [
         {
           value: 'like',

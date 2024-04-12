@@ -5,7 +5,7 @@
       <Col span="24">
         <TsFormSelect
           ref="item"
-          :value="value || -1"
+          :value="value"
           v-bind="getSetting"
           :readonly="readonly"
           :disabled="disabled"
