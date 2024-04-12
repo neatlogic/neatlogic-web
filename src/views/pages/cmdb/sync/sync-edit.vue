@@ -597,7 +597,7 @@ export default {
     getAttrFieldList(fieldList, finalFieldList, parentList, onlyParentKey) {
       fieldList.forEach(f => {
         if (!f.subset && !onlyParentKey) {
-          if (!parentList || parentList.length == 0) {
+          if (!parentList || parentList.length === 0) {
             finalFieldList.push({ text: f.name + '·' + f.desc + '(' + f.type + ')', value: f.name });
           } else {
             let ptext = '';
@@ -656,12 +656,14 @@ export default {
     attrFieldList() {
       return attr => {
         const fieldList = [];
-        const collection = this.collectionList.find(c => c.name == this.currentCollection);
+        const collection = this.collectionList.find(c => c.name === this.currentCollection);
         if (collection && collection.fields) {
           if (!attr.targetCiId) {
             this.getAttrFieldList(collection.fields, fieldList, null, false);
           } else {
+            //引用属性兼容subset型和普通型字段
             this.getRelFieldList(collection.fields, fieldList, null);
+            this.getAttrFieldList(collection.fields, fieldList, null, false);
           }
         }
         return fieldList;

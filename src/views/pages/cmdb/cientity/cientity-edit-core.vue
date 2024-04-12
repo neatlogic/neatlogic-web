@@ -195,11 +195,11 @@
                 </div>
               </Panel>
             </Collapse>
-          </div>
+          </div>  
         </div>
         <div style="text-align: right">
           <Button
-            v-if="ciEntityQueue && ciEntityQueue.length > 1"
+            v-if="saveMode === 'save' && ((ciEntityQueue && ciEntityQueue.length > 1) || mode === 'dialog')"
             style="margin-right: 10px"
             type="default"
             @click="cancel()"
@@ -324,6 +324,8 @@ export default {
     },
     disabledFn(elementId) {
       if (this.ciEntityData.editableAttrRelIdList && this.ciEntityData.editableAttrRelIdList.length > 0 && !this.ciEntityData.editableAttrRelIdList.includes(elementId)) {
+        return true;
+      } else if (this.ciEntityData.disableAttrRelIdList && this.ciEntityData.disableAttrRelIdList.length > 0 && this.ciEntityData.disableAttrRelIdList.includes(elementId)) {
         return true;
       }
       return false;

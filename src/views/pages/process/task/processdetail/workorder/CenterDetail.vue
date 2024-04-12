@@ -1329,7 +1329,7 @@ export default {
       }
     },
     clickTabValue(name) {
-      if (name === 'report') {
+      if (name === 'report' && this.tabValue != 'report') {
         if (this.hasForm) {
           //重现渲染表单组件，避免表单宽度为0
           this.isShowForm = false;

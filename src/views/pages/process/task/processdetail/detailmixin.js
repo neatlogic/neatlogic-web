@@ -802,13 +802,10 @@ export default {
       this.retreatId = item.id;
     },
     validItemClick(selector, tabValue) {
-      this.$refs.TaskCenterDetail.tabValue = tabValue;
-      if (selector && selector == '#form') {
-        this.$refs.TaskCenterDetail.isShowForm = false;
-        this.$nextTick(() => {
-          this.$refs.TaskCenterDetail.isShowForm = true;
-        });
+      if (tabValue === 'report') {
+        this.$refs.TaskCenterDetail.clickTabValue(tabValue);
       }
+      this.$refs.TaskCenterDetail.tabValue = tabValue;
       if (this.$el.querySelector(selector)) {
         // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); 
         document.querySelector(selector).scrollIntoView();

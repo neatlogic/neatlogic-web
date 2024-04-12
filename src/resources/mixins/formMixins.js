@@ -130,12 +130,19 @@ export default {
               isValid = false;
             }
           } else {
-            value = [value];
+            if (!this.$utils.isEmpty(value)) {
+              // 处理空对象，必填校验红色边框不显示问题
+              value = [value];
+            } else {
+              value = [];
+            }
+            if (value.length == 0 && valid.required) {
+              this.$set(this, 'validMesage', valid.message);
+              isValid = false;
+            }
           }
-
           for (let cindex = 0; cindex < value.length; cindex++) {
             let v = value[cindex];
-
             if (isForm && valid.isSearch) {
               //isSearch: TsForm校验 判断searchUrl 校验
               if (valid.isValid === false) {
