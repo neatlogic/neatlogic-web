@@ -86,7 +86,8 @@ export default {
         exportParamList: [],
         scenarioList: [], // 场景列表
         scenarioParamList: [], // 场景参数列表
-        formAttributeList: []
+        formAttributeList: [],
+        runnerGroup: {} //执行器组
       },
       formConfig: {
         autoexecCombopId: {
@@ -173,6 +174,12 @@ export default {
             Object.keys(this.config).forEach(key => {
               this.$set(this.autoexecConfig, key, this.config[key]);
             });
+            //runnerGroup
+            if (this.$utils.isEmpty(this.autoexecConfig.runnerGroup)) {
+              Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
+                this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
+              });
+            }
             //更新组合工具参数列表
             Object.keys(this.autoexecConfig).forEach(key => {
               if (this.includesKeyList.includes(key)) {
@@ -240,6 +247,7 @@ export default {
           let exportParamList = res.Return.exportParamList || [];
           let scenarioList = res.Return.scenarioList || [];
           let scenarioParamList = res.Return.scenarioParamList || [];
+          let runnerGroup = res.Return.runnerGroup || {};
           runtimeParamList.forEach(item => {
             if (item.type == 'phase') {
               this.$set(item, 'config', {});
@@ -251,6 +259,7 @@ export default {
           this.autoexecConfig.exportParamList = exportParamList;
           this.autoexecConfig.scenarioList = scenarioList;
           this.autoexecConfig.scenarioParamList = scenarioParamList;
+          this.autoexecConfig.runnerGroup = runnerGroup;
         }
       }).finally(() => {
         this.loadingShow = false;

@@ -952,7 +952,8 @@ export default {
           icon: 'tsfont-close-o',
           iconColor: '#FF625A',
           msg: this.$t('message.process.complete', { target: this.$t('page.form') }),
-          type: 'error'
+          type: 'error',
+          tabValue: 'report'
         });
       }
       this.rightsettingVue = this.rightsettingVue || getParent(this);
@@ -1329,12 +1330,17 @@ export default {
       }
     },
     clickTabValue(name) {
-      if (name === 'report' && this.tabValue != 'report') {
+      if (name === 'report') {
         if (this.hasForm) {
-          //重现渲染表单组件，避免表单宽度为0
+          //重现渲染表单组件（重新计算），避免表单宽度为0
           this.isShowForm = false;
           this.$nextTick(() => {
             this.isShowForm = true;
+            this.$nextTick(async() => {
+              if (this.$refs.formSheet) {
+                await this.formValid(this.processTaskConfig);
+              }
+            });
           });
         }
       }
@@ -1531,9 +1537,9 @@ function getParent(node) {
 }
 </style>
 <style lang="less" scoped>
-/deep/.ivu-tabs-bar {
-  margin-bottom: 0px !important;
-}
+// /deep/.ivu-tabs-bar {
+//   margin-bottom: 0px !important;
+// }
 /deep/ .subTask-label {
   font-size: 12px;
   margin-left: 4px;
