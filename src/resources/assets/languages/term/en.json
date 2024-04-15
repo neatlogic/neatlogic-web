@@ -2688,6 +2688,7 @@
     "changestatusconfirm": "Are you sure to change current version to {target}?",
     "editingversion": "Editing version",
     "createuser": "Creator",
-    "cientityinfo": "Configuration Item Information"
+    "cientityinfo": "Configuration Item Information",
+    "changedata": "Change data"
   }
 }
