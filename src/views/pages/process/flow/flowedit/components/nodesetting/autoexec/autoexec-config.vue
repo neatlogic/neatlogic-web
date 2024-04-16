@@ -237,8 +237,8 @@ export default {
             Object.keys(this.config).forEach(key => {
               this.$set(this.autoexecConfig, key, this.config[key]);
             });
-            //runnerGroup
-            if (this.$utils.isEmpty(this.autoexecConfig.runnerGroup)) {
+            //runnerGroup如果是常量说明是从组合工具带过来只读，直接以组合工具为主即可
+            if (this.$utils.isEmpty(this.autoexecConfig.runnerGroup) || this.autoexecCombop.runnerGroup.mappingMode === 'constant') {
               Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
                 this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
               });
