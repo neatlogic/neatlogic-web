@@ -135,7 +135,7 @@
         </TabPane>
         <TabPane
           v-if="fixedPageTab.diagram && $slots.diagram"
-          :label="render => renderTabPaneLabel(render, 'diagram', '架构图')"
+          :label="render => renderTabPaneLabel(render, 'diagram', '架构设计')"
           name="diagram"
           class="tab-content"
           tab="tab1"

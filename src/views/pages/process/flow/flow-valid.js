@@ -390,19 +390,25 @@ let valid = {
     let nodeData = nodeConfig.stepConfig || {};
     let diagramConfig = nodeData.diagramConfig || {};
     if (nodeConfig.handler === 'diagram') {
-      if (that.$utils.isEmpty(diagramConfig.catalog)) {
+      if (that.$utils.isEmpty(diagramConfig.catalogId)) {
         validList.push({
           name: $t('form.validate.required', { target: '架构目录' }),
           href: '#diagramSetting'
         });
       }
-      if (that.$utils.isEmpty(diagramConfig.associatedNodes)) {
+      if (that.$utils.isEmpty(diagramConfig.ciEntityIdMappingFormAttributeUuid)) {
         validList.push({
           name: $t('form.validate.required', { target: '架构图关联节点' }),
           href: '#diagramSetting'
         });
       }
-      if (that.$utils.isEmpty(diagramConfig.statusList)) {
+      if (that.$utils.isEmpty(diagramConfig.requestMappingFormAttributeUuid)) {
+        validList.push({
+          name: $t('form.validate.required', { target: '架构图关联需求节点' }),
+          href: '#diagramSetting'
+        });
+      }
+      if (that.$utils.isEmpty(diagramConfig.checkingStatusList)) {
         validList.push({
           name: $t('form.validate.required', { target: '架构图待审批状态' }),
           href: '#diagramSetting'
