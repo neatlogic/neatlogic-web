@@ -237,12 +237,12 @@ export default {
             Object.keys(this.config).forEach(key => {
               this.$set(this.autoexecConfig, key, this.config[key]);
             });
-            //runnerGroup如果是常量说明是从组合工具带过来只读，直接以组合工具为主即可
-            if (this.$utils.isEmpty(this.autoexecConfig.runnerGroup) || this.autoexecCombop.runnerGroup.mappingMode === 'constant') {
-              Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
-                this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
-              });
-            }
+            
+            //执行器组只需要只读，从组合工具带出即可
+            Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
+              this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
+            });
+            
             //更新组合工具参数列表
             Object.keys(this.autoexecConfig).forEach(key => {
               if (this.includesKeyList.includes(key)) {
