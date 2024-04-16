@@ -1,6 +1,6 @@
 
 <template>
-  <div v-if="isOrderRight" class="process-right pt-nm">
+  <div class="process-right pt-nm">
     <Loading :loadingShow="rightLoading" type="fix"></Loading>
     <div v-if="processTaskConfig.statusVo" class="task-status">
       <CommonStatus
