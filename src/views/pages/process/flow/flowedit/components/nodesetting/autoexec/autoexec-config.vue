@@ -19,6 +19,68 @@
           transfer
         ></TsFormSelect>
       </TsFormItem>
+      <div>
+        <TsRow
+          :gutter="8"
+          class="item-list pb-sm"
+        >
+          <Col span="4">
+            <div class="text-title require-label">{{ $t('term.deploy.actuatorgroup') }}</div>
+          </Col>
+          <Col span="20">
+            <TsRow :gutter="8">
+              <template v-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
+                <Col span="10">
+                  <TsFormSelect
+                    ref="runnerGroup"
+                    v-model="autoexecConfig.runnerGroup.mappingMode"
+                    :dataList="executeMappingModeList('runnerGroup')"
+                    :validateList="validateList"
+                    :firstSelect="false"
+                    transfer
+                    border="border"
+                    @on-change="changeMappingMode(autoexecConfig.runnerGroup)"
+                  ></TsFormSelect>
+                </Col>
+              </template>
+              <Col span="14" style="padding:0">
+                <template v-if="autoexecConfig.runnerGroup.mappingMode==='constant'">
+                  <TsFormSelect
+                    ref="runnerGroup"
+                    v-model="autoexecConfig.runnerGroup.value"
+                    dynamicUrl="/api/rest/runnergroup/search"
+                    rootName="tbodyList"
+                    :dealDataByUrl="$utils.getRunnerGroupList"
+                    width="100%"
+                    :validateList="validateList"
+                    :firstSelect="false"
+                    transfer
+                    readonly
+                    border="border"
+                  ></TsFormSelect> 
+                </template>
+                <template v-else-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
+                  <TsFormSelect
+                    ref="runnerGroup"
+                    v-model="autoexecConfig.runnerGroup.value"
+                    :dataList="getFormComponent('formCommonComponent')"
+                    textName="label"
+                    valueName="uuid"
+                    :validateList="validateList"
+                    :firstSelect="false"
+                    transfer
+                    border="border"
+                  ></TsFormSelect> 
+                </template>
+                <template v-else>
+                  <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
+                  <span>{{ getruntimeParamListText(autoexecConfig.runnerGroup.value) }}</span>
+                </template>
+              </Col>
+            </TsRow>
+          </Col>
+        </TsRow>
+      </div>
       <TsFormItem :label="$t('term.process.jobpolicy')" labelPosition="left">
         <RadioGroup v-model="autoexecConfig.createJobPolicy" @on-change="changeJobPolicy">
           <Radio v-for="policy in jobPolicyTypeList" :key="policy.value" :label="policy.value">
@@ -76,6 +138,7 @@ export default {
   data() {
     return {
       loadingShow: true,
+      validateList: ['required'],
       autoexecConfig: {
         autoexecCombopId: null,
         jobName: '',
@@ -303,6 +366,14 @@ export default {
     },
     save() {
       return this.autoexecConfig;
+    },
+    getruntimeParamListText(value) {
+      let findItem = this.autoexecConfig.runtimeParamList.find(item => item.key === value);
+      if (findItem) {
+        return findItem.name;
+      } else {
+        return '';
+      }
     }
   },
   filter: {},
