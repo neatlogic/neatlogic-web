@@ -196,7 +196,19 @@ export default {
                 list.push(item);
               }
             } if (Array.isArray(data.changePriority)) {
-              if (data.changePriority.join('/').includes(item.name)) {
+              let changePriority = [];
+              data.changePriority.forEach(c => {
+                if (typeof c === 'string') {
+                  changePriority.push(c);
+                } else if (typeof c === 'object' && !this.$utils.isEmpty(c.value)) {
+                  changePriority.push(c.value);
+                }
+              });
+              if (changePriority.includes(item.name)) {
+                list.push(item);
+              }
+            } else if (typeof data.changePriority === 'object') {
+              if (!this.$utils.isEmpty(data.changePriority.value) && data.changePriority.value.includes(item.name)) {
                 list.push(item);
               }
             }
