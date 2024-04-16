@@ -7,63 +7,72 @@
     <div v-if="formUuid == ''">
       <div class="text-tip">
         {{ $t('term.process.flowrulttip') }}
-        <a href="javascript:void(0);" @click="tabSetting">{{ $t('term.process.flowsetting') }}</a>{{ $t('page.relevance') }}
+        <a href="javascript:void(0);" @click="tabSetting">{{ $t('term.process.flowsetting') }}</a>
+        {{ $t('page.relevance') }}
       </div>
     </div>
     <div v-if="moveonConfigList && moveonConfigList.length > 0">
-      <div v-for="(item,index) in moveonConfigList" :key="index" class="rule-list">
+      <div v-for="(item, index) in moveonConfigList" :key="index" class="rule-list">
         <div class="list">
           <div class="top">
             <div class="text-grey overflow">
-              <span v-html="item.type=='negative'? $t('term.process.nottransfer') : $t('term.process.transferto')"></span>
-              “
-              <span :title="getTargetStepList(item.targetStepList)">{{ getTargetStepList(item.targetStepList) }}</span>”
+              <span v-html="item.type == 'negative' ? $t('term.process.nottransfer') : $t('term.process.transferto')"></span>
+              <span class="ml-xs text-default" :title="getTargetStepList(item.targetStepList)">
+                <b>{{ getTargetStepList(item.targetStepList) }}</b>
+              </span>
             </div>
             <div class="edit-icon">
-              <i class="tsfont-setting click-tag text-action" @click="editRule(item,index)"></i>
+              <i class="tsfont-setting click-tag text-action" @click="editRule(item, index)"></i>
               <span class="tsfont-close click-tag text-action del-inrule" @click="delRule(index)"></span>
             </div>
           </div>
-          <div v-if="item.conditionGroupList.length >0" class="rule-content edit-setting">
-            <div v-for="(groupItem,groupIndex) in item.conditionGroupList" :key="groupIndex" class="group-list">
-              <div v-for="(conditionItem,conditionIndex) in groupItem.conditionList" :key="conditionIndex" class="condition-list">
-                <Row :gutter="8">
-                  <Col span="8">
-                    <span :title="conditionShow(conditionItem.name)" class="condition-text border-color overflow">{{ conditionShow(conditionItem.name) ||$t('term.process.empty') }}</span>
-                  </Col>
-                  <Col :span="conditionItem.isShowConditionValue == 1?'7':'16'">
-                    <span :title="expressionShow(conditionItem.name,conditionItem.expression)" class="condition-text border-color overflow">{{ expressionShow(conditionItem.name,conditionItem.expression) || $t('term.process.empty') }}</span>
-                  </Col>
-                  <Col v-if="conditionItem.isShowConditionValue == 1" span="9">
-                    <div v-if="ruleConditionConfig[conditionItem.name]">
-                      <div
-                        :is="handlerType(conditionItem.name)"
-                        v-model="conditionItem.valueList"
-                        :config="getselectConfig(conditionItem.name)"
-                        :readonly="true"
-                      ></div>
-                    </div>
-                  </Col>
-                </Row>
+          <div v-if="item.conditionGroupList.length > 0" class="rule-content edit-setting">
+            <div v-for="(groupItem, groupIndex) in item.conditionGroupList" :key="groupIndex" class="group-list">
+              <div v-for="(conditionItem, conditionIndex) in groupItem.conditionList" :key="conditionIndex">
+                <div class="bg-grey padding-xs radius-sm">
+                  <TsRow v-if="conditionItem.type !== 'custom'" :gutter="8">
+                    <Col :span="conditionItem.isShowConditionValue == 1 ? 9 : 18">
+                      <span :title="conditionShow(conditionItem.name)" class="overflow" style="font-style: italic;">
+                        {{ conditionShow(conditionItem.name) || $t('term.process.empty') }}
+                      </span>
+                    </Col>
+                    <Col :span="6">
+                      <span :title="expressionShow(conditionItem.name, conditionItem.expression)" class="text-grey overflow">{{ expressionShow(conditionItem.name, conditionItem.expression) || $t('term.process.empty') }}</span>
+                    </Col>
+                    <Col v-if="conditionItem.isShowConditionValue == 1" span="9">
+                      <div v-if="ruleConditionConfig[conditionItem.name]">
+                        <div
+                          :is="handlerType(conditionItem.name)"
+                          v-model="conditionItem.valueList"
+                          :config="getselectConfig(conditionItem.name)"
+                          :readonly="true"
+                        ></div>
+                      </div>
+                    </Col>
+                  </TsRow>
+                  <TsRow v-else>
+                    <Col span="24">
+                      <span class="overflow">{{ conditionItem.expression }}</span>
+                    </Col>
+                  </TsRow>
+                </div>
                 <div>
                   <TsRow v-show="conditionIndex < groupItem.conditionList.length - 1">
-                    <Col span="12">
-                    </Col>
+                    <Col span="12"></Col>
                     <Col span="10">
                       <div v-if="groupItem.conditionRelList[conditionIndex]" class="condition-joinType text-primary">
-                        {{ getConditionJoinType(groupItem.conditionRelList ,conditionIndex) }}
+                        {{ getConditionJoinType(groupItem.conditionRelList, conditionIndex) }}
                       </div>
                     </Col>
                   </TsRow>
                 </div>
               </div>
-              <div>
+              <div class="mt-xs mb-xs">
                 <TsRow v-show="groupIndex < item.conditionGroupList.length - 1">
-                  <Col span="2">
-                  </Col>
+                  <Col span="2"></Col>
                   <Col span="20">
                     <div v-if="item.conditionGroupRelList[groupIndex]" class="condition-joinType text-primary">
-                      {{ getConditionJoinType(item.conditionGroupRelList,groupIndex) }}
+                      {{ getConditionJoinType(item.conditionGroupRelList, groupIndex) }}
                     </div>
                   </Col>
                 </TsRow>
@@ -79,7 +88,7 @@
       width="692px"
       height="400px"
       @on-ok="saveRule"
-      @on-close="ruleModel= false"
+      @on-close="ruleModel = false"
     >
       <template v-slot:header>
         <div>{{ $t('term.process.flowrult') }}</div>
@@ -95,11 +104,22 @@
             ></TsForm>
           </div>
           <div v-if="isShowRule" class="edit-condition">
-            <div class="text-href add-btn tsfont-plus" @click="addGroup()">{{ $t('page.combinedcondition') }}</div>
-            <div v-for="(item,groupIndex) in editRuleConfig.conditionGroupList" :key="groupIndex" class="group-border">
+            <div class="text-href add-btn tsfont-plus">
+              <Dropdown placement="bottom-start" :transfer="true">
+                <a href="javascript:void(0)">
+                  {{ $t('page.combinedcondition') }}
+                  <Icon type="ios-arrow-down"></Icon>
+                </a>
+                <DropdownMenu slot="list">
+                  <DropdownItem @click.native="addGroup()">普通</DropdownItem>
+                  <DropdownItem @click.native="addGroup('custom')">自定义</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <div v-for="(item, groupIndex) in editRuleConfig.conditionGroupList" :key="groupIndex" class="group-border">
               <div class="group-content bg-op radius-md">
-                <div v-for="(conItem,conIdex) in item.conditionList" :key="conIdex" class="condition-content">
-                  <TsRow :gutter="8">
+                <div v-for="(conItem, conIdex) in item.conditionList" :key="conIdex" class="condition-content">
+                  <TsRow v-if="conItem.type !== 'custom'" :gutter="8">
                     <Col span="6">
                       <div>
                         <TsFormSelect
@@ -113,7 +133,7 @@
                         ></TsFormSelect>
                       </div>
                     </Col>
-                    <Col :span="conItem.isShowConditionValue && conItem.isShowConditionValue == 1?'6':'16'">
+                    <Col :span="conItem.isShowConditionValue && conItem.isShowConditionValue == 1 ? '6' : '16'">
                       <div class>
                         <TsFormSelect
                           v-model="conItem.expression"
@@ -130,15 +150,43 @@
                     </Col>
                     <Col span="2">
                       <div class="btn-group text-tip">
-                        <span class="tsfont-plus" style="padding-right:8px;" @click="addCondition(item)"></span>
-                        <span v-if="item.conditionList.length>1" class="tsfont-minus" @click="delCondition(item,conIdex)"></span>
+                        <span style="padding-right: 8px">
+                          <Dropdown placement="bottom-end" :transfer="true">
+                            <span class="tsfont-plus"></span>
+                            <DropdownMenu slot="list">
+                              <DropdownItem @click.native="addCondition(item)">普通</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item, 'custom')">自定义</DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </span>
+                        <span v-if="item.conditionList.length > 1" class="tsfont-minus" @click="delCondition(item, conIdex)"></span>
                       </div>
                     </Col>
                   </TsRow>
-                  <div v-if="item.conditionList.length-1 >conIdex">
+                  <TsRow v-else :gutter="8">
+                    <Col span="22">
+                      <div>
+                        <TsFormInput v-model="conItem.expression" border="border" placeholder="请填写ES5表达式，返回true或false，例如data['attr'] == 1"></TsFormInput>
+                      </div>
+                    </Col>
+                    <Col span="2">
+                      <div class="btn-group text-tip">
+                        <span style="padding-right: 8px">
+                          <Dropdown placement="bottom-end" :transfer="true">
+                            <span class="tsfont-plus"></span>
+                            <DropdownMenu slot="list">
+                              <DropdownItem @click.native="addCondition(item)">普通</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item, 'custom')">自定义</DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </span>
+                        <span v-if="item.conditionList.length > 1" class="tsfont-minus" @click="delCondition(item, conIdex)"></span>
+                      </div>
+                    </Col>
+                  </TsRow>
+                  <div v-if="item.conditionList.length - 1 > conIdex">
                     <TsRow>
-                      <Col span="12">
-                      </Col>
+                      <Col span="12"></Col>
                       <Col span="10">
                         <div class="condition-joinType text-href">
                           <TsFormSelect
@@ -155,10 +203,9 @@
                   </div>
                 </div>
               </div>
-              <div v-if="editRuleConfig.conditionGroupList.length-1 >groupIndex">
+              <div v-if="editRuleConfig.conditionGroupList.length - 1 > groupIndex">
                 <TsRow>
-                  <Col span="1">
-                  </Col>
+                  <Col span="1"></Col>
                   <Col span="20">
                     <div class="condition-joinType text-href">
                       <TsFormSelect
@@ -173,7 +220,7 @@
                   </Col>
                 </TsRow>
               </div>
-              <div v-if="editRuleConfig.conditionGroupList.length>1" class="delGroup" @click="delGroup(groupIndex)">
+              <div v-if="editRuleConfig.conditionGroupList.length > 1" class="delGroup" @click="delGroup(groupIndex)">
                 <i class="tsfont-close-s text-tip"></i>
               </div>
             </div>
@@ -183,7 +230,6 @@
     </TsDialog>
   </div>
 </template>
-
 <script>
 //条件
 import Items from '@/resources/components/FormItems';
@@ -193,6 +239,7 @@ export default {
   components: {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     ...Items
   },
   mixins: [nodemixin],
@@ -200,7 +247,7 @@ export default {
   data() {
     let _this = this;
     return {
-      configData: {stepConfig: {}}, //当前节点数据
+      configData: { stepConfig: {} }, //当前节点数据
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
       newChildrenNode: _this.nodeChildren || [], //条件节点
       ruleFormData: [
@@ -208,7 +255,7 @@ export default {
           type: 'select',
           name: 'targetStepList',
           value: '',
-          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')}),
+          placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.node') }),
           width: 320,
           maxlength: 30,
           label: this.$t('term.process.transferto'),
@@ -218,7 +265,7 @@ export default {
           validateList: [
             {
               name: 'required',
-              message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.node')})
+              message: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.node') })
             },
             {
               name: 'name-special'
@@ -309,7 +356,7 @@ export default {
   beforeMount() {},
 
   mounted() {
-    this.keyList = ['moveonConfigList'];//stepConfig 需要包含的数据
+    this.keyList = ['moveonConfigList']; //stepConfig 需要包含的数据
     this.getNodeSetting();
   },
 
@@ -328,9 +375,9 @@ export default {
   methods: {
     getNodeSetting() {
       //初始化节点数据
-      let config = this.configData = this.$utils.deepClone(this.nodeConfig);
+      let config = (this.configData = this.$utils.deepClone(this.nodeConfig));
       this.getNewConditionList(this.formUuid);
-      this.initNodeData(config, this.keyList);//初始化数据
+      this.initNodeData(config, this.keyList); //初始化数据
     },
     getTargetStepList(arr) {
       //条件子节点
@@ -378,23 +425,21 @@ export default {
     },
     editRule(item, index) {
       //编辑规则
-      let _this = this;
       let obj = JSON.parse(JSON.stringify(item));
       let nodeUuidlist = obj.targetStepList;
       let type = obj.type;
-      _this.editRuleConfig = obj;
-      _this.getChildrenNode(nodeUuidlist, type);
-      _this.ruleIndex = index;
-      _this.ruleModel = true;
+      this.editRuleConfig = obj;
+      this.getChildrenNode(nodeUuidlist, type);
+      this.ruleIndex = index;
+      this.ruleModel = true;
     },
-    addGroup() {
+    addGroup(type) {
       //条件节点规则：添加组合
-      let _this = this;
-      let conditionGroupRelList = _this.editRuleConfig.conditionGroupRelList || [];
-      let GroupList = _this.editRuleConfig.conditionGroupList;
+      //let conditionGroupRelList = this.editRuleConfig.conditionGroupRelList || [];
+      let GroupList = this.editRuleConfig.conditionGroupList;
       let endRelUuid = GroupList[GroupList.length - 1].uuid;
-      let groupUuid = _this.$utils.setUuid(); //获取组的uuid
-      let uuid = _this.$utils.setUuid(); //获取条件uuid
+      let groupUuid = this.$utils.setUuid(); //获取组的uuid
+      let uuid = this.$utils.setUuid(); //获取条件uuid
       let groupRel = {
         from: endRelUuid,
         joinType: 'and',
@@ -406,10 +451,10 @@ export default {
           {
             uuid: uuid,
             name: '',
-            type: '',
+            type: type || '',
             expression: '',
             valueList: '',
-            isShowConditionValue: 1
+            isShowConditionValue: type === 'custom' ? 0 : 1
           }
         ],
         conditionRelList: []
@@ -419,13 +464,18 @@ export default {
     },
     delGroup(index) {
       //删除组合
+      const uuid = this.editRuleConfig.conditionGroupList[index].uuid;
+      debugger;
       this.$delete(this.editRuleConfig.conditionGroupList, index);
-      this.$delete(this.editRuleConfig.conditionGroupRelList, index - 1);
+      const relindex = this.editRuleConfig.conditionGroupRelList.findIndex(d => d.from === uuid || d.to === uuid);
+      if (relindex >= 0) {
+        this.$delete(this.editRuleConfig.conditionGroupRelList, relindex);
+      }
     },
-    addCondition(item) {
+    addCondition(item, type) {
       //条件节点规则：添加条件
       let uuid = this.$utils.setUuid(); //获取条件uuid
-      let conditionRelList = item.conditionRelList || [];
+      //let conditionRelList = item.conditionRelList || [];
       let conditionList = item.conditionList;
       let endUuid = conditionList[conditionList.length - 1].uuid;
       let conditionRel = {
@@ -436,24 +486,28 @@ export default {
       let condition = {
         uuid: uuid,
         name: '',
-        type: '',
+        type: type || '',
         expression: '',
         valueList: '',
-        isShowConditionValue: 1
+        isShowConditionValue: type === 'custom' ? 0 : 1
       };
       item.conditionList.push(condition);
       item.conditionRelList.push(conditionRel);
     },
     delCondition(item, index) {
       //删除条件
+      const uuid = item.conditionList[index].uuid;
       this.$delete(item.conditionList, index);
-      this.$delete(item.conditionRelList, index - 1);
+      const relindex = item.conditionRelList.findIndex(d => d.from === uuid || d.to === uuid);
+      if (relindex >= 0) {
+        this.$delete(item.conditionRelList, relindex);
+      }
     },
     delRule(index) {
       //删除条件节点规则
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.process.noderules')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.process.noderules') }),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;
@@ -464,21 +518,20 @@ export default {
     },
     saveRule() {
       //条件节点：保存规则
-      let _this = this;
-      let rule = _this.$refs.mainRule;
+      let rule = this.$refs.mainRule;
       let isValue = false;
       if (rule.valid()) {
         let data = rule.getFormValue();
-        _this.editRuleConfig.targetStepList = data.targetStepList;
+        this.editRuleConfig.targetStepList = data.targetStepList;
         let type = data.type;
-        _this.editRuleConfig.type = type;
-        let conditionGroupList = _this.editRuleConfig.conditionGroupList || [];
+        this.editRuleConfig.type = type;
+        let conditionGroupList = this.editRuleConfig.conditionGroupList || [];
         if (type != 'optional') {
-          _this.editRuleConfig.conditionGroupList = [];
-          if (_this.ruleIndex != null) {
-            _this.moveonConfigList[_this.ruleIndex] = _this.editRuleConfig;
+          this.editRuleConfig.conditionGroupList = [];
+          if (this.ruleIndex != null) {
+            this.moveonConfigList[this.ruleIndex] = this.editRuleConfig;
           } else {
-            _this.moveonConfigList.push(_this.editRuleConfig);
+            this.moveonConfigList.push(this.editRuleConfig);
           }
         }
         if (type == 'optional') {
@@ -489,11 +542,11 @@ export default {
                 for (let key in row) {
                   if (row.hasOwnProperty(key)) {
                     let val = row[key];
-                    if (row.isShowConditionValue == 1) {
+                    if (row.isShowConditionValue === 1) {
                       if (key == 'valueList' && Array.isArray(val)) {
                         if (val.length == 0) {
                           this.$Notice.error({
-                            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
+                            title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
                             duration: 1.5
                           });
                           isValue = false;
@@ -501,7 +554,7 @@ export default {
                         } else {
                           if (val[0] == '') {
                             this.$Notice.error({
-                              title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
+                              title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
                               duration: 1.5
                             });
                             isValue = false;
@@ -510,7 +563,7 @@ export default {
                         }
                       } else if (!val) {
                         this.$Notice.error({
-                          title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')}),
+                          title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
                           duration: 1.5
                         });
                         isValue = false;
@@ -519,8 +572,21 @@ export default {
                         isValue = true;
                       }
                     } else {
-                      isValue = true;
                       row.valueList = '';
+                      if (row.type !== 'custom') {
+                        isValue = true;
+                      } else {
+                        if (!row.expression) {
+                          this.$Notice.error({
+                            title: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.process.customexpression') }),
+                            duration: 1.5
+                          });
+                          isValue = false;
+                          return false;
+                        } else {
+                          isValue = true;
+                        }
+                      }
                     }
                   }
                 }
@@ -529,13 +595,13 @@ export default {
           }
         }
         if (isValue) {
-          if (_this.ruleIndex != null) {
-            _this.moveonConfigList[_this.ruleIndex] = _this.editRuleConfig;
+          if (this.ruleIndex != null) {
+            this.moveonConfigList[this.ruleIndex] = this.editRuleConfig;
           } else {
-            _this.moveonConfigList.push(_this.editRuleConfig);
+            this.moveonConfigList.push(this.editRuleConfig);
           }
         }
-        _this.ruleModel = false;
+        this.ruleModel = false;
       }
     },
     getConditionJoinType(relList, index) {
@@ -592,16 +658,15 @@ export default {
       let data = {
         formUuid: formUuid
       };
-      let _this = this;
       this.$api.process.process.conditionList(data).then(res => {
         if (res.Status == 'OK') {
           let dataList = res.Return;
-          _this.ruleConditionList = dataList;
+          this.ruleConditionList = dataList;
           dataList.forEach(item => {
             if (item.type == 'common') {
               item.handler = 'form' + item.controller;
             }
-            _this.ruleConditionConfig[item.name] = item;
+            this.ruleConditionConfig[item.name] = item;
           });
         }
       });
@@ -703,7 +768,7 @@ export default {
 };
 </script>
 
-<style lang='less'>
+<style lang="less">
 @import '~@/resources/assets/css/variable.less';
 .transparentSelect {
   .ivu-input {
@@ -775,7 +840,7 @@ export default {
   width: 100%;
   height: 20px;
   line-height: 20px;
-  border-bottom: 1px solid;
+  font-weight: bold;
 }
 
 .condition-joinType {
