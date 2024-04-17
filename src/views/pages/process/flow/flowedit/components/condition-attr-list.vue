@@ -15,7 +15,12 @@
         ></span>
       </Tag>
       <span v-if="showMap[attr.name] && attr.subParamList && attr.subParamList.length > 0">
-        <ConditionAttrList :level="level + 1" :parentAttr="parentAttr ? parentAttr + '.' + attr.name : attr.name" :formAttrList="attr.subParamList"></ConditionAttrList>
+        <ConditionAttrList
+          :level="level + 1"
+          :parentAttrLabel="parentAttrLabel ? parentAttrLabel + '.' + attr.label : attr.label"
+          :parentAttr="parentAttr ? parentAttr + '.' + attr.name : attr.name"
+          :formAttrList="attr.subParamList"
+        ></ConditionAttrList>
       </span>
     </span>
   </div>
@@ -31,6 +36,7 @@ export default {
   },
   props: {
     parentAttr: { type: String },
+    parentAttrLabel: { type: String },
     level: { type: Number, default: 0 },
     formAttrList: { type: Array }
   },
@@ -64,12 +70,12 @@ export default {
       let str = '';
       if (this.parentAttr) {
         const ps = this.parentAttr.split('\.');
-       
+
         ps.forEach(p => {
-          str += '[\'' + p + '\'][?]';
+          str += "['" + p + "'][?]";
         });
       }
-      return '/*' + attr.label + '*/ data' + str + '[\'' + attr.name + '\']';
+      return '/*' + (this.parentAttrLabel ? this.parentAttrLabel + '.' : '') + attr.label + '*/ data' + str + "['" + attr.name + "']";
     }
   },
   filter: {},

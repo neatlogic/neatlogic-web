@@ -52,7 +52,15 @@
                   </TsRow>
                   <TsRow v-else>
                     <Col span="24">
-                      <code class="overflow">{{ conditionItem.expression }}</code>
+                      <div :ref="'read'+conditionItem.uuid" class="bg-op">
+                        <TsCodemirror
+                          :value="conditionItem.expression"
+                          codeMode="javascript"
+                          :isReadOnly="true"
+                          height="200px"
+                        ></TsCodemirror>
+                      </div>
+                      <div style="text-align:right" class="tsfont-fullscreen cursor" @click="fullscreen('read'+conditionItem.uuid)">{{ $t('page.fullscreen') }}</div>
                     </Col>
                   </TsRow>
                 </div>
@@ -134,7 +142,7 @@
                       </div>
                     </Col>
                     <Col :span="conItem.isShowConditionValue && conItem.isShowConditionValue == 1 ? '6' : '16'">
-                      <div class>
+                      <div>
                         <TsFormSelect
                           v-model="conItem.expression"
                           :dataList="getExpressionList(conItem.name)"
@@ -166,12 +174,14 @@
                   <TsRow v-else :gutter="8">
                     <Col span="22">
                       <div>
-                        <TsCodemirror
-                          v-model="conItem.expression"
-                          codeMode="javascript"
-                          height="auto"
-                          placeholder="请填写ES5脚本，最后返回true或false，范例：return data['attr'] == 1"
-                        ></TsCodemirror>
+                        <div :ref="conItem.uuid" class="bg-op">
+                          <TsCodemirror
+                            v-model="conItem.expression"
+                            codeMode="javascript"
+                            height="auto"
+                            placeholder="请填写ES5脚本，最后返回true或false，范例：return data['attr'] == 1"
+                          ></TsCodemirror>
+                        </div>
                         <div>
                           <Poptip
                             trigger="hover"
@@ -180,13 +190,14 @@
                             title="属性列表"
                             :transfer="true"
                           >
-                            <a>{{ $t('page.help') }}</a>
+                            <span class="tsfont-question-o">{{ $t('page.help') }}</span>
                             <div slot="content">
                               <div v-if="formAttrList && formAttrList.length > 0" style="max-height: 350px; overflow: auto">
                                 <ConditionAttrList :formAttrList="formAttrList"></ConditionAttrList>
                               </div>
                             </div>
                           </Poptip>
+                          <div class="ml-sm tsfont-fullscreen cursor" style="display:inline-block;padding-top:1px" @click="fullscreen(conItem.uuid)">{{ $t('page.fullscreen') }}</div>
                         </div>
                       </div>
                     </Col>
@@ -253,6 +264,7 @@
 </template>
 <script>
 //条件
+import screenfull from '@/resources/assets/js/screenfull.js';
 import Items from '@/resources/components/FormItems';
 import nodemixin from './nodemixin.js';
 export default {
@@ -399,6 +411,12 @@ export default {
   destroyed() {},
 
   methods: {
+    fullscreen(div) {
+      let fullDiv = this.$refs[div];
+      if (fullDiv && fullDiv.length > 0 && screenfull.isEnabled) {
+        screenfull.request(fullDiv[0]);
+      }
+    },
     getNodeSetting() {
       //初始化节点数据
       let config = (this.configData = this.$utils.deepClone(this.nodeConfig));
