@@ -2690,6 +2690,7 @@
     "editingversion": "Editing version",
     "createuser": "Creator",
     "cientityinfo": "Configuration Item Information",
-    "changedata": "Change data"
+    "changedata": "Change data",
+    "diagramcatalog": "Architecture diagram directory"
   }
 }
