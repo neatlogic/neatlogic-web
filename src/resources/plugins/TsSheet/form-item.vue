@@ -69,6 +69,27 @@
         @resize="$emit('resize')"
         @select="selectFormItem"
       ></component>
+      <component
+        :is="formItem.customName"
+        v-else-if="formItem.handler === 'custom' && isExistComponent(formItem.customName)"
+        ref="formItem"
+        :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
+        :formItem="formItem"
+        :formItemList="formItemList"
+        :value="formItemValue"
+        :mode="mode"
+        :filter="filter"
+        :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
+        :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
+        :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
+        :formData="formData"
+        :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+        :isCustomValue="isCustomValue"
+        @setValue="setValue"
+        @resize="$emit('resize')"
+        @select="selectFormItem"
+      ></component>
       <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
     </template>
     <CustomItem
@@ -498,6 +519,13 @@ export default {
         this.executeCount[action] = 0;
       }
       this.executeCount[action] = this.executeCount[action] + 1;
+    },
+    saveChangeConfig() {
+      let changeConfig = {};
+      if (this.$refs['formItem'] && this.$refs['formItem'].saveChangeConfig) {
+        changeConfig = this.$refs['formItem'].saveChangeConfig();
+      }
+      return changeConfig;
     }
   },
   filter: {},

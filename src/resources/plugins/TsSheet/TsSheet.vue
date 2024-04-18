@@ -1652,6 +1652,21 @@ export default {
           this.cutCell();
         }
       }
+    },
+    getFormDataconversionConfig() { //保存数据转换配置
+      let data = {};
+      this.config.tableList.forEach(cell => {
+        if (cell.component) {
+          let component = cell.component;
+          if (!this.$utils.isEmpty(component) && this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] && this.$refs['formitem_' + component.uuid][0].saveDataconversionConfig) {
+            let changeConfig = this.$refs['formitem_' + component.uuid][0].saveDataconversionConfig();
+            if (!this.$utils.isEmpty(changeConfig)) {
+              this.$set(data, component.uuid, changeConfig);
+            }
+          }
+        }
+      });
+      return data;
     }
   },
   filter: {},
