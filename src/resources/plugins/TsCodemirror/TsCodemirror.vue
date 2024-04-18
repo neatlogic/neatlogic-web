@@ -73,6 +73,10 @@ export default {
       type: String,
       default: ''
     },
+    lineNumbers: {
+      type: Boolean,
+      default: true
+    },
     value: {
       type: String,
       default: ''
@@ -132,7 +136,7 @@ export default {
         smartIndent: true, //是否智能缩近
         tabSiae: 4, //Tab缩近，默认4
         readOnly: this.isReadOnly || this.disabled, //是否只读
-        lineNumbers: true, //是否显示行号
+        lineNumbers: this.lineNumbers, //是否显示行号
         firstLineNumber: 1, //默认起始行号1
         foldGutter: true, //折叠
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
@@ -186,7 +190,7 @@ export default {
         this.$emit('repeatClick', this.myBlurText);
       });
     },
-    saveData: function() {
+    saveData: function () {
       var _this = this.$refs.myCode.codemirror;
       var val = _this.getValue();
       return val;
@@ -245,7 +249,7 @@ export default {
       deep: true
     },
     value: {
-      handler: function(val) {
+      handler: function (val) {
         this.currentValue = val;
       },
       deep: true,

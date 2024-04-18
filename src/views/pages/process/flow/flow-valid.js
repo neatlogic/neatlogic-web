@@ -385,6 +385,38 @@ let valid = {
     }
     return validList;
   },
+  diagram(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let diagramConfig = nodeData.diagramConfig || {};
+    if (nodeConfig.handler === 'diagram') {
+      if (that.$utils.isEmpty(diagramConfig.catalogId)) {
+        validList.push({
+          name: $t('form.validate.required', { target: '架构目录' }),
+          href: '#diagramSetting'
+        });
+      }
+      if (that.$utils.isEmpty(diagramConfig.ciEntityIdMappingFormAttributeUuid)) {
+        validList.push({
+          name: $t('form.validate.required', { target: '架构图关联节点' }),
+          href: '#diagramSetting'
+        });
+      }
+      if (that.$utils.isEmpty(diagramConfig.requestMappingFormAttributeUuid)) {
+        validList.push({
+          name: $t('form.validate.required', { target: '架构图关联需求节点' }),
+          href: '#diagramSetting'
+        });
+      }
+      if (that.$utils.isEmpty(diagramConfig.checkingStatusList)) {
+        validList.push({
+          name: $t('form.validate.required', { target: '架构图待审批状态' }),
+          href: '#diagramSetting'
+        });
+      }
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
