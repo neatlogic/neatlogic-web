@@ -154,12 +154,14 @@
         <template v-if="e.mappingMode==='constant'">
           <Col span="20">
             <ProtocolReadonly v-if="e.key=='protocolId'" :value="e.value" readonly></ProtocolReadonly>
-            <ExecuteNodeReadonly
-              v-else-if="e.key==='executeNodeConfig'"
-              :value="e.value"
-              :runtimeParamList="autoexecConfig.runtimeParamList"
-              readonly
-            ></ExecuteNodeReadonly>
+            <template v-else-if="e.key==='executeNodeConfig'">
+              <div v-if="e.value && !$utils.isEmpty(e.value.paramList)">
+                <Tag v-for="param in e.value.paramList" :key="param">
+                  {{ paramsName(param) }}
+                </Tag>
+              </div>
+              <ExecuteNodeReadonly v-else :value="e.value" readonly></ExecuteNodeReadonly>
+            </template>
             <div v-else-if="e.key==='roundCount'">
               {{ getRoundCountText(e.value) }}
             </div>
@@ -512,7 +514,20 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    paramsName() {
+      return (key) => {
+        let name = '';
+        if (this.autoexecConfig.runtimeParamList) {
+          let findItem = this.autoexecConfig.runtimeParamList.find(item => item.key == key);
+          if (findItem) {
+            name = findItem.name;
+          }
+        }
+        return name;
+      };
+    }
+  },
   watch: {}
 };
 </script>
