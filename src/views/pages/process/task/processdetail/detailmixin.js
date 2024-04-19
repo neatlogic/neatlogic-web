@@ -489,15 +489,17 @@ export default {
         if (d.handler == 'end' || d.handler == 'start') {
           return;
         }
-        if (d.status != 'running') {
-          node.setFill(d.statusVo.color);
-          node.setStroke(d.statusVo.color);
-          node.setIconcolor('#fff');
-        } else {
-          node.setFill(d.statusVo.color);
-          node.setLoadingcolor('#fff');
+        if (node) {
+          if (d.status != 'running') {
+            node.setFill(d.statusVo.color);
+            node.setStroke(d.statusVo.color);
+            node.setIconcolor('#fff');
+          } else {
+            node.setFill(d.statusVo.color);
+            node.setLoadingcolor('#fff');
+          }
+          node.stepDate = d;
         }
-        node.stepDate = d;
       });
 
       //连线的颜色改变 ，开始节点的连线需要额外操作，因为接口不返回对应的连线信息
