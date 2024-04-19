@@ -585,7 +585,7 @@ export default {
         });
         this.$set(data, 'formConfig', formConfig);
         let formDataconversionConfig = this.$refs.sheet.getFormDataconversionConfig();
-        console.log(formDataconversionConfig, 'formDataconversionConfig');
+        this.$set(data, 'formDataconversionConfig', formDataconversionConfig);
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;

@@ -520,10 +520,10 @@ export default {
       }
       this.executeCount[action] = this.executeCount[action] + 1;
     },
-    saveChangeConfig() {
+    saveDataconversionConfig() {
       let changeConfig = {};
-      if (this.$refs['formItem'] && this.$refs['formItem'].saveChangeConfig) {
-        changeConfig = this.$refs['formItem'].saveChangeConfig();
+      if (this.$refs['formItem'] && this.$refs['formItem'].saveDataconversionConfig) {
+        changeConfig = this.$refs['formItem'].saveDataconversionConfig();
       }
       return changeConfig;
     }
