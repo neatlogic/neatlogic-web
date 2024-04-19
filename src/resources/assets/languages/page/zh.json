@@ -983,5 +983,6 @@
   "autoexeccomboprunnergrouptips": "只对执行方式是“runner执行“的阶段生效,选择“随机分配”表示会从所有执行器组中随机选择runner执行器",
   "autoexeccomboprunnergrouplabel": "runner执行组",
   "autoexecradomrunnergroup": "随机分配",
-  "common": "普通"
+  "common": "普通",
+  "design": "设计"
 }

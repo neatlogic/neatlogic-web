@@ -981,5 +981,6 @@
   "autoexeccomboprunnergrouptips": "Only effective for stages where the execution method is \"runner execution\"",
   "autoexeccomboprunnergrouplabel": "Runner Execution Group",
   "autoexecradomrunnergroup": "Random allocation",
-  "common": "ordinary"
+  "common": "ordinary",
+  "design": "design"
 }

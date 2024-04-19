@@ -2690,6 +2690,8 @@
     "createuser": "创建人",
     "cientityinfo": "配置项信息",
     "changedata": "变更数据",
-    "diagramcatalog": "架构图目录"
+    "diagramcatalog": "架构图目录",
+    "changearchitecture": "架构变更",
+    "changelist": "变更清单"
   }
 }
