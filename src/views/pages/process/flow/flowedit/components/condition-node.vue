@@ -32,7 +32,7 @@
                 <div class="bg-grey padding-xs radius-sm">
                   <TsRow v-if="conditionItem.type !== 'custom'" :gutter="8">
                     <Col :span="conditionItem.isShowConditionValue == 1 ? 9 : 18">
-                      <span :title="conditionShow(conditionItem.name)" class="overflow" style="font-style: italic;">
+                      <span :title="conditionShow(conditionItem.name)" class="overflow" style="font-style: italic">
                         {{ conditionShow(conditionItem.name) || $t('term.process.empty') }}
                       </span>
                     </Col>
@@ -52,7 +52,15 @@
                   </TsRow>
                   <TsRow v-else>
                     <Col span="24">
-                      <span class="overflow">{{ conditionItem.expression }}</span>
+                      <div :ref="'read'+conditionItem.uuid" class="bg-op">
+                        <TsCodemirror
+                          :value="conditionItem.expression"
+                          codeMode="javascript"
+                          :isReadOnly="true"
+                          height="200px"
+                        ></TsCodemirror>
+                      </div>
+                      <div style="text-align:right" class="tsfont-fullscreen cursor" @click="fullscreen('read'+conditionItem.uuid)">{{ $t('page.fullscreen') }}</div>
                     </Col>
                   </TsRow>
                 </div>
@@ -111,8 +119,8 @@
                   <Icon type="ios-arrow-down"></Icon>
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem @click.native="addGroup()">普通</DropdownItem>
-                  <DropdownItem @click.native="addGroup('custom')">自定义</DropdownItem>
+                  <DropdownItem @click.native="addGroup()">{{ $t('page.common') }}</DropdownItem>
+                  <DropdownItem @click.native="addGroup('custom')">{{ $t('page.custom') }}</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -134,7 +142,7 @@
                       </div>
                     </Col>
                     <Col :span="conItem.isShowConditionValue && conItem.isShowConditionValue == 1 ? '6' : '16'">
-                      <div class>
+                      <div>
                         <TsFormSelect
                           v-model="conItem.expression"
                           :dataList="getExpressionList(conItem.name)"
@@ -154,8 +162,8 @@
                           <Dropdown placement="bottom-end" :transfer="true">
                             <span class="tsfont-plus"></span>
                             <DropdownMenu slot="list">
-                              <DropdownItem @click.native="addCondition(item)">普通</DropdownItem>
-                              <DropdownItem @click.native="addCondition(item, 'custom')">自定义</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item)">{{ $t('page.common') }}</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item, 'custom')">{{ $t('page.custom') }}</DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
                         </span>
@@ -166,7 +174,31 @@
                   <TsRow v-else :gutter="8">
                     <Col span="22">
                       <div>
-                        <TsFormInput v-model="conItem.expression" border="border" placeholder="请填写ES5表达式，返回true或false，例如data['attr'] == 1"></TsFormInput>
+                        <div :ref="conItem.uuid" class="bg-op">
+                          <TsCodemirror
+                            v-model="conItem.expression"
+                            codeMode="javascript"
+                            height="auto"
+                            placeholder="请填写ES5脚本，最后返回true或false，范例：return data['attr'] == 1"
+                          ></TsCodemirror>
+                        </div>
+                        <div>
+                          <Poptip
+                            trigger="hover"
+                            word-wrap
+                            width="550"
+                            title="属性列表"
+                            :transfer="true"
+                          >
+                            <span class="tsfont-question-o">{{ $t('page.help') }}</span>
+                            <div slot="content">
+                              <div v-if="formAttrList && formAttrList.length > 0" style="max-height: 350px; overflow: auto">
+                                <ConditionAttrList :formAttrList="formAttrList"></ConditionAttrList>
+                              </div>
+                            </div>
+                          </Poptip>
+                          <div class="ml-sm tsfont-fullscreen cursor" style="display:inline-block;padding-top:1px" @click="fullscreen(conItem.uuid)">{{ $t('page.fullscreen') }}</div>
+                        </div>
                       </div>
                     </Col>
                     <Col span="2">
@@ -175,8 +207,8 @@
                           <Dropdown placement="bottom-end" :transfer="true">
                             <span class="tsfont-plus"></span>
                             <DropdownMenu slot="list">
-                              <DropdownItem @click.native="addCondition(item)">普通</DropdownItem>
-                              <DropdownItem @click.native="addCondition(item, 'custom')">自定义</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item)">{{ $t('page.common') }}</DropdownItem>
+                              <DropdownItem @click.native="addCondition(item, 'custom')">{{ $t('page.custom') }}</DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
                         </span>
@@ -232,6 +264,7 @@
 </template>
 <script>
 //条件
+import screenfull from '@/resources/assets/js/screenfull.js';
 import Items from '@/resources/components/FormItems';
 import nodemixin from './nodemixin.js';
 export default {
@@ -240,6 +273,8 @@ export default {
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
     TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve),
+    ConditionAttrList: resolve => require(['./condition-attr-list.vue'], resolve),
     ...Items
   },
   mixins: [nodemixin],
@@ -250,6 +285,7 @@ export default {
       configData: { stepConfig: {} }, //当前节点数据
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
       newChildrenNode: _this.nodeChildren || [], //条件节点
+      formAttrList: [],
       ruleFormData: [
         {
           type: 'select',
@@ -334,8 +370,8 @@ export default {
       editRuleConfig: {}, //新增规则
       labelWidth: 80,
       ruleIndex: null,
-      ruleConditionList: [], //条件节点：规则条件
-      ruleConditionConfig: {}, //每个条件对应的数据
+      //ruleConditionList: [], //条件节点：规则条件
+      //ruleConditionConfig: {}, //每个条件对应的数据
       relList: [
         {
           text: this.$t('page.and'),
@@ -351,7 +387,9 @@ export default {
 
   beforeCreate() {},
 
-  created() {},
+  created() {
+    console.log(JSON.stringify(this.formConfig, null, 2));
+  },
 
   beforeMount() {},
 
@@ -373,6 +411,12 @@ export default {
   destroyed() {},
 
   methods: {
+    fullscreen(div) {
+      let fullDiv = this.$refs[div];
+      if (fullDiv && fullDiv.length > 0 && screenfull.isEnabled) {
+        screenfull.request(fullDiv[0]);
+      }
+    },
     getNodeSetting() {
       //初始化节点数据
       let config = (this.configData = this.$utils.deepClone(this.nodeConfig));
@@ -465,7 +509,6 @@ export default {
     delGroup(index) {
       //删除组合
       const uuid = this.editRuleConfig.conditionGroupList[index].uuid;
-      debugger;
       this.$delete(this.editRuleConfig.conditionGroupList, index);
       const relindex = this.editRuleConfig.conditionGroupRelList.findIndex(d => d.from === uuid || d.to === uuid);
       if (relindex >= 0) {
@@ -656,18 +699,12 @@ export default {
     getNewConditionList(formUuid) {
       //新的条件选择
       let data = {
-        formUuid: formUuid
+        formUuid: formUuid,
+        isAll: 1
       };
       this.$api.process.process.conditionList(data).then(res => {
         if (res.Status == 'OK') {
-          let dataList = res.Return;
-          this.ruleConditionList = dataList;
-          dataList.forEach(item => {
-            if (item.type == 'common') {
-              item.handler = 'form' + item.controller;
-            }
-            this.ruleConditionConfig[item.name] = item;
-          });
+          this.formAttrList = res.Return;
         }
       });
     },
@@ -719,6 +756,26 @@ export default {
   filter: {},
 
   computed: {
+    ruleConditionConfig() {
+      const data = {};
+      if (this.formAttrList && this.formAttrList.length > 0) {
+        this.formAttrList.forEach(item => {
+          data[item.name] = item;
+        });
+      }
+      return data;
+    },
+    ruleConditionList() {
+      const list = [];
+      if (this.formAttrList && this.formAttrList.length > 0) {
+        this.formAttrList.forEach(d => {
+          if (d.conditionable) {
+            list.push(d);
+          }
+        });
+      }
+      return list;
+    },
     handlerType() {
       return function(name) {
         let type = 'forminput';

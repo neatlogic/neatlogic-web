@@ -134,6 +134,19 @@
           </div>
         </TabPane>
         <TabPane
+          v-if="fixedPageTab.diagram && $slots.diagram"
+          :label="render => renderTabPaneLabel(render, 'diagram', '架构设计')"
+          name="diagram"
+          class="tab-content"
+          tab="tab1"
+        >
+          <div class="padding">
+            <!-- 架构图 -->
+            <slot name="diagram"></slot>
+            <!-- 架构图end -->
+          </div>
+        </TabPane>
+        <TabPane
           v-if="fixedPageTab.automatic && $slots.automatic"
           :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
           name="automatic"
@@ -403,6 +416,15 @@
           <slot name="subProcess"></slot>
         </div>
       </template>
+      <template v-else-if="item.tabValue == 'diagram'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot name="diagram"></slot>
+        </div>
+      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -540,7 +562,8 @@ export default {
         cmdbsync: true,
         eoa: true,
         dataconversion: true,
-        subProcess: true
+        subProcess: true,
+        diagram: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -1263,9 +1286,20 @@ export default {
               if (data.changePriority.includes(item.name)) {
                 list.push(item);
               }
-            }
-            if (Array.isArray(data.changePriority)) {
-              if (data.changePriority.join('/').includes(item.name)) {
+            } else if (Array.isArray(data.changePriority)) {
+              let changePriority = [];
+              data.changePriority.forEach(c => {
+                if (typeof c === 'string') {
+                  changePriority.push(c);
+                } else if (typeof c === 'object' && !this.$utils.isEmpty(c.value)) {
+                  changePriority.push(c.value);
+                }
+              });
+              if (changePriority.includes(item.name)) {
+                list.push(item);
+              }
+            } else if (typeof data.changePriority === 'object') {
+              if (!this.$utils.isEmpty(data.changePriority.value) && data.changePriority.value.includes(item.name)) {
                 list.push(item);
               }
             }
