@@ -157,7 +157,7 @@ export default {
           label: this.$t('page.uniquekey'),
           maxlength: 50,
           width: '100%',
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'name-special' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'key-special' }]
         },
         {
           type: 'select',
@@ -304,6 +304,11 @@ export default {
           this.matrixAttributeList = res.Return.tbodyList;
           this.matrixAttributeList &&
             this.matrixAttributeList.forEach(async item => {
+              if (item.uniqueIdentifier && item.uniqueIdentifier.length > 0) {
+                this.$set(item, 'isNewUniqueIdentifier', false);
+              } else {
+                this.$set(item, 'isNewUniqueIdentifier', true);
+              }
               // 补充是否被表单引用
               let isDisabledDependency = await this.$frameworkUtils.isDependency(item.uuid, 'matrixattr');
               if (isDisabledDependency) {
@@ -366,7 +371,9 @@ export default {
           matrixUuid: this.matrixUuid,
           name: '',
           uuid: this.$utils.setUuid(),
-          isDeletable: 1
+          isDeletable: 1,
+          isNewLabel: true,
+          isNewUniqueIdentifier: true
           // isRequired:0
         };
         this.dataList = [{ value: '', text: '' }];
@@ -398,9 +405,19 @@ export default {
               break;
             case 'uniqueIdentifier':
               item.value = val.uniqueIdentifier;
+              if (val.isNewUniqueIdentifier) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
               break;
             case 'type':
               item.value = val.type;
+              if (val.isNewLabel) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
               break;
             // case 'isRequired':
             //   item.value = val.isRequired

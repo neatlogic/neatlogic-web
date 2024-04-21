@@ -1134,7 +1134,7 @@ export default {
         label: '',
         uniqueIdentifier: ''
       };
-      this.addAtrixForm.attributeMappingList.value.push(emptyRow);
+      this.formSetting.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.addAtrixForm.attributeMappingList.value, conIdex);
