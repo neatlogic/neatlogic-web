@@ -286,6 +286,7 @@
                     :dataList="getDataList(conItem.label)"
                     search
                     transfer
+                    :validateList="['required']"
                   ></TsFormSelect>
                 </div>
               </Col>
@@ -296,6 +297,7 @@
                     :maxlength="50"
                     type="text"
                     :placeholder="$t('page.uniquekey')"
+                    :validateList="['required', 'key-special']"
                   ></TsFormInput>
                 </div>
               </Col>
@@ -1134,7 +1136,7 @@ export default {
         label: '',
         uniqueIdentifier: ''
       };
-      this.formSetting.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
+      this.addAtrixForm.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.addAtrixForm.attributeMappingList.value, conIdex);
