@@ -22,8 +22,10 @@
                       <TsFormSelect
                         v-model="conItem.label"
                         :dataList="getDataList(conItem.label)"
+                        :validateList="['required']"
                         search
                         transfer
+                        :disabled="!conItem.isNewLabel"
                       ></TsFormSelect>
                     </div>
                   </Col>
@@ -34,6 +36,8 @@
                         :maxlength="50"
                         type="text"
                         :placeholder="$t('page.uniquekey')"
+                        :validateList="['required', 'key-special']"
+                        :disabled="!conItem.isNewUniqueIdentifier"
                       ></TsFormInput>
                     </div>
                   </Col>
@@ -106,6 +110,11 @@ export default {
   },
   beforeCreate() {},
   async created() {
+    this.attributeMappingList.forEach(item => {
+      if (item.uniqueIdentifier.length == 0) {
+        this.$set(item, 'isNewUniqueIdentifier', true);
+      }
+    });
     this.cmdbCustomViewList();
     if (!this.$utils.isEmptyObj(this.fileObj) && this.fileObj.uuid) {
       let isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
@@ -267,8 +276,12 @@ export default {
           type: datas.type
         };
         data.customViewId = this.formSetting.customViewId.value;
+        let attributeMappingList = [];
+        this.formSetting.attributeMappingList.value.forEach(item => {
+          attributeMappingList.push({label: item.label, uniqueIdentifier: item.uniqueIdentifier});
+        });
         data.config = {
-          attributeMappingList: this.formSetting.attributeMappingList.value
+          attributeMappingList: attributeMappingList
         };
         if (this.formSetting.customViewId.disabled) {
           let isDependency = await this.isDependency();
@@ -292,9 +305,11 @@ export default {
     addAttr(conItem, conIdex) {
       let emptyRow = {
         label: '',
-        uniqueIdentifier: ''
+        uniqueIdentifier: '',
+        isNewLabel: true,
+        isNewUniqueIdentifier: true
       };
-      this.formSetting.attributeMappingList.value.push(emptyRow);
+      this.formSetting.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.formSetting.attributeMappingList.value, conIdex);
