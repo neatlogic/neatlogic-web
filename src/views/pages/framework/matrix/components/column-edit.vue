@@ -57,7 +57,7 @@
           </div>
         </div>
         <div v-show="matrixAttributeList.length > 0" class="item-right">
-          <TsForm ref="attributeDialogForm" :item-list="attributeDialogForm" :label-width="52"></TsForm>
+          <TsForm ref="attributeDialogForm" :item-list="attributeDialogForm" :label-width="70"></TsForm>
           <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type == 'select'" class="dataList">
             <!-- start_静态数据源 -->
             <div class="static-main bg-op">
@@ -150,6 +150,14 @@ export default {
           maxlength: 20,
           width: '100%',
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'name-special' }]
+        },
+        {
+          type: 'text',
+          name: 'uniqueIdentifier',
+          label: this.$t('page.uniquekey'),
+          maxlength: 50,
+          width: '100%',
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'key-special' }]
         },
         {
           type: 'select',
@@ -296,6 +304,11 @@ export default {
           this.matrixAttributeList = res.Return.tbodyList;
           this.matrixAttributeList &&
             this.matrixAttributeList.forEach(async item => {
+              if (item.uniqueIdentifier && item.uniqueIdentifier.length > 0) {
+                this.$set(item, 'isNewUniqueIdentifier', false);
+              } else {
+                this.$set(item, 'isNewUniqueIdentifier', true);
+              }
               // 补充是否被表单引用
               let isDisabledDependency = await this.$frameworkUtils.isDependency(item.uuid, 'matrixattr');
               if (isDisabledDependency) {
@@ -358,7 +371,9 @@ export default {
           matrixUuid: this.matrixUuid,
           name: '',
           uuid: this.$utils.setUuid(),
-          isDeletable: 1
+          isDeletable: 1,
+          isNewLabel: true,
+          isNewUniqueIdentifier: true
           // isRequired:0
         };
         this.dataList = [{ value: '', text: '' }];
@@ -388,8 +403,21 @@ export default {
             case 'name':
               item.value = val.name;
               break;
+            case 'uniqueIdentifier':
+              item.value = val.uniqueIdentifier;
+              if (val.isNewUniqueIdentifier) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
+              break;
             case 'type':
               item.value = val.type;
+              if (val.isNewLabel) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
               break;
             // case 'isRequired':
             //   item.value = val.isRequired
@@ -427,6 +455,8 @@ export default {
           newVal.forEach(item => {
             if (item.name == 'name') {
               obj.name = item.value;
+            } else if (item.name == 'uniqueIdentifier') {
+              obj.uniqueIdentifier = item.value;
             } else if (item.name == 'type') {
               obj.type = item.value;
             }

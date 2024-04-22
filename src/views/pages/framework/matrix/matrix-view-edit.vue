@@ -42,8 +42,8 @@
       :ciId="ciId"
       :typeView="typeView"
       :fileObj="fileObj"
-      :showAttributeLabelList="showAttributeLabelList"
       :modelAttributeList="modelAttributeList"
+      :attributeMappingList="attributeMappingList"
       :editTsDialogCmdb="editTsDialogCmdb"
       @isOk="isOk"
     ></CmdbEdit>
@@ -52,8 +52,8 @@
       :customViewId="customViewId"
       :typeView="typeView"
       :fileObj="fileObj"
-      :showAttributeLabelList="showAttributeLabelList"
       :modelAttributeList="modelAttributeList"
+      :attributeMappingList="attributeMappingList"
       :editTsDialogCmdbCustomView="editTsDialogCmdbCustomView"
       @isOk="isOk"
     ></CmdbCustomViewEdit>
@@ -92,7 +92,7 @@ export default {
       ciId: '',
       customViewId: '',
       title: '',
-      showAttributeLabelList: [],
+      attributeMappingList: [],
       modelAttributeList: [], // 模型属性列表
       fileObj: {},
       isShowExternalEditDialog: false,
@@ -202,7 +202,7 @@ export default {
               this.editTsDialogCmdb.isShow = true;
               this.editTsDialogCmdb.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
               if (res.Return.config) {
-                this.showAttributeLabelList = res.Return.config.showAttributeLabelList;
+                this.attributeMappingList = res.Return.config.attributeMappingList;
                 this.modelAttributeList = res.Return.config.showAttributeList || [];
               }
               this.fileObj = JSON.parse(JSON.stringify(res.Return));
@@ -213,7 +213,7 @@ export default {
               this.editTsDialogCmdbCustomView.isShow = true;
               this.editTsDialogCmdbCustomView.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
               if (res.Return.config) {
-                this.showAttributeLabelList = res.Return.config.showAttributeLabelList;
+                this.attributeMappingList = res.Return.config.attributeMappingList;
                 this.modelAttributeList = res.Return.config.showAttributeList || [];
               }
               this.fileObj = JSON.parse(JSON.stringify(res.Return));
