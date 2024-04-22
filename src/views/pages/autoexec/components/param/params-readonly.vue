@@ -141,6 +141,10 @@ export default {
         runnergroup: {
           icon: 'tsfont-ip-object',
           text: this.$t('term.deploy.actuatorgroup')
+        },
+        accounttag: {
+          icon: 'tsfont-taskperson',
+          text: this.$t('term.autoexec.accounttag')
         }
       },
       multipleList: ['multiselect', 'checkbox'],

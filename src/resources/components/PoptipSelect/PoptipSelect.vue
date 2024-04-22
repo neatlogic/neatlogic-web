@@ -165,7 +165,9 @@ export default {
         textarea: 'tsfont-formtextarea', //文本域
         phase: 'tsfont-stage', //阶段
         switch: 'tsfont-canvas', //开关
-        userselect: 'tsfont-group'
+        userselect: 'tsfont-group',
+        usergroup: 'tsfont-ip-object',
+        accounttag: 'tsfont-taskperson'
       },
       validMesage: ''
     };

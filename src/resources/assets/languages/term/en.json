@@ -841,7 +841,8 @@
     "targetjoberror": "{target} Failed to create job",
     "toolparamstooltip": "Tool parameters are a set of parameters for associated tools. Parameters from custom tool libraries can be added, deleted, and modified, while parameters from tool libraries cannot be added, deleted, or modified.",
     "combophasexpired": "The combination tool has expired",
-    "pleasereedit": "Please re edit and submit for review"
+    "pleasereedit": "Please re edit and submit for review",
+    "accounttag": "Account tags"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",

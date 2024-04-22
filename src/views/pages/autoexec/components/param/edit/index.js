@@ -17,6 +17,7 @@ import textareaHandler from './text';
 import switchHandler from './switch';
 import userselectHandler from './userselect';
 import runnergroupHandler from './runnergroup';
+import accounttagHandler from './accounttag';
 export default {
   defaultInput,
   textHandler,
@@ -36,5 +37,6 @@ export default {
   textareaHandler,
   switchHandler,
   userselectHandler,
-  runnergroupHandler
+  runnergroupHandler,
+  accounttagHandler
 };
