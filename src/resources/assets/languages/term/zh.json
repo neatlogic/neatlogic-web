@@ -2692,6 +2692,8 @@
     "changedata": "变更数据",
     "diagramcatalog": "架构图目录",
     "changearchitecture": "架构变更",
-    "changelist": "变更清单"
+    "changelist": "变更清单",
+    "isactive": "是否发布",
+    "nodiagramchange": "暂无架构变更"
   }
 }
