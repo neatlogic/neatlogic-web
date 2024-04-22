@@ -108,6 +108,11 @@ export default {
         return;
       }
       this.configList.forEach(c => {
+        if (!this.$utils.isEmpty(c.executeParamList)) {
+          c.executeParamList = c.executeParamList.filter(f => {
+            return f.mappingMode != 'constant';
+          });
+        }
         this.$delete(c, 'isShow');
       });
       this.$emit('close', this.configList);

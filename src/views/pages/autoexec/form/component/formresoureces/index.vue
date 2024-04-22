@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!readonly && !disabled">
+    <div v-if="!readonly && !disabled" class="pb-sm">
       <Button icon="tsfont tsfont-plus" @click="addResoureces">{{ $t('term.autoexec.executetarget') }}</Button>
     </div>
     <div v-if="value" class="view-detail">
@@ -117,7 +117,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .view-detail {
-  padding-top: 10px;
+  // padding-top: 10px;
   .filter-text {
     display: inline-block;
   }

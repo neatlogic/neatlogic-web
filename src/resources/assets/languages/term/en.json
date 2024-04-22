@@ -2691,6 +2691,8 @@
     "createuser": "Creator",
     "cientityinfo": "Configuration Item Information",
     "changedata": "Change data",
-    "diagramcatalog": "Architecture diagram directory"
+    "diagramcatalog": "Architecture diagram directory",
+    "changearchitecture": "Architecture changes",
+    "changelist": "Change List"
   }
 }
