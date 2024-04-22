@@ -520,12 +520,12 @@ export default {
       }
       this.executeCount[action] = this.executeCount[action] + 1;
     },
-    saveDataconversionConfig() {
-      let changeConfig = {};
-      if (this.$refs['formItem'] && this.$refs['formItem'].saveDataconversionConfig) {
-        changeConfig = this.$refs['formItem'].saveDataconversionConfig();
+    saveFormExtendConfig() {
+      let list = [];
+      if (this.$refs['formItem'] && this.$refs['formItem'].saveFormExtendConfig) {
+        list = this.$refs['formItem'].saveFormExtendConfig();
       }
-      return changeConfig;
+      return list;
     }
   },
   filter: {},

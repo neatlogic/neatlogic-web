@@ -116,8 +116,8 @@ export default {
         }
       }
     },
-    saveDataconversionConfig() { //保存数据转换组件配置
-      return {};
+    saveFormExtendConfig() { //保存数据转换组件配置
+      return [];
     }
   },
   computed: {

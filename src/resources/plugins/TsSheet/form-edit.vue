@@ -584,8 +584,9 @@ export default {
           });
         });
         this.$set(data, 'formConfig', formConfig);
-        let formDataconversionConfig = this.$refs.sheet.getFormDataconversionConfig();
-        this.$set(data, 'formDataconversionConfig', formDataconversionConfig);
+        // 自定义组件，保存多场景消费数据
+        let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
+        this.$set(data, 'formExtendConfig', formExtendConfig);
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;
