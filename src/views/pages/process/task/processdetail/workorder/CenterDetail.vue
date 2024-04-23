@@ -828,6 +828,7 @@ export default {
       let hidecomponentList = [];
       let readcomponentList = [];
       let handlerStepInfo = {};
+      let formExtendAttributeDataList = [];//自定义组件对外消费数据
       if (this.$refs.FormPreview) {
         formData = this.$refs.FormPreview.getFormvalNovalid();
         hidecomponentList = this.$refs.FormPreview.getHidecomponent();
@@ -836,6 +837,7 @@ export default {
         formData = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormData() : this.$refs.formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
         hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
         readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
+        formExtendAttributeDataList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormExtendData() : this.$refs.formSheet.getFormExtendData();
       } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) { //表单组件未渲染且表单值不为空的情况
         Object.keys(this.processTaskConfig.formAttributeDataMap).forEach(key => {
           let find = this.formConfig.tableList.find(i => i.component && i.component.uuid === key);
@@ -858,6 +860,10 @@ export default {
           fileIdList: [],
           readcomponentList: readcomponentList || []
         };
+        
+        if (!this.$utils.isEmpty(formExtendAttributeDataList)) {
+          this.$set(data, 'formExtendAttributeDataList', formExtendAttributeDataList);
+        }
         if (!this.$utils.isEmpty(this.commentObj.fileList)) {
           let fileIdList = this.commentObj.fileList.map(item => {
             return item.id;

@@ -88,6 +88,10 @@ const form = {
   searchMatrixColumnData(params) {
     // 表格输入组件批量矩阵属性查询下拉接口
     return axios.post('/api/rest/matrix/column/data/search/forbatch', params);
+  },
+  getFormItemList(params) {
+    // 获取表单组件列表(包含消费数据)
+    return axios.post('/api/rest/form/attribute/list', params);
   }
 };
 export default form;

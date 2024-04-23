@@ -115,6 +115,9 @@ export default {
           this.formItem.component.splice(index, 1);
         }
       }
+    },
+    saveFormExtendConfig() { //保存数据转换组件配置
+      return [];
     }
   },
   computed: {
