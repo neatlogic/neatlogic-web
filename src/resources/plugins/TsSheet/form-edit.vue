@@ -584,7 +584,7 @@ export default {
           });
         });
         this.$set(data, 'formConfig', formConfig);
-        // 自定义组件，保存多场景消费数据
+        // 自定义组件，消费配置
         let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
         this.$set(data, 'formExtendConfig', formExtendConfig);
         await this.$api.framework.form.saveForm(data).then(res => {

@@ -34,7 +34,7 @@
             ></component>
             <component
               :is="formItem.customName"
-              v-else-if="formItem.handler === 'custom' && isExistComponent(formItem.customName)"
+              v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
               :error="error"
               :formItem="formItem"
               :formItemList="formItemList"

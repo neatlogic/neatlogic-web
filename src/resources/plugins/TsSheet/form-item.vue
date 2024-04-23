@@ -71,7 +71,7 @@
       ></component>
       <component
         :is="formItem.customName"
-        v-else-if="formItem.handler === 'custom' && isExistComponent(formItem.customName)"
+        v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
         ref="formItem"
         :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
         :formItem="formItem"
@@ -89,6 +89,7 @@
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
+        @setExtendValue="setExtendValue"
       ></component>
       <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
     </template>
@@ -155,6 +156,10 @@ export default {
       // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
+    },
+    formExtendData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -526,6 +531,11 @@ export default {
         list = this.$refs['formItem'].saveFormExtendConfig();
       }
       return list;
+    },
+    setExtendValue(val) {
+      if (this.formExtendData) {
+        this.$set(this.formExtendData, this.formItem.uuid, val);
+      }
     }
   },
   filter: {},

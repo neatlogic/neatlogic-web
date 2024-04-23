@@ -229,7 +229,8 @@ export default {
       let formData = {
         formAttributeDataList: [],
         hidecomponentList: [],
-        readcomponentList: []
+        readcomponentList: [],
+        formExtendAttributeDataList: []
       };
       if (this.$refs.FormPreview) {
         formData.formAttributeDataList = this.$refs.FormPreview.getFormvalNovalid();
@@ -239,6 +240,7 @@ export default {
         formData.formAttributeDataList = this.$refs.formSheet.getFormData();
         formData.hidecomponentList = this.$refs.formSheet.getHiddenComponents();
         formData.readcomponentList = this.$refs.formSheet.getReadComponents();
+        formData.formExtendAttributeDataList = this.$refs.formSheet.getFormExtendData();
       }
       return formData;
     },
