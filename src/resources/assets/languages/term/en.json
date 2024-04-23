@@ -2690,6 +2690,11 @@
     "editingversion": "Editing version",
     "createuser": "Creator",
     "cientityinfo": "Configuration Item Information",
-    "changedata": "Change data"
+    "changedata": "Change data",
+    "diagramcatalog": "Architecture diagram directory",
+    "changearchitecture": "Architecture changes",
+    "changelist": "Change List",
+    "isactive": "Whether to publish",
+    "nodiagramchange": "There are currently no architecture changes"
   }
 }

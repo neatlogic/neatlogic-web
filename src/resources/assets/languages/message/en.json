@@ -294,6 +294,7 @@
     "lockdiagramconfirm": "Are you sure to lock the current architecture diagram and enter editing mode?",
     "editingversionnotfound": "The current architecture diagram does not have a editing version",
     "noauthtoedit": "You do not have permission to edit the current architecture diagram",
-    "isactivenotfound": "The current architecture diagram does not have an activated version"
+    "isactivenotfound": "The current architecture diagram does not have an activated version",
+    "editingversionirregular": "The current version is in a non editing state and cannot be edited"
   }
 }

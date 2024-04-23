@@ -628,7 +628,7 @@ let routerList = [
     meta: {
       title: $t('router.framework.servermanage'),
       ismenu: true,
-      icon: 'tsfont-config',
+      icon: 'tsfont-adapter',
       authority: 'ADMIN',
       type: 'others'
     }

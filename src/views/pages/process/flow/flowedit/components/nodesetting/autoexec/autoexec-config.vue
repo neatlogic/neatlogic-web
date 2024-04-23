@@ -239,10 +239,13 @@ export default {
             });
             
             //执行器组只需要只读，从组合工具带出即可
-            Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
-              this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
-            });
-            
+            this.$set(this.autoexecConfig, 'runnerGroup', {});
+            if (!this.$utils.isEmpty(this.autoexecCombop.runnerGroup)) {
+              Object.keys(this.autoexecCombop.runnerGroup).forEach(key => {
+                this.$set(this.autoexecConfig.runnerGroup, key, this.autoexecCombop.runnerGroup[key]);
+              });
+            }
+
             //更新组合工具参数列表
             Object.keys(this.autoexecConfig).forEach(key => {
               if (this.includesKeyList.includes(key)) {
@@ -260,7 +263,11 @@ export default {
                         }
                         let findItem = this.config[key].find(c => c.key === item.key);
                         if (findItem) {
-                          list.push(findItem);
+                          if (key === 'executeParamList' && item.mappingMode === 'constant') {
+                            list.push(item);
+                          } else {
+                            list.push(findItem);
+                          }
                         } else {
                           list.push(item);
                         }
@@ -283,6 +290,7 @@ export default {
       this.$nextTick(() => {
         this.isFirst = false;
         this.loadingShow = false;
+        this.$emit('update', this.autoexecConfig);
       });
     },
     getAutoexecCombop(combopId) {

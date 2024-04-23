@@ -32,6 +32,17 @@
               class="mb-sm"
               @editSubForm="editSubForm"
             ></component>
+            <component
+              :is="formItem.customName"
+              v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
+              :error="error"
+              :formItem="formItem"
+              :formItemList="formItemList"
+              :disabled="!!formItem.inherit || disabled"
+              :initFormItemList="initFormItemList"
+              class="mb-sm"
+              @editSubForm="editSubForm"
+            ></component>
             <div v-else>
               <Alert show-icon>
                 {{ $t('page.commercialcomponenttip') }}

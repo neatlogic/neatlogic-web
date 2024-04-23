@@ -5,7 +5,7 @@ import { default as processProcess } from './process/process'; //流程
 import priority from './priority/priority'; //优先级
 import worktime from './worktime/worktime'; //工作时间窗口
 import notice from './notice/notice'; //通知接口
-import processtask from './task/task'; //工单接口
+import processtask from './processtask/processtask'; //工单接口
 import user from '../framework/users/user'; //个人设置
 import channeltype from './channeltype/channeltype'; //服务类型
 import matrix from '../framework/matrix/matrix'; //矩阵数据源

@@ -134,6 +134,19 @@
           </div>
         </TabPane>
         <TabPane
+          v-if="fixedPageTab.diagram && $slots.diagram"
+          :label="render => renderTabPaneLabel(render, 'diagram', '架构设计')"
+          name="diagram"
+          class="tab-content"
+          tab="tab1"
+        >
+          <div class="padding">
+            <!-- 架构图 -->
+            <slot name="diagram"></slot>
+            <!-- 架构图end -->
+          </div>
+        </TabPane>
+        <TabPane
           v-if="fixedPageTab.automatic && $slots.automatic"
           :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
           name="automatic"
@@ -403,6 +416,15 @@
           <slot name="subProcess"></slot>
         </div>
       </template>
+      <template v-else-if="item.tabValue == 'diagram'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot name="diagram"></slot>
+        </div>
+      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -540,7 +562,8 @@ export default {
         cmdbsync: true,
         eoa: true,
         dataconversion: true,
-        subProcess: true
+        subProcess: true,
+        diagram: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -805,6 +828,7 @@ export default {
       let hidecomponentList = [];
       let readcomponentList = [];
       let handlerStepInfo = {};
+      let formExtendAttributeDataList = [];//自定义组件对外消费数据
       if (this.$refs.FormPreview) {
         formData = this.$refs.FormPreview.getFormvalNovalid();
         hidecomponentList = this.$refs.FormPreview.getHidecomponent();
@@ -813,6 +837,7 @@ export default {
         formData = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormData() : this.$refs.formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
         hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
         readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
+        formExtendAttributeDataList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormExtendData() : this.$refs.formSheet.getFormExtendData();
       } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) { //表单组件未渲染且表单值不为空的情况
         Object.keys(this.processTaskConfig.formAttributeDataMap).forEach(key => {
           let find = this.formConfig.tableList.find(i => i.component && i.component.uuid === key);
@@ -835,6 +860,10 @@ export default {
           fileIdList: [],
           readcomponentList: readcomponentList || []
         };
+        
+        if (!this.$utils.isEmpty(formExtendAttributeDataList)) {
+          this.$set(data, 'formExtendAttributeDataList', formExtendAttributeDataList);
+        }
         if (!this.$utils.isEmpty(this.commentObj.fileList)) {
           let fileIdList = this.commentObj.fileList.map(item => {
             return item.id;
