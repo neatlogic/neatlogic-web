@@ -2695,6 +2695,7 @@
     "changearchitecture": "Architecture changes",
     "changelist": "Change List",
     "isactive": "Whether to publish",
-    "nodiagramchange": "There are currently no architecture changes"
+    "nodiagramchange": "There are currently no architecture changes",
+    "iscurrentversion": "Is it the current version"
   }
 }

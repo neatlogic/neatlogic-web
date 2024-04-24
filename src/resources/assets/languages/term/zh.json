@@ -2694,6 +2694,7 @@
     "changearchitecture": "架构变更",
     "changelist": "变更清单",
     "isactive": "是否发布",
-    "nodiagramchange": "暂无架构变更"
+    "nodiagramchange": "暂无架构变更",
+    "iscurrentversion": "是否当前版本"
   }
 }

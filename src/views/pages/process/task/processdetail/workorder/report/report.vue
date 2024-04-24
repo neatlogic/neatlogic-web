@@ -9,7 +9,7 @@
         <template v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)">
           <div v-if="dataConfig.content && isNeedContent" class="report-content pb10">
             <div class="text-grey fz10 pb-xs">{{ $t('page.description') }}</div>
-            <div class="content-bg bg-tip-grey radius-sm">
+            <div class="pt-md">
               <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
                 <div ref="getheight" v-html="dataConfig.content"></div>
               </div>
@@ -76,7 +76,7 @@
                 <div class="text-grey comment-title fz10">
                   {{ $t('term.process.changecontent') }}
                 </div>
-                <div class="content-bg bg-tip-grey radius-sm">
+                <div class="pt-md">
                   <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
                     <div ref="getheight" v-html="handlerStepInfo.content"></div>
                   </div>

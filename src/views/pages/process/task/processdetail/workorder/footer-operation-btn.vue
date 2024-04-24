@@ -59,7 +59,7 @@
             transfer
           >
             <Button
-              icon="tsfont tsfont-refresh"
+              icon="tsfont tsfont-arrow-right"
               type="primary"
               ghost
               class="btn-margin-right"
@@ -82,7 +82,7 @@
           </template>
           <Button
             v-else-if="nodeBtnList.length == 1"
-            icon="tsfont tsfont-refresh"
+            icon="tsfont tsfont-arrow-right"
             type="primary"
             :disabled="disabledConfig.completing"
             :title="nodeBtnList[0].name ? nodeBtnList[0].flowDirection + nodeBtnList[0].name : null"
