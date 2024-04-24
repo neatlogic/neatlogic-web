@@ -299,6 +299,7 @@
                   :readonly="readonly"
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
+                  :formExtendData="formExtendData"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -446,7 +447,8 @@ export default {
         { value: '16px', text: this.$t('page.big') },
         { value: '18px', text: this.$t('page.maximum') }
       ],
-      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-']
+      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'],
+      formExtendData: {} //自定义组件消费数据
     };
   },
   beforeCreate() {},
@@ -1652,6 +1654,32 @@ export default {
           this.cutCell();
         }
       }
+    },
+    getFormExtendConfig() { //保存消费表单配置
+      let data = {
+        attributeList: []
+      };
+      this.config.tableList.forEach(cell => {
+        if (cell.component) {
+          let component = cell.component;
+          if (!this.$utils.isEmpty(component) && this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] && this.$refs['formitem_' + component.uuid][0].saveFormExtendConfig) {
+            let changeConfig = this.$refs['formitem_' + component.uuid][0].saveFormExtendConfig();
+            if (!this.$utils.isEmpty(changeConfig)) {
+              data.attributeList.push(...changeConfig);
+            }
+          }
+        }
+      });
+      return data;
+    },
+    getFormExtendData() { //提供外部使用，返回表单多场景消费数据
+      let list = [];
+      Object.keys(this.formExtendData).forEach(key => {
+        if (!this.$utils.isEmpty(this.formExtendData[key])) {
+          list.push(...this.formExtendData[key]);
+        }
+      });
+      return list;
     }
   },
   filter: {},
