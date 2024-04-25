@@ -189,6 +189,12 @@ export default {
         }
       }
       return null;
+    },
+    cancelSelectedAllNode() {
+      var nodes = this.zTreeObj.getSelectedNodes();
+      nodes.forEach(node => {
+        this.zTreeObj.cancelSelectedNode(node);
+      })
     }
   },
   computed: {},

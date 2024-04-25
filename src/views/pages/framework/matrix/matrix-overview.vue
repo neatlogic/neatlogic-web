@@ -277,7 +277,7 @@
           </div>
         </template>
         <template v-slot:attributeMappingList>
-          <div v-for="(conItem, conIdex) in addAtrixForm.attributeMappingList.value" :key="conIdex">
+          <div v-for="(conItem, conIdex) in addAtrixForm.attributeMappingList.value" :key="conIdex" class="pb-sm">
             <TsRow :gutter="0">
               <Col span="10">
                 <div class="pr-sm">
