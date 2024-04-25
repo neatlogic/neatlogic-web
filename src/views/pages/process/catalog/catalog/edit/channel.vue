@@ -433,6 +433,7 @@ export default {
           itemValue.desc = this.escape2Html(itemValue.desc);
           this.channelValue = {
             name: itemValue.name || '',
+            parentUuid: itemValue.parentUuid || '',
             processUuid: itemValue.processUuid || '',
             isActive: itemValue.isActive || 0,
             authorityList: itemValue.authorityList,
