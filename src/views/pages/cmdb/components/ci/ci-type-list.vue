@@ -25,7 +25,7 @@
                     :title="ci.label + '(' + ci.name + ')'"
                     @click="
                       if (ciId === ci.id) {
-                        if(toggleable){
+                        if (toggleable) {
                           click(null);
                         }
                       } else {
@@ -44,7 +44,7 @@
         <TabPane
           :label="
             h => {
-              return h('div', [
+              const divList = [
                 h('span', $t('page.custom')),
                 h('span', {
                   class: {
@@ -57,29 +57,34 @@
                       toggleExpand();
                     }
                   }
-                }),
-                h('span', [
-                  h(
-                    'Tooltip',
-                    {
-                      props: {
-                        'max-width': 250,
-                        placement: 'right',
-                        transfer: true,
-                        content: $t('term.cmdb.treedraginfo')
-                      }
-                    },
-                    [
-                      h('span', {
-                        class: {
-                          'tsfont-question-o': true,
-                          'text-grey': true
+                })
+              ];
+              if ($AuthUtils.hasRole('CI_MODIFY')) {
+                divList.push(
+                  h('span', [
+                    h(
+                      'Tooltip',
+                      {
+                        props: {
+                          'max-width': 250,
+                          placement: 'right',
+                          transfer: true,
+                          content: $t('term.cmdb.treedraginfo')
                         }
-                      })
-                    ]
-                  )
-                ])
-              ]);
+                      },
+                      [
+                        h('span', {
+                          class: {
+                            'tsfont-question-o': true,
+                            'text-grey': true
+                          }
+                        })
+                      ]
+                    )
+                  ])
+                );
+              }
+              return h('div', divList);
             }
           "
           name="custom"
@@ -123,7 +128,7 @@ export default {
   filters: {},
   props: {
     ciId: { type: Number },
-    toggleable: {type: Boolean, default: true}, //允许反选
+    toggleable: { type: Boolean, default: true }, //允许反选
     ciFilter: { type: Array }, //过滤模型列表
     tree: {
       //如果有值就用传过来的,没有就用默认的

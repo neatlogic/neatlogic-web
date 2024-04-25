@@ -137,7 +137,7 @@ export default {
   name: '',
   components: {
     CiEntityList: resolve => require(['./cientity-list.vue'], resolve),
-    ciTypeList: resolve => require(['../components/ci/ci-type-list.vue'], resolve),
+    ciTypeList: resolve => require(['@/views/pages/cmdb/components/ci/ci-type-list.vue'], resolve),
     TransactionList: resolve => require(['./transaction-list.vue'], resolve),
     DeleteCiEntityList: resolve => require(['./delete-cientity-list.vue'], resolve),
     IllegalCiEntityList: resolve => require(['./illegal-cientity-list.vue'], resolve)
