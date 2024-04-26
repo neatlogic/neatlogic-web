@@ -11,7 +11,7 @@
       <th
         v-for="(hitem, hindex) in list"
         :key="hindex"
-        :class="[`th-${hitem.key}`, getReadonlyTheadBgClass]"
+        :class="[`th-${hitem.key}`, getReadonlyTheadBgClass, hitem.className]"
         :style="setTh()"
       >
         <template v-if="hitem.key == 'expander'">
