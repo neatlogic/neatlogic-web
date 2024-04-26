@@ -55,6 +55,16 @@
             <div class="infor-left text-title overflow">{{ $t('term.process.usernumber') }}</div>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
+          <div v-if="isNeedRegion" class="information-list">
+            <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
+            <div class="infor-right">
+              <TsFormSelect
+                ref="region"
+                v-model="dispatch.regionId"
+                v-bind="getRegionSetting"
+              ></TsFormSelect>
+            </div>
+          </div>
         </div>
         <!-- <div class="information-list">
           <div class="infor-left text-title overflow">{{ $t('page.phone') }}</div>
@@ -141,11 +151,24 @@ export default {
       groupList: ['user'],
       tagList: [],
       isNeedPriority: true,
+      isNeedRegion: false,
       validateList: ['required'],
       knowledgeList: [],
       showRelateKnowledge: true,
       showBasic: true,
-      showInformant: true
+      showInformant: true,
+      regionSelectConfig: {
+        dynamicUrl: '/api/rest/region/search',
+        rootName: 'tbodyList',
+        valueName: 'id',
+        textName: 'name',
+        search: true,
+        transfer: true,
+        border: 'border',
+        width: '100%',
+        firstSelect: true,
+        validateList: ['required']
+      }
     };
   },
   beforeCreate() {},
@@ -182,6 +205,9 @@ export default {
         }
         if (this.isNeedPriority) {
           this.dispatch.priorityUuid = this.draftData.priorityUuid; 
+        }
+        if (this.draftData.processDispatcherList.some(o => o.endsWith('RegionDispatcher'))) {
+          this.isNeedRegion = true;
         }
       }
     },
@@ -233,6 +259,14 @@ export default {
           type: 'error'
         });
       }
+      if (this.isNeedRegion && !this.$refs.region.valid()) {
+        validList.push({
+          focus: '#base',
+          icon: 'tsfont-close-o',
+          msg: this.$t('message.process.required', {target: this.$t('term.process.region')}),
+          type: 'error'
+        });
+      }
       return validList;
     },
     knowledgeSearch(keyword) {
@@ -271,7 +305,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getRegionSetting() {
+      this.$set(this.regionSelectConfig, 'params', {owner: this.dispatch.owner});
+      return this.regionSelectConfig;
+    }
+  },
   watch: {
     defaultPriorityConfig: {
       handler(val) {
