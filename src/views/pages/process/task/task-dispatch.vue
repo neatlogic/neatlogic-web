@@ -428,6 +428,12 @@ export default {
       if (this.invoke) {
         this.$set(workdata, 'invoke', this.invoke);
       }
+      if (workdata.owner) {
+        let reporter = 'user#' + this.$AuthUtils.getCurrentUser().uuid;
+        if (reporter != workdata.owner) {
+          this.$set(workdata, 'reporter', reporter);
+        }
+      }
       return new Promise((resolve, reject) => {
         if (!this.disabledConfig.saving) {
           this.disabledConfig.saving = true;
