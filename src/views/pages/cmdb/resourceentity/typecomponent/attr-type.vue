@@ -38,7 +38,7 @@ export default {
   },
   props: {
     item: Object,
-    mainCi: String 
+    mainCi: String
   },
   data() {
     return {
@@ -100,7 +100,9 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.item.fromCi = this.mainCi;
+    if (!this.item.fromCi) {
+      this.item.fromCi = this.mainCi;
+    }
   },
   beforeMount() {},
   mounted() {},

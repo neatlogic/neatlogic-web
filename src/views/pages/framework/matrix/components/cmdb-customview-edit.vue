@@ -15,7 +15,7 @@
         >
           <template v-slot:attributeMappingList>
             <div>
-              <div v-for="(conItem, conIdex) in formSetting.attributeMappingList.value" :key="conIdex">
+              <div v-for="(conItem, conIdex) in formSetting.attributeMappingList.value" :key="conIdex" class="pb-sm">
                 <TsRow :gutter="0">
                   <Col span="10">
                     <div class="pr-sm">

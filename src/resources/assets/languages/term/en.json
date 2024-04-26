@@ -2697,6 +2697,8 @@
     "changelist": "Change List",
     "isactive": "Whether to publish",
     "nodiagramchange": "There are currently no architecture changes",
-    "iscurrentversion": "Is it the current version"
+    "iscurrentversion": "Is it the current version",
+    "exportsvg": "Export SVG",
+    "exportpng": "Export PNG"
   }
 }

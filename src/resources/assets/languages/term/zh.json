@@ -2696,6 +2696,8 @@
     "changelist": "变更清单",
     "isactive": "是否发布",
     "nodiagramchange": "暂无架构变更",
-    "iscurrentversion": "是否当前版本"
+    "iscurrentversion": "是否当前版本",
+    "exportsvg": "导出SVG",
+    "exportpng": "导出PNG"
   }
 }
