@@ -2697,6 +2697,7 @@
     "nodiagramchange": "暂无架构变更",
     "iscurrentversion": "是否当前版本",
     "exportsvg": "导出SVG",
-    "exportpng": "导出PNG"
+    "exportpng": "导出PNG",
+    "nootherversion": "暂无其他版本"
   }
 }

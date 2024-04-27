@@ -2698,6 +2698,7 @@
     "nodiagramchange": "There are currently no architecture changes",
     "iscurrentversion": "Is it the current version",
     "exportsvg": "Export SVG",
-    "exportpng": "Export PNG"
+    "exportpng": "Export PNG",
+    "nootherversion": "There are currently no other versions available"
   }
 }
