@@ -206,7 +206,7 @@ export default {
         if (this.isNeedPriority) {
           this.dispatch.priorityUuid = this.draftData.priorityUuid; 
         }
-        if (this.draftData.processDispatcherList.some(o => o.endsWith('RegionDispatcher'))) {
+        if (!this.$utils.isEmpty(this.draftData.processDispatcherList) && this.draftData.processDispatcherList.some(o => o.endsWith('RegionDispatcher'))) {
           this.isNeedRegion = true;
         }
       }
