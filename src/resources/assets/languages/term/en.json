@@ -2700,6 +2700,8 @@
     "iscurrentversion": "Is it the current version",
     "exportsvg": "Export SVG",
     "exportpng": "Export PNG",
-    "nootherversion": "There are currently no other versions available"
+    "nootherversion": "There are currently no other versions available",
+    "otherversion": "Other versions",
+    "deleteversionconfirm": "Are you sure to delete version: {target}?"
   }
 }
