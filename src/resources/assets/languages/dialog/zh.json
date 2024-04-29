@@ -39,7 +39,8 @@
     "rejectconfirm": "驳回确认",
     "actionconfirm": "操作确认",
     "editconfirm": "编辑确认",
-    "canceleditconfirm": "退出编辑确认"
+    "canceleditconfirm": "退出编辑确认",
+    "lockconfirm": "锁定确认"
   },
   "content": {
     "revocatetargetconfirm": "是否确认撤销当前{target}？",
@@ -80,6 +81,7 @@
     "unlinkconfirm": "是否确认解除当前关联？",
     "closecomfirm": "是否确认关闭当前{target}？",
     "opencomfirm": "是否确认打开当前{target}？",
-    "canceleditconfirm": "是否确认退出编辑并解除锁定当前架构图？"
+    "canceleditconfirm": "是否确认退出编辑并解除锁定当前架构图？",
+    "lockconfirm": "是否确认锁定当前{target}？"
   }
 }

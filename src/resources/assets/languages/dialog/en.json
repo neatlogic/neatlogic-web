@@ -39,7 +39,8 @@
     "rejectconfirm": "Rejection confirmation",
     "actionconfirm": "Operation confirmation",
     "editconfirm": "Edit confirmation",
-    "canceleditconfirm": "Exit editing confirmation"
+    "canceleditconfirm": "Exit editing confirmation",
+    "lockconfirm": "Lock Confirmation"
   },
   "content": {
     "revocatetargetconfirm": "Are you sure to recall of the {target}?",
@@ -80,6 +81,7 @@
     "unlinkconfirm": "Are you sure to dissolve the current association?",
     "closecomfirm": "Are you sure to close this {target}?",
     "opencomfirm": "Are you sure to open this {target}?",
-    "canceleditconfirm": "Are you sure to exit editing and unlock the current schema diagram?"
+    "canceleditconfirm": "Are you sure to exit editing and unlock the current schema diagram?",
+    "lockconfirm": "Are you sure you want to lock the current {target}?"
   }
 }

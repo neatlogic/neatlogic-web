@@ -2699,6 +2699,8 @@
     "iscurrentversion": "是否当前版本",
     "exportsvg": "导出SVG",
     "exportpng": "导出PNG",
-    "nootherversion": "暂无其他版本"
+    "nootherversion": "暂无其他版本",
+    "otherversion": "其他版本",
+    "deleteversionconfirm": "是否确认删除版本：{target}？"
   }
 }
