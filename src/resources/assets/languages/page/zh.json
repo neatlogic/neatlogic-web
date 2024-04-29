@@ -984,5 +984,8 @@
   "autoexeccomboprunnergrouplabel": "runner执行组",
   "autoexecradomrunnergroup": "随机分配",
   "common": "普通",
-  "design": "设计"
+  "design": "设计",
+  "licensedberror": "请联系管理员核对系统配置db.url参数的值，重新授权",
+  "licenseexpired": "已失效",
+  "licenseend": "已终止"
 }

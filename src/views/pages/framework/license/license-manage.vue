@@ -6,16 +6,34 @@
           <TsFormItem :label="$t('term.framework.authorizedto')">
             {{ licenseData.purchaser }}
           </TsFormItem>
-          <TsFormItem :label="$t('term.framework.expiredate')">
+          <TsFormItem v-if="!licenseData.isExpired" :label="$t('term.framework.expiredate')">
             {{ licenseData.expirationDate | formatDate('yyyy-mm-dd') }}
           </TsFormItem>
-          <TsFormItem :label="$t('term.framework.serveceenddate')">
+          <TsFormItem v-else :label="$t('term.framework.expiredate')">
+            {{ licenseData.expirationDate | formatDate('yyyy-mm-dd') }}
+            <span class="form-error-tip ">
+              {{ $t('page.exception') }}:{{ $t('page.licenseexpired') }}
+            </span>
+          </TsFormItem>
+          <TsFormItem v-if="!licenseData.isEnd" :label="$t('term.framework.serveceenddate')">
             {{ licenseData.endDate | formatDate('yyyy-mm-dd') }}
           </TsFormItem>
-          <TsFormItem :label="$t('term.rdm.dburl')">
+          <TsFormItem v-else :label="$t('term.framework.serveceenddate')">
+            {{ licenseData.endDate | formatDate('yyyy-mm-dd') }}
+            <span class="form-error-tip">
+              {{ $t('page.exception') }}:{{ $t('page.licenseend') }}
+            </span>
+          </TsFormItem>
+          <TsFormItem v-if="licenseData.isValid" :label="$t('term.rdm.dburl')">
             {{ licenseData.dbUrl }}
           </TsFormItem>
-          <TsFormItem :label="$t('term.rdm.modulelist')">
+          <TsFormItem v-else :label="$t('term.rdm.dburl')">
+            {{ licenseData.dbUrl }}
+            <span class="form-error-tip">
+              {{ $t('page.exception') }}: {{ $t('page.licensedberror') }} 
+            </span>
+          </TsFormItem>
+          <TsFormItem v-if="licenseData.isValid && !licenseData.isEnd" :label="$t('term.rdm.modulelist')">
             <div>
               <Tag
                 v-for="(m,index) in licenseData.moduleList"
