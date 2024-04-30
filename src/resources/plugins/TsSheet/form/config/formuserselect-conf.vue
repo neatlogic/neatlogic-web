@@ -82,15 +82,7 @@ export default {
   destroyed() {},
   methods: {
     dealGroupConfigDataList(dataList) {
-      const newDataList = [];
-      if (dataList && dataList.length > 0) {
-        dataList.forEach(data => {
-          if (data.value != 'common') {
-            newDataList.push(data);
-          }
-        });
-      }
-      return newDataList;
+      return dataList && dataList.filter(data => data.value != 'common');
     }
   },
   filter: {},
