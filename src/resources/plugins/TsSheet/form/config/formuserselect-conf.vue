@@ -61,6 +61,7 @@ export default {
       groupConfig: {
         placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.group')}),
         url: 'api/rest/groupsearch/list',
+        dealDataByUrl: this.dealGroupConfigDataList,
         multiple: true,
         border: 'border',
         validateList: ['required']
@@ -80,7 +81,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-
+    dealGroupConfigDataList(dataList) {
+      return dataList && dataList.filter(data => data.value != 'common');
+    }
   },
   filter: {},
   computed: {
