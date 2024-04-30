@@ -161,6 +161,9 @@ export default {
       if (nowVal) {
         nowVal = this.setUservalue(nowVal);
       }
+      if (nowVal) {
+        this.setValue(nowVal);
+      }
       return nowVal;
     }
   },
