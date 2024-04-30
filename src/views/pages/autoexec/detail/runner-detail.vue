@@ -501,6 +501,7 @@ export default {
       isValid = this.$refs.executeForm ? this.$refs.executeForm.valid() && isValid : isValid;
       isValid = this.$refs.nameForm ? this.$refs.nameForm.valid() && isValid : isValid;
       isValid = this.$refs.roundCountForm ? this.$refs.roundCountForm.valid() && isValid : isValid;
+      isValid = this.$refs.runnerGroup ? this.$refs.runnerGroup.valid() && isValid : isValid;
       return isValid;
     },
     openExecuteSetting() {

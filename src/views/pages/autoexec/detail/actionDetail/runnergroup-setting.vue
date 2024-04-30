@@ -14,24 +14,20 @@
       <Col :span="getSelectWidth">
         <TsFormSelect
           v-if="runnerGroup.mappingMode==='runtimeparam'"
-          ref="userValue"
           v-model="runnerGroup.value"
           :dataList="paramsList"
           :disabled="disabled"
           :validateList="isRequired? validateList : []"
           transfer
-          :firstText="$t('term.autoexec.jobparam')"
           :firstSelect="false"
           @first="gotoAddParameter"
         ></TsFormSelect>
         <TsFormSelect
           v-if="runnerGroup.mappingMode==='constant'"
+          ref="runnerGroup"
           v-model="runnerGroup.value"
           v-bind="runnerGroupConfig"
           :clearable="false"
-          :disabled="disabled"
-          :needCallback.sync="runnerGroupConfig.needCallback"
-          @searchCallback="refreshSuccess('process')"
         >
           <template v-slot:first-ul>
             <li class="tsfont-plus text-href first-slot" @click="gotoRunnerGroupPage">{{ $t('term.deploy.actuatorgroup') }}</li>
@@ -110,9 +106,9 @@ export default {
       typeList: ['runnergroup'],
       validateList: ['required'],
       runnerGroupConfig: {
-        filterable: true,
         transfer: true,
         needCallback: false,
+        border: 'border',
         validateList: ['required'],
         dealDataByUrl: this.$utils.getRunnerGroupList,
         dynamicUrl: '/api/rest/runnergroup/search',
@@ -157,8 +153,8 @@ export default {
     },
     valid() {
       let isValid = true;
-      if (this.$refs.userValue) {
-        isValid = this.$refs.userValue.valid();
+      if (this.$refs.runnerGroup) {
+        isValid = this.$refs.runnerGroup.valid();
       }
       return isValid;
     },
