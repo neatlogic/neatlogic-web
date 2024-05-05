@@ -94,7 +94,8 @@ export default {
         if (group && group.length > 0) {
           if (group.indexOf('user') > -1) {
             //当前登录人、上报人（后台确定要分2个类型获取，不在common做处理）
-            list = this.$utils.concatArr(list, ['common', 'processUserType']);
+            // list = this.$utils.concatArr(list, ['common', 'processUserType']);
+            list = this.$utils.concatArr(list, ['common']);
           }
           if (group.indexOf('team') > -1) {
             //当前用户所在组
@@ -111,7 +112,8 @@ export default {
         if (group && group.length > 0) { 
           if (group.indexOf('user') > -1) {
             //当前登录人、上报人（后台确定要分2个类型获取，不在common做处理）
-            list = list.concat(['common#loginuser', 'processUserType#owner']); 
+            // list = list.concat(['common#loginuser', 'processUserType#owner']); 
+            list = list.concat(['common#loginuser']); 
           }
           if (group.indexOf('team') > -1) {
             //当前用户所在组
