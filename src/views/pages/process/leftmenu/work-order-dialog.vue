@@ -61,7 +61,9 @@ export default {
     ServicesCatalog: resolve => require(['./catalog/services-catalog.vue'], resolve),
     CollectModule: resolve => require(['./catalog/collect-module'], resolve) // 收藏模块
   },
-  props: {},
+  props: {
+    mode: {type: String}
+  },
   data() {
     return {
       isShowDialog: true,
@@ -93,8 +95,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    closeDialog() {
-      this.$emit('close');
+    closeDialog(channel) {
+      this.$emit('close', channel);
     },
     //右上角搜索
     searchCatalog: function() {
@@ -200,13 +202,17 @@ export default {
     },
     gotoWorkOrder(selectedServices) {
       if (selectedServices && !this.$utils.isEmptyObj(selectedServices)) {
-        this.$router.push({
-          path: '/task-dispatch',
-          query: {
-            uuid: selectedServices.uuid
-          }
-        }); 
-        this.closeDialog();
+        if (this.mode === 'emit') {
+          this.closeDialog(selectedServices);
+        } else {
+          this.$router.push({
+            path: '/task-dispatch',
+            query: {
+              uuid: selectedServices.uuid
+            }
+          }); 
+          this.closeDialog();
+        }
       }
     }
   },

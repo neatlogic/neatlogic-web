@@ -36,7 +36,7 @@ export default {
   components: {
     TopNav: resolve => require(['@/views/components/topnav/topnav.vue'], resolve),
     LeftMenu: resolve => require(['@/views/components/leftmenu/leftmenu.vue'], resolve),
-    ProcessMenu: resolve => require(['./leftmenu/menu.vue'], resolve),
+    ProcessMenu: resolve => require(['@/views/pages/process/leftmenu/process-menu.vue'], resolve),
     LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve)
   },
   data() {

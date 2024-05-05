@@ -12,6 +12,7 @@ import process from './process';
 import report from './report';
 import rdm from './rdm';
 import documentonline from './documentonline';
+
 let moduleApiConfig = {};
 let moduleList = ['autoexec', 'cmdb', 'common', 'dashboard', 'deploy', 'framework', 'globalsearch', 'inspect', 'knowledge', 'pbc', 'process', 'report', 'rdm', 'documentonline']; // 用于自定义页面接口导入做浅拷贝
 let moduleConfig = {
