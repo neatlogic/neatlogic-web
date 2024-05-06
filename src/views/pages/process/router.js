@@ -25,9 +25,6 @@ const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-//任务集合
-const collectionManage = () => import('./collection/collection-manage.vue');
-const collectionEdit = () => import('./collection/collection-edit.vue');
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -71,26 +68,6 @@ let routerList = [
     path: '/welcome',
     name: 'welcome',
     component: welcome
-  },
-  {
-    path: '/collection-manage',
-    name: 'collection-manage',
-    component: collectionManage,
-    meta: {
-      title: '任务集合',
-      ismenu: true,
-      icon: 'tsfont-accessendpoint',
-      authority: 'PROCESS_BASE',
-      type: 'collection'
-    }
-  },
-  {
-    path: '/collection-edit',
-    name: 'collection-edit',
-    component: collectionEdit,
-    meta: {
-      ismenu: false
-    }
   },
   {
     path: '/task-overview-:taskTypeid?',
