@@ -1247,7 +1247,8 @@
     "internalmenu": "Internal menu",
     "custommenu": "Custom menu",
     "internalmenuoperationtips": "The internal menu can only be viewed with permission, and cannot add an editing menu",
-    "hidetab": "Hide Tabs"
+    "hidetab": "Hide Tabs",
+    "commercialauth": "Exclusive permissions for commercial modules"
   },
   "knowledge": {
     "document": "Document",

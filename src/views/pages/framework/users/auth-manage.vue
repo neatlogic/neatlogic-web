@@ -21,23 +21,22 @@
               v-model="searchVal"
               v-bind="searchConfig"
               @change="searchAuthData()"
-            >
-            </CombineSearcher>
+            ></CombineSearcher>
           </Col>
         </TsRow>
       </template>
       <div slot="content">
-        <TsTable
-          v-bind="tableConfig"
-          :theadList="theadList"
-        >
+        <TsTable v-bind="tableConfig" :theadList="theadList">
           <template slot="displayName" slot-scope="{ row }">
-            <Tooltip placement="top" :transfer="true">
+            <div>
               <span>{{ row.displayName }}</span>
-              <div slot="content">
-                {{ row.displayName }}{{ row.name ? `(${row.name})` : '' }}
-              </div>
-            </Tooltip>
+              <span v-if="row.name" class="text-grey">·{{ row.name }}</span>
+              <span v-if="row.commercial">
+                <Tooltip placement="top" :transfer="true" :content="$t('term.framework.commercialauth')">
+                  <span class="ml-xs tsfont-star text-warning"></span>
+                </Tooltip>
+              </span>
+            </div>
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
@@ -73,7 +72,7 @@ export default {
       },
       searchConfig: {
         search: true,
-        placeholder: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.keyword')}),
+        placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
         searchList: [
           {
             type: 'cascader',
@@ -83,7 +82,7 @@ export default {
             transfer: true,
             filterable: true,
             onChange: (val, selectedList) => {
-              this.defaultValueList = selectedList.filter(item => item.authority).map((v) => v.authority);
+              this.defaultValueList = selectedList.filter(item => item.authority).map(v => v.authority);
             }
           }
         ]
@@ -135,8 +134,8 @@ export default {
         if (res.Status == 'OK') {
           this.groupList = res.Return.groupList || [];
           if (this.$utils.isEmpty(this.groupName)) {
-            this.groupName = !this.$utils.isEmpty(this.groupList) ? this.groupList[0].value : ''; 
-          } 
+            this.groupName = !this.$utils.isEmpty(this.groupList) ? this.groupList[0].value : '';
+          }
         }
       });
     },
@@ -145,7 +144,7 @@ export default {
       this.loadingShow = true;
       let defaultValue = [];
       if (this.searchVal && !this.$utils.isEmpty(this.searchVal.defaultValue)) {
-        this.defaultValueList.forEach((item) => {
+        this.defaultValueList.forEach(item => {
           if (item) {
             defaultValue.push(...item.split(','));
           }
@@ -158,18 +157,21 @@ export default {
       };
       this.$addHistoryData('groupName', this.groupName);
       this.$addHistoryData('searchVal', this.searchVal);
-      this.$api.framework.auth.getAuthList(data).then(res => {
-        this.tableConfig.tbodyList = res.Return || [];
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.$api.framework.auth
+        .getAuthList(data)
+        .then(res => {
+          this.tableConfig.tbodyList = res.Return || [];
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     restoreHistory(historyData) {
       this.searchVal = historyData['searchVal'];
       this.groupName = historyData['groupName'];
     },
     toAuthAdduserPage(item) {
-      let {name = '', authGroup = ''} = item || {};
+      let { name = '', authGroup = '' } = item || {};
       this.$router.push({
         path: `auth-adduser`,
         query: { name: name, groupName: authGroup }
@@ -196,37 +198,33 @@ export default {
           routerConfig[key] = commercialRouterConfig[key];
         });
       for (let key in routerConfig) {
-        let groupItem = this.groupList.find((item) => item.value == key); 
+        let groupItem = this.groupList.find(item => item.value == key);
         if (key && !this.$utils.isEmpty(groupItem) && !this.$utils.isEmpty(groupItem.text)) {
           dataList.push({
             text: groupItem.text,
             value: key,
             children: []
           });
-          routerConfig[key].forEach((item) => {
+          routerConfig[key].forEach(item => {
             if (item.name && item.meta && item.meta.ismenu && item.meta.authority) {
-              let childrenItem = dataList.find((item) => item.value == key);
+              let childrenItem = dataList.find(item => item.value == key);
               if (!this.$utils.isEmpty(childrenItem)) {
                 childrenItem.children.push({
                   text: `${item.meta.title}`,
                   value: `${item.name}_${item.path}_${key}`,
-                  authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+                  authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '') : ''
                 });
               }
             }
           });
         }
       }
-      this.searchConfig.searchList.forEach((item) => {
+      this.searchConfig.searchList.forEach(item => {
         if (item.name == 'defaultValue') {
           item.dataList = dataList;
         }
       });
-      this.defaultValueList = dataList.flatMap(item =>
-        (item.children || []).flatMap(v =>
-          (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority) ? [v.authority] : []
-        )
-      ); // flatMap 将结果展开一级
+      this.defaultValueList = dataList.flatMap(item => (item.children || []).flatMap(v => (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority ? [v.authority] : []))); // flatMap 将结果展开一级
     },
     getCommercialRouter() {
       //商业版模块
@@ -242,7 +240,7 @@ export default {
           item.keys().forEach(routerPath => {
             const moduleNames = routerPath.split('/')[1];
             const moduleName = moduleNames.split('-').pop() || moduleNames;
-            const routeList = (item(routerPath).default || []);
+            const routeList = item(routerPath).default || [];
             routerConfig[moduleName] = routeList;
           });
         }
@@ -255,5 +253,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
