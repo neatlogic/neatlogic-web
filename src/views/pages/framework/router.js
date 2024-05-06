@@ -57,6 +57,7 @@ const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
+const regionManage = () => import('./region/region-manage.vue');//地域管理
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -151,6 +152,18 @@ let routerList = [
       authority: 'AUTHORITY_MODIFY',
       type: 'user',
       isBack: false
+    }
+  },
+  {
+    path: '/region-manage',
+    name: 'region-manage',
+    component: regionManage,
+    meta: {
+      title: '地域管理',
+      ismenu: true,
+      icon: 'tsfont-location-o',
+      authority: 'REGION_MODIFY',
+      type: 'user'
     }
   },
   {
