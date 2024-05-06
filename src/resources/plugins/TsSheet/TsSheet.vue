@@ -767,16 +767,19 @@ export default {
           width = rect.width;
         }
       }
-      if (this.value && !this.$utils.isEmpty(this.value.formWidth)) {
-        if (this.value.formWidth.type === 'inherit') {
-          this.containerWidth = this.tableSize.width;
-        } else if (this.value.formWidth.type === '%') {
-          this.containerWidth = width * this.value.formWidth.width / 100;
-        } else if (this.value.formWidth.type === 'px') {
-          this.containerWidth = this.value.formWidth.width;
+      //如果宽度为0，代表表单可能处于隐藏状态，这时不修改宽度
+      if (width) {
+        if (this.value && !this.$utils.isEmpty(this.value.formWidth)) {
+          if (this.value.formWidth.type === 'inherit') {
+            this.containerWidth = this.tableSize.width;
+          } else if (this.value.formWidth.type === '%') {
+            this.containerWidth = width * this.value.formWidth.width / 100;
+          } else if (this.value.formWidth.type === 'px') {
+            this.containerWidth = this.value.formWidth.width;
+          }
+        } else {
+          this.containerWidth = width;
         }
-      } else {
-        this.containerWidth = width;
       }
     },
     scrollContainer(event) {
