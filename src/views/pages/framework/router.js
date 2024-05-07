@@ -58,6 +58,7 @@ const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 const regionManage = () => import('./region/region-manage.vue');//地域管理
+const teamTagManage = () => import('./team/tag/team-tag-manage.vue');//分组标签管理
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -186,6 +187,19 @@ let routerList = [
       icon: 'tsfont-sla',
       authority: 'WORKTIME_MODIFY',
       type: 'user'
+    }
+  },
+  {
+    path: '/team-tag-manage',
+    name: 'team-tag-manage',
+    component: teamTagManage,
+    meta: {
+      title: '分组标签管理',
+      ismenu: true,
+      icon: 'tsfont-label-s',
+      authority: 'TEAM_MODIFY',
+      type: 'user',
+      isBack: false
     }
   },
   {

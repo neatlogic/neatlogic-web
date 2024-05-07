@@ -34,6 +34,7 @@ import server from './server/server';// 服务器
 import wechat from './wechat/wechat';// 企业微信
 import extramenu from './extramenu/extramenu'; //附加菜单
 import region from './region/region';//地域管理
+import teamtag from './team/teamtag';//分组标签管理
 
 export default {
   role,
@@ -70,5 +71,6 @@ export default {
   server,
   wechat,
   extramenu,
-  region
+  region,
+  teamtag
 };
