@@ -81,7 +81,6 @@ export default {
   },
   props: {
     selectNum: Number,
-    regionId: Number,
     value: Array,
     type: String
   },
@@ -131,13 +130,8 @@ export default {
   beforeMount() {},
 
   mounted() {
-    this.regionId && (this.teamList = this.$utils.deepClone(this.value) || []);
+    this.teamList = this.$utils.deepClone(this.value) || [];
     this.getTeamList();
-    if (this.type === 'worker') {
-      this.isNeedChildren = false;
-    } else {
-      this.isNeedChildren = true;
-    }
   },
 
   beforeUpdate() {},
@@ -198,7 +192,6 @@ export default {
       }
       let params = { 
         isActive: 1,
-        regionId: this.regionId,
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
       };
@@ -273,8 +266,7 @@ export default {
       let data = {
         needPage: false,
         parentUuid: node.uuid,
-        isActive: 1,
-        regionId: this.regionId
+        isActive: 1
       };
       this.$api.framework.group.getGroupTree(data).then(res => {
         let tbodyList = res.Return.tbodyList;

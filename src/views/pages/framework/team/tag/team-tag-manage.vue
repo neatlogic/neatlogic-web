@@ -37,16 +37,13 @@
                 "
               >
                 <span>{{ tag.matrixAttrValue }}</span>
-                <span style="padding-left: 2px" class="text-grey">({{ tag.id }})</span>
+                <!-- <span style="padding-left: 2px" class="text-grey">({{ tag.id }})</span> -->
                 <span class="navlist-action">
                   <Dropdown trigger="click" :transfer="true">
                     <span class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
                       <DropdownItem @click.native="editRename(childrenItem)">
-                        <div>{{ $t('page.rename') }}</div>
-                      </DropdownItem>
-                      <DropdownItem @click.native="editAuthorization(childrenItem)">
-                        <div>{{ $t('page.auth') }}</div>
+                        <div>{{ $t('page.edit') }}</div>
                       </DropdownItem>
                       <DropdownItem @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
                         <div>{{ $t('page.delete') }}</div>
@@ -60,24 +57,7 @@
         </div>
       </template>
       <template slot="content">
-        <TsTable
-          v-bind="tagListConfig"
-          :theadList="theadList"
-          @changeCurrent="changeCurrent"
-          @changePageSize="changePageSize"
-        >
-          <template slot="checkedChildren" slot-scope="{row}">
-            {{ row.checkedChildren == 1 ? "是":"否" }}
-          </template>
-          <template slot="action" slot-scope="{ row }">
-            <div class="tstable-action">
-              <ul class="tstable-action-ul">
-                <li class="tsfont-edit" @click="editRow(row)">编辑分组</li>
-                <li class="tsfont-trash-o" @click="delRow(row)">删除</li>
-              </ul>
-            </div>
-          </template>
-        </TsTable>
+        <TeamTagTeam :tagIdList="tagIdList"></TeamTagTeam>
       </template>
     </TsContain>
     <TeamTagTypeDialog v-if="isDialogShow" @close="closeDialog"></TeamTagTypeDialog>
@@ -89,14 +69,15 @@ export default {
   components: {
     TeamTagTypeDialog: resolve => require(['./team-tag-type'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TeamTagTeam: resolve => require(['./team-tag-team'], resolve)
   },
   directives: {},
   props: [''],
   data() {
     return {
       tagId: null,
+      tagIdList: [],
       catalogHeight: `calc(100vh - 80px - 64px - 50px - 20px )`, // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
       isDialogShow: false,
       searchVal: {}, //搜索下拉插件的值
@@ -171,10 +152,14 @@ export default {
       this.isDialogShow = false;
     },
     click(tagId) {
-      this.tagId = tagId;
+      if (this.tagIdList.some(t => t == tagId)) {
+        this.tagIdList = this.tagIdList.filter(function(t) { return t != tagId; });
+      } else {
+        this.tagIdList.push(tagId);
+      }
     },
     isActive(tagId) {
-      return this.tagId == tagId;
+      return this.tagIdList.some(t => t == tagId);
     }
   },
   computed: {
