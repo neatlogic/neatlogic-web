@@ -581,7 +581,8 @@
     "customexpression": "自定义表达式",
     "region": "地域",
     "processtaskcollection": "工单集合",
-    "phase": "·阶段"
+    "phase": "·阶段",
+    "channel": "通道"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

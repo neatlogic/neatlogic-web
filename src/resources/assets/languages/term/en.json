@@ -582,7 +582,8 @@
     "customexpression": "Custom expression",
     "region": "region",
     "processtaskcollection": "Work Order Collection",
-    "phase": "·Stage"
+    "phase": "·Stage",
+    "channel": "passageway"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

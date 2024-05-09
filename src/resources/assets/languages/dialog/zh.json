@@ -43,6 +43,7 @@
     "lockconfirm": "锁定确认"
   },
   "content": {
+    "startconfirm": "是否确认开始当前{target}？",
     "revocatetargetconfirm": "是否确认撤销当前{target}？",
     "passtargetconfirm": "是否确认通过当前{target}？",
     "rejecttargetconfirm": "是否确认驳回当前{target}？",
