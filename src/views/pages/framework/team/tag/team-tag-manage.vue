@@ -39,13 +39,13 @@
                 <span>{{ tag.matrixAttrValue }}</span>
                 <!-- <span style="padding-left: 2px" class="text-grey">({{ tag.id }})</span> -->
                 <span class="navlist-action">
-                  <Dropdown trigger="click" :transfer="true">
+                  <Dropdown trigger="click" :transfer="true" @click.stop>
                     <span class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
-                      <DropdownItem @click.native="editRename(childrenItem)">
+                      <DropdownItem @click.native="editTag(childrenItem)">
                         <div>{{ $t('page.edit') }}</div>
                       </DropdownItem>
-                      <DropdownItem @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
+                      <DropdownItem @click.native="deleteTag(childrenItem.name, childrenItem.uuid, index)">
                         <div>{{ $t('page.delete') }}</div>
                       </DropdownItem>
                     </DropdownMenu>
@@ -60,14 +60,14 @@
         <TeamTagTeam :tagIdList="tagIdList"></TeamTagTeam>
       </template>
     </TsContain>
-    <TeamTagTypeDialog v-if="isDialogShow" @close="closeDialog"></TeamTagTypeDialog>
+    <TeamTagDialog v-if="isDialogShow" @close="closeDialog" @save="saveTeamTag"></TeamTagDialog>
   </div>
 </template>
 <script>
 export default {
   name: 'CatalogManage',
   components: {
-    TeamTagTypeDialog: resolve => require(['./team-tag-type'], resolve),
+    TeamTagDialog: resolve => require(['./team-tag'], resolve),
     CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TeamTagTeam: resolve => require(['./team-tag-team'], resolve)
@@ -160,6 +160,9 @@ export default {
     },
     isActive(tagId) {
       return this.tagIdList.some(t => t == tagId);
+    },
+    saveTeamTag(data) {
+      this.isDialogShow = false;
     }
   },
   computed: {
@@ -199,6 +202,7 @@ export default {
   }
   .navlist-li {
     &:hover{
+      background: var(--primary-grey, #e7f0ff);
       .navlist-action {
         display: block;
       }

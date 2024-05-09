@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template slot="topLeft">
-        <span v-if="tagIdList.length == 1" class="text-action tsfont-plus" @click="addTeam">{{ $t('page.group') }}</span>
+        <span v-if="tagIdList.length >0" class="text-action tsfont-plus" @click="addTeam">{{ $t('page.group') }}</span>
         <Tooltip
           v-else
           max-width="400"
@@ -11,12 +11,12 @@
         >
           <span class="text-action text-disabled tsfont-plus">{{ $t('page.group') }}</span>
           <div slot="content">
-            请先选择且仅能选择左侧一个标签
+            请先选择左侧标签
           </div>
         </Tooltip>
       </template>
       <template slot="content">
-        <div class="content bg-op pt-md radius-lg">
+        <div class="content pt-md radius-lg">
           <div v-if="tagIdList.length > 0" class="team-manage">
             <div v-if="tableData && tableData.tbodyList && tableData.tbodyList.length> 0">
               <ul
@@ -147,7 +147,7 @@ export default {
       return data;
     },
     addTeam() {
-      if (this.tagIdList && this.tagIdList.length == 1) {
+      if (this.tagIdList && this.tagIdList.length > 0) {
         this.isDialogShow = true;
       }
     },
@@ -155,7 +155,7 @@ export default {
     addSave(isSave) {
       if (isSave) {
         this.teamList = this.$refs.teamList.getValue();
-        let params = {tagId: this.tagIdList[0], teamList: this.teamList};
+        let params = {tagIdList: this.tagIdList, teamList: this.teamList};
         this.$api.framework.teamtag.saveTeamTagTeam(params).then(res => {
           this.searchData();
         });

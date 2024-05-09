@@ -989,5 +989,6 @@
   "licenseexpired": "已失效",
   "licenseend": "已终止",
   "teamtagtypemanage": "类型管理",
-  "workcenternoauthbatchdelete": "以下工单:{target},没有权限删除"
+  "workcenternoauthbatchdelete": "以下工单:{target},没有权限删除",
+  "teamtagteamwithoutuniqueidentifier": "该矩阵存在属性缺少唯一标识，请补全后重试"
 }
