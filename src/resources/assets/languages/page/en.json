@@ -985,5 +985,6 @@
   "design": "design",
   "licensedberror": "Please contact the administrator to verify the value of the db.URL parameter in the system configuration and authorize again",
   "licenseexpired": "Invalid",
-  "licenseend": "Terminated"
+  "licenseend": "Terminated",
+  "workcenternoauthbatchdelete": "The following work order : {target}, does not have permission to delete"
 }

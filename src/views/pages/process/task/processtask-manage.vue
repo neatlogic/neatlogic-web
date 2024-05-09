@@ -637,7 +637,22 @@ export default {
             this.$api.process.processtask.batchDelete(data)
               .then(res => {
                 if (res.Status == 'OK') {
-                  this.$Message.success(this.$t('message.deletesuccess'));
+                  const withoutAuthTaskList = res.Return;
+                  if (!this.$utils.isEmpty(withoutAuthTaskList)) {
+                    let withoutAuthTasks = '';
+                    withoutAuthTaskList.forEach(processTask => { 
+                      withoutAuthTasks += processTask.title + '(' + processTask.serialNumber + ')、'; 
+                    });
+                    withoutAuthTasks = withoutAuthTasks.slice(0, -1);
+                    this.$Notice.warning({
+                      title: this.$t('message.deletefailed'),
+                      desc: this.$t('page.workcenternoauthbatchdelete', {target: withoutAuthTasks})
+                    });
+                  } else {
+                    this.$Notice.success({
+                      title: this.$t('message.deletesuccess')
+                    });
+                  }
                   this.refreshProcessTask();
                   this.selectedWorkList = [];
                   vnode.isShow = false;
