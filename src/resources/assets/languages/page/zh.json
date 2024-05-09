@@ -988,5 +988,6 @@
   "licensedberror": "请联系管理员核对系统配置db.url参数的值，重新授权",
   "licenseexpired": "已失效",
   "licenseend": "已终止",
-  "teamtagtypemanage": "类型管理"
+  "teamtagtypemanage": "类型管理",
+  "workcenternoauthbatchdelete": "以下工单:{target},没有权限删除"
 }
