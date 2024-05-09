@@ -10,7 +10,7 @@
           type="primary"
           ghost
           :disabled="$utils.isEmpty(selectedWorkList)"
-          @click.native="handleOpen"
+          @click.native="handleToggle"
         >
           {{ $t('page.batchoperation') }}
           <span class="tsfont-down"></span>
@@ -18,9 +18,9 @@
         <DropdownMenu v-if="visible" slot="list">
           <DropdownItem @click.native="batchAction('batchAbort')">{{ $t('page.cancel') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchUrge')">{{ $t('page.urge') }}</DropdownItem>
-          <DropdownItem @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
+          <DropdownItem v-if="$AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchPause')">{{ $t('page.pause') }}</DropdownItem>
-          <DropdownItem @click.native="batchAction('batchDelete')">{{ $t('page.delete') }}</DropdownItem>
+          <DropdownItem v-if="$AuthUtils.hasRole('PROCESSTASK_MODIFY') || getIsDraft" @click.native="batchAction('batchDelete')">{{ $t('page.delete') }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
       <!--我的待办-->
@@ -156,7 +156,8 @@ export default {
     selectedWorkList: {
       type: Array,
       default: () => []
-    }
+    },
+    workcenterUuid: String
   },
   data() {
     return {
@@ -213,8 +214,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleOpen() {
-      this.visible = true;
+    handleToggle() {
+      if (this.visible) {
+        this.visible = false;
+      } else {
+        this.visible = true;
+      }
     },
     closeTypeEditDialog(needRefresh) {
       this.isTypeDialogShow = false;
@@ -483,6 +488,13 @@ export default {
         return this.workcenterData.isMine;
       }
       return false;
+    },
+    getIsDraft() {
+      if (this.workcenterUuid === 'draftProcessTask') {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   watch: {
