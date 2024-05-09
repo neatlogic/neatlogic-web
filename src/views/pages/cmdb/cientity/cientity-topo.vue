@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="padding">
-      <div class="grid">
+    <div :class="{ padding: mode === 'window' }">
+      <div v-if="needToolbar" class="grid">
         <div class="action-group">
           <div class="action-item">
             <Dropdown placement="bottom-start">
@@ -81,7 +81,7 @@
           ></TsFormInput>
         </div>
       </div>
-      <div v-if="globalAttrList && globalAttrList.length > 0" class="mb-md">
+      <div v-if="needToolbar && globalAttrList && globalAttrList.length > 0" class="mb-md">
         <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
           <span class="mr-md">
             <b class="text-grey">{{ attr.label }}</b>
@@ -98,7 +98,7 @@
         </span>
       </div>
       <div style="position: relative">
-        <div v-if="currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
+        <div v-if="needToolbar && currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
           <span v-for="(p, pindex) in currentTemplate.config.ciRelList" :key="pindex">
             <span v-if="pindex === 0">
               <Tag color="success">{{ p.ciLabel }}({{ p.ciName }})</Tag>
@@ -165,8 +165,11 @@ export default {
     CiTopoTemplateEdit: resolve => require(['@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue'], resolve)
   },
   props: {
+    mode: { type: String, default: 'window' }, //window|dialog
+    needToolbar: { type: Boolean, default: true },
     ciEntityId: { type: Number },
-    ciId: { type: Number }
+    ciId: { type: Number },
+    height: { type: Number }
   },
   data() {
     return {
@@ -404,7 +407,7 @@ export default {
           .selectWithoutDataPropagation('svg')
           .transition()
           .attr('width', graphEl.offsetWidth)
-          .attr('height', window.innerHeight - 40 - this.getGraphTop(graphEl).y);
+          .attr('height', this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y);
       }
     },
     initGraph() {
@@ -416,7 +419,7 @@ export default {
         graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
         this.graph.graphviz = graph
           .graphviz()
-          .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+          .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
           .width(graphEl.offsetWidth - 10)
           .zoom(true)
           .fit(false)
@@ -445,9 +448,7 @@ export default {
               }
             }
           })
-          .on('end', () => {
-            //console.log('done');
-          });
+          .on('end', () => {});
         d3.select(window).on('resize', this.resizeSVG);
       }
       //}, 0);
@@ -466,7 +467,7 @@ export default {
             this.loadImage(nodesString);
             this.graph.graphviz
               .transition()
-              .height(window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+              .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
               .width(graphEl.offsetWidth - 10)
               .renderDot(nodesString);
 

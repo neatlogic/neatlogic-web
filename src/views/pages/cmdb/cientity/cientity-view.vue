@@ -297,6 +297,7 @@ export default {
   async mounted() {
     this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
     this.ciEntityId = Math.floor(this.$route.params['id']) || this.propCiEntityId;
+    this.showContent = this.$route.query['show'] || this.showContent;
     await this.getCiEntityById();
     this.getAttrByCiId();
     this.getRelByCiId();
