@@ -109,7 +109,7 @@
                   hide-info
                   :percent="99"
                   status="active"
-                  style="width:50px"
+                  style="width: 50px"
                 />
               </span>
               <span v-else>
@@ -138,10 +138,10 @@
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li v-if="row.collectMode == 'initiative' && row.status != 'doing'" class="tsfont-play-o" @click="execCiCollection(row)">执行</li>
-                  <li v-if="row.collectMode == 'initiative'" class="tsfont-timer" @click="addSchedulePolicy(row)">定时策略</li>
-                  <li class="tsfont-edit" @click="editCiCollection(row)">编辑</li>
-                  <li class="tsfont-trash-o" @click="deleteCiCollection(row)">删除</li>
+                  <li v-if="row.collectMode == 'initiative' && row.status != 'doing'" class="tsfont-play-o" @click="execCiCollection(row)">{{ $t('page.execute') }}</li>
+                  <li v-if="row.collectMode == 'initiative'" class="tsfont-timer" @click="addSchedulePolicy(row)">{{ $t('term.pbc.cromexpression') }}</li>
+                  <li class="tsfont-edit" @click="editCiCollection(row)">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-trash-o" @click="deleteCiCollection(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>
             </template>
@@ -163,6 +163,11 @@
       @close="closeSyncPolicyDialog"
     ></SyncPolicyEdit>
     <CollectionData v-if="isCollectionDataShow" :collection="currentCollection" @close="closeCollectionData"></CollectionData>
+    <LaunchConfirmDialog
+      v-if="isLaunchShow"
+      :collection="currentCollection"
+      @close="closeLaunchDialog"
+    ></LaunchConfirmDialog>
   </div>
 </template>
 <script>
@@ -177,12 +182,14 @@ export default {
     CollectionData: resolve => require(['./collection-data.vue'], resolve),
     CollectionTypeList: resolve => require(['./collection-type-list.vue'], resolve),
     TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve)
+    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
+    LaunchConfirmDialog: resolve => require(['@/views/pages/cmdb/sync/launch-confirm-dialog.vue'], resolve)
   },
   props: {},
   data() {
     return {
       timmer: null,
+      isLaunchShow: false,
       isLoading: false,
       contentHeight: '100',
       isEditDialogShow: false,
@@ -249,6 +256,13 @@ export default {
   },
   destroyed() {},
   methods: {
+    closeLaunchDialog(idList) {
+      this.isLaunchShow = false;
+      this.currentCollection = null;
+      if (idList) {
+        this.refreshSyncCiCollection(idList);
+      }
+    },
     batchRun() {
       if (this.selectedSync.length > 0) {
         this.$createDialog({
@@ -340,12 +354,15 @@ export default {
       });
     },
     execCiCollection(row) {
+      this.currentCollection = row;
+      this.isLaunchShow = true;
+      /*
       this.$createDialog({
-        title: '执行确认',
+        title: this.$t('dialog.title.executeconfirm'),
         content: '确定执行采集映射：' + row.collectionName + ' -> ' + row.ciLabel + '？',
         'on-ok': vnode => {
           this.$api.cmdb.sync.launchSyncCiCollection(row.id).then(res => {
-            this.$Message.success('执行成功');
+            this.$Message.success(this.$t('message.runsuccess'));
             vnode.isShow = false;
             this.refreshSyncCiCollection([row.id]);
           });
@@ -353,7 +370,7 @@ export default {
         'on-cancel': vnode => {
           vnode.isShow = false;
         }
-      });
+      });*/
     },
     addSyncCiCollection() {
       this.currentCiCollectionId = null;

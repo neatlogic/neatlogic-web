@@ -296,5 +296,6 @@
     "noauthtoedit": "您没有权限编辑当前架构图",
     "isactivenotfound": "当前架构图不存在已激活版本",
     "editingversionirregular": "当前版本处于非编辑状态，不能进行编辑"
-  }
+  },
+  "runsuccess": "执行成功"
 }

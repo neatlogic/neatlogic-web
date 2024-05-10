@@ -296,5 +296,6 @@
     "noauthtoedit": "You do not have permission to edit the current architecture diagram",
     "isactivenotfound": "The current architecture diagram does not have an activated version",
     "editingversionirregular": "The current version is in a non editing state and cannot be edited"
-  }
+  },
+  "runsuccess": "Execution successful"
 }
