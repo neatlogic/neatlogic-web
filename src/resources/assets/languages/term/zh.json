@@ -225,7 +225,8 @@
     "relmapping": "关系映射",
     "globalattrmapping": "全局属性映射",
     "matchfield": "匹配字段",
-    "supportmultimodelfile": "帮助：支持同时导入多个模型文件"
+    "supportmultimodelfile": "帮助：支持同时导入多个模型文件",
+    "invokeattr": "引用属性"
   },
   "process": {
     "workordercenter": "工单中心",

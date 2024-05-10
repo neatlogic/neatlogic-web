@@ -598,12 +598,13 @@ export default {
           typeList.push(uniqueObj);
         }
         const manualObj = { type: 'manual', label: this.$t('term.cmdb.manualinput'), elementList: [], isShow: false };
-        manualObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'mt');
+        manualObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'mt' && d.element.type !== 'expression');
+        console.log(JSON.stringify(manualObj.elementList, null, 2));
         if (manualObj.elementList.length > 0) {
           typeList.push(manualObj);
         }
         const autoObj = { type: 'auto', label: this.$t('page.autocollect'), elementList: [], isShow: true };
-        autoObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'at');
+        autoObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'at' && d.element.type !== 'expression');
         if (autoObj.elementList.length > 0) {
           typeList.push(autoObj);
         }
