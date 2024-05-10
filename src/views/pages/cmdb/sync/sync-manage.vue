@@ -123,10 +123,12 @@
                     word-wrap
                     width="400"
                     :transfer="true"
-                    :content="row.error"
-                    placement="right"
                   >
                     <span class="text-error tsfont-warning-s"></span>
+                    <div slot="content">
+                      <div>{{ row.error }}</div>
+                      <div style="text-align:right"><Button v-clipboard="row.error" v-clipboard:success="clipboardSuccess" size="small">{{ $t('page.copy') }}</Button></div>
+                    </div>
                   </Poptip>
                 </span>
               </span>
@@ -171,6 +173,8 @@
   </div>
 </template>
 <script>
+import clipboard from '@/resources/directives/clipboard.js';
+
 export default {
   name: '',
   components: {
@@ -185,6 +189,7 @@ export default {
     TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
     LaunchConfirmDialog: resolve => require(['@/views/pages/cmdb/sync/launch-confirm-dialog.vue'], resolve)
   },
+  directives: { clipboard},
   props: {},
   data() {
     return {
@@ -256,6 +261,9 @@ export default {
   },
   destroyed() {},
   methods: {
+    clipboardSuccess() {
+      this.$Message.success(this.$t('message.copysuccess'));
+    },
     closeLaunchDialog(idList) {
       this.isLaunchShow = false;
       this.currentCollection = null;

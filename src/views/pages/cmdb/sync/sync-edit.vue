@@ -110,7 +110,7 @@
       </template>
       <template v-slot:footer>
         <Button @click="close(false)">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+        <Button v-if="!isLoading" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
