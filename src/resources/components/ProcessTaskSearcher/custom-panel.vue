@@ -174,7 +174,7 @@ export default {
               newD['type'] = 'form';
               newD['expressionList'] = d.expressionList;
               try {
-                newD['config'] = JSON.parse(d.config);
+                newD['config'] = d.config;
               } catch (e) {
                 console.error(e);
               }
@@ -363,8 +363,8 @@ export default {
 .condition-grid {
   display: grid;
   width: 100%;
-  grid-gap: 12px;
-  grid-template-columns: 120px 150px auto 50px;
+  grid-gap: 10px;
+  grid-template-columns: 100px 100px auto 50px;
 }
 </style>
 <style lang="less">
