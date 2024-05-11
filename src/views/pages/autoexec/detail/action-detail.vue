@@ -740,7 +740,7 @@ export default {
               }
               this.versionId = res.Return.id;
               canSave = true; //保存成功之后才可以进行下一步，在路由那里判断
-              this.$router.push({
+              this.$router.replace({
                 path: '/action-detail',
                 query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
               });
@@ -827,7 +827,7 @@ export default {
                 this.showReleaseNewVersionDialog = true;
               } else {
                 this.$Message.success(this.$t('message.commitsuccess'));
-                this.$router.push({
+                this.$router.replace({
                   path: '/action-detail',
                   query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
                 });
@@ -879,7 +879,7 @@ export default {
     },
     cancelPassVersionAction() {
       this.showReleaseNewVersionDialog = false;
-      this.$router.push({
+      this.$router.replace({
         path: '/action-detail',
         query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
       });
@@ -898,7 +898,7 @@ export default {
           this.activeVersionId = this.versionId;
           this.versionBasicInfo.status = 'passed';
           this.versionBasicInfo.isActive = 1;
-          this.$router.push({
+          this.$router.replace({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -915,7 +915,7 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.versionStatus = 'draft';
           this.versionBasicInfo.status = 'draft';
-          this.$router.push({
+          this.$router.replace({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -1439,7 +1439,7 @@ export default {
     switchVersion(id, type, versionId) {
       this.versionType = type;
       if (type == 'submitted') {
-        this.$router.push({
+        this.$router.replace({
           path: '/action-detail',
           query: {
             id: id,
@@ -1447,7 +1447,7 @@ export default {
           }
         });
       } else {
-        this.$router.push({
+        this.$router.replace({
           path: '/action-detail',
           query: {
             id: id,
