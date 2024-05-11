@@ -6,7 +6,7 @@
         <div class="bg-grey padding radius-md">
           <div v-for="(conditionData, cindex) in conditionGroup.conditionList" :key="conditionData.uuid">
             <div class="condition-grid">
-              <div>{{ getConditionConfigByConditionData(conditionGroup, conditionData).handlerName }}：</div>
+              <div class="overflow" :title="getConditionConfigByConditionData(conditionGroup, conditionData).handlerName">{{ getConditionConfigByConditionData(conditionGroup, conditionData).handlerName }}：</div>
               <div>
                 <TsFormSelect
                   ref="expressionList"
@@ -364,7 +364,7 @@ export default {
   display: grid;
   width: 100%;
   grid-gap: 10px;
-  grid-template-columns: 100px 100px auto 50px;
+  grid-template-columns: 120px 150px auto 50px;
 }
 </style>
 <style lang="less">
