@@ -583,7 +583,8 @@
     "region": "地域",
     "processtaskcollection": "工单集合",
     "phase": "·阶段",
-    "channel": "通道"
+    "channel": "通道",
+    "saveandstart": "保存并开始"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

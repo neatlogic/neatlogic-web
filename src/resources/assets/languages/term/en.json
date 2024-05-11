@@ -584,7 +584,8 @@
     "region": "region",
     "processtaskcollection": "Work Order Collection",
     "phase": "·Stage",
-    "channel": "passageway"
+    "channel": "passageway",
+    "saveandstart": "Save and start"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
