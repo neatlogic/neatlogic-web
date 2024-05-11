@@ -26,6 +26,7 @@
       <div v-for="(item, index) in tableList" :key="index">
         <div class="h3 padding-sm">{{ item.type.label }}</div>
         <TsTable
+          :fixedHeader="false"
           :theadList="theadList"
           v-bind="filterTypeFields(item)"
           @changeCurrent="(currentPage) => changeCurrent(currentPage, item, index)"
