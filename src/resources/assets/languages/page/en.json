@@ -988,5 +988,6 @@
   "licenseend": "Terminated",
   "teamtagtypemanage": "Type management",
   "workcenternoauthbatchdelete": "The following work order : {target}, does not have permission to delete",
-  "teamtagteamwithoutuniqueidentifier": "There is a missing unique identifier for the attribute in this matrix. Please complete it and try again"
+  "teamtagteamwithoutuniqueidentifier": "There is a missing unique identifier for the attribute in this matrix. Please complete it and try again",
+  "teamtageditcheckedchildren": "If so, then the tag opens the \"Select Child Nodes\" option"
 }

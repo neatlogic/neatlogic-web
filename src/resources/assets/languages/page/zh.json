@@ -990,5 +990,6 @@
   "licenseend": "已终止",
   "teamtagtypemanage": "类型管理",
   "workcenternoauthbatchdelete": "以下工单:{target},没有权限删除",
-  "teamtagteamwithoutuniqueidentifier": "该矩阵存在属性缺少唯一标识，请补全后重试"
+  "teamtagteamwithoutuniqueidentifier": "该矩阵存在属性缺少唯一标识，请补全后重试",
+  "teamtageditcheckedchildren": "如果是，则该标签开放“选中子节点“选项"
 }

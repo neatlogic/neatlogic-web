@@ -42,10 +42,7 @@
                   <Dropdown trigger="click" :transfer="true" @click.stop>
                     <span class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
-                      <DropdownItem @click.native="editTag(childrenItem)">
-                        <div>{{ $t('page.edit') }}</div>
-                      </DropdownItem>
-                      <DropdownItem @click.native="deleteTag(childrenItem.name, childrenItem.uuid, index)">
+                      <DropdownItem @click.native="deleteTag(tag.id)">
                         <div>{{ $t('page.delete') }}</div>
                       </DropdownItem>
                     </DropdownMenu>
@@ -60,7 +57,7 @@
         <TeamTagTeam :tagIdList="tagIdList"></TeamTagTeam>
       </template>
     </TsContain>
-    <TeamTagDialog v-if="isDialogShow" @close="closeDialog" @save="saveTeamTag"></TeamTagDialog>
+    <TeamTagDialog v-if="isDialogShow" @close="closeDialog"></TeamTagDialog>
   </div>
 </template>
 <script>
@@ -150,6 +147,7 @@ export default {
     },
     closeDialog() {
       this.isDialogShow = false;
+      this.searchTableData();
     },
     click(tagId) {
       if (this.tagIdList.some(t => t == tagId)) {
@@ -161,8 +159,11 @@ export default {
     isActive(tagId) {
       return this.tagIdList.some(t => t == tagId);
     },
-    saveTeamTag(data) {
-      this.isDialogShow = false;
+    deleteTag(tagId) {
+      let data = {tagId: tagId};
+      this.$api.framework.deleteTeamTag(data).then(res => {
+        searchTableData(1);
+      });
     }
   },
   computed: {
