@@ -121,7 +121,6 @@
   </div>
 </template>
 <script>
-import {store} from '@/views/pages/process/flow/flowedit/floweditState.js';
 export default {
   name: '',
   components: {
@@ -133,6 +132,7 @@ export default {
     Singlejobpolicy: resolve => require(['./joppolicy/singlejobpolicy.vue'], resolve)
   },
   props: {
+    allFormitemList: Array,
     config: Object
   },
   data() {
@@ -386,9 +386,6 @@ export default {
   },
   filter: {},
   computed: {
-    allFormitemList() {
-      return store.allFormitemList;
-    },
     autoexecParamsList() {
       let dataList = [];
       if (this.autoexecConfig.executeParamList && this.autoexecConfig.executeParamList.length) {
