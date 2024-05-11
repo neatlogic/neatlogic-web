@@ -404,7 +404,7 @@ export default {
           this.versionId = res.Return.versionId;
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
           if (!isLeave) {
-            this.$router.push({
+            this.$router.replace({
               path: '/script-detail',
               query: {
                 versionId: this.versionId
@@ -472,7 +472,7 @@ export default {
           }
         });
       } else {
-        this.$router.push({
+        this.$router.replace({
           path: '/script-detail',
           query: {
             versionId: id,
@@ -581,7 +581,7 @@ export default {
       this.$api.autoexec.script.switchVersion({ versionId: this.versionId }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
-          this.$router.push({
+          this.$router.replace({
             path: '/script-detail',
             query: {
               versionId: this.versionId,
@@ -613,7 +613,7 @@ export default {
           query: param
         });
       } else {
-        this.$router.push({
+        this.$router.replace({
           path: '/script-detail',
           query: param
         });
