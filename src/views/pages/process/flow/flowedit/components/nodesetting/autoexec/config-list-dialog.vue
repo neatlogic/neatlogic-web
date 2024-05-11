@@ -20,7 +20,12 @@
             </div>
           </div>
           <div v-show="item.isShow" class="autoexec-content border-color padding">
-            <AutoexecConfig ref="autoexecConfig" :config="item" @update="(config)=>{setConfig(item, config,index)}"></AutoexecConfig>
+            <AutoexecConfig
+              ref="autoexecConfig"
+              :allFormitemList="allFormitemList"
+              :config="item"
+              @update="(config)=>{setConfig(item, config,index)}"
+            ></AutoexecConfig>
           </div>
         </div>
       </div>
@@ -38,19 +43,22 @@ export default {
     AutoexecConfig: resolve => require(['./autoexec-config.vue'], resolve)
   },
   props: {
+    formUuid: String,
     list: Array
   },
   data() {
     return {
       loadingShow: true,
       configList: [],
-      isValid: true
+      isValid: true,
+      allFormitemList: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
+    await this.getFormItemList();
     this.init();
   },
   beforeUpdate() {},
@@ -70,6 +78,21 @@ export default {
         this.addAutoexecList();
       }
       this.loadingShow = false;
+    },
+    getFormItemList() {
+      if (!this.formUuid) {
+        this.allFormitemList = [];
+        return;
+      }
+      let data = {
+        formUuid: this.formUuid,
+        tag: 'common'
+      };
+      return this.$api.framework.form.getFormItemList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.allFormitemList = res.Return || [];
+        }
+      });
     },
     addAutoexecList() {
       let config = {

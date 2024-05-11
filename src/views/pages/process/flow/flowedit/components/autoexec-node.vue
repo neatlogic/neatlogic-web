@@ -56,6 +56,7 @@
       :defaultAutoexecConfig="autoexecConfig"
       :allPrevNodes="allPrevNodes"
       :uuid="uuid"
+      :formUuid="formUuid"
     ></AutoexecSetting>
     <!-- 初步处理人 -->
     <div v-if="!isStart">

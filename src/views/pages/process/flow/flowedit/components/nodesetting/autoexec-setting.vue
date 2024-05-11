@@ -53,7 +53,12 @@
         {{ $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}) }}
       </div>
     </div>
-    <ConfigListDialog v-if="isShow" :list="autoexecConfig.configList" @close="closeConfigList"></ConfigListDialog>
+    <ConfigListDialog
+      v-if="isShow"
+      :formUuid="formUuid"
+      :list="autoexecConfig.configList"
+      @close="closeConfigList"
+    ></ConfigListDialog>
   </div>
 </template>
 <script>
@@ -69,7 +74,8 @@ export default {
   props: {
     defaultAutoexecConfig: Object,
     allPrevNodes: Array, //所有前置节点，用于判断是否是开始节点
-    uuid: String //节点uuid
+    uuid: String, //节点uuid
+    formUuid: String
   },
   data() {
     return {
