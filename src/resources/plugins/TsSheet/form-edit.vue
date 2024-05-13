@@ -583,10 +583,11 @@ export default {
             }
           });
         });
-        this.$set(data, 'formConfig', formConfig);
         // 自定义组件，消费配置
         let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
-        this.$set(data, 'formExtendConfig', formExtendConfig);
+        this.$set(formConfig, 'formExtendConfig', formExtendConfig);
+        this.$set(data, 'formConfig', formConfig);
+       
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;
