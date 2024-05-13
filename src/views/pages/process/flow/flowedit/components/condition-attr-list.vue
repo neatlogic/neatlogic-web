@@ -68,14 +68,14 @@ export default {
     },
     getScriptParam(attr) {
       let str = '';
-      if (this.parentAttr) {
-        const ps = this.parentAttr.split('\.');
+      if (this.parentAttrLabel) {
+        const ps = this.parentAttrLabel.split('\.');
 
         ps.forEach(p => {
           str += "['" + p + "'][?]";
         });
       }
-      return '/*' + (this.parentAttrLabel ? this.parentAttrLabel + '.' : '') + attr.label + '*/ data' + str + "['" + attr.name + "']";
+      return '/*' + (this.parentAttrLabel ? this.parentAttrLabel + '.' : '') + attr.label + '*/ data' + str + "['" + attr.label + "']";
     }
   },
   filter: {},

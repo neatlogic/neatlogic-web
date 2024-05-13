@@ -988,5 +988,8 @@
   "licenseend": "Terminated",
   "workcenternoauthbatchdelete": "The following work order : {target}, does not have permission to delete",
   "nocommon": "There is currently no explanation",
-  "deploynoexecuteconfigauthtip": "You do not have the \"execute or edit configuration permissions\" for the current application. Please contact the administrator for authorization"
+  "deploynoexecuteconfigauthtip": "You do not have the \"execute or edit configuration permissions\" for the current application. Please contact the administrator for authorization",
+  "deploy": {
+    "contactwithadmin": "Please contact the administrator for authorization"
+  }
 }
