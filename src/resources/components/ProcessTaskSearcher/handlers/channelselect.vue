@@ -172,7 +172,7 @@ export default {
               newD['formHandler'] = d.handler; //ex:formselect
               newD['type'] = 'form';
               try {
-                newD['config'] = JSON.parse(d.config);
+                newD['config'] = d.config;
               } catch (e) {
                 console.error(e);
               }
