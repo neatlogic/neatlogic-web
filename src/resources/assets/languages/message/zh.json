@@ -138,7 +138,7 @@
     "atleastonestaticsource": "请至少添加一个静态数据源下拉选项",
     "plecompletecondition": "请填写完整过滤条件",
     "teamcounttarget": "共计选中{target}个分组",
-    "sqlactiondesc": "增加监控：开始监控指定sql，删除监控：解除解控指定sql，清空所有：清空所有sql监控",
+    "sqlactiondesc": "增加监控：开始监控指定sql，删除监控：解除监控指定sql，清空所有：清空所有sql监控",
     "sqliddesc": "sql id是mybatis sql语句mapper文件中的语句id，请联系研发获取，如果添加*，代表监控所有SQL语句，系统最多只会保存最新的1000条审计记录。",
     "stopusetip": "停用后，公告将从消息列表消失",
     "privatematrixtip": "当前矩阵为私有数据源，无法删除",
