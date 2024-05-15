@@ -1763,7 +1763,7 @@
     "sealplate": "封版",
     "selectaddversion": "请选中应用或模块后再创建版本",
     "noconfigauthtip": "您没有当前应用的“编辑配置权限”，请联系管理员授权",
-    "notversionproductauth": "您没有版本&制品管理权限，请联系管理员授权",
+    "notversionproductauth": "您没有当前应用的“版本&制品管理”权限，请联系管理员授权",
     "failurecount": "失败${target}次",
     "flowchart": "流程图",
     "discarddraft": "丢弃草稿",
@@ -2038,7 +2038,9 @@
     "addcodeline": "新增代码行",
     "deletefilecount": "删除文件数",
     "modifyfilecount": "修改文件数",
-    "addfilecount": "新增文件数"
+    "addfilecount": "新增文件数",
+    "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
+    "withoutconfigeditauth": "请联系发布管理员授权配置"
   },
   "inspect": {
     "alarmprompt": "告警提示",

@@ -2,7 +2,17 @@
   <div class="padding">
     <TsRow class="pb-nm">
       <Col span="12" class="mt-xs">
-        <span class="text-action tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+        <span v-if="hasEditConfigAuth" class="text-action tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+        <Tooltip
+          max-width="400"
+          placement="right"
+          transfer
+        >
+          <span v-if="!hasEditConfigAuth" class="text-action text-disabled tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+          <ul slot="content">
+            <li><span>{{ $t('term.deploy.withoutconfigeditauth') }}</span></li>
+          </ul>
+        </Tooltip>
       </Col>
       <Col span="12">
         <InputSearcher
@@ -58,6 +68,11 @@ export default {
     appSystemId: {
       type: Number,
       default: null
+    },
+    hasEditConfigAuth: {
+      // 是否有编辑配置权限
+      type: Boolean,
+      default: false
     }
   },
   data() {

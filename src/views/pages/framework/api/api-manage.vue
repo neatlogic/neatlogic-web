@@ -1,35 +1,24 @@
 <template>
   <div>
     <Loading :loadingShow="isLoading" type="fix"></Loading>
-    <TsContain
-      :isSiderHide="isSiderHide"
-      :enableCollapse="true"
-      border="border"
-    >
+    <TsContain :isSiderHide="isSiderHide" :enableCollapse="true" border="border">
       <template v-slot:topLeft>
         <div class="action-group">
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
-          <span 
-            v-if="searchParams.apiType === 'system'"
-            class="action-item tsfont-download "
-            @click="exportHelp()"
-          >{{ $t('page.export') }}</span>
+          <span v-if="searchParams.apiType === 'system'" class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
           <span v-if="searchParams.apiType === 'custom'" class="create-api action-item" @click="showApiForm({}, 'create')">
             <i class="tsfont-plus">{{ $t('page.customapi') }}</i>
           </span>
         </div>
       </template>
       <template v-slot:topRight>
-        <div style="text-align:right;" :style="{'--children':3}" class="controller-group">
+        <div style="text-align: right" :style="{ '--children': 3 }" class="controller-group">
           <div><TsformSelect v-model="apiType" v-bind="apiTypeConfig" @on-change="handleApiTypeChange" /></div>
           <div><TsformSelect v-model="needAudit" v-bind="auditConfig" @on-change="filterAudit" /></div>
           <div>
-            <InputSearcher
-              v-model="searchParams.keyword"
-              @change="handleSearchChange"
-            ></InputSearcher>
+            <InputSearcher v-model="searchParams.keyword" @change="handleSearchChange"></InputSearcher>
           </div>
         </div>
       </template>
@@ -49,7 +38,8 @@
           @changePageSize="pageSize => getTableConfig({ pageSize })"
         >
           <template v-slot:isActive="{ row }">
-            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
+            <span v-if="row.isActive" class="text-success">{{ $t('page.enable') }}</span>
+            <span v-else class="text-grey">{{ $t('page.disable') }}</span>
           </template>
           <template v-slot:needAudit="{ row }">
             <i-switch
@@ -135,7 +125,7 @@ export default {
       return value in config ? config[value] : value;
     }
   },
-  mixins: [download], 
+  mixins: [download],
   data() {
     return {
       isLoading: true, //页面加载中
@@ -312,7 +302,7 @@ export default {
         currentPage: 1,
         needAudit: typeof this.needAudit == 'number' ? this.needAudit : null
       };
-      this.getTableConfig(params);      
+      this.getTableConfig(params);
     },
     // 搜索数据
     handleSearchChange() {
@@ -334,25 +324,31 @@ export default {
         let datas = {
           token: row.token
         };
-        this.$api.framework.apiManage.apiUdpateList(datas).then(res => {
-          if (res.Status === 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        }).catch(error => {
-          row.needAudit = row.needAudit === 0 ? 1 : 0;
-        });
+        this.$api.framework.apiManage
+          .apiUdpateList(datas)
+          .then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.savesuccess'));
+            }
+          })
+          .catch(error => {
+            row.needAudit = row.needAudit === 0 ? 1 : 0;
+          });
       } else {
         const params = {
           ...row,
           operationType: 'update'
         };
-        this.$api.framework.apiManage.save(params).then(res => {
-          if (res.Status === 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        }).catch(error => {
-          row.needAudit = row.needAudit === 0 ? 1 : 0;
-        });
+        this.$api.framework.apiManage
+          .save(params)
+          .then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.savesuccess'));
+            }
+          })
+          .catch(error => {
+            row.needAudit = row.needAudit === 0 ? 1 : 0;
+          });
       }
     },
     testApi(row) {
@@ -375,7 +371,8 @@ export default {
       this.operationType = type;
       this.isFormDialogShow = true;
     },
-    t(arg) { //国际化翻译时，过滤器filter中拿不到this, 需要转化
+    t(arg) {
+      //国际化翻译时，过滤器filter中拿不到this, 需要转化
       return this.$t(arg);
     },
     exportHelp() {
@@ -403,6 +400,4 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>
