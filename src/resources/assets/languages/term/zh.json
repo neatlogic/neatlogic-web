@@ -2038,7 +2038,9 @@
     "addcodeline": "新增代码行",
     "deletefilecount": "删除文件数",
     "modifyfilecount": "修改文件数",
-    "addfilecount": "新增文件数"
+    "addfilecount": "新增文件数",
+    "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
+    "withoutconfigeditauth": "请联系发布管理员授权配置"
   },
   "inspect": {
     "alarmprompt": "告警提示",

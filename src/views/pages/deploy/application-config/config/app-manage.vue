@@ -16,7 +16,7 @@
         ></AppInfoManage>
       </TabPane>
       <TabPane v-if="!hideFucntionExcludeAppModuleRunner" :label="$t('term.deploy.continuousintegration')" name="integrated">
-        <IntegratedManage v-if="tabValue == 'integrated'" :appSystemId="appSystemId"></IntegratedManage>
+        <IntegratedManage v-if="tabValue == 'integrated'" :appSystemId="appSystemId" :hasEditConfigAuth="hasEditConfigAuth"></IntegratedManage>
       </TabPane>
       <TabPane v-if="hasEditPipelineAuth" :label="$t('term.deploy.superpipeline')" name="pipeline">
         <AppPipeline

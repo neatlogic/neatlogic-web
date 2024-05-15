@@ -6,6 +6,7 @@
     <DeployNoticeSetting
       v-if="appSystemId && canShow"
       :appSystemId="appSystemId"
+      :hasEditConfigAuth="hasEditConfigAuth"
     ></DeployNoticeSetting>
     <div class="border-bottom border-color"></div>
     <div class="pt-nm">

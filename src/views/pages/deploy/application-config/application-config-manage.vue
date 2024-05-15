@@ -77,14 +77,21 @@
             <template v-else-if="!hasConfig && !loadingShow">
               <div v-if="canShow" class="no-data-box">
                 <NoData text=""></NoData>
-                <div v-if="!isHasAppSystemIdList" class="flex-center pt-nm">
-                  {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.apply') }}</span>
+                <div v-if="!canEdit" class="no-data-box">
+                  <div class="flex-center pt-nm">
+                    {{ $t('term.deploy.withoutconfigandeditauth') }}
+                  </div>
                 </div>
-                <div v-else class="flex-center pt-nm">
-                  {{ $t('term.deploy.applynotconfigselect') }}
-                  <span class="text-href" @click="toPipeline">{{ $t('term.deploy.pipelinetemplate') }}</span>
-                  {{ $t('term.framework.or') }}
-                  <span class="text-href" @click="importPipelineConfig">{{ $t('term.deploy.importpipelineconfig') }}</span>
+                <div v-else>
+                  <div v-if="!isHasAppSystemIdList" class="flex-center pt-nm">
+                    {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.apply') }}</span>
+                  </div>
+                  <div v-else class="flex-center pt-nm">
+                    {{ $t('term.deploy.applynotconfigselect') }}
+                    <span class="text-href" @click="toPipeline">{{ $t('term.deploy.pipelinetemplate') }}</span>
+                    {{ $t('term.framework.or') }}
+                    <span class="text-href" @click="importPipelineConfig">{{ $t('term.deploy.importpipelineconfig') }}</span>
+                  </div>
                 </div>
               </div>
               <template v-else>
