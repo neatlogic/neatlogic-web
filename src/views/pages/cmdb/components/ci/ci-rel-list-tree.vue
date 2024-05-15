@@ -168,7 +168,7 @@ export default {
         excludeCiIdList.push(excludeCiId);
         this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
           //排除掉来源关系，避免产生回环
-          const relList = res.Return.filter(d => d.id !== item.id && ((d.direction === 'from' && !excludeCiIdList.includes(d.toCiId)) || (d.direction === 'to' && !excludeCiIdList.includes(item.fromCiId))));
+          const relList = res.Return.filter(d => d.id !== item.id && ((d.direction === 'from' && !excludeCiIdList.includes(d.toCiId)) || (d.direction === 'to' && !excludeCiIdList.includes(d.fromCiId))));
           if (relList.length === 0) {
             this.$delete(item, 'children');
             this.$delete(item, 'loading');

@@ -2,7 +2,10 @@
   <div>
     <div>
       <div class="clearfix searchBox">
-        <div v-if="dataCount" class="datacount"><span class="text-grey">{{ $t('page.datacapacity') }}</span><span class="ml-xs">{{ dataCount == dataLimit ? dataLimit - 1 + '+' : dataCount }}</span></div>
+        <div v-if="dataCount" class="datacount">
+          <span class="text-grey">{{ $t('page.datacapacity') }}</span>
+          <span class="ml-xs">{{ dataCount == dataLimit ? dataLimit - 1 + '+' : dataCount }}</span>
+        </div>
         <div class="search">
           <div v-if="!isAdvancedSearch" class="displayinline">
             <TsFormInput
@@ -103,7 +106,6 @@
         </Card>
       </div>
     </div>
-
     <div v-if="groupList && groupList.length > 0">
       <span class="text-grey">{{ $t('page.group') }}：</span>
       <Tag
@@ -131,10 +133,10 @@
           <div>
             <div v-if="!row._isPager">
               <span v-if="row._isGroup" :style="row._filterList ? 'padding-left:' + row._filterList.length * 8 + 'px' : ''">
-                <i :class="!row._hasChild ? 'tsfont-right' : 'tsfont-down'" style="cursor: pointer" @click="showChild(row)"></i>
+                <i :class="!row._hasChild ? 'tsfont-drop-right' : 'tsfont-drop-down'" style="cursor: pointer" @click="showChild(row)"></i>
                 <span class="text-grey">{{ row._attrAlias }}：</span>
                 <span>{{ row._value }}</span>
-                <span>（{{ row._count }}）</span>
+                <span class="text-grey">·<b class="text-info">{{ row._count }}</b></span>
               </span>
               <span v-else :style="row._filterList ? 'padding-left:' + (row._filterList.length * 8 + 8) + 'px' : ''">
                 <a href="javascript:void(0)" @click="toViewDetail(row)">{{ row.id }}</a>
@@ -290,6 +292,7 @@ export default {
             this.viewData.theadList.push({
               key: attr.uuid,
               title: attr.alias,
+              style: { cursor: 'pointer' },
               click: row => {
                 if (
                   !this.groupList.some(a => {
@@ -554,7 +557,7 @@ export default {
   .datacount {
     position: absolute;
     left: 0;
-    line-height:30px;
+    line-height: 30px;
   }
   .search {
     position: absolute;

@@ -43,6 +43,7 @@
     "lockconfirm": "Lock Confirmation"
   },
   "content": {
+    "startconfirm": "Are you sure to start {target}？",
     "revocatetargetconfirm": "Are you sure to recall of the {target}?",
     "passtargetconfirm": "Are you sure to pass {target}？",
     "rejecttargetconfirm": "Are you sure to reject {target}？",

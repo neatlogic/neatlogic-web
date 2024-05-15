@@ -785,7 +785,7 @@ export default {
           this.draftPrevData = this.$utils.deepClone(saveData);
 
           if (!isGoFlow) {
-            this.$router.push({
+            this.$router.replace({
               path: '/flow-edit',
               query: {
                 uuid: this.processConfig.uuid,

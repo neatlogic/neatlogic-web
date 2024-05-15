@@ -19,7 +19,7 @@
                   <span class="ci-label">{{ viewData.name }}</span>
                 </div>
                 <div v-if="viewData.description" class="ci-description overflow text-grey" :title="viewData.description">{{ viewData.description }}</div>
-                <div v-else class="text-grey">{{ $t('page.nodata') }}</div>
+                <div v-else class="text-grey">{{ $t('page.nocommon') }}</div>
               </div>
             </div>
             <div class="right-block bg-block  radius-lg pl-nm pr-nm pb-nm">

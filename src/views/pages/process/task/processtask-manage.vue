@@ -8,6 +8,7 @@
               v-if="workcenterData"
               :workcenterData="workcenterData"
               :selectedWorkList="selectedWorkList"
+              :workcenterUuid="workcenterUuid"
               @search="search"
               @batchAction="batchAction"
             ></ProcessTaskSearcher>

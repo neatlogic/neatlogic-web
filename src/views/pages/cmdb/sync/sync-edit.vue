@@ -53,7 +53,7 @@
                 </div>
                 <div style="font-size: 12px" class="text-grey">
                   {{ row.attrName }}
-                  <i v-if="row.targetCiId" class="tsfont-bind fz10" title="引用属性"></i>
+                  <i v-if="row.targetCiId" class="tsfont-bind fz10" :title="$t('term.cmdb.invokeattr')"></i>
                 </div>
               </template>
               <template slot="field" slot-scope="{ row }">
@@ -68,7 +68,17 @@
                 ></TsFormSelect>
               </template>
               <template slot="actionType" slot-scope="{ row }">
-                <TsFormSwitch v-model="row.action" falseValue="replace" trueValue="delete"></TsFormSwitch>
+                <TsFormSelect
+                  v-if="row.targetCiId"
+                  v-model="row.action"
+                  :transfer="true"
+                  :clearable="false"
+                  :dataList="[
+                    { value: 'merge', text: $t('page.merge') },
+                    { value: 'replace', text: $t('page.replace') }
+                  ]"
+                ></TsFormSelect>
+                <div v-else></div>
               </template>
             </TsTable>
           </template>
@@ -110,7 +120,7 @@
       </template>
       <template v-slot:footer>
         <Button @click="close(false)">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+        <Button v-if="!isLoading" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -121,8 +131,7 @@ export default {
   components: {
     TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
     TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: {
     id: { type: Number },
@@ -319,7 +328,8 @@ export default {
       attrData: {
         theadList: [
           { key: 'attrId', title: this.$t('page.attribute'), width: 200 },
-          { key: 'field', title: this.$t('term.cmdb.matchfield') }
+          { key: 'field', title: this.$t('term.cmdb.matchfield') },
+          { key: 'actionType', title: this.$t('page.actions'), tooltip: '合并：新关系追加到旧属性中；替换：当新属性有值时，用新属性替换掉旧属性', width: 120 }
           //{ key: 'actionType', title: '空值覆盖', tooltip: '激活后如果采集数据的对应属性是空值，则会清空对应属性原有的数据', width: 120 }
         ],
         tbodyList: []

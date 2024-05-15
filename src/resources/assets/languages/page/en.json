@@ -989,5 +989,10 @@
   "teamtagtypemanage": "Type management",
   "workcenternoauthbatchdelete": "The following work order : {target}, does not have permission to delete",
   "teamtagteamwithoutuniqueidentifier": "There is a missing unique identifier for the attribute in this matrix. Please complete it and try again",
-  "teamtageditcheckedchildren": "If so, then the tag opens the \"Select Child Nodes\" option"
+  "teamtageditcheckedchildren": "If so, then the tag opens the \"Select Child Nodes\" option",
+  "nocommon": "There is currently no explanation",
+  "deploynoexecuteconfigauthtip": "You do not have the \"execute or edit configuration permissions\" for the current application. Please contact the administrator for authorization",
+  "deploy": {
+    "contactwithadmin": "Please contact the administrator for authorization"
+  }
 }

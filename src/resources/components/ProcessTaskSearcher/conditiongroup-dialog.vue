@@ -171,7 +171,7 @@ export default {
                 newD['type'] = 'form';
                 newD['expressionList'] = d.expressionList;
                 try {
-                  newD['config'] = JSON.parse(d.config);
+                  newD['config'] = d.config;
                 } catch (e) {
                   console.error(e);
                 }

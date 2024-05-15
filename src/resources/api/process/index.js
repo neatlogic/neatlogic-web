@@ -14,7 +14,6 @@ import relation from './channeltype/relation'; //工单关联关系
 import reply from './reply/reply'; //回复模板
 import strategy from './strategy/strategy'; //子策略任务
 import integration from './integration/integration'; //集成
-import collection from './collection/collection';//任务集
 
 export default {
   process: processProcess,
@@ -31,6 +30,5 @@ export default {
   relation,
   reply,
   strategy,
-  integration,
-  collection
+  integration
 };

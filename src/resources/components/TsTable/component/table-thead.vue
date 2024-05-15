@@ -38,7 +38,7 @@
               </span>
               <span
                 v-else
-                :style="[hitem.click && typeof hitem.click == 'function'?'cursor:pointer':'', hitem.style]"
+                :style="hitem.style"
                 :class="{'require-label':hitem.isRequired}"
                 @click.stop="clickHeader(hitem)"
               >{{ hitem.title }}</span>

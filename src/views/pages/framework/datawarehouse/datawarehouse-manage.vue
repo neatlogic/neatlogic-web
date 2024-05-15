@@ -29,7 +29,7 @@
           keyName="id"
           selectedRemain
           @getSelected="getSelected"
-          @changeCurrent="updatePage"
+          @changeCurrent="changePage"
           @changePageSize="updatePagesize"
         >
           <template v-slot:isActive="{ row }">
@@ -197,12 +197,15 @@ export default {
         this.timer = null;
       }
     },
-    searchReportDataSource(currentPage) {
+    changePage(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       } else {
         this.searchParam.currentPage = 1;
       }
+      this.searchReportDataSource();
+    },
+    searchReportDataSource() {
       this.$api.framework.datawarehouse.searchDataSource(this.searchParam).then(res => {
         this.reportDataSourceData = res.Return;
         this.reportDataSourceData.tbodyList.forEach(element => {
@@ -248,11 +251,9 @@ export default {
         }
       });
     },
-    updatePage(currentPage) {
-      this.searchReportDataSource(currentPage);
-    },
     updatePagesize(pageSize) {
       this.searchParam.pageSize = pageSize;
+      this.searchParam.currentPage = 1;
       this.searchReportDataSource();
     },
     closeEditDialog(needRefresh) {

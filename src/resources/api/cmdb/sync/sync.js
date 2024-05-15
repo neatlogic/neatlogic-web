@@ -43,8 +43,8 @@ const sync = {
   testCondition(params) {
     return axios.post('/api/rest/cmdb/sync/policy/condition/test', params);
   },
-  launchSyncCiCollection(id) {
-    return axios.post('/api/rest/cmdb/sync/cicollection/launch', { id: id });
+  launchSyncCiCollection(params) {
+    return axios.post('/api/rest/cmdb/sync/cicollection/launch', params);
   },
   launchSyncCiCollectionBatch(idList) {
     return axios.post('/api/rest/cmdb/sync/cicollection/launch', { idList: idList });

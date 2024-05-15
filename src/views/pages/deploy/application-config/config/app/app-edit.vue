@@ -214,6 +214,7 @@ export default {
     },
     getAuthInfoById() {
       let params = {
+        authorityStrList: ['user#' + this.$AuthUtils.getCurrentUser().uuid],
         ...this.params
       };
       this.loadingShow = true;
@@ -221,19 +222,21 @@ export default {
         if (res && res.Status == 'OK') {
           if (res.Return && res.Return.tbodyList) {
             let authInfo = res.Return.tbodyList[0];
-            this.authConfig.authorityStrList = authInfo ? [`${authInfo['authType']}#${authInfo['authUuid']}`] : [];
-            for (let key in authInfo) {
-              if (key && this.defaultoperationAuthList.includes(key)) {
-                this.authConfig.operationAuthList.push(key);
-              } else if (key && this.defaultscenarioAuthList.includes(parseInt(key))) {
-                this.authConfig.scenarioAuthList.push(parseInt(key));
-              } else if (key && this.defaultenvAuthList.includes(parseInt(key))) {
-                this.authConfig.envAuthList.push(parseInt(key));
+            if (!this.$utils.isEmpty(authInfo)) {
+              this.authConfig.authorityStrList = authInfo ? [`${authInfo['authType']}#${authInfo['authUuid']}`] : [];
+              for (let key in authInfo) {
+                if (key && this.defaultoperationAuthList.includes(key)) {
+                  this.authConfig.operationAuthList.push(key);
+                } else if (key && this.defaultscenarioAuthList.includes(parseInt(key))) {
+                  this.authConfig.scenarioAuthList.push(parseInt(key));
+                } else if (key && this.defaultenvAuthList.includes(parseInt(key))) {
+                  this.authConfig.envAuthList.push(parseInt(key));
+                }
               }
-            }
-            for (let key in this.formConfig) {
-              if (key == 'authorityStrList') {
-                this.$set(this.formConfig[key], 'disabled', true);
+              for (let key in this.formConfig) {
+                if (key == 'authorityStrList') {
+                  this.$set(this.formConfig[key], 'disabled', true);
+                }
               }
             }
           }

@@ -30,6 +30,7 @@
             <span v-else class="tsfont-dot"></span>
             <Tooltip
               class="tooltip-box"
+              placement="right"
               :content="app.abbrName + '（' + app.name + '）'"
               :transfer="true"
               :max-width="500"
@@ -60,7 +61,12 @@
                 </span>
                 <span v-else-if="level === 'env' && !module.isHasEnv" class="tsfont-dot"></span>
                 <span v-else class="tsfont-application"></span>
-                <Tooltip class="tooltip-box" :content="module.abbrName + (module.name ? '（' + module.name + '）' : '')" :transfer="true">
+                <Tooltip
+                  class="tooltip-box"
+                  :content="module.abbrName + (module.name ? '（' + module.name + '）' : '')"
+                  :transfer="true"
+                  placement="right"
+                >
                   <div style="width: 100%" @contextmenu="newTab($event, module, app.id, module.id, '', !!module.isSelected)">
                     <span class="name-pl overflow" v-html="module.keywordHighlight ? module.keywordHighlight : (module.abbrName +(module.name ? '(' + module.name + ')' : '' ))"></span>
                   </div>

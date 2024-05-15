@@ -416,16 +416,34 @@ export default {
   },
   watch: {
     defaultList: {
-      handler(newVal) {
+      async handler(newVal) {
         if (newVal) {
           let list = [];
+          const fileIdList = [];
           newVal.forEach(item => {
-            let data = {
-              name: item.name,
-              id: item.id
-            };
-            list.push(data);
+            if (typeof item === 'object') {
+              let data = {
+                name: item.name,
+                id: item.id
+              };
+              list.push(data);
+            } else if (typeof item === 'number') {
+              fileIdList.push(item);
+            }
           });
+          if (fileIdList.length > 0) {
+            await this.$api.framework.file.getFileByIdList(fileIdList).then(res => {
+              const fileList = res.Return;
+              for (let i = 0; i < fileList.length; i++) {
+                const item = fileList[i];
+                let data = {
+                  name: item.name,
+                  id: item.id
+                };
+                list.push(data);
+              }
+            });
+          }
           this.defaultFileList = list;
           this.$nextTick(() => {
             let upload = this.$refs.upload;
