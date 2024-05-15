@@ -2,7 +2,7 @@
   <TsDialog
     type="modal"
     :isShow="true"
-    :title="$t('page.newtarget', {target: $t('page.tag')}) "
+    :title="tagId == null? $t('dialog.title.addtarget', {target: $t('page.tag')}): $t('dialog.title.edittarget', {target: $t('page.tag')})"
     width="50%"
     height="200px"
     @on-close="onClose()"
@@ -108,7 +108,7 @@ export default {
     TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
   },
   props: {
-  
+    tagId: Number
   },
   data() {
     return {
@@ -162,8 +162,10 @@ export default {
 
   beforeMount() {},
 
-  mounted() {
-
+  async mounted() {
+    if (this.tagId) {
+      await getTeamTagInfo();
+    }
   },
 
   beforeUpdate() {},
@@ -233,6 +235,9 @@ export default {
       }).finally(() => {
         this.isSaving = false;
       });
+    },
+    getTeamTagInfo() {
+
     }
   },
 

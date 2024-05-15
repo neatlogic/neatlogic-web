@@ -2,10 +2,10 @@
   <div>
     <TsContain>
       <template slot="topLeft">
-        <span class="text-action tsfont-plus pl-sm" @click="teamTagTypeManage">{{ $t('page.tag') }}</span>
+        <span class="text-action tsfont-plus pl-sm" @click="addTag">{{ $t('page.tag') }}</span>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchData(1)"></CombineSearcher>
+        
       </template>
       <template v-slot:sider>
         <div class="pt-md pr-md pl-md">
@@ -14,6 +14,7 @@
             border="bottom"
             :search="true"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
+            @on-change="searchTableData()"
           ></TsFormInput>
         </div>
         <div class="pl-md pr-md">
@@ -38,10 +39,13 @@
               >
                 <span>{{ tag.matrixAttrValue }}</span>
                 <!-- <span style="padding-left: 2px" class="text-grey">({{ tag.id }})</span> -->
-                <span class="navlist-action">
-                  <Dropdown trigger="click" :transfer="true" @click.stop>
+                <span class="navlist-action" @click.stop>
+                  <Dropdown trigger="click" :transfer="true">
                     <span class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
+                      <DropdownItem @click.native="editTag(tag.id)">
+                        <div>{{ $t('page.edit') }}</div>
+                      </DropdownItem>
                       <DropdownItem @click.native="deleteTag(tag.id)">
                         <div>{{ $t('page.delete') }}</div>
                       </DropdownItem>
@@ -57,7 +61,7 @@
         <TeamTagTeam :tagIdList="tagIdList"></TeamTagTeam>
       </template>
     </TsContain>
-    <TeamTagDialog v-if="isDialogShow" @close="closeDialog"></TeamTagDialog>
+    <TeamTagDialog v-if="isDialogShow" :tagId="tagId" @close="closeDialog"></TeamTagDialog>
   </div>
 </template>
 <script>
@@ -65,7 +69,6 @@ export default {
   name: 'CatalogManage',
   components: {
     TeamTagDialog: resolve => require(['./team-tag'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
     TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
     TeamTagTeam: resolve => require(['./team-tag-team'], resolve)
   },
@@ -78,24 +81,6 @@ export default {
       catalogHeight: `calc(100vh - 80px - 64px - 50px - 20px )`, // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
       isDialogShow: false,
       searchVal: {}, //搜索下拉插件的值
-      searchConfig: {
-        placeholder: '分组' + this.$t('page.name'),
-        searchList: [
-          {
-            type: 'select',
-            name: 'typeId',
-            value: '',
-            dataList: [],
-            label: '标签',
-            search: true,
-            dynamicUrl: '/api/rest/autoexec/type/search',
-            rootName: 'tbodyList',
-            dealDataByUrl: this.$utils.getToolClassificationList,
-            transfer: true,
-            labelPosition: 'top'
-          }
-        ]
-      },
       keyword: null,
       searchParams: {},
       theadList: [
@@ -142,7 +127,12 @@ export default {
       this.searchParams.currentPage = currentPage;
       this.searchTableData();
     },
-    teamTagTypeManage() {
+    addTag() {
+      this.tagId = null;
+      this.isDialogShow = true;
+    },
+    editTag(tagId) {
+      this.tagId = tagId;
       this.isDialogShow = true;
     },
     closeDialog() {
@@ -161,8 +151,9 @@ export default {
     },
     deleteTag(tagId) {
       let data = {tagId: tagId};
-      this.$api.framework.deleteTeamTag(data).then(res => {
-        searchTableData(1);
+      this.$api.framework.teamtag.deleteTeamTag(data).then(res => {
+        this.$Message.success(this.$t('message.deletesuccess'));
+        this.searchTableData(1);
       });
     }
   },
@@ -211,6 +202,7 @@ export default {
         display: none;
       }
     }
+    margin-bottom: 3px
   }
   .active {
     background: var(--primary-grey, #e7f0ff);

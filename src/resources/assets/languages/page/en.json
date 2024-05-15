@@ -994,5 +994,6 @@
   "deploynoexecuteconfigauthtip": "You do not have the \"execute or edit configuration permissions\" for the current application. Please contact the administrator for authorization",
   "deploy": {
     "contactwithadmin": "Please contact the administrator for authorization"
-  }
+  },
+  "teamtagselectlefttag": "Please select the left label first"
 }

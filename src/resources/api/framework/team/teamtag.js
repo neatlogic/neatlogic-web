@@ -12,6 +12,10 @@ export default {
   deleteTeamTag(data) {
     return axios.post('/api/rest/team/tag/delete', data);
   },
+  //删除标签分组
+  deleteTeamTagTeam(data) {
+    return axios.post('/api/rest/team/tag/team/delete', data);
+  },
   //获取标签关联的分组
   searchTeamTagTeam(data) {
     return axios.post('/api/rest/team/tag/team/search', data);

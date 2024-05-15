@@ -11,7 +11,7 @@
         >
           <span class="text-action text-disabled tsfont-plus">{{ $t('page.group') }}</span>
           <div slot="content">
-            请先选择左侧标签
+            {{ $t('page.teamtagselectlefttag') }}
           </div>
         </Tooltip>
       </template>
@@ -40,12 +40,12 @@
                 </li>
               </ul>
             </div>
-            <div v-else class="center">
-              暂无数据
+            <div v-else>
+              <NoData></NoData>
             </div>
           </div>
-          <div v-else class="center">
-            请选择左侧标签
+          <div v-else>
+            <NoData :text="$t('page.teamtagselectlefttag')"></NoData>
           </div>
         </div>
       </template>
@@ -112,35 +112,29 @@ export default {
       }
     },
     delRow(row, index) { //删除列表数据
-      if (this.tagIdList) {
-        this.$createDialog({
-          title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
-          btnType: 'error',
-          'on-ok': vnode => {
-            let data = {
-              tagIdList: this.tagIdList,
-              teamUuidList: [row.uuid]
-            };
-            this.$api.framework.region.deleteRegionTeam(data).then(res => {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.deletesuccess'));
-                vnode.isShow = false;
-                this.tableData.tbodyList.splice(index, 1);
-              //this.searchData();
-              }
-            });
-          }
-        });
-      } else {
-        let delArray = this.tableData.tbodyList.splice(index, 1);
-        this.teamList.find((item, i) => {
-          if (item.uuid == delArray[0].uuid) {
-            this.teamList.splice(i, 1);
-            return true;
-          }
-        });
+      if (!this.tagIdList || this.tagIdList.length < 1) {
+        this.$Message.warning(this.$t('page.teamtagselectlefttag'));
+        return;
       }
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          let data = {
+            tagIdList: this.tagIdList,
+            teamUuid: row.uuid
+          };
+          this.$api.framework.teamtag.deleteTeamTagTeam(data).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              vnode.isShow = false;
+              this.tableData.tbodyList.splice(index, 1);
+              //this.searchData();
+            }
+          });
+        }
+      });
     },
     dataRetrun() {
       let data = this.$refs.teamList.dataRetrun();

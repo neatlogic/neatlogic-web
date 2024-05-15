@@ -247,7 +247,6 @@ export default {
           'checkedChildren': node.checkedChildren
         });
       }
-      console.log(this.teamList);
     },
     changeOpen(node) {
       node._open = !node._open;
