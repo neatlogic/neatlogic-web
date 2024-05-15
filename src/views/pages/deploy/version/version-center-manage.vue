@@ -20,7 +20,7 @@
           >
             <span class="tsfont-plus text-disabled action-item">{{ $t('page.versions') }}</span>
             <ul slot="content">
-              <li v-if="!canEdit">{{ $t('term.deploy.noconfigauthtip') }}</li>
+              <li v-if="!hasAuth">{{ $t('term.deploy.notversionproductauth') }}</li>
             </ul>
           </Tooltip>
           <span v-else-if="appModuleData && appModuleData.appId" class="action-item tsfont-plus" @click="addVersion">{{ $t('page.versions') }}</span>
@@ -538,13 +538,6 @@ export default {
   },
   filter: {},
   computed: {
-    canEdit() {
-      // [编辑配置]权限
-      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#edit') || this.authList.includes('operation#all') || this.authList.length == 0) {
-        return true;
-      }
-      return false;
-    },
     hasAuth() {
       // [版本&制品管理]权限
       if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#versionAndProductManager') || this.authList.includes('operation#all') || this.authList.length == 0) {

@@ -1763,7 +1763,7 @@
     "sealplate": "封版",
     "selectaddversion": "请选中应用或模块后再创建版本",
     "noconfigauthtip": "您没有当前应用的“编辑配置权限”，请联系管理员授权",
-    "notversionproductauth": "您没有版本&制品管理权限，请联系管理员授权",
+    "notversionproductauth": "您没有当前应用的“版本&制品管理”权限，请联系管理员授权",
     "failurecount": "失败${target}次",
     "flowchart": "流程图",
     "discarddraft": "丢弃草稿",
