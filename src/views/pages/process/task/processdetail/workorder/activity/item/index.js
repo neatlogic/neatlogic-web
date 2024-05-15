@@ -1,4 +1,5 @@
 import defaultHandler from './default-handler'; 
+import titleHandler from './title-handler';
 import priorityHandler from './priority-handler';
 import contentHandler from './content-handler';
 import formHandler from './form-handler';
@@ -37,6 +38,7 @@ try {
 
 export default {
   defaultHandler, //默认活动展示
+  titleHandler,
   priorityHandler, //优先级
   contentHandler, //描述/描述
   formHandler, //表单
