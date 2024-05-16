@@ -14,7 +14,7 @@
                 v-bind="item.fcuVo"
                 hideAvatar
               ></UserCard>
-              <span>{{ item.title }}：</span>
+              <span v-if="item.title && item.title.length > 0">{{ item.title }}：</span>
               <span>
                 <Tooltip
                   max-width="600"
@@ -126,7 +126,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.$nextTick(() => { 
+    this.$nextTick(() => {
       //使用nextTick为了保证dom元素都已经渲染完毕，确保父组件可以拿到子组件渲染后的高度
       // 工单中心有 【回退，转交，转报等】 时，需要减去提示的高度，确保剩余的内容可以正常显示
       this.$emit('getTaskAlertHeight', this.$el.offsetHeight + 16); // 16 margin-bottom 的高度
