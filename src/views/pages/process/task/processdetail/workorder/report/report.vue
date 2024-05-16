@@ -11,7 +11,7 @@
             <div class="text-grey fz10 pb-xs">{{ $t('page.description') }}</div>
             <div class="pt-md">
               <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
-                <div ref="getheight" v-html="dataConfig.content"></div>
+                <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
               </div>
               <div
                 v-if="isView"

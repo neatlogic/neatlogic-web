@@ -175,7 +175,7 @@
                         <div class="change-commet">
                           <span class="change-commet-label text-grey pr-sm">{{ $t('page.description') }}</span>
                           <div v-if="change.content">
-                            <div v-html="change.content"></div>
+                            <div v-dompurify-html="change.content"></div>
                           </div>
                           <div v-else>-</div>
                         </div>
@@ -201,7 +201,7 @@
                             </div>
                             <div class="text-grey ml-md inb">{{ scomment.fcd | formatDate }}</div>
                           </div>
-                          <div style="margin-left:20px;" v-html="scomment.content"></div>
+                          <div v-dompurify-html="scomment.content" style="margin-left:20px;"></div>
                         </TimelineItem>
                       </Timeline>
                     </div>

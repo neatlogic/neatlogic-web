@@ -33,10 +33,10 @@
                 <div>
                   <div 
                     v-imgViewer
+                    v-dompurify-html="stepItem.content"
                     class="content-text-padding overflow-y ml-xs"
-                    :class="stepItem.fileList && stepItem.fileList.length > 0 ? 'pb-xs' : ''"
-                    :style="{'height':stepItem.showViewMore?stepItem.maxheight:'auto'}" 
-                    v-html="stepItem.content"
+                    :class="stepItem.fileList && stepItem.fileList.length > 0 ? 'pb-xs' : ''" 
+                    :style="{'height':stepItem.showViewMore?stepItem.maxheight:'auto'}"
                   >
                   </div>
                   <div
