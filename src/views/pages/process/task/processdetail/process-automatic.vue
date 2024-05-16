@@ -218,6 +218,7 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
+                  :defaultTabValue="'automatic'"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
