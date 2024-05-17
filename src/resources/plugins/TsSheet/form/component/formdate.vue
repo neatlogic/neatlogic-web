@@ -347,7 +347,11 @@ export default {
               trigger: 'change',
               message: this.$t('term.framework.dateneed') + (dateText[item.text]) + this.$t('term.framework.currdate') + item.value + unitText[item.unit],
               validator: (rule, value) => {
-                let currentValue = new Date(this.$utils.handleInvalidDate(value, this.config.format || '', this.config.styleType)).getTime();
+                let currentValue = this.$utils.handleInvalidDate(value, this.config.format || '', this.config.styleType);
+                if (typeof currentValue === 'object') {
+                  currentValue = this.$utils.getDateByFormat(new Date(currentValue), this.config.format);
+                }  
+                currentValue = new Date(currentValue).getTime();
                 let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, null, this.config.format || '', this.config.styleType, plusMinusSign[item.text])).getTime();
                 if (value == '') {
                   return true;
