@@ -42,6 +42,11 @@
                     {{ $t('term.autoexec.copyjob') }}
                   </div>
                 </DropdownItem>
+                <DropdownItem v-if="jobData.isCanExecute || jobData.isCanTakeOver" @click.native="abortJob()">
+                  <div>
+                    {{ $t('term.autoexec.abortjob') }}
+                  </div>
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </span>
@@ -97,6 +102,7 @@
   </div>
 </template>
 <script>
+import {store, mutations} from './jobDetailState.js';
 import ContentItem from './jobDetail/phase/index.js';
 import download from '@/resources/directives/download.js';
 export default {
@@ -204,7 +210,9 @@ export default {
   beforeDestroy() {
     this.clearTimmer();
   },
-  destroyed() {},
+  destroyed() {
+    mutations.setSearchParam({});
+  },
   methods: {
     async getJobById() {
       await this.$api.autoexec.job.getJobById(this.jobParam.jobId).then(res => {

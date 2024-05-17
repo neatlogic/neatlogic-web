@@ -740,7 +740,8 @@ export default {
               }
               this.versionId = res.Return.id;
               canSave = true; //保存成功之后才可以进行下一步，在路由那里判断
-              this.$router.replace({
+              this.$route.meta.isSkip = true;
+              this.$router.push({
                 path: '/action-detail',
                 query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
               });
@@ -795,7 +796,8 @@ export default {
               this.$Message.success(this.$t('message.deletesuccess'));
               if (versionCount > 1) {
                 this.versionStatus = 'passed';
-                this.$router.replace({
+                this.$route.meta.isSkip = true;
+                this.$router.push({
                   path: '/action-detail',
                   query: { id: this.id, versionStatus: this.versionStatus }
                 });
@@ -827,7 +829,7 @@ export default {
                 this.showReleaseNewVersionDialog = true;
               } else {
                 this.$Message.success(this.$t('message.commitsuccess'));
-                this.$router.replace({
+                this.$router.push({
                   path: '/action-detail',
                   query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
                 });
@@ -847,7 +849,8 @@ export default {
         let data = this.getData();
         if (this.$utils.isSame(this.initData, data)) {
           sessionStorage.setItem('action_versionId', this.versionId);
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/runner-detail',
             query: {
               actionId: this.id,
@@ -870,7 +873,8 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.versionStatus = 'rejected';
           this.versionBasicInfo.status = 'rejected';
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -879,7 +883,8 @@ export default {
     },
     cancelPassVersionAction() {
       this.showReleaseNewVersionDialog = false;
-      this.$router.replace({
+      this.$route.meta.isSkip = true;
+      this.$router.push({
         path: '/action-detail',
         query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
       });
@@ -898,7 +903,8 @@ export default {
           this.activeVersionId = this.versionId;
           this.versionBasicInfo.status = 'passed';
           this.versionBasicInfo.isActive = 1;
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -915,7 +921,8 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.versionStatus = 'draft';
           this.versionBasicInfo.status = 'draft';
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -1438,8 +1445,9 @@ export default {
     },
     switchVersion(id, type, versionId) {
       this.versionType = type;
+      this.$route.meta.isSkip = true;
       if (type == 'submitted') {
-        this.$router.replace({
+        this.$router.push({
           path: '/action-detail',
           query: {
             id: id,
@@ -1447,7 +1455,7 @@ export default {
           }
         });
       } else {
-        this.$router.replace({
+        this.$router.push({
           path: '/action-detail',
           query: {
             id: id,

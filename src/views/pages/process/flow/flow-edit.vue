@@ -783,9 +783,10 @@ export default {
           this.$Message.success(this.$t('message.savesuccess'));
           this.portData = saveData;
           this.draftPrevData = this.$utils.deepClone(saveData);
-
+          
+          this.$route.meta.isSkip = true;
           if (!isGoFlow) {
-            this.$router.replace({
+            this.$router.push({
               path: '/flow-edit',
               query: {
                 uuid: this.processConfig.uuid,
