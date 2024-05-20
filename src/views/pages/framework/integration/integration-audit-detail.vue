@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsDialog :is-show="isShow" v-bind="dialogConfig" @on-close="close">
+    <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
         {{ $t('page.detail') }}
       </template>
@@ -28,12 +28,14 @@ export default {
       dialogConfig: {
         type: 'modal',
         maskClose: true,
-        isShow: false,
-        width: '600px'
+        isShow: true,
+        width: 'small'
       }};
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getAuditDetail();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -43,17 +45,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getAuditDetail: function() {
+    getAuditDetail() {
       this.$api.framework.integration.getIntegrationAuditDetail({filePath: this.filePath}).then(res => {
         if (res.Status == 'OK') {
           this.content = res.Return.content;
           this.hasMore = res.Return.hasMore;
-          this.isShow = true;
         }
       });
     },
-    close: function() {
-      this.isShow = false;
+    close() {
       this.$emit('close');
     }
   },
@@ -77,11 +77,6 @@ export default {
     }
   },
   watch: {
-    filePath: {handler: function(val) {
-      if (val) {
-        this.getAuditDetail();
-      }
-    }}
   }
 };
 </script>

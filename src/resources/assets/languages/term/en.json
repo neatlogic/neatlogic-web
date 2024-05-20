@@ -226,7 +226,10 @@
     "globalattrmapping": "Global attribute mapping",
     "matchfield": "Matching Fields",
     "supportmultimodelfile": "Help: Supports importing multiple model files simultaneously",
-    "invokeattr": "Reference Properties"
+    "invokeattr": "Reference Properties",
+    "cientityid": "Configuration item ID",
+    "cientityicon": "Configuration item icon",
+    "editablefield": "Editable attributes"
   },
   "process": {
     "workordercenter": "Work Center",

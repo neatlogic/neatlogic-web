@@ -226,7 +226,11 @@
     "globalattrmapping": "全局属性映射",
     "matchfield": "匹配字段",
     "supportmultimodelfile": "帮助：支持同时导入多个模型文件",
-    "invokeattr": "引用属性"
+    "invokeattr": "引用属性",
+    "ciid": "模型id",
+    "cientityid": "配置项id",
+    "cientityicon": "配置项图标",
+    "editablefield": "可编辑属性"
   },
   "process": {
     "workordercenter": "工单中心",

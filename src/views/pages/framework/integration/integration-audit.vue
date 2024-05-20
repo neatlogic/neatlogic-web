@@ -97,7 +97,7 @@
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
       </template>
     </TsDialog>
-    <IntegrationAuditDetail :filePath="filePath" @close="closeAuditDetailDialog"></IntegrationAuditDetail>
+    <IntegrationAuditDetail v-if="isAuditDetailShow" :filePath="filePath" @close="closeAuditDetailDialog"></IntegrationAuditDetail>
   </div>
 </template>
 <script>
@@ -118,6 +118,7 @@ export default {
   },
   data() {
     return {
+      isAuditDetailShow: false,
       isShow: false,
       filePath: null,
       detailData: {},
@@ -275,6 +276,7 @@ export default {
       this.filePath = filePath;
     },
     closeAuditDetailDialog: function() {
+      this.isAuditDetailShow = false;
       this.filePath = null;
     },
     initHeight() {
