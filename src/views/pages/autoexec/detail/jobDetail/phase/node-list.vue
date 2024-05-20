@@ -158,6 +158,7 @@
   </div>
 </template>
 <script>
+import {store, mutations} from '../../jobDetailState.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
@@ -284,6 +285,9 @@ export default {
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
       this.theadList.push({ key: 'action' });
+    }
+    if (!this.$utils.isEmpty(mutations.getSearchParam())) {
+      this.searchParam = mutations.getSearchParam();
     }
     this.searchNode();
   },
@@ -448,6 +452,7 @@ export default {
         this.searchParam.currentPage = currentPage;
         this.searchParam.nodeIdList = [];
       }
+      mutations.setSearchParam(this.searchParam);
       this.$api.autoexec.job.searchPhaseNode(this.searchParam).then(res => {
         this.nodeData = res.Return;
         const nodeList = res.Return.tbodyList;

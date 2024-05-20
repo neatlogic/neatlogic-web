@@ -72,11 +72,40 @@ function handleUrl(url, httpresponsestatuscode) {
   }
   return url;
 }
+
+//获取url上所有参数
+function getUrlParams(url) {
+  const params = {};
+  const urlParts = url.split('?');
+
+  if (urlParts.length > 1) {
+    const queryString = urlParts[1];
+    const pairs = queryString.split('&');
+    for (const pair of pairs) {
+      const keyValue = pair.split('=');
+      const key = decodeURIComponent(keyValue[0]);
+      const value = keyValue.length > 1 ? decodeURIComponent(keyValue[1]) : '';
+      params[key] = value;
+    }
+  }
+
+  return params;
+}
+
+//用于后端认证，确保同步等接口返回即认证结束才执行发起后续请求
 function getDirectUrl() {
   try {
+    const currentUrl = location.href;
+    const hashParams = getUrlParams(currentUrl);
     const xhr = new XMLHttpRequest();
     xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
-
+    //将参数设置进header，因为referer不靠谱，不支持url带#号，会导致后面的参数都取不到，所以都塞header里
+    for (const key in hashParams) {
+      xhr.setRequestHeader(key,hashParams[key]);
+    }
+    if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
+        SSOTICKETVALUE = hashParams[SSOTICKETKEY];
+    }
     xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
 
@@ -112,11 +141,9 @@ function getDirectUrl() {
 }
 
 async function getSsoTokenKey() {
-  const currentUrl = location.href;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', BASEURLPREFIX + '/tenant/check', false); // 第三个参数设置为 false 表示同步请求
   xhr.send();
-
   if (xhr.status === 200) {
     try {
       const responseText = JSON.parse(xhr.responseText);
@@ -124,12 +151,6 @@ async function getSsoTokenKey() {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
-        if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
-          const queryString = currentUrl.split(SSOTICKETKEY + '=')[1];
-          if (queryString) {
-            SSOTICKETVALUE = queryString.split('&')[0];
-          }
-        }
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
