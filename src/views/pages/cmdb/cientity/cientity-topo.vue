@@ -599,9 +599,13 @@ export default {
     },
     toCiEntityView(ciId, ciEntityId) {
       if (ciId && ciEntityId) {
-        this.$router.push({
-          path: '/ci/' + ciId + '/cientity-view/' + ciEntityId
-        });
+        if (this.mode === 'window') {
+          this.$router.push({
+            path: '/ci/' + ciId + '/cientity-view/' + ciEntityId
+          });
+        } else {
+          this.$emit('click', ciId, ciEntityId);
+        }
       }
     }
   },
