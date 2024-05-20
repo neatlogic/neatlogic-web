@@ -45,9 +45,9 @@
                   :is="handlerType(jitem.type)"
                   :key="jindex"
                   :config="jitem"
-                  :formConfig="formConfigData"
-                  :processTaskStepId="item.processTaskStepId"
                   :formSceneUuid="item.formSceneUuid"
+                  :formConfig="$utils.deepClone(formConfig)"
+                  :processTaskStepId="item.processTaskStepId"
                   class="mb-sm"
                 ></component>
               </template>
@@ -75,17 +75,11 @@ export default {
       type: Array,
       default: () => []
     },
-    formConfig: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
+    formConfig: Object
   },
   data() {
     return {
-      activeData: [],
-      formConfigData: {}
+      activeData: []
     };
   },
   beforeCreate() {},
@@ -117,13 +111,6 @@ export default {
         if (val && val.length > 0) {
           this.activeData = val;
         }
-      },
-      deep: true,
-      immediate: true
-    },
-    formConfig: {
-      handler(val) {
-        this.formConfigData = val;
       },
       deep: true,
       immediate: true

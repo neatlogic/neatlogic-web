@@ -417,7 +417,8 @@ export default {
     isFormSubassembly: { //是否是子表单组件引用
       type: Boolean,
       default: false
-    }
+    },
+    formSceneUuid: [String, Number] //表单场景uuid（工单详情页，必须给默认值，展示对应场景）
   },
   data() {
     return {
@@ -562,7 +563,11 @@ export default {
          * 只读模式下，采用深度拷贝，避免表单渲染过程中数据变化导致外部数据也产生变化。
          **/
         if (this.mode !== 'edit') {
-          this.config = this.$utils.deepClone(this.value);
+          if (this.formSceneUuid) {
+            this.config = this.setFormSceneConfig(this.formSceneUuid, this.value);
+          } else {
+            this.config = this.$utils.deepClone(this.value);
+          }
         } else {
           this.config = this.value;
         }
@@ -1683,6 +1688,38 @@ export default {
         }
       });
       return list;
+    },
+    setFormSceneConfig(formSceneUuid, formConfig) {
+      let data = this.$utils.deepClone(formConfig);//主表单
+      let formItemList = [];
+      if (formSceneUuid != formConfig.uuid && !this.$utils.isEmpty(formConfig.sceneList)) {
+        let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid); //流程场景
+        if (!sceneConfig) {
+          //流程场景不存在，用表单默认场景
+          sceneConfig = formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
+        }
+        if (sceneConfig) {
+          //场景表单，继承组件替换
+          if (formConfig.tableList) {
+            formConfig.tableList.forEach(item => {
+              if (item.component) {
+                formItemList.push(item.component);
+              }
+            });
+          }
+          sceneConfig.tableList.forEach(item => {
+            if (item.component && item.component.inherit) {
+              let component = formItemList.find(c => c.uuid === item.component.uuid);
+              if (component) {
+                this.$set(item, 'component', component);
+              }
+            }
+          });
+          this.$set(sceneConfig, 'formWidth', formConfig.formWidth);
+          data = sceneConfig;
+        }
+      }
+      return data;
     }
   },
   filter: {},
