@@ -283,12 +283,7 @@ export default {
         }
       }
       if (this.processTaskConfig.formConfig) {
-        let formSceneUuid = this.processTaskConfig.currentProcessTaskStep ? this.processTaskConfig.currentProcessTaskStep.formSceneUuid : null;
         this.formConfig = this.processTaskConfig.formConfig; //主表单
-        if (this.formConfig._type == 'new' && !this.$utils.isEmpty(this.processTask.currentProcessTaskStep)) {
-          //场景表单：步骤进行中展示设置的节点场景或者默认场景
-          this.formConfig = this.initNewFormConfig(formSceneUuid, this.formConfig);
-        }
       }
       if (this.processTaskConfig.startProcessTaskStep) {
         this.startProcessTaskStep = this.processTaskConfig.startProcessTaskStep;

@@ -60,6 +60,7 @@
                   ref="formSheet"
                   mode="read"
                   :value="formConfig"
+                  :formSceneUuid="formSceneUuid"
                   :data="processTaskConfig.formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit || formConfig.readOnly"
                   class="pl-sm pr-sm"
@@ -316,6 +317,7 @@
                 ref="formSheet"
                 mode="read"
                 :value="formConfig"
+                :formSceneUuid="formSceneUuid"
                 :data="processTaskConfig.formAttributeDataMap"
                 :readonly="!actionConfig.save || !formEdit"
                 class="pl-sm pr-sm"
@@ -620,7 +622,8 @@ export default {
       taskConfigList: [], //子任务策略
       autoexechandlerStepInfo: null, // 自动化信息
       lastFormConfig: null,
-      isShowForm: true
+      isShowForm: true,
+      formSceneUuid: 'defaultSceneUuid'
     };
   },
   created() {
@@ -629,6 +632,10 @@ export default {
     }
     if (!this.formConfig._type == 'new') {
       this.setStepform();
+    }
+    //场景表单：步骤进行中展示设置的节点场景或者默认场景
+    if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
+      this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
     }
   },
   mounted() {

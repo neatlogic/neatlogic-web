@@ -14,6 +14,7 @@
       mode="read"
       :readonly="formConfig.readOnly || false"
       :value="formConfig"
+      :formSceneUuid="formSceneUuid"
       :data="formAttributeDataMap"
       @emit="formSheetEmitData"
     ></TsSheet>
@@ -38,7 +39,8 @@ export default {
       formAttributeDataMap: null,
       formAttributeHideList: [], //表单组件的权限（隐藏列表）
       stephidetrList: [], //当前步骤需要隐藏的行
-      stepreadtrList: [] //当前步骤需要只读的行
+      stepreadtrList: [], //当前步骤需要只读的行
+      formSceneUuid: 'defaultSceneUuid'
     };
   },
   beforeCreate() {},
@@ -66,7 +68,7 @@ export default {
         this.formAttributeDataMap = this.draftData.formAttributeDataMap || null;
         if (this.formConfig) {
           if (this.draftData.formConfig._type == 'new') {
-            this.formConfig = this.initNewFormConfig(this.draftData.startProcessTaskStep.formSceneUuid, this.formConfig);
+            this.formSceneUuid = this.draftData.startProcessTaskStep.formSceneUuid || 'defaultSceneUuid';
           } else {
             this.getStepformauth(this.draftData);
           }
