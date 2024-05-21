@@ -195,9 +195,9 @@ export default {
           let allPrevOutputList = [];
           if (list && list.length) {
             list.forEach(l => {
-              if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
+              if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length > 0) {
                 l.config.phaseOperationList.forEach(p => {
-                  if (!this.$utils.isEmpty(p.operation) && p.operation.outputParamList && p.operation.outputParamList.length) {
+                  if (!this.$utils.isEmpty(p.operation) && p.operation.outputParamList && p.operation.outputParamList.length > 0) {
                     let item = p.operation.outputParamList;
                     item.forEach(i => {
                       allPrevOutputList.push({
@@ -212,6 +212,51 @@ export default {
                         operationDes: p.description
                       });
                     });
+                  } else if (p.operationName == 'native/IF-Block') {
+                    if (p.config) {
+                      if (p.config.ifList && p.config.ifList.length > 0) {
+                        let ifList = p.config.ifList;
+                        ifList.forEach(ifItem => {
+                          if (ifItem.operation.outputParamList && ifItem.operation.outputParamList.length > 0) {
+                            let item = ifItem.operation.outputParamList;
+                            item.forEach(i => {
+                              allPrevOutputList.push({
+                                ...i,
+                                combopName: l.name,
+                                combopId: l.id,
+                                combopUuid: l.uuid,
+                                operationId: ifItem.operationId,
+                                operationName: ifItem.operationName,
+                                operationUuid: ifItem.uuid,
+                                operationLetter: ifItem.letter || null,
+                                operationDes: ifItem.description
+                              });
+                            });
+                          }
+                        });
+                      }
+                      if (p.config.elseList && p.config.elseList.length > 0) {
+                        let elseList = p.config.elseList;
+                        elseList.forEach(elseItem => {
+                          if (elseItem.operation.outputParamList && elseItem.operation.outputParamList.length > 0) {
+                            let item = elseItem.operation.outputParamList;
+                            item.forEach(i => {
+                              allPrevOutputList.push({
+                                ...i,
+                                combopName: l.name,
+                                combopId: l.id,
+                                combopUuid: l.uuid,
+                                operationId: elseItem.operationId,
+                                operationName: elseItem.operationName,
+                                operationUuid: elseItem.uuid,
+                                operationLetter: elseItem.letter || null,
+                                operationDes: elseItem.description
+                              });
+                            });
+                          }
+                        });
+                      }
+                    }
                   }
                 });
               }
