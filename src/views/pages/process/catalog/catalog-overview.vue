@@ -147,6 +147,7 @@ export default {
   props: [''],
   data() {
     return {
+      catalogUuid: null,
       loadingShow: false,
       loadingList: null,
       serviceDilog: 'serviceDilog',
@@ -176,7 +177,12 @@ export default {
   created() {
     this.getAllService();
     this.getFavorite(1); //默认第一页
-    this.getCalalogroute(1); //默认第一页
+    this.catalogUuid = this.$route.query.catalogUuid;
+    if (this.catalogUuid) {
+      this.selectValue.push(this.catalogUuid);
+    } else {
+      this.getCalalogroute(1);//默认第一页
+    }
   },
 
   beforeMount() {},
