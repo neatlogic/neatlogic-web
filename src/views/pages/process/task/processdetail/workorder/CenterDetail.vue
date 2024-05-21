@@ -62,7 +62,7 @@
                   :value="formConfig"
                   :formSceneUuid="formSceneUuid"
                   :data="processTaskConfig.formAttributeDataMap"
-                  :readonly="!actionConfig.save || !formEdit || formConfig.readOnly"
+                  :readonly="!actionConfig.save || !formEdit"
                   class="pl-sm pr-sm"
                   style="width:100%"
                   @emit="formSheetEmitData"

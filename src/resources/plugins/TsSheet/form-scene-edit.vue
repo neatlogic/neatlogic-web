@@ -113,6 +113,7 @@
           <TsSheet
             ref="sheet"
             v-model="formData.formConfig"
+            :readonly="readOnly"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateItemList="updateItemList"
