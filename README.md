@@ -37,9 +37,9 @@ pnpm run rs-dev
 ```
 
 
-## 通过pnpm打包项目代码
+## 通过cnpm打包项目代码
 ```
-pnpm run rs-build
+cnpm run build
 ```
 
 ## 更新某个依赖
