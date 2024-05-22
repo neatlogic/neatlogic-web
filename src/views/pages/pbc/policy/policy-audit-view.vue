@@ -48,15 +48,14 @@
 export default {
   name: '',
   components: {
-    ResultHandler: resolve =>
-      require(['./phase/result-handler.vue'], resolve)
+    ResultHandler: () => import('./phase/result-handler.vue')
   },
   props: {
     id: {type: Number}
   },
   data() {
-    return { 
-      dialogConfig: { 
+    return {
+      dialogConfig: {
         type: 'modal',
         maskClose: true,
         isShow: true,
@@ -72,7 +71,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getPolicyAuditById(); 
+    this.getPolicyAuditById();
   },
   beforeUpdate() {},
   updated() {},
@@ -117,8 +116,8 @@ export default {
             });
           }
           if (this.auditData.status == 'running') {
-            this.timer = setTimeout(() => { 
-              this.getPolicyAuditById(); 
+            this.timer = setTimeout(() => {
+              this.getPolicyAuditById();
             }, 5000);
           }
         });

@@ -15,8 +15,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {

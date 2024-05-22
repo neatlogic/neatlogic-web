@@ -4,6 +4,8 @@
   "private": false,
   "author": "neatlogic",
   "scripts": {
+    "rs-dev": "rsbuild dev",
+    "rs-build": "node version.js && rsbuild build",
     "serve": "node --max_old_space_size=9096 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open",
     "build": "node version.js && vue-cli-service build",
     "lint": "vue-cli-service lint --fix",
@@ -77,6 +79,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
+    "@rsbuild/core": "^0.6.15",
+    "@rsbuild/plugin-vue2": "^0.6.15",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.6",
     "@vue/cli-plugin-eslint": "^5.0.6",

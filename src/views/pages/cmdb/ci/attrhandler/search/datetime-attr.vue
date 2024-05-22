@@ -29,8 +29,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     propConfig: {type: Object},
@@ -64,11 +63,11 @@ export default {
       const hour = d.getHours();
       const min = d.getMinutes();
       const sec = d.getSeconds();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
-        (day < 10 ? '0' + day : day) + ' ' + 
-        (hour < 10 ? '0' + hour : hour) + ':' + 
-        (min < 10 ? '0' + min : min) + ':' + 
+      return year + '-' +
+        (month < 10 ? '0' + month : month) + '-' +
+        (day < 10 ? '0' + day : day) + ' ' +
+        (hour < 10 ? '0' + hour : hour) + ':' +
+        (min < 10 ? '0' + min : min) + ':' +
         (sec < 10 ? '0' + sec : sec);
     },
     setDataBefore(val) {
@@ -99,7 +98,7 @@ export default {
         if (this.valueList[0].indexOf('~') > -1) {
           return this.valueList[0].split('~')[0];
         }
-      } 
+      }
       return '';
     },
     valueA: function() {
@@ -107,7 +106,7 @@ export default {
         if (this.valueList[0].indexOf('~') > -1) {
           return this.valueList[0].split('~')[1];
         }
-      } 
+      }
       return '';
     }
   },

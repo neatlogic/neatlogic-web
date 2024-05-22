@@ -12,8 +12,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {type: Number}
@@ -21,7 +20,7 @@ export default {
   data() {
     return {
       categoryData: {},
-      dialogConfig: { 
+      dialogConfig: {
         title: this.id ? this.$t('term.pbc.edittype') : this.$t('term.pbc.addtype'),
         type: 'modal',
         maskClose: false,

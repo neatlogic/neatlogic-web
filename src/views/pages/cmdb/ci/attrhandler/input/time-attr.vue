@@ -17,8 +17,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     disabled: {type: Boolean, default: false},
@@ -66,7 +65,7 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return null;
     }},
   watch: {

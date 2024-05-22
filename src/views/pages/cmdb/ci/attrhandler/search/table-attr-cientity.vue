@@ -26,8 +26,7 @@
 export default {
   name: '',
   components: {
-    CiEntityList: resolve =>
-      require(['@/views/pages/cmdb/cientity/cientity-list.vue'], resolve)
+    CiEntityList: () => import('@/views/pages/cmdb/cientity/cientity-list.vue')
   },
   props: {
     attrData: {type: Object}

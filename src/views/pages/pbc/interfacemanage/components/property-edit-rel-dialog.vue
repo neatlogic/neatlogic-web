@@ -62,8 +62,7 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: { propertyUid: {type: Number}},
   data() {

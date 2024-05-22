@@ -12,8 +12,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: {value: {type: String}, property: { type: Object }},
   data() {
@@ -30,7 +29,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: { setData() {
-      
+
   },
   valid() {
     return this.$refs['propertyHandler'].valid();

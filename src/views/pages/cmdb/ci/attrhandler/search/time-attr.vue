@@ -29,8 +29,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     propConfig: {type: Object},
@@ -84,7 +83,7 @@ export default {
         if (this.valueList[0].indexOf('~') > -1) {
           return this.valueList[0].split('~')[0];
         }
-      } 
+      }
       return '';
     },
     valueA: function() {
@@ -92,7 +91,7 @@ export default {
         if (this.valueList[0].indexOf('~') > -1) {
           return this.valueList[0].split('~')[1];
         }
-      } 
+      }
       return '';
     }
   },

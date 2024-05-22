@@ -77,12 +77,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/img/common/noauthority-default.png') no-repeat center;
+      background: url('@img-module/img/common/noauthority-default.png') no-repeat center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/img/common/noauthority-dark.png');
+        background-image: url('@img-module/img/common/noauthority-dark.png');
       }
     }
   }

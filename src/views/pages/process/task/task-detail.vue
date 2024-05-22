@@ -442,12 +442,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/img/common/taskLading-default.gif') no-repeat center center;
+      background: url('@img-module/img/common/taskLading-default.gif') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~publics/img/common/taskLading-dark.gif');
+        background-image: url('@publics/img/common/taskLading-dark.gif');
       }
     }
   }

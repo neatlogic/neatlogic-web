@@ -54,10 +54,8 @@
 export default {
   name: 'TableAttr',
   components: {
-    TsTable: resolve =>
-      require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve =>
-      require(['../../../cientity/attr-viewer.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('../../../cientity/attr-viewer.vue')
   },
   props: {
     mode: {type: String, default: 'list'},

@@ -13,8 +13,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     attrData: {type: Object},
@@ -29,7 +28,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() { 
+  mounted() {
     if (this.attrData.isRequired == 1) {
       this.validateList.push('required');
     }

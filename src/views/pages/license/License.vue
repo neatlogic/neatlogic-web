@@ -2,7 +2,7 @@
   <div class="login_bg bg-grey grid">
     <div style="display:table;height:100%;width:100%">
       <div style="display:table-cell" class="padding">
-        <img src="~img-module/img/common/login-pic.png" style="width:100%;vertical-align:middle" />
+        <img src="@img-module/img/common/login-pic.png" style="width:100%;vertical-align:middle" />
       </div>
     </div>
     <div style="display:table;height:100%;width:100%">
