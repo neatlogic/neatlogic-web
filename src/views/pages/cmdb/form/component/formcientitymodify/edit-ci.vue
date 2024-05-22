@@ -124,7 +124,7 @@ export default {
       ],
       importList: [], //如果是从原来的导入的
       canEdit: false,
-      importidList: [],
+      importidList: null,
       type: '',
       canSave: true
     };
