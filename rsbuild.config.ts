@@ -56,9 +56,6 @@ function getPages(pageList) {
 
   return pages;
 }
-
-console.log(JSON.stringify(getPages(process.env.VUE_APP_PAGE_LIST), null, 2));
-
 const pages = getPages(process.env.VUE_APP_PAGE_LIST);
 const ent = Object.fromEntries(Object.keys(pages).map(key => [tenantName + '/' + key, pages[key].entry]));
 
