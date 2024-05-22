@@ -599,7 +599,7 @@ export default {
         }
         const manualObj = { type: 'manual', label: this.$t('term.cmdb.manualinput'), elementList: [], isShow: false };
         manualObj.elementList = elementList.filter(d => !uniqueList.includes(d.element.id) && d.element.inputType === 'mt' && d.element.type !== 'expression');
-        console.log(JSON.stringify(manualObj.elementList, null, 2));
+        //console.log(JSON.stringify(manualObj.elementList, null, 2));
         if (manualObj.elementList.length > 0) {
           typeList.push(manualObj);
         }

@@ -12,6 +12,9 @@ const transaction = {
   searchTransactionCount(params) {
     return axios.post('/api/rest/cmdb/transaction/search/count', params);
   },
+  getCiTransactionByGroupId(transactionGroupId) {
+    return axios.post('/api/rest/cmdb/cientitytransactiongroup/get', { transactionGroupId: transactionGroupId });
+  },
   getCientityTransaction(transactionId, ciId, ciEntityId) {
     return axios.post('/api/rest/cmdb/cientitytransaction/get', { transactionId: transactionId, ciId: ciId, ciEntityId: ciEntityId });
   },
