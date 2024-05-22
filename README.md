@@ -16,20 +16,30 @@ npm install -g @vue/cli
 npm install --registry=https://registry.npm.taobao.org
 ```
 
-## 本地开发环境运行项目
->需修改apiconfig.json配置文件,将tenantName的值修改为在用的租户（如果使用的是官方提供的用例数据，则租户就是demo），urlPrefix改成neatlogic后端tomcat服务的http://ip:port
-```
-npm run serve
-```
-<font color="red">异常：</font>
-如果启动时发现大量不明报错，可能原因是npm install阶段加载的依赖包不完整导致，可以对npm进行降级再次install，目前测试v18的npm可以正常install。或者通过cnpm install加载依赖包也可以。cnpm版本也不能太高，建议使用v8.2.0。建议使用nvm管理多版本的node，使用v18.x版本的node会比较稳定。
+
+
+> 如果启动时发现大量不明报错，可能原因是npm install阶段加载的依赖包不完整导致，可以对npm进行降级再次install，目前测试v18的npm可以正常install。或者通过cnpm install加载依赖包也可以。cnpm版本也不能太高，建议使用v8.2.0。建议使用nvm管理多版本的node，使用v18.x版本的node会比较稳定。
 ```
 sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
+
+cnpm install
 ```
 
-## 打包项目代码
+## 本地开发环境运行项目
+>需修改apiconfig.json配置文件,将tenantName的值修改为在用的租户（如果使用的是官方提供的用例数据，则租户就是demo），urlPrefix改成neatlogic后端tomcat服务的http://ip:port
+
+## 通过pnpm启动项目
 ```
-cnpm run build
+//先安装pnpm
+npm install -g pnpm
+//再启动
+pnpm run rs-dev
+```
+
+
+## 通过pnpm打包项目代码
+```
+pnpm run rs-build
 ```
 
 ## 更新某个依赖
