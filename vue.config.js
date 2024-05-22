@@ -117,9 +117,9 @@ module.exports = {
     config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
     config.resolve.alias.set('@', resolve(src));
     config.resolve.alias.set('base-module', resolve(localUrl));
-    config.resolve.alias.set('img-module', resolve(baseImg));
+    config.resolve.alias.set('@img-module', resolve(baseImg));
     config.resolve.alias.set('assets', resolve(src + '/resources/assets'));
-    config.resolve.alias.set('publics', resolve('./public/resource'));
+    config.resolve.alias.set('@publics', resolve('./public/resource'));
     config.resolve.alias.set('components', resolve(src + '/resources/components'));
     config.resolve.alias.set('pages', resolve(src + '/views/pages'));
     config.resolve.alias.set('api', resolve(src + '/resources/api'));

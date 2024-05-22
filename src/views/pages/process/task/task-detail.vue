@@ -447,7 +447,7 @@ export default {
     }
     .theme-dark & {
       &::before{
-        background-image: url('@publics/img/common/taskLading-dark.gif');
+        background-image: url('@img-module/img/common/taskLading-dark.gif');
       }
     }
   }
