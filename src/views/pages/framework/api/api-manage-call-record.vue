@@ -60,7 +60,7 @@
           </div>
         </template>
       </TsTable>
-      
+
     </TsDialog>
     <TsDialog :isShow.sync="isCallDetailShow" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
@@ -81,10 +81,10 @@ export default {
   name: 'CallRecord',
   directives: {download},
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   props: {
     isShow: {

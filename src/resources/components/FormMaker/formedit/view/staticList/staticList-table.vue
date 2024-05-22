@@ -57,7 +57,7 @@ export default {
   name: 'StaticTable',
   components: {
     draggable,
-    CellComponent: resolve => require(['./staticList-components.vue'], resolve)
+    CellComponent: () => import('./staticList-components.vue')
   },
   filters: {},
   props: {

@@ -125,8 +125,8 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: { config: { type: Object } },
   data() {

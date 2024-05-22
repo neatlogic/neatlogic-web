@@ -168,15 +168,15 @@ export default {
     };
   },
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    StepGroup: resolve => require(['./pipeline/step-group'], resolve),
-    ProfileSetting: resolve => require(['./pipeline/profile-setting'], resolve),
-    ScenarioSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/scenario-setting'], resolve),
-    StepTopo: resolve => require(['./pipeline/step/step-topo'], resolve),
-    StepList: resolve => require(['./pipeline/step/step-list'], resolve),
-    PipelineValid: resolve => require(['./pipeline/pipeline-valid'], resolve),
-    ExecuteSetting: resolve => require(['./pipeline/execute-setting'], resolve),
-    ActuatorSetting: resolve => require(['./pipeline/actuator-setting'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    StepGroup: () => import('./pipeline/step-group'),
+    ProfileSetting: () => import('./pipeline/profile-setting'),
+    ScenarioSetting: () => import('@/views/pages/autoexec/detail/actionDetail/scenario-setting'),
+    StepTopo: () => import('./pipeline/step/step-topo'),
+    StepList: () => import('./pipeline/step/step-list'),
+    PipelineValid: () => import('./pipeline/pipeline-valid'),
+    ExecuteSetting: () => import('./pipeline/execute-setting'),
+    ActuatorSetting: () => import('./pipeline/actuator-setting')
   },
   filters: {
   },
@@ -205,7 +205,7 @@ export default {
           border: 'border',
           validateList: ['required'],
           onChange: (val) => {
-            this.changeAction(val); 
+            this.changeAction(val);
           }
         }
       ],
@@ -233,7 +233,7 @@ export default {
         protocolId: null,
         executeUser: {}
       },
-      isShowStepTopo: false 
+      isShowStepTopo: false
     };
   },
   beforeCreate() {},
@@ -434,7 +434,7 @@ export default {
             list.push(item);
           }
         });
-      } 
+      }
       return list;
     },
     changeSelectStep(item) {
@@ -445,7 +445,7 @@ export default {
       }
     },
     updatedCombopGroupList(stepList) { //更新组列表
-      let newList = []; 
+      let newList = [];
       stepList.forEach(item => {
         let findItem = this.combopGroupList.find(c => c.uuid == item.groupUuid);
         if (findItem) {
@@ -708,7 +708,7 @@ export default {
         delete item.isShow;
         delete item.scriptLength;
         item.config &&
-            item.config.phaseOperationList && 
+            item.config.phaseOperationList &&
             this.$set(item.config, 'phaseOperationList', this.savePhaseOperationList(item.config.phaseOperationList));
         this.combopGroupList.forEach(c => {
           if (c.policy == 'grayScale' && c.uuid == item.groupUuid) {
@@ -720,11 +720,11 @@ export default {
       if (this.defaultScenarioId) {
         this.$set(data.config, 'defaultScenarioId', this.defaultScenarioId);
       }
-      if (this.$refs.actuatorSetting) { 
+      if (this.$refs.actuatorSetting) {
         let moduleRunnerGroupList = this.$refs.actuatorSetting.save();
         this.$set(data.config, 'moduleRunnerGroupList', moduleRunnerGroupList);
       }
-      return data; 
+      return data;
     },
     savePhaseOperationList(list) { //工具
       let phaseOperationList = this.$utils.deepClone(list);

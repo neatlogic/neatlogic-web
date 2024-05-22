@@ -34,9 +34,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    categoryImportDialog: resolve => require(['./components/category-import-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    categoryImportDialog: () => import('./components/category-import-dialog.vue')
   },
   props: {},
   data() {
@@ -45,15 +45,15 @@ export default {
       searchParam: {},
       theadList: [
         {key: 'interfaceName', title: this.$t('term.pbc.dataelementname')},
-        {key: 'interfaceId', title: this.$t('term.pbc.dataelementtransferid')}, 
-        {key: 'name1', title: this.$t('term.knowledge.primaryclassification')}, 
-        {key: 'id1', title: this.$t('term.pbc.firstclassidentifier')}, 
-        {key: 'name2', title: this.$t('term.pbc.secondclass')}, 
-        {key: 'id2', title: this.$t('term.pbc.secondclassidentifier')}, 
-        {key: 'name3', title: this.$t('term.pbc.thirdclass')}, 
-        {key: 'id3', title: this.$t('term.pbc.thirdclassidentifier')}, 
-        {key: 'name4', title: this.$t('term.pbc.fourthclass')}, 
-        {key: 'id4', title: this.$t('term.pbc.fourthclassidentifier')}, 
+        {key: 'interfaceId', title: this.$t('term.pbc.dataelementtransferid')},
+        {key: 'name1', title: this.$t('term.knowledge.primaryclassification')},
+        {key: 'id1', title: this.$t('term.pbc.firstclassidentifier')},
+        {key: 'name2', title: this.$t('term.pbc.secondclass')},
+        {key: 'id2', title: this.$t('term.pbc.secondclassidentifier')},
+        {key: 'name3', title: this.$t('term.pbc.thirdclass')},
+        {key: 'id3', title: this.$t('term.pbc.thirdclassidentifier')},
+        {key: 'name4', title: this.$t('term.pbc.fourthclass')},
+        {key: 'id4', title: this.$t('term.pbc.fourthclassidentifier')},
         {key: 'id', title: this.$t('term.pbc.classidentifier')},
         {key: 'isMatch', title: this.$t('term.pbc.conform')}
       ],
@@ -79,14 +79,14 @@ export default {
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.tipcomfirm', {'target': this.$t('page.delete'), 'name': category.name}),
         btnType: 'error',
-        'on-ok': async vnode => { 
+        'on-ok': async vnode => {
           this.$api.pbc.category.deleteCategoryById(category.id).then(res => {
             this.$Message.success(this.$t('message.executesuccess'));
             vnode.isShow = false;
             this.searchCategory();
           });
         }
-      }); 
+      });
     },
     changePage(page) {
       this.searchCategory(page);

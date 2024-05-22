@@ -13,9 +13,9 @@
             class="action-item tsfont-plus"
             @click="addAppModule()"
           >{{ $t('page.module') }}</span>
-          <span 
-            v-if="$AuthUtils.hasRole('INSPECT_SCHEDULE_EXECUTE')" 
-            class="action-item tsfont-sla" 
+          <span
+            v-if="$AuthUtils.hasRole('INSPECT_SCHEDULE_EXECUTE')"
+            class="action-item tsfont-sla"
             @click="openInspectionScheduleDialog()"
           >{{ $t('term.inspect.scheduleinspect') }}</span>
         </div>
@@ -145,17 +145,17 @@
 export default {
   name: '',
   components: {
-    AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
-    ModuleInfo: resolve => require(['@/views/pages/deploy/application-config/config/module/module-info'], resolve),
-    AppEditDialog: resolve => require(['@/views/pages/cmdb/application/app-edit-dialog.vue'], resolve),
-    AppModuleEditDialog: resolve => require(['@/views/pages/cmdb/application/appmodule-edit-dialog.vue'], resolve),
-    DeleteCiEntityDialog: resolve => require(['@/views/pages/cmdb/cientity/cientity-delete-dialog.vue'], resolve),
-    InspectionScheduleDialog: resolve => require(['./inspection-schedule-dialog.vue'], resolve),
-    InspectionAssetsManage: resolve => require(['@/views/pages/inspect/application/inspection-assets-manage'], resolve), // 资产清单
-    AppModuleTree: resolve => require(['@/views/pages/cmdb/application/app-module-tree'], resolve), // 应用模块树
-    LatestQuestionsManage: resolve => require(['./latest-questions-manage'], resolve), // 最新问题
-    BatchSystemInspectionDialog: resolve => require(['./batch-system-inspection-dialog'], resolve), // 批量应用巡检
-    BatchModuleInspectionDialog: resolve => require(['./batch-module-inspection-dialog'], resolve) // 批量模块巡检
+    AppInfo: () => import('@/views/pages/deploy/application-config/config/app/app-info.vue'),
+    ModuleInfo: () => import('@/views/pages/deploy/application-config/config/module/module-info'),
+    AppEditDialog: () => import('@/views/pages/cmdb/application/app-edit-dialog.vue'),
+    AppModuleEditDialog: () => import('@/views/pages/cmdb/application/appmodule-edit-dialog.vue'),
+    DeleteCiEntityDialog: () => import('@/views/pages/cmdb/cientity/cientity-delete-dialog.vue'),
+    InspectionScheduleDialog: () => import('./inspection-schedule-dialog.vue'),
+    InspectionAssetsManage: () => import('@/views/pages/inspect/application/inspection-assets-manage'), // 资产清单
+    AppModuleTree: () => import('@/views/pages/cmdb/application/app-module-tree'), // 应用模块树
+    LatestQuestionsManage: () => import('./latest-questions-manage'), // 最新问题
+    BatchSystemInspectionDialog: () => import('./batch-system-inspection-dialog'), // 批量应用巡检
+    BatchModuleInspectionDialog: () => import('./batch-module-inspection-dialog') // 批量模块巡检
   },
   props: {},
   data() {

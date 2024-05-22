@@ -70,9 +70,9 @@ import utils from 'assets/js/util.js';
 export default {
   name: 'CircleEdit',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsTree: resolve => require(['components/TsTree/TsTree.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsTree: () => import('components/TsTree/TsTree.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   data() {
     this.keyConfig = {id: 'uuid', parentId: 'parentUuid'};
@@ -166,7 +166,7 @@ export default {
         }
       }
     },
-    async saveCircle(stay = true) { 
+    async saveCircle(stay = true) {
       if (this.knowledgeCircle.children.length === 0) {
         this.$Notice.warning({title: this.$t('form.validate.required', {target: this.$t('term.knowledge.knowtype')})});
         return false;
@@ -207,7 +207,7 @@ export default {
         }
       }
     },
-    async deleteCircle() { 
+    async deleteCircle() {
       if (this.$route.query.operation === 'add' || this.documentCount) return;
       const {id, name} = this.knowledgeCircle;
       this.$createDialog({

@@ -34,8 +34,8 @@ import { BORDER_LIST } from './widgetborders/border-list.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    BorderConfig: resolve => require(['./widgetborderconfigs/widget-border-config.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    BorderConfig: () => import('./widgetborderconfigs/widget-border-config.vue')
   },
   props: {
     currentWidget: {type: Object},

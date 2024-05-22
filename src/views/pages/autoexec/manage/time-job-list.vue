@@ -124,14 +124,14 @@
 export default {
   name: 'TimeJobList',
   components: {
-    TimejobClickText: resolve => require(['./job/time-job-click-text.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    RecordList: resolve => require(['./action/record-list'], resolve), // 执行记录组件
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    JobAudit: resolve => require(['../../framework/schedule/job-audit-dialog.vue'], resolve)
+    TimejobClickText: () => import('./job/time-job-click-text.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    RecordList: () => import('./action/record-list'), // 执行记录组件
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    JobAudit: () => import('../../framework/schedule/job-audit-dialog.vue')
   },
   filters: {},
   props: {},
@@ -171,7 +171,7 @@ export default {
           { key: 'execCount', title: this.$t('term.autoexec.executecount') }, // 执行次数
           { key: 'lcuVo', title: this.$t('page.fcu'), type: 'user' }, // 修改人
           { key: 'lcd', title: this.$t('page.fcd'), type: 'time' }, // 修改时间
-          { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') }, 
+          { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') },
           { key: 'action' }
         ],
         tbodyList: [],

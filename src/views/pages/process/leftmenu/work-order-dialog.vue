@@ -57,9 +57,9 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    ServicesCatalog: resolve => require(['./catalog/services-catalog.vue'], resolve),
-    CollectModule: resolve => require(['./catalog/collect-module'], resolve) // 收藏模块
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ServicesCatalog: () => import('./catalog/services-catalog.vue'),
+    CollectModule: () => import('./catalog/collect-module') // 收藏模块
   },
   props: {
     mode: {type: String}
@@ -137,7 +137,7 @@ export default {
       }
       return arr;
     },
-  
+
     format(labels, selectedData) {
       return labels[labels.length - 1];
     },
@@ -210,7 +210,7 @@ export default {
             query: {
               uuid: selectedServices.uuid
             }
-          }); 
+          });
           this.closeDialog();
         }
       }

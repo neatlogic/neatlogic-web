@@ -51,9 +51,9 @@ import { THEME_LIST } from './widgetthemes/theme-list.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     canvas: { type: Object }

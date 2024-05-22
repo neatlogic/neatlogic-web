@@ -104,14 +104,14 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiManage',
   components: {
-    TsformSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    ApiHelp: resolve => require(['./api-manage-help'], resolve),
-    CallRecord: resolve => require(['./api-manage-call-record'], resolve),
-    FormDialog: resolve => require(['./api-manage-form'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ApiTest: resolve => require(['./api-manage-test.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    TsformSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    ApiHelp: () => import('./api-manage-help'),
+    CallRecord: () => import('./api-manage-call-record'),
+    FormDialog: () => import('./api-manage-form'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ApiTest: () => import('./api-manage-test.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {
     authtypeText(value, t) {

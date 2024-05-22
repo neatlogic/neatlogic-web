@@ -124,15 +124,15 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    BatchEditDialog: resolve => require(['./components/batch-edit-dialog.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    FileListDialog: resolve => require(['./components/file-list-dialog.vue'], resolve),
-    EditFilePath: resolve => require(['./components/edit-file-path.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    BatchEditDialog: () => import('./components/batch-edit-dialog.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    FileListDialog: () => import('./components/file-list-dialog.vue'),
+    EditFilePath: () => import('./components/edit-file-path.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
 
   },
   props: {},
@@ -391,7 +391,7 @@ export default {
     },
     dealDataByUrl(nodeList, type) {
       // 处理默认值的数据结构
-      let columlist = [];           
+      let columlist = [];
       nodeList.forEach(v => {
         let text = '';
         if (v.port) {
@@ -516,7 +516,7 @@ export default {
       this.$api.inspect.configfile.getConfigFileList({
         needPage: false,
         idList: idList,
-        typeId: this.searchParam.typeId 
+        typeId: this.searchParam.typeId
       }).then(res => {
         if (res && res.Status == 'OK') {
           const jobList = res.Return.tbodyList;

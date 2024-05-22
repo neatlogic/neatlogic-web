@@ -61,7 +61,7 @@
 export default {
   name: '',
   components: {
-    CommonAdduser: resolve => require(['./common/common-adduser.vue'], resolve)
+    CommonAdduser: () => import('./common/common-adduser.vue')
   },
   props: [''],
   data() {

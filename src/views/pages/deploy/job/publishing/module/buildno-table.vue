@@ -59,20 +59,20 @@
         </template>
       </TsTable>
     </div>
- 
+
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     params: Object
@@ -158,7 +158,7 @@ export default {
     },
     dealDataFilter(nodeList) {
       // 处理默认值的数据结构
-      let columlist = [];           
+      let columlist = [];
       nodeList.forEach(v => {
         let text = v.version;
         if (v.isFreeze) {
@@ -168,7 +168,7 @@ export default {
         }
         columlist.push(
           {
-            text: text, 
+            text: text,
             value: v.version,
             _disabled: v.isFreeze
           }

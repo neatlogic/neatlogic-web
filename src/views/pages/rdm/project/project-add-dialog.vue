@@ -13,7 +13,7 @@
 export default {
   name: '',
   components: {
-    ProjectEdit: resolve => require(['@/views/pages/rdm/project/edittab/project-edit.vue'], resolve)
+    ProjectEdit: () => import('@/views/pages/rdm/project/edittab/project-edit.vue')
   },
   props: {
     id: { type: Number }
@@ -31,7 +31,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() {},

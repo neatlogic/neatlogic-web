@@ -204,10 +204,10 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AttrInputer: resolve => require(['./attr-inputer.vue'], resolve),
-    CiEntityChoose: resolve => require(['./cientity-choose.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AttrInputer: () => import('./attr-inputer.vue'),
+    CiEntityChoose: () => import('./cientity-choose.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     mode: { type: String, default: 'window' },

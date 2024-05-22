@@ -39,8 +39,8 @@ export default {
   name: '',
   components: {
     VersionEdit,
-    VersionValid: resolve => require(['./version-valid'], resolve),
-    ReviewDialog: resolve => require(['../edit/review-dialog.vue'], resolve)
+    VersionValid: () => import('./version-valid'),
+    ReviewDialog: () => import('../edit/review-dialog.vue')
   },
   filters: {
   },
@@ -158,7 +158,7 @@ export default {
     }
   },
   computed: {
-  
+
   },
   watch: {
     defaultVersionVo: {

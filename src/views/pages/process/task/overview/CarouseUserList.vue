@@ -1,7 +1,7 @@
 <template>
   <div class="workcenterCardUserList" @click="cardclick(row, $event, type)">
     <div v-if="type === 'table'" :style="{height:'100%'}">
-      <div v-if="!row.currentstep.length || !row.currentstep" class="no-current-step">        
+      <div v-if="!row.currentstep.length || !row.currentstep" class="no-current-step">
         <span class="mr-sx" :class="getTsStatus(row.status.value)" :style="{ color: row.status.color }"></span>
         <slot><span :style="{color: row.status.color}">{{ row.status.text }}</span></slot>
       </div>
@@ -66,10 +66,10 @@
             </Row>
           </CarouselItem>
         </div>
-        
+
       </Carousel>
     </div>
-    
+
   </div>
 </template>
 
@@ -77,8 +77,8 @@
 export default {
   name: '',
   components: {
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    UserList: resolve => require(['./UserList.vue'], resolve)
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    UserList: () => import('./UserList.vue')
   },
   props: ['row', 'type'],
   data() {

@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     disabled: {type: Boolean, default: false},
@@ -37,7 +37,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-   
+
   },
   beforeUpdate() {},
   updated() {},
@@ -80,7 +80,7 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return null;
     }},
   watch: {

@@ -122,8 +122,8 @@
 export default {
   name: '',
   components: {
-    AttrSearcher: resolve => require(['@/views/pages/cmdb/cientity/attr-searcher.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    AttrSearcher: () => import('@/views/pages/cmdb/cientity/attr-searcher.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     value: { type: Object },

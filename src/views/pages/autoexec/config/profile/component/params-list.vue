@@ -58,7 +58,7 @@ export default {
   components: {
     TsFormItem,
     ...Component,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {},
   props: {
@@ -143,7 +143,7 @@ export default {
     initConfig() {
       this.itemConfig = {};
       this.list instanceof Array && this.list.forEach(data => {
-        let config = Object.assign({}, data.config ? data.config : data);  
+        let config = Object.assign({}, data.config ? data.config : data);
         config.desc = data.description;
         config.type = data.type == 'phase' ? 'text' : data.type;
         if (data.type == 'node' || data.type == 'file') {
@@ -169,7 +169,7 @@ export default {
         return type;
       };
     }
-   
+
   },
   watch: {
     paramList: {

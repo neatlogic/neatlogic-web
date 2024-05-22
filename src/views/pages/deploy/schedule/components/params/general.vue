@@ -131,11 +131,11 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    ModuleList: resolve => require(['@/views/pages/deploy/job/publishing/module-list'], resolve),
-    SetParam: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/param.vue'], resolve),
-    PhaseList: resolve => require(['@/views/pages/deploy/job/publishing/phase-list'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ModuleList: () => import('@/views/pages/deploy/job/publishing/module-list'),
+    SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue'),
+    PhaseList: () => import('@/views/pages/deploy/job/publishing/phase-list')
   },
   props: {
     baseParams: Object,

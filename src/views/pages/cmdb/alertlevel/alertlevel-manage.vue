@@ -32,8 +32,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AlertLevelEdit: resolve => require(['./alertlevel-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AlertLevelEdit: () => import('./alertlevel-edit-dialog.vue')
   },
   props: {},
   data() {

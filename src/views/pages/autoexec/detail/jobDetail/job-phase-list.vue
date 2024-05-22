@@ -35,7 +35,7 @@
                   <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
                   <template v-slot:content>
                     <div>
-                      <div 
+                      <div
                         v-for=" title in getExceptionTips(phase).titles"
                         :key="title"
                       >{{ title }}</div>
@@ -54,8 +54,8 @@
 <script>
 export default {
   components: {
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
   model: {
@@ -75,7 +75,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-  
+
   },
   beforeUpdate() {},
   updated() {},

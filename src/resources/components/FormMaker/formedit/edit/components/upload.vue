@@ -54,7 +54,7 @@ import sheetCompontMixins from '@/resources/mixins/sheetCompontMixins.js';
 export default {
   name: 'FormEditUpload',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   mixins: [sheetCompontMixins],
   props: {

@@ -66,7 +66,7 @@ import viewmixin from '../viewmixin.js';
 export default {
   name: 'Formstaticlist',
   components: {
-    CellComponent: resolve => require(['./staticList-components.vue'], resolve),
+    CellComponent: () => import('./staticList-components.vue'),
     draggable
   },
   mixins: [viewmixin],

@@ -322,12 +322,12 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve),
-    IconDialog: resolve => require(['@/views/pages/common/icon-dialog.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    FormItemConfig: resolve => require(['@/resources/plugins/TsSheet/form-item-config.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
+    IconDialog: () => import('@/views/pages/common/icon-dialog.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    FormItemConfig: () => import('@/resources/plugins/TsSheet/form-item-config.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     id: { type: Number }

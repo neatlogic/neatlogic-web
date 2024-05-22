@@ -60,9 +60,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CustomAttrEdit: resolve => require(['@/views/pages/rdm/project/edittab/components/customattr-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CustomAttrEdit: () => import('@/views/pages/rdm/project/edittab/components/customattr-edit-dialog.vue')
   },
   props: {
     projectId: { type: Number },

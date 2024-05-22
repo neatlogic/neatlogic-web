@@ -49,10 +49,10 @@
 export default {
   name: 'ChanneltypeManage',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ChannelTypeEditDialog: resolve => require(['./channel-type-edit-dialog'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ChannelTypeEditDialog: () => import('./channel-type-edit-dialog')
   },
   filters: {},
   props: [],
@@ -114,7 +114,7 @@ export default {
       this.loadingShow = true;
       let params = {
         ...this.searchParam,
-        currentPage: this.tableData.currentPage || 1, 
+        currentPage: this.tableData.currentPage || 1,
         pageSize: this.tableData.pageSize || 20
       };
       this.$api.process.channeltype

@@ -96,11 +96,11 @@ import typeList from './staticList.js';
 export default {
   name: 'Formstaticlist',
   components: {
-    DataSetting: resolve => require(['./staticList-setting'], resolve),
-    TypeSetting: resolve => require(['./staticList-type-setting'], resolve),
-    TsFormSelect, 
+    DataSetting: () => import('./staticList-setting'),
+    TypeSetting: () => import('./staticList-type-setting'),
+    TsFormSelect,
     draggable,
-    TsFormInput 
+    TsFormInput
   },
   props: {
     type: String,

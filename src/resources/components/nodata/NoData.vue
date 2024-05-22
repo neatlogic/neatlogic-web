@@ -56,12 +56,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/img/common/nodata-default.png') no-repeat center center;
+      background: url('@img-module/img/common/nodata-default.png') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/img/common/nodata-dark.png');
+        background-image: url('@img-module/img/common/nodata-dark.png');
       }
     }
   }
@@ -75,12 +75,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/img/common/no-search-result-default.png') no-repeat center center;
+      background: url('@img-module/img/common/no-search-result-default.png') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~img-module/img/common/no-search-result-dark.png');
+        background-image: url('@img-module/img/common/no-search-result-dark.png');
       }
     }
   }

@@ -150,12 +150,12 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    ReplyTemplate: resolve => require(['../reply/reply-template'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    ReplyTemplate: () => import('../reply/reply-template')
   },
   props: {
     handler: {

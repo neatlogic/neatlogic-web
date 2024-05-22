@@ -41,7 +41,7 @@
 export default {
   name: 'NoticeIssue',
   components: {
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     isShow: { type: Boolean, default: false },

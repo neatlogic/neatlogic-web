@@ -94,9 +94,9 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard')
   },
   filters: {
   },
@@ -106,11 +106,11 @@ export default {
       default: null
     },
     specifyVersion: {
-      type: Object, 
+      type: Object,
       default: () => {}
     },
     currentVersionId: {
-      type: [String, Number], 
+      type: [String, Number],
       default: null
     }
   },
@@ -202,7 +202,7 @@ export default {
         }
       } else if (status == 'rejected') {
         return status;
-      } 
+      }
       return '';
     },
     getStatusText(status, isActive) {
@@ -218,7 +218,7 @@ export default {
         }
       } else if (status == 'rejected') {
         return this.$t('page.rejected');
-      } 
+      }
       return '';
     }
   },

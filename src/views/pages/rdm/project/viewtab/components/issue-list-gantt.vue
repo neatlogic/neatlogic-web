@@ -119,11 +119,11 @@ import '@/resources/assets/font/tsIconfont.js';
 export default {
   name: '',
   components: {
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueTimeEditDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issuetime-edit-dialog.vue'], resolve)
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    IssueTimeEditDialog: () => import('@/views/pages/rdm/project/viewtab/components/issuetime-edit-dialog.vue')
   },
   props: {
     issueData: { type: Object },

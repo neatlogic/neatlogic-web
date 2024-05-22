@@ -78,12 +78,12 @@
 export default {
   name: '',
   components: {
-    AddTarget: resolve => require(['./runnerDetail/add-target.vue'], resolve),
-    SetParam: resolve => require(['./runnerDetail/param.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ArgumentParams: resolve => require(['./runnerDetail/argument-params.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
-  
+    AddTarget: () => import('./runnerDetail/add-target.vue'),
+    SetParam: () => import('./runnerDetail/param.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+
   },
   filters: {},
   data() {
@@ -279,7 +279,7 @@ export default {
       await this.$api.cmdb.tagManage.getTag(params).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.tagIdList = [res.Return.id];
-        } 
+        }
       });
       if (this.$utils.isEmpty(this.tagIdList)) {
         // 如果没有“test”标签，则新建一个“test”标签

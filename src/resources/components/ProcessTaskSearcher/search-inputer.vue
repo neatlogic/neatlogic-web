@@ -46,7 +46,7 @@ export default {
   name: '',
   components: {
     ...handlers,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     mode: { type: String, default: 'simple' },

@@ -37,9 +37,9 @@ export default {
   name: 'Resourcefilter',
   components: {
     FilterSearch,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
-    
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+
   },
   filters: {
   },
@@ -119,7 +119,7 @@ export default {
     },
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
-      this.getDataList('currentPage', 1); 
+      this.getDataList('currentPage', 1);
     }
   },
   computed: {},

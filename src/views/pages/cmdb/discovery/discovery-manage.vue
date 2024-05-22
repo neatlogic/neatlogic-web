@@ -110,9 +110,9 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {},
   data() {

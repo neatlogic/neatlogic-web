@@ -56,12 +56,12 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReportInstanceEdit: resolve => require(['./reportinstance-edit.vue'], resolve)
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReportInstanceEdit: () => import('./reportinstance-edit.vue')
   },
   props: {},
   data() {

@@ -90,14 +90,14 @@
               <!-- 子任务策略节点 -->
               <div v-show="item.isShow == 1" class="sub-description border-color padding" :class="!isTabShow(item) ? 'mt-md' : '' ">
                 <div v-if="item.taskConfigList && getTaskConfigList(item.taskConfigList).length > 0">
-                  <Tabs                  
+                  <Tabs
                     class="block-span"
                     :animated="false"
                     name="tab2"
                   >
-                    <TabPane      
+                    <TabPane
                       v-for="subStep in getTaskConfigList(item.taskConfigList)"
-                      :key="subStep.id"   
+                      :key="subStep.id"
                       :label="subStep.name"
                       :name="'subTask' + subStep.id"
                       tab="tab2"
@@ -223,11 +223,11 @@ export default {
   name: 'StepOverview',
   components: {
     ...stepitems,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    StrategyDetailReadonly: resolve => require(['../strategy/strategy-detail-readonly.vue'], resolve),
-    JobDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'], resolve),
-    SlaTime: resolve => require(['./sla-time.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    StrategyDetailReadonly: () => import('../strategy/strategy-detail-readonly.vue'),
+    JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
+    SlaTime: () => import('./sla-time.vue')
   },
   directives: { download },
   props: {

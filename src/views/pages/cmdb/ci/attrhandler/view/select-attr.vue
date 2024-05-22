@@ -42,8 +42,7 @@
 export default {
   name: '',
   directives: {},
-  components: { TsTable: resolve =>
-    require(['@/resources/components/TsTable/TsTable.vue'], resolve) },
+  components: { TsTable: () => import('@/resources/components/TsTable/TsTable.vue') },
   props: {
     mode: { type: String, default: 'list' },
     ciEntity: {type: Object},

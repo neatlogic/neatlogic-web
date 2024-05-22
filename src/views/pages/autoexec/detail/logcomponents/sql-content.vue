@@ -36,7 +36,7 @@ import NodeLog from '../logcomponents/node-log.vue';
 export default {
   name: '',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   directives: { download },
   filters: {},

@@ -54,9 +54,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    SubscribeEdit: resolve => require(['./mq-subscribe-edit.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    SubscribeEdit: () => import('./mq-subscribe-edit.vue')
   },
   props: {},
   data() {
@@ -93,7 +93,7 @@ export default {
       if (row) {
         this.currentSubscribeId = row.id;
       } else {
-        this.currentSubscribeId = null; 
+        this.currentSubscribeId = null;
       }
       this.isEditShow = true;
     },
@@ -111,7 +111,7 @@ export default {
               this.searchSubscribe();
             });
         },
-        'on-cancel': vnode => { 
+        'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });

@@ -22,9 +22,9 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    MailServerEdit: resolve => require(['./mailserver-edit.vue'], resolve),
-    WechatEdit: resolve => require(['./wechat-edit.vue'], resolve)
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    MailServerEdit: () => import('./mailserver-edit.vue'),
+    WechatEdit: () => import('./wechat-edit.vue')
   },
   props: {},
   data() {

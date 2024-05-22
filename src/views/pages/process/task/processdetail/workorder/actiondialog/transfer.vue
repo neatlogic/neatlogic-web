@@ -30,8 +30,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue')
   },
   props: {
     isShow: {type: Boolean, default: false},

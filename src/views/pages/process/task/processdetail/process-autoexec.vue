@@ -21,7 +21,7 @@
             @editTitle="editTitle"
             @changeTitle="changeTitle"
           ></NavTop>
-     
+
           <div class="toolbar-right">
             <div class="action-group">
               <!-- 开始_start -->
@@ -133,7 +133,7 @@
               </span>
               <!-- 回退s -->
               <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
-                <Button 
+                <Button
                   icon="tsfont tsfont-reply"
                   @click="backTask"
                 >{{ actionConfig.back }}</Button>
@@ -483,18 +483,18 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    LookSitemapDialog: resolve => require(['./workorder/actiondialog/lookSitemap.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    NavTop: () => import('./navTop.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     ...itemDialog,
-    TaskAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'], resolve),
-    JobDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
+    TaskAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'),
+    JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
     FooterOperationBtn
   },
   provide() {
@@ -518,7 +518,7 @@ export default {
       completeErrorText: this.$t('term.process.autoexeccompleteerror'),
       taskAlertHeight: 0 // taskAlert高度
       // taskForm: null, //工单表单查看权限
-    
+
     };
   },
   created() {
@@ -532,7 +532,7 @@ export default {
     this.timer = null;
   },
   methods: {
-    getMessage() { 
+    getMessage() {
       //初始化当前步骤:自动化
       if (this.processTaskStepConfig) {
         this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || null;

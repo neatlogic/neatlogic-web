@@ -92,17 +92,17 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    DirectoryTree: resolve => require(['./directory-tree.vue'], resolve),
-    DocumentonlineContent: resolve => require(['@/views/pages/documentonline/document/documentonline-content.vue'], resolve),
-    FileDetailDialog: resolve => require(['./file-detail-dialog.vue'], resolve),
-    AddClassificationDialog: resolve => require(['./add-classification-dialog.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    DirectoryTree: () => import('./directory-tree.vue'),
+    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue'),
+    FileDetailDialog: () => import('./file-detail-dialog.vue'),
+    AddClassificationDialog: () => import('./add-classification-dialog.vue')
   },
   props: {},
   data() {
     return {
       loadingShow: true,
-      keyword: '',    
+      keyword: '',
       tableData: {},
       list: [],
       filePath: '',
@@ -265,7 +265,7 @@ export default {
       } else if (type === 'edit') {
         this.openClassifyDialog(this.fileConfig);
       } else {
-        this.isShowDialog = false; 
+        this.isShowDialog = false;
       }
     },
     openClassifyDialog(item) {

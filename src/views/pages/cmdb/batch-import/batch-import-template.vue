@@ -28,8 +28,8 @@
 export default {
   name: 'ImportTemplate',
   components: {
-    ciTypeList: resolve => require(['../components/ci/ci-type-list.vue'], resolve),
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve)
+    ciTypeList: () => import('../components/ci/ci-type-list.vue'),
+    TsTable: () => import('components/TsTable/TsTable')
   },
   data() {
     return {

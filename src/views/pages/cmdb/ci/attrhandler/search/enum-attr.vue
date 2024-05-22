@@ -13,7 +13,7 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     attrData: { type: Object },
@@ -61,7 +61,7 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return '';
     }
   },

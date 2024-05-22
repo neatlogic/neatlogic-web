@@ -21,7 +21,7 @@ import validmixin from '@/resources/plugins/TsSheet/form/component/common/valida
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   extends: base,
   mixins: [validmixin],

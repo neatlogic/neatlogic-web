@@ -9,10 +9,10 @@
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addFlow">{{ $t('term.process.flow') }}</span>
           <div class="action-item tsfont-upload" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</div>
-          <ComplexUploadDialog  
-            ref="uploadDialog" 
-            targetType="process"  
-            url="/api/binary/common/import"  
+          <ComplexUploadDialog
+            ref="uploadDialog"
+            targetType="process"
+            url="/api/binary/common/import"
             @close="closeComplexUploadDialog"
           ></ComplexUploadDialog>
         </div>
@@ -103,13 +103,13 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'FlowOverview',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ComplexUploadDialog: resolve => require(['@/resources/components/ComplexUploadDialog/complexUploadDialog.vue'], resolve),
-    RelationService: resolve => require(['./flowedit/relation-service.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ComplexUploadDialog: () => import('@/resources/components/ComplexUploadDialog/complexUploadDialog.vue'),
+    RelationService: () => import('./flowedit/relation-service.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
   mixins: [download],
@@ -208,7 +208,7 @@ export default {
               v.btnList = [
                 {name: this.$t('term.process.relcatalog'), value: 'referenceCount', icon: 'tsfont-tool', type: 'referenceCount', key: 'referenceCount'},
                 {name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('term.process.flowcannotdelete'), key: 'referenceCount'},
-                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: this.$t('page.copy'), value: 'copy', type: 'text'}, 
+                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: this.$t('page.copy'), value: 'copy', type: 'text'},
                   {name: this.$t('page.export'), value: 'export', type: 'download'}]
                 }
               ];

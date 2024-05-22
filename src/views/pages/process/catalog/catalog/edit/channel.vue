@@ -161,9 +161,9 @@ export default {
     TsFormSelect,
     TsCkeditor,
     TranferreportSetting,
-    ViewProcess: resolve => require(['../catalog-viewprocess.vue'], resolve),
-    IconEdit: resolve => require(['./icon-edit.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve)
+    ViewProcess: () => import('../catalog-viewprocess.vue'),
+    IconEdit: () => import('./icon-edit.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue')
   },
   filters: {},
   mixins: [editmixin],

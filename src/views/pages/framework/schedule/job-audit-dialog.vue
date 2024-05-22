@@ -60,9 +60,9 @@
 export default {
   name: '',
   components: {
-    LogDialog: resolve => require(['./job-log-dialog.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+    LogDialog: () => import('./job-log-dialog.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {
     jobUuid: {type: String}

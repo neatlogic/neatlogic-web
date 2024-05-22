@@ -68,8 +68,8 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    ComparisonDetail: resolve => require(['./comparison-detail'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ComparisonDetail: () => import('./comparison-detail')
   },
   props: {
     pathId: Number,
@@ -109,7 +109,7 @@ export default {
         search: true,
         isSquare: false,
         clearable: false,
-        border: 'none'        
+        border: 'none'
       },
       newVersionId: null,
       oldVersionId: null,

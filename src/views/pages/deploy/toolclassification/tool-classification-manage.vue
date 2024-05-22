@@ -47,9 +47,9 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {

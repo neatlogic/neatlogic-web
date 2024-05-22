@@ -40,7 +40,7 @@ import upload from '@/resources/mixins/upload.js';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   mixins: [upload],
   props: { moduleId: { type: String } },

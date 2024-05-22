@@ -190,7 +190,7 @@ export default {
     TsForm,
     TsQuartz,
     TsFormSelect,
-    AttrSearcher: resolve => require(['../cientity/attr-searcher.vue'], resolve)
+    AttrSearcher: () => import('../cientity/attr-searcher.vue')
   },
   props: {
     ciId: {

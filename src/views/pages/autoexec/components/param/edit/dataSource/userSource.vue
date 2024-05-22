@@ -37,10 +37,10 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   props: {
     config: Object

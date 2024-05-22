@@ -93,8 +93,8 @@ import Search from './search';
 export default {
   name: 'FormdynamicList',
   components: {
-    Search, 
-    TdFormitem: resolve => require(['../integration/td-formitem.vue'], resolve)
+    Search,
+    TdFormitem: () => import('../integration/td-formitem.vue')
   },
   mixins: [viewmixin, filtermixin],
   props: {
@@ -155,7 +155,7 @@ export default {
       this.currentValue = {};
       this.detailData = {};
       //赋值
-      let data = this.$utils.deepClone(this.value); 
+      let data = this.$utils.deepClone(this.value);
       if (data && data.table) { //val存在 保存表格
         this.tableData = data.table;
         this.searchValueList = data.searchValueList;
@@ -178,7 +178,7 @@ export default {
       if (!this.setting.config.needPage) { //不需要分页时，拿去整个表格数据
         objJson.table = this.tableData;
         objJson.searchValueList = this.searchValueList;
-      } 
+      }
       if (this.selectUuidList && this.selectUuidList.length > 0) {
         let detailData = this.saveIntegrationDetail(this.detailData, this.currentValue);
         this.$set(objJson, 'detailData', detailData);
@@ -333,7 +333,7 @@ export default {
       if (this.filterList && this.filterList.length > 0) {
         this.$set(json, 'filterList', this.updateFilterList(this.filterList));
       }
-      
+
       this.$set(json, 'sourceColumnList', this.searchSourceColumnList(json.sourceColumnList, this.filterList));
 
       //取消正在搜索的请求

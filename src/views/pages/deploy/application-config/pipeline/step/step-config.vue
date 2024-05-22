@@ -17,7 +17,7 @@
       ></ScriptList>
     </div>
     <div v-if="canEdit" class="add-bar">
-      <span class="text-href tsfont-plus" @click="addOperation"> 
+      <span class="text-href tsfont-plus" @click="addOperation">
         {{ $t('dialog.title.addtarget', {target: $t('term.autoexec.tool')}) }}
       </span>
     </div>
@@ -34,11 +34,11 @@
 export default {
   name: 'StepConfig',
   components: {
-    ScriptList: resolve => require(['@/views/pages/autoexec/components/script/script-list.vue'], resolve),
-    AddOperation: resolve => require(['@/views/pages/deploy/application-config/pipeline/step/type/operation-add.vue'], resolve)
+    ScriptList: () => import('@/views/pages/autoexec/components/script/script-list.vue'),
+    AddOperation: () => import('@/views/pages/deploy/application-config/pipeline/step/type/operation-add.vue')
   },
   filters: {},
-  props: { 
+  props: {
     canEdit: {
       type: Boolean,
       default: true

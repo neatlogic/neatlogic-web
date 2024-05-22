@@ -48,7 +48,7 @@
                     :title="$t('term.autoexec.associateacustomtool')"
                     :referenceCount="node.referenceCountForScript"
                     :isShowStatus="true"
-                  ></ReferenceSelect>              
+                  ></ReferenceSelect>
                 </li>
                 <li
                   class="action-item tsfont-trash-o"
@@ -73,10 +73,10 @@
 export default {
   name: 'ToolCatalogManage', // 工具目录管理
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsDragTreeTable: resolve => require(['components/TsDragTreeTable/TsDragTreeTable'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ToolCatalogEditDialog: resolve => require(['./tool/tool-catalog-edit-dialog'], resolve) // 工具目录编辑
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsDragTreeTable: () => import('components/TsDragTreeTable/TsDragTreeTable'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ToolCatalogEditDialog: () => import('./tool/tool-catalog-edit-dialog') // 工具目录编辑
   },
   filters: {},
   props: {},

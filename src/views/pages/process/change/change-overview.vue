@@ -73,12 +73,12 @@
 export default {
   name: '',
   components: {
-    //UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ChangeSetting: resolve => require(['./change-setting.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    //UserCard:()=>import('@/resources/components/UserCard/UserCard.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ChangeSetting: () => import('./change-setting.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: {},

@@ -87,11 +87,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExecutionRecordDialog: resolve => require(['./execution-record-dialog'], resolve) // 执行记录
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExecutionRecordDialog: () => import('./execution-record-dialog') // 执行记录
   },
   props: {},
   data() {
@@ -123,14 +123,14 @@ export default {
           title: this.$t('term.deploy.integratedaction'),
           key: 'integrationName'
         },
-        { 
-          title: this.$t('page.fcu'), 
-          key: 'fcuVo', 
+        {
+          title: this.$t('page.fcu'),
+          key: 'fcuVo',
           type: 'user'
         },
-        { 
-          title: this.$t('page.fcd'), 
-          key: 'lcd', 
+        {
+          title: this.$t('page.fcd'),
+          key: 'lcd',
           type: 'time'
         },
         {

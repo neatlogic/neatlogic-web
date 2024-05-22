@@ -25,7 +25,7 @@
                   </div>
                   <div class="item-cli pl-nm pr-nm">
                     <CheckboxGroup v-model="selectedConfig[item.value]">
-                      <Checkbox 
+                      <Checkbox
                         v-for="(innerItem) in item.optionList"
                         :key="innerItem.value"
                         :label="innerItem.value"
@@ -54,7 +54,7 @@
 export default {
   name: '',
   components: {
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   props: {
     isShowCoverDialog: {

@@ -113,13 +113,13 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ColumnEdit: resolve => require(['./components/column-edit.vue'], resolve),
-    RowEdit: resolve => require(['./components/row-edit.vue'], resolve)
-    // UserSelect: resolve => require(["@/resources/components/UserSelect/UserSelect.vue"], resolve)
+    navTopLeft: () => import('./components/navTopLeft'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ColumnEdit: () => import('./components/column-edit.vue'),
+    RowEdit: () => import('./components/row-edit.vue')
+    // UserSelect:()=>import("@/resources/components/UserSelect/UserSelect.vue")
   },
   directives: { download },
   props: [''],
@@ -142,7 +142,7 @@ export default {
       matrixAttributeList: [], //矩阵属性
       nameValidateList: ['required', {
         name: 'searchUrl',
-        url: 'api/rest/matrix/save', 
+        url: 'api/rest/matrix/save',
         message: this.$t('message.targetisexists', {'target': this.$t('page.matrixname')}),
         key: 'name',
         params: () => ({uuid: this.matrixUuid})
@@ -194,7 +194,7 @@ export default {
         currentPage: this.tabledata.currentPage ? this.tabledata.currentPage : 1,
         matrixUuid: this.matrixUuid
       };
-     
+
       this.getMatrixData(param);
     },
     //改变页数
@@ -213,8 +213,8 @@ export default {
       }).then(res => {
         if (res.Status == 'OK') {
           this.processMatrixAttributeList = res.Return.tbodyList;
-        } 
-      }); 
+        }
+      });
     },
     //获取矩阵数据
     getMatrixData: function(param) {
@@ -426,7 +426,7 @@ export default {
       let toUuid = tbodyList[newIndex].uuid.value;
       const param = {
         matrixUuid: this.matrixUuid,
-        uuid: uuid, 
+        uuid: uuid,
         toUuid: toUuid
       };
       this.$api.framework.matrix.moveMatrixData(param)

@@ -1,8 +1,8 @@
 <template>
   <div class="mq-overview">
-    <TsContain hideHeader> 
+    <TsContain hideHeader>
       <template v-slot:content>
-        <Tabs 
+        <Tabs
           v-model="currentTab"
           class="block-tabs"
           :animated="false"
@@ -39,9 +39,9 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    MqSubscribeList: resolve => require(['./mq-subscribe-list.vue'], resolve),
-    MqTopicList: resolve => require(['./mq-topic-list.vue'], resolve)
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    MqSubscribeList: () => import('./mq-subscribe-list.vue'),
+    MqTopicList: () => import('./mq-topic-list.vue')
   },
   props: {},
   data() {

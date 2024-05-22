@@ -21,7 +21,7 @@
 export default {
   name: '', // 发送邮件
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     params: {

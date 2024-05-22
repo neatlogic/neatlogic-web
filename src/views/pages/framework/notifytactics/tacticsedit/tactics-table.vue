@@ -45,8 +45,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect')
   },
   props: {
     triggerList: Array

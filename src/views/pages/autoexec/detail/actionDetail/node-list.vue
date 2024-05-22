@@ -73,9 +73,9 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
-    // NodeView: resolve => require(['@/views/pages/autoexec/components/common/targetView/node-view'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+    // NodeView:()=>import('@/views/pages/autoexec/components/common/targetView/node-view')
   },
   filters: {
   },

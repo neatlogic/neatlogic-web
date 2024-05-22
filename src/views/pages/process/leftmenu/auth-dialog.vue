@@ -17,7 +17,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     uuid: {type: String}
@@ -31,7 +31,7 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'small'
-      }, 
+      },
       workcenterData: {},
       formConfig: {
         type: {
@@ -61,7 +61,7 @@ export default {
           transfer: true,
           groupList: ['role', 'user', 'common'],
           validateList: ['required']
-        }, 
+        },
         support: {
           type: 'select',
           label: this.$t('page.limituser'),

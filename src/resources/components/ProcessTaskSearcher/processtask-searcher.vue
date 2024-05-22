@@ -122,7 +122,7 @@
                 </div>
                 <div v-if="workcenterData.type!='factory'" class="action-item">
                   <Button
-                   
+
                     ghost
                     type="primary"
                     @click="saveWorkcenter"
@@ -144,12 +144,12 @@
 export default {
   name: '',
   components: {
-    SimplePanel: resolve => require(['./simple-panel.vue'], resolve),
-    CustomPanel: resolve => require(['./custom-panel.vue'], resolve),
-    ConditionViewer: resolve => require(['./condition-viewer.vue'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    WorkcenterTypeEdit: resolve => require(['./workcenter-type-edit.vue'], resolve)
+    SimplePanel: () => import('./simple-panel.vue'),
+    CustomPanel: () => import('./custom-panel.vue'),
+    ConditionViewer: () => import('./condition-viewer.vue'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    WorkcenterTypeEdit: () => import('./workcenter-type-edit.vue')
   },
   props: {
     workcenterData: { type: Object },

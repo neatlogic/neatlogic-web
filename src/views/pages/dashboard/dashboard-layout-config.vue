@@ -31,8 +31,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     widget: { type: Object }
@@ -46,7 +46,7 @@ export default {
           onChange: (val) => {
             if (this.widget) {
               this.$set(this.widget, 'name', val.trim());
-            } 
+            }
           }
         },
         padding: {

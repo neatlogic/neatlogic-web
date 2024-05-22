@@ -74,7 +74,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['components/UserCard/UserCard'], resolve)
+    UserCard: () => import('components/UserCard/UserCard')
   },
   directives: { download },
   filters: {},

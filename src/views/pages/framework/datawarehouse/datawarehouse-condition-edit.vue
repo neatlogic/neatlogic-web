@@ -43,10 +43,10 @@ import { HANDLERS } from './handler-list.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ConditionConfig: resolve => require(['./condition-config.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ConditionConfig: () => import('./condition-config.vue')
   },
   props: {
     id: { type: Number }
@@ -129,7 +129,7 @@ export default {
             }
           }
         });
-       
+
         if (isValid) {
           this.$api.framework.datawarehouse.saveDataSourceField({fieldList: this.dataSourceData.fieldList}).then(res => {
             if (res.Status == 'OK') {

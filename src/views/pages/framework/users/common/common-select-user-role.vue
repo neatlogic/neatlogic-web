@@ -2,7 +2,7 @@
   <div class="select-user">
     <TsRow class="pb-md">
       <Col :span="14"></Col>
-      <Col :span="10"> 
+      <Col :span="10">
         <TsFormInput
           v-model="keyword"
           suffix="tsfont-search"
@@ -25,8 +25,8 @@
 export default {
   name: 'SelectUser',
   components: {
-    userList: resolve => require(['./select-user/user-list'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    userList: () => import('./select-user/user-list'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: [],
   data() {

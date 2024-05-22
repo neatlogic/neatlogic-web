@@ -48,8 +48,8 @@ import items from './review/index.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    ActivityDetail: resolve => require(['@/views/pages/knowledge/common/activity-detail.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    ActivityDetail: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
     ...items
   },
   filters: {},
@@ -127,7 +127,7 @@ export default {
           if (error) {
             this.isPass = false;
             this.$set(this.formConfig.content, 'value', error);
-          } 
+          }
         });
     },
     getDocumentConfig(type) {

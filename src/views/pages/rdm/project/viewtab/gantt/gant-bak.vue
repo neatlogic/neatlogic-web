@@ -25,8 +25,8 @@ import * as d3 from 'd3';
 
 export default {
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    GanttChar: resolve => require(['@/views/pages/rdm/project/viewtab/gantt/gantt-char.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    GanttChar: () => import('@/views/pages/rdm/project/viewtab/gantt/gantt-char.vue')
   },
   props: {},
   data() {

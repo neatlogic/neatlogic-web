@@ -57,7 +57,7 @@
                     transfer
                     readonly
                     border="border"
-                  ></TsFormSelect> 
+                  ></TsFormSelect>
                 </template>
                 <template v-else-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
                   <TsFormSelect
@@ -70,7 +70,7 @@
                     :firstSelect="false"
                     transfer
                     border="border"
-                  ></TsFormSelect> 
+                  ></TsFormSelect>
                 </template>
                 <template v-else>
                   <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
@@ -100,7 +100,7 @@
                     <TsTable :theadList="theadList" :tbodyList="tbodyList"></TsTable>
                   </div>
                   <div class="center-text">
-                    {{ $t('dialog.title.batchcreatetarget',{target:$t('term.autoexec.job')}) }} 
+                    {{ $t('dialog.title.batchcreatetarget',{target:$t('term.autoexec.job')}) }}
                   </div>
                   <div style="width:100px">
                     <TsTable :theadList="[{ title: $t('page.autoexecjob'),key: 'jop'}]" :tbodyList="[{jop:$t('term.autoexec.job') + 'A'},{jop: $t('term.autoexec.job') + 'B'}]"></TsTable>
@@ -124,12 +124,12 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Batchjobpolicy: resolve => require(['./joppolicy/batchjobpolicy.vue'], resolve),
-    Singlejobpolicy: resolve => require(['./joppolicy/singlejobpolicy.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Batchjobpolicy: () => import('./joppolicy/batchjobpolicy.vue'),
+    Singlejobpolicy: () => import('./joppolicy/singlejobpolicy.vue')
   },
   props: {
     allFormitemList: Array,
@@ -237,7 +237,7 @@ export default {
             Object.keys(this.config).forEach(key => {
               this.$set(this.autoexecConfig, key, this.config[key]);
             });
-            
+
             //执行器组只需要只读，从组合工具带出即可
             this.$set(this.autoexecConfig, 'runnerGroup', {});
             if (!this.$utils.isEmpty(this.autoexecCombop.runnerGroup)) {

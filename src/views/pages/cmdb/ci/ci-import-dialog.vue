@@ -107,10 +107,10 @@ import upload from '@/resources/mixins/upload.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    IconDialog: () => import('../common/icon-dialog.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   mixins: [upload],
   props: {},

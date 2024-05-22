@@ -28,11 +28,11 @@
               <span class="text-title">{{ $t('page.description') }}</span>
               <span class="text-default" v-html="item.content"></span>
             </div>
-           
+
           </Col>
         </TsRow>
         <div class="mt-md">
-          <TsTable    
+          <TsTable
             :tbodyList="item.tbodyList"
             :theadList="theadList"
             :height="'280'"
@@ -115,7 +115,7 @@
               :disabled="isDisableCommet"
               :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
               @click="comment(item)"
-            >{{ $t('page.reply') }}</Button>            
+            >{{ $t('page.reply') }}</Button>
           </div>
         </div>
       </div>
@@ -147,12 +147,12 @@
 export default {
   name: 'StrategyDetail',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    ReplyDialog: resolve => require(['./reply-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    ReplyDialog: () => import('./reply-dialog.vue')
   },
   filters: {
   },
@@ -161,7 +161,7 @@ export default {
     processTaskStepId: [String, Number], //工单步骤id
     actionConfig: Object, //权限数据
     config: Object, //策略数据
-    readonly: { 
+    readonly: {
       type: Boolean,
       default: false
     }
@@ -215,7 +215,7 @@ export default {
           name: 'content',
           label: this.$t('page.description'),
           validateList: ['required']
-        } 
+        }
       },
       subTaskContent: {
         userList: null,
@@ -279,7 +279,7 @@ export default {
       if (this.stepConfig.config && this.stepConfig.config.customButtonList && this.stepConfig.config.customButtonList.length > 0) {
         this.customButtonList = this.stepConfig.config.customButtonList;
       }
-     
+
       this.loadingShow = false;
     },
     async getListTask() {
@@ -375,7 +375,7 @@ export default {
           let findUserList = tbodyList.filter(t => {
             if (!t.isDelete && (t.userUuid == uuid)) {
               return t;
-            } 
+            }
           });
           if (findUserList && findUserList.length > 0) {
             findUserList.forEach(f => { //相同处理人，回复id不同
@@ -413,23 +413,23 @@ export default {
         id: item.id,
         content: item.CkeditorContent
       };
-      let isValid = true; 
+      let isValid = true;
       if (btn) {
         this.$set(data, 'button', btn.name);
         !data.content && this.$set(data, 'content', btn.defaultContent);
         //检验：判断回复意见是否必填
-        if (btn.isRequired && !data.content) { 
+        if (btn.isRequired && !data.content) {
           isValid = false;
         }
       } else if (!data.content) {
         isValid = false;
-      } 
+      }
       if (!isValid) {
         this.$Notice.warning({
           title: this.$t('form.validate.required', {target: this.$t('page.reply')})
         });
         return;
-      } 
+      }
       this.$api.process.process.completeTask(data).then(res => {
         this.isShow = false;
         this.$Message.success(this.$t('message.executesuccess'));

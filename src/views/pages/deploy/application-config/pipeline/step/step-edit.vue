@@ -107,14 +107,14 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
   },
   props: {
     canEdit: {
@@ -131,7 +131,7 @@ export default {
     groupConfig: Object,
     appSystemId: Number, //应用id
     appModuleId: Number, //模块id
-    envId: Number, //环境id 
+    envId: Number, //环境id
     runtimeParamList: Array //作业参数
   },
   data() {
@@ -246,7 +246,7 @@ export default {
     async okDialog() {
       if (this.$refs.formConfig.valid()) {
         if (this.editConfig.policy && (!this.groupConfig || this.groupConfig.policy != 'grayScale' || (this.editConfig.execMode && this.editConfig.execMode != 'runner' && this.editConfig.execMode != 'sqlfile'))) {
-          this.$delete(this.editConfig, 'policy'); 
+          this.$delete(this.editConfig, 'policy');
         }
         await this.validSetting();
         if (!this.isValid) {
@@ -293,7 +293,7 @@ export default {
     },
     dealDataFilter(nodeList) {
       // 处理默认值的数据结构
-      let columlist = [];           
+      let columlist = [];
       nodeList.forEach(v => {
         let text = '';
         if (v.port) {

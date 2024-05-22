@@ -32,8 +32,8 @@
 export default {
   name: '',
   components: {
-    PropertyHandler: resolve => require(['../property/property-handler.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    PropertyHandler: () => import('../property/property-handler.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     property: { type: Object }
@@ -70,7 +70,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-   
+
   },
   beforeUpdate() {},
   updated() {},

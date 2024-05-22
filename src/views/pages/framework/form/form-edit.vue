@@ -230,11 +230,11 @@ export default {
     };
   },
   components: {
-    TsSheet: resolve => require(['@/resources/components/FormMaker/formedit/TsSheet.vue'], resolve),
-    FormPreview: resolve => require(['@/resources/components/FormMaker/formview/form-view.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    // UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve)
+    TsSheet: () => import('@/resources/components/FormMaker/formedit/TsSheet.vue'),
+    FormPreview: () => import('@/resources/components/FormMaker/formview/form-view.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    // UploadDialog:()=>import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard')
   },
   props: [''],
   data() {

@@ -77,7 +77,7 @@ import inspectRouterList from '@/views/pages/inspect/router.js'; // 巡检路由
 export default {
   name: '', // 巡检结果菜单
   components: {
-    CategoryEditDialog: resolve => require(['@/views/pages/inspect/recentIssues/category-edit-dialog'], resolve), // 编辑新分类
+    CategoryEditDialog: () => import('@/views/pages/inspect/recentIssues/category-edit-dialog'), // 编辑新分类
     draggable
   },
   extends: LeftMenu,

@@ -39,7 +39,7 @@
             </template>
           </TsTable>
         </div>
-    
+
       </template>
     </TsContain>
 
@@ -68,15 +68,15 @@
 export default {
   name: 'SceneDefinitionManage', // 场景定义
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {},
   data() {
     return {
       keyword: '', // 搜索关键字
-      dialogTitle: '', 
+      dialogTitle: '',
       isShowDialog: false,
       isShowLoading: false,
       formValue: {},
@@ -91,9 +91,9 @@ export default {
           type: 'text',
           validateList: [
             'required',
-            'name-special', 
+            'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/scenario/save', 
+              url: '/api/rest/autoexec/scenario/save',
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
               params: { id: ''}

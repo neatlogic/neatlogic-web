@@ -16,9 +16,9 @@ import base from '../base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TabListSetting: resolve => require(['./tab-list-setting.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TabListSetting: () => import('./tab-list-setting.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   extends: base,
   props: {},

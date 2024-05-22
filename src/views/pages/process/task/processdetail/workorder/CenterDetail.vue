@@ -496,18 +496,18 @@ export default {
     FormPreviewHtml,
     Report,
     ...Component,
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve),
-    ActivityOverview: resolve => require(['./activity/activity-overview.vue'], resolve),
-    StepOverview: resolve => require(['./taskstep/step-overview.vue'], resolve),
-    StrategyDetail: resolve => require(['./strategy/strategy-detail.vue'], resolve),
-    RelationDetail: resolve => require(['./relation/relation-detail.vue'], resolve),
-    ChangeDetail: resolve => require(['./change/change-detail.vue'], resolve),
-    ChangecreateStep: resolve => require(['./change/changecreate-detail'], resolve),
-    ScoreEdit: resolve => require(['./score/score-edit.vue'], resolve),
-    MarkRepeat: resolve => require(['./markrepeat/mark-repeat.vue'], resolve),
-    AccessoriesList: resolve => require(['./CenterDetailComponent/accessories-list'], resolve), // 附件清单
-    ReplyContent: resolve => require(['./CenterDetailComponent/reply-content'], resolve), // 回复内容
-    ReportingHistory: resolve => require(['./CenterDetailComponent/reporting-history'], resolve) // 上报历史
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
+    ActivityOverview: () => import('./activity/activity-overview.vue'),
+    StepOverview: () => import('./taskstep/step-overview.vue'),
+    StrategyDetail: () => import('./strategy/strategy-detail.vue'),
+    RelationDetail: () => import('./relation/relation-detail.vue'),
+    ChangeDetail: () => import('./change/change-detail.vue'),
+    ChangecreateStep: () => import('./change/changecreate-detail'),
+    ScoreEdit: () => import('./score/score-edit.vue'),
+    MarkRepeat: () => import('./markrepeat/mark-repeat.vue'),
+    AccessoriesList: () => import('./CenterDetailComponent/accessories-list'), // 附件清单
+    ReplyContent: () => import('./CenterDetailComponent/reply-content'), // 回复内容
+    ReportingHistory: () => import('./CenterDetailComponent/reporting-history') // 上报历史
   },
   directives: { imgViewer, scrollHidden, download },
   mixins: [dealFormMix],
@@ -867,7 +867,7 @@ export default {
           fileIdList: [],
           readcomponentList: readcomponentList || []
         };
-        
+
         if (!this.$utils.isEmpty(formExtendAttributeDataList)) {
           this.$set(data, 'formExtendAttributeDataList', formExtendAttributeDataList);
         }
@@ -893,7 +893,7 @@ export default {
             Object.assign(data, eventConfig);
           }
         }
-        
+
         this.rightsettingVue = this.rightsettingVue || getParent(this);
         this.rightsettingVue && (data.priorityUuid = this.rightsettingVue.$refs.RightSetting ? this.rightsettingVue.$refs.RightSetting.priorityUuid : this.processTaskConfig.priorityUuid);
         return data;
@@ -1198,7 +1198,7 @@ export default {
         if (this.tabValue == tabValue) {
           this.tabValue = ''; // 当前选中tab是高亮tab时，固定页面后，设置默认选中第一个tab
         }
-        this.loadingShow = false; 
+        this.loadingShow = false;
       });
     },
     cancelFixedPage(tabValue) {
@@ -1441,7 +1441,7 @@ export default {
       return !!(this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig));
     },
     hasFormRequiredTask() {
-      /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】 
+      /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】
           拿到表单所有必填的组件，过滤掉被隐藏必填的组件，并且必填字段为空时，需要高亮【内容详情tab】
       */
       let hasFormRequired = false;

@@ -22,7 +22,7 @@
 export default {
   name: '',
   components: {
-    DataList: resolve => require(['./formtableselector-datalist.vue'], resolve)
+    DataList: () => import('./formtableselector-datalist.vue')
   },
   props: {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标

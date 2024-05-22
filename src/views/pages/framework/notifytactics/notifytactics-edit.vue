@@ -204,15 +204,15 @@ import ActiveDetail from './tacticsedit/active-detail.vue';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ConditionEdit: resolve => require(['./tacticsedit/condition-modal.vue'], resolve),
-    TacticsDialog: resolve => require(['./tacticsedit/tactics-dialog.vue'], resolve),
-    SettingTemplate: resolve => require(['./tacticsedit/setting/setting-template'], resolve),
-    SettingParameter: resolve => require(['./tacticsedit/setting/setting-parameter'], resolve),
-    DelItme: resolve => require(['./tacticsedit/setting/del-item.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ConditionEdit: () => import('./tacticsedit/condition-modal.vue'),
+    TacticsDialog: () => import('./tacticsedit/tactics-dialog.vue'),
+    SettingTemplate: () => import('./tacticsedit/setting/setting-template'),
+    SettingParameter: () => import('./tacticsedit/setting/setting-parameter'),
+    DelItme: () => import('./tacticsedit/setting/del-item.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     ActiveDetail
   },
   provide() {

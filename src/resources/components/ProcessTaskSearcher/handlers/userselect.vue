@@ -19,7 +19,7 @@
 export default {
   name: '',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   props: {
     isReadOnly: { type: Boolean, default: false },

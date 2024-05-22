@@ -178,16 +178,16 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    SyncEdit: resolve => require(['./sync-edit.vue'], resolve),
-    SyncPolicyEdit: resolve => require(['./syncpolicy-edit.vue'], resolve),
-    CollectionData: resolve => require(['./collection-data.vue'], resolve),
-    CollectionTypeList: resolve => require(['./collection-type-list.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    LaunchConfirmDialog: resolve => require(['@/views/pages/cmdb/sync/launch-confirm-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    SyncEdit: () => import('./sync-edit.vue'),
+    SyncPolicyEdit: () => import('./syncpolicy-edit.vue'),
+    CollectionData: () => import('./collection-data.vue'),
+    CollectionTypeList: () => import('./collection-type-list.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    LaunchConfirmDialog: () => import('@/views/pages/cmdb/sync/launch-confirm-dialog.vue')
   },
   directives: { clipboard},
   props: {},

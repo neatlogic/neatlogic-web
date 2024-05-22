@@ -51,7 +51,7 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
   components: {
-    TagList: resolve => require(['@/views/pages/knowledge/common/tag-list.vue'], resolve),
+    TagList: () => import('@/views/pages/knowledge/common/tag-list.vue'),
     ...items,
     LeftNav
   },

@@ -1,4 +1,9 @@
 {
+<<<<<<< HEAD
   "tenantName": "tlcb",
   "urlPrefix": "http://localhost:8080"
+=======
+  "tenantName": "demo",
+  "urlPrefix": "http://172.16.40.142:8282"
+>>>>>>> c23d3f5b6fce2417d75b3286d892f8abe7e6169c
 }

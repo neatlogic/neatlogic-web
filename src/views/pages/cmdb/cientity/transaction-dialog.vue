@@ -20,15 +20,15 @@
 export default {
   name: '',
   components: {
-    TransactionList: resolve => require(['./transaction-list.vue'], resolve)
+    TransactionList: () => import('./transaction-list.vue')
   },
   props: {
     ciEntityId: {type: Number},
     ciId: {type: Number}
   },
   data() {
-    return { 
-      dialogConfig: { 
+    return {
+      dialogConfig: {
         title: this.$t('term.cmdb.uncommittransaction'),
         type: 'modal',
         maskClose: false,

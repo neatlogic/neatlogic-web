@@ -23,8 +23,8 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
     mode: {
@@ -77,7 +77,7 @@ export default {
           needPage: false
         };
         Object.assign(this.config, this.matrixConfig);
-      } 
+      }
     },
     change(val, option) {
       let text = '';

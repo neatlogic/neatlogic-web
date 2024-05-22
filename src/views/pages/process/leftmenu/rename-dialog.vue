@@ -17,20 +17,20 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     uuid: {type: String}
   },
   data() {
     return {
-      dialogConfig: { 
+      dialogConfig: {
         title: this.$t('dialog.title.edittarget', {target: this.$t('page.name')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
         width: 'small'
-      }, 
+      },
       workcenterData: {},
       formConfig: [
         {
@@ -54,7 +54,7 @@ export default {
           falseValue: 0,
           desc: this.$t('term.process.workordertypenumdes')
         }
-      ] 
+      ]
     };
   },
   beforeCreate() {},

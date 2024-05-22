@@ -8,9 +8,9 @@
 export default {
   name: '',
   components: {
-    filterHandler: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-filter.vue'], resolve),
-    inputNodeListHandler: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-input-node.vue'], resolve),
-    selectNodeListHandler: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-select-node.vue'], resolve)
+    filterHandler: () => import('@/views/pages/autoexec/components/common/targetView/target-filter.vue'),
+    inputNodeListHandler: () => import('@/views/pages/autoexec/components/common/targetView/target-input-node.vue'),
+    selectNodeListHandler: () => import('@/views/pages/autoexec/components/common/targetView/target-select-node.vue')
   },
   filters: {
   },

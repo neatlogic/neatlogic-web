@@ -19,8 +19,7 @@ import { AttrBase } from './base-attr.js';
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   extends: AttrBase,
   props: {},
@@ -44,8 +43,8 @@ export default {
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
       const day = d.getDate();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
+      return year + '-' +
+        (month < 10 ? '0' + month : month) + '-' +
         (day < 10 ? '0' + day : day);
     },
     valid() {
@@ -76,7 +75,7 @@ export default {
       if (this.mode === 'input') {
         if (this.valueList && this.valueList.length > 0) {
           return this.valueList[0];
-        } 
+        }
       } else if (this.mode === 'search') {
         //搜索模式返回的是数组
         return this.valueList;

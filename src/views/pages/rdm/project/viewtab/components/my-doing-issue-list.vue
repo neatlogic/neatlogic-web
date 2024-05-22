@@ -20,7 +20,7 @@
 export default {
   name: '',
   components: {
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve)
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue')
   },
   props: {
     appId: { type: Number },

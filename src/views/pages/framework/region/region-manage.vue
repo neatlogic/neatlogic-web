@@ -66,10 +66,10 @@
 export default {
   name: 'CatalogManage',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    RegionTeam: resolve => require(['./region-team'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    RegionTeam: () => import('./region-team')
   },
   directives: {},
   props: [''],
@@ -294,7 +294,7 @@ export default {
         });
     },
     beforeDrop(tree, treeNodes, targetNode, moveType) {
-      
+
     },
     cancelSelectedAllNode() {},
     onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
@@ -312,7 +312,7 @@ export default {
         parentId: parentId,
         targetId: targetNode?.id || 0
       };
-     
+
       if (moveType != null) {
         this.$api.framework.region.moveRegion(data).then(res => {
           if (res && res.Status == 'OK') {
@@ -392,7 +392,7 @@ export default {
           'div',
           {
             style: {
-              
+
             },
             on: {
               click: e => {

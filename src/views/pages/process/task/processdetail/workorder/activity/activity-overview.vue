@@ -66,7 +66,7 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: 'ActivityOverview',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...Item
   },
   directives: {imgViewer},

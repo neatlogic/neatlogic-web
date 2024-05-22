@@ -25,8 +25,8 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue')
   },
   props: {
     issueData: { type: Object },

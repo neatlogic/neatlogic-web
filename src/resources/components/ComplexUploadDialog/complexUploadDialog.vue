@@ -65,7 +65,7 @@ import axios from '@/resources/api/http';
 export default {
   name: '',
   components: {
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   props: {
     targetType: { // 上传类型

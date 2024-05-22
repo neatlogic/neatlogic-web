@@ -37,7 +37,7 @@
               >
                 <CompareContent :config="sourceVersion"></CompareContent>
               </div>
-              
+
             </div>
           </Col>
           <Col span="12">
@@ -98,10 +98,10 @@ import CompareContent from '../common/compare-content.vue';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
     CompareContent
   },
   filters: {

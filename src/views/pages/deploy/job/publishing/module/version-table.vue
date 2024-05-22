@@ -49,11 +49,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     params: Object
@@ -84,11 +84,11 @@ export default {
           title: this.$t('term.deploy.sealplate'),
           key: 'isFreeze'
         },
-       
+
         {
           title: this.$t('page.environment'),
           key: 'envList'
-        } 
+        }
       ],
       statusObj: {
         released: 'released',

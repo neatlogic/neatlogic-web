@@ -28,8 +28,8 @@
 export default {
   name: '',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    EditAppCatalog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-appcatalog-dialog.vue'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    EditAppCatalog: () => import('@/views/pages/rdm/project/viewtab/components/edit-appcatalog-dialog.vue')
   },
   props: {
     appId: { type: Number },

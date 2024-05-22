@@ -69,12 +69,12 @@ import Component from '@/views/pages/autoexec/components/param/readonly/index.js
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve),
-    SaveSetting: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'], resolve),
-    AddTarget: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/add-target.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
+    SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
+    AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
     ...Component
   },
   props: {
@@ -127,7 +127,7 @@ export default {
             allowToggle: true,
             readonly: true,
             dataList: []
-          } 
+          }
         },
         {
           name: 'roundCount',
@@ -213,7 +213,7 @@ export default {
           label: this.$t('page.form'),
           dynamicUrl: '/api/rest/form/search',
           params: {
-            isActive: 1, 
+            isActive: 1,
             needPage: false
           },
           rootName: 'tbodyList',
@@ -334,7 +334,7 @@ export default {
               this.formList.dataList.push(item.component);
             }
           });
-        } 
+        }
       });
     },
     async getCombopDetail() {

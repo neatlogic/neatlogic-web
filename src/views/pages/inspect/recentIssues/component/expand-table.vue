@@ -44,7 +44,7 @@
 export default {
   name: 'ExpandTable', // 内嵌表格
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -181,7 +181,7 @@ export default {
             if (item) {
               this.tbodyList.push({
                 ...item,
-                flag: this.handleRule(item).ruleFlag, 
+                flag: this.handleRule(item).ruleFlag,
                 ruleId: this.handleRule(item).ruleId,
                 appSystemName: this.handleRule(item).ruleFlag == 'appRule' ? (item.ruleSeq.split('#') && item.ruleSeq.split('#')[0]) : '-'
               });

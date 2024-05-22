@@ -14,17 +14,16 @@
 <script>
 export default {
   name: '',
-  components: { 
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+  components: {
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
-  props: { 
+  props: {
     config: {type: Object}
   },
   data() {
     const _this = this;
-    return { 
+    return {
       myConfig: {},
       typeList: [
         {value: 'daterange', text: '日期范围'},
@@ -32,7 +31,7 @@ export default {
         {value: 'datetimerange', text: '日期时间范围'}
       ],
       formatList: [
-        {value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm', type: ['datetimerange']}, 
+        {value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm', type: ['datetimerange']},
         {value: 'yyyy-MM-dd', text: 'yyyy-MM-dd', type: ['daterange']},
         {value: 'MM-dd', text: 'MM-dd', type: ['daterange']},
         {value: 'HH:mm:ss', text: 'HH:mm:ss', type: ['timerange']}],
@@ -81,7 +80,7 @@ export default {
     myConfig: {
       handler: function(val) {
         this.$emit('setConfig', val);
-      }, 
+      },
       deep: true
     },
     type: {
@@ -90,7 +89,7 @@ export default {
           this.dynamicFormatList = this.formatList.filter(f => f.type.includes(newval));
           this.$forceUpdate();
         }
-      }, 
+      },
       deep: true
     },
     config: {

@@ -63,8 +63,8 @@ import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormDatePicker
   },
   props: {
@@ -262,9 +262,9 @@ export default {
           this.uuid = val.uuid;
           if (val.fileList && val.fileList.length > 0) {
             this.fileList = val.fileList;
-            this.defaultFileList = this.$utils.deepClone(val.fileList); 
+            this.defaultFileList = this.$utils.deepClone(val.fileList);
           }
-        
+
           this.workerVo = val.workerVo || '';
           this.startTimeWindow = val.startTimeWindow || '';
           this.endTimeWindow = val.endTimeWindow || '';

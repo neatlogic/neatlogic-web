@@ -98,7 +98,7 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: {imgViewer, clipboard},
   filters: {

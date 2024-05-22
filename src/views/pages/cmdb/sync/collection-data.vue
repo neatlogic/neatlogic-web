@@ -87,10 +87,10 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    DiscoveryDataDetail: resolve => require(['@/views/pages/cmdb/discovery/discovery-data-detail.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    JsonViewer: () => import('vue-json-viewer'),
+    DiscoveryDataDetail: () => import('@/views/pages/cmdb/discovery/discovery-data-detail.vue')
   },
   props: {
     collection: { type: String }

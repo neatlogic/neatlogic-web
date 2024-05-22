@@ -159,10 +159,10 @@ import { addEvent } from './util/event.js';
 export default {
   name: '',
   components: {
-    D3Tooltip: resolve => require(['../asset/d3/d3-tooltip.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    CiTopoTemplateEdit: resolve => require(['@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue'], resolve)
+    D3Tooltip: () => import('../asset/d3/d3-tooltip.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    CiTopoTemplateEdit: () => import('@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue')
   },
   props: {
     mode: { type: String, default: 'window' }, //window|dialog

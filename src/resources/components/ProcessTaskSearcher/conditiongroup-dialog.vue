@@ -79,7 +79,7 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     conditionList: { type: Array },

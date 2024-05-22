@@ -112,11 +112,11 @@
 export default {
   name: '',
   components: {
-    CiTopo: resolve => require(['../ci/ci-topo.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    CiTopo: () => import('../ci/ci-topo.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {

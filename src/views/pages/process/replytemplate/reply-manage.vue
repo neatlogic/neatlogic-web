@@ -22,7 +22,7 @@
           @changeCurrent="getPageData"
           @changePageSize="changePageSize"
         >
-          <template slot="type" slot-scope="{ row }"> 
+          <template slot="type" slot-scope="{ row }">
             {{ row.type == 'custom' ? $t('page.personal') : $t('page.system') }}
           </template>
           <template slot="action" slot-scope="{ row }">
@@ -66,8 +66,8 @@ export default {
   components: {
     TsTable,
     TsForm,
-    TsformSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsformSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
 
   },
   props: {},
@@ -126,12 +126,12 @@ export default {
           width: '100%',
           name: 'name',
           validateList: ['required',
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/process/comment/template/save', 
-              key: 'name', 
-              message: this.$t('message.targetisexists', {target: this.$t('page.template')}), 
-              params: { id: '' } 
+            {
+              name: 'searchUrl',
+              url: '/api/rest/process/comment/template/save',
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('page.template')}),
+              params: { id: '' }
             }]
         },
         {
@@ -164,7 +164,7 @@ export default {
           validateList: ['required']
         }
       ],
-      systemTypeFrom: 
+      systemTypeFrom:
         {
           type: 'userselect',
           name: 'authList',
@@ -173,7 +173,7 @@ export default {
           groupList: ['common', 'user', 'role', 'team'],
           validateList: ['required'],
           transfer: true
-        },      
+        },
       tableData: null,
       editTsDialog: {
         type: 'modal',
@@ -252,7 +252,7 @@ export default {
       this.editTsDialog.isShow = true;
       this.editTsDialog.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.template')});
       let hasModifyAuthority = this.$AuthUtils.hasRole('PROCESS_COMMENT_TEMPLATE_MODIFY');
-      
+
       let index = this.editForm.findIndex(item => item.name == 'authList');
       if (data.type == 'system' && index == -1) {
         this.editForm.splice(3, 0, this.systemTypeFrom);
@@ -274,7 +274,7 @@ export default {
         }
         if (data['type'] == 'custom' && !hasModifyAuthority && item.name == 'type') {
           item.disabled = true;
-        } 
+        }
       });
     },
     deleteRow(id) {

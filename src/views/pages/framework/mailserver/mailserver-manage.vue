@@ -80,7 +80,7 @@ export default {
     TsTable,
     TsForm,
     PasswordRow,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {},
   props: [],

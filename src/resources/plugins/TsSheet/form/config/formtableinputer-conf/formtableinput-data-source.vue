@@ -14,7 +14,7 @@
         }"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('page.fieldmapping')">  
+    <TsFormItem :label="$t('page.fieldmapping')">
       <div class="bg-block padding-md radius-md">
         <TsRow :gutter="10">
           <Col span="12">
@@ -52,8 +52,8 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     propertyLocal: Object,

@@ -30,8 +30,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Item: resolve => require(['./phase/node/param-item.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Item: () => import('./phase/node/param-item.vue')
   },
   filters: {},
   directives: { },
@@ -52,7 +52,7 @@ export default {
         theadList: [{
           title: this.$t('term.autoexec.paramsname'),
           key: 'name'
-        }, 
+        },
         {
           title: this.$t('page.value'),
           key: 'value'
@@ -67,7 +67,7 @@ export default {
         theadList: [{
           title: this.$t('term.autoexec.paramsname'),
           key: 'name'
-        }, 
+        },
         {
           title: this.$t('page.value'),
           key: 'value'
@@ -116,5 +116,5 @@ export default {
       padding-bottom: 10px;
       padding-top: 16px;
   }
-} 
+}
 </style>

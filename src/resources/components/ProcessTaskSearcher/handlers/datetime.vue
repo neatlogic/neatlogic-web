@@ -13,7 +13,7 @@
 export default {
   name: '',
   components: {
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve)
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue')
   },
   props: {
     mode: {
@@ -24,7 +24,7 @@ export default {
     conditionData: {type: Object}//当前组件在工单中心配置中的数据
   },
   data() {
-    return { 
+    return {
       config: this.condition.config
     };
   },
@@ -44,7 +44,7 @@ export default {
       if (this.$refs['searchInputer']) {
         return this.$refs['searchInputer'].valid();
       }
-      return true; 
+      return true;
     },
     change(val, option) {
       let text = '';

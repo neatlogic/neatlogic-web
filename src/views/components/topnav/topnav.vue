@@ -28,8 +28,8 @@ export default {
   components: {
     TopnavUser,
     TopnavMessage,
-    TopnavMenu: resolve => require(['./topnav-menu.vue'], resolve),
-    TopnavHelp: resolve => require(['./topnav-help.vue'], resolve)
+    TopnavMenu: () => import('./topnav-menu.vue'),
+    TopnavHelp: () => import('./topnav-help.vue')
   },
   data() {
     return {

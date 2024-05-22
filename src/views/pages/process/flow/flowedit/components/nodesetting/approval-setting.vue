@@ -28,7 +28,7 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   filters: {
   },

@@ -1,7 +1,7 @@
 <template>
   <div class="resourceinput">
     <div>
-      <i v-if="setting.config.isRequired" class="require-label"></i> 
+      <i v-if="setting.config.isRequired" class="require-label"></i>
       <Button v-if="!isReadonly && !formView">添加目标</Button>
     </div>
     <template v-if="formView">
@@ -37,8 +37,8 @@ import viewmixin from '@/resources/components/FormMaker/formedit/view/viewmixin.
 export default {
   name: 'Resourceinput',
   components: {
-    ResourceinputNomarl: resolve => require(['./resourceinput-nomarl'], resolve),
-    ResourceinputDialog: resolve => require(['./resourceinput-dialog'], resolve)
+    ResourceinputNomarl: () => import('./resourceinput-nomarl'),
+    ResourceinputDialog: () => import('./resourceinput-dialog')
   },
   mixins: [viewmixin],
   props: {

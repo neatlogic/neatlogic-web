@@ -120,10 +120,10 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AttrConfigDialog: resolve => require(['./formtableinputer-attr-config-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    AttrConfigDialog: () => import('./formtableinputer-attr-config-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},

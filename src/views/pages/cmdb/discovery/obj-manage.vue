@@ -60,9 +60,9 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ObjectEdit: resolve => require(['@/views/pages/cmdb/discovery/obj-edit-dialog.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ObjectEdit: () => import('@/views/pages/cmdb/discovery/obj-edit-dialog.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {},
   data() {

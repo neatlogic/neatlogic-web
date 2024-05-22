@@ -108,9 +108,9 @@ import { directive as ClickOutside } from '@/resources/directives/v-click-outsid
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     TsFormDatePicker
   },
   directives: { ClickOutside },

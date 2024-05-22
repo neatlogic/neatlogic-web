@@ -87,8 +87,8 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TagList: resolve => require(['@/views/pages/knowledge/common/tag-list.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TagList: () => import('@/views/pages/knowledge/common/tag-list.vue'),
     LeftNav,
     ...items
   },
@@ -196,7 +196,7 @@ export default {
     right: 0;
     left: 200px;
     bottom: 0;
-    border-radius: 10px;    
+    border-radius: 10px;
     .main {
       height: 100%;
       overflow: auto;
@@ -213,7 +213,7 @@ export default {
       &:not(:last-child) {
         &:after {
           content:'、'
-        } 
+        }
       }
     }
   }

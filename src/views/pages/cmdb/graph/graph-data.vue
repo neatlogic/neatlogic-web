@@ -74,8 +74,8 @@ import screenfull from '@/resources/assets/js/screenfull.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    GraphTopoDialog: resolve => require(['./graph-topo.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    GraphTopoDialog: () => import('./graph-topo.vue')
   },
   props: {},
   data() {

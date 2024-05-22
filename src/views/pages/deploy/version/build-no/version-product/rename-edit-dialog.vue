@@ -28,7 +28,7 @@
 export default {
   name: '', // 版本制品
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     params: {
@@ -53,7 +53,7 @@ export default {
             });
           },
           validateList: ['required', {
-            name: 'custom', trigger: 'change', validator: (rule, value) => { 
+            name: 'custom', trigger: 'change', validator: (rule, value) => {
               return this.validUniqueName(value);
             }}]
         }

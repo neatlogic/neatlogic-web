@@ -25,8 +25,8 @@
           </div>
         </template>
         <template v-else>
-          <span @click="handleOpen"> 
-            {{ referenceName }} 
+          <span @click="handleOpen">
+            {{ referenceName }}
             <span :class="referenceCount > 0?'text-href':'text-tip'">
               {{ referenceCount }}
             </span>
@@ -69,7 +69,7 @@ import { directive as ClickOutside } from '../../directives/v-click-outside-x.js
 export default {
   name: 'ReferenceSelect',
   components: {
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   directives: { ClickOutside },
   filters: {},
@@ -114,11 +114,11 @@ export default {
     },
     placement: { type: String, default: 'bottom-start' }, //自定义提示位置
     isIcon: { //是否需要图标
-      type: Boolean, 
+      type: Boolean,
       default: false
     },
     isMove: { //超过10个显示省略号
-      type: Boolean, 
+      type: Boolean,
       default: false
     },
     isUrl: {
@@ -144,7 +144,7 @@ export default {
       default: 'value'
     },
     jumpPath: {
-      // 跳转地址 
+      // 跳转地址
       type: String,
       default: ''
     },
@@ -172,7 +172,7 @@ export default {
       type: String,
       default: 'versionStatus'
     }
-    
+
   },
   data() {
     return {
@@ -196,7 +196,7 @@ export default {
   destroyed() {},
   methods: {
     updatePosition() {
-      if (this.$el) { 
+      if (this.$el) {
         this.$refs.dropdownContain && this.$refs.dropdownContain.$refs.drop && this.$refs.dropdownContain.$refs.drop.update();
       }
     },
@@ -205,7 +205,7 @@ export default {
         pageSize: this.pageSize,
         calleeType: this.calleeType,
         currentPage: currentPage
-       
+
       };
       if (this.uuid) {
         this.$set(params, 'uuid', this.uuid);
@@ -320,7 +320,7 @@ export default {
   /deep/ a{
     display: block;
     padding: 8px 16px;
-  }  
+  }
   .inline-block {
     display: inline-block;
   }

@@ -5,7 +5,7 @@
       labelPosition="left"
       :labelWidth="labelWidth"
     >
-      
+
       <TsFormCascader
         v-model="currentValue"
         :dataList="getPrevList(prevStepList)"
@@ -23,8 +23,8 @@ import addtargetmixin from './addtargetmixin.js';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader')
   },
   mixins: [addtargetmixin],
   props: {

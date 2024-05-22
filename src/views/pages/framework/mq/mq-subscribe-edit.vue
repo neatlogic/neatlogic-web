@@ -21,8 +21,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {type: Number}
@@ -30,7 +29,7 @@ export default {
   data() {
     const _this = this;
     return {
-      dialogConfig: { 
+      dialogConfig: {
         type: 'modal',
         maskClose: false,
         isShow: false,
@@ -135,7 +134,7 @@ export default {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
             this.close(true);
-          } 
+          }
         });
       }
     },

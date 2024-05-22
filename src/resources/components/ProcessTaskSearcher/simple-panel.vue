@@ -18,7 +18,7 @@
 export default {
   name: '',
   components: {
-    SearchInputer: resolve => require(['./search-inputer.vue'], resolve)
+    SearchInputer: () => import('./search-inputer.vue')
   },
   props: {
     workcenterConditionData: { type: Object },
@@ -180,7 +180,7 @@ export default {
           this.workcenterConditionDataLocal.conditionGroupList = [];
           this.workcenterConditionDataLocal.conditionGroupRelList = [];
         }
-      }, 
+      },
       deep: true,
       immediate: true
     }

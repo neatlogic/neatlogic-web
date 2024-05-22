@@ -80,7 +80,7 @@
             </template>
           </TsCard>
         </div>
-        
+
       </div>
     </TsContain>
     <GroupEdit v-if="isGroupEditShow" :id="groupId" @close="close"></GroupEdit>
@@ -91,10 +91,10 @@
 export default {
   name: '',
   components: {
-    GroupEdit: resolve => require(['./group-edit.vue'], resolve),
-    GroupExec: resolve => require(['./group-exec.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    GroupEdit: () => import('./group-edit.vue'),
+    GroupExec: () => import('./group-exec.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {},
   data() {
@@ -196,7 +196,7 @@ export default {
               this.searchGroup();
             });
         },
-        'on-cancel': vnode => { 
+        'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });
@@ -211,7 +211,7 @@ export default {
               const oldElement = this.groupData.cardList.find(a => a.id == element.id);
               if (element.status == 'doing') {
                 this.doingIdList.push(element.id);
-              } 
+              }
               if (oldElement) {
                 this.$set(oldElement, 'status', element.status);
                 this.$set(oldElement, 'error', element.error);

@@ -108,15 +108,15 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'ActionDetail',
   components: {
-    RefireJobDialog: resolve => require(['./jobDetail/refire-job-dialog.vue'], resolve),
-    PhaseList: resolve => require(['./jobDetail/job-phase-list.vue'], resolve),
-    ConsoleLogDialog: resolve => require(['./jobDetail/job-console-log-dialog.vue'], resolve),
-    JobParamDialog: resolve => require(['./jobDetail/job-param-dialog.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    RefireJobDialog: () => import('./jobDetail/refire-job-dialog.vue'),
+    PhaseList: () => import('./jobDetail/job-phase-list.vue'),
+    ConsoleLogDialog: () => import('./jobDetail/job-console-log-dialog.vue'),
+    JobParamDialog: () => import('./jobDetail/job-param-dialog.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...ContentItem,
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExtrainfoDetail: resolve => require(['./jobDetail/extrainfo-detail.vue'], resolve),
-    LockDialog: resolve => require(['@/views/pages/deploy/job/resourcelock/resourcelock-dialog'], resolve) //资源锁
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
+    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog') //资源锁
   },
   filters: {},
   directives: { download },
@@ -188,7 +188,7 @@ export default {
           fn: _this.revokeJob
         }
       }, lockSearchParam: {
-        
+
       }
     };
   },

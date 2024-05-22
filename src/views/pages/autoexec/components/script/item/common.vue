@@ -114,9 +114,9 @@ export default {
   name: '',
   components: {
     InputParam,
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    ArgumentParam: resolve => require(['./param/argumentparam.vue'], resolve),
-    ProfileEdit: resolve => require(['./param/profile-edit'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    ArgumentParam: () => import('./param/argumentparam.vue'),
+    ProfileEdit: () => import('./param/profile-edit')
   },
   filters: {
   },
@@ -193,7 +193,7 @@ export default {
         }
       },
       deep: true,
-      immediate: true      
+      immediate: true
     }
   }
 };

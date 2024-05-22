@@ -28,7 +28,7 @@
 export default {
   name: '', // 版本制品
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {

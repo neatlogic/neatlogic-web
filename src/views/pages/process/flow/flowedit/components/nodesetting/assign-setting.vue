@@ -11,7 +11,7 @@
           </Col>
           <Col span="12">
             <TsFormSelect
-              v-model="workerPolicyConfig.executeMode"              
+              v-model="workerPolicyConfig.executeMode"
               :dataList="executeModeList"
               :clearable="false"
               border="border"
@@ -326,10 +326,10 @@ export default {
   name: 'AssignSetting',
   components: {
     vuedraggable,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    CmdbDispatcher: resolve => require(['./dispatcher/cmdb-dispatcher'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    CmdbDispatcher: () => import('./dispatcher/cmdb-dispatcher')
   },
   props: {
     prevNodes: {

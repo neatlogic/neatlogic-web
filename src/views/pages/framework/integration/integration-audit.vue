@@ -107,8 +107,8 @@ import TimeSelect from '@/resources/components/TimeSelect/TimeSelect.vue';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    IntegrationAuditDetail: resolve => require(['./integration-audit-detail.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    IntegrationAuditDetail: () => import('./integration-audit-detail.vue'),
     UserSelect,
     TsFormSelect,
     TimeSelect
@@ -234,7 +234,7 @@ export default {
       // 搜索条件下拉
       this.searchAudit(1);
     },
-    
+
     close: function() {
       this.isShow = false;
       this.userSelectSetting.value = '';
@@ -251,7 +251,7 @@ export default {
         params['pageSize'] = pageSize;
       } else {
         params['pageSize'] = this.auditData.pageSize || 20;
-      } 
+      }
       params.userUuidList = this.userSelectSetting.value ? [this.userSelectSetting.value] : []; // 用户
       params.statusList = this.selectSetting.value ? (this.selectSetting.value == 'all' ? [] : [this.selectSetting.value]) : []; // 状态
       if (!this.timeSelectSetting.value) {

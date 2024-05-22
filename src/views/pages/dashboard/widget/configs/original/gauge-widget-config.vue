@@ -129,7 +129,7 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: { config: { type: Object } },
   data() {

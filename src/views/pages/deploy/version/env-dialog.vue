@@ -44,8 +44,8 @@
 export default {
   name: '',
   components: {
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    VersionProduct: resolve => require(['./build-no/version-product'], resolve)
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    VersionProduct: () => import('./build-no/version-product')
   },
   props: {
     envParams: {

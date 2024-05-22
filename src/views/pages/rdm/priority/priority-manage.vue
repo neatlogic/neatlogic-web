@@ -34,8 +34,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    PriorityEditDialog: resolve => require(['./priority-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    PriorityEditDialog: () => import('./priority-edit-dialog.vue')
   },
   props: {},
   data() {

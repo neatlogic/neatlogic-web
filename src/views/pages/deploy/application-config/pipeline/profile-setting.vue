@@ -67,7 +67,7 @@
                           @click.native="jumpToItem(r)"
                         >
                           <div class="text-action">{{ r.text }}</div>
-                        </DropdownItem>                       
+                        </DropdownItem>
                       </DropdownMenu>
                       <DropdownMenu v-else slot="list" class="dropdown">
                         <DropdownItem>
@@ -86,7 +86,7 @@
         </div>
       </div>
     </div>
-    <ToolProfileEdit 
+    <ToolProfileEdit
       v-if="isShow"
       :toolProfileId="profileId"
       @close="closeDialog"
@@ -122,8 +122,8 @@ import Items from '@/views/pages/autoexec/components/param/view/index.js';
 export default {
   name: '',
   components: {
-    ToolProfileEdit: resolve => require(['@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    ToolProfileEdit: () => import('@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ...Items
   },
   props: {
@@ -160,7 +160,7 @@ export default {
           title: this.$t('page.description'),
           key: 'description'
         },
-        { 
+        {
           key: 'action'
         }
       ],
@@ -240,7 +240,7 @@ export default {
         this.$set(data, 'envId', this.envId);
       }
       this.$set(this.paramoverrideTable, 'loading', true);
-      this.showParams = true; 
+      this.showParams = true;
       this.$api.deploy.apppipeline.getParamoverrideList(data).then((res) => {
         if (res.Status == 'OK') {
           this.$set(this.paramoverrideTable, 'tbodyList', res.Return.tbodyList || []);

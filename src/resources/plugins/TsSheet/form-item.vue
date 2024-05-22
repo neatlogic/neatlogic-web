@@ -120,7 +120,7 @@ export default {
   name: '',
   components: {
     ...formItems,
-    CustomItem: resolve => require(['./form/component/customitem.vue'], resolve)
+    CustomItem: () => import('./form/component/customitem.vue')
   },
   mixins: [conditionMixin],
   props: {
@@ -378,7 +378,7 @@ export default {
                           }
                           if (valueList.length > 0) {
                             this.filter.push({ uuid: r.matrixAttrUuid,
-                              valueList: valueList, 
+                              valueList: valueList,
                               textList: textList
                             });
                           }

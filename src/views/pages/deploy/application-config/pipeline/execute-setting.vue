@@ -23,8 +23,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
   },
   props: {
     defaultExecuteConfig: Object,
@@ -108,7 +108,7 @@ export default {
     },
     dealDataFilter(nodeList) {
       // 处理默认值的数据结构
-      let columlist = [];           
+      let columlist = [];
       nodeList.forEach(v => {
         let text = '';
         if (v.port) {
@@ -154,7 +154,7 @@ export default {
           let data = {
             appSystemId: this.appSystemId
           };
-          if (this.envId) { 
+          if (this.envId) {
             this.$set(data, 'appModuleId', this.appModuleId);
           }
           let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
@@ -188,7 +188,7 @@ export default {
         //模块层和环境层继承时，执行账号不可编辑
         this.formConfig.itemList.protocolId.readonly = !val || !!this.defaultExecuteConfig.inherit;
         this.formConfig.itemList.executeUser.readonly = !val || !!this.defaultExecuteConfig.inherit;
-      }, 
+      },
       immediate: true
     },
     defaultExecuteConfig: {

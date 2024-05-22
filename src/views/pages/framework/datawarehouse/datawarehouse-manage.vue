@@ -88,16 +88,16 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    //DataWarehouseEdit: resolve => require(['./datawarehouse-edit.vue'], resolve),
-    DataWarehouseConditionEdit: resolve => require(['./datawarehouse-condition-edit.vue'], resolve),
-    DataWarehouseEdit: resolve => require(['./datawarehouse-edit.vue'], resolve),
-    DataWarehouseAudit: resolve => require(['./datawarehouse-audit.vue'], resolve),
-    DataWarehouseData: resolve => require(['./datawarehouse-data.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    //DataWarehouseEdit:()=>import('./datawarehouse-edit.vue'),
+    DataWarehouseConditionEdit: () => import('./datawarehouse-condition-edit.vue'),
+    DataWarehouseEdit: () => import('./datawarehouse-edit.vue'),
+    DataWarehouseAudit: () => import('./datawarehouse-audit.vue'),
+    DataWarehouseData: () => import('./datawarehouse-data.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   mixins: [download],
   props: {},

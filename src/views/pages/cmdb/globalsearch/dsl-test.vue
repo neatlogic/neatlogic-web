@@ -8,7 +8,7 @@
 <script>
 export default {
   name: '',
-  components: { DslEditor: resolve => require(['./dsl-editor.vue'], resolve)},
+  components: { DslEditor: () => import('./dsl-editor.vue')},
   props: {},
   data() {
     return {};

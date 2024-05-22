@@ -55,7 +55,7 @@
           <div v-if="userUuidList.length == 0">
             <NoData></NoData>
           </div>
-        </template>        
+        </template>
         <template v-else>
           <TsCard
             v-if="isRefresh"
@@ -64,7 +64,7 @@
             :lg="8"
             :xl="6"
             :xxl="4"
-            :boxShadow="false"          
+            :boxShadow="false"
             classname="overvivew-main"
             @updatePage="getpageList"
           >
@@ -132,10 +132,10 @@ export default {
   name: 'CommonAdduser',
   components: {
     TsCard,
-    UserDetail: resolve => require(['./common-user-detail'], resolve),
-    selectUser: resolve => require(['./common-select-user'], resolve),
-    roleList: resolve => require(['./select-user/role-list'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    UserDetail: () => import('./common-user-detail'),
+    selectUser: () => import('./common-select-user'),
+    roleList: () => import('./select-user/role-list'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     authName: {
@@ -303,7 +303,7 @@ export default {
           //   this.userUuidList.push(obj);
           // });
           this.isShow = false;
-          
+
           this.$nextTick(() => {
             this.roleUuidList = [];
             if (res.Return.tbodyList) {
@@ -319,7 +319,7 @@ export default {
             }
             this.isShow = true;
           });
-          
+
           this.$emit('getuserIdList', this.userUuidList);
         }
       });
@@ -342,9 +342,9 @@ export default {
               value: tbody.name,
               uuid: tbody.uuid
             };
-            
+
             this.userUuidList.push(obj);
-          });          
+          });
           this.$emit('getroleIdList', this.userUuidList);
         }
       });
@@ -359,7 +359,7 @@ export default {
           content: this.$t('dialog.content.deleteconfirm', {target: item.name}),
           btnType: 'error',
           'on-ok': async vnode => {
-            const key = await this.deleteMember(item.uuid);            
+            const key = await this.deleteMember(item.uuid);
             if (key === 'OK') {
               _this.isShow = false;
               _this.$nextTick(() => {
@@ -446,7 +446,7 @@ export default {
       } else {
         list = JSON.parse(JSON.stringify(this.roleUuidList));
       }
-      
+
       for (let i = 0; i < list.length; i++) {
         let index = list[i].uuid;
         this.$set(this.single, index, this.isSelectAll);
@@ -505,7 +505,7 @@ export default {
               }
             }
           }
-        }        
+        }
       } else {
         this.$Message.warning(this.$t('message.selectobjdel'));
       }
@@ -535,7 +535,7 @@ export default {
       let _this = this;
       if (this.userCount.teamUuidList && this.userCount.teamUuidList.length > 0) { //获取用户组中激活的用户列表
         this.isShow = false;
-        await this.$api.common.getUserUuidForTeam({ teamUuidList: this.userCount.teamUuidList, isActive: 1 }).then(res => { 
+        await this.$api.common.getUserUuidForTeam({ teamUuidList: this.userCount.teamUuidList, isActive: 1 }).then(res => {
           if (res.Status === 'OK') {
             let newList = res.Return.map(item => {
               let obj = {
@@ -545,21 +545,21 @@ export default {
               };
               return obj;
             });
-            _this.userCount.userUuidList = _this.isRepeat(newList, this.userCount.userUuidList);        
+            _this.userCount.userUuidList = _this.isRepeat(newList, this.userCount.userUuidList);
           }
         });
       }
-     
+
       if (this.userCount.userUuidList) {
         this.userUuidList = this.isRepeat(this.userCount.userUuidList, this.userUuidList);
-      } 
+      }
       this.isRefresh = false;
       this.showAdd = false;
       this.saveUuidList = this.userUuidList.map(item => item.uuid);
       this.$emit('saveUser', this.saveUuidList);
       this.$nextTick(() => {
         this.isRefresh = true;
-        this.isShow = true;  
+        this.isShow = true;
       });
     },
     submitRole() {
@@ -571,8 +571,8 @@ export default {
       this.showAddRole = false;
       this.isShow = false;
       this.saveUuidList = this.userUuidList.map(item => item.uuid);
-      this.$emit('saveRole', this.saveUuidList); 
-      this.isShow = true;   
+      this.$emit('saveRole', this.saveUuidList);
+      this.isShow = true;
     },
     isRepeat(l1, l2) {
       //l1新增数组，l2目标数组
@@ -597,7 +597,7 @@ export default {
         roleUuidList: roleList
       };
     },
-    getSaveUuidList() { 
+    getSaveUuidList() {
       this.saveUuidList = this.userUuidList.map(item => item.uuid);//saveUuidList 主要用于新增角色和组时拿去数据 ,不能删除
       return this.saveUuidList;
     }
@@ -626,7 +626,7 @@ export default {
             this.selectList.push(i);
           }
         }
-        
+
         this.$nextTick(() => {
           if (this.selectList.length == 0) {
             this.isSelectAll = true;
@@ -683,7 +683,7 @@ export default {
     margin-bottom: 0px!important;
     border: 0px solid transparent!important;
   }
-  
+
 }
 /deep/.tscard-body{
   padding: 0!important;

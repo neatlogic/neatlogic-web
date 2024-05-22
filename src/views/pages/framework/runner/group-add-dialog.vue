@@ -79,9 +79,9 @@ export default {
   name: 'RunnerGroupAdd', // 添加分组
   components: {
     RelateRunnerList,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
   mixins: [runnerGroupMixin],
@@ -122,7 +122,7 @@ export default {
         return;
       }
       if (!this.validNetwork()) {
-        return; 
+        return;
       }
       this.current = current; // 步骤
       this.stepStatus = 'process';
@@ -134,7 +134,7 @@ export default {
         return;
       }
       if (!this.validNetwork()) {
-        return; 
+        return;
       }
       let params = {
         ...form.getFormValue(),

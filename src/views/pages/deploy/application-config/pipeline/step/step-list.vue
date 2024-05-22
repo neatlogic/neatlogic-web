@@ -83,7 +83,7 @@
                         <div class="pr-nm">
                           <span class="pr-xs">{{ $t('page.heavyload') }}</span>
                           <span class="inline-block"><TsFormSwitch v-model="step.override" :disabled="!canEdit" @change="(val)=>{ changeOverride(val, step) }"></TsFormSwitch></span>
-                          
+
                         </div>
                         <div>
                           <span class="pr-xs">{{ $t('page.enable') }}</span>
@@ -145,10 +145,10 @@ export default {
   },
   components: {
     draggable,
-    StepConfig: resolve => require(['./step-config.vue'], resolve),
-    StepEdit: resolve => require(['./step-edit.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    StepConfig: () => import('./step-config.vue'),
+    StepEdit: () => import('./step-edit.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {
   },
@@ -167,7 +167,7 @@ export default {
     },
     appSystemId: Number, //应用id
     appModuleId: Number, //模块id
-    envId: Number //环境id 
+    envId: Number //环境id
   },
   data() {
     return {
@@ -378,7 +378,7 @@ export default {
         let data = {
           appSystemId: this.appSystemId
         };
-        if (this.envId) { 
+        if (this.envId) {
           this.$set(data, 'appModuleId', this.appModuleId);
         }
         let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
@@ -499,7 +499,7 @@ ul.stepList {
        }
      }
    }
-  
+
     &.active {
       border: 0 none;
     }

@@ -32,7 +32,7 @@
 export default {
   name: '',
   components: {
-    DocumentonlineContent: resolve => require(['@/views/pages/documentonline/document/documentonline-content.vue'], resolve)
+    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue')
   },
   props: {
     isShow: {

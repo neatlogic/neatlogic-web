@@ -105,8 +105,8 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: { download },
   filters: {},

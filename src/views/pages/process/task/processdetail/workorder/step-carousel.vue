@@ -56,7 +56,7 @@
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">{{ item.textConfig }}</div>
                 </template>
-              </div>          
+              </div>
               <div v-for="(sla, slaIndex) in slaTimeList" :key="slaIndex" class="information-list">
                 <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
                 <div class="infor-right">
@@ -102,7 +102,7 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   props: {},

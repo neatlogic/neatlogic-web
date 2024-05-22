@@ -49,7 +49,7 @@
 export default {
   name: 'SendjobRecord',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     rowData: { type: Object, default: null }

@@ -72,7 +72,7 @@
               <div v-else class="text-tip">{{ $t('page.notarget', {target: $t('term.deploy.activeversion')}) }}</div>
             </div>
             <div v-if="!appSystemId && activeVersionData.rowNum > 0" class="page-container bg-grey text-right">
-              <Page 
+              <Page
                 :current.sync="activeVersionData.currentPage"
                 :page-size="activeVersionData.pageSize"
                 :total="activeVersionData.rowNum"
@@ -105,8 +105,8 @@
 export default {
   name: '',
   components: {
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    HistoryVersionDialog: resolve => require(['./history-version-dialog.vue'], resolve)
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    HistoryVersionDialog: () => import('./history-version-dialog.vue')
   },
   props: {},
   data() {
@@ -158,7 +158,7 @@ export default {
       }
       this.appSystemId = m.appSystemId;
       this.appModuleId = m.appModuleId;
-      this.appModuleName = item.appSystemAbbrName + (item.appSystemName ? '[' + item.appSystemName + ']' : '') + '/' + m.appModuleAbbrName + (m.appModuleName ? '[' + m.appModuleName + ']' : ''); 
+      this.appModuleName = item.appSystemAbbrName + (item.appSystemName ? '[' + item.appSystemName + ']' : '') + '/' + m.appModuleAbbrName + (m.appModuleName ? '[' + m.appModuleName + ']' : '');
       this.envList = m.envList || [];
       this.isShowVersionDialog = true;
     },
@@ -250,7 +250,7 @@ export default {
               text-align: right;
               .version-dot {
                 left: calc(100% - 10px);
-                i { 
+                i {
                   left: 6px;
                 }
               }

@@ -36,8 +36,8 @@
 export default {
   name: '',
   components: {
-    BasicEditDialog: resolve => require(['./basic-edit-dialog'], resolve),
-    ReferenceList: resolve => require(['@/resources/components/ReferenceSelect/ReferenceList.vue'], resolve)
+    BasicEditDialog: () => import('./basic-edit-dialog'),
+    ReferenceList: () => import('@/resources/components/ReferenceSelect/ReferenceList.vue')
   },
   filters: {
   },

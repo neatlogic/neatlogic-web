@@ -106,14 +106,14 @@
 export default {
   name: '',
   components: {
-    JobAudit: resolve => require(['./job-audit-dialog.vue'], resolve),
-    schedulerMemory: resolve => require(['./job-memory.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve),
-    JobEdit: resolve => require(['./job-edit-dialog.vue'], resolve)
+    JobAudit: () => import('./job-audit-dialog.vue'),
+    schedulerMemory: () => import('./job-memory.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    JobEdit: () => import('./job-edit-dialog.vue')
   },
   filters: {
   },

@@ -82,9 +82,9 @@
         </TsFormItem>
         <TsFormItem :label="$t('page.protocol')" labelWidth="80">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.protocolId)">
-            <TsFormSelect 
-              v-bind="executeForm.itemList.protocolId" 
-              :readonly="true" 
+            <TsFormSelect
+              v-bind="executeForm.itemList.protocolId"
+              :readonly="true"
               :value="groupConfig.config.executeConfig.protocolId"
             ></TsFormSelect>
           </template>
@@ -149,7 +149,7 @@
               ></TargetDetail>
             </div>
           </div>
-       
+
           <div>
             <Divider orientation="start">
               <span>{{ $t('page.whitelist') }}</span>
@@ -212,16 +212,16 @@ import {store, mutations} from './actionState.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    NodeList: resolve => require(['./node-list.vue'], resolve),
-    NodeView: resolve => require(['./group/node-view'], resolve),
-    Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters.vue'], resolve),
-    TargetView: resolve => require(['@/views/pages/autoexec/components/common/targetView/target.vue'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
+    NodeList: () => import('./node-list.vue'),
+    NodeView: () => import('./group/node-view'),
+    Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters.vue'),
+    TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    ExecuteuserSetting: () => import('./executeuser-setting.vue')
   },
   filters: {
   },
@@ -297,7 +297,7 @@ export default {
     },
     dealDataFilter(nodeList) {
       // 处理默认值的数据结构
-      let columlist = [];           
+      let columlist = [];
       nodeList.forEach(v => {
         columlist.push(
           {text: v.name, value: v.id}

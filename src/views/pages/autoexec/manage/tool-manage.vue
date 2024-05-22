@@ -93,9 +93,9 @@ export default {
   components: {
     CombineSearcher,
     RiskItem,
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   directives: { download },
@@ -332,7 +332,7 @@ export default {
           if (res.Status == 'OK' && res.Return) {
             this.$router.push({
               path: '/action-detail',
-              query: { 
+              query: {
                 id: res.Return,
                 versionStatus: 'passed'
 

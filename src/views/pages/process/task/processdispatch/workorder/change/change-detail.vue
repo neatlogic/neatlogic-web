@@ -219,10 +219,10 @@ export default {
   components: {
     StepDialog,
     UserSelect,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    UserCard: resolve => require(['components/UserCard/UserCard'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    UserCard: () => import('components/UserCard/UserCard')
   },
   directives: { download },
   props: {

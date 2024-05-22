@@ -216,19 +216,19 @@ export default {
     };
   },
   components: {
-    AddTarget: resolve => require(['./runnerDetail/add-target.vue'], resolve),
-    StepList: resolve => require(['./actionDetail/step/step-list.vue'], resolve),
-    StepConfig: resolve => require(['./actionDetail/step/step-config.vue'], resolve),
-    SetParam: resolve => require(['./runnerDetail/param.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    SaveSetting: resolve => require(['./runnerDetail/save-setting.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve),
-    RunnerGroupSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'], resolve)
+    AddTarget: () => import('./runnerDetail/add-target.vue'),
+    StepList: () => import('./actionDetail/step/step-list.vue'),
+    StepConfig: () => import('./actionDetail/step/step-config.vue'),
+    SetParam: () => import('./runnerDetail/param.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    SaveSetting: () => import('./runnerDetail/save-setting.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ExpiredReasonAlert: () => import('./expired-reason-alert'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
   },
   filters: {},
   props: {
@@ -371,7 +371,7 @@ export default {
   },
   async beforeMount() {
     await this.getParamsTypeLit();
-    await this.getExecModeList();    
+    await this.getExecModeList();
   },
   mounted() {},
   beforeUpdate() {},
@@ -462,13 +462,13 @@ export default {
               // 执行目标回显
               if (this.isEdit && !this.$utils.isEmpty(this.config)) {
                 // 处理定时任务编辑回显
-                this.setJobParams(this.config); 
+                this.setJobParams(this.config);
                 if (this.executeConfig.whenToSpecify) {
                   this.$set(this.executeConfig, 'whenToSpecify', 'runtime');
-                } 
+                }
               }
             }
-            
+
             // this.showExecuteData = this.stepList instanceof Array ? this.stepList.find(item => item.execMode != 'runner') : false;//如果阶段执行方式都是runner 则不用显示执行方面的信息
             if (this.needExecuteNode || this.needExecuteUser || this.needProtocol) { //接口返回是否需要展示：执行目标，连接协议，执行用户
               this.showExecuteData = true;

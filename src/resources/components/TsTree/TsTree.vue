@@ -31,7 +31,7 @@
 export default {
   name: 'TsTree',
   components: {
-    NodeList: resolve => require(['./NodeList.vue'], resolve)
+    NodeList: () => import('./NodeList.vue')
   },
   provide() {
     return {

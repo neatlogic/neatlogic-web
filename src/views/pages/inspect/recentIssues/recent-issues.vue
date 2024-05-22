@@ -23,7 +23,7 @@
           v-model="searchVal"
           v-bind="searchConfig"
           @change="searchCondition"
-        >   
+        >
           <template v-slot:batchSearchList="{textConfig, valueConfig}">
             <div>
               <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
@@ -196,16 +196,16 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '', // 最新问题
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExpandTable: resolve => require(['./component/expand-table.vue'], resolve),
-    SendEmail: resolve => require(['./component/send-email.vue'], resolve),
-    RuleOfThresholdDialog: resolve => require(['@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'], resolve),
-    CategoryEditDialog: resolve => require(['./category-edit-dialog'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExpandTable: () => import('./component/expand-table.vue'),
+    SendEmail: () => import('./component/send-email.vue'),
+    RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'),
+    CategoryEditDialog: () => import('./category-edit-dialog')
   },
   directives: { download },
   filters: {},

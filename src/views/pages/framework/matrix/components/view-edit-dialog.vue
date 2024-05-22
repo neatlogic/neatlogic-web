@@ -64,9 +64,9 @@
     group_concat( `t`.`name`) AS teamName
     FROM
     `user` `u`
-    LEFT JOIN `user_team` `ut` 
+    LEFT JOIN `user_team` `ut`
     ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t` 
+    LEFT JOIN `team` `t`
     ON `t`.`uuid` = `ut`.`team_uuid`
     GROUP BY u.uuid
   &lt;/sql&gt;
@@ -87,8 +87,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     matrixUuid: {
@@ -210,8 +210,8 @@ export default {
                 type: type,
                 uuid: uuid,
                 matrixUuid: matrixUuid
-              }; 
-              this.defaultFileList.push(fileObj); 
+              };
+              this.defaultFileList.push(fileObj);
             }
           }
         });

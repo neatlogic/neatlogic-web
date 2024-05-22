@@ -35,7 +35,7 @@
         @click="refreshProfile(true)"
       ></i>
     </div>
-    <ToolProfileEdit 
+    <ToolProfileEdit
       v-if="isShow"
       :toolProfileId="profileId"
       @close="closeDialog"
@@ -47,9 +47,9 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    ToolProfileEdit: resolve => require(['@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ToolProfileEdit: () => import('@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue')
   },
   inject: {
     getProfileList: {
@@ -181,7 +181,7 @@ export default {
     right: 0px;
     top: 16px
   }
-  
+
 }
 
 </style>

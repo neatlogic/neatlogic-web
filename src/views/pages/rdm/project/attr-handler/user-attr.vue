@@ -33,8 +33,8 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   extends: AttrBase,
   props: {},

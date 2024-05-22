@@ -106,12 +106,12 @@ export default {
   name: '',
   components: {
     ...formItemConfig,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ReactionDialog: resolve => require(['./form-item-reaction-dialog.vue'], resolve),
-    FormCustomItemConfig: resolve => require(['./form/config/customitem-config.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ReactionDialog: () => import('./form-item-reaction-dialog.vue'),
+    FormCustomItemConfig: () => import('./form/config/customitem-config.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     error: { type: Array }, //异常列表
@@ -299,7 +299,7 @@ export default {
           if (element.name === 'defaultValue') {
             if (!this.formItem.hasValue || this.formItem.config.disableDefaultValue) {
               this.formConfig.splice(i, 1);
-            } 
+            }
           } else {
             const configName = element.name.replace('config.', '');
             if (this.formItem.config.hasOwnProperty(configName)) {
@@ -382,7 +382,7 @@ export default {
     closeEdit() {
       this.$emit('close');
     },
-    changeInherit(val) { 
+    changeInherit(val) {
       this.formConfig.forEach(item => {
         this.$set(item, 'disabled', !!val);
       });

@@ -94,7 +94,7 @@ import upload from '@/resources/mixins/upload.js';
 export default {
   name: '',
   components: {
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve)
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox')
   },
   mixins: [upload],
   props: {

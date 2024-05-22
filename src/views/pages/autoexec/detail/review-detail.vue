@@ -136,8 +136,8 @@ export default {
   name: '',
   components: {
     UserCard,
-    VersionStatus: resolve => require(['./scriptDetail/common/version-status.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    VersionStatus: () => import('./scriptDetail/common/version-status.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CompareContent
   },
   filters: {
@@ -390,7 +390,7 @@ export default {
     &:not(:last-child) {
       &:after {
         content:'、'
-      } 
+      }
     }
   }
 }

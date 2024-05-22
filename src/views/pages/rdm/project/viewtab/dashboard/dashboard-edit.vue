@@ -186,12 +186,12 @@ export default {
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    DashboardConfig: resolve => require(['./dashboard-config.vue'], resolve),
-    WidgetConfig: resolve => require(['@/views/pages/dashboard/widget/configs/widget-config.vue'], resolve),
-    DataConfig: resolve => require(['@/views/pages/dashboard/dashboard-data-config.vue'], resolve),
-    LayoutConfig: resolve => require(['@/views/pages/dashboard/dashboard-layout-config.vue'], resolve),
-    DashboardWidget: resolve => require(['@/views/pages/dashboard/widget/dashboard-widget.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    DashboardConfig: () => import('./dashboard-config.vue'),
+    WidgetConfig: () => import('@/views/pages/dashboard/widget/configs/widget-config.vue'),
+    DataConfig: () => import('@/views/pages/dashboard/dashboard-data-config.vue'),
+    LayoutConfig: () => import('@/views/pages/dashboard/dashboard-layout-config.vue'),
+    DashboardWidget: () => import('@/views/pages/dashboard/widget/dashboard-widget.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: [],
   data() {

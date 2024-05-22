@@ -22,8 +22,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {type: Number}
@@ -152,7 +151,7 @@ export default {
             this.configFormConfig = res.Return;
             if (this.validatorData && this.validatorData.config && this.configFormConfig && this.configFormConfig.length > 0) {
               this.configFormConfig.forEach(element => {
-                element.value = this.validatorData.config[element.name]; 
+                element.value = this.validatorData.config[element.name];
                 element.width = '100%';
               });
             } else {

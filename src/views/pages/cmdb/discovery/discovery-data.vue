@@ -98,11 +98,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    CollectionTypeList: resolve => require(['./collection-type-list.vue'], resolve),
-    DiscoveryDataDetail: resolve => require(['./discovery-data-detail.vue'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    CollectionTypeList: () => import('./collection-type-list.vue'),
+    DiscoveryDataDetail: () => import('./discovery-data-detail.vue'),
+    JsonViewer: () => import('vue-json-viewer')
   },
   props: {},
   data() {

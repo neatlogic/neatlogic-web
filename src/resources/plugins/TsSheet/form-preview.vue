@@ -71,10 +71,10 @@ import { default as emitTypeList } from './form/define/common/emittype.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    TsSheet: resolve => require(['./TsSheet.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
+    JsonViewer: () => import('vue-json-viewer'),
+    TsSheet: () => import('./TsSheet.vue')
   },
   directives: { clipboard },
   props: {

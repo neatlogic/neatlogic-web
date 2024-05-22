@@ -15,7 +15,7 @@
 export default {
   name: '', // 查看密码
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     tagentId: {

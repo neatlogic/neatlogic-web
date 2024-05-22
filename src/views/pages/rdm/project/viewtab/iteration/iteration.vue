@@ -87,11 +87,11 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    EditIteration: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue'], resolve),
-    IterationList: resolve => require(['@/views/pages/rdm/project/viewtab/components/iteration-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
+    EditIteration: () => import('@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue'),
+    IterationList: () => import('@/views/pages/rdm/project/viewtab/components/iteration-list.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   mixins: [mixins],
   props: {},

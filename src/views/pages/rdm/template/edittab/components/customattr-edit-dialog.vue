@@ -36,8 +36,8 @@ import * as handlers from '@/views/pages/rdm/project/attr-config/index.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     ...handlers
   },
   props: {

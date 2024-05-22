@@ -20,7 +20,7 @@
         <TsFormItem :label="$t('term.autoexec.triggertype')" :required="true" labelWidth="80">
           <TsFormSelect
             ref="formValid"
-            v-model="triggerType" 
+            v-model="triggerType"
             v-bind="itemList.triggerType"
           ></TsFormSelect>
         </TsFormItem>
@@ -35,9 +35,9 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     editType: String,

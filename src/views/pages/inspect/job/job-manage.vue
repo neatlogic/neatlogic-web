@@ -60,10 +60,10 @@
 export default {
   name: 'JobManage', // 巡检作业
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
   props: {},
@@ -121,8 +121,8 @@ export default {
           type: 'user',
           uuid: 'uuid'
         },
-        { 
-          key: 'action' 
+        {
+          key: 'action'
         }
       ],
       searchConfig: {
@@ -161,7 +161,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() { this.searchJob(1); },
@@ -177,7 +177,7 @@ export default {
   },
   destroyed() {},
   methods: {
-    searchJob(currentPage) { 
+    searchJob(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }

@@ -65,8 +65,8 @@
 export default {
   name: '', // 选择组合工具弹窗入口
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {},
   data() {
@@ -127,7 +127,7 @@ export default {
         this.$router.push({
           path: '/runner-detail',
           query: { actionId: selectedToolId }
-        }); 
+        });
         this.closeDialog();
       }
     },

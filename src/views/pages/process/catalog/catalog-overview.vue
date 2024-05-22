@@ -140,9 +140,9 @@ export default {
   //服务目录
   name: '',
   components: {
-    ServiceRoute: resolve => require(['./catalog/ServiceRoute.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    ServiceRoute: () => import('./catalog/ServiceRoute.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: [''],
   data() {

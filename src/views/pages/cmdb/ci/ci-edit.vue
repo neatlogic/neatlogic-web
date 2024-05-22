@@ -35,9 +35,9 @@
     group_concat( `t`.`name`) AS teamName
     FROM
     `user` `u`
-    LEFT JOIN `user_team` `ut` 
+    LEFT JOIN `user_team` `ut`
     ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t` 
+    LEFT JOIN `team` `t`
     ON `t`.`uuid` = `ut`.`team_uuid`
     GROUP BY u.uuid
   &lt;/sql&gt;
@@ -93,9 +93,9 @@
     group_concat( `t`.`name`) AS teamName
     FROM
     `user` `u`
-    LEFT JOIN `user_team` `ut` 
+    LEFT JOIN `user_team` `ut`
     ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t` 
+    LEFT JOIN `team` `t`
     ON `t`.`uuid` = `ut`.`team_uuid`
     GROUP BY u.uuid
   &lt;/sql&gt;
@@ -134,9 +134,9 @@ export default {
   name: '',
   components: {
     TsForm,
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    IconDialog: () => import('../common/icon-dialog.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   //mixins: [menuMinix],
   props: {

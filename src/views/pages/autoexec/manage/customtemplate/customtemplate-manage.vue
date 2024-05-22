@@ -60,11 +60,11 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    CustomTemplateEditDialog: resolve => require(['./customtemplate-edit-dialog.vue'], resolve),
-    CustomTemplateTestDialog: resolve => require(['./customtemplate-test-dialog.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    CustomTemplateEditDialog: () => import('./customtemplate-edit-dialog.vue'),
+    CustomTemplateTestDialog: () => import('./customtemplate-test-dialog.vue')
   },
   props: {},
   data() {

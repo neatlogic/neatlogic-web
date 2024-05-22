@@ -8,7 +8,7 @@
       <template v-slot:topRight>
         <TsFormInput
           v-model.trim="searchParams.keyword"
-          search 
+          search
           @on-search="keyword => search({keyword})"
         ></TsFormInput>
       </template>
@@ -40,7 +40,7 @@
               </div>
               <div class="flex-start">
                 <div class="lcu">
-                  <span class="label text-grey">{{ $t('page.creator') }}</span>	
+                  <span class="label text-grey">{{ $t('page.creator') }}</span>
                   <UserCard class="user-card" v-bind="knowledge.lcuVo" hideAvatar />
                 </div>
                 <div class="lcd">
@@ -74,8 +74,8 @@
 export default {
   name: 'KnowledgeSearch',
   components: {
-    UserCard: resolve => require(['components/UserCard/UserCard'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    UserCard: () => import('components/UserCard/UserCard'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: ['knowledgeType'],
   data() {
@@ -105,11 +105,11 @@ export default {
   methods: {
     async search(params = {}) {
       if (!this.searchParams.keyword) return;
-      try { 
+      try {
         this.isLoading = true;
         this.searchParams = {...this.searchParams, currentPage: 1, ...params};
         const res = await this.$api.knowledge.overview.search(this.searchParams);
-        this.result = res.Return; 
+        this.result = res.Return;
       } finally {
         this.isLoading = false;
       }
@@ -149,7 +149,7 @@ export default {
 				margin: 15px 0;
 				padding: 10px 16px;
 				cursor: pointer;
-        .path {	
+        .path {
           margin-left: 15px;
         }
         .count {

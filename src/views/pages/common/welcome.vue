@@ -63,7 +63,7 @@ export default {
     text-align: center;
     padding-top: 120px;
     padding-left: 50px;
-    background: url('~@/resources/assets/images/modules/welcome/content-bg.png') no-repeat;
+    background: url('@/resources/assets/images/modules/welcome/content-bg.png') no-repeat;
     background-size: cover;
 		.description {
       font-size: 14px;
@@ -78,7 +78,7 @@ export default {
   .welcome {
     background: none;
     .welcome-content  {
-      background: url('~@/resources/assets/images/modules/welcome/content-bg_dark.png') no-repeat;
+      background: url('@/resources/assets/images/modules/welcome/content-bg_dark.png') no-repeat;
       background-size: cover;
     }
     .welcome-img {

@@ -64,8 +64,8 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   mixins: [mixins],
   props: {

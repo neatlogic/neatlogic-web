@@ -109,9 +109,9 @@ export default {
   name: '',
   components: {
     draggable,
-    JobTemplateDialog: resolve => require(['./edit-jobtemplate-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AuthDialog: resolve => require(['./auth-dialog.vue'], resolve)
+    JobTemplateDialog: () => import('./edit-jobtemplate-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AuthDialog: () => import('./auth-dialog.vue')
   },
   props: {},
   data() {

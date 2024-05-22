@@ -15,8 +15,8 @@
           @enter-search="searchkeyWord"
         >
           <template v-slot:option="{item}">
-            <div class="flex-start team-manage-wrap"> 
-              <div class="pr-md">{{ item.name }}</div>  
+            <div class="flex-start team-manage-wrap">
+              <div class="pr-md">{{ item.name }}</div>
               <div :title="item.upwardNamePath" class="overflow fz10 text-grey upward-name-path">{{ item.upwardNamePath }}</div>
             </div>
           </template>
@@ -56,7 +56,7 @@
         </div>
       </div>
     </TsContain>
-    
+
     <template v-slot:footer>
       <div class="drawer-footer ">
         <span v-if="teamCount.number> 0" style="float:left;padding-top:10px"> {{ $t('message.framework.teamcounttarget',{target: teamCount.number}) }} </span>
@@ -76,7 +76,7 @@ export default {
     return { $parent: this };
   },
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     GroupTreeView
   },
   props: {
@@ -196,7 +196,7 @@ export default {
       } else {
         this.tableData.currentPage = 1;
       }
-      let params = { 
+      let params = {
         isActive: 1,
         regionId: this.regionId,
         currentPage: this.tableData.currentPage,
@@ -319,10 +319,10 @@ export default {
     setPath(node, isSelf) { //isSelf：只跟新自己的继承路径
       let findParent = this.getfirstLevel(node);
       this.$set(node, '_parentFullPath', findParent ? findParent._fullPath : null);
- 
+
       if (!isSelf) { //子集需要跟新继承路径
         node.children && node.children.forEach(item => this.getLastLevel(item));
-      } 
+      }
     },
     getLastLevel(node) { //给下层设置继承路径
       let findParent = this.getfirstLevel(node);

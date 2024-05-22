@@ -64,7 +64,7 @@
       </div>
 
       <div v-if="!$utils.isEmptyObj(item.argument) && item.argument.valueList&& item.argument.valueList.length>0" class="extrainfo-detail bg-op padding radius-lg">
-        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>  
+        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>
         <div class="content-grid">
           <div class="item">
             <div class="content">
@@ -85,9 +85,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    JsonViewer: () => import('vue-json-viewer'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: { download },
   filters: {},
@@ -233,7 +233,7 @@ export default {
           }
         } else if (row.value && row.value instanceof Object && (Object.values(row.value).join('') + Object.keys(row.value).join('')).length < 40) {
           isDisabled = true;
-        } 
+        }
         return isDisabled;
       };
     },

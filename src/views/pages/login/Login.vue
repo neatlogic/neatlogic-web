@@ -14,7 +14,7 @@
       >
         <p class="text-title">{{ title }}</p>
         <div class="title-bottom text-grey">For your better IT service</div>
-      
+
         <div class="form-wrap">
           <div class="user-input">
             <Input
@@ -130,7 +130,7 @@ export default {
           psd = '{BS}' + this.$base64.encode(this.loginForm.password);
         }
         let param = {
-          userid: this.loginForm.username, 
+          userid: this.loginForm.username,
           password: psd,
           authType: this.authtype
         };
@@ -239,7 +239,7 @@ export default {
   bottom: 8%;
   left: 0;
   position: absolute;
-  background: url('~img-module/img/common/login-pic.png') no-repeat center center;
+  background: url('@img-module/img/common/login-pic.png') no-repeat center center;
   background-size: auto 100%;
 }
 .form-wrap {

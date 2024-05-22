@@ -70,8 +70,8 @@
 export default {
   name: '',
   components: {
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
-    InspectToolSetting: resolve => require(['@/views/pages/inspect/definition/components/inspect-tool-setting'], resolve)
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    InspectToolSetting: () => import('@/views/pages/inspect/definition/components/inspect-tool-setting')
   },
   filters: {},
   props: {

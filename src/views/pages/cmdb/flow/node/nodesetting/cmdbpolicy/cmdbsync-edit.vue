@@ -43,7 +43,7 @@
                         </template>
                       </Col>
                       <Col span="20">
-                        <div v-if="e.type == 'rel'">  
+                        <div v-if="e.type == 'rel'">
                           <div v-if="isRelShow(e.element, ciEntityData)">
                             <a
                               href="javascript:void(0)"
@@ -275,14 +275,14 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrInputer: resolve => require(['@/views/pages/cmdb/cientity/attr-inputer.vue'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader.vue'], resolve),
-    TargetCi: resolve => require(['./target-ci.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AttrInputer: () => import('@/views/pages/cmdb/cientity/attr-inputer.vue'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader.vue'),
+    TargetCi: () => import('./target-ci.vue')
   },
   props: {
     ciData: Object,
@@ -619,7 +619,7 @@ export default {
         return dataList;
       };
     },
-    getMappingDataList() { 
+    getMappingDataList() {
       return () => {
         let dataList = this.$utils.deepClone(this.mappingModeList);
         //添加多条数据，遍历对象与普通属性保持一致

@@ -44,7 +44,7 @@
 export default {
   name: '',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {},
   data() {
@@ -60,7 +60,7 @@ export default {
         codeMode: 'text/javascript',
         disabled: true
       },
-      
+
       installTipsList: [
         {
           title: this.$t('term.framework.autoinstall'),

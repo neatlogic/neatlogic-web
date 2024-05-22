@@ -60,8 +60,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    CiRelTree: resolve => require(['@/views/pages/cmdb/components/ci/ci-rel-list-tree.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    CiRelTree: () => import('@/views/pages/cmdb/components/ci/ci-rel-list-tree.vue')
   },
   props: {
     id: { type: Number },

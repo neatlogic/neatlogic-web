@@ -40,8 +40,8 @@ export default {
   name: '',
   components: {
     ...Items,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
     data: Object,

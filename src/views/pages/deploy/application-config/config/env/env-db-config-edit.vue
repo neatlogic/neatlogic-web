@@ -48,9 +48,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     id: {
@@ -91,7 +91,7 @@ export default {
         validateList: ['required'],
         firstSelect: false
       },
-   
+
       config: {},
       hasConfig: false,
       databaseList: [],
@@ -103,27 +103,27 @@ export default {
           label: this.$t('term.deploy.databaseschema'),
           maxlength: 50,
           validateList: [
-            'required', 
-            'key-special', 
+            'required',
+            'key-special',
             {
-              name: 'regex', 
+              name: 'regex',
               message: this.$t('term.deploy.inputformatisnotstandardpleaseenter'),
               pattern: /^[A-Za-z\d_-]+[.]+[A-Za-z\d_-]+$/
             },
             {
               name: 'custom',
               trigger: 'change',
-              message: this.$t('term.deploy.thereisoneandonlyonedot'), 
+              message: this.$t('term.deploy.thereisoneandonlyonedot'),
               validator: (rule, value) => {
                 // 验证有且只有一个点号
-                let potsNumber = value ? value.split('.').length : 0; 
+                let potsNumber = value ? value.split('.').length : 0;
                 return !(potsNumber > 2);
               }
             },
             {
-              name: 'searchUrl', 
-              url: '/api/rest/deploy/app/config/env/db/config/save', 
-              key: 'dbSchema', 
+              name: 'searchUrl',
+              url: '/api/rest/deploy/app/config/env/db/config/save',
+              key: 'dbSchema',
               message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.databaseschema')}),
               params: {id: this.id, ...this.params}
             }
@@ -310,7 +310,7 @@ export default {
       });
       this.$set(this.accountSetting, 'dataList', this.$utils.getAccountNodeList(accountList));
     },
-    dealDataByUrl(nodeList) { 
+    dealDataByUrl(nodeList) {
       let databaseList = [];
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach(item => {

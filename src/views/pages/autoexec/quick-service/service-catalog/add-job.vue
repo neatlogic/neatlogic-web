@@ -44,8 +44,8 @@
 export default {
   name: '',
   components: {
-    FormServiceEdit: resolve => require(['./form-service-edit.vue'], resolve),
-    NoFormServiceEdit: resolve => require(['./no-form-service-edit.vue'], resolve)
+    FormServiceEdit: () => import('./form-service-edit.vue'),
+    NoFormServiceEdit: () => import('./no-form-service-edit.vue')
   },
   filters: {},
   props: {},

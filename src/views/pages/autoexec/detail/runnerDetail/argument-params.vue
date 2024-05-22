@@ -51,8 +51,8 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     config: Object
@@ -77,7 +77,7 @@ export default {
   destroyed() {},
   methods: {
     initArgument() {
-      let obj = { 
+      let obj = {
         mappingMode: 'constant',
         value: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),
         name: this.$utils.deepClone(this.config ? this.config.defaultValue : '')

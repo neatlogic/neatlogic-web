@@ -102,14 +102,14 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InterfaceImportDialog: resolve => require(['./components/interface-import-dialog.vue'], resolve),
-    InterfaceMappingEdit: resolve => require(['./interface-mapping-edit.vue'], resolve),
-    InterfaceList: resolve => require(['./components/interface-list.vue'], resolve),
-    EditProperty: resolve => require(['./components/property-edit-dialog.vue'], resolve),
-    EditInterface: resolve => require(['./components/interface-edit-dialog.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    PropertyRelEdit: resolve => require(['./components/property-edit-rel-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InterfaceImportDialog: () => import('./components/interface-import-dialog.vue'),
+    InterfaceMappingEdit: () => import('./interface-mapping-edit.vue'),
+    InterfaceList: () => import('./components/interface-list.vue'),
+    EditProperty: () => import('./components/property-edit-dialog.vue'),
+    EditInterface: () => import('./components/interface-edit-dialog.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    PropertyRelEdit: () => import('./components/property-edit-rel-dialog.vue')
   },
   mixins: [download],
   props: {},
@@ -221,7 +221,7 @@ export default {
       this.isEditPropertyDialogShow = true;
       this.currentPropertyUid = row.uid;
     },
-   
+
     deleteProperty(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),

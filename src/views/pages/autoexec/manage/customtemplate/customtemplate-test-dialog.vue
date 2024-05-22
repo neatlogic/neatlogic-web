@@ -66,8 +66,8 @@
 export default {
   name: '',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve),
-    CustomTemplateViewer: resolve => require(['@/resources/components/customtemplate/customtemplate-viewer.vue'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
+    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue')
   },
   props: {
     id: { type: Number }

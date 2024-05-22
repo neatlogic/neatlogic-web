@@ -16,7 +16,7 @@
 export default {
   name: '', // 脚本管理
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {

@@ -26,8 +26,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    StatusRequiredAttrList: () => import('@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue')
   },
   props: {
     projectId: {type: Number},
@@ -71,7 +71,7 @@ export default {
       this.$emit('close');
     },
     confirm() {
-      
+
     }
   },
   filter: {},
