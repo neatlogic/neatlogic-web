@@ -296,7 +296,7 @@
                   :formItemList="formItemList"
                   :mode="mode"
                   :disabled="disabled"
-                  :readonly="readonly"
+                  :readonly="readonly || config.readOnly"
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
@@ -674,7 +674,7 @@ export default {
     async validData(validConifg) {
       const errorMap = {};
       //表单只读或者禁用,所有组件跳过校验
-      if (!this.disabled && !this.readonly) {
+      if (!this.disabled && !this.readonly && !this.config.readOnly) {
         for (let i = 0; i < this.componentCells.length; i++) {
           const component = this.componentCells[i].component;
           if (component && component.uuid) {
@@ -1608,7 +1608,7 @@ export default {
       if (this.config.tableList && this.config.tableList.length > 0) {
         this.config.tableList.forEach(item => {
           if (item.component && item.component.hasValue) {
-            if (this.disabled || this.readonly) { 
+            if (this.disabled || this.readonly || this.config.readOnly) { 
               //表单只读或者禁用,所有组件uuid传到后台跳过接口校验
               hiddenComponentList.push(item.component.uuid);
             } else if (!hiddenComponentList.includes(item.component.uuid)) {

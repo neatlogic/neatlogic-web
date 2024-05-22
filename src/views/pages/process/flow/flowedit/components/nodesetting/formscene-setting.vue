@@ -32,7 +32,12 @@
     <div v-else-if="!$utils.isEmpty(formConfig.uuid)" class="text-tip mt-xs">
       {{ $t('term.process.noformscenetip') }}
     </div>
-    <FormPreview v-if="isPreviewShow" :data="formPreviewContent" @close="closePreview"></FormPreview>
+    <FormPreview
+      v-if="isPreviewShow"
+      :data="formPreviewContent"
+      :formSceneUuid="formSceneUuid || 'defaultSceneUuid'"
+      @close="closePreview"
+    ></FormPreview>
   </div>
 </template>
 <script>
@@ -98,7 +103,6 @@ export default {
     async getSceneDataList(isClear = true) {
       // 获取表单场景列表
       if (this.formConfig.uuid) {
-        let tableList = [];
         if (isClear) {
           this.dataList = [];
         }
@@ -111,44 +115,20 @@ export default {
               this.formPreviewContent = formConfig;
               let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
               this.versionUuid = res.Return.currentVersionUuid;
-              formConfig.sceneList && formConfig.sceneList.forEach((item) => {
-                if (item.name && item.uuid && isClear) {
-                  this.dataList.push({
-                    text: item.name,
-                    value: item.uuid
-                  });
-                }
-                // 根据表单场景拿到对应的表单组件列表
-                if (item.uuid == this.formSceneUuid) {
-                  item.tableList && item.tableList.forEach((tItem) => {
-                    if (tItem && tItem.component && tItem.component.uuid) {
-                      let formComponentItem = formConfig.tableList.find((v) => {
-                        return v.component && v.component.uuid == tItem.component.uuid;
-                      });
-                      if (formComponentItem) {
-                        tableList.push({
-                          col: tItem.col,
-                          component: formComponentItem.component,
-                          row: tItem.row
-                        });
-                      }
-                    }
-                  });
-                  this.formPreviewContent = item;
-                  this.$set(this.formPreviewContent, 'tableList', tableList);
-                  this.$set(this.formPreviewContent, 'formWidth', formConfig.formWidth);
-                }
-              });
               if (formConfig.name && formConfig.uuid && isClear) {
-                this.dataList.unshift({
-                  text: this.$t('page.mainscene'),
+                this.dataList.push({
+                  text: formConfig.uuid === defaultSceneUuid ? this.$t('page.mainscene') + '(' + this.$t('page.defaultscenario') + ')' : this.$t('page.mainscene'),
                   value: formConfig.uuid
                 });
               }
-              let findScene = this.dataList.find(item => item.value === defaultSceneUuid);
-              if (findScene) {
-                this.$set(findScene, 'text', findScene.text + '(' + this.$t('page.defaultscenario') + ')');
-              }
+              formConfig.sceneList && formConfig.sceneList.forEach((item) => {
+                if (item.name && item.uuid && isClear) {
+                  this.dataList.push({
+                    text: item.uuid === defaultSceneUuid ? item.name + '(' + this.$t('page.defaultscenario') + ')' : item.name,
+                    value: item.uuid
+                  });
+                }
+              });
             } catch (error) {
               this.dataList = [];
               this.formPreviewContent = {};

@@ -12,7 +12,6 @@
       v-else-if="formConfig && formConfig._type == 'new'"
       ref="formSheet"
       mode="read"
-      :readonly="formConfig.readOnly || false"
       :value="formConfig"
       :formSceneUuid="formSceneUuid"
       :data="formAttributeDataMap"

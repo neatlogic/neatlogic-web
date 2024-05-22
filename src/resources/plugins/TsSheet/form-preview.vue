@@ -8,8 +8,8 @@
             ref="sheet"
             mode="read"
             :value="data"
+            :formSceneUuid="formSceneUuid"
             :data="inputFormData"
-            :readonly="data.readOnly || false"
             @emit="emitFn"
           ></TsSheet>
         </TabPane>
@@ -78,7 +78,8 @@ export default {
   },
   directives: { clipboard },
   props: {
-    data: { type: Object }
+    data: { type: Object },
+    formSceneUuid: [String, Array]
   },
   data() {
     return {
