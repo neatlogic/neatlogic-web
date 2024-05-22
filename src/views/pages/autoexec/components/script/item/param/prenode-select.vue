@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader'], resolve)
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader')
   },
   props: {
     value: { //上游参数值

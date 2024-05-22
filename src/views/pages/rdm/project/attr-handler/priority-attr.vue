@@ -25,7 +25,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   extends: AttrBase,
   props: {},

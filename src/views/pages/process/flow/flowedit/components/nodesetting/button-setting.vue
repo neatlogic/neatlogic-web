@@ -49,8 +49,8 @@ import itemmixin from '../itemmixin.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   mixins: [itemmixin],
   props: {
@@ -94,12 +94,12 @@ export default {
           text: this.$t('page.button'),
           dataList: [],
           isShowButton: true
-        }, 
+        },
         customStatusList: {
           text: this.$t('term.process.nodestatus'),
           dataList: [],
           isShowButton: true
-        }, 
+        },
         replaceableTextList: {
           text: this.$t('page.others'),
           dataList: [],

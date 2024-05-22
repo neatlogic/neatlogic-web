@@ -116,10 +116,10 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiTest',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    JsonViewer: () => import('vue-json-viewer'),
     ...authHandler
   },
   mixins: [download],
@@ -264,7 +264,7 @@ export default {
             aLink.download = fileName;
             document.body.appendChild(aLink);
             aLink.click();
-            aLink.remove();  
+            aLink.remove();
           }
         }
       });

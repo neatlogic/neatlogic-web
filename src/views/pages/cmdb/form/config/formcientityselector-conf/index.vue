@@ -29,9 +29,9 @@ import base from '@/resources/plugins/TsSheet/form/config/base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    CiDialog: resolve => require(['./ci-dialog.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    CiDialog: () => import('./ci-dialog.vue')
   },
   extends: base,
   props: {},
@@ -54,7 +54,7 @@ export default {
   destroyed() {},
   methods: {
     openCiDialog() {
-      this.isCiDialogShow = true; 
+      this.isCiDialogShow = true;
     },
     closeCiDialog(ciList) {
       this.isCiDialogShow = false;

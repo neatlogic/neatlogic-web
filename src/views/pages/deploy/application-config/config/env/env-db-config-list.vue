@@ -71,8 +71,8 @@
 export default {
   name: '', // DB配置
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    EnvDbConfigEdit: resolve => require(['./env-db-config-edit'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    EnvDbConfigEdit: () => import('./env-db-config-edit')
   },
   props: {
     params: {
@@ -134,7 +134,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    dealDataByUrl(nodeList) { 
+    dealDataByUrl(nodeList) {
       let databaseList = [];
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach(item => {

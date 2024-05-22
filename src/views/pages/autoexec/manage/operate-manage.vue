@@ -56,9 +56,9 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    OperateAdd: resolve => require(['./operate-add'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    OperateAdd: () => import('./operate-add')
   },
   filters: {},
   props: {},
@@ -81,7 +81,7 @@ export default {
       searchConfig: {
         placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.autoexec.operationlevel')})
       },
-      
+
       keyword: '',
       searchParam: {
         keyword: null,
@@ -89,7 +89,7 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      
+
       deleting: false,
       oldList: [],
       id: null,
@@ -147,7 +147,7 @@ export default {
     addRow() {
       this.id = null;
       this.isDialogShow = true;
-    },  
+    },
     closeDialog(needFresh) {
       this.isDialogShow = false;
       if (needFresh) {
@@ -201,7 +201,7 @@ export default {
           this.getTableDataSearch(1);
         });
     }
-    
+
   },
   computed: {},
   watch: {}

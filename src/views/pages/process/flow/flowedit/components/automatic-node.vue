@@ -499,18 +499,18 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AssignSetting: resolve => require(['./nodesetting/assign-setting'], resolve),
-    TemplateEdit: resolve => require(['./nodesetting/template-edit'], resolve),
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
-    WaitTip: resolve => require(['./nodesetting/wait-tip.vue'], resolve),
-    TagSetting: resolve => require(['./nodesetting/tag-setting.vue'], resolve),
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AssignSetting: () => import('./nodesetting/assign-setting'),
+    TemplateEdit: () => import('./nodesetting/template-edit'),
+    NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
+    AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
+    ButtonSetting: () => import('./nodesetting/button-setting.vue'),
+    WaitTip: () => import('./nodesetting/wait-tip.vue'),
+    TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
   props: {},
@@ -712,7 +712,7 @@ export default {
           let paramConditionList = [];
           defaultParamConditionList.forEach(p => {
             let label = '';
-            label = p.type == 'form' ? p.label + '(' + this.$t('page.form') + ')' : p.label; 
+            label = p.type == 'form' ? p.label + '(' + this.$t('page.form') + ')' : p.label;
             let obj = {
               label: label,
               value: p.type + '#' + p.name

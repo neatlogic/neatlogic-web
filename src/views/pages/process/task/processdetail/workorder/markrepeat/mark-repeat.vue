@@ -16,7 +16,7 @@
               {{ $t('page.workordernumber') }}
             </span>
             <span class="item-serialNumber overflow">
-              <span class="text-href" @click="toTaskdetail(item.id)">{{ item.serialNumber }}</span> 
+              <span class="text-href" @click="toTaskdetail(item.id)">{{ item.serialNumber }}</span>
               <i v-clipboard="item.serialNumber" v-clipboard:success="clipboardSuc" class="tsfont-copy text-action"></i>
             </span>
           </div>
@@ -111,9 +111,9 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   directives: {clipboard},
   filters: {

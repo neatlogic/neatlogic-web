@@ -44,8 +44,8 @@
 export default {
   name: '',
   components: {
-    ConditionGroup: resolve => require(['./form/config/common/condition-group.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ConditionGroup: () => import('./form/config/common/condition-group.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     rowcount: { type: Number }, //总行数

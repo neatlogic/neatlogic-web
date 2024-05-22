@@ -34,7 +34,7 @@ export default {
   name: '',
   components: {
     TsTable,
-    RormaccountsDialog: resolve => require(['./formaccounts-dialog.vue'], resolve)
+    RormaccountsDialog: () => import('./formaccounts-dialog.vue')
   },
   extends: base,
   mixins: [validmixin],

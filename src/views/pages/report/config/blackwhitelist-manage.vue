@@ -40,8 +40,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    BlackWhiteEdit: resolve => require(['./blackwhitelist-edit.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    BlackWhiteEdit: () => import('./blackwhitelist-edit.vue')
   },
   props: {},
   data() {

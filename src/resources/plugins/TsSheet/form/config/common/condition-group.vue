@@ -118,8 +118,8 @@
 export default {
   name: '',
   components: {
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     value: { type: Object },
@@ -326,7 +326,7 @@ export default {
       if (list[1] && !this.$utils.isEmpty(findItem.config.mapping)) {
         findItem.config.mapping.value = list[1];
         findItem.config.mapping.text = list[1];
-      }     
+      }
       return findItem;
     }
   },

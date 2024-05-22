@@ -20,7 +20,7 @@
               {{ $t('page.workordernumber') }}
             </div>
             <div class="">
-              <span class="text-action" style="padding-right:8px;" @click="toTaskdetail(processTaskVo.id)">{{ processTaskVo.serialNumber }}</span> 
+              <span class="text-action" style="padding-right:8px;" @click="toTaskdetail(processTaskVo.id)">{{ processTaskVo.serialNumber }}</span>
               <i v-clipboard="processTaskVo.serialNumber" v-clipboard:success="clipboardSuc" class="tsfont-copy text-action"></i>
             </div>
           </Col>
@@ -71,8 +71,8 @@ export default {
   name: 'ForwardingDetail',
   components: {
     FormPreview,
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
-    
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
+
   },
   directives: {clipboard, download},
   filters: {},

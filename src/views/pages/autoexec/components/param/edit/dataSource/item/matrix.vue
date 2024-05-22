@@ -43,7 +43,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('page.defaultvalue')" labelPosition="top">
       <TsFormSelect
-        v-model="defaultValue" 
+        v-model="defaultValue"
         v-bind="defaultSelfJson"
         :multiple="multiple"
         border="border"
@@ -56,9 +56,9 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DataMapping: resolve => require(['../dataMapping.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    DataMapping: () => import('../dataMapping.vue')
   },
   filters: {
   },
@@ -68,11 +68,11 @@ export default {
   },
   data() {
     return {
-      matrixConfig: { 
-        dynamicUrl: '/api/rest/matrix/search', 
-        rootName: 'tbodyList', 
-        textName: 'name', 
-        valueName: 'uuid', 
+      matrixConfig: {
+        dynamicUrl: '/api/rest/matrix/search',
+        rootName: 'tbodyList',
+        textName: 'name',
+        valueName: 'uuid',
         multiple: false,
         validateList: ['required'],
         transfer: true

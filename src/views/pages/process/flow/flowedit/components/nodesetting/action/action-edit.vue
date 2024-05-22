@@ -52,7 +52,7 @@
             ></TsFormSelect>
           </div>
         </div> -->
-        
+
         <!-- <div class="form-block">
           <span class="block-left require-label-right">外部调用</span>
           <div clss="block-right">
@@ -178,10 +178,10 @@ export default {
   name: 'ActionEdit',
   components: {
     TsForm,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: {
     isShow: {

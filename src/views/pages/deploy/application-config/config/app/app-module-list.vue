@@ -96,7 +96,7 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     offsetTop: {
@@ -549,7 +549,7 @@ export default {
         params = `?appSystemId=${appSystemId}`;
         if (appModuleId) {
           params = `?appSystemId=${appSystemId}&appModuleId=${appModuleId}`;
-        } 
+        }
         if (envId) {
           params = `?appSystemId=${appSystemId}&appModuleId=${appModuleId}&envId=${envId}`;
         }

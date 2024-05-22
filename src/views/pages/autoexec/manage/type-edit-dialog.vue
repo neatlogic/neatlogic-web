@@ -22,7 +22,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {
@@ -51,10 +51,10 @@ export default {
           width: '100%',
           label: this.$t('page.name'),
           validateList: [
-            'required', 
-            'name-special', 
+            'required',
+            'name-special',
             { name: 'searchUrl',
-              url: 'api/rest/autoexec/type/save', 
+              url: 'api/rest/autoexec/type/save',
               key: 'name',
               params: {
                 id: this.id || ''
@@ -72,7 +72,7 @@ export default {
         authList: {
           label: this.$t('page.auth'),
           type: 'userselect',
-          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam')}], 
+          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam')}],
           multiple: true,
           transfer: true,
           groupList: ['user', 'team', 'role', 'common'],
@@ -81,7 +81,7 @@ export default {
         reviewAuthList: {
           label: this.$t('term.autoexec.auditauthorization'),
           type: 'userselect',
-          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam') }], 
+          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam') }],
           multiple: true,
           transfer: true,
           groupList: ['user', 'team', 'role', 'common'],

@@ -16,7 +16,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     mode: {
@@ -27,7 +27,7 @@ export default {
     conditionData: {type: Object}//当前组件在工单中心配置中的数据
   },
   data() {
-    return { 
+    return {
       config: this.condition.config
     };
   },
@@ -46,7 +46,7 @@ export default {
       if (this.$refs['searchInputer']) {
         return this.$refs['searchInputer'].valid();
       }
-      return true; 
+      return true;
     },
     change(val) {
       let text = '';

@@ -11,10 +11,10 @@
       @updatePage="getData"
     >
       <template slot-scope="{ row }">
-        <div class="title" @click="gotoJobList(row)"> 
+        <div class="title" @click="gotoJobList(row)">
           <span class="number h3">{{ row.referenceCount }}</span>
           <span class="title-name overflow" :title="row.name"> {{ row.name }}</span>
-          <span class="text-tip overflow" :title="row.uk">{{ row.uk }}</span> 
+          <span class="text-tip overflow" :title="row.uk">{{ row.uk }}</span>
         </div>
       </template>
     </TsCard>
@@ -25,7 +25,7 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard')
   },
   filters: {},
   props: {
@@ -109,7 +109,7 @@ export default {
       width: 40px;
       text-align: center;
     }
-   
+
   }
 }
 </style>

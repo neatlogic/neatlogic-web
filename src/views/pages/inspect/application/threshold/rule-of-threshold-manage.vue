@@ -57,8 +57,8 @@
 export default {
   name: 'RuleOfThresholdManage', // 巡检规则
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue')
   },
   filters: {},
   props: {},
@@ -74,7 +74,7 @@ export default {
         value: '',
         border: 'border'
       }
-     
+
     };
   },
   beforeCreate() {},

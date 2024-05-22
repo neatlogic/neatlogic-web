@@ -10,10 +10,10 @@
 
       </template>
       <template v-slot:content>
-        <TsTable 
+        <TsTable
           v-if="!loading"
-          v-bind="tableData" 
-          :theadList="theadList" 
+          v-bind="tableData"
+          :theadList="theadList"
           @changeCurrent="changePage"
           @changePageSize="changePageSize"
         >
@@ -42,7 +42,7 @@
       @on-ok="save"
     >
       <template v-slot>
-        <TsForm 
+        <TsForm
           ref="mainForm"
           v-model="rowData"
           :itemList="formSetting"
@@ -58,8 +58,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {
@@ -82,7 +82,7 @@ export default {
         },
         {
           key: 'heartbeatTime',
-          title: this.$t('term.framework.heartbeattime'), 
+          title: this.$t('term.framework.heartbeattime'),
           type: 'time'
         },
         {
@@ -93,11 +93,11 @@ export default {
           key: 'heartbeatThreshold',
           title: this.$t('term.framework.heartbeatthreshold') + '（' + this.$t('page.counter') + '）'
         },
-        { 
-          title: ' ', 
-          key: 'action', 
-          align: 'right', 
-          width: 10 
+        {
+          title: ' ',
+          key: 'action',
+          align: 'right',
+          width: 10
         }
       ],
       tableData: {},

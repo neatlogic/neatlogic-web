@@ -127,11 +127,11 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExpandTable: resolve => require(['@/views/pages/inspect/recentIssues/component/expand-table.vue'], resolve),
-    SendEmail: resolve => require(['@/views/pages/inspect/recentIssues/component/send-email.vue'], resolve),
-    RuleOfThresholdDialog: resolve => require(['@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExpandTable: () => import('@/views/pages/inspect/recentIssues/component/expand-table.vue'),
+    SendEmail: () => import('@/views/pages/inspect/recentIssues/component/send-email.vue'),
+    RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue')
   },
   directives: { download },
   props: {

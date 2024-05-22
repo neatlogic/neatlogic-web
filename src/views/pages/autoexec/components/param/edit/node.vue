@@ -53,8 +53,8 @@ import comMixin from './editmixin.js';
 export default {
   name: 'Node',
   components: {
-    NodeDialog: resolve => require(['./node/node-dialog'], resolve),
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve)
+    NodeDialog: () => import('./node/node-dialog'),
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
   },
   filters: {},
   mixins: [comMixin],
@@ -127,7 +127,7 @@ export default {
       this.showDialog = false;
     },
     removeNode(obj) {
-      this.nodeList.splice(this.nodeList.findIndex(item => item.id === obj.id), 1); 
+      this.nodeList.splice(this.nodeList.findIndex(item => item.id === obj.id), 1);
       this.$emit('change', this.nodeList);
     }
   },

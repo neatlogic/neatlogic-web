@@ -57,8 +57,8 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    SearchHandler: resolve => require(['./search-handler.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    SearchHandler: () => import('./search-handler.vue')
   },
   model: {
     prop: 'value',
@@ -168,7 +168,7 @@ export default {
         } else if (filter.uuid) {
           num = 5;
         }
-        return num; 
+        return num;
       };
     },
     listFilter() {
@@ -185,7 +185,7 @@ export default {
               }
             });
           }
-          return all; 
+          return all;
         });
         return totallist;
       };

@@ -37,7 +37,7 @@
 export default {
   name: 'RdmMenu',
   components: {
-    ProjectEditDialog: resolve => require(['@/views/pages/rdm/project/project-add-dialog.vue'], resolve)
+    ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue')
   },
   data: function() {
     return {

@@ -54,7 +54,7 @@ import Item from './readonly/index.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     ...Item
   },
   filters: {
@@ -177,7 +177,7 @@ export default {
     },
     multiple() {
       let isMultiple = this.multipleList.includes(this.config.type);
-      return isMultiple; 
+      return isMultiple;
     },
     validText() {
       let text = '';

@@ -26,10 +26,10 @@ export default {
     };
   },
   components: {
-    TopNav: resolve => require(['@/views/components/topnav/topnav.vue'], resolve),
-    LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve),
-    LeftMenu: resolve => require(['@/views/components/leftmenu/leftmenu.vue'], resolve),
-    InspectResultMenu: resolve => require(['./leftmenu/inspect-result-menu'], resolve) // 巡检结果菜单
+    TopNav: () => import('@/views/components/topnav/topnav.vue'),
+    LicenseValidator: () => import('@/views/components/license/license-validator.vue'),
+    LeftMenu: () => import('@/views/components/leftmenu/leftmenu.vue'),
+    InspectResultMenu: () => import('./leftmenu/inspect-result-menu') // 巡检结果菜单
   },
   data() {
     return {

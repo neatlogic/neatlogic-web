@@ -73,12 +73,12 @@ export default {
   name: '',
   components: {
     TsFormSelect,
-    AssignSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    AuthoritySetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'], resolve),
-    ExtendAuth: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/extend/extendauth.vue'], resolve),
-    FormsceneSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting'], resolve) // 表单场景
+    AssignSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    AuthoritySetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'),
+    ButtonSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'),
+    ExtendAuth: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/extend/extendauth.vue'),
+    FormsceneSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting') // 表单场景
   },
   filters: {},
   mixins: [nodemixin, itemmixin],
@@ -157,7 +157,7 @@ export default {
       }
       if (this.$refs.assignData) {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();
-      } 
+      }
       return stepConfig;
     },
 
@@ -186,7 +186,7 @@ export default {
               }
               return c.handler == 'formcientityselector';
             });
-          } else if (config._type === 'new') { 
+          } else if (config._type === 'new') {
             //新表单
             let tableList = JSON.parse(JSON.stringify(config.tableList));
             list = tableList.filter((c) => {
@@ -234,7 +234,7 @@ export default {
         }
       },
       immediate: true,
-      deep: true      
+      deep: true
     },
     formUuid: {
       handler: function(val) {
@@ -245,7 +245,7 @@ export default {
         }
       },
       immediate: true,
-      deep: true        
+      deep: true
     }
   }
 };

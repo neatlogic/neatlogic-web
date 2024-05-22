@@ -80,13 +80,13 @@
 export default {
   name: 'TagentManage',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InstallTipsDialog: resolve => require(['./tagent/install-tips-dialog'], resolve),
-    ViewPasswordDialog: resolve => require(['./tagent/view-password-dialog'], resolve), // 查看密码
-    ViewLogDialog: resolve => require(['./tagent/view-log-dialog'], resolve), // 查看日志
-    UpgradeVersionDialog: resolve => require(['./tagent/upgrade-version-dialog'], resolve), // 升级版本
-    TagentConfigDialog: resolve => require(['./tagent/tagent-config-dialog'], resolve) // tagent配置
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InstallTipsDialog: () => import('./tagent/install-tips-dialog'),
+    ViewPasswordDialog: () => import('./tagent/view-password-dialog'), // 查看密码
+    ViewLogDialog: () => import('./tagent/view-log-dialog'), // 查看日志
+    UpgradeVersionDialog: () => import('./tagent/upgrade-version-dialog'), // 升级版本
+    TagentConfigDialog: () => import('./tagent/tagent-config-dialog') // tagent配置
   },
   filters: {},
   props: {},
@@ -209,25 +209,25 @@ export default {
     goPages(type) {
       if (type == 'batchUpgrade') {
         // 批量升级
-        this.$router.push({ 
+        this.$router.push({
           path: '/batch-upgrade'
-        }); 
+        });
       } else if (type == 'batchReboot') {
         // 批量重启
-        this.$router.push({ 
+        this.$router.push({
           path: '/batch-operation',
           query: {type: 'reload'}
-        }); 
+        });
       } else if (type == 'batchResetcred') {
-        this.$router.push({ 
+        this.$router.push({
           path: '/batch-operation',
           query: {type: 'resetcred'}
         });
       } else {
         // 安装包管理
-        this.$router.push({ 
+        this.$router.push({
           path: '/installation-package'
-        }); 
+        });
       }
     },
     changeCurrent(currentPage = 1) {

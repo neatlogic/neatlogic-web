@@ -96,11 +96,11 @@
 export default {
   name: 'TemplateDialog',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ChangeStepDetail: resolve => require(['./changestep-edit.vue'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ChangeStepDetail: () => import('./changestep-edit.vue')
   },
   filters: {},
   props: {

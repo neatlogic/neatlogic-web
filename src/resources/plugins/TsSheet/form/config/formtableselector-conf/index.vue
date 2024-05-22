@@ -135,12 +135,12 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AttrConfigDialog: resolve => require(['./formtableselector-attr-config-dialog.vue'], resolve),
-    DataSourceFilter: resolve => require(['../common/data-source-filter.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AttrConfigDialog: () => import('./formtableselector-attr-config-dialog.vue'),
+    DataSourceFilter: () => import('../common/data-source-filter.vue')
   },
   extends: base,
   props: {},

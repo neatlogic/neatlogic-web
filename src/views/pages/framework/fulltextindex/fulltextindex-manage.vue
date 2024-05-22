@@ -34,8 +34,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    FullIndexRebuildDialog: resolve => require(['./fulltextindex-rebuild-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    FullIndexRebuildDialog: () => import('./fulltextindex-rebuild-dialog.vue')
   },
   props: {},
   data() {
@@ -94,7 +94,7 @@ export default {
               const oldElement = this.fullTextIndexRebuildAuditData.tbodyList.find(a => a.type == element.type);
               if (element.status == 'doing') {
                 this.doingIdList.push(element.type);
-              } 
+              }
               if (oldElement) {
                 this.$set(oldElement, 'status', element.status);
                 this.$set(oldElement, 'statusText', element.statusText);

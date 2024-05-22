@@ -142,7 +142,7 @@ export default {
   name: '',
   components: {
     ...handlers,
-    WidgetBorder: resolve => require(['../widgetborders/widget-border.vue'], resolve)
+    WidgetBorder: () => import('../widgetborders/widget-border.vue')
   },
   props: {
     mode: { type: String, default: 'edit' }, //模式:edit或read

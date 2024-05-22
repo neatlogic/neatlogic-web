@@ -45,9 +45,9 @@ import handleTimeMixin from '../app/components/handleTimeMixin.js';
 export default {
   name: '', // 实例列表
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    EnvInstanceEdit: resolve => require(['./env-instance-edit'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    EnvInstanceEdit: () => import('./env-instance-edit')
   },
   mixins: [handleTimeMixin],
   props: {

@@ -87,7 +87,7 @@
                     v-text="maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway')"
                   ></div>
                 </div>
-       
+
               </div>
               <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
                 <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
@@ -173,12 +173,12 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    // TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: {imgViewer, download},
   filters: {
@@ -346,7 +346,7 @@ export default {
       this.isNeedContent = startProcessTaskStep.hasOwnProperty('isNeedContent') ? !!startProcessTaskStep.isNeedContent : true;
       this.$set(this.omnipotentForm.content, 'isHidden', !this.isNeedContent);
       this.$set(this.changecreateForm.content, 'isHidden', !this.isNeedContent);
-      
+
       //流程上报可配置隐藏上传文件组件
       this.isShowUploadFile = startProcessTaskStep.hasOwnProperty('isNeedUploadFile') ? !!startProcessTaskStep.isNeedUploadFile : true;
       //变更上报

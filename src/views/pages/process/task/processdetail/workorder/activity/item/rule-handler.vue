@@ -92,7 +92,7 @@
 export default {
   name: '',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   filters: {},
   props: {

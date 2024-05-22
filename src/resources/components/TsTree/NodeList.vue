@@ -6,7 +6,7 @@
     :animation="150"
     :disabled="!draggable"
     ghostClass="tree-ghost"
-    handle=".handle" 
+    handle=".handle"
     class="tree"
     @choose="e => handleChoose(parentNode, e)"
     @unchoose="e => handleUnchoose(parentNode, e)"
@@ -77,7 +77,7 @@ export default {
     Draggable,
     NodeContent,
     NodeRight,
-    NodeList: resolve => require(['./NodeList'], resolve)
+    NodeList: () => import('./NodeList')
   },
   props: {
     path: {type: Array, default: () => []},
@@ -89,7 +89,7 @@ export default {
     },
     children: { type: Array, required: true }
   },
-	
+
   data() {
     return {
       loadingNodeList: [],
@@ -145,9 +145,9 @@ export default {
       }
     },
     isNotTheLastAndHasChildren(node, index) {
-      if (index < this.children.length - 1 && node.children.length !== 0 && node.expand) { 
+      if (index < this.children.length - 1 && node.children.length !== 0 && node.expand) {
         return true;
-      } 
+      }
       return false;
     }
   },

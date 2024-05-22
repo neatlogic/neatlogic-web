@@ -59,9 +59,9 @@
 export default {
   name: 'InspectToolSetting', // 巡检工具设置
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: {
@@ -197,7 +197,7 @@ export default {
           this.tableSetting.tbodyList.forEach((val) => {
             if (!val.combopId) {
               val.combopId = null; // 设置默认初始值
-            } 
+            }
           });
         }
       }).finally(() => {

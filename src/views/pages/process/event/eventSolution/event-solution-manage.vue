@@ -49,11 +49,11 @@
 export default {
   name: 'EventSolutionManage',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
-    //UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
+    //UserCard:()=>import('@/resources/components/UserCard/UserCard.vue')
   },
   data() {
     const vm = this;

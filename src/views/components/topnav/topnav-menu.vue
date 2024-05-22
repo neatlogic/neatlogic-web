@@ -60,7 +60,7 @@
 export default {
   name: 'TopnavMenu',
   components: {
-    TopnavExtramenu: resolve => require(['./topnav-extramenu.vue'], resolve)
+    TopnavExtramenu: () => import('./topnav-extramenu.vue')
   },
   data() {
     return {
@@ -133,7 +133,7 @@ export default {
         }
       }).finally(() => {
         this.$nextTick(() => {
-          this.$store.commit('setExtramenu', false); 
+          this.$store.commit('setExtramenu', false);
         });
       });
     }

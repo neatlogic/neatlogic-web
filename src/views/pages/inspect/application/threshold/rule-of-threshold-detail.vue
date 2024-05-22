@@ -45,15 +45,15 @@
 export default {
   name: '', // 阈值规则详情
   components: {
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    AppThresholdRuleAdd: resolve => require(['./app-threshold-rule-add.vue'], resolve), // 添加规则
-    CopyRuleDialog: resolve => require(['./copy-rule-dialog'], resolve)
+    JsonViewer: () => import('vue-json-viewer'),
+    AppThresholdRuleAdd: () => import('./app-threshold-rule-add.vue'), // 添加规则
+    CopyRuleDialog: () => import('./copy-rule-dialog')
   },
   filters: {},
   props: {},
   data() {
     return {
-      thresholds: {}, 
+      thresholds: {},
       fields: {}, // 结构
       loadingShow: false,
       isShowCopyRuleDialog: false,
@@ -92,7 +92,7 @@ export default {
           this.fields = data.fields;
           let collectionName = data.label || '';
           let appSystemName = data.appSystemAbbrName ? (data.appSystemName ? `${data.appSystemAbbrName}(${data.appSystemName})` : data.appSystemAbbrName) : (data.appSystemName || '');
-          this.appSystemCollectionName = appSystemName ? (collectionName ? `${appSystemName} - ${collectionName}` : appSystemName) : (collectionName || ''); 
+          this.appSystemCollectionName = appSystemName ? (collectionName ? `${appSystemName} - ${collectionName}` : appSystemName) : (collectionName || '');
           this.thresholds = {
             globalThresholds: data.globalThresholds || [],
             appThresholds: data.appThresholds || []

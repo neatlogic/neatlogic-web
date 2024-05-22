@@ -55,7 +55,7 @@
               <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical cursor" @click="toInspectStatusDetail(row)">{{ row.inspectStatusJson.text }} </span>
               <span class="text-title">
                 {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-              </span> 
+              </span>
             </span>
             <span v-else>-</span>
           </template>
@@ -99,10 +99,10 @@
 export default {
   name: '',
   components: {
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InspectionDialog: resolve => require(['../assetsInspect/inspection-dialog.vue'], resolve), // 单个巡检
-    RuleOfThresholdDialog: resolve => require(['@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'], resolve)
+    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InspectionDialog: () => import('../assetsInspect/inspection-dialog.vue'), // 单个巡检
+    RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue')
   },
   filters: {},
   props: {

@@ -20,14 +20,14 @@
       :isReadonly="true"
       :dataList="list"
       @on-ok="onOk"
-    ></MoreTarget>  
+    ></MoreTarget>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filters: {
   },
@@ -89,5 +89,5 @@ export default {
   .div-btn{
     text-align: right;
   }
-} 
+}
 </style>

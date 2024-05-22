@@ -30,7 +30,7 @@
           <TsFormItem v-else :label="$t('term.rdm.dburl')">
             {{ licenseData.dbUrl }}
             <span class="form-error-tip">
-              {{ $t('page.exception') }}: {{ $t('page.licensedberror') }} 
+              {{ $t('page.exception') }}: {{ $t('page.licensedberror') }}
             </span>
           </TsFormItem>
           <TsFormItem v-if="licenseData.isValid && !licenseData.isEnd" :label="$t('term.rdm.modulelist')">
@@ -53,7 +53,7 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   props: {},
   data() {

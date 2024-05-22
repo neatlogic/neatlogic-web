@@ -35,7 +35,7 @@
 export default {
   name: '',
   components: {
-    CiEntityDetailDialog: resolve => require(['./cientity-detail-dialog.vue'], resolve)
+    CiEntityDetailDialog: () => import('./cientity-detail-dialog.vue')
   },
   filters: {},
   props: {

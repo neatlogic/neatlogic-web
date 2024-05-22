@@ -41,8 +41,8 @@ import itemmixin from '../itemmixin.js';
 export default {
   name: 'AuthoritySetting',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect')
   },
   mixins: [itemmixin],
   props: {

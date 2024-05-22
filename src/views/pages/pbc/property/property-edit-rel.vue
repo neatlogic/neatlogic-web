@@ -61,19 +61,19 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSelect: resolve =>
       require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
   },
   props: { uid: {type: Number}},
   data() {
-    return { 
+    return {
       formConfig: [{
         type: 'slot',
         name: 'config',
         hideLabel: true
       }],
-      dialogConfig: { 
+      dialogConfig: {
         type: 'modal',
         title: this.$t('term.pbc.editrelation'),
         maskClose: false,
@@ -129,7 +129,7 @@ export default {
             this.$set(this.propertyRelData, 'tbodyList', [{index: 0}]);
           }
         });
-      } 
+      }
     },
     save() {
       let isValid = true;
@@ -137,7 +137,7 @@ export default {
         const sltToInterfaceId = this.$refs['sltToInterfaceId' + element.index];
         const sltToValuePropertyId = this.$refs['sltToValuePropertyId' + element.index];
         const sltToTextPropertyId = this.$refs['sltToTextPropertyId' + element.index];
-        
+
         if (!sltToInterfaceId.valid()) {
           isValid = false;
         }

@@ -89,7 +89,7 @@
         <NoData v-else></NoData>
       </div>
     </TsContain>
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
       :formatList="formatList"
@@ -105,12 +105,12 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    WidgetOverview: resolve => require(['./widget/widget-overview.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    WidgetOverview: () => import('./widget/widget-overview.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   mixins: [download],
   props: [],

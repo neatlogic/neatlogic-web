@@ -34,7 +34,7 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: 'ScriptContentDialog',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   filters: {},
   directives: { download, clipboard},
@@ -108,7 +108,7 @@ export default {
                   if (scriptContent) {
                     this.scriptContentList.push(scriptContent);
                   }
-                });   
+                });
                 this.scriptContent = tempList.join('');
               } else {
                 this.scriptContent = '';

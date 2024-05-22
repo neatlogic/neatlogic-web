@@ -31,8 +31,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AddDeployJobForm: resolve => require(['../pipeline/add-deployjob-form.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    AddDeployJobForm: () => import('../pipeline/add-deployjob-form.vue')
   },
   data() {
     return {

@@ -57,8 +57,8 @@
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -140,7 +140,7 @@ export default {
       }
       if (!this.$utils.isEmpty(this.searchVal)) {
         Object.assign(data, this.searchVal);
-      } 
+      }
       Object.assign(data, this.searchParams);
       this.$api.common.getNodeList(data).then(res => {
         if (res.Status == 'OK') {

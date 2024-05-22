@@ -47,7 +47,7 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable')
   },
   filters: {
   },

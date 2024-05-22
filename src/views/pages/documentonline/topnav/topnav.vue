@@ -28,8 +28,8 @@ import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 export default {
   name: '',
   components: {
-    TopnavUser: resolve => require(['@/views/components/topnav/topnav-user.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TopnavUser: () => import('@/views/components/topnav/topnav-user.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {},
   data() {

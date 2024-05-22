@@ -54,11 +54,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AddDeployJobDialog: resolve => require(['./add-deployjob-dialog.vue'], resolve),
-    ListDeployJobDialog: resolve => require(['./list-deployjob-dialog.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AddDeployJobDialog: () => import('./add-deployjob-dialog.vue'),
+    ListDeployJobDialog: () => import('./list-deployjob-dialog.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {},
   data() {

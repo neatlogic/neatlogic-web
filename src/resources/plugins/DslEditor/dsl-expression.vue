@@ -66,7 +66,7 @@
 export default {
   name: '',
   components: {
-    DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
+    DslExpression: () => import('@/resources/plugins/DslEditor/dsl-expression.vue')
   },
   props: {
     needInputer: { type: Boolean, default: false },

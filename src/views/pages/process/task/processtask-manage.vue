@@ -133,23 +133,23 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ProcessTaskSearcher: resolve => require(['@/resources/components/ProcessTaskSearcher/processtask-searcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CardInfo: resolve => require(['./overview/CenterCard.vue'], resolve),
-    tdjson: resolve => require(['./overview/Tdjson.vue'], resolve),
-    tdBtn: resolve => require(['./overview/ControllerBtn.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    ProcessTaskSearcher: () => import('@/resources/components/ProcessTaskSearcher/processtask-searcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CardInfo: () => import('./overview/CenterCard.vue'),
+    tdjson: () => import('./overview/Tdjson.vue'),
+    tdBtn: () => import('./overview/ControllerBtn.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   directives: { download },
   props: {},
   data() {
-    return {  
+    return {
       workcenterUuid: this.$route.params['taskTypeid'] || '',
       showMode: 'table', //列表模式或块模式
       cancelAxios: null, //实时搜索，取消接口调用
       isLoading: true,
       timmer: null, //定时刷新工单中心
-      timmerInterval: 30000, //定时刷新工单中心间隔(毫秒) 
+      timmerInterval: 30000, //定时刷新工单中心间隔(毫秒)
       workcenterData: null,
       isDownloading: false,
       tableConfig: {
@@ -469,7 +469,7 @@ export default {
         willOverTimeMin = null;
         willOverSlaName = null;
       }
-      
+
       return {
         expireStatus,
         expireConfig: {
@@ -588,7 +588,7 @@ export default {
     },
     filtertheadList(theadList) {
       let list = theadList.filter(item => {
-        return item.key != 'selection'; 
+        return item.key != 'selection';
       });
       return list;
     },
@@ -600,12 +600,12 @@ export default {
         processTaskIdList: this.$utils.mapArray(this.selectedWorkList, 'id'),
         source: 'pc'
       };
-      if (type === 'batchAbort') { 
+      if (type === 'batchAbort') {
         //取消
         this.processTaskConfig.name = 'batchAbort';
         this.processTaskConfig.text = this.$t('page.batchabort');
         this.isShowModal = true;
-      } else if (type === 'batchUrge') { 
+      } else if (type === 'batchUrge') {
         //催办
         this.$api.process.processtask.batchUrge(data).then(res => {
           if (res && res.Status == 'OK') {
@@ -614,7 +614,7 @@ export default {
             this.selectedWorkList = [];
           }
         });
-      } else if (type === 'batchHide') { 
+      } else if (type === 'batchHide') {
         //隐藏
         this.$api.process.processtask.batchHide(data).then(res => {
           if (res && res.Status == 'OK') {
@@ -623,7 +623,7 @@ export default {
             this.selectedWorkList = [];
           }
         });
-      } else if (type === 'batchPause') { 
+      } else if (type === 'batchPause') {
         //暂停
         this.processTaskConfig.name = 'batchPause';
         this.processTaskConfig.text = this.$t('page.batchpause');
@@ -641,8 +641,8 @@ export default {
                   const withoutAuthTaskList = res.Return;
                   if (!this.$utils.isEmpty(withoutAuthTaskList)) {
                     let withoutAuthTasks = '';
-                    withoutAuthTaskList.forEach(processTask => { 
-                      withoutAuthTasks += processTask.title + '(' + processTask.serialNumber + ')、'; 
+                    withoutAuthTaskList.forEach(processTask => {
+                      withoutAuthTasks += processTask.title + '(' + processTask.serialNumber + ')、';
                     });
                     withoutAuthTasks = withoutAuthTasks.slice(0, -1);
                     this.$Notice.warning({
@@ -665,7 +665,7 @@ export default {
     }
   },
   filter: {},
-  computed: { 
+  computed: {
     downloadUrl() {
       const param = {
         url: 'api/binary/workcenter/export',
@@ -679,7 +679,7 @@ export default {
         }
       };
       return param;
-    } 
+    }
   },
   watch: {
     showMode: {
@@ -692,14 +692,14 @@ export default {
           } else {
             this.tableConfig.pageSize = 24;
           }
-          this.tableConfig.pageSizeOpts = cardPageSizeopts;                 
+          this.tableConfig.pageSizeOpts = cardPageSizeopts;
         } else {
           if (cardPageSizeopts.includes(this.tableConfig.pageSize)) {
             this.tableConfig.pageSize = this.tableConfig.pageSize - this.tableConfig.pageSize / 6;
           } else {
             this.tableConfig.pageSize = 20;
           }
-          this.tableConfig.pageSizeOpts = tablePageSizeOpts;  
+          this.tableConfig.pageSizeOpts = tablePageSizeOpts;
         }
       },
       immediate: true

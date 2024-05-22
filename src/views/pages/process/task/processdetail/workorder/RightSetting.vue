@@ -191,7 +191,7 @@
           </div>
           <div v-show="showScore">
             <ScoreDisplay :scoreConfig="JSON.parse(processTaskConfig.scoreInfo)"></ScoreDisplay>
-          </div> 
+          </div>
         </div>
       </div>
     </div>
@@ -203,12 +203,12 @@ import StepCarousel from './step-carousel.vue';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    WorkLabel: resolve => require(['./label/label'], resolve),
-    UserSelect: resolve => require(['components/UserSelect/UserSelect.vue'], resolve),
-    ScoreDisplay: resolve => require(['./score/score-display.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    WorkLabel: () => import('./label/label'),
+    UserSelect: () => import('components/UserSelect/UserSelect.vue'),
+    ScoreDisplay: () => import('./score/score-display.vue'),
     StepCarousel
   },
   directives: {

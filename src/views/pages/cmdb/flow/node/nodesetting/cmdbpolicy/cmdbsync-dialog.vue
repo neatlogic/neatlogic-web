@@ -168,11 +168,11 @@ import {store} from '@/views/pages/process/flow/flowedit/floweditState.js';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    CmdbsyncEdit: resolve => require(['./cmdbsync-edit.vue'], resolve),
-    FilterList: resolve => require(['./filter-list.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    CmdbsyncEdit: () => import('./cmdbsync-edit.vue'),
+    FilterList: () => import('./filter-list.vue')
   },
   props: {
     configList: Array
@@ -183,7 +183,7 @@ export default {
       ciData: { //当前配置
         ciId: null,
         ciName: '',
-        createPolicy: 'single', 
+        createPolicy: 'single',
         batchDataSource: {},
         mappingList: [],
         relEntityData: {}
@@ -318,8 +318,8 @@ export default {
         //标记为已保存的，用于点击“取消”后判断是否需要删除数据
         cientity._isnew = true;
       }
-      if (preCiEntity && preCiEntity.batchDataSource && preCiEntity.batchDataSource.type && 
-      cientity.batchDataSource && cientity.batchDataSource.type && 
+      if (preCiEntity && preCiEntity.batchDataSource && preCiEntity.batchDataSource.type &&
+      cientity.batchDataSource && cientity.batchDataSource.type &&
       preCiEntity.batchDataSource.type !== cientity.batchDataSource.type) {
         this.$set(cientity.batchDataSource, 'type', preCiEntity.batchDataSource.type);
         this.$set(cientity.batchDataSource, 'attributeUuid', '');
@@ -335,7 +335,7 @@ export default {
     },
     okDialog() {
       if (!this.valid()) {
-        return false; 
+        return false;
       }
       let data = this.save();
       this.$emit('close', data);
@@ -589,11 +589,11 @@ export default {
       if (this.$refs.cmdbsyncEdit && !this.$refs.cmdbsyncEdit.valid()) {
         isValid = false;
       }
-      return isValid; 
+      return isValid;
     },
     saveNewCiEntity() {
       if (!this.valid()) {
-        return false; 
+        return false;
       }
       //队列只剩一个配置项时才写入数据库
       if (this.ciEntityQueue.length > 1) {
@@ -662,7 +662,7 @@ export default {
                 let objectData = {
                   key: key,
                   mappingMode: item.allAttrEntityData[key].mappingMode,
-                  valueList: item.allAttrEntityData[key].valueList 
+                  valueList: item.allAttrEntityData[key].valueList
                 };
                 if (item.allAttrEntityData[key].hasOwnProperty('filterList')) {
                   objectData.filterList = item.allAttrEntityData[key].filterList;
@@ -822,9 +822,9 @@ export default {
     },
     getTableAttrList() { //过滤对象为表格组件时，属性映射可选的表格属性
       let list = [];
-      if (this.currentCiEntity && 
-      this.currentCiEntity.batchDataSource && 
-      this.currentCiEntity.batchDataSource.type === 'formTableComponent' && 
+      if (this.currentCiEntity &&
+      this.currentCiEntity.batchDataSource &&
+      this.currentCiEntity.batchDataSource.type === 'formTableComponent' &&
       this.currentCiEntity.batchDataSource.attributeUuid) {
         let uuidList = [];
         for (let i = this.ciEntityQueue.length - 1; i >= 0; i--) {
@@ -845,9 +845,9 @@ export default {
     },
     getTreeSubFormComponent() { //过滤对象为子表单, 属性映射可选的子表单组件
       let list = [];
-      if (this.currentCiEntity && 
-      this.currentCiEntity.batchDataSource && 
-      this.currentCiEntity.batchDataSource.type === 'formSubassemblyComponent' && 
+      if (this.currentCiEntity &&
+      this.currentCiEntity.batchDataSource &&
+      this.currentCiEntity.batchDataSource.type === 'formSubassemblyComponent' &&
       this.currentCiEntity.batchDataSource.attributeUuid) {
         let subformUuidList = [];
         for (let i = this.ciEntityQueue.length - 1; i >= 0; i--) {

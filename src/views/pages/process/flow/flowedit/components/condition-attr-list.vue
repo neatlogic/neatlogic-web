@@ -32,7 +32,7 @@ export default {
   name: '',
   directives: { clipboard },
   components: {
-    ConditionAttrList: resolve => require(['./condition-attr-list.vue'], resolve)
+    ConditionAttrList: () => import('./condition-attr-list.vue')
   },
   props: {
     parentAttr: { type: String },

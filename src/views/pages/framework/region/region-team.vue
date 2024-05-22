@@ -11,7 +11,7 @@
             :key="item.uuid"
             :index="index"
             class="group-ul"
-          > 
+          >
             <li class="bg-op radius-lg mb-md pr-nm pl-nm group-li">
               <span>{{ item.upwardNamePath }} </span>
               <div class="operation-wrap">
@@ -34,7 +34,7 @@
       v-if="isDialogShow"
       ref="teamList"
       :regionId="regionId"
-      :selectNum="tableData.tbodyList.length" 
+      :selectNum="tableData.tbodyList.length"
       :type="type"
       :value="teamList"
       @on-ok="addSave"
@@ -46,8 +46,8 @@ export default {
   name: '',
   tagName: 'addgroup',
   components: {
-    TeamListDialog: resolve => require(['./team-list-dialog'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TeamListDialog: () => import('./team-list-dialog'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   filters: {},
   props: {
@@ -61,7 +61,7 @@ export default {
         tbodyList: [],
         pageSize: 10,
         currentPage: 1
-      },  
+      },
 
       isDialogShow: false,
       teamList: [] //角色分组集合
@@ -83,7 +83,7 @@ export default {
     //查询角色分组列表(编辑时查询)
     searchData() {
       if (this.regionId) {
-        let params = { 
+        let params = {
           regionId: this.regionId,
           type: this.type,
           currentPage: this.tableData.currentPage,

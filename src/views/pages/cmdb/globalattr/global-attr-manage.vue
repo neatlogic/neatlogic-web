@@ -42,8 +42,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrEditDialog: resolve => require(['./global-attr-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrEditDialog: () => import('./global-attr-edit-dialog.vue')
   },
   props: {},
   data() {

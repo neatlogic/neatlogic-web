@@ -48,9 +48,9 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {
@@ -129,8 +129,8 @@ export default {
         } else {
           routeList = (communityConfig(routerPath).default || []);
         }
-        const menuList = routeList  
-          .filter(item => item.meta)  
+        const menuList = routeList
+          .filter(item => item.meta)
           .map(item => ({
             menuName: item.meta.title,
             menu: item.name,
@@ -138,9 +138,9 @@ export default {
             module: moduleId,
             authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
           }));
-        if (menuList.length) {  
-          routerConfig[moduleId] = menuList;  
-        }  
+        if (menuList.length) {
+          routerConfig[moduleId] = menuList;
+        }
       });
       this.routerConfig = routerConfig;
     },
@@ -169,21 +169,21 @@ export default {
               });
             }
           });
-        }  
+        }
       });
       // 根据搜索条件，过滤菜单权限列表数据
       let keyword = this.keyword ? this.keyword.toUpperCase() : '';
       if (this.$utils.isEmpty(keyword) && !this.$utils.isEmpty(this.moduleName)) {
-        menuAuthList = menuAuthList.filter((item) => 
-          item.moduleId && item.moduleId.indexOf(this.moduleName) != -1 
+        menuAuthList = menuAuthList.filter((item) =>
+          item.moduleId && item.moduleId.indexOf(this.moduleName) != -1
         );
         return menuAuthList;
       }
-      menuAuthList = menuAuthList.filter((item) => 
+      menuAuthList = menuAuthList.filter((item) =>
         (item.moduleName && item.moduleName.indexOf(keyword) != -1) || (item.menuName && item.menuName.indexOf(keyword) != -1) || (item.authority && item.authority.indexOf(keyword) != -1)
       );
       if (this.moduleName) {
-        menuAuthList = menuAuthList.filter((item) => 
+        menuAuthList = menuAuthList.filter((item) =>
           item.moduleId && item.moduleId.indexOf(this.moduleName) != -1
         );
       }

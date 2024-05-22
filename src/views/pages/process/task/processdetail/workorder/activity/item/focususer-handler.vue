@@ -49,7 +49,7 @@
 export default {
   name: 'FocususerHandler',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {
     config: Object

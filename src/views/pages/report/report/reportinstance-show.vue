@@ -70,7 +70,7 @@ export default {
   components: {
     TsFormItem,
     ...paramhandler,
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve)
+    ReportMain: () => import('../component/report-main.vue')
 
   },
   directives: { download },

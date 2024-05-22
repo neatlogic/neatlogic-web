@@ -18,7 +18,7 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   mixins: [download],
   props: {},

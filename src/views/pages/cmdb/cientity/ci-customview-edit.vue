@@ -129,11 +129,11 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    //TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DisplaySetting: resolve => require(['@/views/pages/cmdb/customview/viewdisplay-edit.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    //TsFormSelect:()=>import('@/resources/plugins/TsForm/TsFormSelect'),
+    DisplaySetting: () => import('@/views/pages/cmdb/customview/viewdisplay-edit.vue')
   },
   props: {
     id: { type: Number },

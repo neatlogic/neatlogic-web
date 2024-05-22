@@ -127,12 +127,12 @@
 export default {
   name: '',
   components: {
-    BuildnoTable: resolve => require(['./module/buildno-table.vue'], resolve),
-    VersionTable: resolve => require(['./module/version-table.vue'], resolve),
-    AddVersionDialog: resolve => require(['./module/add-version-dialog.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    ModuleEdit: resolve => require(['@/views/pages/deploy/application-config/config/module/module-edit'], resolve)
+    BuildnoTable: () => import('./module/buildno-table.vue'),
+    VersionTable: () => import('./module/version-table.vue'),
+    AddVersionDialog: () => import('./module/add-version-dialog.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ModuleEdit: () => import('@/views/pages/deploy/application-config/config/module/module-edit')
   },
   props: {
     appSystemId: Number,

@@ -55,8 +55,8 @@
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['./addtarget/filter-search.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    FilterSearch: () => import('./addtarget/filter-search.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -139,7 +139,7 @@ export default {
       }
       if (!this.$utils.isEmptyObj(this.searchVal)) {
         Object.assign(data, this.searchVal);
-      } 
+      }
       this.$api.common.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -160,7 +160,7 @@ export default {
     },
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
-      this.getDataList('currentPage', 1); 
+      this.getDataList('currentPage', 1);
     }
   },
   computed: {

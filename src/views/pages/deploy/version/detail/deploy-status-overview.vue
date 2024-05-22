@@ -55,15 +55,15 @@
         <NoData :text="$t('term.deploy.appnotsettingenv')"></NoData>
       </div>
     </template>
-    
+
   </div>
 </template>
 <script>
 export default {
   name: '', // 发布状态
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     envId: {

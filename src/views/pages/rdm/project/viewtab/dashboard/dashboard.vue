@@ -69,10 +69,10 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    WidgetOverview: resolve => require(['@/views/pages/dashboard/widget/widget-overview.vue'], resolve)
-    //InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    WidgetOverview: () => import('@/views/pages/dashboard/widget/widget-overview.vue')
+    //InputSearcher:()=>import('@/resources/components/InputSearcher/InputSearcher.vue'),
   },
   mixins: [download, mixins],
   props: [],

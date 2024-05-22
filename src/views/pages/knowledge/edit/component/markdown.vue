@@ -27,7 +27,7 @@
 export default {
   name: '',
   components: {
-    MarkdownEditor: resolve => require(['pages/knowledge/common/markdown-editor.vue'], resolve)
+    MarkdownEditor: () => import('pages/knowledge/common/markdown-editor.vue')
   },
   filters: {},
   props: {

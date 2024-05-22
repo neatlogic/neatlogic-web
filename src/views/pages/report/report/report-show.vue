@@ -68,9 +68,9 @@ export default {
   name: '',
   components: {
     TsFormItem,
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve), 
+    ReportMain: () => import('../component/report-main.vue'),
     ...paramhandler
-  }, 
+  },
   directives: {download},
   props: {},
   data() {
@@ -174,7 +174,7 @@ export default {
           }
           this.reportData = d;
         });
-      } 
+      }
     },
     setParam: function(paramName, paramValue) {
       let obj = {};

@@ -313,16 +313,16 @@ import IntegrationSetting from './integration/integration-setting.vue';
 import filterItems from './dataSource/dataFilter/filters.js';
 export default {
   name: 'FormdynamicList',
-  components: { 
-    TsFormSelect, 
-    draggable, 
-    TsFormInput, 
-    DataFilter, 
-    DataSetting: resolve => require(['./staticList/staticList-setting'], resolve),
-    TypeSetting: resolve => require(['./staticList/staticList-type-setting'], resolve),
+  components: {
+    TsFormSelect,
+    draggable,
+    TsFormInput,
+    DataFilter,
+    DataSetting: () => import('./staticList/staticList-setting'),
+    TypeSetting: () => import('./staticList/staticList-type-setting'),
     IntegrationSetting,
     ...filterItems,
-    AttrSetting: resolve => require(['./dynamicList/attr-setting'], resolve)
+    AttrSetting: () => import('./dynamicList/attr-setting')
   },
   props: {
     uuid: String,
@@ -408,7 +408,7 @@ export default {
         this.$set(this.setting, 'uuidColumn', null);
         this.carouselNumber = 1;
       }
-      
+
       if (_this.setting.matrixUuid) {
         this.tbodyList = [];
         this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: _this.setting.matrixUuid }).then(res => {
@@ -455,7 +455,7 @@ export default {
                 _this.setting.dataConfig.length > 0 && (_this.setting.uuidColumn = _this.setting.dataConfig[0].uuid);
               }
             }
-            
+
             //cmdb矩阵
             if (type == 'cmdbci') {
               this.filterList = [];

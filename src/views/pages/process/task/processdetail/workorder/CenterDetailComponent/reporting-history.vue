@@ -36,7 +36,7 @@
           {{ row.endTime | formatDate }}
         </div>
       </template>
-     
+
     </TsTable>
   </div>
 </template>
@@ -44,7 +44,7 @@
 export default {
   name: '', // 上报列表页面
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     processTaskConfig: {

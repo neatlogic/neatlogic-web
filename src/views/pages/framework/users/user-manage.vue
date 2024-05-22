@@ -122,10 +122,10 @@
 export default {
   name: 'UserManage',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonAuth: resolve => require(['./common/common-auth.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonAuth: () => import('./common/common-auth.vue')
   },
   props: [],
   data() {

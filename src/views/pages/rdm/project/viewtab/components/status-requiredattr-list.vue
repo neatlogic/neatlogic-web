@@ -47,9 +47,9 @@
 export default {
   name: '',
   components: {
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve)
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue')
   },
   props: {
     projectId: {type: Number},

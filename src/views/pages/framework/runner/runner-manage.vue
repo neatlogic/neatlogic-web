@@ -63,10 +63,10 @@
 export default {
   name: 'RunnerManage', // runner管理
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    RunnerEditDialog: resolve => require(['./runner-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    RunnerEditDialog: () => import('./runner-edit-dialog.vue')
   },
   filters: {},
   props: {},
@@ -87,7 +87,7 @@ export default {
         {
           title: this.$t('term.deploy.connectionmode'),
           key: 'authType'
-        }, 
+        },
         {
           title: 'IP',
           key: 'host'

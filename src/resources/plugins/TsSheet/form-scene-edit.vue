@@ -162,13 +162,13 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsSheet: resolve => require(['./TsSheet.vue'], resolve),
-    FormItemConfig: resolve => require(['./form-item-config.vue'], resolve),
-    FormPreview: resolve => require(['./form-preview.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
-    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsSheet: () => import('./TsSheet.vue'),
+    FormItemConfig: () => import('./form-item-config.vue'),
+    FormPreview: () => import('./form-preview.vue'),
+    FormSceneDialog: () => import('./form-scene-dialog.vue'),
+    ReactionDialog: () => import('./form-row-reaction-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {},
   data() {
@@ -259,9 +259,9 @@ export default {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;
           if (oldData && oldData[i] && oldData[i][type]) {
-            oldNum = oldData[i][type] + num; 
+            oldNum = oldData[i][type] + num;
           }
-          if (newData[i] && (newData[i][type] > oldNum)) { 
+          if (newData[i] && (newData[i][type] > oldNum)) {
             isSame = false;
             break;
           }
@@ -333,7 +333,7 @@ export default {
             } else {
               this.sceneName = sceneConfig.name;
             }
-            if (sceneConfig) { 
+            if (sceneConfig) {
               sceneConfig.tableList.forEach(item => {
                 if (item.component && item.component.inherit) {
                   let component = formItemList.find(c => c.uuid === item.component.uuid);
@@ -387,7 +387,7 @@ export default {
           this.errorData.scene && this.$delete(this.errorData, 'scene');
         }
       }
-      this.errorData = Object.assign(this.errorData, sheet.validConfig()); 
+      this.errorData = Object.assign(this.errorData, sheet.validConfig());
       if (isValid && !this.$utils.isEmpty(this.errorData)) {
         isValid = false;
       }
@@ -456,7 +456,7 @@ export default {
           this.initFormItemList.forEach(item => {
             if (!itemUuidList.includes(item.uuid)) {
               newFormItemList.push(item);
-            } 
+            }
           });
           this.formItemList = newFormItemList;
         } else {

@@ -63,8 +63,8 @@
 export default {
   name: '',
   components: {
-    PersonSettingsDialog: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'], resolve), // 个性设置
-    DeployNoticeEditDialog: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-edit-dialog.vue'], resolve) // 编辑自定义通知策略
+    PersonSettingsDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'), // 个性设置
+    DeployNoticeEditDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-edit-dialog.vue') // 编辑自定义通知策略
 
   },
   props: {

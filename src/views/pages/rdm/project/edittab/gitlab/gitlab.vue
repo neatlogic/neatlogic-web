@@ -29,7 +29,7 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   props: {
     appData: { type: Object }

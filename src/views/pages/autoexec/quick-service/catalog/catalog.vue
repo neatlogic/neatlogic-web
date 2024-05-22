@@ -22,7 +22,7 @@ import catalogmixin from './catalogmixin.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   mixins: [catalogmixin],
@@ -137,7 +137,7 @@ export default {
             name: itemValue.name || '',
             isActive: itemValue.isActive || 0,
             authorityList: itemValue.authorityList,
-            description: itemValue.description || ''    
+            description: itemValue.description || ''
           };
           this.$emit('updateName', this.catalogValue.name);
         } else {

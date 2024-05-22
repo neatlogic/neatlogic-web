@@ -17,7 +17,7 @@ import { AttrBase } from './base-attr.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: AttrBase,
   props: {},

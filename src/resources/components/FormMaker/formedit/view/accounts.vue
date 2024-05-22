@@ -108,8 +108,8 @@ import viewmixin from '@/resources/components/FormMaker/formedit/view/viewmixin.
 export default {
   name: 'Formaccounts',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   mixins: [viewmixin],
   props: {

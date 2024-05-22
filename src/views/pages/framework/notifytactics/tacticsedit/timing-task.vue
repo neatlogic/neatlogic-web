@@ -110,11 +110,11 @@ export default {
   components: {
     TsTable,
     TsQuartz,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFromSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    SendjobRecord: resolve => require(['./sendjob-record'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFromSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    SendjobRecord: () => import('./sendjob-record'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: [],
   data() {

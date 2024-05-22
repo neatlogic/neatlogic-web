@@ -20,7 +20,7 @@
 export default {
   name: '',
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {
     pathList: Array,
@@ -78,7 +78,7 @@ export default {
         if (!this.$utils.isEmpty(val)) {
           this.filePath = val.join('\n');
         }
-      }, 
+      },
       deep: true,
       immediate: true
     }

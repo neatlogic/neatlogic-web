@@ -81,10 +81,10 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'BatchImport',
   components: {
-    ImportAudit: resolve => require(['./batch-import-audit.vue'], resolve),
-    ImportTemplate: resolve => require(['./batch-import-template.vue'], resolve),
-    UploadDialog: resolve => require(['components/UploadDialog/UploadDialog'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    ImportAudit: () => import('./batch-import-audit.vue'),
+    ImportTemplate: () => import('./batch-import-template.vue'),
+    UploadDialog: () => import('components/UploadDialog/UploadDialog'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   directives: { download },
   data() {

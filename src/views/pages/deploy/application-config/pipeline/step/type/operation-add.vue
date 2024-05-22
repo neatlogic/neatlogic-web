@@ -22,7 +22,7 @@
             v-bind="cardConfig"
             :currentPage="currentPage"
             :pageSize="pageSize"
-            :loading="loading"            
+            :loading="loading"
             @updatePage="getScriptList"
             @getSelected="getSelected"
           >
@@ -48,7 +48,7 @@ import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearc
 export default {
   name: 'OperationAdd',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     CombineSearcher
   },
   filters: {},
@@ -224,9 +224,9 @@ export default {
                   'argument': currentV.argument || null, //自由参数
                   'defaultProfileId': currentV.defaultProfileId || null //默认预置参数集
                 };
-                newList.push(item); 
+                newList.push(item);
               }
-            });          
+            });
             _this.$emit('close', newList);
           }
         });
@@ -315,7 +315,7 @@ export default {
     .li-tool {
         &.li-selected {
           .tscard-body {
-            border: 1px solid @info-color !important; 
+            border: 1px solid @info-color !important;
           }
         }
     }
@@ -332,7 +332,7 @@ export default {
           }
         }
       }
-    } 
+    }
   }
 }
 html {

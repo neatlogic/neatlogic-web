@@ -10,7 +10,7 @@
         <div v-if="row.score.content" class="small text-tip score-content" v-html="row.score.content"></div>
       </div>
     </CarouseUserList>
-    
+
     <CenterExpireStatus v-if="row.expireStatus !== 'no-expired-time'" :row="row"></CenterExpireStatus>
   </div>
 </template>
@@ -18,8 +18,8 @@
 export default {
   name: '',
   components: {
-    CarouseUserList: resolve => require(['../CarouseUserList.vue'], resolve),
-    CenterExpireStatus: resolve => require(['../CenterExpireStatus.vue'], resolve)
+    CarouseUserList: () => import('../CarouseUserList.vue'),
+    CenterExpireStatus: () => import('../CenterExpireStatus.vue')
   },
   filters: {},
   props: {

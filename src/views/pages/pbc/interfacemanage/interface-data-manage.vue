@@ -216,11 +216,11 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    InterfaceItemEdit: resolve => require(['./interface-item-edit.vue'], resolve),
-    InterfaceList: resolve => require(['./components/interface-list.vue'], resolve),
-    InterfaceItemImportDialog: resolve => require(['./components/interface-item-import-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    InterfaceItemEdit: () => import('./interface-item-edit.vue'),
+    InterfaceList: () => import('./components/interface-list.vue'),
+    InterfaceItemImportDialog: () => import('./components/interface-item-import-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   directives: { download },
   props: {},

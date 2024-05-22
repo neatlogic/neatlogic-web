@@ -5,7 +5,7 @@
       :key="cd.uuid"
       :index="index"
       class="dataSource-ul"
-    > 
+    >
       <span class="sub-line"></span>
       <p class="team-check bg-check">
         <Checkbox :value="cd.checked?true:false" @on-change="changeCheckbox(cd,...arguments)"></Checkbox>
@@ -46,8 +46,8 @@ export default {
   inject: ['$parent'],
   name: 'GroupTreeView',
   components: {
-    GroupTreeView: resolve => require(['./group-treeview'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    GroupTreeView: () => import('./group-treeview'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
 
   },
   props: {

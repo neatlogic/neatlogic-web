@@ -58,7 +58,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
@@ -169,9 +169,9 @@ export default {
                 validateList: [
                   'required',
                   {
-                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                       return this.validNameUnique(value);
-                    }} 
+                    }}
                 ]
               },
               {
@@ -326,9 +326,9 @@ export default {
               validateList: [
                 'required',
                 {
-                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                     return this.validNameUnique(value);
-                  }} 
+                  }}
               ]
             },
             {
@@ -387,9 +387,9 @@ export default {
             validateList: [
               'required',
               {
-                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                   return this.validNameUnique(value);
-                }} 
+                }}
             ]
           },
           {

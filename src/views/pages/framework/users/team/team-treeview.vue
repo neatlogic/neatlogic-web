@@ -91,7 +91,7 @@ export default {
   name: 'TeamTreeview',
   components: {
     draggable,
-    TeamTreeview: resolve => require(['./team-treeview'], resolve)
+    TeamTreeview: () => import('./team-treeview')
   },
   props: {
     children: {

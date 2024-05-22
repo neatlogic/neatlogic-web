@@ -11,7 +11,7 @@
       </template>
       <template v-slot:content>
         <div v-if="!loadingShow">
-          <Tabs 
+          <Tabs
             v-model="current"
             class="block-tabs2"
             name="content"
@@ -55,9 +55,9 @@
 export default {
   name: 'ScheduleJobEdit',
   components: {
-    JobBaseInfo: resolve => require(['./components/job-base-info.vue'], resolve),
-    JobParams: resolve => require(['./components/job-params.vue'], resolve),
-    PublishingValid: resolve => require(['@/views/pages/deploy/job/publishing/publishing-valid'], resolve)
+    JobBaseInfo: () => import('./components/job-base-info.vue'),
+    JobParams: () => import('./components/job-params.vue'),
+    PublishingValid: () => import('@/views/pages/deploy/job/publishing/publishing-valid')
   },
   props: {},
   data() {

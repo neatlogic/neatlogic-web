@@ -16,7 +16,7 @@
       </template>
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="!isLoading" slot="content" class="content">
-        <Tabs 
+        <Tabs
           v-model="current"
           class="block-tabs2"
           @on-click="changeTabValue"
@@ -63,7 +63,7 @@ export default {
   name: 'TimeJobDetail',
   components: {
     runnerDetail,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   props: {},
   data() {
@@ -94,7 +94,7 @@ export default {
           maxlength: 50,
           label: _this.$t('page.name'), // 名称
           validateList: ['required', 'name-special', {
-            name: 'searchUrl', 
+            name: 'searchUrl',
             url: 'api/rest/autoexec/schedule/save',
             params: {
               id: _this.$route.query.id || ''
@@ -231,7 +231,7 @@ export default {
       // 保存
       if (this.$refs.runnerDetail && !this.$refs.runnerDetail.openExecuteSetting()) {
         this.current = 'toolParam'; // 打开工具参数
-        return false; 
+        return false;
       }
       let params = this.getToolParams();
       this.initData = params;
@@ -247,7 +247,7 @@ export default {
     getTimeJobDetailById() {
       // 根据id获取定时作业详情信息
       if (!this.id) {
-        return; 
+        return;
       }
       let param = {
         id: this.id
@@ -261,7 +261,7 @@ export default {
               this.$set(this.formSetting[key], 'value', data[key]);
               this.$set(this.initData, key, data[key]);
             }
-          } 
+          }
           if (!this.defaultCombopId) {
             this.defaultCombopId = data.autoexecCombopId;
           }

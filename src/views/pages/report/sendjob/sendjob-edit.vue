@@ -193,12 +193,12 @@ import * as widgets from '@/views/pages/report/report/paramhandler';
 export default {
   name: 'SendjobEdit',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    Draggable: resolve => require(['vuedraggable'], resolve),
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    Draggable: () => import('vuedraggable'),
+    ReportMain: () => import('../component/report-main.vue'),
     ...widgets
   },
   data() {

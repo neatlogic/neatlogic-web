@@ -114,14 +114,14 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    EditCronDialog: resolve => require(['./edit-cron-dialog.vue'], resolve),
-    JobListDialog: resolve => require(['./job-list-dialog.vue'], resolve),
-    JobAudit: resolve => require(['../../framework/schedule/job-audit-dialog.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    EditCronDialog: () => import('./edit-cron-dialog.vue'),
+    JobListDialog: () => import('./job-list-dialog.vue'),
+    JobAudit: () => import('../../framework/schedule/job-audit-dialog.vue')
   },
   filters: {},
   props: {
@@ -169,7 +169,7 @@ export default {
           key: 'lcd',
           type: 'time'
         },
-        { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') }, 
+        { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') },
         { key: 'action', title: '', type: 'action' }
       ],
       isCronDialogShow: false,

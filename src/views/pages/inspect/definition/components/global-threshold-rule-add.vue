@@ -58,7 +58,7 @@
 export default {
   name: '', // 添加规则
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
@@ -70,7 +70,7 @@ export default {
   },
   data() {
     return {
-      defaultRuleUuIdList: [], // 
+      defaultRuleUuIdList: [], //
       ruleList: [],
       levelList: [], // 级别下拉数组
       ruleTooltips: this.$t('term.inspect.ruletooltips')
@@ -113,9 +113,9 @@ export default {
                 validateList: [
                   'required',
                   {
-                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                       return this.validNameUnique(value);
-                    }} 
+                    }}
                 ]
               },
               {
@@ -217,9 +217,9 @@ export default {
               validateList: [
                 'required',
                 {
-                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                     return this.validNameUnique(value);
-                  }} 
+                  }}
               ]
             },
             {
@@ -274,9 +274,9 @@ export default {
             validateList: [
               'required',
               {
-                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                   return this.validNameUnique(value);
-                }} 
+                }}
             ]
           },
           {

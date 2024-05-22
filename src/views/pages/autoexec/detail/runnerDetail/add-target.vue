@@ -122,11 +122,11 @@
 export default {
   name: '',
   components: {
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail.vue'], resolve),
-    NodeDetail: resolve => require(['@/views/pages/autoexec/components/param/edit/node/add-node.vue'], resolve),
-    Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters.vue'], resolve),
-    TargetView: resolve => require(['@/views/pages/autoexec/components/common/targetView/target.vue'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve)
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail.vue'),
+    NodeDetail: () => import('@/views/pages/autoexec/components/param/edit/node/add-node.vue'),
+    Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters.vue'),
+    TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue')
   },
   filters: {},
   props: {
@@ -197,7 +197,7 @@ export default {
     initData(val, isValid) {
       let _this = this;
       this.validMessage = '';
-      this.showData = []; 
+      this.showData = [];
       this.valueConfig = {};// 设置默认初始值，解决切换不同的组合工具，执行目标内容没有清空的问题
       this.showNumber = 0;
       this.valueConfig = Object.assign(this.valueConfig, this.$utils.deepClone(val));
@@ -404,7 +404,7 @@ export default {
         //新增
         title = this.$t('page.newtarget', {target: this.$t('term.autoexec.executetarget')});
       } else {
-        //查看 
+        //查看
         title = this.$t('page.viewtarget', {target: this.$t('term.autoexec.executetarget')});
       }
       return title;

@@ -299,7 +299,7 @@ export default {
   name: 'Card',
   components: {
     UserCard,
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue')
   },
   model: {
     prop: 'value',
@@ -703,7 +703,7 @@ export default {
       handler: function(val) {
         if (val) {
           this.list = val;
-        } 
+        }
       },
       immediate: true,
       deep: true

@@ -11,18 +11,18 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {item: Object, type: String},
   data() {
     return {
       dataList: [
         {
-          text: 'yes', 
+          text: 'yes',
           value: 'yes'
         },
         {
-          text: 'no', 
+          text: 'no',
           value: 'no'
         }
       ],

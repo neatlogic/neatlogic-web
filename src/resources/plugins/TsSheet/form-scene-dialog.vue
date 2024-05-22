@@ -30,7 +30,7 @@
                   :isTable="true"
                   :referenceCount="row.referenceCount"
                 ></ReferenceSelect>
-              </template> 
+              </template>
               <template v-slot:readOnly="{row}">
                 <TsFormSwitch
                   v-model="row.readOnly"
@@ -87,11 +87,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     uuid: String,
@@ -149,11 +149,11 @@ export default {
           lcd: this.formConfig.lcd,
           readOnly: this.formConfig.readOnly || false
         });
-        
+
         this.defaultSceneUuid = this.formConfig.defaultSceneUuid || this.formConfig.uuid;
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
-        this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; }); 
+        this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; });
         this.tbodyList.push(...this.formConfig.sceneList);
         let findDefaultValue = this.formConfig.sceneList.find(s => s.isDefaultValue);
         if (findDefaultValue) {

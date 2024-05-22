@@ -132,11 +132,11 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve)
+    ContentHandler: () => import('@/views/pages/rdm/project/content-handler/content-handler.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue')
   },
   directives: { download },
   props: {

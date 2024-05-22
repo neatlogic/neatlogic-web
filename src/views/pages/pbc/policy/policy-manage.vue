@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain> 
+    <TsContain>
       <template slot="topLeft">
         <div class="action-group">
           <div class="action-item tsfont-plus" @click="addPolicy()">{{ $t('term.process.policy') }}</div>
@@ -68,10 +68,10 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    PolicyEdit: resolve => require(['./policy-edit.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    PolicyEdit: () => import('./policy-edit.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue')
   },
   props: {},
   data() {
@@ -158,7 +158,7 @@ export default {
               this.searchPolicy();
             });
         },
-        'on-cancel': vnode => { 
+        'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });
@@ -177,7 +177,7 @@ export default {
               this.searchPolicy();
             });
         },
-        'on-cancel': vnode => { 
+        'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });

@@ -76,7 +76,7 @@ export default {
   name: '',
   components: {
     ConditionEdit,
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     ...Items
   },
   props: {

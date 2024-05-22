@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve)
+    ContentHandler: () => import('@/views/pages/rdm/project/content-handler/content-handler.vue')
   },
   props: {
     issueData: { type: Object },

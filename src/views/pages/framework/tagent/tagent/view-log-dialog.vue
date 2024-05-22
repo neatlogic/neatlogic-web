@@ -25,7 +25,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '', // 查看密码
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   directives: { download },
   props: {
@@ -89,9 +89,9 @@ export default {
           tagentId: this.tagentId
         };
         return {
-          url: '/api/binary/tagent/exec/log/download', 
-          params: data, 
-          method: 'post', 
+          url: '/api/binary/tagent/exec/log/download',
+          params: data,
+          method: 'post',
           changeStatus: status => {
             if (status == 'start') {
               this.$set(row, 'isDownloadFileLoding', true);

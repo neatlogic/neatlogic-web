@@ -23,7 +23,7 @@
           @changePageSize="changePageSize"
           @clickTr="selectRow"
         >
-          <template slot="type" slot-scope="{ row }"> 
+          <template slot="type" slot-scope="{ row }">
             {{ row.type == 'custom' ? $t('page.personal') : $t('page.system') }}
           </template>
           <template slot="content" slot-scope="{ row }">
@@ -74,8 +74,8 @@ export default {
   components: {
     TsTable,
     TsForm,
-    TsformSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsformSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     content: {
@@ -134,12 +134,12 @@ export default {
           name: 'name',
           label: this.$t('page.name'),
           validateList: ['required',
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/process/comment/template/save', 
-              key: 'name', 
-              message: this.$t('message.targetisexists', {target: this.$t('page.template')}), 
-              params: { id: '' } 
+            {
+              name: 'searchUrl',
+              url: '/api/rest/process/comment/template/save',
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('page.template')}),
+              params: { id: '' }
             }]
         },
         {
@@ -159,7 +159,7 @@ export default {
               text: this.$t('page.system'),
               value: 'system'
             }
-          ],    
+          ],
           onChange: (val) => {
             this.changeType(val);
           }
@@ -171,7 +171,7 @@ export default {
           validateList: ['required']
         }
       ],
-      systemTypeFrom: 
+      systemTypeFrom:
         {
           type: 'userselect',
           name: 'authList',
@@ -180,7 +180,7 @@ export default {
           groupList: ['common', 'user', 'role', 'team'],
           validateList: ['required'],
           transfer: true
-        },  
+        },
       tableData: null,
       editTsDialog: {
         type: 'modal',
@@ -266,7 +266,7 @@ export default {
               }
               if (data['type'] == 'custom' && !hasModifyAuthority && item.name == 'type') {
                 item.disabled = true;
-              } 
+              }
             });
             this.editForm.forEach(item => {
               item.value = data[item.name];

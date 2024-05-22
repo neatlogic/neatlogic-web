@@ -67,7 +67,7 @@ import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression
 
 export default {
   name: '',
-  components: { ChildFormItem: resolve => require(['@/resources/plugins/TsSheet/child-form-item.vue'], resolve) },
+  components: { ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue') },
   extends: base,
   mixins: [validmixin, conditionMixin],
   props: {},

@@ -59,8 +59,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   props: {
     selectedApp: {
@@ -151,7 +151,7 @@ export default {
         content: this.$t('term.deploy.jobnotexecutefinish', {target: row.jobName}) + (buttonType === 'cancel' ? this.$t('term.deploy.cancelwait') : this.$t('term.deploy.forceunlock')) + this.$t('term.deploy.jobexecutionmayfailconfirm'),
         btnType: 'info',
         'on-ok': vnode => {
-          let data = { 
+          let data = {
             lockId: row.id,
             operType: 'deploy',
             action: buttonType

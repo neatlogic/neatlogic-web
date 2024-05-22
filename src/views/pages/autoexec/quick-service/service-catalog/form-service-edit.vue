@@ -59,12 +59,12 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve),
-    SaveSetting: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'], resolve),
-    FormOtherParams: resolve => require(['./other-params'], resolve), // 其他参数
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve) // 服务失效原因提示列表
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
+    SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
+    FormOtherParams: () => import('./other-params'), // 其他参数
+    ExpiredReasonAlert: () => import('./expired-reason-alert') // 服务失效原因提示列表
   },
   mixins: [],
   props: {

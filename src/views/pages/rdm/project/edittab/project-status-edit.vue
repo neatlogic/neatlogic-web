@@ -81,8 +81,8 @@ export default {
   name: '',
   components: {
     draggable,
-    StatusEditDialog: resolve => require(['./components/project-status-edit-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    StatusEditDialog: () => import('./components/project-status-edit-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     projectId: { type: Number }

@@ -26,7 +26,7 @@
             class="automatic-status"
           ></CommonStatus>
         </div>
-        <AutoDetail :defaultStepData="automaticConfig.callbackAudit" :isShowFailed="automaticConfig.callbackAudit.status && automaticConfig.callbackAudit.status.value == 'failed' ? true : false" type="callbackAudit">></AutoDetail>           
+        <AutoDetail :defaultStepData="automaticConfig.callbackAudit" :isShowFailed="automaticConfig.callbackAudit.status && automaticConfig.callbackAudit.status.value == 'failed' ? true : false" type="callbackAudit">></AutoDetail>
       </div>
     </div>
   </div>
@@ -35,8 +35,8 @@
 export default {
   name: '',
   components: {
-    AutoDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/taskdetail-auto.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    AutoDetail: () => import('@/views/pages/process/task/processdetail/workorder/taskdetail-auto.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   props: {
     config: Object

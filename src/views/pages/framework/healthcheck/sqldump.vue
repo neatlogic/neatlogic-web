@@ -115,7 +115,7 @@
               >
                 <span class="tsfont-zirenwu" style="cursor:pointer"></span>
                 <div
-                  
+
                   slot="content"
                   class="fz10 scroll"
                   style="max-height:500px"
@@ -137,11 +137,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    SqlDumpEdit: resolve => require(['./sqldump-edit.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusDialog: resolve => require(['./status-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    SqlDumpEdit: () => import('./sqldump-edit.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    StatusDialog: () => import('./status-dialog.vue')
   },
   props: {},
   data() {

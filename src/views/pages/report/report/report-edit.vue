@@ -46,12 +46,12 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
-    ReportParam: resolve => require(['./report-param.vue'], resolve),
-    ReportContent: resolve => require(['./report-content.vue'], resolve),
-    ContentHelp: resolve => require(['./content-help.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    ReportParam: () => import('./report-param.vue'),
+    ReportContent: () => import('./report-content.vue'),
+    ContentHelp: () => import('./content-help.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     id: {type: Number},
@@ -62,7 +62,7 @@ export default {
   },
   data() {
     var _this = this;
-    return { 
+    return {
       isSaving: false,
       reportDialogConfig: {
         type: 'slider',
@@ -82,7 +82,7 @@ export default {
           name: 'name',
           label: this.$t('page.name'),
           maxlength: 50,
-          validateList: ['required', { 
+          validateList: ['required', {
             name: 'searchUrl',
             url: '/api/rest/report/save',
             key: 'name',
@@ -103,7 +103,7 @@ export default {
           onChange: function(name) {
             _this.reportData.type = name;
           }
-        }, 
+        },
         {
           type: 'userselect',
           name: 'authList',

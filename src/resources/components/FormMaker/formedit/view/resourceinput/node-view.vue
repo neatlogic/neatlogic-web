@@ -20,14 +20,14 @@
       :isReadonly="isReadonly"
       :dataList="list"
       @on-ok="onOk"
-    ></MoreTarget>  
+    ></MoreTarget>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    MoreTarget: resolve => require(['./more-target.vue'], resolve)
+    MoreTarget: () => import('./more-target.vue')
   },
   filters: {
   },
@@ -115,5 +115,5 @@ export default {
     display: inline-block;
     text-align: right;
   }
-} 
+}
 </style>

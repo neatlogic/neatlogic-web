@@ -122,9 +122,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    vuedraggable: resolve => require(['vuedraggable'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    vuedraggable: () => import('vuedraggable'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: {
     matrixUuid: { type: String }

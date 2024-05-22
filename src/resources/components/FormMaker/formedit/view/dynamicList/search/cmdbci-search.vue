@@ -132,10 +132,10 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    SearchHandler: resolve => require(['@/resources/components/FormMaker/formedit/edit/components/dataSource/dataFilter/search-handler.vue'], resolve),
-    SelectAttr: resolve => require(['./view/select-attr.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    SearchHandler: () => import('@/resources/components/FormMaker/formedit/edit/components/dataSource/dataFilter/search-handler.vue'),
+    SelectAttr: () => import('./view/select-attr.vue')
   },
   props: {
     searchColumnDetailList: Array,
@@ -181,7 +181,7 @@ export default {
       let constSearchList = [];
       let attrSearchList = [];
       let relSearchList = [];
-     
+
       list.forEach(item => {
         let config = item.config || {};
         this.$set(this.cmdbAttrConfig, item.uuid, item);
@@ -384,7 +384,7 @@ export default {
       },
       deep: true,
       immediate: true
-    } 
+    }
   }
 };
 </script>

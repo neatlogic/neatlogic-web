@@ -74,8 +74,8 @@ export default {
   name: '',
   components: {
     CombineSearcher,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    HistoryDetail: resolve => require(['./history-detail.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    HistoryDetail: () => import('./history-detail.vue')
   },
   props: {
     ciId: { type: Number },

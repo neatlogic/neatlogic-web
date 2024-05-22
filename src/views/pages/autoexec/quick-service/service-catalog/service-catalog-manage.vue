@@ -103,9 +103,9 @@ export default {
   //服务目录
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ServiceContent: resolve => require(['./service-content'], resolve),
-    SeeMoreDialog: resolve => require(['./see-more-dialog'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ServiceContent: () => import('./service-content'),
+    SeeMoreDialog: () => import('./see-more-dialog')
   },
   mixins: [serivemixin],
   props: {},

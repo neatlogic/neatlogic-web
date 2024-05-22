@@ -113,8 +113,8 @@ export default {
     draggable,
     ...item,
     RiskItem,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {},
   props: {
@@ -260,7 +260,7 @@ export default {
       //inputParam,输入参数
       if (this.$el.querySelectorAll('.input-param').length) {
         this.isValid = this.validStep('.input-param');
-      } 
+      }
       //自由参数
       if (this.$el.querySelectorAll('.argument-param').length) {
         if (this.validStep('.argument-param')) {

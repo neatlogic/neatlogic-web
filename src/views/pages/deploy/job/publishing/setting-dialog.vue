@@ -40,7 +40,7 @@
 export default {
   name: '',
   components: {
-    AppEdit: resolve => require(['../../application-config/config/app/app-edit'], resolve) // 编辑权限
+    AppEdit: () => import('../../application-config/config/app/app-edit') // 编辑权限
   },
   props: {
     appSystemId: Number,

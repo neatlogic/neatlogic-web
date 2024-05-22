@@ -97,10 +97,10 @@ export default {
   name: '',
   components: {
     draggable,
-    ProjectEdit: resolve => require(['./edittab/project-edit.vue'], resolve),
-    AppEditor: resolve => require(['./edittab/app-editor.vue'], resolve),
-    MoreEdit: resolve => require(['./edittab/more-edit.vue'], resolve),
-    ProjectStatus: resolve => require(['./edittab/project-status-edit.vue'], resolve)
+    ProjectEdit: () => import('./edittab/project-edit.vue'),
+    AppEditor: () => import('./edittab/app-editor.vue'),
+    MoreEdit: () => import('./edittab/more-edit.vue'),
+    ProjectStatus: () => import('./edittab/project-status-edit.vue')
   },
   data() {
     return {

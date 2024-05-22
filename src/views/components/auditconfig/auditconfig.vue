@@ -24,7 +24,7 @@
 export default {
   name: '',
   components: {
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve)
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect')
   },
   props: {
     auditName: {type: String},
@@ -45,7 +45,7 @@ export default {
         validateList: ['required'],
         type: 'datetimerange',
         format: 'yyyy-MM-dd HH:mm:ss'
-      } 
+      }
     };
   },
   beforeCreate() {},

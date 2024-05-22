@@ -13,11 +13,11 @@
 export default {
   name: '',
   components: {
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve)
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox')
   },
   props: {item: Object, type: String},
   data() {
-    return { 
+    return {
       dataList: [
         {
           text: 'p0',

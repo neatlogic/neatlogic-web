@@ -20,7 +20,7 @@
 export default {
   name: '',
   components: {
-    EditExtend: resolve => require(['./edit/cientityselect.vue'], resolve)
+    EditExtend: () => import('./edit/cientityselect.vue')
   },
   filters: {},
   mixins: [],

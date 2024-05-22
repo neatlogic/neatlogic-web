@@ -57,9 +57,9 @@
               ></TsFormSelect>
             </Col>
             <Col v-else-if="configParamList[lindex].mappingMode.indexOf('prenode')==0" span="17">
-              <PrenodeSelect 
-                :value="configParamList[lindex].value" 
-                :dataList="getPrevList(prevList)" 
+              <PrenodeSelect
+                :value="configParamList[lindex].value"
+                :dataList="getPrevList(prevList)"
                 :disabled="!canEdit"
                 :validateList="validateList"
                 @updateVal="(val)=>{changeValue(val,lindex,'prenode')}"
@@ -75,8 +75,8 @@
               <div class="overflow">
                 <template v-if="configParamList[lindex].mappingMode.indexOf('prenode')==0">
                   <TsFormCascader
-                    :value="configParamList[lindex].value" 
-                    :dataList="getPrevList(prevList)" 
+                    :value="configParamList[lindex].value"
+                    :dataList="getPrevList(prevList)"
                     :format="format"
                     readonly
                   ></TsFormCascader>
@@ -114,10 +114,10 @@ export default {
   components: {
     TsFormSelect,
     ...items,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    Globalparam: resolve => require(['./globalparam.vue'], resolve),
-    PrenodeSelect: resolve => require(['./prenode-select.vue'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    Globalparam: () => import('./globalparam.vue'),
+    PrenodeSelect: () => import('./prenode-select.vue'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader')
   },
   filters: {
   },
@@ -332,7 +332,7 @@ export default {
               };
             });
           } else {
-            let obj = { 
+            let obj = {
               mappingMode: 'constant',
               value: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),
               component: val.type,
@@ -389,7 +389,7 @@ export default {
     }
   }
   .delete-btn{
-    display: none; 
+    display: none;
     position: absolute;
     right: 8px;
     top: 8px;

@@ -21,7 +21,7 @@
             @editTitle="editTitle"
             @changeTitle="changeTitle"
           ></NavTop>
-   
+
           <div class="toolbar-right">
             <div class="action-group">
               <!-- 开始_start -->
@@ -133,7 +133,7 @@
               </span>
               <!-- 回退s -->
               <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
-                <Button 
+                <Button
                   icon="tsfont tsfont-reply"
                   @click="backTask"
                 >{{ actionConfig.back }}</Button>
@@ -493,18 +493,18 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     ...itemDialog,
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    TaskAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'], resolve),
-    AutoDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/taskdetail-auto.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
+    NavTop: () => import('./navTop.vue'),
+    TaskAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'),
+    AutoDetail: () => import('@/views/pages/process/task/processdetail/workorder/taskdetail-auto.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
     FooterOperationBtn
   },
   provide() {
@@ -538,7 +538,7 @@ export default {
     this.timer = null;
   },
   methods: {
-    getMessage() { 
+    getMessage() {
       //单独处理当前步骤特有信息
     },
     async completeTask() {

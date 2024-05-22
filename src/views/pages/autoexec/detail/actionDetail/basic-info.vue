@@ -26,9 +26,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   props: {

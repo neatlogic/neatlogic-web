@@ -33,19 +33,19 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
     processTaskConfig: {type: Object},
     isShow: {type: Boolean, default: false},
     title: {
-      type: String, 
+      type: String,
       default() {
         return this.$t('page.rollback');
       }
     }
-    
+
   },
   data() {
     return {

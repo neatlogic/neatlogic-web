@@ -22,7 +22,7 @@
             @editTitle="editTitle"
             @changeTitle="changeTitle"
           ></NavTop>
-    
+
           <div class="toolbar-right">
             <div class="action-group">
               <!-- 开始_start -->
@@ -288,16 +288,16 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    LookSitemapDialog: resolve => require(['./workorder/actiondialog/lookSitemap.vue'], resolve),
-    TransferDialog: resolve => require(['./workorder/actiondialog/transfer.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    RanferreportDialog: resolve => require(['./workorder/actiondialog/tranferreport.vue'], resolve),
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
-    TimterAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/timer-alert.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    TransferDialog: () => import('./workorder/actiondialog/transfer.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    RanferreportDialog: () => import('./workorder/actiondialog/tranferreport.vue'),
+    NavTop: () => import('./navTop.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
+    TimterAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/timer-alert.vue')
   },
   filters: {
   },
@@ -327,7 +327,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getMessage() { 
+    getMessage() {
       //单独处理当前步骤特有信息
     },
     async completeTask() { //定时节点强制流转时：弹框需要填写原因

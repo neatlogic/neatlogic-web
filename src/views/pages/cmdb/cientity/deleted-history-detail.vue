@@ -43,8 +43,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('./attr-viewer.vue')
   },
   props: {
     transactionId: {type: Number},
@@ -72,8 +72,8 @@ export default {
           key: 'type',
           title: this.$t('page.type')
         }, {
-          key: 'oldValueList', 
-          title: this.$t('page.value') 
+          key: 'oldValueList',
+          title: this.$t('page.value')
         }
       ])
     };

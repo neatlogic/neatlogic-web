@@ -10,7 +10,7 @@
         <TsFormInput
           v-model="keyword"
           search
-          :placeholder="$t('form.placeholder.pleaseinput', {target: $t('term.dashboard.widgetname')})" 
+          :placeholder="$t('form.placeholder.pleaseinput', {target: $t('term.dashboard.widgetname')})"
           clearable
           width="400px"
           @on-enter="getPagedata(1)"
@@ -102,8 +102,8 @@
 export default {
   name: '',
   components: {
-    addComponent: resolve => require(['./component.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    addComponent: () => import('./component.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: [],
   data() {

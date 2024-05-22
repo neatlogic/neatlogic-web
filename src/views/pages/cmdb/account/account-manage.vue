@@ -51,7 +51,7 @@
               :isTable="true"
               :referenceCount="row.resourceReferredCount"
             ></ReferenceSelect>
-          </template> 
+          </template>
           <template v-slot:action="{ row }">
             <div v-auth="'RESOURCECENTER_ACCOUNT_MODIFY'" class="tstable-action">
               <ul class="tstable-action-ul">
@@ -80,12 +80,12 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    NewAccount: resolve => require(['./components/new-account'], resolve),
-    Agreement: resolve => require(['./components/agreement'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    NewAccount: () => import('./components/new-account'),
+    Agreement: () => import('./components/agreement'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue')
   },
   filters: {},
   props: {},
@@ -170,7 +170,7 @@ export default {
           dataList.push({ text: namePort, value: item.id});
         });
       }
-     
+
       return dataList;
     },
     operation(row, view) {

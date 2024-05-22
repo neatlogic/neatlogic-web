@@ -8,8 +8,8 @@
 export default {
   name: '',
   components: {
-    CarouseUserList: resolve => require(['../CarouseUserList.vue'], resolve),
-    CenterExpireStatus: resolve => require(['../CenterExpireStatus.vue'], resolve)
+    CarouseUserList: () => import('../CarouseUserList.vue'),
+    CenterExpireStatus: () => import('../CenterExpireStatus.vue')
   },
   filters: {},
   props: {

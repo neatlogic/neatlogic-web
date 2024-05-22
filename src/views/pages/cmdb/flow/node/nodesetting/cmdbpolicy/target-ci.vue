@@ -22,7 +22,7 @@
         <template v-if="getTargetCi('mappingMode') === 'constant'">
           <TsFormSelect
             ref="valueList"
-            v-bind="targetCiConfig" 
+            v-bind="targetCiConfig"
             :value="getTargetCi('valueList')"
             @on-change="(val)=>changeTargetCi(val,'valueList')"
           ></TsFormSelect>
@@ -114,9 +114,9 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader.vue')
   },
   props: {
     ciId: Number,
@@ -167,7 +167,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    dealDataByUrl(nodeList) { 
+    dealDataByUrl(nodeList) {
       let list = [];
       if (nodeList && nodeList.length > 0) {
         list = nodeList.filter(item => {

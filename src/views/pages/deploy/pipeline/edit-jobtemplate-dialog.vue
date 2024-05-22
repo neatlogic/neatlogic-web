@@ -27,10 +27,10 @@
                 :xl="4"
                 :xxl="4"
               >
-                <div 
+                <div
                   v-if="item.isEnable"
-                  class="li-item text-action" 
-                  :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'" 
+                  class="li-item text-action"
+                  :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'"
                   @click="selectScenario(item)"
                 >{{ item.scenarioName }}</div>
                 <Tooltip
@@ -64,10 +64,10 @@
                 :xl="4"
                 :xxl="4"
               >
-                <div 
+                <div
                   v-if="item.isEnable"
-                  class="li-item text-action" 
-                  :class="jobTemplateData.envId == item.id ? 'li-active li-text border-primary' : 'border-base bg-op'" 
+                  class="li-item text-action"
+                  :class="jobTemplateData.envId == item.id ? 'li-active li-text border-primary' : 'border-base bg-op'"
                   @click="selectEnv(item)"
                 >{{ item.name }}</div>
                 <Tooltip
@@ -142,9 +142,9 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    ModuleList: resolve => require(['@/views/pages/deploy/job/publishing/module-list'], resolve),
-    SetParam: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/param.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ModuleList: () => import('@/views/pages/deploy/job/publishing/module-list'),
+    SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue')
   },
   props: {
     id: { type: Number },
@@ -160,8 +160,8 @@ export default {
         appSystemId: null,
         envId: null,
         scenarioId: null,
-        roundCount: 1, 
-        config: { param: {}, selectNodeList: [] } 
+        roundCount: 1,
+        config: { param: {}, selectNodeList: [] }
       },
       scenarioList: [], //场景列表
       envList: [], //环境列表

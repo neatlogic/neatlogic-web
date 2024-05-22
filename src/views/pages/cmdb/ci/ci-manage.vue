@@ -126,16 +126,16 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CiTypeEdit: resolve => require(['../citype/citype-edit.vue'], resolve),
-    CiTypeManage: resolve => require(['../citype/citype-manage.vue'], resolve),
-    CiEdit: resolve => require(['./ci-edit.vue'], resolve),
-    CiTopo: resolve => require(['./ci-topo.vue'], resolve),
-    CiImportDialog: resolve => require(['./ci-import-dialog.vue'], resolve),
-    CiExportDialog: resolve => require(['./ci-export-dialog.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CiTypeEdit: () => import('../citype/citype-edit.vue'),
+    CiTypeManage: () => import('../citype/citype-manage.vue'),
+    CiEdit: () => import('./ci-edit.vue'),
+    CiTopo: () => import('./ci-topo.vue'),
+    CiImportDialog: () => import('./ci-import-dialog.vue'),
+    CiExportDialog: () => import('./ci-export-dialog.vue')
   },
   props: {},
   data() {

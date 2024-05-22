@@ -40,8 +40,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   filters: {
   },
@@ -114,7 +114,7 @@ export default {
             validateList: ['required']
           }
         }
-  
+
       }
     };
   },

@@ -35,7 +35,7 @@ export default {
   name: '',
   components: {
     ParamsList,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     toolProfileId: {
@@ -71,10 +71,10 @@ export default {
           width: '100%',
           label: this.$t('page.name'),
           validateList: [
-            'required', 
-            'name-special', 
+            'required',
+            'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/profile/save', 
+              url: '/api/rest/autoexec/profile/save',
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')}),
               params: { id: ''}

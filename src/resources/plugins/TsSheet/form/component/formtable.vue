@@ -39,7 +39,7 @@ export default {
   name: '',
   components: {
     TsTable,
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
   mixins: [validmixin],
@@ -93,7 +93,7 @@ export default {
         if (value.length > 0) {
           this.tableData.tbodyList.push(...value);
         }
-      } else { 
+      } else {
         //默认展示行
         this.addItem();
       }
@@ -166,8 +166,8 @@ export default {
         if (val) {
           val.forEach(d => {
             let item = {
-              key: d.uuid, 
-              title: d.label 
+              key: d.uuid,
+              title: d.label
             };
             if (d.config && d.config.isRequired) {
               this.$set(item, 'isRequired', true);

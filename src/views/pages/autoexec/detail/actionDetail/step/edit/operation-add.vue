@@ -22,7 +22,7 @@
             v-bind="cardConfig"
             :currentPage="currentPage"
             :pageSize="pageSize"
-            :loading="loading"            
+            :loading="loading"
             @updatePage="getScriptList"
             @getSelected="getSelected"
           >
@@ -50,7 +50,7 @@ import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearc
 export default {
   name: 'OperationAdd',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     CombineSearcher
   },
   filters: {},
@@ -127,7 +127,7 @@ export default {
             placeholder: this.$t('page.pleaseselect'),
             search: true,
             multiple: true,
-            params: { 
+            params: {
               isNeedCheckDataAuth: 1
             },
             dynamicUrl: '/api/rest/autoexec/type/search',
@@ -230,9 +230,9 @@ export default {
                   'argument': currentV.argument || null, //自由参数
                   'defaultProfileId': currentV.defaultProfileId || null //默认预置参数集
                 };
-                newList.push(item); 
+                newList.push(item);
               }
-            });          
+            });
             _this.$emit('close', newList);
           }
         });
@@ -321,18 +321,18 @@ export default {
   .tscard-container {
     .li-tool {
         // .tscard-body {
-        //   background:@info-bg-color !important; 
+        //   background:@info-bg-color !important;
         // }
         &.li-selected {
           .tscard-body {
-            border: 1px solid @info-color !important; 
+            border: 1px solid @info-color !important;
           }
         }
     }
     .li-script {
       .tscard-inner {
         .tscard-body {
-          // background: @warning-bg-color !important; 
+          // background: @warning-bg-color !important;
           border: 1px solid transparent;
         }
       }
@@ -343,7 +343,7 @@ export default {
           }
         }
       }
-    } 
+    }
   }
 }
 html {

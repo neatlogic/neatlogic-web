@@ -54,7 +54,7 @@
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <div ref="tableMain" class="tstable-main">
           <table ref="tableBody" class="tstable-body">
-            <thead> 
+            <thead>
               <tr>
                 <th
                   v-for="(th, thIndex) in tableConfig.theadList"
@@ -84,7 +84,7 @@
                     v-for="(innerItem, nIndex) in tableConfig.theadList"
                     :key="nIndex"
                     :class="borderRight(innerItem.key, nIndex + 1)"
-                  > 
+                  >
                     <template v-if="innerItem.key == 'selection'">
                       <Checkbox :value="item.isSelected" @on-change="(isSelected) => getSelected(isSelected, item, item.authUuid)"></Checkbox>
                     </template>
@@ -132,12 +132,12 @@
 export default {
   name: '', // 应用信息
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit.vue'], resolve),
-    AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
-    BatchEditAuthDialog: resolve => require(['@/views/pages/deploy/application-config/config/app/components/batch-edit-auth-dialog.vue'], resolve), // 批量编辑权限
-    DeployNoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-setting.vue'], resolve) // 通知策略
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    AppEdit: () => import('@/views/pages/deploy/application-config/config/app/app-edit.vue'),
+    AppInfo: () => import('@/views/pages/deploy/application-config/config/app/app-info.vue'),
+    BatchEditAuthDialog: () => import('@/views/pages/deploy/application-config/config/app/components/batch-edit-auth-dialog.vue'), // 批量编辑权限
+    DeployNoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-setting.vue') // 通知策略
   },
   props: {
     appSystemId: {
@@ -157,7 +157,7 @@ export default {
   },
   data() {
     return {
-      topRightWidth: 0, 
+      topRightWidth: 0,
       indeterminate: false,
       loadingShow: false,
       checkAll: false, // 全选
@@ -236,7 +236,7 @@ export default {
           this.checkboxIsSelectedAll(false);
           this.tableConfig.theadList.forEach((item) => {
             item['title'] = item.displayName;
-            item['key'] = item.name; 
+            item['key'] = item.name;
             if (this.operationAuthList.includes(item.key)) {
               this.operationAuthLength = this.operationAuthLength + 1;
             } else if (this.envAuthList.includes(item.key)) {
@@ -289,11 +289,11 @@ export default {
                 vnode.isShow = false;
               }
             },
-            { 
+            {
               text: this.$t('page.delete'),
-              type: 'error', 
+              type: 'error',
               fn: vnode => {
-                vnode.isShow = false; 
+                vnode.isShow = false;
                 this.$api.deploy.applicationConfig.batchDelAuthApp(params).then((res) => {
                   if (res && res.Status == 'OK') {
                     this.$Message.success(this.$t('message.deletesuccess'));
@@ -333,7 +333,7 @@ export default {
         this.indeterminate = !!this.selectedAuthList.length;
       }
     },
-    checkboxIsSelectedAll(isSelectedAll) { 
+    checkboxIsSelectedAll(isSelectedAll) {
       if (isSelectedAll) {
         this.tableConfig.tbodyList.forEach((item) => {
           this.$set(item, 'isSelected', true);
@@ -408,11 +408,11 @@ export default {
                 vnode.isShow = false;
               }
             },
-            { 
+            {
               text: this.$t('page.delete'),
-              type: 'error', 
+              type: 'error',
               fn: vnode => {
-                vnode.isShow = false; 
+                vnode.isShow = false;
                 this.$api.deploy.applicationConfig.batchDelAuthApp(batchDelParams).then((res) => {
                   if (res && res.Status == 'OK') {
                     this.$Message.success(this.$t('message.deletesuccess'));

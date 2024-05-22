@@ -19,7 +19,7 @@
 export default {
   name: 'ExpandTable', // 内嵌表格
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -88,5 +88,5 @@ export default {
     width: 60px;
   }
 }
- 
+
 </style>

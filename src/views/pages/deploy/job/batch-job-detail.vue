@@ -112,9 +112,9 @@
 export default {
   name: '',
   components: {
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExecutePolicyDialog: resolve => require(['./execute-policy-dialog.vue'], resolve),
-    PhaseBar: resolve => require(['./phase-bar.vue'], resolve)
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExecutePolicyDialog: () => import('./execute-policy-dialog.vue'),
+    PhaseBar: () => import('./phase-bar.vue')
   },
   props: {},
   data() {

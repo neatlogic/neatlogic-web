@@ -51,7 +51,7 @@
           >
             <span class="tsfont-setting" :class="disabled?'text-disabled':'text-action'" @click="clickSetting()"></span>
             <div slot="content">
-             
+
               <div class="tsfont-lightning border-base-bottom pb-xs text-action" @click="openReactionDialog(item, index)">{{ $t('term.framework.reactionsetting') }}</div>
               <div class="flex-start pt-xs">
                 <div class="pr-sm">{{ $t('term.framework.hidetab') }}</div>
@@ -115,9 +115,9 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    ReactionDialog: resolve => require(['@/resources/plugins/TsSheet/form-item-reaction-dialog.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ReactionDialog: () => import('@/resources/plugins/TsSheet/form-item-reaction-dialog.vue')
   },
   props: {
     needCopyValue: {type: Boolean, default: true}, //默认需要复制数据，避免内部修改影响原数据，cascader则不能复制，使用复制模式继承关系会断裂

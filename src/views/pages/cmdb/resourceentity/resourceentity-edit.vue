@@ -43,10 +43,10 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    // TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    MappingSetting: resolve => require(['./mapping-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    // TsCodemirror:()=>import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    MappingSetting: () => import('./mapping-setting.vue')
   },
   props: {name: {type: String}},
   data() {

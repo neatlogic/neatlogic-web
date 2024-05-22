@@ -136,11 +136,11 @@
 export default {
   name: '',
   components: {
-    CiEntityList: resolve => require(['./cientity-list.vue'], resolve),
-    ciTypeList: resolve => require(['@/views/pages/cmdb/components/ci/ci-type-list.vue'], resolve),
-    TransactionList: resolve => require(['./transaction-list.vue'], resolve),
-    DeleteCiEntityList: resolve => require(['./delete-cientity-list.vue'], resolve),
-    IllegalCiEntityList: resolve => require(['./illegal-cientity-list.vue'], resolve)
+    CiEntityList: () => import('./cientity-list.vue'),
+    ciTypeList: () => import('@/views/pages/cmdb/components/ci/ci-type-list.vue'),
+    TransactionList: () => import('./transaction-list.vue'),
+    DeleteCiEntityList: () => import('./delete-cientity-list.vue'),
+    IllegalCiEntityList: () => import('./illegal-cientity-list.vue')
   },
   props: {},
   data() {

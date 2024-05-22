@@ -84,8 +84,8 @@
 export default {
   name: '',
   components: {
-    ComparisonDetail: resolve => require(['@/views/pages/knowledge/detail/comparison/comparison-detail.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    ComparisonDetail: () => import('@/views/pages/knowledge/detail/comparison/comparison-detail.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   props: {
@@ -244,7 +244,7 @@ export default {
       &:not(:last-child) {
         &:after {
           content:'、'
-        } 
+        }
       }
     }
   }

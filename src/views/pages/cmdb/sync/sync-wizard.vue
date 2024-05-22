@@ -51,8 +51,8 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {},
   data() {
@@ -107,7 +107,7 @@ export default {
       if (collectionTypeList && collectionTypeList.length > 0) {
         if (this.keyword) {
           collectionTypeList.forEach(type => {
-            if ((type.name && type.name.toLowerCase().indexOf(this.keyword.toLowerCase()) > -1) || 
+            if ((type.name && type.name.toLowerCase().indexOf(this.keyword.toLowerCase()) > -1) ||
             (type.label && type.label.toLowerCase().indexOf(this.keyword.toLowerCase()) > -1)) {
               returnList.push(type);
             } else {

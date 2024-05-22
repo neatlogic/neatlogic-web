@@ -50,9 +50,9 @@
 export default {
   name: '',
   components: {
-    AutoDetail: resolve => require(['../../taskdetail-auto.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    StepLogCommon: resolve => require(['./step-log-common'], resolve)
+    AutoDetail: () => import('../../taskdetail-auto.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    StepLogCommon: () => import('./step-log-common')
 
   },
   filters: {},

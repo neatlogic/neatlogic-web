@@ -18,7 +18,7 @@
 export default {
   name: 'WidgetSetting',
   components: {
-    forminput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    forminput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     widgetdata: Object

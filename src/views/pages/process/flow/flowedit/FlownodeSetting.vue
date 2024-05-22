@@ -40,7 +40,7 @@ import NodeItem from './components';
 export default {
   name: 'FlownodeSetting',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     ...NodeItem
   },
   props: {

@@ -55,8 +55,8 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ConfEdit: resolve => require(['./discovery-conf-edit-dialog.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ConfEdit: () => import('./discovery-conf-edit-dialog.vue')
   },
   props: {},
   data() {

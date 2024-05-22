@@ -40,7 +40,7 @@
 export default {
   name: '',
   components: {
-    AutoexecConfig: resolve => require(['./autoexec-config.vue'], resolve)
+    AutoexecConfig: () => import('./autoexec-config.vue')
   },
   props: {
     formUuid: String,

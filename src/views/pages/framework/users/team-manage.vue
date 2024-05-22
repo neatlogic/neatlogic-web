@@ -15,8 +15,8 @@
           @enter-search="searchkeyWord"
         >
           <template v-slot:option="{item}">
-            <div class="flex-start team-manage-wrap"> 
-              <div class="pr-md">{{ item.name }}</div>  
+            <div class="flex-start team-manage-wrap">
+              <div class="pr-md">{{ item.name }}</div>
               <div :title="item.upwardNamePath" class="overflow fz10 text-grey upward-name-path">{{ item.upwardNamePath }}</div>
             </div>
           </template>
@@ -71,7 +71,7 @@ export default {
   name: '',
   components: {
     // vuedraggable
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
     TeamTreeview
   },
   props: [],

@@ -33,10 +33,10 @@
 <script>
 export default {
   name: '',
-  components: { 
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve), 
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    MqTopicEdit: resolve => require(['@/views/pages/framework/mq/mq-topic-edit.vue'], resolve)
+  components: {
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    MqTopicEdit: () => import('@/views/pages/framework/mq/mq-topic-edit.vue')
   },
   props: {},
   data() {

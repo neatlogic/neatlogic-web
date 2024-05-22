@@ -1,5 +1,5 @@
 <template>
-  <TsDialog 
+  <TsDialog
     className="notice-edit"
     type="modal"
     :isShow="isShow"
@@ -18,7 +18,7 @@
 export default {
   name: 'NoticeEdit',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     isShow: { type: Boolean, default: false },
@@ -38,7 +38,7 @@ export default {
             'name-special',
             {
               name: 'searchUrl',
-              url: 'api/rest/systemnotice/save', 
+              url: 'api/rest/systemnotice/save',
               key: 'title',
               params: () => ({id: this.notice.id || null})
             }

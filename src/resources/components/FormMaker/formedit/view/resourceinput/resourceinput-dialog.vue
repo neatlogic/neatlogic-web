@@ -103,7 +103,7 @@
 export default {
   name: '',
   components: {
-    NodeView: resolve => require(['./node-view'], resolve)
+    NodeView: () => import('./node-view')
   },
   filters: {},
   props: {
@@ -226,7 +226,7 @@ export default {
           if (res.Status == 'OK' && res.Return && res.Return.list) {
             let list = res.Return.list;
             list.length && (this.messageConfig.list = list[0].list);
-          } 
+          }
         }
       }
     },

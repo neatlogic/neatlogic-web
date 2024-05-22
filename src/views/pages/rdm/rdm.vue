@@ -21,10 +21,10 @@ export default {
     };
   },
   components: {
-    TopNav: resolve => require(['@/views/components/topnav/topnav.vue'], resolve),
-    LeftMenu: resolve => require(['@/views/components/leftmenu/leftmenu.vue'], resolve),
-    RdmMenu: resolve => require(['./leftmenu/rdm-menu.vue'], resolve),
-    LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve)
+    TopNav: () => import('@/views/components/topnav/topnav.vue'),
+    LeftMenu: () => import('@/views/components/leftmenu/leftmenu.vue'),
+    RdmMenu: () => import('./leftmenu/rdm-menu.vue'),
+    LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
     return {

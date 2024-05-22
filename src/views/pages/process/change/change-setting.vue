@@ -14,8 +14,8 @@
 export default {
   name: 'ChangeSetting',
   components: {
-    SopSetting: resolve => require(['./setting/sop-setting.vue'], resolve),
-    ParamSetting: resolve => require(['./setting/param-setting.vue'], resolve)
+    SopSetting: () => import('./setting/sop-setting.vue'),
+    ParamSetting: () => import('./setting/param-setting.vue')
   },
   filters: {},
   props: {},

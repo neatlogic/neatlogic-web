@@ -25,7 +25,7 @@
 export default {
   name: '',
   components: {
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filters: {
   },
@@ -86,5 +86,5 @@ export default {
   .div-btn{
     text-align: right;
   }
-} 
+}
 </style>

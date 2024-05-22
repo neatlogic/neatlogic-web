@@ -41,7 +41,7 @@
 export default {
   name: 'ImportAudit',
   components: {
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve)
+    TsTable: () => import('components/TsTable/TsTable')
   },
   data() {
     return {

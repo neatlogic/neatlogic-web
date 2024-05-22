@@ -12,10 +12,10 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
-  props: { 
-    value: { type: String }, 
+  props: {
+    value: { type: String },
     property: { type: Object } },
   data() {
     return {};

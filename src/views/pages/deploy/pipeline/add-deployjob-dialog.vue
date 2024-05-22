@@ -20,7 +20,7 @@
 export default {
   name: '',
   components: {
-    AddDeployJobForm: resolve => require(['../pipeline/add-deployjob-form.vue'], resolve)
+    AddDeployJobForm: () => import('../pipeline/add-deployjob-form.vue')
   },
   props: {
     id: { type: Number }

@@ -63,13 +63,13 @@ import nodemixin from '@/views/pages/process/flow/flowedit/components/nodemixin.
 export default {
   name: '',
   components: {
-    FormsceneSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting'], resolve), // 表单场景
-    AuthoritySetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    ActionSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/action-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'], resolve),
-    AssignSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting.vue'], resolve),
-    CmdbsyncSetting: resolve => require(['./nodesetting/cmdbsync-setting.vue'], resolve)
+    FormsceneSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting'), // 表单场景
+    AuthoritySetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    ActionSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/action-setting.vue'),
+    ButtonSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'),
+    AssignSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting.vue'),
+    CmdbsyncSetting: () => import('./nodesetting/cmdbsync-setting.vue')
   },
   mixins: [nodemixin],
   props: {},

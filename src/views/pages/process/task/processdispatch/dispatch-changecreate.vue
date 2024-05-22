@@ -72,7 +72,7 @@
                     type="time"
                   ></TsFormDatePicker>
                 </div>
-              </TsFormItem>                        
+              </TsFormItem>
             </Col>
             <Col span="12">
               <TsFormItem
@@ -86,7 +86,7 @@
                   :true-value="1"
                   :false-value="0"
                 ></TsFormSwitch>
-              </TsFormItem>    
+              </TsFormItem>
             </Col>
           </TsRow>
         </div>
@@ -134,13 +134,13 @@ import {store} from './dispatchState.js';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    ChangeDetail: resolve => require(['./workorder/change/change-detail.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    ChangeDetail: () => import('./workorder/change/change-detail.vue')
   },
   props: {
     draftData: Object
@@ -230,7 +230,7 @@ export default {
           type: 'error',
           showDetail: 'handlerStepInfo'
         });
-      } 
+      }
       if (this.$refs.owner && !this.$refs.owner.valid()) {
         validList.push({
           focus: '#handlerStepInfo',
@@ -239,7 +239,7 @@ export default {
           type: 'error',
           showDetail: 'handlerStepInfo'
         });
-      } 
+      }
       if (this.$refs.changeStepList && this.$refs.changeStepList.validParam().length > 0) {
         validList.push({
           focus: '#changeStepList',

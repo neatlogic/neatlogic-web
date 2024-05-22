@@ -31,8 +31,8 @@
     <TsFormItem :label="$t('page.decimalnumber')" labelPosition="top">
       <TsFormInput
         :value="config.decimalNumber"
-        :placeholder="$t('page.decimalnumber')" 
-        :validateList="validateSetting.number" 
+        :placeholder="$t('page.decimalnumber')"
+        :validateList="validateSetting.number"
         :disabled="disabled"
         @on-change="val => {
           setConfig('decimalNumber', val);
@@ -57,8 +57,8 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},

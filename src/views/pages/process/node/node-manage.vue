@@ -167,9 +167,9 @@
 export default {
   name: 'NodeManage',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
-    // TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    // TimeSelect:()=>import('@/resources/components/TimeSelect/TimeSelect'),
   },
   props: [],
   data() {
@@ -213,7 +213,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    
+
   },
   beforeMount() {},
   async mounted() {
@@ -269,7 +269,7 @@ export default {
     },
     getValue(handler) {
       let valueList = [];
-      
+
       this.nodeList && this.nodeList.forEach((item) => {
         if (handler && item.handler != handler) {
           return;
@@ -283,7 +283,7 @@ export default {
         //         name: citem.name,
         //         value: citem.value || '',
         //         type: 'constant'
-        //       }; 
+        //       };
         //       let handler = item.config.notifyPolicyConfig.handler;
         //       let paramItem = this.paramTypeConfig[handler][citem.paramType] ? this.paramTypeConfig[handler][citem.paramType].find(cc => cc.value == citem.value) : null;
         //       data.type = paramItem ? (paramItem.type || data.type) : data.type;
@@ -301,7 +301,7 @@ export default {
             //   paramMappingList: paramMappingList,
             //   handler: item.config.notifyPolicyConfig.handler
             // }
-          }) 
+          })
         };
           //映射字段处理
         this.mapList.forEach(cc => {
@@ -364,7 +364,7 @@ export default {
     //     node.config.notifyPolicyConfig.paramMappingList = [];
     //     return;
     //   }
-    
+
     //   const data = {
     //     policyId: val
     //   };
@@ -426,7 +426,7 @@ export default {
       if (_this.$el && this.nodeType && _this.$el.querySelector('#' + this.nodeType)) {
         if (_this.$el.querySelector('#' + this.nodeType).offsetTop != e) {
           _this.nodeType = null;
-          _this.actionType = null;  
+          _this.actionType = null;
         }
       }
     }

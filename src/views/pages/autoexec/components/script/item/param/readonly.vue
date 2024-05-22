@@ -75,11 +75,11 @@ import items from '@/views/pages/autoexec/components/param/readonly/index.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     TsFormSelect,
     ...items,
-    Globalparam: resolve => require(['./globalparam.vue'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader'], resolve)
+    Globalparam: () => import('./globalparam.vue'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader')
   },
   filters: {
   },

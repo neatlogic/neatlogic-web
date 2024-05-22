@@ -48,7 +48,7 @@ import screenfull from '@/resources/assets/js/screenfull.js';
 export default {
   name: '',
   components: {
-    Widget: resolve => require(['./widgets/widget-handler.vue'], resolve)
+    Widget: () => import('./widgets/widget-handler.vue')
   },
   props: {},
   data() {
@@ -121,7 +121,7 @@ export default {
       let fullDiv = this.$refs.canvasContainer;
       if (screenfull.isEnabled) {
         screenfull.request(fullDiv);
-      } 
+      }
     },
     getReportById() {
       if (this.id) {
@@ -164,7 +164,7 @@ export default {
         this.containerWidth = rect.width;
         this.containerHeight = rect.height;
         this.isShowGrid = true;
-      } 
+      }
     },
     stopMove() {
       if (!this.isGrabbing) {
@@ -201,7 +201,7 @@ export default {
         } else if (this.containerHeight && this.containerHeight - this.reportData.height >= this.canvasY) {
           this.canvasY = this.containerHeight - this.reportData.height;
         }
-      } 
+      }
       this.mouseX = x;
       this.mouseY = y;
     },

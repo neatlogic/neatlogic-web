@@ -270,11 +270,11 @@ import nodemixin from './nodemixin.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve),
-    ConditionAttrList: resolve => require(['./condition-attr-list.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
+    ConditionAttrList: () => import('./condition-attr-list.vue'),
     ...Items
   },
   mixins: [nodemixin],

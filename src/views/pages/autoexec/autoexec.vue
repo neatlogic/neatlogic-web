@@ -24,9 +24,9 @@ export default {
     };
   },
   components: {
-    TopNav: resolve => require(['@/views/components/topnav/topnav.vue'], resolve),
-    AutoexecMenu: resolve => require(['./leftmenu/autoexec-menu'], resolve),
-    LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve)
+    TopNav: () => import('@/views/components/topnav/topnav.vue'),
+    AutoexecMenu: () => import('./leftmenu/autoexec-menu'),
+    LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
     return {

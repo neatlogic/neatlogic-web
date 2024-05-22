@@ -76,8 +76,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {
     id: { type: Number }
@@ -87,7 +87,7 @@ export default {
       isReady: false,
       configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name' + this.$t('term.autoexec.isdataproperties') + '\n\t\t}\n\t}\n}',
       dialogConfig: {
-        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.template')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.template')}), 
+        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.template')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.template')}),
         type: 'modal',
         width: 'medium',
         isShow: true

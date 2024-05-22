@@ -18,7 +18,7 @@
 export default {
   name: 'ToolCatalogEditDialog', // 目录工具(添加-编辑)
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   filters: {},
   props: {
@@ -53,9 +53,9 @@ export default {
           label: this.$t('page.name'),
           maxlength: 50,
           validateList: [
-            'required', 
+            'required',
             'name-special',
-            { 
+            {
               name: 'searchUrl', // 字段必须，不能更改
               url: '/api/rest/autoexec/catalog/save',
               key: 'name', // key值
@@ -106,7 +106,7 @@ export default {
         if (res.Status == 'OK') {
           if (!this.$utils.isEmpty(this.nodeData) && !this.$utils.isEmpty(this.nodeData.value) && !this.$utils.isEmpty(this.nodeData.value.id)) {
             // 重命名
-            this.nodeData.node.name = params.name; 
+            this.nodeData.node.name = params.name;
           } else if (!this.$utils.isEmpty(this.nodeData) && !this.$utils.isEmpty(this.nodeData.value) && this.$utils.isEmpty(this.nodeData.value.id)) {
             // 添加下级目录
             const newNode = {

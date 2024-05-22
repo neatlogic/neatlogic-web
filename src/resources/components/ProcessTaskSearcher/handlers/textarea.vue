@@ -18,7 +18,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     mode: {
@@ -29,7 +29,7 @@ export default {
     conditionData: {type: Object}//当前组件在工单中心配置中的数据
   },
   data() {
-    return { 
+    return {
       config: this.condition.config
     };
   },
@@ -49,7 +49,7 @@ export default {
       if (this.$refs['searchInputer']) {
         return this.$refs['searchInputer'].valid();
       }
-      return true; 
+      return true;
     },
     change(val) {
       this.$emit('change', val, val);

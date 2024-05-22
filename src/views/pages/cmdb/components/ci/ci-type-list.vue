@@ -122,8 +122,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue')
   },
   filters: {},
   props: {

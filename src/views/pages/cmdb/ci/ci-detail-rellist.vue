@@ -109,7 +109,7 @@ export default {
   name: '',
   components: {
     TsCard,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     ciData: { type: Object },

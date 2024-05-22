@@ -72,13 +72,13 @@
 export default {
   name: '',
   components: {
-    AddNode: resolve => require(['./add-node.vue'], resolve),
-    InputTag: resolve => require(['./add-input.vue'], resolve),
-    AddParam: resolve => require(['./add-param.vue'], resolve),
-    AddFilters: resolve => require(['./add-filters.vue'], resolve),
-    AddPrenode: resolve => require(['./add-prenode.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve)
+    AddNode: () => import('./add-node.vue'),
+    InputTag: () => import('./add-input.vue'),
+    AddParam: () => import('./add-param.vue'),
+    AddFilters: () => import('./add-filters.vue'),
+    AddPrenode: () => import('./add-prenode.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue')
   },
   filters: {
   },

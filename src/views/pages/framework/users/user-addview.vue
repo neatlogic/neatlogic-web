@@ -201,9 +201,9 @@ import CommonAuth from './common/common-auth.vue';
 export default {
   name: 'UserAddview',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CommonAuth,
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue')
   },
   props: [''],
   data() {

@@ -37,10 +37,10 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    DataList: resolve => require(['../dataList.vue'], resolve),
-    BatchData: resolve => require(['../batchData.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    DataList: () => import('../dataList.vue'),
+    BatchData: () => import('../batchData.vue')
   },
   filters: {
   },
@@ -120,7 +120,7 @@ export default {
     .static-edit{
       position: absolute;
       top: -36px;
-      right: 16px;                
+      right: 16px;
     }
   }
 </style>

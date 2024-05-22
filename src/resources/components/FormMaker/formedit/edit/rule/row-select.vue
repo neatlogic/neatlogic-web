@@ -41,7 +41,7 @@
 export default {
   name: 'RowSelect',
   components: {
-    RowView: resolve => require(['./row-view.vue'], resolve)
+    RowView: () => import('./row-view.vue')
   },
   filters: {},
   model: {

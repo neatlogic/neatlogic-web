@@ -49,7 +49,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     uuid: {
@@ -99,8 +99,8 @@ export default {
           value: '',
           validateList: [
             'required',
-            { 
-              name: 'searchUrl', 
+            {
+              name: 'searchUrl',
               url: 'api/rest/process/channeltype/save',
               message: this.$t('message.targetisexists', {target: this.$t('term.process.sertype')}),
               params: () => ({uuid: this.uuid})
@@ -222,7 +222,7 @@ export default {
             item.value = formValue[item.name];
           }
         });
-  
+
         this.formSetting.splice(5, 0, ...formAttributeList);
       }
     },

@@ -70,11 +70,11 @@ export default {
   tagComponent: 'taskDispatch', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
     ...Dispatch,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve), 
-    ForwardingDetail: resolve => require(['@/views/pages/process/task/taskcommon/forwarding-detail.vue'], resolve),
-    BaseSetting: resolve => require(['./workorder/base-setting.vue'], resolve),
-    FormSetting: resolve => require(['./workorder/form-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ForwardingDetail: () => import('@/views/pages/process/task/taskcommon/forwarding-detail.vue'),
+    BaseSetting: () => import('./workorder/base-setting.vue'),
+    FormSetting: () => import('./workorder/form-setting.vue')
   },
   directives: {scrollHidden},
   props: {
@@ -260,7 +260,7 @@ export default {
         'changecreate': 'changecreate' //变更创建
       };
       let itemName = node[this.handler];
-      return itemName || 'omnipotent';     
+      return itemName || 'omnipotent';
     },
     isNeedPriority() {
       return this.draftData.hasOwnProperty('isNeedPriority') ? this.draftData.isNeedPriority : 1;

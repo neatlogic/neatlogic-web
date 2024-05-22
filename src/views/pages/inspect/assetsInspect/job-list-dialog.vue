@@ -18,14 +18,14 @@
 export default {
   name: '',
   components: {
-    JobList: resolve => require(['pages/autoexec/manage/job/job-list.vue'], resolve)
+    JobList: () => import('pages/autoexec/manage/job/job-list.vue')
   },
   props: {
     id: {type: Number}
   },
   data() {
     return {
-      dialogConfig: { 
+      dialogConfig: {
         type: 'modal',
         title: this.$t('term.inspect.jobexerecord'),
         hasFooter: false,

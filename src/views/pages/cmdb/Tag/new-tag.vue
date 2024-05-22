@@ -13,7 +13,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
@@ -43,7 +43,7 @@ export default {
         },
         description: {
           type: 'textarea',
-          name: 'description',          
+          name: 'description',
           label: this.$t('page.description'),
           width: '100%',
           maxlength: 50,
@@ -96,7 +96,7 @@ export default {
           this.$set(this.formConfig[key], 'value', this.data[key]);
         }
       }
-      
+
       // this.formConfig.password.showPassword = false;
     }
   },

@@ -156,13 +156,13 @@ export default {
   name: 'ActionManage',
   components: {
     TimeJobClickText,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     CombineSearcher,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    RecordList: resolve => require(['./action/record-list'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    SingleUploadDialog: resolve => require(['./action/single-upload-dialog.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    RecordList: () => import('./action/record-list'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    SingleUploadDialog: () => import('./action/single-upload-dialog.vue')
   },
   directives: { download },
   filters: {},
@@ -471,7 +471,7 @@ export default {
           if (res.Status == 'OK') {
             this.$router.push({
               path: '/action-detail',
-              query: { 
+              query: {
                 id: res.Return,
                 versionStatus: 'passed'
               }

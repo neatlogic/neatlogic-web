@@ -75,7 +75,7 @@
         <TsFormItem :label="$t('term.autoexec.triggertype')" :required="true" labelWidth="80">
           <TsFormSelect
             ref="formValid"
-            v-model="triggerType" 
+            v-model="triggerType"
             v-bind="itemList.triggerType"
           ></TsFormSelect>
         </TsFormItem>
@@ -91,11 +91,11 @@ import Liquid from '@/resources/components/SimpleGraph/Liquid.vue';
 export default {
   name: '',
   components: {
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     Liquid
   },
   filters: {},
@@ -199,9 +199,9 @@ export default {
           validateList: [
             'required',
             {
-              name: 'custom', message: this.$t('term.autoexec.taskexpirationtip'), validator: function(rule, value) { 
+              name: 'custom', message: this.$t('term.autoexec.taskexpirationtip'), validator: function(rule, value) {
                 return _this.validDateTime(value);
-              }} 
+              }}
           ],
           onChange: (value) => {
             _this.getTimeDisabledList(value);

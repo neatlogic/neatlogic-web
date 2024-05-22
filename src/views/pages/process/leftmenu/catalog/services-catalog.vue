@@ -3,10 +3,10 @@
     <div v-for="(item, index) in dataList" :key="index">
       <div class="path-box pb-sm">
         <div class="title">
-          <span 
-            v-for="(ttext, tindex) in item.path" 
-            :key="tindex" 
-            class="text-grey" 
+          <span
+            v-for="(ttext, tindex) in item.path"
+            :key="tindex"
+            class="text-grey"
             :class="setTitlearr(item, tindex)"
           >{{ ttext }}</span>
         </div>
@@ -28,10 +28,10 @@
                     </div>
                     <div class="overflow">
                       <div class="overflow pb-xs" :title="seritem.name">{{ seritem.name }}</div>
-                      <Tooltip 
-                        transfer 
-                        placement="bottom-start" 
-                        max-width="300" 
+                      <Tooltip
+                        transfer
+                        placement="bottom-start"
+                        max-width="300"
                         class="services-catalog-tooltip-wrap"
                         theme="light"
                         :disabled="!seritem.desc"
@@ -61,7 +61,7 @@
 export default {
   name: 'ServicesCatalog',
   components: {
-    SeeMore: resolve => require(['./see-more.vue'], resolve) // 查看更多
+    SeeMore: () => import('./see-more.vue') // 查看更多
   },
   props: {
     dataList: {

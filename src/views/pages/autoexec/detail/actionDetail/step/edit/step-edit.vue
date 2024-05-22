@@ -116,7 +116,7 @@
       @close="closeValid()"
     ></TargetValid>
   </div>
- 
+
 </template>
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm';
@@ -124,13 +124,13 @@ export default {
   name: '',
   components: {
     TsForm,
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
   },
   filters: {},
   props: {
@@ -292,7 +292,7 @@ export default {
       if (this.$refs.form.valid()) {
         let editConfig = this.$utils.deepClone(this.editConfig);
         if (editConfig.policy && (!this.groupConfig || this.groupConfig.policy != 'grayScale' || (this.editConfig.execMode && this.editConfig.execMode != 'runner' && this.editConfig.execMode != 'sqlfile'))) {
-          this.$delete(editConfig, 'policy'); 
+          this.$delete(editConfig, 'policy');
         }
         this.$emit('close', editConfig, this.executeConfig.isPresetExecuteConfig ? this.executeConfig : {});
       }

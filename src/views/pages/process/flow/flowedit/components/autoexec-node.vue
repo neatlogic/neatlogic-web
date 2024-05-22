@@ -81,12 +81,12 @@ export default {
   components: {
     AssignSetting,
     AutoexecSetting,
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
-    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
-    ExtendAuth: resolve => require(['./nodesetting/extend/extendauth.vue'], resolve),
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+    AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
+    NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
+    ActionSetting: () => import('./nodesetting/action-setting.vue'),
+    ButtonSetting: () => import('./nodesetting/button-setting.vue'),
+    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'),
+    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   filters: {},
   mixins: [nodemixin, itemmixin],
@@ -104,7 +104,7 @@ export default {
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
       taskisStrategy: {
         isStrategy: 0 //子任务节点是否开启，如果说有子任务节点id就开启，没有就关闭
-      },    
+      },
       authorityList: [], //权限
       customButtonList: [], //按钮
       customStatusList: [], //工单状态映射
@@ -182,7 +182,7 @@ export default {
           this.$refs.assignData && this.$refs.assignData.assignValid();
         } else {
           this.$refs[`${querySelect}`].valid();
-        } 
+        }
       });
     },
     saveNodeData() {

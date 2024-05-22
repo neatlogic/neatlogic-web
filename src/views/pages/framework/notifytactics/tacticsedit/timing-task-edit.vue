@@ -42,7 +42,7 @@
           <div class="notify-setting">
             <TsForm ref="notifySetting" :itemList="notifySetting" width="100%"></TsForm>
           </div>
-       
+
           <div v-if="table.columnList.length > 0" class="dataColumn-main">
             <div>
               <div class="label-text">
@@ -78,7 +78,7 @@
           <div class="cron-setting">
             <TsForm ref="cronSetting" :itemList="cronSetting" width="100%"></TsForm>
           </div>
-        
+
         </div>
       </div>
     </TsContain>
@@ -97,11 +97,11 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    Draggable: resolve => require(['vuedraggable'], resolve),
-    TimingPreview: resolve => require(['./timing-preview.vue'], resolve)
-    // TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    Draggable: () => import('vuedraggable'),
+    TimingPreview: () => import('./timing-preview.vue')
+    // TsFormSelect:()=>import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: [],
   data() {

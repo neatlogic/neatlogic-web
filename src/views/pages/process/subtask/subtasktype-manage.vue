@@ -107,11 +107,11 @@ export default {
   name: '',
   components: {
     UserCard,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFromSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFromSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: {},
@@ -193,7 +193,7 @@ export default {
             {text: '7', value: '7'},
             {text: '8', value: '8'},
             {text: '9', value: '9'},
-            {text: '10', value: '10'}            
+            {text: '10', value: '10'}
           ],
           validateList: ['required']
         },
@@ -222,7 +222,7 @@ export default {
           type: 'slot',
           label: this.$t('term.process.custombtn')
         }
-        
+
       ],
       saving: false,
       customButtonList: [],

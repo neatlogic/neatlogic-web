@@ -79,7 +79,7 @@
             transfer
           ></TsFormSelect>
         </div>
-      </TsFormItem>  
+      </TsFormItem>
     </div>
     <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.executeTarget ? 'mb-sm' : ''">
@@ -295,14 +295,14 @@ import Component from '@/views/pages/autoexec/components/param/view/index.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AddTarget: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/add-target.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve),
-    ExpiredReasonAlert: resolve => require(['../service-catalog/expired-reason-alert'], resolve), // 服务失效原因提示列表
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    ExpiredReasonAlert: () => import('../service-catalog/expired-reason-alert'), // 服务失效原因提示列表
     ...Component
   },
   mixins: [catalogmixin],
@@ -483,7 +483,7 @@ export default {
           isHidden: true,
           dynamicUrl: '/api/rest/form/search',
           params: {
-            isActive: 1, 
+            isActive: 1,
             needPage: false
           },
           rootName: 'tbodyList',
@@ -608,7 +608,7 @@ export default {
     },
     clearComboptoolValue() {
       // 切换不同的组合工具，需要清空值
-      this.formUuid = ''; 
+      this.formUuid = '';
       this.scenarioId = null; // 场景id
       this.needExecuteUser = false;
       this.needProtocol = false;
@@ -723,7 +723,7 @@ export default {
               this.formDataList.push(item.component);
             }
           });
-        } 
+        }
       });
     },
     initConfig() {
@@ -731,7 +731,7 @@ export default {
       this.itemConfig = {};
       this.valueConfig = {};
       this.paramsList instanceof Array && this.paramsList.forEach(data => {
-        let config = Object.assign({}, data.config ? data.config : data);  
+        let config = Object.assign({}, data.config ? data.config : data);
         config.desc = data.description;
         if (config.validateList && !config.validateList.includes('required')) {
           data.isRequired && config.validateList.push('required');
@@ -781,8 +781,8 @@ export default {
       !this.$utils.isEmpty(formList) && formList.forEach((item) => {
         if (this.$refs[item] && !this.$refs[item].valid()) {
           if (!this.unfoldAndFold[item]) {
-            if (!this.unfoldAndFold['executeAccountForm'] && (item == 'executeUserForm' || item == 'protocolForm')) { 
-              this.handleUnfoldAndFold('executeAccountForm'); 
+            if (!this.unfoldAndFold['executeAccountForm'] && (item == 'executeUserForm' || item == 'protocolForm')) {
+              this.handleUnfoldAndFold('executeAccountForm');
             } else {
               this.handleUnfoldAndFold(item);
             }

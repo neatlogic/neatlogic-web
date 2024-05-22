@@ -73,11 +73,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     instanceId: {
@@ -241,7 +241,7 @@ export default {
             // 新增
             this.tableData.tbodyList = [];
           } else {
-            // 编辑 
+            // 编辑
             returnData.instanceAutoConfigList && returnData.instanceAutoConfigList.forEach((item) => {
               if (item.instanceId == this.instanceId) {
                 item.keyValueList && item.keyValueList.forEach((v) => {

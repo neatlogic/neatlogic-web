@@ -32,9 +32,9 @@
 export default {
   name: '',
   components: {
-    AppInfoManage: resolve => require(['./app/app-info-manage'], resolve), // 应用信息
-    IntegratedManage: resolve => require(['./integrated/integrated-manage'], resolve), // 持续集成
-    AppPipeline: resolve => require(['./app/app-pipeline'], resolve) //超级流水线
+    AppInfoManage: () => import('./app/app-info-manage'), // 应用信息
+    IntegratedManage: () => import('./integrated/integrated-manage'), // 持续集成
+    AppPipeline: () => import('./app/app-pipeline') //超级流水线
   },
   props: {
     appSystemId: {

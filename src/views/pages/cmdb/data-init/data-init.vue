@@ -41,15 +41,15 @@
       </template>
     </TsDialog>
   </div>
- 
+
 </template>
 <script>
 export default {
   name: 'DataInit', // 数据初始化
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   filters: {
   },

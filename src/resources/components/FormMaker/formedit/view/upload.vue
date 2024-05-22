@@ -11,7 +11,7 @@
         :rowSpan="24"
         :uploadCount="uploadCount"
         :multiple="isMultiple"
-        :disabled="isReadonly || false" 
+        :disabled="isReadonly || false"
         :defaultList="filterNoTemplateList()"
         @remove="remove"
         @getFileList="getFileList"
@@ -32,8 +32,8 @@ import sheetCompontMixins from '@/resources/mixins/sheetCompontMixins.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: 'FormViewUpload',
-  components: { 
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+  components: {
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   directives: { download },
   mixins: [sheetCompontMixins],
