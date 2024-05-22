@@ -24,7 +24,7 @@ import formtab from './formtab.vue';
 import formcollapse from './formcollapse.vue';
 import formtable from './formtable.vue';
 
-// import * as cmdbComponent from '@/views/pages/cmdb/form/component';
+import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
 
 let importComponentConfig = {};
@@ -66,7 +66,7 @@ export default {
   formtab,
   formcollapse,
   formtable,
-  // ...cmdbComponent,
+  ...cmdbComponent,
   ...autoexecComponent,
   ...importComponentConfig
 };
