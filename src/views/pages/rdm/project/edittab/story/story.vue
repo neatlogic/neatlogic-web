@@ -14,8 +14,8 @@
 export default {
   name: '',
   components: {
-    AttrEdit: resolve => require(['@/views/pages/rdm/project/edittab/components/attr-edit.vue'], resolve),
-    AppStatus: resolve => require(['@/views/pages/rdm/project/edittab/components/app-status-edit.vue'], resolve)
+    AttrEdit: () => import('@/views/pages/rdm/project/edittab/components/attr-edit.vue'),
+    AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue')
   },
   props: {
     appData: { type: Object }

@@ -110,9 +110,9 @@ import UserCard from '@/resources/components/UserCard/UserCard.vue';
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     UserCard
   },
   props: {},

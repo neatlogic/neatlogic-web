@@ -27,7 +27,7 @@
 export default {
   name: 'RunnerAdd', // runner管理
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   filters: {},
   props: {
@@ -79,7 +79,7 @@ export default {
           url: '/api/rest/universal/enum/get',
           params: {enumClass: 'neatlogic.framework.dto.runner.RunnerVo$HttpProtocol'},
           transfer: true
-        },      
+        },
         port: {
           type: 'text',
           label: this.$t('term.deploy.commandport'),
@@ -91,7 +91,7 @@ export default {
           label: this.$t('term.deploy.heartbeatport'),
           value: '',
           validateList: ['required']
-        },        
+        },
         isAuth: {
           label: this.$t('term.framework.externalauthen'),
           type: 'switch',
@@ -121,7 +121,7 @@ export default {
   methods: {
     editRunner() {
       this.runnerAuthList = [];
-      if (!this.$utils.isEmptyObj(this.runnerData)) { 
+      if (!this.$utils.isEmptyObj(this.runnerData)) {
         this.addTsDialogs.isShow = true;
         this.formData = this.runnerData;
         this.externalAuth(this.runnerData.isAuth);
@@ -171,7 +171,7 @@ export default {
       // 点击弹框确认按钮
       const form = this.$refs['form'];
       let authForm = this.$refs['authForm'];
-      if (!form.valid()) { 
+      if (!form.valid()) {
         return false;
       }
       if (this.runnerAuthList.length > 0) {

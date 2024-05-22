@@ -94,8 +94,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {
     id: { type: Number }

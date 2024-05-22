@@ -5,7 +5,7 @@
       <i class="text-tip-active pr-sm" :class="isShowStepList? 'tsfont-up' : 'tsfont-down'" @click="isShowStepList=!isShowStepList"></i>
     </Divider>
     <div v-if="isShowStepList" class="step-main">
-      <Tabs 
+      <Tabs
         class="block-tabs2"
         :animated="false"
         name="phase"
@@ -69,9 +69,9 @@
 export default {
   name: '',
   components: {
-    StepList: resolve => require(['@/views/pages/autoexec/detail/actionDetail/step/step-list.vue'], resolve),
-    StepConfig: resolve => require(['@/views/pages/autoexec/detail/actionDetail/step/step-config.vue'], resolve),
-    StepGroup: resolve => require(['@/views/pages/deploy/application-config/pipeline/step-group'], resolve)
+    StepList: () => import('@/views/pages/autoexec/detail/actionDetail/step/step-list.vue'),
+    StepConfig: () => import('@/views/pages/autoexec/detail/actionDetail/step/step-config.vue'),
+    StepGroup: () => import('@/views/pages/deploy/application-config/pipeline/step-group')
   },
   props: {
     appSystemId: Number,
@@ -232,7 +232,7 @@ export default {
     }
     .step-tool {
       padding: 10px 0 10px 10px;
-      flex-grow:1;  
+      flex-grow:1;
     }
     .step-group {
       width: 280px;

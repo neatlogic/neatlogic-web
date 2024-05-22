@@ -16,7 +16,7 @@ import Particles from 'particles.vue'; //粒子效果
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import AuthUtils from '@/resources/assets/js/authUtil.js'; //权限判断
 import VueDomPurifyHtml from 'vue-dompurify-html'; //防止xss攻击
-
+import './assets/index.js';
 // common.checkTenant().then(res => {
 //   if (res) {
 //     if (res.Status != 'OK') {

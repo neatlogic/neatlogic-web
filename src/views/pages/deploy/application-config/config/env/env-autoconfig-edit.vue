@@ -69,10 +69,10 @@ import Items from '@/views/pages/autoexec/components/param/edit';
 export default {
   name: '', // 适配文件适配
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
     ...Items
   },
   props: {
@@ -98,7 +98,7 @@ export default {
       },
       paramsTypeList: [],
       typeList: [
-        'text',         
+        'text',
         'password'
       ],
       formValue: {},
@@ -195,7 +195,7 @@ export default {
           type: item.type === '' ? null : item.type,
           value: item.value
         });
-      }); 
+      });
       let params = {
         ...this.params,
         keyValueList: keyValueList

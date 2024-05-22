@@ -56,9 +56,9 @@
 export default {
   name: '',
   components: {
-    SqlLog: resolve => require(['@/views/pages/autoexec/detail/logcomponents/sql-log.vue'], resolve),
-    Record: resolve => require(['./node/record.vue'], resolve),
-    SqlFileList: resolve => require(['./sqlfile-list.vue'], resolve)
+    SqlLog: () => import('@/views/pages/autoexec/detail/logcomponents/sql-log.vue'),
+    Record: () => import('./node/record.vue'),
+    SqlFileList: () => import('./sqlfile-list.vue')
   },
   filters: {},
   directives: {},

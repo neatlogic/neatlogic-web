@@ -15,8 +15,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker.vue'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker.vue')
   },
   props: {value: {type: String},
     property: { type: Object }},
@@ -33,10 +32,10 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: { 
+  methods: {
     setData(val) {
       this.$emit('setData', val);
-    }, 
+    },
     valid() {
       return this.$refs['propertyHandler'].valid();
     }

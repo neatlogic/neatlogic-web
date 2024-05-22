@@ -102,11 +102,11 @@ import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
-    
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+
   },
   model: {
     prop: 'value',
@@ -307,7 +307,7 @@ export default {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
     },
-    opType() { 
+    opType() {
       return mutations.getOpType();
     }
   },

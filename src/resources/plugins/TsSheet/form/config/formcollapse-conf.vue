@@ -29,9 +29,9 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StaticDataEditor: resolve => require(['./common/static-data-editor.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    StaticDataEditor: () => import('./common/static-data-editor.vue')
   },
   extends: base,
   props: {},

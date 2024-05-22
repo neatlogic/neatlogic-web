@@ -94,7 +94,7 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['components/UserCard/UserCard'], resolve)
+    UserCard: () => import('components/UserCard/UserCard')
   },
   filters: {},
   props: {

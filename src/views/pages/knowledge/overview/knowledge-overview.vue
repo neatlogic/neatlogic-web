@@ -43,13 +43,13 @@
         </div>
       </template>
       <div slot="content" class="layout">
-        <SearchResult 
+        <SearchResult
           class="search-result-box"
-          :circleListNum="circleList.length" 
-          :result="result" 
-          :currentPath="currentPath" 
+          :circleListNum="circleList.length"
+          :result="result"
+          :currentPath="currentPath"
           :knowledgeType="knowledgeType"
-          @searchResult="getTable" 
+          @searchResult="getTable"
           @addNewRule="addNewRule"
         ></SearchResult>
       </div>
@@ -70,9 +70,9 @@
 export default {
   name: 'KnowledgeOverview',
   components: {
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    SearchResult: resolve => require(['./search/search-result.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    SearchResult: () => import('./search/search-result.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {
     knowledgeType: { type: String }
@@ -110,7 +110,7 @@ export default {
           url: 'api/rest/knowledge/document/type/tree/forselect',
           params: { isActive: 1 },
           search: true,
-          valueName: 'uuid',          
+          valueName: 'uuid',
           textName: 'name',
           transfer: true,
           showPath: true,
@@ -229,7 +229,7 @@ export default {
       // if (this.knowledgeType === 'all' && !this.searchParams.knowledgeDocumentTypeUuid) {
       //   return new Error('知识分类为all时，必须要选择文档分类才能搜索');
       // }
-        
+
       this.$addHistoryData('konledgeCondition', this.getKonledgeCondition());
       try {
         let res = {};

@@ -85,9 +85,9 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AppEditor: resolve => require(['@/views/pages/rdm/template/template-app-editor.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AppEditor: () => import('@/views/pages/rdm/template/template-app-editor.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   data() {
     return {

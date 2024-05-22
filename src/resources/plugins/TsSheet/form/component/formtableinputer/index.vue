@@ -7,7 +7,7 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
-     
+
       <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
       <span v-else class="action-item">
         <Icon
@@ -96,7 +96,7 @@ export default {
   name: '',
   components: {
     TsTable,
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
   mixins: [validmixin],
@@ -165,7 +165,7 @@ export default {
         if (value.length > 0) {
           this.tableData.tbodyList.push(...value);
         }
-      } else if (this.config.lineNumber) { 
+      } else if (this.config.lineNumber) {
         //默认展示行
         for (let i = 0; i < this.config.lineNumber; i++) {
           this.addData();
@@ -670,7 +670,7 @@ export default {
           if (valueItem) {
             dataConfig = valueItem;
           }
-        } 
+        }
         if (!dataConfig) {
           dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
         }
@@ -718,8 +718,8 @@ export default {
         this.config.dataConfig.forEach(d => {
           if (d.isPC) {
             let item = {
-              key: d.uuid, 
-              title: d.label 
+              key: d.uuid,
+              title: d.label
             };
             if (d.config && d.config.isRequired) {
               this.$set(item, 'isRequired', true);

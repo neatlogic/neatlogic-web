@@ -94,7 +94,7 @@ export default {
   name: '',
   components: {
     TsFormDatePicker,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: { download },
   filters: {},

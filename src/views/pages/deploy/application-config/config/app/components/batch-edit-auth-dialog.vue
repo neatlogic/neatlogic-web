@@ -63,8 +63,8 @@
 export default {
   name: '', // 批量编辑权限
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AuthEdit: resolve => require(['./auth-edit'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    AuthEdit: () => import('./auth-edit')
   },
   props: {
     params: {
@@ -145,7 +145,7 @@ export default {
         appSystemId: this.params.appSystemId,
         isEdit: this.isEdit,
         actionList: this.handleActionList(this.authConfig),
-        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit'] 
+        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']
       };
       this.$api.deploy.applicationConfig.saveAppConfigAuth(params).then((res) => {
         if (res && res.Status == 'OK') {

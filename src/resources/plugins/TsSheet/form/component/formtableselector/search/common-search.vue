@@ -63,10 +63,10 @@ import expressionConfig from '@/resources/plugins/TsSheet/form/config/common/exp
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     searchColumnDetailList: {
@@ -110,7 +110,7 @@ export default {
       let valueList = [];
       if (val && !this.$utils.isEmpty(val)) {
         if (val instanceof Array) {
-          valueList.push(...val); 
+          valueList.push(...val);
         } else {
           valueList.push(val);
         }
@@ -140,7 +140,7 @@ export default {
         if (val && !this.$utils.isSame(val, this.searchValueList)) {
           this.searchValueList = this.$utils.deepClone(val);
         }
-      }, 
+      },
       deep: true,
       immediate: true
     }

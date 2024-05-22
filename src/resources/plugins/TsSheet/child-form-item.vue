@@ -41,7 +41,7 @@
 export default {
   name: '',
   components: {
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   props: {
     formData: Object,

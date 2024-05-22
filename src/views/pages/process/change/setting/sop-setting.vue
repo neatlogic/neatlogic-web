@@ -97,8 +97,8 @@ export default {
   components: {
     draggable,
     CombineSearcher,
-    SoptemplateEdit: resolve => require(['./soptemplate-edit.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    SoptemplateEdit: () => import('./soptemplate-edit.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   directives: { TransferDom },
   inject: {

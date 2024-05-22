@@ -6,7 +6,7 @@
     >
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-auth="['ADMIN']" class="action-item"> 
+          <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="API-AUDIT"></AuditConfig>
           </span>
         </div>
@@ -154,12 +154,12 @@ export default {
     }
   },
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    // UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
-    //TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    // UserSelect:()=>import('@/resources/components/UserSelect/UserSelect'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
+    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
   },
   data() {
     return {

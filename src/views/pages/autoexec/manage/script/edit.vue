@@ -22,7 +22,7 @@
 export default {
   name: 'ScriptEdit',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {
   },
@@ -58,10 +58,10 @@ export default {
           maxlength: 50,
           label: this.$t('page.name'),
           validateList: [
-            'required', 
+            'required',
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/combop/basic/info/save', 
+              url: '/api/rest/autoexec/combop/basic/info/save',
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
@@ -90,7 +90,7 @@ export default {
           transfer: true,
           maxlength: 500
         }
-      ] 
+      ]
     };
   },
   beforeCreate() {},

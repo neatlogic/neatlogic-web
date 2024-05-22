@@ -116,9 +116,9 @@ export default {
   name: '',
   components: {
     ParamsReadonly,
-    BasicDetail: resolve => require(['./scriptDetail/edit/basic-detail'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    BasicDetail: () => import('./scriptDetail/edit/basic-detail'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   filters: {},
   directives: { download },
@@ -250,12 +250,12 @@ export default {
         .generateAction(data)
         .then(res => {
           if (res.Status == 'OK' && res.Return) {
-            this.$router.push({ 
+            this.$router.push({
               path: '/action-detail',
-              query: { 
+              query: {
                 id: res.Return,
                 versionStatus: 'passed'
- 
+
               }
             });
           }

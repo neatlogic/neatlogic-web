@@ -117,7 +117,7 @@
         </TsRow>
       </template>
       <!-- <template v-slot:topRight>
-    
+
       </template> -->
       <!-- 左侧步骤列表 -->
       <template v-slot:sider>
@@ -311,20 +311,20 @@ export default {
     StepConfig,
     ActionValid,
     TimeJobClickText,
-    // TimeSetting: resolve => require(['./actionDetail/time-setting.vue'], resolve),
-    ParamsSetting: resolve => require(['./actionDetail/params-setting.vue'], resolve),
-    ExecuteSetting: resolve => require(['./actionDetail/execute-setting.vue'], resolve),
-    RecordList: resolve => require(['@/views/pages/autoexec/manage/action/record-list'], resolve),
+    // TimeSetting:()=>import('./actionDetail/time-setting.vue'),
+    ParamsSetting: () => import('./actionDetail/params-setting.vue'),
+    ExecuteSetting: () => import('./actionDetail/execute-setting.vue'),
+    RecordList: () => import('@/views/pages/autoexec/manage/action/record-list'),
     BasicInfo,
-    VersionList: resolve => require(['./actionDetail/version-list.vue'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    StepGroup: resolve => require(['./actionDetail/step-group.vue'], resolve),
-    ScenarioSetting: resolve => require(['./actionDetail/scenario-setting.vue'], resolve),
-    ProfileSetting: resolve => require(['./actionDetail/profile-setting.vue'], resolve),
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
-    TestDialog: resolve => require(['./actionDetail/test-dialog.vue'], resolve)
+    VersionList: () => import('./actionDetail/version-list.vue'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    StepGroup: () => import('./actionDetail/step-group.vue'),
+    ScenarioSetting: () => import('./actionDetail/scenario-setting.vue'),
+    ProfileSetting: () => import('./actionDetail/profile-setting.vue'),
+    ExpiredReasonAlert: () => import('./expired-reason-alert'),
+    TestDialog: () => import('./actionDetail/test-dialog.vue')
   },
   filters: {},
   mixins: [actionMixins],
@@ -508,7 +508,7 @@ export default {
     }
     if (this.$route.query.versionId) {
       this.versionId = parseInt(this.$route.query.versionId);
-    } 
+    }
     if (!this.versionId) {
       let versionId = sessionStorage.getItem('action_versionId');
       this.versionId = versionId ? parseInt(versionId) : null;
@@ -780,7 +780,7 @@ export default {
         } else {
           title = this.$t('dialog.content.deleteconfirm', {target: _this.version});
         }
-        
+
         content = '';
       } else {
         title = this.$t('dialog.content.deleteconfirm', {target: _this.$t('term.autoexec.customtool')});

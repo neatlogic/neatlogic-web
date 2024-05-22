@@ -18,7 +18,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     authList: {type: Array, default: () => { return []; }}
@@ -32,10 +32,10 @@ export default {
         maskClose: false
       },
       formConfig: {
-        authList: { 
+        authList: {
           type: 'userselect',
           isMultiple: true,
-          label: this.$t('term.deploy.authorizeduser'), 
+          label: this.$t('term.deploy.authorizeduser'),
           transfer: true,
           desc: this.$t('term.deploy.authorizedusercanexecutebatchjob'),
           groupList: ['user'],

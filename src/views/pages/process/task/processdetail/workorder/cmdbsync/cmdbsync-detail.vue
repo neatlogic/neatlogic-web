@@ -85,9 +85,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    HistoryDetail: resolve => require(['@/views/pages/cmdb/cientity/history-detail.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    HistoryDetail: () => import('@/views/pages/cmdb/cientity/history-detail.vue')
   },
   props: {
     errorList: Array,

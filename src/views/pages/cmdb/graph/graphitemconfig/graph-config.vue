@@ -47,9 +47,9 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    IconDialog: resolve => require(['@/views/pages/common/icon-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    IconDialog: () => import('@/views/pages/common/icon-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},

@@ -36,8 +36,8 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   directives: { download },
   props: {},

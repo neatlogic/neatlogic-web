@@ -1,5 +1,5 @@
 <template>
-  <div>    
+  <div>
     <div v-if="isShow" class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -40,7 +40,7 @@
               >
               </TsFormSelect>
             </template>
-          </TsForm>          
+          </TsForm>
           <div class="text-title text">{{ $t('term.process.userfilter') }}</div>
           <UserSelect
             ref="defaultWorker"
@@ -61,9 +61,9 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormSelect,
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect')
   },
   props: ['strategySetting', 'isStrategy'],
   data() {

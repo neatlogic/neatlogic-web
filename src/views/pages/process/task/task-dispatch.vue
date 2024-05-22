@@ -105,11 +105,11 @@ import { store, mutations } from './processdispatch/dispatchState.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    DispatchCommon: resolve => require(['./processdispatch/dispatch-common.vue'], resolve),
-    ValidDialog: resolve => require(['./processdispatch/workorder/valid-dialog.vue'], resolve),
-    SubmitDialog: resolve => require(['./processdispatch/workorder/submit-dialog.vue'], resolve),
-    AssignDialog: resolve => require(['./processdispatch/workorder/assign-dialog.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    DispatchCommon: () => import('./processdispatch/dispatch-common.vue'),
+    ValidDialog: () => import('./processdispatch/workorder/valid-dialog.vue'),
+    SubmitDialog: () => import('./processdispatch/workorder/submit-dialog.vue'),
+    AssignDialog: () => import('./processdispatch/workorder/assign-dialog.vue')
   },
   props: {
     propChannelUuid: { type: String }

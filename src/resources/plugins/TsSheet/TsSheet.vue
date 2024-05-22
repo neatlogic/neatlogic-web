@@ -381,7 +381,7 @@ import conditionMixin from './form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
   components: {
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   mixins: [conditionMixin],
   props: {
@@ -462,7 +462,7 @@ export default {
     this.$nextTick(() => {
       this.calcContainerHeight();
     });
-   
+
     window.addEventListener('resize', this.calcContainerHeight);
     window.addEventListener('keydown', this.windowKeypress);
   },
@@ -899,7 +899,7 @@ export default {
           Object.keys(value).forEach(key => {
             if (key.startsWith('_')) {
               delete value[key];
-            } 
+            }
           });
         }
       }
@@ -1608,7 +1608,7 @@ export default {
       if (this.config.tableList && this.config.tableList.length > 0) {
         this.config.tableList.forEach(item => {
           if (item.component && item.component.hasValue) {
-            if (this.disabled || this.readonly || this.config.readOnly) { 
+            if (this.disabled || this.readonly || this.config.readOnly) {
               //表单只读或者禁用,所有组件uuid传到后台跳过接口校验
               hiddenComponentList.push(item.component.uuid);
             } else if (!hiddenComponentList.includes(item.component.uuid)) {
@@ -2033,7 +2033,7 @@ export default {
             width += this.config.headerList[cell.col + i].width;
           }
           width -= 2;
-        } 
+        }
         return (width / this.tableSize.width * this.containerWidth) + 'px';
       };
     }

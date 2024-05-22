@@ -76,9 +76,9 @@
 export default {
   name: '',
   components: {
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    BuildNoDialog: resolve => require(['@/views/pages/deploy/version/build-no/build-no-dialog'], resolve), // build-no
-    VersionDialog: resolve => require(['@/views/pages/deploy/version/env-dialog'], resolve) // 版本
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    BuildNoDialog: () => import('@/views/pages/deploy/version/build-no/build-no-dialog'), // build-no
+    VersionDialog: () => import('@/views/pages/deploy/version/env-dialog') // 版本
   },
   props: {
     config: Object
@@ -127,7 +127,7 @@ export default {
         this.envParams = {
           id: this.config.version.id,
           type: 'env'
-        }; 
+        };
         if (this.config.buildNo) {
           this.$set(this.envParams, 'buildNo', this.config.buildNo.buildNo);
         }

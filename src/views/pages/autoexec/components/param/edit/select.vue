@@ -21,11 +21,11 @@
           >
           </TsFormSelect>
           <div v-else>{{ $t('term.autoexec.static') }}</div>
-        </div>  
+        </div>
         <div v-if="sourcDefaultValue" class="item-text overflow bg-op border-color">
-          <TsFormSelect 
+          <TsFormSelect
             v-model="sourcDefaultValue"
-            v-bind="defaultValueConfig" 
+            v-bind="defaultValueConfig"
             :multiple="multiple"
             :readonly="true"
             border="border"
@@ -51,7 +51,7 @@
       :multiple="multiple"
       @saveSourc="saveSourc"
       @close="close"
-    ></DataSource> 
+    ></DataSource>
   </div>
 </template>
 <script>
@@ -61,7 +61,7 @@ export default {
   name: '',
   components: {
     TsFormSelect,
-    DataSource: resolve => require(['./dataSource/dataSource.vue'], resolve)
+    DataSource: () => import('./dataSource/dataSource.vue')
   },
   filters: {},
   mixins: [comMixin],
@@ -73,10 +73,10 @@ export default {
   data() {
     return {
       matrixConfig: { //矩阵
-        dynamicUrl: '/api/rest/matrix/search', 
-        rootName: 'tbodyList', 
-        textName: 'name', 
-        valueName: 'uuid', 
+        dynamicUrl: '/api/rest/matrix/search',
+        rootName: 'tbodyList',
+        textName: 'name',
+        valueName: 'uuid',
         multiple: false
       },
       dataSource: 'matrix', //数据源类型：static（静态数据源）、matrix（矩阵）
@@ -85,14 +85,14 @@ export default {
         dataList: []
       },
       matrixconfig: {//矩阵
-        matrixUuid: null, 
+        matrixUuid: null,
         mapping: {text: '', value: ''}
       },
       sourcConfig: {}, //当前展示数据源
       validMesage: '',
       defaultValueConfig: { //矩阵默认值设置
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect', 
-        rootName: 'dataList', 
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
         param: null
       },
       sourcDefaultValue: '', //数据源默认值
@@ -179,7 +179,7 @@ export default {
             textField = this.sourcConfig.mapping.text;
             keywordColumn = this.sourcConfig.mapping.text;
           }
-          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };  
+          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };
           if (this.sourcDefaultValue) {
             if (Array.isArray(this.sourcDefaultValue)) {
               this.sourcDefaultValue.length && (param.defaultValue = this.sourcDefaultValue);

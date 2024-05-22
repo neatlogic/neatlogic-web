@@ -184,14 +184,14 @@ import versionCenterMixin from './versionCenterMixin.js';
 export default {
   name: '', // 版本中心
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    VersionAddDialog: resolve => require(['./version-add-dialog'], resolve), // 新增版本
-    BuildNoDialog: resolve => require(['./build-no/build-no-dialog'], resolve), // build-no
-    EnvDialog: resolve => require(['./env-dialog'], resolve), // env
-    ProjectDirectoryDialog: resolve => require(['./project-directory-dialog'], resolve) // 工程目录
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    VersionAddDialog: () => import('./version-add-dialog'), // 新增版本
+    BuildNoDialog: () => import('./build-no/build-no-dialog'), // build-no
+    EnvDialog: () => import('./env-dialog'), // env
+    ProjectDirectoryDialog: () => import('./project-directory-dialog') // 工程目录
   },
   mixins: [versionCenterMixin],
   props: {},
@@ -425,8 +425,8 @@ export default {
         let { appSystemAbbrName, appModuleAbbrName, version, id, isFreeze } = row;
         this.$router.push({
           path: './version-detail',
-          query: { 
-            versionId: id, 
+          query: {
+            versionId: id,
             title: appSystemAbbrName ? (appModuleAbbrName ? `${appSystemAbbrName}/${appModuleAbbrName}/V${version}` : `${appSystemAbbrName}/V${version}`) : `V${version}`,
             versionName: version,
             isFreeze: isFreeze,

@@ -53,10 +53,10 @@ export default {
     }
   },
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   data() {
     return {

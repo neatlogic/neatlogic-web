@@ -49,10 +49,10 @@
 export default {
   name: 'ScoreTemplateManage',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsFromSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    ScoreTemplateDialog: resolve => require(['./score-template-manage-dialog'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TsFromSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    ScoreTemplateDialog: () => import('./score-template-manage-dialog'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   data() {
     return {

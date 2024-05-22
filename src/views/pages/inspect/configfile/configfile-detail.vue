@@ -80,8 +80,8 @@
 export default {
   name: '',
   components: {
-    ComparisonDetail: resolve => require(['./components/comparison-dialog'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ComparisonDetail: () => import('./components/comparison-dialog'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {},
   data() {

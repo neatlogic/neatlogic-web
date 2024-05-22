@@ -77,10 +77,10 @@ import expressionConfig from './expression.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   filters: {},
   model: {
@@ -125,16 +125,16 @@ export default {
         return;
       }
       let newList = {
-        column: '', 
+        column: '',
         defaultValue: [],
-        valueList: [], 
+        valueList: [],
         expression: '',
         isFilterList: true,
         type: 'input'
       };
       this.$nextTick(() => {
         this.sourceColumnList.push(newList);
-      });      
+      });
     },
     removeFilter(index) {
       if (this.disabled) {
@@ -193,7 +193,7 @@ export default {
             transfer: true,
             search: true,
             multiple: true,
-            border: 'border' 
+            border: 'border'
           };
         } else {
           return {};
@@ -214,7 +214,7 @@ export default {
               }
             });
           }
-          return all; 
+          return all;
         });
         return totallist;
       };

@@ -66,7 +66,7 @@ import ErrorListener from './parser/ErrorListener.js';
 export default {
   name: '',
   components: {
-    DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
+    DslExpression: () => import('@/resources/plugins/DslEditor/dsl-expression.vue')
   },
   props: {
     value: { type: String },

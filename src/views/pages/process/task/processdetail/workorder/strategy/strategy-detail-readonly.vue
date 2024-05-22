@@ -23,7 +23,7 @@
           </Col>
         </TsRow>
         <div class="mt-md">
-          <TsTable    
+          <TsTable
             :tbodyList="item.tbodyList"
             :theadList="theadList"
             :height="'280'"
@@ -66,8 +66,8 @@
 export default {
   name: 'StrategyDetailReadonly',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard')
   },
   filters: {
   },
@@ -119,7 +119,7 @@ export default {
     initData(val) {
       this.stepConfig = this.$utils.deepClone(val);
       this.processTaskStepTaskList = this.stepConfig.processTaskStepTaskList || [];
-      this.processTaskStepTaskList.forEach(item => {   
+      this.processTaskStepTaskList.forEach(item => {
         this.$set(item, 'tbodyList', this.getTbodyList(item));
       });
       this.loadingShow = false;
@@ -130,15 +130,15 @@ export default {
         item.stepTaskUserVoList.forEach((r, i) => {
           newArr.push(
             {
-              id: r.id, 
-              userUuid: r.userUuid, 
+              id: r.id,
+              userUuid: r.userUuid,
               userVo: r.userVo,
-              originalUserUuid: r.originalUserUuid || null, 
-              endTime: r.endTime, 
-              content: r.content, 
-              isDelete: r.isDelete, 
-              isDisabled: !!r.isDisabled || false, 
-              fileList: r.fileList 
+              originalUserUuid: r.originalUserUuid || null,
+              endTime: r.endTime,
+              content: r.content,
+              isDelete: r.isDelete,
+              isDisabled: !!r.isDisabled || false,
+              fileList: r.fileList
             }
           );
         });

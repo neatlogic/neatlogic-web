@@ -55,9 +55,9 @@
 export default {
   name: 'AuthManage',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {},
   data() {

@@ -126,11 +126,11 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsAvatar: resolve => require(['@/resources/components/TsAvatar/TsAvatar'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    WorkLabel: resolve => require(['@/views/pages/process/task/processdetail/workorder/label/label.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsAvatar: () => import('@/resources/components/TsAvatar/TsAvatar'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    WorkLabel: () => import('@/views/pages/process/task/processdetail/workorder/label/label.vue')
   },
   props: {
     draftData: Object,
@@ -204,7 +204,7 @@ export default {
           this.isNeedPriority = !!this.draftData.isNeedPriority;
         }
         if (this.isNeedPriority) {
-          this.dispatch.priorityUuid = this.draftData.priorityUuid; 
+          this.dispatch.priorityUuid = this.draftData.priorityUuid;
         }
         if (!this.$utils.isEmpty(this.draftData.processDispatcherList) && this.draftData.processDispatcherList.some(o => o.endsWith('RegionDispatcher'))) {
           this.isNeedRegion = true;
@@ -295,8 +295,8 @@ export default {
     },
     goToKnowledge(knowledge) {
       let {knowledgeDocumentId, knowledgeDocumentTypeUuid, knowledgeDocumentVersionId, status} = knowledge;
-      const url = 
-      `${HOME}/knowledge.html#/knowledge-detail?` + 
+      const url =
+      `${HOME}/knowledge.html#/knowledge-detail?` +
       `knowledgeDocumentId=${knowledgeDocumentId}&` +
       `knowledgeDocumentTypeUuid=${knowledgeDocumentTypeUuid}&` +
       `knowledgeDocumentVersionId=${knowledgeDocumentVersionId}&` +

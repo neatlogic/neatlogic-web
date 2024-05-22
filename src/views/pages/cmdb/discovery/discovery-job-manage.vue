@@ -32,10 +32,10 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    DiscoveryConfList: resolve => require(['./discovery-conf-list.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    DiscoveryConfList: () => import('./discovery-conf-list.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {},
   data() {

@@ -33,9 +33,9 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
-    SearchResult: resolve => require(['./search-result.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    SearchResult: () => import('./search-result.vue')
   },
   props: {},
   data() {

@@ -7,22 +7,22 @@
 html {
   [class^="module-img-"],
   [class*=" module-img-"]{
-    background-image: url('~img-module/img/module/navigation/framework-default.png');
+    background-image: url('@img-module/img/module/navigation/framework-default.png');
   }
   each(@modules, {
     .module-img-@{value} {
-      background-image: url('~img-module/img/module/navigation/@{value}-default.png');
+      background-image: url('@img-module/img/module/navigation/@{value}-default.png');
     }
   });
   &.theme-dark {
     [class^="module-img-"],
     [class*=" module-img-"]{
-      background-image: url('~img-module/img/module/navigation/framework-dark.png');
+      background-image: url('@img-module/img/module/navigation/framework-dark.png');
     }
     each(@modules, {
       .module-img-@{value} {
-        background-image: url('~img-module/img/module/navigation/@{value}-dark.png');
+        background-image: url('@img-module/img/module/navigation/@{value}-dark.png');
       }
-    }); 
+    });
   }
 }

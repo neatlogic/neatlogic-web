@@ -60,9 +60,9 @@ import viewmixin from '../viewmixin.js';
 export default {
   name: '',
   components: {
-    ResourecesView: resolve => require(['./resoureces-view'], resolve),
-    ResourecesDialog: resolve => require(['./resoureces-dialog'], resolve),
-    FilterSearch: resolve => require(['./addtarget/filter-search.vue'], resolve)
+    ResourecesView: () => import('./resoureces-view'),
+    ResourecesDialog: () => import('./resoureces-dialog'),
+    FilterSearch: () => import('./addtarget/filter-search.vue')
   },
   filters: {
   },

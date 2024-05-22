@@ -26,8 +26,8 @@
 export default {
   name: '',
   components: {
-    CmdbsyncDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/cmdbsync/cmdbsync-detail.vue'], resolve)
-  
+    CmdbsyncDetail: () => import('@/views/pages/process/task/processdetail/workorder/cmdbsync/cmdbsync-detail.vue')
+
   },
   props: {
     item: Object

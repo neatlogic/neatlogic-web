@@ -1,7 +1,7 @@
 <template>
   <div>
     <TimeSelect
-      v-bind="timeSelectConfig" 
+      v-bind="timeSelectConfig"
       :value="value"
       border="border"
       @change="change"
@@ -12,7 +12,7 @@
 export default {
   name: '',
   components: {
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve)
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue')
   },
   props: {
     value: {type: [Object, Array, String, Number]}

@@ -45,10 +45,10 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    VersionDialog: resolve => require(['@/views/pages/deploy/pipeline/version-dialog.vue'], resolve)
-  
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    VersionDialog: () => import('@/views/pages/deploy/pipeline/version-dialog.vue')
+
   },
   props: {
     baseParams: {
@@ -62,8 +62,8 @@ export default {
   },
   data() {
     return {
-      jobData: { 
-        pipelineId: null, 
+      jobData: {
+        pipelineId: null,
         appSystemModuleVersionList: []
       },
       theadList: [
@@ -182,7 +182,7 @@ export default {
             isValid = false;
           }
         });
-      } 
+      }
       if (isValid) {
         if (!this.jobData.appSystemModuleVersionList.length) {
           isValid = false;

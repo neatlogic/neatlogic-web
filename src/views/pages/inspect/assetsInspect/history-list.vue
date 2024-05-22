@@ -23,7 +23,7 @@
 export default {
   name: '',
   components: {
-    TsUlList: resolve => require(['@/resources/components/TsUlList/TsUlList.vue'], resolve)
+    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue')
   },
   filters: {},
   props: {
@@ -98,7 +98,7 @@ export default {
           if (res.Return.tbodyList.length > 0) {
             this.$set(this.historyData, 'currentPage', res.Return.currentPage);
             this.historyData.tbodyList.push(...res.Return.tbodyList);
-          } 
+          }
         }
       });
     },

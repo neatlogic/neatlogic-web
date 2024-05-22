@@ -41,8 +41,8 @@
 export default {
   name: '',
   components: {
-    ViewDataList: resolve => require(['./view-data-list.vue'], resolve),
-    CustomTemplate: resolve => require(['./custom-template.vue'], resolve)
+    ViewDataList: () => import('./view-data-list.vue'),
+    CustomTemplate: () => import('./custom-template.vue')
   },
   props: {
     customViewId: { type: Number }

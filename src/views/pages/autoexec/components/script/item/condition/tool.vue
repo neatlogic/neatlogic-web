@@ -4,7 +4,7 @@
       <span class="text-title pr-sm">{{ title }}</span>
       <span v-if="canEdit" class="tsfont-plus text-href" @click="isAdd = true">{{ $t('term.autoexec.tool') }}</span>
     </div>
-    
+
     <div v-if="phaseOperationList&& phaseOperationList.length" class="config-list">
       <ConditionToolList
         ref="conditionToolList"
@@ -36,8 +36,8 @@ import itemmixin from '@/views/pages/autoexec/components/script/item/itemmixin.j
 export default {
   name: '',
   components: {
-    ConditionToolList: resolve => require(['./condition-tool-list'], resolve),
-    AddOperation: resolve => require(['@/views/pages/autoexec/detail/actionDetail/step/edit/operation-add'], resolve)
+    ConditionToolList: () => import('./condition-tool-list'),
+    AddOperation: () => import('@/views/pages/autoexec/detail/actionDetail/step/edit/operation-add')
   },
   mixins: [itemmixin],
   model: {

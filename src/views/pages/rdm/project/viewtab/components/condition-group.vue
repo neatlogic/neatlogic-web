@@ -113,8 +113,8 @@
 export default {
   name: '',
   components: {
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     value: { type: Object },
@@ -252,7 +252,7 @@ export default {
       console.log(JSON.stringify(this.attrMap, null, 2));
       if (condition.type == 'attr' && this.attrMap[condition.id]) {
         return this.attrMap[condition.id].expressionList;
-      } 
+      }
       return [];
     },
     addConditionGroup() {

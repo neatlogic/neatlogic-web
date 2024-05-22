@@ -34,7 +34,7 @@
       </div>
     </div>
   </div>
-  
+
 </template>
 
 <script>
@@ -43,7 +43,7 @@ import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 export default {
   name: 'FormtreeSelect',
   components: { dataSource, TsFormInput,
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve) },
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree') },
   props: {
     uuid: String,
     setting: Object,
@@ -73,7 +73,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {   
+  methods: {
     getLevelDataList(level) {
       let _this = this;
       if (!_this.setting.matrixUuid) {

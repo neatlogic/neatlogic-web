@@ -42,8 +42,8 @@ import {store} from './dispatchState.js';
 export default {
   name: '',
   components: {
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     draftData: Object

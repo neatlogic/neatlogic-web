@@ -59,9 +59,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    CiCustomviewEdit: resolve => require(['./ci-customview-edit.vue'], resolve),
-    CiRelTree: resolve => require(['@/views/pages/cmdb/components/ci/ci-rel-list-tree.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    CiCustomviewEdit: () => import('./ci-customview-edit.vue'),
+    CiRelTree: () => import('@/views/pages/cmdb/components/ci/ci-rel-list-tree.vue')
   },
   props: {
     ciId: { type: Number },

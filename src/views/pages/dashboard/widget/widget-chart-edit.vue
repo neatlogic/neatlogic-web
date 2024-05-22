@@ -85,7 +85,7 @@ export default {
     // DataHref,
     ChartTypeList,
     WidgetSetting,
-    WidgetPreview: resolve => require(['./widget-preview'], resolve)
+    WidgetPreview: () => import('./widget-preview')
   },
   props: {
     baseData: Object, // 基础数据
@@ -285,7 +285,7 @@ export default {
         });
         // 以上方法为，是否有必填项没填写
       }
-      
+
       if (isSubmit) {
         if (this.$refs.preview) {
           this.$nextTick(() => {

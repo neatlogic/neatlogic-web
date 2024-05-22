@@ -10,7 +10,7 @@
             name="name"
             :validateList="nameValidateList"
             :maxlength="30"
-          ></TsFormInput>        
+          ></TsFormInput>
         </keep-alive>
       </div>
     </div>
@@ -49,7 +49,7 @@
         </div>
       </div>
     </div>
-  
+
     <!-- 权限 -->
     <AuthoritySetting
       :list="flowAuthorityConifig.authorityList"
@@ -95,7 +95,7 @@
     >
       <div slot="header">{{ $t('page.preview') }}</div>
       <div>
-        
+
         <TsSheet
           v-if="previewFormContent && previewFormContent._type == 'new'"
           ref="formSheet"
@@ -118,11 +118,11 @@ export default {
     TsFormInput,
     TsFormSelect,
     FormPreview,
-    NoticeSetting: resolve => require(['./components/nodesetting/notice-setting.vue'], resolve),
-    AuthoritySetting: resolve => require(['./components/nodesetting/authority-setting.vue'], resolve),
-    ActionSetting: resolve => require(['./components/nodesetting/action-setting.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    NoticeSetting: () => import('./components/nodesetting/notice-setting.vue'),
+    AuthoritySetting: () => import('./components/nodesetting/authority-setting.vue'),
+    ActionSetting: () => import('./components/nodesetting/action-setting.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   props: {
     uuid: {
@@ -161,7 +161,7 @@ export default {
       currentName: _this.name || '', //流程名称
       nameValidateList: ['required', 'name-special', {
         name: 'searchUrl',
-        url: 'api/rest/process/save', 
+        url: 'api/rest/process/save',
         key: 'name',
         params: () => ({uuid: this.uuid})
       }],
@@ -183,14 +183,14 @@ export default {
       actionConfig: {//动作数据
         handler: '',
         actionList: []
-      }, 
+      },
       flowAuthorityConifig: {
         authorityList: [] //权限数据
       },
       relateSelectConfig: {
         dynamicUrl: '/api/rest/form/search',
         params: {
-          isActive: 1, 
+          isActive: 1,
           needPage: false
         },
         rootName: 'tbodyList',
@@ -276,7 +276,7 @@ export default {
       if (!this.activeSetting.actionSetting) {
         this.$set(this.actionConfig, 'actionList', []);
       }
-      
+
       let json = {
         processConfig: {
           name: this.currentName,
@@ -285,7 +285,7 @@ export default {
           actionConfig: this.actionConfig,
           enableAuthority: this.configData.enableAuthority || 0,
           authorityList: this.flowAuthorityConifig.authorityList,
-          enableMarkRepeat: this.activeSetting.enableMarkRepeat 
+          enableMarkRepeat: this.activeSetting.enableMarkRepeat
         },
         formConfig: {
           uuid: ''

@@ -72,9 +72,9 @@
 export default {
   name: '', // 配置文件适配列表
   components: {
-    EnvAutoconfigEdit: resolve => require(['./env-autoconfig-edit'], resolve),
-    EnvAutoconfigInstanceDifferenceEdit: resolve => require(['./env-autoconfig-instance-difference-edit'], resolve), // 添加实例差异
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
+    EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     params: {
@@ -103,7 +103,7 @@ export default {
         {
           title: this.$t('page.variablename'),
           key: 'key'
-        },        
+        },
         {
           title: this.$t('page.type'),
           key: 'typeText'
@@ -181,7 +181,7 @@ export default {
       if (item) {
         let params = {
           appSystemId: item.appSystemId,
-          appModuleId: item.appModuleId, 
+          appModuleId: item.appModuleId,
           envId: item.envId,
           instanceId: item.instanceId
         };

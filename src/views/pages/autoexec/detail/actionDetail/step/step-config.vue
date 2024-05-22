@@ -42,10 +42,10 @@ export default {
   name: 'StepConfig',
   components: {
     ScriptList,
-    AddOperation: resolve => require(['./edit/operation-add.vue'], resolve)
+    AddOperation: () => import('./edit/operation-add.vue')
   },
   filters: {},
-  props: { 
+  props: {
     canEdit: {//是否可以编辑 ，允许改变顺序、编辑修改、新增
       type: [Boolean],
       default: true
@@ -69,13 +69,13 @@ export default {
     },
     isRunner: {
       type: [Boolean],
-      default: false      
+      default: false
     },
     execModeList: {
       type: Array,
       default() {
         return [];
-      }      
+      }
     },
     operationType: { //组合工具类型不是combop时，只能修改输入参数，预设参数、自由参数，不可对阶段信息进行修改
       type: String,
@@ -187,10 +187,10 @@ export default {
           this.phaseOperationList.push(item);
           this.$nextTick(() => {
             this.$refs.list.updateList(this.phaseOperationList);
-          });  
+          });
         });
       }
-    }, 
+    },
     getOperationList() {
       if (this.phaseOperationList && this.phaseOperationList.length) {
         return this.phaseOperationList;

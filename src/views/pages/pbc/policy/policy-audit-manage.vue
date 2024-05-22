@@ -100,11 +100,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsUlList: resolve => require(['@/resources/components/TsUlList/TsUlList.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    PolicyAuditView: resolve => require(['./policy-audit-view.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    PolicyAuditView: () => import('./policy-audit-view.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   props: {},
   data() {

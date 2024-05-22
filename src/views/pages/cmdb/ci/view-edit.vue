@@ -103,10 +103,10 @@ export default {
   name: '',
   components: {
     //draggable,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     ciId: {

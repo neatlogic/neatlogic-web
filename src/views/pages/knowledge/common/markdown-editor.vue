@@ -76,7 +76,7 @@ export default {
   name: '',
   components: {
     mavonEditor,
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   mixins: [editorMixins],
   props: {

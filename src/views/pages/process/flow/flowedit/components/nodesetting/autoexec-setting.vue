@@ -65,9 +65,9 @@
 export default {
   name: '',
   components: {
-    ConfigListDialog: resolve => require(['./autoexec/config-list-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ConfigListDialog: () => import('./autoexec/config-list-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {
   },

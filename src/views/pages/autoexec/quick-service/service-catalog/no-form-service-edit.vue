@@ -131,15 +131,15 @@ import Component from '@/views/pages/autoexec/components/param/view/index.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AddTarget: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/add-target.vue'], resolve),
-    SaveSetting: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'], resolve),
-    OtherParam: resolve => require(['./other-params'], resolve),
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve), // 服务失效原因提示列表
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
+    SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
+    OtherParam: () => import('./other-params'),
+    ExpiredReasonAlert: () => import('./expired-reason-alert'), // 服务失效原因提示列表
     ...Component
   },
   mixins: [],
@@ -312,7 +312,7 @@ export default {
       this.itemConfig = {};
       this.valueConfig = {};
       this.runtimeParamList instanceof Array && this.runtimeParamList.forEach(data => {
-        let config = Object.assign({}, data.config ? data.config : data);  
+        let config = Object.assign({}, data.config ? data.config : data);
         config.desc = data.description;
         if (config.validateList && !config.validateList.includes('required')) {
           data.isRequired && config.validateList.push('required');
@@ -398,7 +398,7 @@ export default {
         params.executeUser = this.executeUser;
       }
       if (executeNode) {
-        params.executeNodeConfig = executeNode; 
+        params.executeNodeConfig = executeNode;
       }
       if (!this.$utils.isEmpty(runtimeParamMap)) {
         params.runtimeParamMap = runtimeParamMap;

@@ -19,7 +19,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   filters: {},
   props: {
@@ -36,7 +36,7 @@ export default {
       matrixLabel: '', //唯一值
       nameValidateList: ['required', {
         name: 'searchUrl',
-        url: 'api/rest/matrix/save', 
+        url: 'api/rest/matrix/save',
         message: this.$t('message.targetisexists', {'target': this.$t('page.matrixname')}),
         key: 'name',
         params: () => ({uuid: this.matrixUuid})

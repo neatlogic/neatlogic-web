@@ -65,8 +65,8 @@
 export default {
   name: '',
   components: {
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     config: Object,

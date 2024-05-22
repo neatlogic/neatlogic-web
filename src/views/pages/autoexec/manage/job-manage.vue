@@ -5,7 +5,7 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job') }}</span>
-          <span v-auth="['AUTOEXEC_MODIFY']" class="action-item"> 
+          <span v-auth="['AUTOEXEC_MODIFY']" class="action-item">
             <AuditConfig auditName="AUTOEXEC-JOB"></AuditConfig>
           </span>
         </div>
@@ -137,13 +137,13 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    PortfolioToolsDialog: resolve => require(['./tool/portfolio-tools-dialog'], resolve), // 创建作业-弹窗
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ActionDialog: resolve => require(['./job/action-dialog.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    PortfolioToolsDialog: () => import('./tool/portfolio-tools-dialog'), // 创建作业-弹窗
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ActionDialog: () => import('./job/action-dialog.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {},
   props: {},
@@ -273,7 +273,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() { this.searchJob(1); },

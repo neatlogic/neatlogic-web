@@ -86,8 +86,8 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue')
   },
   props: {},
   data() {

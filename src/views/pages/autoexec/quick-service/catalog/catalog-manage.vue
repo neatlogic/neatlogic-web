@@ -73,10 +73,10 @@
 export default {
   name: 'CatalogManage',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    catalog: resolve => require(['./catalog.vue'], resolve),
-    service: resolve => require(['./service.vue'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    catalog: () => import('./catalog.vue'),
+    service: () => import('./service.vue')
   },
   directives: {},
   props: {},

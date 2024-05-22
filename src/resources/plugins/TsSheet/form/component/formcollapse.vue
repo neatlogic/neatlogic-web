@@ -60,7 +60,7 @@ import validmixin from './common/validate-mixin.js';
 export default {
   name: '',
   components: {
-    ChildFormItem: resolve => require(['@/resources/plugins/TsSheet/child-form-item.vue'], resolve)
+    ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue')
   },
   extends: base,
   mixins: [validmixin],

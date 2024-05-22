@@ -14,8 +14,8 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: { type: Number },

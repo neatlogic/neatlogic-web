@@ -27,8 +27,7 @@
 export default {
   name: '',
   components: {
-    CiEntityList: resolve =>
-      require(['./cientity-list.vue'], resolve)
+    CiEntityList: () => import('./cientity-list.vue')
   },
   props: {
     ciId: {type: Number},

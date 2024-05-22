@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   filters: {},
   props: {

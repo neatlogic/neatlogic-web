@@ -78,9 +78,9 @@ export default {
   name: 'OverviewMenu',
   components: {
     draggable,
-    RenameDialog: resolve => require(['./rename-dialog.vue'], resolve),
-    AuthDialog: resolve => require(['./auth-dialog.vue'], resolve),
-    WorkOrderDialog: resolve => require(['./work-order-dialog'], resolve)
+    RenameDialog: () => import('./rename-dialog.vue'),
+    AuthDialog: () => import('./auth-dialog.vue'),
+    WorkOrderDialog: () => import('./work-order-dialog')
   }, // 工单中心左侧菜单
   extends: LeftMenu,
   props: {},
@@ -203,8 +203,8 @@ export default {
       }
     },
     save(uuid, name, authList, type, support, catalogId, catalogName) {
-      /* 保存方法 
-          support 使用范围 
+      /* 保存方法
+          support 使用范围
           catalogId 菜单类型
       */
       let data = {

@@ -76,8 +76,8 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
   components: {
-    ComparisonDetail: resolve => require(['./comparison-detail.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
+    ComparisonDetail: () => import('./comparison-detail.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     TsFormSelect
   },
   filters: {},

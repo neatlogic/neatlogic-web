@@ -17,7 +17,7 @@
 export default {
   name: '',
   components: {
-    ConditionGroup: resolve => require(['@/views/pages/rdm/project/viewtab/components/condition-group.vue'], resolve)
+    ConditionGroup: () => import('@/views/pages/rdm/project/viewtab/components/condition-group.vue')
   },
   props: {
     appId: {type: Number}
@@ -49,7 +49,7 @@ export default {
 
     },
     close() {
-      
+
     }
   },
   filter: {},

@@ -131,10 +131,10 @@ export default {
   name: '',
   components: {
     draggable,
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {
     projectId: { type: Number },

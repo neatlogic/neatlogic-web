@@ -82,12 +82,12 @@
 export default {
   name: 'SendjobManage',
   components: {
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve),
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz'], resolve),
-    SendjobRecord: resolve => require(['./sendjob-record'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('components/TsTable/TsTable'),
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz'),
+    SendjobRecord: () => import('./sendjob-record'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   data() {
     let _this = this;

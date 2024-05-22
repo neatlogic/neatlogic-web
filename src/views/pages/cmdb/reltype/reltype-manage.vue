@@ -39,8 +39,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    RelTypeEdit: resolve => require(['./reltype-edit.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    RelTypeEdit: () => import('./reltype-edit.vue')
   },
   props: {},
   data() {

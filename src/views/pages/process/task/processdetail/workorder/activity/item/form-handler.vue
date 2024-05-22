@@ -20,7 +20,7 @@
 export default {
   name: '',
   components: {
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   filters: {},
   mixins: [],

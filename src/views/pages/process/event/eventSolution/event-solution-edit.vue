@@ -47,9 +47,9 @@
 export default {
   name: 'EventSolutionEdit',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   data() {
     const vm = this;
@@ -214,7 +214,7 @@ export default {
       if (!this.saving) {
         this.saving = true;
         const params = this.solutionConfig;
-        
+
         await this.$api.process.eventSolution
           .save(params)
           .then(res => {

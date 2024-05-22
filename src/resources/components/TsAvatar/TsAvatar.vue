@@ -25,7 +25,7 @@
 export default {
   name: 'TsAvatar',
   components: {
-    UserStatus: resolve => require(['@/resources/components/UserCard/user-status'], resolve)
+    UserStatus: () => import('@/resources/components/UserCard/user-status')
   },
   props: {
     initType: { type: String, default: 'user' }, //头像的类型,user, role, team
@@ -80,7 +80,7 @@ export default {
         newName = name.slice(0, 1);//判断中文，如果是的话，就显示第一个文字
         if (!re.test(newName)) { // 不是，就显示前面两个字符
           newName = name.slice(0, 2);
-        } 
+        }
       }
       return newName;
     },

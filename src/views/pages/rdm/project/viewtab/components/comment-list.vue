@@ -64,11 +64,11 @@ export default {
   name: '',
   directives: { imgViewer },
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    CommentList: resolve => require(['./comment-list.vue'], resolve),
-    EditCommentDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-comment-dialog.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    CommentList: () => import('./comment-list.vue'),
+    EditCommentDialog: () => import('@/views/pages/rdm/project/viewtab/components/edit-comment-dialog.vue')
   },
   props: {
     issueData: { type: Object },

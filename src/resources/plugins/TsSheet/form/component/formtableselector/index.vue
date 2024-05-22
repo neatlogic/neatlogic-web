@@ -88,10 +88,10 @@ export default {
   components: {
     DataList,
     TsTable,
-    DataDialog: resolve => require(['./formtableselector-dialog.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    DataDialog: () => import('./formtableselector-dialog.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
-  extends: base,  
+  extends: base,
   mixins: [validmixin],
   props: {
     readonly: { type: Boolean, default: false },
@@ -299,9 +299,9 @@ export default {
       if (this?.config?.dataConfig && this.config.dataConfig.length > 0) {
         this.config.dataConfig.forEach(thead => {
           if (thead.isPC) {
-            theadList.push({ 
-              key: thead.uuid, 
-              title: thead.label, 
+            theadList.push({
+              key: thead.uuid,
+              title: thead.label,
               type: thead.config && thead.config.urlAttributeValue ? 'linktext' : '',
               textValue: thead.config && thead.config.urlAttributeValue ? thead.config.urlAttributeValue : '',
               isRequired: !!(thead.config && thead.config.isRequired)

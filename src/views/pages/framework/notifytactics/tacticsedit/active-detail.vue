@@ -46,8 +46,8 @@ import Items from '@/resources/components/FormItems';
 export default {
   name: '',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...Items
   },
   filters: {},

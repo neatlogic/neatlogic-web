@@ -46,8 +46,8 @@ import {store} from '../floweditState.js';
 export default {
   name: 'Timer',
   components: {
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve), // 表单场景
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
+    FormsceneSetting: () => import('./nodesetting/formscene-setting'), // 表单场景
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     AssignSetting
   },
   filters: {
@@ -99,7 +99,7 @@ export default {
       //分派处理人
       if (this.$refs.assignData) {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();
-      } 
+      }
       stepConfig['formSceneUuid'] = this.configData.stepConfig.formSceneUuid || '';
       return stepConfig;
     },

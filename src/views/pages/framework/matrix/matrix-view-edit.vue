@@ -77,13 +77,13 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'MatrixExternal',
   components: {
-    CmdbEdit: resolve => require(['./components/cmdb-edit'], resolve),
-    CmdbCustomViewEdit: resolve => require(['./components/cmdb-customview-edit'], resolve),
-    navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ExternalEditDialog: resolve => require(['./components/external-edit-dialog'], resolve), // 外部数据源
-    ViewEditDialog: resolve => require(['./components/view-edit-dialog'], resolve) // 视图数据源
+    CmdbEdit: () => import('./components/cmdb-edit'),
+    CmdbCustomViewEdit: () => import('./components/cmdb-customview-edit'),
+    navTopLeft: () => import('./components/navTopLeft'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ExternalEditDialog: () => import('./components/external-edit-dialog'), // 外部数据源
+    ViewEditDialog: () => import('./components/view-edit-dialog') // 视图数据源
   },
   directives: { download },
   props: [''],
@@ -117,7 +117,7 @@ export default {
       validJson: ['required'],
       nameValidateList: ['required', {
         name: 'searchUrl',
-        url: 'api/rest/matrix/save', 
+        url: 'api/rest/matrix/save',
         message: this.$t('message.targetisexists', {'target': this.$t('page.matrixname')}),
         key: 'name',
         params: () => ({uuid: this.matrixUuid})

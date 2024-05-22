@@ -67,8 +67,8 @@
 export default {
   name: '', // 应用权限编辑
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AuthEdit: resolve => require(['./components/auth-edit'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    AuthEdit: () => import('./components/auth-edit')
   },
   props: {
     params: {
@@ -125,7 +125,7 @@ export default {
   created() {},
   beforeMount() {},
   async mounted() {
-    this.loadingShow = true; 
+    this.loadingShow = true;
     await this.getAuthList();
     if (this.isEdit) {
       this.getAuthInfoById();

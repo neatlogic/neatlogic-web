@@ -56,8 +56,8 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},
@@ -93,10 +93,10 @@ export default {
   methods: {
     isValidRegex(regexString) {
       try {
-        new RegExp(regexString); 
-        return true; 
+        new RegExp(regexString);
+        return true;
       } catch (error) {
-        return false; 
+        return false;
       }
     },
     configValid() {

@@ -57,10 +57,10 @@
 export default {
   name: 'CatalogManage',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    catalog: resolve => require(['./catalog/edit/catalog.vue'], resolve),
-    channel: resolve => require(['./catalog/edit/channel.vue'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    catalog: () => import('./catalog/edit/catalog.vue'),
+    channel: () => import('./catalog/edit/channel.vue')
   },
   directives: {},
   props: [''],
@@ -323,7 +323,7 @@ export default {
         parentUuid: parentId,
         targetUuid: targetNode?.uuid || 0
       };
-     
+
       if (moveType != null) {
         if (treeNode.type == 'catalog') {
           this.$api.process.service.moveCatalog(data).then(res => {

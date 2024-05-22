@@ -72,9 +72,9 @@
 export default {
   name: 'UpgradeRecord', // 升级记录
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -147,7 +147,7 @@ export default {
       },
       detailTableConfig: {
         // 详情表格
-        
+
         theadList: [
           {
             title: 'IP',
@@ -189,7 +189,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() {},
@@ -245,7 +245,7 @@ export default {
       this.detailTableConfig.loading = true;
       this.$api.framework.tagent.getBatchUpgradeDetail(params).then((res) => {
         if (res.Status == 'OK') {
-          if (this.$utils.isEmptyObj(res.Return)) { 
+          if (this.$utils.isEmptyObj(res.Return)) {
             this.$set(this.detailTableConfig, 'tbodyList', []);
             this.detailTableConfig.loading = false;
           } else {

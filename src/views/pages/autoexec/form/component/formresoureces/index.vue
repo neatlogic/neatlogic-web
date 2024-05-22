@@ -57,9 +57,9 @@ import validmixin from '@/resources/plugins/TsSheet/form/component/common/valida
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve),
-    ResourecesDialog: resolve => require(['./resoureces-dialog'], resolve),
-    ResourecesView: resolve => require(['./resoureces-view'], resolve)
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    ResourecesDialog: () => import('./resoureces-dialog'),
+    ResourecesView: () => import('./resoureces-view')
   },
   extends: base,
   mixins: [validmixin],

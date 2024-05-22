@@ -38,8 +38,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    EditInterface: resolve => require(['./interface-edit-dialog.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    EditInterface: () => import('./interface-edit-dialog.vue')
   },
   filters: {},
   props: {

@@ -40,8 +40,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ClearFileDialog: resolve => require(['./clear-file-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ClearFileDialog: () => import('./clear-file-dialog.vue')
   },
   props: {
     resourceId: Number

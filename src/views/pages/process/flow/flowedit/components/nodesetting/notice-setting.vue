@@ -82,8 +82,8 @@ import itemmixin from '../itemmixin.js';
 export default {
   name: 'NoticeSetting',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    PersonSettingsDialog: resolve => require(['./notice/person-settings-dialog'], resolve) // 个性设置
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    PersonSettingsDialog: () => import('./notice/person-settings-dialog') // 个性设置
   },
   mixins: [itemmixin],
   model: {
@@ -305,7 +305,7 @@ export default {
     config: {
       handler(config) {
         // 解决切换不同的节点，通知策略数据没有变化的问题
-        this.defaultDeepCloneConfig = this.$utils.deepClone(config); 
+        this.defaultDeepCloneConfig = this.$utils.deepClone(config);
         this.init();
       },
       deep: true

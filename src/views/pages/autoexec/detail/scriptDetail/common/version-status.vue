@@ -94,9 +94,9 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard')
   },
   filters: {
   },
@@ -106,11 +106,11 @@ export default {
       default: null
     },
     versionVo: {
-      type: Object, 
+      type: Object,
       default: () => {}
     },
     currentVersion: {
-      type: Object, 
+      type: Object,
       default: () => {}
     }
   },

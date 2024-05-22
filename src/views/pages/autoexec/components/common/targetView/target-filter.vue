@@ -40,7 +40,7 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },

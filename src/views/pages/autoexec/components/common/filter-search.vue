@@ -41,8 +41,8 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    AdvancedModeSearch: resolve => require(['@/views/pages/cmdb/asset/advanced-mode-search'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    AdvancedModeSearch: () => import('@/views/pages/cmdb/asset/advanced-mode-search')
   },
   filters: {},
   props: {

@@ -24,8 +24,8 @@ import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.j
 export default {
   name: '',
   components: {
-    FormPreview: resolve => require(['@/resources/components/FormMaker/formview/form-view.vue'], resolve),
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    FormPreview: () => import('@/resources/components/FormMaker/formview/form-view.vue'),
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   mixins: [dealFormMix],
   props: {
@@ -63,7 +63,7 @@ export default {
   methods: {
     init() {
       if (this.draftData) {
-        this.formConfig = this.draftData.formConfig; 
+        this.formConfig = this.draftData.formConfig;
         this.formAttributeDataMap = this.draftData.formAttributeDataMap || null;
         if (this.formConfig) {
           if (this.draftData.formConfig._type == 'new') {

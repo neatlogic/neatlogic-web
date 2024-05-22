@@ -60,9 +60,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    PersonSettingsDialog: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'], resolve) // 个性设置
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    PersonSettingsDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue') // 个性设置
   },
   props: {
     appSystemId: {
@@ -151,7 +151,7 @@ export default {
         window.open(HOME + '/framework.html#/notifytactics-overview?addNotify=' + true + '&handler=' + this.notifyPolicyConfig.handler, '_blank');
       }
     },
-    refreshNotify() { 
+    refreshNotify() {
       //刷新通知策略
       this.$refs.notifyPolicyId.initDataListByUrl();
       this.$Message.success(this.$t('message.executesuccess'));

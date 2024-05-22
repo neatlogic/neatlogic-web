@@ -118,12 +118,12 @@ import Items from '@/views/pages/autoexec/components/param/edit';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    // TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    // TsFormSelect:()=>import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect'),
     ...Items,
-    vuedraggable: resolve => require(['vuedraggable'], resolve)
+    vuedraggable: () => import('vuedraggable')
   },
   filters: {},
   props: {
@@ -256,7 +256,7 @@ export default {
           findNameList.push(t);
         }
       });
-      this.$nextTick(() => { 
+      this.$nextTick(() => {
         if (type == 'key') {
           if (findNameList.length > 1) {
             this.isRepeatName = true;
@@ -389,7 +389,7 @@ export default {
     line-height: 32px;
   }
   .del-btn{
-    display: none; 
+    display: none;
   }
   .move {
     position: absolute;

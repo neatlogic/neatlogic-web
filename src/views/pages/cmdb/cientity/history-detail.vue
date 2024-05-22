@@ -77,8 +77,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('./attr-viewer.vue')
   },
   props: {
     transactionId: { type: Number },

@@ -91,13 +91,13 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    ExecutionModeParam: resolve => require(['@/views/pages/autoexec/components/common/executionMode/param'], resolve),
-    Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve),
-    RunnerGroupSetting: resolve => require(['./runnergroup-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
+    ExecutionModeParam: () => import('@/views/pages/autoexec/components/common/executionMode/param'),
+    Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    ExecuteuserSetting: () => import('./executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('./runnergroup-setting.vue')
   },
   filters: {},
   props: {

@@ -41,8 +41,8 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: { config: { type: Object } },
   data() {

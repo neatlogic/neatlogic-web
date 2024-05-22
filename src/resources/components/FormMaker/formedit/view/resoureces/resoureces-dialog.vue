@@ -33,7 +33,7 @@ export default {
   name: '',
   components: {
     ...Item,
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   filters: {
   },

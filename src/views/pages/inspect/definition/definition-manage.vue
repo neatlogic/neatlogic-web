@@ -66,9 +66,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'DefinitionManage', // 巡检定义
   components: {
-    InspectToolSetting: resolve => require(['./components/inspect-tool-setting'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    InspectToolSetting: () => import('./components/inspect-tool-setting'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue')
   },
   filters: {},
   directives: { download },

@@ -38,10 +38,10 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AddDeployJobDialog: resolve => require(['@/views/pages/deploy/pipeline/add-deployjob-dialog.vue'], resolve),
-    ListDeployJobDialog: resolve => require(['@/views/pages/deploy/pipeline/list-deployjob-dialog.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AddDeployJobDialog: () => import('@/views/pages/deploy/pipeline/add-deployjob-dialog.vue'),
+    ListDeployJobDialog: () => import('@/views/pages/deploy/pipeline/list-deployjob-dialog.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     appSystemId: Number
@@ -57,8 +57,8 @@ export default {
       isListDeployJobDialogShow: false,
       currentPipelineId: null,
       searchParam: {
-        keyword: '', 
-        type: 'appsystem', 
+        keyword: '',
+        type: 'appsystem',
         appSystemId: this.appSystemId
       },
       pipelineData: {}
@@ -82,7 +82,7 @@ export default {
       this.currentPipelineId = row.id;
     },
     editPipeline(row) {
-      this.$router.push({ 
+      this.$router.push({
         path: '/pipeline-edit',
         query: {
           id: row.id,
@@ -92,7 +92,7 @@ export default {
       });
     },
     addPipeline() {
-      this.$router.push({ 
+      this.$router.push({
         path: '/pipeline-edit',
         query: {
           type: 'appsystem',

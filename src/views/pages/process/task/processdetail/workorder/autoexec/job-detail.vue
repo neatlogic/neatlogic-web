@@ -37,9 +37,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue')
   },
   props: {
     handlerStepInfo: Object

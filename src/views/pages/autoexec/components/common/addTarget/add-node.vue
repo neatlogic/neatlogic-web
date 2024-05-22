@@ -86,9 +86,9 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve),
-    NodeView: resolve => require(['../targetView/node-view'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'),
+    NodeView: () => import('../targetView/node-view')
   },
   filtes: {},
   mixins: [addtargetmixin],
@@ -160,7 +160,7 @@ export default {
       this.handlePageChange();
     },
     handlePageChange() {
-      const hasConditionGroupList = 
+      const hasConditionGroupList =
     (!this.$utils.isEmpty(this.defaultSearchValue) &&
       this.defaultSearchValue.hasOwnProperty('conditionGroupList')) ||
     (!this.$utils.isEmpty(this.searchVal) &&
@@ -284,7 +284,7 @@ export default {
         return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
     },
-    opType() { 
+    opType() {
       return mutations.getOpType();
     }
   },

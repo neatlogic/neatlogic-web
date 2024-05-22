@@ -417,17 +417,17 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    /*CiEntityListRelCondition: resolve => require(['./cientity-list-relcondition.vue'], resolve),*/
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrSearcher: resolve => require(['./attr-searcher.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve),
-    RelCiEntityDialog: resolve => require(['./rel-cientity-dialog.vue'], resolve),
-    DeleteCiEntityDialog: resolve => require(['./cientity-delete-dialog.vue'], resolve),
-    BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve),
-    DslEditor: resolve => require(['@/resources/plugins/DslEditor/dsl-editor.vue'], resolve),
-    AccountEditDialog: resolve => require(['@/views/pages/cmdb/asset/components/account-edit-dialog'], resolve) // 帐户管理
+    /*CiEntityListRelCondition:()=>import('./cientity-list-relcondition.vue'),*/
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AttrSearcher: () => import('./attr-searcher.vue'),
+    AttrViewer: () => import('./attr-viewer.vue'),
+    RelCiEntityDialog: () => import('./rel-cientity-dialog.vue'),
+    DeleteCiEntityDialog: () => import('./cientity-delete-dialog.vue'),
+    BatchEditCiEntityDialog: () => import('./cientity-edit-batch.vue'),
+    DslEditor: () => import('@/resources/plugins/DslEditor/dsl-editor.vue'),
+    AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog') // 帐户管理
   },
   directives: { download },
   props: {

@@ -64,10 +64,10 @@
 export default {
   name: '', // 批量操作
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    BatchOperationDialog: resolve => require(['./batch-operation-dialog'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    BatchOperationDialog: () => import('./batch-operation-dialog')
   },
   filters: {},
   props: {},
@@ -80,7 +80,7 @@ export default {
       tagentNumber: 0,
       itemList: {
         runnerGroupIdList: {
-          type: 'select', 
+          type: 'select',
           label: this.$t('term.framework.runnergroup'),
           labelPosition: 'top',
           dynamicUrl: '/api/rest/runnergroup/search',
@@ -127,7 +127,7 @@ export default {
           {
             networkIp: '',
             mask: '',
-            validateIpList: ['ip'], 
+            validateIpList: ['ip'],
             validateMaskList: ['mask']
           }
         ]
@@ -153,7 +153,7 @@ export default {
     operationRow(type, index) {
       // 添加网段
       if (type == 'add') { // 添加
-        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: ['ip'], validateMaskList: ['mask']}); 
+        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: ['ip'], validateMaskList: ['mask']});
       } else { // 删除
         this.tableConfig.tbodyList.splice(index, 1);
       }
@@ -212,13 +212,13 @@ export default {
       return ipPortList;
     },
     validNetwork() {
-      let networkRef = this.$refs.formNetworkList; 
+      let networkRef = this.$refs.formNetworkList;
       let isValid = true;
       if (networkRef && networkRef.$parent && networkRef.$parent.$children) {
         networkRef.$parent.$children.forEach((val) => {
           if (!val.valid()) {
             isValid = false;
-          } 
+          }
         });
       }
       return isValid;
@@ -258,8 +258,8 @@ export default {
         return false;
       }
       let params = {
-        networkVoList: this.handleNetworkList(), 
-        ipPortList: this.handleIpPortList(), 
+        networkVoList: this.handleNetworkList(),
+        ipPortList: this.handleIpPortList(),
         runnerGroupIdList: form.runnerGroupIdList
       };
       this.isLoading = true;

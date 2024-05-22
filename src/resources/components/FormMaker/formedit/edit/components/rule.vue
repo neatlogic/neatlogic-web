@@ -52,8 +52,8 @@
 export default {
   name: 'Rule',
   components: {
-    RuleCondition: resolve => require(['./rule/condition.vue'], resolve),
-    RuleAction: resolve => require(['./rule/action.vue'], resolve)
+    RuleCondition: () => import('./rule/condition.vue'),
+    RuleAction: () => import('./rule/action.vue')
   },
   props: {
     uuid: {
@@ -278,7 +278,7 @@ export default {
             }
           });
         }
-        
+
         if (list && list.length > 0) {
           let listtxt = this.getRowgroup(list);
           listtxt.forEach((li, lindex) => {

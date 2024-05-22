@@ -30,7 +30,7 @@ import appEditAttrList from '../appEditAttrList.js';
 export default {
   name: '', // 编辑模块
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   mixins: [handleTimeMixin, appEditAttrList],
   props: {
@@ -60,7 +60,7 @@ export default {
           label: 'id',
           name: 'id',
           isHidden: true
-        }   
+        }
       ]
     };
   },

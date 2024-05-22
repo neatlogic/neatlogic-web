@@ -51,10 +51,10 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
-    //TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: { config: { type: Object } },
   data() {

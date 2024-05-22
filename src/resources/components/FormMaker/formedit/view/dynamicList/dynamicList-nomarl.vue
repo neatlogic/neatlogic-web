@@ -107,9 +107,9 @@ import searchItems from './search/search.js';
 export default {
   name: 'FormdynamicList',
   components: {
-    Search, 
+    Search,
     TdComponent,
-    CellComponent: resolve => require(['./components.vue'], resolve),
+    CellComponent: () => import('./components.vue'),
     ...searchItems
   },
   mixins: [viewmixin, filtermixin],
@@ -221,7 +221,7 @@ export default {
         }
         objJson.table = table;
         objJson.sourceColumnList = this.sourceColumnList;
-      } 
+      }
       return objJson;
     },
     validateValue() {
@@ -390,7 +390,7 @@ export default {
       if (this.filterList && this.filterList.length > 0) {
         this.$set(json, 'filterList', this.updateFilterList(this.filterList));
       }
-      
+
       this.$set(json, 'sourceColumnList', this.searchSourceColumnList(json.sourceColumnList, this.filterList));
 
       //取消正在搜索的请求
@@ -458,11 +458,11 @@ export default {
         resultJson.matrixType = this.matrixType;
         resultJson.disabled = !tr._isSelected;
       }
-      
+
       return resultJson;
     },
     //扩展属性
-    getAttributeTable(type) { 
+    getAttributeTable(type) {
       let _this = this;
       if (_this.attributeList.length > 0) {
         _this.attributeList.forEach(item => {
@@ -496,7 +496,7 @@ export default {
     getDataConfig(uuid, tr) { //二次编辑
       let _this = this;
       let dataConfig = this.setting.config.dataConfig && this.setting.config.dataConfig.length > 0 ? this.setting.config.dataConfig : [];
-      if (dataConfig.length > 0) { 
+      if (dataConfig.length > 0) {
         dataConfig.forEach(d => {
           if (d.isEdit && tr[d.uuid]) {
             let dataList = tr[d.uuid].dataList || [];

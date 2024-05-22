@@ -12,7 +12,7 @@
         :disabled="isReadonly || false"
         @on-change="updatethis"
       ></TsFormTree>
-      
+
     </div>
     <div v-if="setting.config.desc" class="component-tips tsfont-info-o">
       {{ setting.config.desc }}
@@ -23,7 +23,7 @@
 import viewmixin from '@/resources/components/FormMaker/formedit/view/viewmixin.js';
 export default {
   name: 'FormtreeSelect',
-  components: { TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+  components: { TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   mixins: [viewmixin],
   props: {

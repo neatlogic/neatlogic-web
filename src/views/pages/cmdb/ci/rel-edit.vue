@@ -274,12 +274,12 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    RelGroupEdit: resolve => require(['./relgroup-edit.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CiSelect: resolve => require(['./ci-select.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    RelGroupEdit: () => import('./relgroup-edit.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CiSelect: () => import('./ci-select.vue')
   },
   props: {
     id: {

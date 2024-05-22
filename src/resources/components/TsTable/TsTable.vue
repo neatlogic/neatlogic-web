@@ -347,7 +347,7 @@ export default {
     TBody,
     ColGroup,
     // UserCard,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
     // Liquid
   },
   directives: { scrollHidden },
@@ -596,7 +596,7 @@ export default {
         selectItem && selectedList.push(selectItem);
       });
       this.selectedItemList = selectedList;
-     
+
       this.$emit('getSelected', this.value, selectedList);
     }*/
     if (this.height) {

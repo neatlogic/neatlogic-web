@@ -55,9 +55,9 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    ModuleImportDialog: resolve => require(['./module-import-dialog.vue'], resolve),
-    VersionLogDialog: resolve => require(['./version-log-dialog'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ModuleImportDialog: () => import('./module-import-dialog.vue'),
+    VersionLogDialog: () => import('./version-log-dialog')
   },
   mixins: [download],
   props: {},

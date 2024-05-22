@@ -43,7 +43,7 @@
             {{ row.serialnumber }}
           </span>
         </div>
-        
+
         <div class="report mb-xs">
           <Row>
             <Col span="12">
@@ -79,7 +79,7 @@
         </div>
         <div v-if="!(row.action && (row.action.firstActionList.length>0 ||row.action.secondActionList.length > 0))" class="emptyaction-div"></div>
       </div>
-      
+
       <div v-if="row.action && (row.action.firstActionList.length>0 ||row.action.secondActionList.length > 0)" slot="footer" slot-scope="{ row }">
         <ControllerBtn
           :row="row"
@@ -104,7 +104,7 @@ export default {
     TsCard,
     ControllerBtn,
     UserCard,
-    CarouseUserList: resolve => require(['./CarouseUserList.vue'], resolve),
+    CarouseUserList: () => import('./CarouseUserList.vue'),
     ...tditem
   },
   props: ['cardInfo', 'taskTypeUuid'],
@@ -136,7 +136,7 @@ export default {
     // 大数据分页
     this.cardData.endPage = this.cardInfo.endPage; //结束页
     this.cardData.processingOfMineCount = this.cardInfo.processingOfMineCount;
-    this.cardData.startPage = this.cardInfo.startPage; //起始页    
+    this.cardData.startPage = this.cardInfo.startPage; //起始页
     this.cardData.pageSizeOpts = this.cardInfo.pageSizeOpts;
   },
   methods: {
@@ -306,7 +306,7 @@ export default {
         // 大数据分页
         this.cardData.endPage = this.cardInfo.endPage; //结束页
         this.cardData.processingOfMineCount = this.cardInfo.processingOfMineCount;
-        this.cardData.startPage = this.cardInfo.startPage; //起始页    
+        this.cardData.startPage = this.cardInfo.startPage; //起始页
         this.cardData.pageSizeOpts = this.cardInfo.pageSizeOpts;
       },
       deep: true

@@ -251,12 +251,12 @@ export default {
   components: {
     AttrViewer,
     SubCiEntityList,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CustomViewDetailData: resolve => require(['@/views/pages/cmdb/customview/view-detail-data.vue'], resolve),
-    CustomViewDialog: resolve => require(['./ci-customview-dialog.vue'], resolve),
-    HistoryList: resolve => require(['./history-list.vue'], resolve),
-    CiEntityTopo: resolve => require(['./cientity-topo.vue'], resolve),
-    TransactionDialog: resolve => require(['./transaction-dialog.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CustomViewDetailData: () => import('@/views/pages/cmdb/customview/view-detail-data.vue'),
+    CustomViewDialog: () => import('./ci-customview-dialog.vue'),
+    HistoryList: () => import('./history-list.vue'),
+    CiEntityTopo: () => import('./cientity-topo.vue'),
+    TransactionDialog: () => import('./transaction-dialog.vue')
   },
   props: {
     propCiId: { type: Number },

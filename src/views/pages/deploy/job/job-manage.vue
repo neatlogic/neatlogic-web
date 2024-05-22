@@ -223,17 +223,17 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    // SettingDialog: resolve => require(['./publishing/setting-dialog.vue'], resolve),
-    AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit'], resolve), // 编辑权限
-    ModuleEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/components/module-tree-edit'], resolve), // 编辑模块
-    EnvEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/components/env-tree-edit'], resolve), // 编辑模块
-    LockDialog: resolve => require(['@/views/pages/deploy/job/resourcelock/resourcelock-dialog'], resolve), //资源锁
-    AddBatchJobDialog: resolve => require(['./add-batch-job-dialog.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    // SettingDialog:()=>import('./publishing/setting-dialog.vue'),
+    AppEdit: () => import('@/views/pages/deploy/application-config/config/app/app-edit'), // 编辑权限
+    ModuleEdit: () => import('@/views/pages/deploy/application-config/config/app/components/module-tree-edit'), // 编辑模块
+    EnvEdit: () => import('@/views/pages/deploy/application-config/config/app/components/env-tree-edit'), // 编辑模块
+    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog'), //资源锁
+    AddBatchJobDialog: () => import('./add-batch-job-dialog.vue')
   },
   props: {},
   data() {

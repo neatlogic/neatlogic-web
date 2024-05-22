@@ -44,9 +44,9 @@
 export default {
   name: '', // 执行记录
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    LogDetailDialog: resolve => require(['./log-detail-dialog'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    LogDetailDialog: () => import('./log-detail-dialog')
   },
   props: {
     title: {

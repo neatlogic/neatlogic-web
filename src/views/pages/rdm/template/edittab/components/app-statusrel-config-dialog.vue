@@ -87,11 +87,11 @@
 export default {
   name: '',
   components: {
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    //UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    //UserSelect:()=>import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     statusrel: { type: Object }

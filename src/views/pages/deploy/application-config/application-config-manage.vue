@@ -134,17 +134,17 @@
 export default {
   name: '',
   components: {
-    ModuleManage: resolve => require(['./config/module-manage'], resolve),
-    EnvManage: resolve => require(['./config/env-manage'], resolve),
-    AppManage: resolve => require(['./config/app-manage'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    CopyConfigModule: resolve => require(['./config/module/copy-config-module'], resolve), // 复制配置（模块）
-    CopyConfigEnv: resolve => require(['./config/env/copy-config-env'], resolve), // 复制配置（环境）
-    AppTreeEdit: resolve => require(['./config/app/components/app-tree-edit'], resolve), // 编辑应用（应用配置树）
-    ModuleTreeEdit: resolve => require(['./config/app/components/module-tree-edit'], resolve), // 编辑模块（应用配置树）
-    EnvTreeEdit: resolve => require(['./config/app/components/env-tree-edit'], resolve), // 编辑模块（应用配置树）
-    ClearConfigDialog: resolve => require(['./config/clear-config-dialog'], resolve), // 清空配置
-    ImportPipelineConfigDialog: resolve => require(['pages/deploy/application-config/import-pipeline-config-dialog'], resolve) // 导入流水线配置
+    ModuleManage: () => import('./config/module-manage'),
+    EnvManage: () => import('./config/env-manage'),
+    AppManage: () => import('./config/app-manage'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    CopyConfigModule: () => import('./config/module/copy-config-module'), // 复制配置（模块）
+    CopyConfigEnv: () => import('./config/env/copy-config-env'), // 复制配置（环境）
+    AppTreeEdit: () => import('./config/app/components/app-tree-edit'), // 编辑应用（应用配置树）
+    ModuleTreeEdit: () => import('./config/app/components/module-tree-edit'), // 编辑模块（应用配置树）
+    EnvTreeEdit: () => import('./config/app/components/env-tree-edit'), // 编辑模块（应用配置树）
+    ClearConfigDialog: () => import('./config/clear-config-dialog'), // 清空配置
+    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog') // 导入流水线配置
   },
   props: {
     hideFucntionExcludeAppModuleRunner: {
@@ -406,16 +406,16 @@ export default {
           title: this.$t('dialog.title.deleteconfirm'),
           content: this.$t('dialog.content.deleteconfirm', {target: this.getDelEnvPath()}),
           btnList: [//底部操作区域的按钮数组
-            { 
-              text: this.$t('page.cancel'),  
-              ghost: true, 
+            {
+              text: this.$t('page.cancel'),
+              ghost: true,
               fn: vnode => { vnode.isShow = false; }
             },
             {
-              text: this.$t('page.delete'), 
-              type: 'error', 
+              text: this.$t('page.delete'),
+              type: 'error',
               fn: vnode => {
-                vnode.isShow = false; 
+                vnode.isShow = false;
                 this.$api.deploy.applicationConfig.delEnv(params).then(res => {
                   if (res && res.Status == 'OK') {
                     this.$Message.success(this.$t('message.deletesuccess'));
@@ -488,7 +488,7 @@ export default {
       if (needRefresh) {
         this.$refs?.appModuleList?.refreshApp(this.appSystemId);
       }
-    } 
+    }
   },
   filter: {},
   computed: {
@@ -509,7 +509,7 @@ export default {
       // 应用和模块以及模块对应的runner组，其他功能全部屏蔽
       return !this.hideFucntionExcludeAppModuleRunner;
     }
-    
+
   },
   watch: {
     appModuleData: {

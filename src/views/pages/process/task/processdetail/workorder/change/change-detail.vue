@@ -148,7 +148,7 @@
           </div>
         </div>
         <div v-if="cd.isShow" class="content-box dividing-color radius-sm">
-          <div class="text-grey content-top"> 
+          <div class="text-grey content-top">
             <div class="order-tabs-title step-tabs-title">
               <span
                 v-for="(item, tindex) of changeTitle"
@@ -293,8 +293,8 @@ export default {
     TsCkeditor,
     TsUpLoad,
     EditStepDialog,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsAvatar: resolve => require(['@/resources/components/TsAvatar/TsAvatar'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsAvatar: () => import('@/resources/components/TsAvatar/TsAvatar')
   },
   directives: { download, scrollHidden },
   props: {

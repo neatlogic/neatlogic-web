@@ -18,7 +18,7 @@
 export default {
   name: '',
   components: {
-    NodeDetail: resolve => require(['./phase/node/node-detail.vue'], resolve)
+    NodeDetail: () => import('./phase/node/node-detail.vue')
   },
   filters: {},
   directives: {},

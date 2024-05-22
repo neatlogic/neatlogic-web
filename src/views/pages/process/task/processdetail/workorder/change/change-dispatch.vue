@@ -139,8 +139,8 @@ export default {
     TsUpLoad,
     TsCkeditor,
     TsFormDatePicker,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   directives: { download, imgViewer},
   filters: {},

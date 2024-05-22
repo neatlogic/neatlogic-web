@@ -19,8 +19,8 @@
 export default {
   name: '',
   components: {
-    GeneralParams: resolve => require(['./params/general.vue'], resolve),
-    PipelineParams: resolve => require(['./params/pipeline.vue'], resolve)
+    GeneralParams: () => import('./params/general.vue'),
+    PipelineParams: () => import('./params/pipeline.vue')
   },
   props: {
     baseParams: Object,

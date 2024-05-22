@@ -68,8 +68,8 @@
 export default {
   name: 'SendjobRecord',
   components: {
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsTable: () => import('components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {
     visible: { type: Boolean, default: false },

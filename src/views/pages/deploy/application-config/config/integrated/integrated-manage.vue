@@ -59,10 +59,10 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ExecuteRecordDialog: resolve => require(['./execute-record-dialog'], resolve) // 执行记录
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ExecuteRecordDialog: () => import('./execute-record-dialog') // 执行记录
   },
   props: {
     appSystemId: {
@@ -154,7 +154,7 @@ export default {
       if (id) {
         this.$router.push(
           {
-            path: '/config-add', 
+            path: '/config-add',
             query: {
               appSystemId: this.appSystemId,
               id

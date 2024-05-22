@@ -23,7 +23,7 @@
         <span class="action-item">
           <Poptip transfer placement="bottom">
             <span class="text-action">
-              <i class="tsfont-adapter pr-icon"></i><span>{{ $t('term.autoexec.actuatorinformation') }}</span> 
+              <i class="tsfont-adapter pr-icon"></i><span>{{ $t('term.autoexec.actuatorinformation') }}</span>
             </span>
             <div slot="content">
               <div>
@@ -65,9 +65,9 @@
 export default {
   name: '',
   components: {
-    NodeDetail: resolve => require(['./node/node-detail.vue'], resolve),
-    RefirePhaseDialog: resolve => require(['../refire-phase-dialog.vue'], resolve),
-    IgnorePhaseDialog: resolve => require(['./ignore-phase-dialog.vue'], resolve)
+    NodeDetail: () => import('./node/node-detail.vue'),
+    RefirePhaseDialog: () => import('../refire-phase-dialog.vue'),
+    IgnorePhaseDialog: () => import('./ignore-phase-dialog.vue')
   },
   filters: {},
   props: {
@@ -136,7 +136,7 @@ export default {
             this.timmer = setTimeout(() => {
               this.getRunner();
             }, 3000);
-          } 
+          }
           if (this.phaseEndingStatusList.includes(res.Return.status)) {
             if (this.timmer) {
               clearTimeout(this.timmer);

@@ -74,7 +74,7 @@
 export default {
   name: '',
   components: {
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   props: {
     type: { type: String }

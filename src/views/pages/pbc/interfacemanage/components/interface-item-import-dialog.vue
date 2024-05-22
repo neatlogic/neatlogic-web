@@ -29,7 +29,7 @@
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     interfaceId: { type: String },

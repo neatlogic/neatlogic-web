@@ -32,9 +32,9 @@
 export default {
   name: '',
   components: {
-    EnvInstanceList: resolve => require(['./env/env-instance-list'], resolve), // 实例列表
-    EnvAutoConfigList: resolve => require(['./env/env-autoconfig-list'], resolve), // autoconfig
-    EnvDbConfigList: resolve => require(['./env/env-db-config-list'], resolve) // autoconfig
+    EnvInstanceList: () => import('./env/env-instance-list'), // 实例列表
+    EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
+    EnvDbConfigList: () => import('./env/env-db-config-list') // autoconfig
   },
   props: {
     params: {

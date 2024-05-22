@@ -40,11 +40,11 @@
 export default {
   name: 'HistoryOverview',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve),
-    HistoryMessage: resolve => require(['./history-message'], resolve),
-    HistoryNotice: resolve => require(['./history-notice'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect'),
+    HistoryMessage: () => import('./history-message'),
+    HistoryNotice: () => import('./history-notice'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   data() {
     return {

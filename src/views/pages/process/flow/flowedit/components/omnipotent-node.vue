@@ -152,19 +152,19 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve), // 权限设置
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve), // 通知设置
-    ReapprovalSetting: resolve => require(['./nodesetting/reapproval-setting.vue'], resolve), // 重审
-    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve), // 动作设置
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve), // 文案修改
+    AuthoritySetting: () => import('./nodesetting/authority-setting.vue'), // 权限设置
+    NoticeSetting: () => import('./nodesetting/notice-setting.vue'), // 通知设置
+    ReapprovalSetting: () => import('./nodesetting/reapproval-setting.vue'), // 重审
+    ActionSetting: () => import('./nodesetting/action-setting.vue'), // 动作设置
+    ButtonSetting: () => import('./nodesetting/button-setting.vue'), // 文案修改
     AssignSetting,
-    ExtendAuth: resolve => require(['./nodesetting/extend/extendauth.vue'], resolve), // 表单授权
-    ReplySetting: resolve => require(['./nodesetting/reply-setting.vue'], resolve), // 回复模板
-    StrategySetting: resolve => require(['./nodesetting/strategy-setting.vue'], resolve), // 创建子任务
-    TagSetting: resolve => require(['./nodesetting/tag-setting.vue'], resolve), // 标签
-    CompleteSetting: resolve => require(['./nodesetting/complete-setting.vue'], resolve), // 自动流转
-    ApprovalSetting: resolve => require(['./nodesetting/approval-setting.vue'], resolve), // 自动审批
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'), // 表单授权
+    ReplySetting: () => import('./nodesetting/reply-setting.vue'), // 回复模板
+    StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
+    TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
+    CompleteSetting: () => import('./nodesetting/complete-setting.vue'), // 自动流转
+    ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
+    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
   props: {},
@@ -234,14 +234,14 @@ export default {
       if (!this.nodeConfig) {
         return;
       }
-      // 如果子任务有id就开启,没有就关闭      
-      let config = this.configData = this.$utils.deepClone(this.nodeConfig);      
+      // 如果子任务有id就开启,没有就关闭
+      let config = this.configData = this.$utils.deepClone(this.nodeConfig);
       // if (this.configData.stepConfig.taskConfig && this.configData.stepConfig.taskConfig.idList.length > 0) {
       //   this.taskisStrategy.isStrategy = 1;
       // } else {
       //   this.taskisStrategy.isStrategy = 0;
       // }
-    
+
       this.uuid = config.uuid;
       this.initNodeData(config, this.keyList);//初始化数据
       this.getCopyPrevNodes();//初始化前置节点
@@ -257,7 +257,7 @@ export default {
       this.activeSetting.enableReapproval = config.stepConfig ? config.stepConfig.enableReapproval : 0;
       this.activeSetting.autoComplete = config.stepConfig ? config.stepConfig.autoComplete : 0;
       this.activeSetting.autoApproval = config.stepConfig ? config.stepConfig.autoApproval : 0;
-    },    
+    },
     getCopyPrevNodes() {
       //所有节点数据筛选
       if (this.copyPrevNodes && this.copyPrevNodes.length > 0) {

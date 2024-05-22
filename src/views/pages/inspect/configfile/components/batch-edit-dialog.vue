@@ -39,8 +39,8 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   props: {
     editType: String,
@@ -174,7 +174,7 @@ export default {
             if (this.searchConfigText[key]) {
               this.conditionList.push({
                 label: this.searchConfigText[key],
-                text: Array.isArray(val[key]) ? val[key].join('|') : val[key] 
+                text: Array.isArray(val[key]) ? val[key].join('|') : val[key]
               });
             }
           });

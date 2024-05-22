@@ -54,8 +54,8 @@
         </div>
       </template>
     </TsContain>
-    <GlobalParamsEdit 
-      v-if="isShowGlobalParams" 
+    <GlobalParamsEdit
+      v-if="isShowGlobalParams"
       :id="id"
       @close="closeDialog"
     >
@@ -66,10 +66,10 @@
 export default {
   name: 'GlobalParamsManage', // 全局参数
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    GlobalParamsEdit: resolve => require(['./component/global-params-edit'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    GlobalParamsEdit: () => import('./component/global-params-edit')
   },
   props: {},
   data() {

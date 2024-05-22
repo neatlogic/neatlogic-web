@@ -67,11 +67,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue')
   },
   props: {
     issueData: { type: Object },

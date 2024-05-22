@@ -64,7 +64,7 @@ import serivemixin from './serivemixin.js';
 export default {
   name: '',
   components: {
-    SeeMoreDialog: resolve => require(['./see-more-dialog'], resolve)
+    SeeMoreDialog: () => import('./see-more-dialog')
   },
   mixins: [serivemixin],
   props: {

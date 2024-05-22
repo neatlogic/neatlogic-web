@@ -106,10 +106,10 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'KnowledgeDetail',
   components: {
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ComparisonDialog: resolve => require(['./comparison/comparison-dialog.vue'], resolve),
-    ActivityDetail: resolve => require(['@/views/pages/knowledge/common/activity-detail.vue'], resolve),
-    DocumentDetail: resolve => require(['./document-detail.vue'], resolve),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ComparisonDialog: () => import('./comparison/comparison-dialog.vue'),
+    ActivityDetail: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
+    DocumentDetail: () => import('./document-detail.vue'),
     UserCard
   },
   filters: {},

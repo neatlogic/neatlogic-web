@@ -37,7 +37,7 @@ export default {
   components: {
     TsFormSelect,
     TsTable,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   data() {
     let _this = this;

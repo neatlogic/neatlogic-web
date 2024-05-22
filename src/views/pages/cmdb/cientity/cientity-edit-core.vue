@@ -195,7 +195,7 @@
                 </div>
               </Panel>
             </Collapse>
-          </div>  
+          </div>
         </div>
         <div style="text-align: right">
           <Button
@@ -240,14 +240,14 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AttrInputer: resolve => require(['./attr-inputer.vue'], resolve),
-    HistoryList: resolve => require(['./history-list.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve),
-    // TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CiEntityChoose: resolve => require(['./cientity-choose.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AttrInputer: () => import('./attr-inputer.vue'),
+    HistoryList: () => import('./history-list.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    // TsTable:()=>import('@/resources/components/TsTable/TsTable.vue'),
+    CiEntityChoose: () => import('./cientity-choose.vue')
   },
   props: {
     padding: { type: Boolean, default: true }, //是否有白色底色和间距

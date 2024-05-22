@@ -54,9 +54,9 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
-    
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+
   },
   filters: {
   },
@@ -191,7 +191,7 @@ export default {
     }
   },
   computed: {
-    opType() { 
+    opType() {
       return mutations.getOpType();
     }
   },

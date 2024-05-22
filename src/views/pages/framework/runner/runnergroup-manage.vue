@@ -71,17 +71,17 @@
       </template>
     </TsDialog>
   </div>
- 
+
 </template>
 <script>
 export default {
   name: 'TagentAdd',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    GroupAddDialog: resolve => require(['./group-add-dialog.vue'], resolve),
-    GroupEditDialog: resolve => require(['./group-edit-dialog.vue'], resolve),
-    RunnerRelate: resolve => require(['./runner-relate.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    GroupAddDialog: () => import('./group-add-dialog.vue'),
+    GroupEditDialog: () => import('./group-edit-dialog.vue'),
+    RunnerRelate: () => import('./runner-relate.vue')
   },
   filters: {},
   props: {
@@ -184,7 +184,7 @@ export default {
     },
     goRunner() {
       // 跳转runner管理页面
-      this.$router.push({ 
+      this.$router.push({
         path: '/runner-manage'
       });
     },

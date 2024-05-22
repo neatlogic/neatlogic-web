@@ -164,11 +164,11 @@
 export default {
   name: 'RoleAddview',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CommonAuth: resolve => require(['./common/common-auth.vue'], resolve),
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    CommonAdduserRole: resolve => require(['./common/common-adduser-role.vue'], resolve),
-    CommonAddgroup: resolve => require(['./common/common-addgroup.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CommonAuth: () => import('./common/common-auth.vue'),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    CommonAdduserRole: () => import('./common/common-adduser-role.vue'),
+    CommonAddgroup: () => import('./common/common-addgroup.vue')
   },
   props: [''],
   data() {
@@ -198,7 +198,7 @@ export default {
             _this.formData[1].errorMessage = '';
             _this.allroleList.forEach(item => {
               if (item.name == value) {
-                _this.formData[1].errorMessage = this.$t('message.targetisexists', {target: this.$t('term.framework.roleid')}); 
+                _this.formData[1].errorMessage = this.$t('message.targetisexists', {target: this.$t('term.framework.roleid')});
                 this.roleKey = false;
               }
             });
@@ -212,7 +212,7 @@ export default {
           maxlength: 50,
           label: this.$t('term.framework.rolename'),
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.rolename')}) }, { name: 'name-special' }]
-        },        
+        },
         {
           type: 'textarea',
           name: 'rule',
@@ -251,7 +251,7 @@ export default {
       submitModel: false,
       stepList: [
         this.$t('page.basicinfo'),
-        this.$t('dialog.title.addtarget', {target: this.$t('page.member')}), 
+        this.$t('dialog.title.addtarget', {target: this.$t('page.member')}),
         this.$t('dialog.title.addtarget', {target: this.$t('page.group')}),
         this.$t('page.auth')
       ],
@@ -443,7 +443,7 @@ export default {
     deleteOk() {
       this.saveUserData();
     },
-    
+
     //保存当前用户信息，用于跳转判断
     saveUserData() {
       this.refreshListSetting.isRefreshRoleUserList = false;
@@ -573,7 +573,7 @@ export default {
               this.tabSaveTip = true;
               this.tabsaveModel = true; //打开模态框
             }
-          } 
+          }
         }
       }
       return this.tabSaveTip;

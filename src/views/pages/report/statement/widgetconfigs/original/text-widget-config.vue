@@ -21,7 +21,7 @@
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('page.fontsize') }}
-        
+
       </label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
@@ -112,8 +112,8 @@
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     config: { type: Object }

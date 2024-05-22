@@ -68,9 +68,9 @@
         </div>
       </template>
       <template v-slot:right>
-        <BasicDetail 
-          :config="scriptConfig" 
-          @updetaScriptName="updetaScriptName" 
+        <BasicDetail
+          :config="scriptConfig"
+          @updetaScriptName="updetaScriptName"
           @updateIsLib="updateIsLib"
         >
         </BasicDetail>
@@ -126,15 +126,15 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ScriptDetail',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    VersionDetail: resolve => require(['./scriptDetail/edit/version-detail'], resolve),
-    BasicDetail: resolve => require(['./scriptDetail/edit/basic-detail'], resolve),
-    VersionStatus: resolve => require(['./scriptDetail/common/version-status.vue'], resolve),
-    ReviewDialog: resolve => require(['./scriptDetail/edit/review-dialog.vue'], resolve),
-    VersionCompare: resolve => require(['./scriptDetail/edit/version-compare'], resolve),
-    VersionValid: resolve => require(['./scriptDetail/common/version-valid'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    DataDialog: resolve => require(['./scriptDetail/common/data-dialog.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    VersionDetail: () => import('./scriptDetail/edit/version-detail'),
+    BasicDetail: () => import('./scriptDetail/edit/basic-detail'),
+    VersionStatus: () => import('./scriptDetail/common/version-status.vue'),
+    ReviewDialog: () => import('./scriptDetail/edit/review-dialog.vue'),
+    VersionCompare: () => import('./scriptDetail/edit/version-compare'),
+    VersionValid: () => import('./scriptDetail/common/version-valid'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    DataDialog: () => import('./scriptDetail/common/data-dialog.vue')
   },
   filters: {},
   mixins: [download],
@@ -667,7 +667,7 @@ export default {
         catalogId: this.scriptConfig.catalogId, // 工具目录Id
         isLib: this.scriptConfig.isLib,
         useLib: this.scriptConfig.useLib
-       
+
       };
       //自由参数
       if (this.versionVo.argument && !this.$utils.isEmpty(this.versionVo.argument)) {

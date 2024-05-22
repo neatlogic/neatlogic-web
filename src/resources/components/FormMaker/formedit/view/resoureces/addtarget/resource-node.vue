@@ -71,8 +71,8 @@ export default {
   name: 'Resourcenode',
   components: {
     FilterSearch,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filtes: {},
   props: {
@@ -181,7 +181,7 @@ export default {
     valid() {
       !this.selectNodeList.length && (this.isRequired = true);
     },
-    save() { 
+    save() {
       this.valid();
       let list = this.selectNodeList.map(item => {
         let keyList = ['id', 'ip', 'port', 'name'];

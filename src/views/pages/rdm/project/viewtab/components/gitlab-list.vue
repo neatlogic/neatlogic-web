@@ -107,10 +107,10 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue')
   },
   props: {
     canSearch: { type: Boolean, default: false },

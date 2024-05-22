@@ -74,7 +74,7 @@ export default {
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    DashboardWidget: resolve => require(['./widget/dashboard-widget.vue'], resolve)
+    DashboardWidget: () => import('./widget/dashboard-widget.vue')
   },
   props: [],
   data() {

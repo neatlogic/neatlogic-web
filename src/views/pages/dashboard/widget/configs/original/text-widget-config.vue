@@ -82,9 +82,9 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     config: { type: Object }

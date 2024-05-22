@@ -54,8 +54,8 @@
 export default {
   name: 'ApiHelp',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    JsonViewer: () => import('vue-json-viewer')
   },
   props: {
     rowData: {

@@ -51,9 +51,9 @@
 export default {
   name: '', // 执行记录
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ViewParamDialog: resolve => require(['./view-param-dialog'], resolve) // 输入、输出参数结果查看
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ViewParamDialog: () => import('./view-param-dialog') // 输入、输出参数结果查看
   },
   props: {
     title: {

@@ -43,9 +43,9 @@
 export default {
   name: 'RunnerRelateComponent', // runner管理
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue')
   },
   filters: {},
   props: {
@@ -74,7 +74,7 @@ export default {
         {
           title: this.$t('term.deploy.connectionmode'),
           key: 'authType'
-        }, 
+        },
         {
           title: 'IP',
           key: 'host'
@@ -95,9 +95,9 @@ export default {
           title: this.$t('term.framework.associationgroup'),
           key: 'usedCount'
         },
-        { 
-          key: 'action', 
-          title: '', 
+        {
+          key: 'action',
+          title: '',
           type: 'action',
           operations: [
             {
@@ -106,7 +106,7 @@ export default {
               type: 'text',
               action: 'del'
             }
-          ] 
+          ]
         }
       ],
       tableSetting: {

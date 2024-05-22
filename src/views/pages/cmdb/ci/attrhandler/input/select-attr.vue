@@ -38,7 +38,7 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     disabled: { type: Boolean, default: false },
@@ -70,7 +70,7 @@ export default {
                 returnActualValue.push(opt.text);
               }
             }
-          } 
+          }
           if (this.extraDataList.length > 0) {
             this.extraDataList.forEach(d => {
               returnValue.push(d);
@@ -93,7 +93,7 @@ export default {
       if (this.attrData.isRequired || this.attrData.isCiUnique) {
         this.validateList.push('required');
       }
-    } 
+    }
   },
   beforeMount() {},
   mounted() {},
@@ -110,7 +110,7 @@ export default {
       let isValid = true;
       if (handler) {
         isValid = handler.valid();
-      } 
+      }
       if (isValid) {
         if (this.attrData && (this.attrData.isRequired || this.attrData.isCiUnique)) {
           if (this.selectValueList.length == 0 && this.extraDataList.length == 0) {

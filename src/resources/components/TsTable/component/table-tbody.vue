@@ -114,7 +114,7 @@
                     <span v-else-if="typeof bitem['' + hitem.key + ''] == 'object'">
                       <UserCard v-bind="bitem['' + hitem.key + '']" hideAvatar></UserCard>
                     </span>
-                    
+
                   </span>
                   <span v-else-if="hitem.type == 'usercards'" :class="hitem.textStyle" @click.stop>
                     <GroupList :dataList="bitem['' + hitem.key + '']"></GroupList>
@@ -129,7 +129,7 @@
                     </span>
                     <span v-else>
                       <GroupList :dataList="bitem['' + hitem.key + '']" type="tag"></GroupList>
-                    </span>                    
+                    </span>
                   </span>
                   <span v-else-if="hitem.type == 'file'">
                     <TdFile :list="bitem[hitem.key]"></TdFile>
@@ -183,10 +183,10 @@ export default {
   name: 'TBody',
   components: {
     draggable,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TdFile: resolve => require(['./td-file.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TdFile: () => import('./td-file.vue')
   },
   filters: {},
   props: {
@@ -241,7 +241,7 @@ export default {
     isExpand: {
       //是否有展开更多
       type: Boolean,
-      default: false      
+      default: false
     },
     theme: Object, //自定义主题,
     canResize: Boolean
@@ -289,7 +289,7 @@ export default {
       if (!keyName && !bitem['' + keyName + ''] && bitem['' + keyName + ''] != 0 && keyName != 0) {
         name = bindex;
       } else {
-        name = bitem['' + keyName + ''];      
+        name = bitem['' + keyName + ''];
       }
       return name;
     },
@@ -311,7 +311,7 @@ export default {
           return themeConfig;
         }
       }
-    },    
+    },
     setTd() {
       if (this.theme) {
         let table = this.theme.TsTable;
@@ -356,7 +356,7 @@ export default {
       return html;
     },
     rowList(row, valueKey) {
-      let name = '';      
+      let name = '';
       if (row.length > 0) {
         row.forEach(v => {
           name += v['' + valueKey + ''] + ',';
@@ -475,7 +475,7 @@ export default {
           return '';
         }
       };
-    },    
+    },
     getActionPostion() {
       return function(width, scrollleft) {
         return {
@@ -542,7 +542,7 @@ export default {
         }
       },
       deep: true,
-      immediate: true      
+      immediate: true
     }
   }
 };

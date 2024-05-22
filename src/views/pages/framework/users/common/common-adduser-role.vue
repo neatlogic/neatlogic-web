@@ -1,6 +1,6 @@
 <template>
   <TsContain :hasContentPadding="false">
-    <template slot="topLeft">     
+    <template slot="topLeft">
       <span class="action-item tsfont-plus cursor" @click="showAdd = true">
         {{ $t('page.newtarget',{'target':$t('page.member')}) }}
       </span>
@@ -10,7 +10,7 @@
         <InputSearcher v-model="keyword" :placeholder="$t('page.keyword')" @change="userKeyword"></InputSearcher>
       </div>
     </template>
-    <template slot="topCenter">            
+    <template slot="topCenter">
       <div class="div-btn-contain action-group text-right pr-nm">
         <template v-if="userListData.cardList.length > 0">
           <span class="action-item" :class="isSelectAll?'tsfont-check-square-o':'tsfont-minus-square'" @click="allSelect">{{ isSelectAll ? $t('page.selectall') : $t('page.unselectall') }}</span>
@@ -78,10 +78,10 @@
 export default {
   name: 'CommonAdduser',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    UserDetail: resolve => require(['./common-user-detail'], resolve),
-    selectUser: resolve => require(['./common-select-user-role'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    UserDetail: () => import('./common-user-detail'),
+    selectUser: () => import('./common-select-user-role'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher')
   },
   props: {
     authName: {
@@ -225,7 +225,7 @@ export default {
         this.$Message.warning(this.$t('message.selectobjdel'));
         return;
       }
-     
+
       if (this.authName) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
@@ -287,11 +287,11 @@ export default {
       // 模态框，点击确认按钮
       let _this = this;
       let uuidList = [];
-      if (this.userCount.userUuidList) {        
+      if (this.userCount.userUuidList) {
         uuidList = this.isRepeat(this.userCount.userUuidList, uuidList);
-      } 
-      this.showAdd = false;     
-      this.isSelectAll = true; 
+      }
+      this.showAdd = false;
+      this.isSelectAll = true;
       this.saveUuidList = uuidList.map(item => item.uuid);
       this.userListData.cardList.push(...uuidList);
       this.$emit('saveUser');

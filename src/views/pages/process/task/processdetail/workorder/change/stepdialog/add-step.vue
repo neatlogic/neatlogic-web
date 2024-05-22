@@ -62,8 +62,8 @@ import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormDatePicker
   },
   props: {

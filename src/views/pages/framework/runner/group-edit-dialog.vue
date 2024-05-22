@@ -8,7 +8,7 @@
     >
       <template v-slot>
         <div>
-          <Tabs 
+          <Tabs
             v-model="current"
             class="block-tabs"
             :animated="false"
@@ -59,7 +59,7 @@
                       </TsTable>
                     </template>
                   </TsForm>
-                 
+
                 </div>
               </div>
             </TabPane>
@@ -92,11 +92,11 @@ export default {
   name: 'RunnerGroupEdit', // 添加分组
   components: {
     RunnerRelate,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
-  filters: {}, 
+  filters: {},
   mixins: [runnerGroupMixin],
   props: {
     runnerGroupData: {
@@ -110,14 +110,14 @@ export default {
     return {
       runnerList: [],
       current: 'basicInfo', // 默认显示第一个
-      formValue: {}, 
+      formValue: {},
       editTsDialog: {
         // 弹框配置信息
         type: 'modal',
         isShow: true,
         title: this.$t('dialog.title.edittarget', {target: this.$t('page.group')}),
         okText: this.$t('page.save')
-      }    
+      }
     };
   },
   beforeCreate() {},
@@ -134,7 +134,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: { 
+  methods: {
     saveRunnerGroup() {
       // 保存runner
       let form = this.$refs.form;

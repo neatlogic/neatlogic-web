@@ -19,7 +19,7 @@ import viewmixin from './viewmixin.js';
 export default {
   name: '',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   mixins: [viewmixin],
   props: {},

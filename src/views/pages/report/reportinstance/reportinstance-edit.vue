@@ -58,11 +58,11 @@
                 <div class="text-default">{{ table.title }}</div>
                 <div class="bg-op thead-check-list radius-lg">
                   <CheckboxGroup v-model="table.valueList">
-                    <Checkbox 
-                      v-for="item in table.columnList" 
+                    <Checkbox
+                      v-for="item in table.columnList"
                       :key="item.value"
                       :label="item.value"
-                      :disabled="table.valueList.length === 1 && table.valueList.includes(item.value)" 
+                      :disabled="table.valueList.length === 1 && table.valueList.includes(item.value)"
                       class="checkbox-item"
                     >{{ item.text }}</Checkbox>
                   </CheckboxGroup>
@@ -101,8 +101,8 @@ export default {
   components: {
     TsForm,
     ...paramhandler,
-    Draggable: resolve => require(['vuedraggable'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    Draggable: () => import('vuedraggable'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     id: {type: Number},
@@ -110,7 +110,7 @@ export default {
   },
   data() {
     var _this = this;
-    return { 
+    return {
       isSaving: false,
       reportDialogConfig: {
         type: 'slider',
@@ -148,7 +148,7 @@ export default {
             _this.reportInstanceData.reportId = name;
             _this.getReportParamList();
           }
-        }, 
+        },
         authList: {
           type: 'userselect',
           label: this.$t('page.useauth'),
@@ -353,7 +353,7 @@ export default {
      margin-right: 16px;
     }
   }
-  
+
   .checked-item {
     display: inline-block;
     margin-bottom: 10px;

@@ -72,10 +72,10 @@
 export default {
   name: '',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    MenuEdit: resolve => require(['./menu-edit'], resolve),
-    AuthorityViewDialog: resolve => require(['./authority-view-dialog'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MenuEdit: () => import('./menu-edit'),
+    AuthorityViewDialog: () => import('./authority-view-dialog')
   },
   props: {},
   data() {
@@ -207,7 +207,7 @@ export default {
       });
     },
     getMenuTreeNode() {
-      this.loadingShow = true; 
+      this.loadingShow = true;
       this.$api.framework.extramenu.getMenuTreeNode({id: this.selectedTreeId}).then(res => {
         if (res.Status == 'OK') {
           this.selectData = res.Return || {};
@@ -237,11 +237,11 @@ export default {
         items && items.forEach(item => {
           result.push(item);
           if (!_this.$utils.isEmpty(item) && Array.isArray(item.children)) {
-            flatten(item.children); // 递归调用 flatten 函数  
+            flatten(item.children); // 递归调用 flatten 函数
           }
-        });  
+        });
       }
-      flatten(array); // 开始扁平化过程  
+      flatten(array); // 开始扁平化过程
       return result;
     },
     clickNode(tree, node) {
@@ -352,7 +352,7 @@ export default {
           this.selectSaveId = res.Return;
           this.$Message.success(this.$t('message.savesuccess'));
           this.init();
-          this.$store.commit('setExtramenu', true); 
+          this.$store.commit('setExtramenu', true);
         }
       }).finally(() => {
         this.saving = false;
@@ -380,7 +380,7 @@ export default {
       this.$api.framework.extramenu.moveExtramenu(data).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          this.$store.commit('setExtramenu', true); 
+          this.$store.commit('setExtramenu', true);
         }
       }).finally(() => {
         this.getTreeList();
@@ -436,28 +436,28 @@ export default {
         } else {
           routeList = (communityConfig(routerPath).default || []);
         }
-        const menuList = routeList  
-          .filter(item => item.meta)  
+        const menuList = routeList
+          .filter(item => item.meta)
           .map(item => ({
             title: item.meta.title,
             name: item.name,
             path: item.path,
             authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
           }));
-        if (menuList.length) {  
-          routerConfig[moduleId] = menuList;  
-        }  
+        if (menuList.length) {
+          routerConfig[moduleId] = menuList;
+        }
       });
       return routerConfig;
     }
   },
   filter: {},
-  computed: {  
+  computed: {
     moduleList() {
       const moduleList = [];
       let menuAuthList = [];
       this.$store.state.topMenu.moduleList.forEach((item, index) => {
-        if (item.moduleId && item.moduleName) {  
+        if (item.moduleId && item.moduleName) {
           moduleList.push({
             id: item.moduleId,
             name: item.moduleName,
@@ -480,8 +480,8 @@ export default {
                 }
               });
             }
-          }); 
-        }  
+          });
+        }
       });
       this.menuAuthList = menuAuthList;
       return [
@@ -504,8 +504,8 @@ export default {
             }
           ]
         }
-      ];  
-    }  
+      ];
+    }
   },
   watch: {}
 };

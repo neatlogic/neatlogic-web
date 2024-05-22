@@ -215,14 +215,14 @@ import draggable from 'vuedraggable';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    DisplaySetting: resolve => require(['./viewdisplay-edit.vue'], resolve),
-    //ViewTag: resolve => require(['./view-tag.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve),
-    EditCustomTemplate: resolve => require(['./edit-customtemplate-dialog.vue'], resolve),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    DisplaySetting: () => import('./viewdisplay-edit.vue'),
+    //ViewTag:()=>import('./view-tag.vue'),
+    IconDialog: () => import('../common/icon-dialog.vue'),
+    EditCustomTemplate: () => import('./edit-customtemplate-dialog.vue'),
     draggable
   },
   props: {},

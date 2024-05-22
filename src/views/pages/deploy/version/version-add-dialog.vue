@@ -24,7 +24,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     params: {
@@ -76,12 +76,12 @@ export default {
           type: 'text',
           name: 'version',
           maxlength: 50,
-          validateList: ['required', 'key-special', { 
-            name: 'searchUrl', 
-            url: '/api/rest/deploy/version/save', 
-            key: 'version', 
-            message: this.$t('form.validate.repeat', {target: this.$t('page.versions')}), 
-            params: {} 
+          validateList: ['required', 'key-special', {
+            name: 'searchUrl',
+            url: '/api/rest/deploy/version/save',
+            key: 'version',
+            message: this.$t('form.validate.repeat', {target: this.$t('page.versions')}),
+            params: {}
           }]
         },
         {

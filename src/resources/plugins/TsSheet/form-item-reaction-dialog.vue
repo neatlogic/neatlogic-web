@@ -103,7 +103,7 @@
                     }else {
                       $delete(r, 'event');
                     }
-                    
+
                   }
                 "
               ></TsFormRadio>
@@ -119,11 +119,11 @@ import { default as emitTypeList } from './form/define/common/emittype.js';
 export default {
   name: '',
   components: {
-    ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
-    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve),
-    FormItem: resolve => require(['./form-item.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    FormItem: () => import('./form-item.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     formItem: { type: Object }, //当前表单组件

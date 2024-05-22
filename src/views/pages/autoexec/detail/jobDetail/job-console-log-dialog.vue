@@ -58,8 +58,8 @@
 export default {
   name: '',
   components: {
-    ConsoleLog: resolve => require(['@/views/pages/autoexec/detail/logcomponents/job-log.vue'], resolve),
-    ConsoleRecords: resolve => require(['./console-records.vue'], resolve)
+    ConsoleLog: () => import('@/views/pages/autoexec/detail/logcomponents/job-log.vue'),
+    ConsoleRecords: () => import('./console-records.vue')
   },
   props: {
     jobData: { type: Object }

@@ -35,7 +35,7 @@ import { addEvent } from './util/event.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: {
     isShow: { type: Boolean, default: false },

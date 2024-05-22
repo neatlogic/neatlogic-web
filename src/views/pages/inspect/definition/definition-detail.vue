@@ -52,9 +52,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'DefinitionDetail', // 编辑巡检定义
   components: {
-    GlobalThresholdRuleAdd: resolve => require(['./components/global-threshold-rule-add.vue'], resolve), // 添加规则
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    TargetFilter: resolve => require(['./components/target-filter.vue'], resolve) // 指标过滤
+    GlobalThresholdRuleAdd: () => import('./components/global-threshold-rule-add.vue'), // 添加规则
+    JsonViewer: () => import('vue-json-viewer'),
+    TargetFilter: () => import('./components/target-filter.vue') // 指标过滤
   },
   filters: {},
   directives: { download },

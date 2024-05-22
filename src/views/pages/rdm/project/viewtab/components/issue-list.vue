@@ -233,20 +233,20 @@ export default {
   name: '',
   components: {
     ...issueDetailHandler,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
-    EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve),
-    IssueListTable: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-table.vue'], resolve),
-    IssueListGantt: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-gantt.vue'], resolve),
-    IssueListStorywall: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
+    EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
+    IssueListDialog: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    BatchExecDialog: () => import('@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'),
+    IssueListTable: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-table.vue'),
+    IssueListGantt: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-gantt.vue'),
+    IssueListStorywall: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue')
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -690,7 +690,7 @@ export default {
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
       this.searchIssueData.isProcessed = this.isProcessed;
-      
+
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {

@@ -4,7 +4,7 @@
     <loading :loadingShow="loadingShow" type="fix"></loading>
     <TsContain
       :isSiderHide="isSiderHide"
-      :enableCollapse="true"  
+      :enableCollapse="true"
       border="border"
     >
       <template v-slot:navigation>
@@ -61,7 +61,7 @@
                 <span :class="[row.monitorStatusJson.cssClass, {'background-FATAL': row.monitorStatusJson.value== 'FATAL'}]" class="vertical">{{ row.monitorStatusJson.text }} </span>
                 <span class="text-title">
                   {{ handleTime(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-                </span> 
+                </span>
               </span>
             </span>
             <span v-else>
@@ -86,7 +86,7 @@
                 <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical">{{ row.inspectStatusJson.text }} </span>
                 <span class="text-title">
                   {{ handleTime(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-                </span> 
+                </span>
               </span>
             </span>
             <span v-else>
@@ -109,13 +109,13 @@
 export default {
   name: 'InspectResult', // 巡检结果
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
-  props: {}, 
+  props: {},
   data() {
     return {
       loadingShow: true, // 加载中动画
@@ -271,7 +271,7 @@ export default {
           {
             title: this.$t('page.name'),
             key: 'name'
-          },          
+          },
           {
             title: this.$t('page.description'),
             key: 'description'
@@ -292,8 +292,8 @@ export default {
             title: this.$t('term.inspect.iplist'),
             key: 'allIp',
             type: 'tag',
-            valueKey: 'ip' 
-          },          
+            valueKey: 'ip'
+          },
           {
             title: this.$t('term.autoexec.subordinatedepartment'),
             key: 'bgList',
@@ -321,7 +321,7 @@ export default {
           {
             title: this.$t('term.deploy.maintenancewindow'),
             key: 'maintenanceWindow'
-          },        
+          },
           {
             title: '',
             key: 'action'
@@ -332,7 +332,7 @@ export default {
         currentPage: 1,
         rowNum: null
       }
-    
+
     };
   },
   beforeCreate() {},

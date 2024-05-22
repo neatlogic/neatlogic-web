@@ -38,10 +38,10 @@
 export default {
   name: '',
   components: {
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    IssueFavorite: () => import('@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     issueData: { type: Object },

@@ -305,19 +305,19 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    StaticDataEditor: resolve => require(['../common/static-data-editor.vue'], resolve),
-    ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
-    TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve),
-    FormtableinputDataSource: resolve => require(['./formtableinput-data-source.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    StaticDataEditor: () => import('../common/static-data-editor.vue'),
+    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
+    TableConfig: () => import('./formtableinputer-table-config.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    FormtableinputDataSource: () => import('./formtableinput-data-source.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -507,7 +507,7 @@ export default {
           }
         }
       }
-      
+
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
       }
@@ -727,7 +727,7 @@ export default {
         if (handler && handler != 'formselect') {
           list = list.filter(item => item.value != 'formtableinputer');
         }
-        return list; 
+        return list;
       };
     }
   },

@@ -43,7 +43,7 @@
         <div>
           <ul v-if="stepList && stepList.length>0" class="stepList">
             <template v-for="(ary, sindex) in stepList">
-              <li   
+              <li
                 v-if="ary && ary.length"
                 :key="sindex"
                 class="step-li border-color"
@@ -56,7 +56,7 @@
                     class="dividing-color radius-sm padding-sm"
                     :class="step.isSelect?'bg-selected border-primary text-primary':'bg-op'"
                     @click="selectStep(step)"
-                  >    
+                  >
                     <div>
                       <div class="step-name overflow" :title="step.name && step.name.length > 9 ? step.name : ''">{{ step.name || '-' }}</div>
                       <div class="step-type">
@@ -77,9 +77,9 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     combopId: [Number, String],
@@ -138,7 +138,7 @@ export default {
         let findItem = this.scenarioList.find(s => s.scenarioId == item.id);
         //选择过的场景不可再次选择
         if (findItem) {
-          if (!this.scenarioId && (this.editScenarioConfig && findItem.scenarioId == this.editScenarioConfig.scenarioId)) { 
+          if (!this.scenarioId && (this.editScenarioConfig && findItem.scenarioId == this.editScenarioConfig.scenarioId)) {
             this.$set(item, '_disabled', false);
           } else {
             this.$set(item, '_disabled', true);
@@ -223,7 +223,7 @@ export default {
         this.$Notice.info({
           title: this.$t('term.autoexec.pleaseselectatleastonephase')
         });
-      }  
+      }
       return isValid;
     },
     clearScenarioData() {

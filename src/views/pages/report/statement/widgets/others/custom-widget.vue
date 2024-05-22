@@ -14,7 +14,7 @@ import { WidgetBase } from '../widget-base.js';
 export default {
   name: '',
   components: {
-    CustomTemplateViewer: resolve => require(['@/resources/components/customtemplate/customtemplate-viewer.vue'], resolve)
+    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue')
   },
   extends: WidgetBase,
   props: {},

@@ -14,13 +14,13 @@
       <Button @click="close()">{{ $t('page.cancel') }}</Button>
       <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
     </template>
-  </TsDialog>  
+  </TsDialog>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     ciId: {
@@ -79,7 +79,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    
+
   },
   beforedUpdate() {},
   updated() {},

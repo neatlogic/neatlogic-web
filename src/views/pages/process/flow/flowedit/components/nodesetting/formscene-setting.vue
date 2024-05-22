@@ -46,8 +46,8 @@ import itemmixin from '@/views/pages/process/flow/flowedit/components/itemmixin.
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    FormPreview: resolve => require(['@/resources/plugins/TsSheet/form-preview.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    FormPreview: () => import('@/resources/plugins/TsSheet/form-preview.vue')
   },
   mixins: [nodemixin, itemmixin],
   props: {

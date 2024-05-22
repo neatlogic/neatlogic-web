@@ -12,7 +12,7 @@
     </TsFormItem>
     <TsFormItem
       :label="$t('page.filetemplate')"
-      labelPosition="left"  
+      labelPosition="left"
       contentAlign="right"
     >
       <TsFormSwitch
@@ -49,10 +49,10 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   extends: base,
   props: {},

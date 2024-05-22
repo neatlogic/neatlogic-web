@@ -27,8 +27,8 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {
   },
@@ -61,7 +61,7 @@ export default {
       },
       defaultValue: _this.list,
       tagList: []
-     
+
     };
   },
   beforeCreate() {},
@@ -82,7 +82,7 @@ export default {
       }
       return tagList;
     },
-    changeSwitch(val) { 
+    changeSwitch(val) {
       if (!val) {
         this.tagList = [];
       }

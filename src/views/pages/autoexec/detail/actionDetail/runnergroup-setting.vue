@@ -63,7 +63,7 @@ export default {
     }
   },
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     readonly: Boolean,
@@ -113,7 +113,7 @@ export default {
         dealDataByUrl: this.$utils.getRunnerGroupList,
         dynamicUrl: '/api/rest/runnergroup/search',
         params: {
-          
+
         },
         rootName: 'tbodyList'
       }

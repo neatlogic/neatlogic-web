@@ -102,10 +102,10 @@
 export default {
   name: '',
   components: {
-    TsUlList: resolve => require(['@/resources/components/TsUlList/TsUlList.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   props: {},
   data() {

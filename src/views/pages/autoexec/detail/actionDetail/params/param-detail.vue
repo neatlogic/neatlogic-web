@@ -135,7 +135,7 @@ export default {
     TsFormSwitch,
     PoptipSelect,
     ...Items,
-    vuedraggable: resolve => require(['vuedraggable'], resolve)
+    vuedraggable: () => import('vuedraggable')
   },
   filters: {},
   props: {
@@ -251,7 +251,7 @@ export default {
           findNameList.push(t);
         }
       });
-      this.$nextTick(() => { 
+      this.$nextTick(() => {
         if (type == 'key') {
           if (findNameList.length > 1) {
             this.isRepeatName = true;

@@ -89,11 +89,11 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    BatchAddJob: resolve => require(['./batch-add-job'], resolve), // 批量作业作业
-    SingleAddJob: resolve => require(['./single-add-job'], resolve), // 单个创建作业
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
-    ConfigAddHelpDialog: resolve => require(['./config-add-help-dialog'], resolve) // 帮助
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    BatchAddJob: () => import('./batch-add-job'), // 批量作业作业
+    SingleAddJob: () => import('./single-add-job'), // 单个创建作业
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
+    ConfigAddHelpDialog: () => import('./config-add-help-dialog') // 帮助
   },
   props: {},
   data() {

@@ -181,9 +181,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrSearcher: resolve => require(['../cientity/attr-searcher.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AttrSearcher: () => import('../cientity/attr-searcher.vue')
   },
   props: {
     id: { type: Number }

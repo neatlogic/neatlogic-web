@@ -6,7 +6,7 @@
           <Row class="mb-md" :gutter="8">
             <Col span="8"></Col>
             <Col span="8">
-              <TsFormDatePicker 
+              <TsFormDatePicker
                 v-model="dateTimeRange"
                 :placeholder="$t('page.plantime')"
                 format="yyyy-MM-dd HH:mm:ss"
@@ -31,9 +31,9 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    JobList: resolve => require(['pages/autoexec/manage/job/job-list.vue'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    JobList: () => import('pages/autoexec/manage/job/job-list.vue')
   },
   props: {
     id: {

@@ -94,12 +94,12 @@
 export default {
   name: '',
   components: {
-    IssueRing: resolve => require(['@/views/pages/rdm/project/viewtab/iteration/issue-ring.vue'], resolve),
-    IssueBar: resolve => require(['@/views/pages/rdm/project/viewtab/iteration/issue-bar.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    EditIteration: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue'], resolve)
+    IssueRing: () => import('@/views/pages/rdm/project/viewtab/iteration/issue-ring.vue'),
+    IssueBar: () => import('@/views/pages/rdm/project/viewtab/iteration/issue-bar.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    EditIteration: () => import('@/views/pages/rdm/project/viewtab/components/edit-iteration-dialog.vue')
   },
   props: {},
   data() {

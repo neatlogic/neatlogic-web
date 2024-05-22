@@ -84,9 +84,9 @@
 import MainLeft from './main-left.vue';
 export default {
   name: '',
-  components: { 
+  components: {
     MainLeft,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: ['hasTemplateAuth'],
   data() {

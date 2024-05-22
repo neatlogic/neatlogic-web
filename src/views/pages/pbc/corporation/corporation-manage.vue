@@ -38,8 +38,8 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CorporationEdit: resolve => require(['./corporation-edit-dialog.vue'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    CorporationEdit: () => import('./corporation-edit-dialog.vue')
   },
   props: {},
   data() {

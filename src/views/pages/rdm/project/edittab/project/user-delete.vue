@@ -21,7 +21,7 @@
 export default {
   name: '',
   components: {
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve)
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox')
   },
   props: {
     projectUser: { type: Object }

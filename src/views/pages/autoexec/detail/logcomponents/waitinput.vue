@@ -48,8 +48,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {},
   props: {

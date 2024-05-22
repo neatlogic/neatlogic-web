@@ -79,9 +79,9 @@
             ></TsFormSelect>
           </Col>
           <Col v-else-if="configParamList[lindex].mappingMode.indexOf('prenode')==0" span="12">
-            <PrenodeSelect 
-              :value="configParamList[lindex].value" 
-              :dataList="getPrevList(prevList, configParamList[lindex].component,configParamList[lindex].mappingMode)" 
+            <PrenodeSelect
+              :value="configParamList[lindex].value"
+              :dataList="getPrevList(prevList, configParamList[lindex].component,configParamList[lindex].mappingMode)"
               :disabled="!canEdit"
               @updateVal="(val)=>{changePrenode(val,lindex)}"
             ></PrenodeSelect>
@@ -151,10 +151,10 @@ export default {
   components: {
     TsFormSelect,
     ...items,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    Readonly: resolve => require(['./readonly.vue'], resolve),
-    Globalparam: resolve => require(['./globalparam.vue'], resolve),
-    PrenodeSelect: resolve => require(['./prenode-select.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    Readonly: () => import('./readonly.vue'),
+    Globalparam: () => import('./globalparam.vue'),
+    PrenodeSelect: () => import('./prenode-select.vue')
   },
   filters: {},
   model: {
@@ -275,7 +275,7 @@ export default {
         return true;
       }
     },
-    changeMappingMode(item, l) { 
+    changeMappingMode(item, l) {
       if (item.mappingMode == 'constant' && l.defaultValue) { //选择常量时把默认值替换
         this.$set(item, 'value', l.defaultValue);
       } else if (item.mappingMode == 'profile') { ////选择参数集时把默认值替换
@@ -312,7 +312,7 @@ export default {
     //判断是否需要把预置参数集的选项过滤
     filterProfile(list, profileParamVoList, item) {
       let dataList = list || [];
-      let isFilterProfile = true; 
+      let isFilterProfile = true;
       if (profileParamVoList && profileParamVoList.length > 0) {
         profileParamVoList.forEach(p => {
           if (p.key == item.key && p.type == item.type && !this.$utils.isEmpty(p.defaultValue)) {

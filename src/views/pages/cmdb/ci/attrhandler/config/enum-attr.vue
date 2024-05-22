@@ -27,8 +27,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     config: {type: Object},

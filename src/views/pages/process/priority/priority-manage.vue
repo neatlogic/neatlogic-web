@@ -95,7 +95,7 @@ export default {
     TsTable,
     TsForm,
     TsFormSelect,
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: [],

@@ -39,8 +39,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue')
   },
   props: {
     ciEntityId: { type: Number },

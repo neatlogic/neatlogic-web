@@ -63,9 +63,9 @@ export default {
   name: 'ScriptDetail',
   components: {
     VersionEdit,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ReviewDialog: resolve => require(['./scriptDetail/edit/review-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ReviewDialog: () => import('./scriptDetail/edit/review-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {
   },
@@ -97,15 +97,15 @@ export default {
           label: this.$t('page.name'),
           width: '100%',
           validateList: [
-            'required', 
+            'required',
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/script/save', 
+              url: '/api/rest/autoexec/script/save',
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
           ]
-         
+
         },
         {
           type: 'select',
@@ -122,7 +122,7 @@ export default {
           dealDataByUrl: this.$utils.getToolClassificationList,
           transfer: true,
           width: '100%'
-         
+
         },
         {
           type: 'tree',
@@ -138,7 +138,7 @@ export default {
           valueName: 'id',
           transfer: true,
           width: '100%'
-         
+
         },
         {
           name: 'isLib',
@@ -231,13 +231,13 @@ export default {
       isReviewShow: false,
       versionId: null,
       id: null, //新建id
-      versionForm: { 
+      versionForm: {
         value: '',
         width: '50%',
         maxlength: 50,
         border: 'border',
         validateList: ['required', 'name-special']
-      },      
+      },
       versionConfig: {
         title: ''
       },
@@ -333,7 +333,7 @@ export default {
         if (!isValid) {
           return;
         }
-        
+
         this.$nextTick(() => {
           data = Object.assign(data, this.settingConfig, this.versionConfig, this.$refs.versionEdit.save());
           if (this.versionId) {
@@ -398,7 +398,7 @@ export default {
       } else {
         this.userType = 'submit';
       }
-      await this.$api.autoexec.script.submitScript({ versionId: this.versionId}); 
+      await this.$api.autoexec.script.submitScript({ versionId: this.versionId});
       this.isReviewShow = true;
     },
     updateData(status) {
@@ -440,7 +440,7 @@ export default {
 <style lang="less" scoped>
 .step-main{
   padding-top: 20px;
-  .step{ 
+  .step{
     width: 60%;
     margin: 0 auto;
     padding: 40px 0;

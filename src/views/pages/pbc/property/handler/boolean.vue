@@ -13,8 +13,7 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormRadio.vue'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio.vue')
   },
   props: {
     value: {type: [Boolean, String]},

@@ -60,7 +60,7 @@
 export default {
   name: 'UserList',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: ['item', 'styleClass'],
 
@@ -81,7 +81,7 @@ export default {
     }
   },
   methods: {
-   
+
   },
   computed: {
   },

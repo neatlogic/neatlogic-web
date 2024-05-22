@@ -3,7 +3,7 @@
     <TsDialog
       v-bind="dialogConfig"
       @on-close="closeDialog"
-    > 
+    >
       <template v-slot>
         <div>
           <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
@@ -36,8 +36,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {},
   data() {
@@ -85,7 +85,7 @@ export default {
           title: this.$t('page.jobname'),
           key: 'jobName',
           maxLength: 40
-        }, 
+        },
         {
           title: 'cron',
           key: 'cron'
@@ -98,7 +98,7 @@ export default {
           title: this.$t('page.jobgroupname'),
           key: 'jobGroup',
           maxLength: 60
-        }, 
+        },
         {
           title: this.$t('term.autoexec.jobhandler'),
           key: 'jobHandler',

@@ -108,7 +108,7 @@
 export default {
   name: '',
   components: {
-    PropertyHandler: resolve => require(['../property/property-handler.vue'], resolve)
+    PropertyHandler: () => import('../property/property-handler.vue')
   },
   props: {
     interfaceId: { type: String },

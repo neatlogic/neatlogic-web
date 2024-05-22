@@ -104,9 +104,9 @@
 export default {
   name: '',
   components: {
-    ConditionGroupDialog: resolve => require(['./conditiongroup-dialog.vue'], resolve),
-    SearchInputer: resolve => require(['./search-inputer.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ConditionGroupDialog: () => import('./conditiongroup-dialog.vue'),
+    SearchInputer: () => import('./search-inputer.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     workcenterConditionData: { type: Object },
@@ -286,7 +286,7 @@ export default {
         let newConditionGroup = null;
         if (conditionGroupUuid) {
           newConditionGroup = this.workcenterConditionDataLocal.conditionGroupList.find(d => d.uuid == conditionGroupUuid);
-        } 
+        }
         if (!newConditionGroup) {
           newConditionGroup = {};
           newConditionGroup['uuid'] = this.$utils.setUuid();

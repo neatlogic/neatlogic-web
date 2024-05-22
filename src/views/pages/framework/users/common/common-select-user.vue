@@ -38,9 +38,9 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
 export default {
   name: 'SelectUser',
   components: {
-    userList: resolve => require(['./select-user/user-list'], resolve),
-    teamList: resolve => require(['./select-user/team-list'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
+    userList: () => import('./select-user/user-list'),
+    teamList: () => import('./select-user/team-list'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect
   },
   props: [],

@@ -89,7 +89,7 @@
         </ul>
 
         <div v-if="tableConfig.rowNum > 0" class="page-container">
-          <Page 
+          <Page
             :current.sync="tableConfig.currentPage"
             :page-size="tableConfig.pageSize"
             :total="tableConfig.rowNum"
@@ -117,11 +117,11 @@
 export default {
   name: 'NoticeManage',
   components: {
-    NoticeEdit: resolve => require(['./notice-edit.vue'], resolve),
-    NoticeIssue: resolve => require(['./notice-issue.vue'], resolve),
-    NoticePreview: resolve => require(['./notice-preview.vue'], resolve),
-    UserCard: resolve => require(['components/UserCard/UserCard.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    NoticeEdit: () => import('./notice-edit.vue'),
+    NoticeIssue: () => import('./notice-issue.vue'),
+    NoticePreview: () => import('./notice-preview.vue'),
+    UserCard: () => import('components/UserCard/UserCard.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   data() {
     return {
@@ -136,10 +136,10 @@ export default {
         pageSize: 20
       },
       tableConfig: {
-        tbodyList: [], 
-        rowNum: 0, 
+        tbodyList: [],
+        rowNum: 0,
         currentPage: 1,
-        pageSize: 20 
+        pageSize: 20
       }
     };
   },

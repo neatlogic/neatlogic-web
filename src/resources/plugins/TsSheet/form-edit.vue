@@ -327,17 +327,17 @@ import { FORMITEMS, FORMITEM_CATEGORY } from './form/formitem-list.js';
 export default {
   name: '',
   components: {
-    FormItemConfig: resolve => require(['./form-item-config.vue'], resolve),
-    TsSheet: resolve => require(['./TsSheet.vue'], resolve),
-    FormPreview: resolve => require(['./form-preview.vue'], resolve),
-    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve),
-    CustomItemDialog: resolve => require(['./customitem-edit-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    FormReferenceDialog: resolve => require(['./form-reference-dialog.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    FormWidthDialog: resolve => require(['./form-width-dialog.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    FormItemConfig: () => import('./form-item-config.vue'),
+    TsSheet: () => import('./TsSheet.vue'),
+    FormPreview: () => import('./form-preview.vue'),
+    ReactionDialog: () => import('./form-row-reaction-dialog.vue'),
+    CustomItemDialog: () => import('./customitem-edit-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    FormReferenceDialog: () => import('./form-reference-dialog.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    FormWidthDialog: () => import('./form-width-dialog.vue'),
+    FormSceneDialog: () => import('./form-scene-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   extends: subformconfig,
   mixins: [download],
@@ -588,7 +588,7 @@ export default {
         let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
         this.$set(formConfig, 'formExtendConfig', formExtendConfig);
         this.$set(data, 'formConfig', formConfig);
-       
+
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;

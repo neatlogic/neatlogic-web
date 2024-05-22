@@ -36,9 +36,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     id: { type: Number }

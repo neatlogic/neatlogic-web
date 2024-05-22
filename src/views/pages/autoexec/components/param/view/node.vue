@@ -46,7 +46,7 @@
       :isReadonly="disabled || readonly"
       :dataList="nodeList"
       @on-ok="okMore"
-    ></MoreTarget> 
+    ></MoreTarget>
   </div>
 </template>
 <script>
@@ -54,8 +54,8 @@ import viewmixin from './viewmixin.js';
 export default {
   name: 'Node',
   components: {
-    AddNode: resolve => require(['../edit/node/add-node'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    AddNode: () => import('../edit/node/add-node'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filters: {},
   mixins: [viewmixin],

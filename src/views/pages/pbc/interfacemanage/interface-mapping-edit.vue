@@ -134,12 +134,12 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InterfaceMappingConfig: resolve => require(['./interface-mapping-config.vue'], resolve),
-    //AttrSearcher: resolve => require(['@/views/pages/cmdb/cientity/attr-searcher.vue'], resolve),
-    ConditionGroup: resolve => require(['@/views/pages/cmdb/components/condition/condition-group.vue'], resolve),
-    CustomviewConditionGroup: resolve => require(['@/views/pages/cmdb/components/condition/customview-condition-group.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    InterfaceMappingConfig: () => import('./interface-mapping-config.vue'),
+    //AttrSearcher:()=>import('@/views/pages/cmdb/cientity/attr-searcher.vue'),
+    ConditionGroup: () => import('@/views/pages/cmdb/components/condition/condition-group.vue'),
+    CustomviewConditionGroup: () => import('@/views/pages/cmdb/components/condition/customview-condition-group.vue')
   },
   props: {
     interfaceId: { type: String }

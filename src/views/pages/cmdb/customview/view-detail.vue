@@ -41,8 +41,8 @@ export default {
   name: '',
   components: {
     ViewCiEntityList,
-    ViewDetailData: resolve => require(['./view-detail-data.vue'], resolve),
-    CustomViewTopo: resolve => require(['./view-topo.vue'], resolve)
+    ViewDetailData: () => import('./view-detail-data.vue'),
+    CustomViewTopo: () => import('./view-topo.vue')
   },
   props: {},
   data() {

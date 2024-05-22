@@ -15,7 +15,7 @@ import comMixin from './editmixin.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {
   },
@@ -44,11 +44,11 @@ export default {
     updateval(val) {
       this.$emit('change', val);
     }
-    
+
   },
   computed: {
     getSetting() {
-      let setting = this.$utils.deepClone(this.config);  
+      let setting = this.$utils.deepClone(this.config);
       if (!this.disabled) {
         Object.assign(setting, {
           type: 'text'
@@ -64,7 +64,7 @@ export default {
             return v != 'required';
           });
         }
-      }     
+      }
       return setting;
     }
   },

@@ -19,7 +19,7 @@
 export default {
   name: '',
   components: {
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve)
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail')
   },
   props: {
     config: Object, //执行目标的值

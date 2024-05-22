@@ -17,7 +17,7 @@
 export default {
   name: '',
   components: {
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve)
+    JsonViewer: () => import('vue-json-viewer')
   },
   props: {
     data: { type: Object }

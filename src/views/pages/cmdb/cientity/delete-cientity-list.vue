@@ -91,9 +91,9 @@ export default {
   name: '',
   components: {
     CombineSearcher,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve),
-    DeletedHistoryDetail: resolve => require(['./deleted-history-detail.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('./attr-viewer.vue'),
+    DeletedHistoryDetail: () => import('./deleted-history-detail.vue')
   },
   props: {
     ciId: { type: Number },
