@@ -229,7 +229,8 @@
     "invokeattr": "Reference Properties",
     "cientityid": "Configuration item ID",
     "cientityicon": "Configuration item icon",
-    "editablefield": "Editable attributes"
+    "editablefield": "Editable attributes",
+    "deletecitip": "The current configuration item has been deleted"
   },
   "process": {
     "workordercenter": "Work Center",

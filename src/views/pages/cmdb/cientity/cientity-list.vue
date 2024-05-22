@@ -826,6 +826,14 @@ export default {
             }
           });
         }
+        if (!this.$utils.isEmpty(this.ciEntityData.tbodyList)) {
+          this.ciEntityData.tbodyList.forEach(element => {
+            if (element.actionType == 'delete') {
+              this.$set(element, '_expander', false);
+            }
+          });
+        }
+        
         //补充选中状态
         if (this.selectedData && this.selectedData.length > 0) {
           this.selectedIndexList = this.$utils.deepClone(this.selectedData);
