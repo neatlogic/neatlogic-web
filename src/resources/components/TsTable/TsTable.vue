@@ -506,7 +506,7 @@ export default {
     styleType: {
       //table样式类型,支持多个类型空格隔开的字符串。跟type的区别是type针对排版块状还是列表，styleType针对普通的table常用的样式比如线条还是斑马支持多个字符串  [border,stripe]
       type: String,
-      default: (process.env && process.env.VUE_APP_TABLESTRYLE) || 'border'
+      default: GLOBAL_TABLESTRYLE || 'border'
     },
     loading: {
       type: Boolean,

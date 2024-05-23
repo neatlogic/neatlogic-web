@@ -81,7 +81,7 @@ export default {
         username: '',
         password: ''
       },
-      title: process.env && process.env.VUE_APP_LOGINTITLE,
+      title: GLOBAL_LOGINTITLE,
       errorTips: '',
       remember: false,
       loading: false,
