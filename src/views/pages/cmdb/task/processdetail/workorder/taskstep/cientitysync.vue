@@ -5,7 +5,7 @@
       <TsRow>
         <Col v-for="(entity,eindex) in stepData.ciEntityList" :key="eindex" span="6">
           <div style="font-size:12px" class="text-grey">{{ entity.ciLabel }}({{ entity.ciName }})</div>
-          <div class="ci-main list collection block-container block-main" style="padding:12px;cursor:pointer" @click="toCiEntity(entity.ciEntityId, entity.ciId)">
+          <div class="ci-main list collection block-container block-main" style="padding:12px;cursor:pointer" @click="toCiEntity(entity.ciEntityId, entity.ciId, entity)">
             {{ entity.ciEntityName }}<i v-if="!entity.error" :class="entity.status=='success'?'tsfont-check-o text-success':'tsfont-close-o text-danger'"></i>
             <Poptip
               v-if="entity.error"
@@ -69,7 +69,13 @@ export default {
       this.ciEntityId = null;
       this.isCiEntityDialogShow = false;
     },
-    toCiEntity(ciEntityId, ciId) {
+    toCiEntity(ciEntityId, ciId, entity) {
+      if (entity.action === 'delete') {
+        this.$Notice.info({
+          title: this.$t('term.cmdb.deletecitip')
+        });
+        return;
+      }
       this.ciId = ciId;
       this.ciEntityId = ciEntityId;
       this.isCiEntityDialogShow = true;

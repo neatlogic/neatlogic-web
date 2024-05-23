@@ -230,7 +230,8 @@
     "ciid": "模型id",
     "cientityid": "配置项id",
     "cientityicon": "配置项图标",
-    "editablefield": "可编辑属性"
+    "editablefield": "可编辑属性",
+    "deletecitip": "当前配置项已被删除"
   },
   "process": {
     "workordercenter": "工单中心",
