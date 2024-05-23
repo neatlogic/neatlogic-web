@@ -53,7 +53,11 @@
     <div class="switch-theme">
       <div class="action-group">
         <span class="action-item tsfont-flow" @click.stop="changeLanguage">{{ $t('page.language') }}</span>
-        <span class="action-item" :class="themeClass == 'theme-default' ? 'tsfont-night':'tsfont-day'" @click.stop="changeTheme">
+        <span
+          class="action-item"
+          :class="themeClass == 'theme-default' ? 'tsfont-night':'tsfont-day'"
+          @click.stop="changeTheme"
+        >
           {{ themeClass == 'theme-default' ? $t('page.themedark'): $t('page.themelight') }}
         </span>
       </div>
@@ -62,7 +66,7 @@
 </template>
 <script>
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
-import {mutations} from '@/views/pages/framework/theme/state.js';
+import { mutations } from '@/views/pages/framework/theme/state.js';
 
 export default {
   name: '',
@@ -77,23 +81,21 @@ export default {
         username: '',
         password: ''
       },
-      title: process.env.VUE_APP_LOGINTITLE,
+      title: GLOBAL_LOGINTITLE,
       errorTips: '',
       remember: false,
       loading: false,
       needRefresh: false, // 点击登录会有闪一下的问题
       themeClass: localStorage.getItem('themeClass') || 'theme-default',
-      httpResponseStatusCodeLst: [
-        '522'
-      ], // http状态码，用于显示接口异常返回的错误信息
+      httpResponseStatusCodeLst: ['522'], // http状态码，用于显示接口异常返回的错误信息
       httpResponseStatusCodeMessage: {
-        '522': this.$t('page.userauthfailedpleaselogin')
+        522: this.$t('page.userauthfailedpleaselogin')
       }
     };
   },
   beforeCreate() {},
   created() {
-    document.onkeydown = (e) => {
+    document.onkeydown = e => {
       let key = window.event.keyCode;
       if (key == 13) {
         this.handleLogin();
@@ -120,9 +122,9 @@ export default {
   methods: {
     handleLogin() {
       if (this.loginForm.username === '') {
-        this.errorTips = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')});
+        this.errorTips = this.$t('form.placeholder.pleaseinput', { target: this.$t('page.username') });
       } else if (this.loginForm.password === '') {
-        this.errorTips = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.password')});
+        this.errorTips = this.$t('form.placeholder.pleaseinput', { target: this.$t('page.password') });
       } else {
         this.errorTips = '';
         let psd = '{MD5}' + this.$md5(this.loginForm.password);
@@ -135,31 +137,34 @@ export default {
           authType: this.authtype
         };
         this.loading = true;
-        this.$axios({method: 'post', url: '/login/check', data: param}).then(res => { //登录页面的接口不在全局（获取租户等，还有减少登录页面不必要的资源加载）
-          this.loading = false;
-          if (res.data) {
-            if (res.data.Status == 'OK') {
-              if (res.data.JwtToken) {
-                sessionStorage.setItem('neatlogic_authorization', 'Bearer_' + res.data.JwtToken);
+        this.$axios({ method: 'post', url: '/login/check', data: param })
+          .then(res => {
+            //登录页面的接口不在全局（获取租户等，还有减少登录页面不必要的资源加载）
+            this.loading = false;
+            if (res.data) {
+              if (res.data.Status == 'OK') {
+                if (res.data.JwtToken) {
+                  sessionStorage.setItem('neatlogic_authorization', 'Bearer_' + res.data.JwtToken);
+                }
+                if (this.getRedirect()) {
+                  window.location.href = HOME + '/' + this.getRedirect();
+                } else {
+                  window.location.href = HOME + '/index.html';
+                }
+                if (!localStorage.themeClass) {
+                  localStorage.themeClass = 'theme-default';
+                }
+              } else if (res.data.Status == 'ERROR') {
+                this.errorTips = res.data.Message;
+                sessionStorage.removeItem('neatlogic_authorization');
               }
-              if (this.getRedirect()) {
-                window.location.href = HOME + '/' + this.getRedirect();
-              } else {
-                window.location.href = HOME + '/index.html';
-              }
-              if (!localStorage.themeClass) {
-                localStorage.themeClass = 'theme-default';
-              }
-            } else if (res.data.Status == 'ERROR') {
-              this.errorTips = res.data.Message;
-              sessionStorage.removeItem('neatlogic_authorization');
             }
-          }
-        }).catch(() => {
-          this.loading = true;
-          this.errorTips = this.$t('page.accountorpwderror');
-          sessionStorage.removeItem('neatlogic_authorization');
-        });
+          })
+          .catch(() => {
+            this.loading = true;
+            this.errorTips = this.$t('page.accountorpwderror');
+            sessionStorage.removeItem('neatlogic_authorization');
+          });
       }
     },
     getRedirect() {
@@ -214,110 +219,110 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@primary-color, @login-bg-color, @bg-op, @input-border, @text-color) {
-.login-bg {
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  background: var(--login-bg-color, @login-bg-color);
-}
-.switch-theme {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  z-index: 2;
-}
-#loginContainer {
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-#loginContainer:before {
-  content: '';
-  height: 50%;
-  width: 100%;
-  bottom: 8%;
-  left: 0;
-  position: absolute;
-  background: url('@img-module/img/common/login-pic.png') no-repeat center center;
-  background-size: auto 100%;
-}
-.form-wrap {
-  display: flex;
-  margin: 0 auto;
-  .user-input{
-    margin-right: 32px;
+  .login-bg {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: var(--login-bg-color, @login-bg-color);
   }
-}
-.form-block {
-  float: none;
-  padding: 6px 0;
-}
-#loginForm {
- display: block;
-  width: 827px;
-  height: 360px;
-  margin: 0 auto;
-  position: relative;
-  top: 38%;
-  margin-top: -180px;
-}
-#loginForm p {
-  padding-top: 40px;
-  padding-bottom: 6px;
-  font-size: 24px;
-}
-#loginForm .title-bottom {
-  margin-left: 0;
-  font-size: 14px;
-  padding-bottom: 20px;
-}
-#btnLogin {
-  width: 102px;
-  height: 42px;
-  line-height: 41px;
-  margin-left: 20px;
-  font-size: 16px;
-  background: var(--primary-color, @primary-color);
-  border-color: var(--primary-color, @primary-color);
-  color: #fff;
-  &:focus {
-    box-shadow: none;
+  .switch-theme {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 2;
   }
-}
-.form-wrap {
-  /deep/.ivu-btn > span{
-    vertical-align: top;
+  #loginContainer {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
   }
-}
-.login-int {
-  width: 336px;
-  /deep/.ivu-input {
-    border: 1px solid var(--input-border, @input-border)!important;
+  #loginContainer:before {
+    content: '';
+    height: 50%;
+    width: 100%;
+    bottom: 8%;
+    left: 0;
+    position: absolute;
+    background: url('@img-module/img/common/login-pic.png') no-repeat center center;
+    background-size: auto 100%;
+  }
+  .form-wrap {
+    display: flex;
+    margin: 0 auto;
+    .user-input {
+      margin-right: 32px;
+    }
+  }
+  .form-block {
+    float: none;
+    padding: 6px 0;
+  }
+  #loginForm {
+    display: block;
+    width: 827px;
+    height: 360px;
+    margin: 0 auto;
+    position: relative;
+    top: 38%;
+    margin-top: -180px;
+  }
+  #loginForm p {
+    padding-top: 40px;
+    padding-bottom: 6px;
+    font-size: 24px;
+  }
+  #loginForm .title-bottom {
+    margin-left: 0;
+    font-size: 14px;
+    padding-bottom: 20px;
+  }
+  #btnLogin {
+    width: 102px;
     height: 42px;
-    line-height: 42px;
-    border-radius: 8px;
-    background: var(--bg-op, @bg-op);
-    color: var(--text-color, @text-color);
+    line-height: 41px;
+    margin-left: 20px;
+    font-size: 16px;
+    background: var(--primary-color, @primary-color);
+    border-color: var(--primary-color, @primary-color);
+    color: #fff;
+    &:focus {
+      box-shadow: none;
+    }
   }
-  /deep/.ivu-input:focus {
-    box-shadow: 0 0 0 2px var(--bg-op, @bg-op) !important;
-    background: transparent !important;
+  .form-wrap {
+    /deep/.ivu-btn > span {
+      vertical-align: top;
+    }
   }
- /deep/ input:-webkit-autofill,
- /deep/ input:-webkit-autofill:hover,
- /deep/ input:-webkit-autofill:focus,
- /deep/ input:-webkit-autofill:active {
-   box-shadow: 0 0 0 1000px var(--bg-op, @bg-op) inset !important; // 自动填充背景颜色，用阴影来填充
-   transition-delay: 99999s; // 延迟
-   transition: color 99999s ease-out, background-color 99999s ease-out;
-  -webkit-text-fill-color: var(--text-color, @text-color) !important; // 自动填充，字体的颜色
-}
-  /deep/.ivu-input-prefix i,
-  /deep/.ivu-input-suffix i{
-    line-height: 40px;
+  .login-int {
+    width: 336px;
+    /deep/.ivu-input {
+      border: 1px solid var(--input-border, @input-border) !important;
+      height: 42px;
+      line-height: 42px;
+      border-radius: 8px;
+      background: var(--bg-op, @bg-op);
+      color: var(--text-color, @text-color);
+    }
+    /deep/.ivu-input:focus {
+      box-shadow: 0 0 0 2px var(--bg-op, @bg-op) !important;
+      background: transparent !important;
+    }
+    /deep/ input:-webkit-autofill,
+    /deep/ input:-webkit-autofill:hover,
+    /deep/ input:-webkit-autofill:focus,
+    /deep/ input:-webkit-autofill:active {
+      box-shadow: 0 0 0 1000px var(--bg-op, @bg-op) inset !important; // 自动填充背景颜色，用阴影来填充
+      transition-delay: 99999s; // 延迟
+      transition: color 99999s ease-out, background-color 99999s ease-out;
+      -webkit-text-fill-color: var(--text-color, @text-color) !important; // 自动填充，字体的颜色
+    }
+    /deep/.ivu-input-prefix i,
+    /deep/.ivu-input-suffix i {
+      line-height: 40px;
+    }
   }
- }
 }
 html {
   .theme(@default-primary-color, @default-login-bg-color, @default-op, @default-input-border, @default-text);
@@ -325,5 +330,4 @@ html {
     .theme(@dark-primary-color, @dark-login-bg-color, @dark-op, @dark-input-border, @dark-text);
   }
 }
-
 </style>

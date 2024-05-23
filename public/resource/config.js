@@ -19,6 +19,9 @@ var SSOTICKETVALUE = ''; // 单点登录value值
 var ISNEEDAUTH = false; //是否需要免登录认证。如果需要，则页面会在第一个接口请求走myAuth认证后，才请求后续的接口。
 const COMMERCIAL_MODULES = []; //已激活的商业模块
 var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
+var GLOBAL_PAGELIST = '';
+var GLOBAL_TABLESTRYLE = '';
+var GLOBAL_LOGINTITLE = 'welcome';
 
 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
 var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器

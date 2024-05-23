@@ -60,7 +60,8 @@ function getPages(pageList) {
 console.log(JSON.stringify(getPages(process.env.VUE_APP_PAGE_LIST), null, 2));
 
 const pages = getPages(process.env.VUE_APP_PAGE_LIST);
-const ent = Object.fromEntries(Object.keys(pages).map(key => [tenantName + '/' + key, pages[key].entry]));
+let tenantNames = process.env.NODE_ENV === 'development' ? tenantName : '';
+const ent = Object.fromEntries(Object.keys(pages).map(key => [tenantNames + '/' + key, pages[key].entry]));
 
 export default defineConfig({
   plugins: [pluginVue2()],
@@ -75,11 +76,10 @@ export default defineConfig({
     rspack: {
       plugins: [
         new rspack.DefinePlugin({
-          'process.env.VERSION': "'3.0.0'",
-          'process.env.VUE_APP_PAGE_LIST': "''",
-          'process.env.VUE_APP_TABLESTRYLE': '"border"',
-          'process.env.VUE_APP_TENANT': tenantName,
-          'process.env.VUE_APP_LOGINTITLE': '"welcome"'
+          'GLOBAL_VERSION': "'3.0.0'",
+          'GLOBAL_PAGELIST': "''",
+          'GLOBAL_TABLESTRYLE': '"border"',
+          'GLOBAL_LOGINTITLE': '"welcome"'
         })
       ]
     },
@@ -152,6 +152,16 @@ export default defineConfig({
   performance: {
     chunkSplit: {
       strategy: 'split-by-size'
+    }
+  },
+  output: {
+    distPath: {
+      image: 'resource/images',
+      svg: 'resource/images',
+      font: 'resource/fonts',
+      js: 'resource/js',
+      wasm: 'resource/js',
+      css: 'resource/css'
     }
   }
 });

@@ -676,7 +676,7 @@ export default {
     filterCustommergeprocess(formConfig) {
       // 过滤银行定制批量合并上报组件
       let data = this.$utils.deepClone(formConfig);
-      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && process.env.VUE_APP_LOGINTITLE == 'neatlogic') {
+      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && GLOBAL_LOGINTITLE && GLOBAL_LOGINTITLE == 'neatlogic') {
         let arr = formConfig.controllerList.filter(val => {
           return val.handler != 'custommergeprocess';
         });

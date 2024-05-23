@@ -270,7 +270,6 @@ module.exports = {
     yoda: [2, 'never'],
     'prefer-const': 0,
     'no-debugger': 0,
-    //'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'object-curly-spacing': 'off',
     'array-bracket-spacing': [2, 'never']
   }

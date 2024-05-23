@@ -66,7 +66,6 @@ export default {
   mounted() {
     this.initLanguage();
     this.initTheme();
-    // this.env = process.env.NODE_ENV;
   },
   methods: {
     initLanguage() {
