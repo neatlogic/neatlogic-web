@@ -74,6 +74,15 @@ dependencies:
   '@antv/x6-vue-shape':
     specifier: ^2.1.2
     version: 2.1.2(@antv/x6@2.18.1)(vue@2.7.16)
+  '@fullcalendar/core':
+    specifier: ^6.1.11
+    version: 6.1.13
+  '@fullcalendar/daygrid':
+    specifier: ^6.1.11
+    version: 6.1.13(@fullcalendar/core@6.1.13)
+  '@fullcalendar/vue':
+    specifier: ^6.1.11
+    version: 6.1.13(@fullcalendar/core@6.1.13)(vue@2.7.16)
   '@hpcc-js/wasm':
     specifier: ^2.16.0
     version: 2.16.2
@@ -83,6 +92,9 @@ dependencies:
   axios:
     specifier: ^0.21.1
     version: 0.21.4
+  codemirror:
+    specifier: ^5.65.16
+    version: 5.65.16
   core-js:
     specifier: ^3.8.3
     version: 3.36.0
@@ -96,6 +108,12 @@ dependencies:
     specifier: ^5.3.0
     version: 5.4.0(d3-selection@3.0.0)
   d3-selection:
+    specifier: ^3.0.0
+    version: 3.0.0
+  d3-transition:
+    specifier: ^3.0.1
+    version: 3.0.1(d3-selection@3.0.0)
+  d3-zoom:
     specifier: ^3.0.0
     version: 3.0.0
   docx-preview:
@@ -2199,6 +2217,30 @@ packages:
       lodash.isnil: 4.0.0
       lodash.isundefined: 3.0.1
       lodash.uniq: 4.5.0
+    dev: false
+
+  /@fullcalendar/core@6.1.13:
+    resolution: {integrity: sha512-Cps/hMQan4kwnsBhFf2+m2mijbGoWs6r18ZzxBnAAOkkNHtPmHU8EdR6lF+ZLsiVvb7nsC4H/ZKqnxXWwgpoPw==}
+    dependencies:
+      preact: 10.12.1
+    dev: false
+
+  /@fullcalendar/daygrid@6.1.13(@fullcalendar/core@6.1.13):
+    resolution: {integrity: sha512-0I0hL1kgGjkZuc7Qt8mu4jjrqIL5PZzd58bEpTxoXRKI5UBZ9KbshGVMryQSXYANlrRtkPnXVt90VIDrxZbDrA==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.13
+    dependencies:
+      '@fullcalendar/core': 6.1.13
+    dev: false
+
+  /@fullcalendar/vue@6.1.13(@fullcalendar/core@6.1.13)(vue@2.7.16):
+    resolution: {integrity: sha512-gIuzcDQXA0Rf2icATb91PKcdFHkDYFX7zh8Y08D4qZEhfQ8RJOUTjoGsGwDMUSbDx8JLnWMrzHlcNQdjkPBhEg==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.13
+      vue: ^2.6.12
+    dependencies:
+      '@fullcalendar/core': 6.1.13
+      vue: 2.7.16
     dev: false
 
   /@hapi/hoek@9.3.0:
@@ -10151,6 +10193,10 @@ packages:
 
   /potpack@2.0.0:
     resolution: {integrity: sha512-Q+/tYsFU9r7xoOJ+y/ZTtdVQwTWfzjbiXBDMM/JKUux3+QPP02iUuIoeBQ+Ot6oEDlC+/PGjB/5A3K7KKb7hcw==}
+    dev: false
+
+  /preact@10.12.1:
+    resolution: {integrity: sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==}
     dev: false
 
   /prelude-ls@1.2.1:

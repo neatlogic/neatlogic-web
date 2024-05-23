@@ -5,7 +5,7 @@
 
 /* global window, console */
 
-import { debounce } from 'lodash-es';
+import debounce from 'lodash/debounce';
 
 const SAMPLE_READ_ONLY_LOCK_ID = 'Integration Sample';
 const INPUT_EVENT_DEBOUNCE_WAIT = 300;
