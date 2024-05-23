@@ -6,9 +6,6 @@ let commercialModule = './src/commercial-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
-process.env.VUE_APP_TENANT = tenantName; // 租户名称
-process.env.VUE_APP_LOGINTITLE = 'welcome';
-
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {

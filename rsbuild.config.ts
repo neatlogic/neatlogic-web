@@ -76,11 +76,10 @@ export default defineConfig({
     rspack: {
       plugins: [
         new rspack.DefinePlugin({
-          'process.env.VERSION': "'3.0.0'",
-          'process.env.VUE_APP_PAGE_LIST': "''",
-          'process.env.VUE_APP_TABLESTRYLE': '"border"',
-          'process.env.VUE_APP_TENANT': tenantName,
-          'process.env.VUE_APP_LOGINTITLE': '"welcome"'
+          'GLOBAL_VERSION': "'3.0.0'",
+          'GLOBAL_PAGELIST': "''",
+          'GLOBAL_TABLESTRYLE': '"border"',
+          'GLOBAL_LOGINTITLE': '"welcome"'
         })
       ]
     },

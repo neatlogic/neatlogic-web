@@ -48,9 +48,9 @@ const actions = {
     const res = await state.gettingModuleList;
     const userRes = await commonApi.getUser();
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
-    if (process.env && process.env.VUE_APP_PAGE_LIST && JSON.parse(process.env.VUE_APP_PAGE_LIST)) {
+    if (GLOBAL_PAGELIST && JSON.parse(GLOBAL_PAGELIST)) {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
-      showModuleList = JSON.parse(process.env.VUE_APP_PAGE_LIST);
+      showModuleList = JSON.parse(GLOBAL_PAGELIST);
     }
 
     userRes &&
