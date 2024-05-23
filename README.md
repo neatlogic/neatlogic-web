@@ -28,12 +28,9 @@ cnpm install
 ## 本地开发环境运行项目
 >需修改apiconfig.json配置文件,将tenantName的值修改为在用的租户（如果使用的是官方提供的用例数据，则租户就是demo），urlPrefix改成neatlogic后端tomcat服务的http://ip:port
 
-## 通过pnpm启动项目
+## 通过cnpm启动项目
 ```
-//先安装pnpm
-npm install -g pnpm
-//再启动
-pnpm run rs-dev
+cnpm run serve
 ```
 
 
