@@ -101,6 +101,9 @@ export default {
           .on('dblclick.zoom', null)
           .on('wheel.zoom', null)
           .on('mousewheel.zoom', null);
+        if (!graph.graphviz) {
+          graph.graphviz = graphviz;
+        }
         this.graph.graphviz = graph
           .graphviz()
           .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)

@@ -417,6 +417,9 @@ export default {
         let graph = d3.select(graphEl);
         const _this = this;
         graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
+        if (!graph.graphviz) {
+          graph.graphviz = graphviz;
+        }
         this.graph.graphviz = graph
           .graphviz()
           .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
