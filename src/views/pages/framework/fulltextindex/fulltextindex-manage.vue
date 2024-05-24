@@ -17,6 +17,14 @@
               <span class="text-error tsfont-warning-s"></span>
             </Poptip>
           </template>
+          <template v-slot:statusText="{ row }">
+            <Progress v-if="row.status==='done'" :percent="100">
+              <span>{{ row.statusText }}</span>
+            </Progress>
+            <Progress v-else-if="row.status==='doing'" :percent="99" status="active">
+              <span>{{ row.statusText }}</span>
+            </Progress>
+          </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
@@ -82,6 +90,16 @@ export default {
     getFullTextIndexRebuildAuditList() {
       this.$api.framework.fulltextindex.getFullTextIndexRebuildAuditList().then(res => {
         this.$set(this.fullTextIndexRebuildAuditData, 'tbodyList', res.Return);
+        res.Return.forEach(element => {
+          if (element.status == 'doing') {
+            this.doingIdList.push(element.type);
+          }
+        });
+        if (this.doingIdList.length > 0) {
+          this.timer = setTimeout(() => {
+            this.checkAuditStatusInterval();
+          }, 3000);
+        }
       });
     },
     checkAuditStatusInterval() {
