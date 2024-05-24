@@ -77,59 +77,119 @@ export default {
           let list = res.Return.tbodyList;
           this.matrixDataDialogForm = [];
           list.forEach(item => {
-            let type = '';
             let dataList = null;
-            let groupList = [];
+            let data = {};
+            let params = {};
             if (item.config != undefined) {
               dataList = item.config.dataList;
             }
             switch (item.type) {
               case 'input':
-                type = 'text';
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'text',
+                  maxlength: 50,
+                  transfer: true
+                };
                 break;
               case 'select':
-                type = 'select';
+                dataList.forEach(item => {
+                  if (item.defaultValue == '1') {
+                    data.value = item.value;
+                  }
+                });
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'select',
+                  maxlength: 50,
+                  dataList: dataList,
+                  transfer: true
+                };
                 break;
               case 'date':
-                type = 'datetime';
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'datetime',
+                  maxlength: 50,
+                  valueType: 'format',
+                  transfer: true
+                };
                 break;
               case 'user':
-                type = 'userselect';
-                groupList = ['user'];
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'userselect',
+                  groupList: ['user'],
+                  maxlength: 50,
+                  multiple: false,
+                  transfer: true
+                };
                 break;
               case 'role':
-                type = 'userselect';
-                groupList = ['role'];
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'userselect',
+                  groupList: ['role'],
+                  maxlength: 50,
+                  multiple: false,
+                  transfer: true
+                };
                 break;
               case 'team':
-                type = 'userselect';
-                groupList = ['team'];
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'userselect',
+                  groupList: ['team'],
+                  maxlength: 50,
+                  multiple: false,
+                  transfer: true
+                };
                 break;
-            }
-            let data = {
-              name: item.uuid,
-              label: item.name,
-              type: type,
-              maxlength: 50,
-              transfer: true
-            };
-
-            if (item.type == 'select') {
-              data.dataList = dataList;
-              dataList.forEach(item => {
-                if (item.defaultValue == '1') {
-                  data.value = item.value;
+              case 'cmdbci':
+                if (!this.$utils.isEmpty(item.config) && !this.$utils.isEmpty(item.config.cmdbCi)) {
+                  params = {ciId: item.config.cmdbCi.ciId, label: item.config.cmdbCi.label};
                 }
-              });
-            }
-
-            if (item.type == 'date') {
-              data.valueType = 'format';
-            }
-
-            if (item.type == 'role' || item.type == 'user' || item.type == 'team') {
-              data.groupList = groupList;
-              data.multiple = false;
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'select',
+                  dynamicUrl: 'api/rest/cmdb/cientity/data/list/forselect',
+                  rootName: 'tbodyList',
+                  groupList: ['user'],
+                  params: params,
+                  maxlength: 50,
+                  transfer: true
+                };
+                break;
+              case 'region':
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'tree',
+                  url: '/api/rest/region/tree/search',
+                  textName: 'name',
+                  valueName: 'id',
+                  transfer: true
+                };
+                break;
+              case 'processtaskuser':
+                data = {
+                  name: item.uuid,
+                  label: item.name,
+                  type: 'userselect',
+                  groupList: ['processUserType'],
+                  excludeList: ['processUserType#minor', 'processUserType#worker', 'processUserType#reporter'],
+                  maxlength: 50,
+                  multiple: false,
+                  transfer: true
+                };
+                break;
             }
             this.matrixDataDialogForm.push(data);
           });
