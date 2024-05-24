@@ -19,3 +19,4 @@ yarn.lock
 /.vscode
 /src/commercial-module/*
 *.code-workspace
+pnpm-lock.yaml
