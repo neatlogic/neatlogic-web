@@ -589,7 +589,8 @@
     "processtaskcollection": "Work Order Collection",
     "phase": "·Stage",
     "channel": "passageway",
-    "saveandstart": "Save and start"
+    "saveandstart": "Save and start",
+    "createcollection": "Create Collection"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
