@@ -7,7 +7,7 @@
       transfer
       :search="true"
       :params="{ projectId: projectId }"
-      url="/api/rest/rdm/iteration/search"
+      dynamicUrl="/api/rest/rdm/iteration/search"
       :border="border"
       :validateList="validateList"
       :dealDataByUrl="fixData"
