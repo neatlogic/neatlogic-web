@@ -119,11 +119,13 @@
   </div>
 </template>
 <script>
+import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';// 修复使用：()=>import('')懒加载组件，导致输入框显示不出来报错问题 
+import TsZtree from '@/resources/plugins/TsZtree/TsZtree.vue';
 export default {
   name: '',
   components: {
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue')
+    TsFormInput,
+    TsZtree
   },
   filters: {},
   props: {
