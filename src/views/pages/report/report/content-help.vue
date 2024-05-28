@@ -3,6 +3,7 @@
     <Alert show-icon>
       <div>
         <Poptip
+          v-model="isHelpShow"
           trigger="hover"
           placement="right"
           width="700"
@@ -11,7 +12,7 @@
         >
           <a href="javascript:void(0)">{{ $t('term.report.contentconfigexample') }}</a>
           <div slot="content" style="height:600px;">
-            <div style="word-break:break-all;white-space:pre-wrap;">
+            <div>
               内容配置支持
               <b>freemarker</b>
               语法，通过
@@ -30,7 +31,12 @@
                 <b>${drawTable(config[必须，json格式，data字段必须])}，config范例：</b>
               </p>
               <div>
-                {{ table.config }}
+                <TsCodemirror
+                  ref="editor1"
+                  :value="table.config"
+                  :isReadOnly="true"
+                  codeMode="json"
+                ></TsCodemirror>
               </div>
               <p>
                 柱状图：
@@ -38,7 +44,12 @@
                 ，data范例：
               </p>
               <div>
-                {{ barHelp.data }}
+                <TsCodemirror
+                  ref="editor2"
+                  :value="barHelp.data"
+                  :isReadOnly="true"
+                  codeMode="xml"
+                ></TsCodemirror>
               </div>
               <p>
                 横向柱状图：
@@ -46,7 +57,12 @@
                 ，data范例：
               </p>
               <div>
-                {{ barhHelp.data }}
+                <TsCodemirror
+                  ref="editor3"
+                  :value="barhHelp.data"
+                  :isReadOnly="true"
+                  codeMode="xml"
+                ></TsCodemirror>
               </div>
               <p>
                 堆积图：
@@ -54,7 +70,12 @@
                 ，data范例：
               </p>
               <div>
-                {{ stackedBar.data }}
+                <TsCodemirror
+                  ref="editor4"
+                  :value="stackedBar.data"
+                  :isReadOnly="true"
+                  codeMode="xml"
+                ></TsCodemirror>
               </div>
               <p>
                 横向堆积图：
@@ -74,11 +95,21 @@
                 ，data范例：
               </p>
               <div>
-                {{ pie.data }}
+                <TsCodemirror
+                  ref="editor5"
+                  :value="pie.data"
+                  :isReadOnly="true"
+                  codeMode="xml"
+                ></TsCodemirror>
               </div>
               <p>config范例，适用于以上所有图表：</p>
               <div>
-                {{ barHelp.config }}
+                <TsCodemirror
+                  ref="editor6"
+                  :value="barHelp.config"
+                  :isReadOnly="true"
+                  codeMode="json"
+                ></TsCodemirror>
               </div>
             </div>
           </div>
@@ -90,11 +121,14 @@
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
+  },
   filters: {},
   props: {},
   data() {
     return {
+      isHelpShow: false,
       table: {
         config: `{\n   "data":"dataList",\n   "title":"${this.$t('page.title')}",\n   "header":${this.$t('term.report.describe.headerdescribe')},\n   "column":${this.$t('term.report.describe.columndescribe')}\n}`
       },
@@ -116,7 +150,8 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -125,7 +160,21 @@ export default {
   destroyed() {},
   methods: {},
   computed: {},
-  watch: {}
+  watch: {
+    isHelpShow: {
+      handler: function(val) {
+        if (val) {
+          this.$nextTick(() => {
+            for (let e in this.$refs) {
+              if (this.$refs[e] && this.$refs[e].refresh) {
+                this.$refs[e].refresh();
+              }
+            }
+          });
+        }
+      }
+    }
+  }
 };
 </script>
 <style lang="less" scoped></style>
