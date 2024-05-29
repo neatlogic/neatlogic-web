@@ -112,5 +112,41 @@ export default {
       'text': $t('term.expression.notempty'),
       'value': 'is-not-null'
     }
+  ],
+  'cmdbci': [
+    {
+      'text': $t('term.expression.like'),
+      'value': 'like'
+    },
+    {
+      'text': $t('term.expression.notlike'),
+      'value': 'notlike'
+    },
+    {
+      'text': $t('term.expression.empty'),
+      'value': 'is-null'
+    },
+    {
+      'text': $t('term.expression.notempty'),
+      'value': 'is-not-null'
+    }
+  ],
+  'region': [
+    {
+      'text': $t('term.expression.like'),
+      'value': 'like'
+    },
+    {
+      'text': $t('term.expression.notlike'),
+      'value': 'notlike'
+    },
+    {
+      'text': $t('term.expression.empty'),
+      'value': 'is-null'
+    },
+    {
+      'text': $t('term.expression.notempty'),
+      'value': 'is-not-null'
+    }
   ]
 };

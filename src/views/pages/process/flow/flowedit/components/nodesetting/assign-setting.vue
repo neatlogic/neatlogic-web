@@ -207,6 +207,12 @@
                       v-model="item.config.handlerConfig"
                       :allFormitemList="allFormitemList"
                     ></CmdbDispatcher>
+                    <RegionDispatcher
+                      v-if="getDispatcherName(item.config.handler) == 'RegionDispatcher'"
+                      ref="regionDispatcher"
+                      v-model="item.config.handlerConfig"
+                      :allFormitemList="allFormitemList"
+                    ></RegionDispatcher>
                     <div v-else-if="automaticDeal.length > 0" class="text-list">
                       <div v-for="automatic in automaticDeal" :key="automatic.name">
                         <div class="title text-left require-label overflow text-tip form-label" :title="automatic.label">{{ automatic.label }}</div>
@@ -329,7 +335,8 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    CmdbDispatcher: () => import('./dispatcher/cmdb-dispatcher')
+    CmdbDispatcher: () => import('./dispatcher/cmdb-dispatcher'),
+    RegionDispatcher: () => import('./dispatcher/region-dispatcher')
   },
   props: {
     prevNodes: {
@@ -542,6 +549,10 @@ export default {
           // cmdb分派器，单独处理值
           item.config.handlerConfig = this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].saveData() || {};
         }
+        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'RegionDispatcher') {
+          // 地域分派器，单独处理值
+          item.config.handlerConfig = this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].saveData() || {};
+        }
       });
       this.$set(data, 'policyList', this.policyList);
       this.assignValid();
@@ -562,6 +573,7 @@ export default {
       }
       this.$refs.defaultWorker && this.$refs.defaultWorker.valid();
       this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].valid(); // 由于policyList是v-for循环，导致获取节点也是数组，所以this.$refs.cmdbDispatcher[0]取第一个数组值
+      this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].valid(); 
     },
     selectAutomatic(handler, type) {
       //选择分派器
