@@ -91,6 +91,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="tsfont-edit icon" @click.stop="editMatrixData(row)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-copy icon" @click.stop="copyMatrixData(row)">{{ $t('page.copy') }}</li>
                 <li class="tsfont-trash-o icon" @click.stop="deleteMatrixData(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -102,6 +103,7 @@
       v-if="matrixDataDialog"
       :data="currentData"
       :matrixUuid="matrixUuid"
+      :isCopy="isCopy"
       @close="closeDataDialog"
     ></RowEdit>
     <ColumnEdit v-if="attributeDialog" :matrixUuid="matrixUuid" @close="closeAttributeDialog"></ColumnEdit>
@@ -127,6 +129,7 @@ export default {
     let _this = this;
     return {
       currentData: null, //当前编辑行
+      isCopy: false,
       actionUrl: BASEURLPREFIX + '/api/binary/matrix/data/import',
       formatList: ['xls', 'xlsx'], //导入文件格式
       loadingShow: true,
@@ -403,6 +406,12 @@ export default {
       //this.matrixDataDialogTitle = '编辑行';
       this.matrixDataDialog = true;
       this.currentData = val || null;
+      this.isCopy = false;
+    },
+    copyMatrixData(val) {
+      this.matrixDataDialog = true;
+      this.currentData = val || null;
+      this.isCopy = true;
     },
     closeAttributeDialog(needRefresh) {
       this.attributeDialog = false;

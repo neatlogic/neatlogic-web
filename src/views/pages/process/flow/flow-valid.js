@@ -105,7 +105,8 @@ let valid = {
                   for (let key in row) {
                     if (row.hasOwnProperty(key)) {
                       let val = row[key];
-                      if (that.$utils.isEmpty(val) || this.validCmdbDispatcher(policyList[i].config.handler, key, val)) {
+                      let handler = policyList[i].config.handler;
+                      if ((handler.indexOf('CmdbDispatcher') > -1 && this.validCmdbDispatcher(that, handler, key, val)) || (handler.indexOf('RegionDispatcher') > -1 && this.validRegionDispatcher(that, handler, key, val))) {
                         isChecked = 0;
                         errorText = $t('term.process.assignconfigvalid');
                         break;
@@ -422,14 +423,30 @@ let valid = {
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
     return arr[arr.length - 1];
   },
-  validCmdbDispatcher(handler, key, filterList) {
+  validCmdbDispatcher(that, handler, key, filterList) {
+    if (that.$utils.isEmpty(filterList)) {
+      return true;
+    }
     // 验证cmdb分派器，匹配映射，两个数组时，有一个为空时，数据校验不通过问题
     // [{"formAttributeUuid": "ca04365ff49c4c80b39cf802e857eeaa","key": 441733552807936},{key: '441733846409216', formAttributeUuid: ''}]
     if (key !== 'filterList' || this.handleDispatcherName(handler) !== 'CmdbDispatcher') {
       return false;
     }
     return filterList.some(item => !item.formAttributeUuid || !item.key);
+  },
+  validRegionDispatcher(that, handler, key, value) {
+    if (key !== 'app' && !value) {
+      return true;
+    }
+    if (key === 'regionAttrs') {
+      if (that.$utils.isEmpty(value)) {
+        return true;
+      } else {
+        return value.some(item => !item.value);
+      }
+    }
   }
+
 };
 
 let setInitData = {

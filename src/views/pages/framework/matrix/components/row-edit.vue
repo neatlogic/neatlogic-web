@@ -23,12 +23,13 @@ export default {
   },
   props: {
     matrixUuid: {type: String},
-    data: {type: Object}//编辑的行数据
+    data: {type: Object}, //编辑的行数据
+    isCopy: Boolean
   },
   data() {
     return {
       dialogConfig: {
-        title: this.data ? this.$t('dialog.title.edittarget', {'target': this.$t('page.row')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.row')}),
+        title: null,
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -42,6 +43,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.renderingMatrixData();
+    this.getTitle();
   },
   beforeUpdate() {},
   updated() {},
@@ -60,6 +62,9 @@ export default {
         rowData: formData,
         matrixUuid: this.matrixUuid
       };
+      if (this.isCopy && !this.$utils.isEmpty(data.rowData)) {
+        data.rowData.uuid = null;
+      }
       this.$api.framework.matrix.saveMatrixData(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -219,10 +224,18 @@ export default {
           }
         }
       });
+    },
+    getTitle() {
+      if (this.isCopy) {
+        this.dialogConfig.title = this.$t('dialog.title.copytarget', {'target': this.$t('page.row')});
+      } else {
+        this.dialogConfig.title = this.data ? this.$t('dialog.title.edittarget', {'target': this.$t('page.row')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.row')});
+      }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+  },
   watch: {}
 };
 </script>
