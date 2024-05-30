@@ -40,7 +40,7 @@
                   transfer
                 ></TsFormSelect>
               </TabPane>
-              <TabPane v-if="isShowFormTableComponent" :label="$t('term.framework.formtableinputercomponent')" name="formTableComponent">
+              <TabPane v-if="isShowFormTableComponent && jopPolicy!='single'" :label="$t('term.framework.formtableinputercomponent')" name="formTableComponent">
                 <TsRow :gutter="8">
                   <Col :span="12">
                     <TsFormSelect
@@ -111,7 +111,8 @@ export default {
     isRequired: {
       type: Boolean,
       default: false
-    }
+    },
+    jopPolicy: String //作业策略（单次、批量）
   },
   data() {
     return {

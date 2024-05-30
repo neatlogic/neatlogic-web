@@ -264,7 +264,7 @@
             <TsFormSelect
               ref="formValid"
               v-model="r.mappingMode"
-              :dataList="mappingModeList"
+              :dataList="runtimeParamMappingModeList(r.type)"
               :validateList="r.isRequired?validateList:[]"
               :firstSelect="false"
               transfer
@@ -312,6 +312,7 @@
             <template v-else-if="r.mappingMode === 'expression'">
               <MappingmodeExpression
                 ref="formValid"
+                jopPolicy="batch"
                 :allFormitemList="allFormitemList"
                 :value="r.value"
                 :formCommonComponentList="getFormComponent('formCommonComponent')"
