@@ -15,7 +15,7 @@
           <div class="autoexec-title">
             <div>#{{ index+1 }}</div>
             <div class="action-btn">
-              <!-- <span class="tsfont-close pr-sm text-tip-active" @click="delItem(index)"></span> -->
+              <span class="tsfont-close pr-sm text-tip-active" @click="delItem(index)"></span>
               <span class="text-tip-active" :class="item.isShow ? 'tsfont-down' : 'tsfont-up'" @click="item.isShow=!item.isShow"></span>
             </div>
           </div>
