@@ -2050,7 +2050,9 @@
     "modifyfilecount": "修改文件数",
     "addfilecount": "新增文件数",
     "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
-    "withoutconfigeditauth": "请联系发布管理员授权配置"
+    "withoutconfigeditauth": "请联系发布管理员授权配置",
+    "envattr": "环境属性",
+    "addenvattrtips": "未配置属性，点击"
   },
   "inspect": {
     "alarmprompt": "告警提示",

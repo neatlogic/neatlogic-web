@@ -57,8 +57,10 @@
     <EnvAutoconfigEdit
       v-if="isShowEnvEdit"
       :isEdit="hasAutoConfig"
+      :tableData="tableData"
       :params="params"
       @close="closeAutoConfigEdit"
+      @save="saveAutoConfig"
     ></EnvAutoconfigEdit>
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
@@ -112,7 +114,11 @@ export default {
           title: this.$t('page.variablevalue'),
           key: 'value'
         }
-      ]
+      ],
+      tableData: {
+        hideAction: false,
+        tbodyList: []
+      } //配置文件适配的变量
     };
   },
   beforeCreate() {},
@@ -174,6 +180,17 @@ export default {
           } else {
             this.hasAutoConfig = false;
           }
+          //
+          this.tableData.tbodyList = [];
+          returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
+            this.tableData.tbodyList.push({
+              key: v.key,
+              type: v.type,
+              value: v.hasOwnProperty('value') ? v.value : '',
+              isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
+              delOperation: ''
+            });
+          });
         }
       });
     },
@@ -214,6 +231,14 @@ export default {
       if (item) {
         return item.instanceIp ? (item.instancePort ? (item.instanceName ? `${item.instanceIp}:${item.instancePort}[${item.instanceName}]` : `${item.instanceIp}:${item.instancePort}`) : item.instanceIp) : '';
       }
+    },
+    saveAutoConfig(params) {
+      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.closeAutoConfigEdit(true);
+        }
+      });
     }
   },
   filter: {},
