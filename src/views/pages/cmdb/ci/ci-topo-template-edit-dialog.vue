@@ -11,7 +11,7 @@
               :transfer="true"
             >
               <div>
-                <a v-if="templateData.config.ciRelList && templateData.config.ciRelList.length > 0">
+                <a v-if="templateData.config && templateData.config.ciRelList && templateData.config.ciRelList.length > 0">
                   {{ $t('term.cmdb.selectagain') }}
                 </a>
                 <a v-else>{{ $t('term.cmdb.selectrelpath') }}</a>

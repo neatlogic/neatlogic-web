@@ -1,14 +1,16 @@
 <template>
-  <Tree
-    v-if="relListLocal && relListLocal.length > 0"
-    :data="relListLocal"
-    :render="renderName"
-    :load-data="loadData"
-    :multiple="false"
-    class="ts-tree"
-    @on-select-change="selectNode"
-  ></Tree>
-  <div v-else class="text-grey">{{ $t('page.nodata') }}</div>
+  <div>
+    <Tree
+      v-if="relListLocal && relListLocal.length > 0"
+      :data="relListLocal"
+      :render="renderName"
+      :load-data="loadData"
+      :multiple="false"
+      class="ts-tree"
+      @on-select-change="selectNode"
+    ></Tree>
+    <div v-else class="text-grey">{{ $t('page.nodata') }}</div>
+  </div>
 </template>
 <script>
 export default {
@@ -74,7 +76,7 @@ export default {
                 'tsfont-arrow-right': true
               }
             }),
-            h('span', data.toCiLabel + '(' + data.toCiName + ')')
+            h('span', data.toCiLabel + '(' + data.toCiName + data.nodeKey + ')')
           ]
         );
       } else {
@@ -110,7 +112,7 @@ export default {
                 'tsfont-minus': true
               }
             }),
-            h('span', data.fromCiLabel + '(' + data.fromCiName + ')')
+            h('span', data.fromCiLabel + '(' + data.fromCiName + data.nodeKey + ')')
           ]
         );
       }
@@ -125,8 +127,9 @@ export default {
           rel.children = [];
           rel.loading = false;
           rel.selected = false;
-
+          rel.nodeKey = rel.id;
           let relData = {
+            nodeKey: rel.id,
             relId: rel.id,
             direction: rel.direction
           };
@@ -179,8 +182,9 @@ export default {
               rel.loading = false;
               rel.selected = false;
               rel.excludeCiIdList = excludeCiIdList;
-
+              rel.nodeKey = rel.id;
               let relData = {
+                nodeKey: rel.id,
                 relId: rel.id,
                 direction: rel.direction
               };
@@ -209,6 +213,7 @@ export default {
                 relData.targetCiName = rel.fromCiName;
                 relData.targetCiLabel = rel.fromCiLabel;
               }
+              //console.log('path', path);
               path.push(relData);
               rel.path = path;
             });

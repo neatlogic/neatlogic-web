@@ -17,7 +17,7 @@
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>按场景展开</DropdownItem>
-                <DropdownItem v-for="(topoTemplate, index) in filterCiTopoTemplateList" :key="index" :selected="searchParam.templateId === topoTemplate.id">
+                <DropdownItem v-for="(topoTemplate) in filterCiTopoTemplateList" :key="topoTemplate.id" :selected="searchParam.templateId === topoTemplate.id">
                   <span :class="{ 'text-grey': !topoTemplate.isActive }" @click="showTopoTemplate(topoTemplate)">{{ topoTemplate.name }}</span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-edit" @click="editTopoTemplate(topoTemplate)"></span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-trash-o" @click="deleteTopoTemplate(topoTemplate)"></span>
