@@ -25,6 +25,15 @@
           @close="close"
         ></EnvInstanceList>
       </TabPane>
+      <TabPane :label="$t('term.deploy.envattr')">
+        <EnvAttr
+          v-if="tabActive == 3"
+          :params="params"
+          :hasEditConfigAuth="hasEditConfigAuth"
+          @close="close"
+        >
+        </EnvAttr>
+      </TabPane>
     </Tabs>
   </div>
 </template>
@@ -34,7 +43,8 @@ export default {
   components: {
     EnvInstanceList: () => import('./env/env-instance-list'), // 实例列表
     EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
-    EnvDbConfigList: () => import('./env/env-db-config-list') // autoconfig
+    EnvDbConfigList: () => import('./env/env-db-config-list'), // autoconfig
+    EnvAttr: () => import('./env/env-attr')
   },
   props: {
     params: {

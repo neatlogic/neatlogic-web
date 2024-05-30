@@ -2053,7 +2053,9 @@
     "modifyfilecount": "Number of modified files",
     "addfilecount": "Number of newly added files",
     "withoutconfigandeditauth": "The current application has not been configured yet. Please contact the publishing administrator to authorize the configuration",
-    "withoutconfigeditauth": "Please contact the publishing administrator for authorization configuration"
+    "withoutconfigeditauth": "Please contact the publishing administrator for authorization configuration",
+    "envattr": "Environmental attributes",
+    "addenvattrtips": "Unconfigured attributes, click"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
