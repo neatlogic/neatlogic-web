@@ -206,6 +206,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
+                  :slotList="[{ name: 'automatic', label: '自动处理' }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"
