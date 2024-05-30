@@ -222,6 +222,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
+                  :slotList="[{ name: 'autoexec', label: '自动化' }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

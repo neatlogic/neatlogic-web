@@ -55,15 +55,13 @@
             <div class="infor-left text-title overflow">{{ $t('term.process.usernumber') }}</div>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
-          <div v-if="isNeedRegion" class="information-list">
-            <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
-            <div class="infor-right">
-              <TsFormSelect
-                ref="region"
-                v-model="dispatch.regionId"
-                v-bind="getRegionSetting"
-              ></TsFormSelect>
-            </div>
+          <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
+          <div class="infor-right">
+            <TsFormSelect
+              ref="region"
+              v-model="dispatch.regionId"
+              v-bind="getRegionSetting"
+            ></TsFormSelect>
           </div>
         </div>
         <!-- <div class="information-list">
@@ -151,7 +149,6 @@ export default {
       groupList: ['user'],
       tagList: [],
       isNeedPriority: true,
-      isNeedRegion: false,
       validateList: ['required'],
       knowledgeList: [],
       showRelateKnowledge: true,
@@ -206,9 +203,6 @@ export default {
         if (this.isNeedPriority) {
           this.dispatch.priorityUuid = this.draftData.priorityUuid;
         }
-        if (!this.$utils.isEmpty(this.draftData.processDispatcherList) && this.draftData.processDispatcherList.some(o => o.endsWith('RegionDispatcher'))) {
-          this.isNeedRegion = true;
-        }
       }
     },
     //修改用户
@@ -256,14 +250,6 @@ export default {
           focus: '#base',
           icon: 'tsfont-close-o',
           msg: this.$t('message.process.required', {target: this.$t('page.priority')}),
-          type: 'error'
-        });
-      }
-      if (this.isNeedRegion && !this.$refs.region.valid()) {
-        validList.push({
-          focus: '#base',
-          icon: 'tsfont-close-o',
-          msg: this.$t('message.process.required', {target: this.$t('term.process.region')}),
           type: 'error'
         });
       }

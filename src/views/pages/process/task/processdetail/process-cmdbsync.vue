@@ -202,6 +202,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
+                  :slotList="[{ name: 'cmdbsync', label: '配置项同步' }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

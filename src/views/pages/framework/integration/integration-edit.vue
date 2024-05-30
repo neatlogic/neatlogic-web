@@ -8,19 +8,21 @@
       <template v-slot>
         <TsForm ref="integrationForm" :item-list="integrationFormConfig">
           <template v-slot:target>
-            <TsRow :gutter="0">
-              <Col span="4">
-                <TsFormSelect
-                  v-model="integrationData.method"
-                  :data-list="methodList"
-                  :name="'method'"
-                  style="margin-right:5px"
-                ></TsFormSelect>
-              </Col>
-              <Col span="20" style="padding-left:8px;">
-                <TsFormInput v-model="integrationData.url" type="text" :name="'url'" />
-              </Col>
-            </TsRow>
+            <div>
+              <TsRow :gutter="0">
+                <Col span="4">
+                  <TsFormSelect
+                    v-model="integrationData.method"
+                    :data-list="methodList"
+                    :name="'method'"
+                    style="margin-right: 5px"
+                  ></TsFormSelect>
+                </Col>
+                <Col span="20" style="padding-left: 8px">
+                  <TsFormInput v-model="integrationData.url" type="text" :name="'url'" />
+                </Col>
+              </TsRow>
+            </div>
           </template>
           <template v-slot:config>
             <Tabs v-model="activedTab" name="integrationEditTabs">

@@ -64,7 +64,7 @@
                   :data="processTaskConfig.formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit"
                   class="pl-sm pr-sm"
-                  style="width:100%"
+                  style="width: 100%"
                   @emit="formSheetEmitData"
                   @updateHiddenComponentList="updateHiddenComponentList"
                   @setValue="setFormAttributeDataMap"
@@ -93,6 +93,18 @@
           </div>
         </TabPane>
         <TabPane
+          v-for="s in unfixedSlotList"
+          :key="s.name"
+          :name="s.name"
+          class="tab-content"
+          tab="tab1"
+          :label="render => renderTabPaneLabel(render, s.name, s.label)"
+        >
+          <div class="padding">
+            <slot :name="s.name"></slot>
+          </div>
+        </TabPane>
+        <TabPane
           v-if="fixedPageTab.changeDetails && ($slots.changecreate || $slots.changehandle)"
           :label="render => renderTabPaneLabel(render, 'changeDetails', $t('term.process.changedetail'))"
           name="changeDetails"
@@ -106,97 +118,6 @@
             <!-- 变更处理s -->
             <slot name="changehandle"></slot>
             <!-- 变更处理end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.autoexec && $slots.autoexec"
-          :label="render => renderTabPaneLabel(render, 'autoexec', $t('page.autoexec'))"
-          name="autoexec"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!-- 自动化节点s -->
-            <slot name="autoexec"></slot>
-            <!-- 自动化节点end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.subProcess && $slots.subProcess"
-          :label="render => renderTabPaneLabel(render, 'subProcess', $t('term.process.subprocess.tab'))"
-          name="subProcess"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!-- 子流程 -->
-            <slot name="subProcess"></slot>
-            <!-- 子流程end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.diagram && $slots.diagram"
-          :label="render => renderTabPaneLabel(render, 'diagram', '架构设计')"
-          name="diagram"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!-- 架构图 -->
-            <slot name="diagram"></slot>
-            <!-- 架构图end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.automatic && $slots.automatic"
-          :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
-          name="automatic"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--  auto回调 -->
-            <slot name="automatic"></slot>
-            <!--  auto回调 -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.cmdbsync && $slots.cmdbsync"
-          :label="render => renderTabPaneLabel(render, 'cmdbsync', 'cmdb')"
-          name="cmdbsync"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--cmdb同步s -->
-            <slot name="cmdbsync"></slot>
-            <!-- cmdb同步end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.eoa && $slots.eoa"
-          :label="render => renderTabPaneLabel(render, 'eoa', 'EOA')"
-          name="eoa"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--eoa -->
-            <slot name="eoa"></slot>
-            <!-- eoa -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.dataconversion && $slots.dataconversion"
-          :label="render => renderTabPaneLabel(render, 'dataconversion', '数据转换')"
-          name="dataconversion"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--数据转换 -->
-            <slot name="dataconversion"></slot>
-            <!-- 数据转换 -->
           </div>
         </TabPane>
         <template v-for="subStep in taskConfigList">
@@ -359,6 +280,15 @@
           @getStepList="getStepList"
         ></StrategyDetail>
       </template>
+      <template v-else-if="slotList.find(d=>d.name === item.tabValue)">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot :name="item.tabValue"></slot>
+        </div>
+      </template>
       <template v-else-if="item.tabValue == 'changeDetails'">
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -371,60 +301,6 @@
           <!-- 变更处理s -->
           <slot name="changehandle"></slot>
           <!-- 变更处理end -->
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'automatic'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="automatic"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'cmdbsync'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="cmdbsync"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'eoa'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="eoa"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'dataconversion'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="dataconversion"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'subProcess'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="subProcess"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'diagram'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="diagram"></slot>
         </div>
       </template>
       <template v-else>
@@ -512,6 +388,9 @@ export default {
   directives: { imgViewer, scrollHidden, download },
   mixins: [dealFormMix],
   props: {
+    slotList: {
+      type: Array
+    },
     defaultProcessTaskId: {
       type: [String, Number],
       default: null
@@ -558,14 +437,7 @@ export default {
         markrepeat: true,
         file: true,
         reportingHistory: true,
-        changeDetails: true,
-        autoexec: true,
-        automatic: true, // 自动处理节点
-        cmdbsync: true,
-        eoa: true,
-        dataconversion: true,
-        subProcess: true,
-        diagram: true
+        changeDetails: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -637,6 +509,12 @@ export default {
     if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
       this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
     }
+    //补充动态slot进fixedPageTab
+    if (this.slotList && this.slotList.length > 0) {
+      this.slotList.forEach(d => {
+        this.fixedPageTab[d.name] = true;
+      });
+    }
   },
   mounted() {
     this.$nextTick(() => {
@@ -690,7 +568,8 @@ export default {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
       this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
       this.setTimeUpdata = setTimeout(() => {
-        this.$nextTick(() => { // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
+        this.$nextTick(() => {
+          // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
           let allData = this.getData();
           this.$emit('update', allData);
         });
@@ -835,7 +714,7 @@ export default {
       let hidecomponentList = [];
       let readcomponentList = [];
       let handlerStepInfo = {};
-      let formExtendAttributeDataList = [];//自定义组件对外消费数据
+      let formExtendAttributeDataList = []; //自定义组件对外消费数据
       if (this.$refs.FormPreview) {
         formData = this.$refs.FormPreview.getFormvalNovalid();
         hidecomponentList = this.$refs.FormPreview.getHidecomponent();
@@ -845,7 +724,8 @@ export default {
         hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
         readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
         formExtendAttributeDataList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormExtendData() : this.$refs.formSheet.getFormExtendData();
-      } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) { //表单组件未渲染且表单值不为空的情况
+      } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) {
+        //表单组件未渲染且表单值不为空的情况
         Object.keys(this.processTaskConfig.formAttributeDataMap).forEach(key => {
           let find = this.formConfig.tableList.find(i => i.component && i.component.uuid === key);
           if (find) {
@@ -1191,8 +1071,11 @@ export default {
         tabValue: tabValue,
         label: labelName
       });
-      if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
+      /*if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
         this.fixedPageTab[tabValue] = false;
+      }*/
+      if (tabValue) {
+        this.$set(this.fixedPageTab, tabValue, false);
       }
       this.$nextTick(() => {
         if (this.tabValue == tabValue) {
@@ -1209,8 +1092,9 @@ export default {
           this.fixedPageList.splice(index, 1);
           this.$nextTick(() => {
             this.loadingShow = false; // 取消固定页面时，调整tab顺序为初始化时的顺序
-            if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
-              this.fixedPageTab[tabValue] = true;
+            if (tabValue /*&& this.fixedPageTab.hasOwnProperty(tabValue)*/) {
+              //this.fixedPageTab[tabValue] = true;
+              this.$set(this.fixedPageTab, tabValue, true);
             }
           });
         }
@@ -1348,7 +1232,8 @@ export default {
         hidecomponentList: hidecomponentList
       };
     },
-    setFormAttributeDataMap(val) { //表单改变时更新formAttributeDataMap
+    setFormAttributeDataMap(val) {
+      //表单改变时更新formAttributeDataMap
       if (!this.$utils.isSame(val, this.processTaskConfig.formAttributeDataMap)) {
         this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
       }
@@ -1371,6 +1256,12 @@ export default {
     }
   },
   computed: {
+    unfixedSlotList() {
+      if (this.slotList && this.slotList.length > 0 && !this.loadingShow) {
+        return this.slotList.filter(d => this.fixedPageTab[d.name]);
+      }
+      return [];
+    },
     getStrategyConfig() {
       // 根据子任务id获取子任务配置信息
       let config = {};

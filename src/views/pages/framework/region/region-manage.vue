@@ -51,11 +51,8 @@
               ></TsForm>
             </div>
           </TabPane>
-          <TabPane v-if="regionData.id" :label="ownerLabel" name="owner">
-            <RegionTeam ref="regionOwnerTeam" :regionId="regionData.id" type="owner"></RegionTeam>
-          </TabPane>
-          <TabPane v-if="regionData.id" :label="workerLabel" name="worker">
-            <RegionTeam ref="regionOwnerTeam" :regionId="regionData.id" type="worker"></RegionTeam>
+          <TabPane v-if="regionData.id" :label="teamLabel" name="team">
+            <RegionTeam ref="regionOwnerTeam" :regionId="regionData.id" type="team"></RegionTeam>
           </TabPane>
         </Tabs>
       </template>
@@ -78,8 +75,7 @@ export default {
       currentTab: 'info',
       selectSaveId: null,
       infoLabel: null,
-      ownerLabel: null,
-      workerLabel: null,
+      teamLabel: null,
       isSiderHide: false,
       regionName: this.$t('dialog.title.edittarget', { target: '地域' }), //表单标题
       treeloading: true,
@@ -210,8 +206,7 @@ export default {
   async created() {
     await this.getTreeList(true);
     this.infoLabel = this.getLabel(this.$t('page.basicinfo'), 'role');
-    this.ownerLabel = this.getLabel(this.$t('page.informant'), 'owner');
-    this.workerLabel = this.getLabel(this.$t('term.process.dealwithuser'), 'worker');
+    this.teamLabel = this.getLabel(this.$t('page.group'), 'team');
   },
   beforeMount() {},
   mounted() {

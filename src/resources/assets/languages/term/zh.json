@@ -1260,7 +1260,10 @@
     "custommenu": "自定义菜单",
     "internalmenuoperationtips": "内部菜单只能查看权限，不能新增编辑菜单",
     "hidetab": "隐藏选项卡",
-    "commercialauth": "商业模块专属权限"
+    "commercialauth": "商业模块专属权限",
+    "regiondispatcherapp": "业务系统",
+    "regiondispatcherapptooltip": "请选择业务系统表单",
+    "regiondispatchermatchtooltips": "分派器属性映射矩阵属性"
   },
   "knowledge": {
     "document": "文档",
@@ -2048,7 +2051,9 @@
     "modifyfilecount": "修改文件数",
     "addfilecount": "新增文件数",
     "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
-    "withoutconfigeditauth": "请联系发布管理员授权配置"
+    "withoutconfigeditauth": "请联系发布管理员授权配置",
+    "envattr": "环境属性",
+    "addenvattrtips": "未配置属性，点击"
   },
   "inspect": {
     "alarmprompt": "告警提示",
