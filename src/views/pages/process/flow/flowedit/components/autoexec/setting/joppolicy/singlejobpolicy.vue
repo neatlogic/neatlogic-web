@@ -490,7 +490,7 @@
                     ref="formValid"
                     jopPolicy="single"
                     :allFormitemList="allFormitemList"
-                    :value="r.value"
+                    :valueList="r.value"
                     :formCommonComponentList="getFormComponent('formCommonComponent')"
                     :mappingDataList="runtimeParamMappingModeList(r.type)"
                     :formTableComponentList="getFormComponent('formTableComponent')"

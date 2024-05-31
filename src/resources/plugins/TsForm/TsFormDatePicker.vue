@@ -321,7 +321,7 @@ export default {
       }
       //初始化  valueType=='format'  格式完整
       value instanceof Number && (value = new Date(value));
-      if (this.type.indexOf('time') != -1 && typeof value == 'string' && (format.indexOf('yyyy') > 0 || format.indexOf('MM') > 0)) {
+      if (this.type && this.type.indexOf('time') != -1 && typeof value == 'string' && (format.indexOf('yyyy') > 0 || format.indexOf('MM') > 0)) {
         //处理当格式是时间的但是用了错的format（比如：yyyy-mm-dd）
         value = new Date(value);
       }

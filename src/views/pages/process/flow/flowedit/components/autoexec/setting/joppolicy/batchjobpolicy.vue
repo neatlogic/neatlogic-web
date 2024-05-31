@@ -314,7 +314,7 @@
                 ref="formValid"
                 jopPolicy="batch"
                 :allFormitemList="allFormitemList"
-                :value="r.value"
+                :valueList="r.value"
                 :formCommonComponentList="getFormComponent('formCommonComponent')"
                 :mappingDataList="runtimeParamMappingModeList(r.type)"
                 :formTableComponentList="getFormComponent('formTableComponent')"
