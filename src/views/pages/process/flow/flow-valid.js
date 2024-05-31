@@ -418,6 +418,32 @@ let valid = {
     }
     return validList;
   },
+  collection(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let collectionConfig = nodeData.collectionConfig || {};
+    if (nodeConfig.handler === 'collection') {
+      if (that.$utils.isEmpty(collectionConfig.systemField)) {
+        validList.push({
+          name: '应用系统关联字段不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.requestField)) {
+        validList.push({
+          name: '需求编号关联字段不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.envField)) {
+        validList.push({
+          name: '环境关联字段不能为空',
+          href: '#collectionConfig'
+        });
+      }
+    }
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
