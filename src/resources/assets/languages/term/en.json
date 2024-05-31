@@ -590,7 +590,8 @@
     "phase": "·Stage",
     "channel": "passageway",
     "saveandstart": "Save and start",
-    "createcollection": "Create Collection"
+    "createcollection": "Create Collection",
+    "taskinformation": "Work order information"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
