@@ -28,6 +28,7 @@
           v-model="runnerGroup.value"
           v-bind="runnerGroupConfig"
           :clearable="false"
+          @on-change="updateRunnerGroupText"
         >
           <template v-slot:first-ul>
             <li class="tsfont-plus text-href first-slot" @click="gotoRunnerGroupPage">{{ $t('term.deploy.actuatorgroup') }}</li>
@@ -193,6 +194,9 @@ export default {
       let newParam = { timeUuid: this.$utils.setUuid() };
       this.$set(this.runnerGroupConfig, 'params', newParam);
       this.$set(this.runnerGroupConfig, 'needCallback', true);
+    },
+    updateRunnerGroupText(val, valObj) {
+      this.runnerGroup.text = valObj.text;
     }
   },
   filter: {},

@@ -10,7 +10,8 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MappingmodeExpression: () => import('@/views/pages/process/flow/flowedit/components/autoexec/setting/joppolicy/mappingmode-expression.vue')
   },
   props: {
     config: Object,
@@ -34,7 +35,14 @@ export default {
         }
       ],
       validateList: ['required'],
-      formDataList: [] //表单赋值：仅支持文本框、文本域类型的控件赋值
+      formDataList: [], //表单赋值：仅支持文本框、文本域类型的控件赋值
+      processTaskParamConfig: {
+        dynamicUrl: '/api/rest/process/condition/list',
+        textName: 'label',
+        valueName: 'name',
+        border: 'border',
+        transfer: true
+      }
     };
   },
   created() {
@@ -57,6 +65,20 @@ export default {
           return item.value != 'constant' && item.value != 'formTableComponent';
         });
       }
+    },
+    runtimeParamMappingModeList(type) {
+      let dataList = this.$utils.deepClone(this.mappingModeList);
+      dataList.push({
+        text: this.$t('term.process.taskinformation'),
+        value: 'processTaskParam'
+      });
+      if (type === 'text') {
+        dataList.push({
+          text: this.$t('term.cmdb.expression'),
+          value: 'expression'
+        });
+      }
+      return dataList;
     },
     getRoundCountText(value) {
       let text = value;
@@ -106,6 +128,16 @@ export default {
           this.$set(e, '_disabled', false);
         }
       });
+    },
+    addFilter(filterList) {
+      filterList.push({
+        'column': '',
+        'expression': 'like',
+        'value': ''
+      });
+    },
+    delFilterItem(filterList, index) {
+      filterList.splice(index, 1);
     }
   },
   computed: {
@@ -127,7 +159,7 @@ export default {
       };
     },
     getAttrList() {
-      return (value) => {
+      return (value, column, filterList) => {
         let dataList = [];
         if (this.allFormitemList && this.allFormitemList.length > 0) {
           let find = this.allFormitemList.find(item => item.uuid === value);
@@ -135,7 +167,8 @@ export default {
             find.config.dataConfig.forEach(d => {
               dataList.push({
                 text: d.label,
-                value: d.uuid
+                value: d.uuid,
+                _disabled: !!(filterList && filterList.find(f => f.column === d.uuid && f.column != column))
               });
             });
           }

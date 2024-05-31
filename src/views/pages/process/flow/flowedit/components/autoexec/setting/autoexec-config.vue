@@ -59,23 +59,11 @@
                     border="border"
                   ></TsFormSelect>
                 </template>
-                <template v-else-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
-                  <TsFormSelect
-                    ref="runnerGroup"
-                    v-model="autoexecConfig.runnerGroup.value"
-                    :dataList="getFormComponent('formCommonComponent')"
-                    textName="label"
-                    valueName="uuid"
-                    :validateList="validateList"
-                    :firstSelect="false"
-                    transfer
-                    border="border"
-                  ></TsFormSelect>
-                </template>
                 <template v-else>
                   <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
                   <span>{{ getruntimeParamListText(autoexecConfig.runnerGroup.value) }}</span>
                 </template>
+                <p><span v-if="isRunnerGroupDeprecated" class="text-error">{{ $t('term.autoexec.runnergroupdeprecatedtips') }}</span></p>
               </Col>
             </TsRow>
           </Col>
@@ -139,6 +127,7 @@ export default {
     return {
       loadingShow: true,
       validateList: ['required'],
+      isRunnerGroupDeprecated: false, //runnerGroup是否过期需要重新保存刷新
       autoexecConfig: {
         autoexecCombopId: null,
         jobName: '',
@@ -237,7 +226,11 @@ export default {
             Object.keys(this.config).forEach(key => {
               this.$set(this.autoexecConfig, key, this.config[key]);
             });
-
+            if (this.autoexecConfig.runnerGroup.mappingMode != this.autoexecCombop.runnerGroup.mappingMode || this.autoexecConfig.runnerGroup.value != this.autoexecCombop.runnerGroup.value) {
+              this.isRunnerGroupDeprecated = true;
+            } else {
+              this.isRunnerGroupDeprecated = false;
+            }
             //执行器组只需要只读，从组合工具带出即可
             this.$set(this.autoexecConfig, 'runnerGroup', {});
             if (!this.$utils.isEmpty(this.autoexecCombop.runnerGroup)) {

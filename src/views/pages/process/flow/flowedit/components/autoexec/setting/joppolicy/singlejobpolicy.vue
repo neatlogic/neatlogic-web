@@ -393,7 +393,7 @@
                 <TsFormSelect
                   ref="formValid"
                   v-model="r.mappingMode"
-                  :dataList="mappingModeList"
+                  :dataList="runtimeParamMappingModeList(r.type)"
                   :validateList="r.isRequired?validateList:[]"
                   :firstSelect="false"
                   transfer
@@ -485,6 +485,29 @@
                     :isRequired="!!r.isRequired"
                   ></Edit>
                 </template>
+                <template v-else-if="r.mappingMode === 'expression'">
+                  <MappingmodeExpression
+                    ref="formValid"
+                    jopPolicy="single"
+                    :allFormitemList="allFormitemList"
+                    :valueList="r.value"
+                    :formCommonComponentList="getFormComponent('formCommonComponent')"
+                    :mappingDataList="runtimeParamMappingModeList(r.type)"
+                    :formTableComponentList="getFormComponent('formTableComponent')"
+                    :isRequired="!!r.isRequired"
+                    @setConfig="(val)=>{
+                      $set(r,'value',val);
+                    }"
+                  ></MappingmodeExpression>
+                </template>
+                <template v-else-if="r.mappingMode === 'processTaskParam'">
+                  <TsFormSelect
+                    ref="formValid"
+                    v-model="r.value"
+                    v-bind="processTaskParamConfig"
+                    :validateList="r.isRequired? validateList:[]"
+                  ></TsFormSelect>
+                </template>
                 <template v-else>
                   <TsFormInput
                     ref="formValid"
@@ -505,19 +528,24 @@
                   }"
                 ></TsFormSwitch>
               </div>
-              <div v-if="r.isActive" class="pb-sm">
-                <TsRow v-for="(f,findex) in r.filterList" :key="findex" :gutter="8">
+              <div v-if="r.isActive">
+                <TsRow
+                  v-for="(f,findex) in r.filterList"
+                  :key="findex"
+                  :gutter="8"
+                  class="pb-xs"
+                >
                   <Col span="10">
                     <TsFormSelect
                       ref="formValid"
                       v-model="f.column"
-                      :dataList="getAttrList(r.value)"
+                      :dataList="getAttrList(r.value, f.column, r.filterList)"
                       :validateList="validateList"
                       :firstSelect="false"
                       transfer
                     ></TsFormSelect>
                   </Col>
-                  <Col span="7">
+                  <Col span="6">
                     <TsFormSelect
                       ref="formValid"
                       v-model="f.expression"
@@ -527,14 +555,18 @@
                       transfer
                     ></TsFormSelect>
                   </Col>
-                  <Col span="7">
+                  <Col span="6">
                     <TsFormInput
                       ref="formValid"
                       v-model="f.value"
                       :validateList="validateList"
                     ></TsFormInput>
                   </Col>
+                  <Col span="2">
+                    <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(r.filterList, findex)"></span>
+                  </Col>
                 </TsRow>
+                <span class="tsfont-plus text-href" @click="addFilter(r.filterList)">{{ $t('term.pbc.adddata') }}</span>
               </div>
             </div>
           </Col>

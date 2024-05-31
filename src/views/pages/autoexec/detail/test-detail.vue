@@ -69,6 +69,17 @@
             </div>
           </div>
         </template>
+        <div>
+          <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
+          <div>
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :isCreateJob="true"
+              :disabled="false"
+            ></RunnerGroupSetting>
+          </div>
+        </div>
       </div>
     </TsContain>
     <Loading v-else></Loading>
@@ -82,7 +93,8 @@ export default {
     SetParam: () => import('./runnerDetail/param.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
 
   },
   filters: {},
@@ -143,7 +155,11 @@ export default {
       jobConfig: {},
       executeNodeConfig: {},
       paramValue: {},
-      tagIdList: null
+      tagIdList: null,
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '-1'
+      }
     };
   },
   beforeCreate() {
@@ -222,12 +238,14 @@ export default {
       }
     },
     executeAction() {
+      this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
       //执行
       let val = {
         operationId: this.id,
         type: this.type,
         param: this.$refs.param.getValue(),
-        name: this.nameForm.itemList.name.value
+        name: this.nameForm.itemList.name.value,
+        runnerGroup: this.runnerGroup
       };
 
       val.executeConfig = this.$refs.executeForm ? this.$refs.executeForm.getFormValue() : {};
