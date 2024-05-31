@@ -14,7 +14,8 @@
         @changePageSize="changePageSizeAutoConfig"
       >
         <template slot="value" slot-scope="{row}">
-          <span v-if="row.type==='password'">******</span>
+          <span v-if="row.type==='password' && row.value">******</span>
+          <span v-else-if="row.type==='password' && !row.value">{{ $t('page.settonull') }}</span>
           <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
         </template>
       </TsTable>

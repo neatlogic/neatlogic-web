@@ -142,7 +142,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.getParamsTypeLit();
-    console.log(this.tableData);
   },
   beforeUpdate() {},
   updated() {},
