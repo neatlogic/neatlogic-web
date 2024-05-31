@@ -7,7 +7,9 @@ try {
   validPath
     .keys()
     .forEach(path => {
-      Object.assign(validConfig, validPath(path).nodeConfigValid);
+      if (validPath(path).nodeConfigValid) {
+        Object.assign(validConfig, validPath(path).nodeConfigValid);
+      }
     });
 } catch (error) {
   console.error('flowNodeValid.js异常', error);

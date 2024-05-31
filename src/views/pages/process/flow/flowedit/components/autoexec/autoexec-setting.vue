@@ -152,6 +152,9 @@ export default {
       if (this.$utils.isEmpty(this.autoexecConfig.configList)) {
         this.isValid = false;
       }
+      if (this.$refs.failPolicy && !this.$refs.failPolicy.valid()) {
+        this.isValid = false;
+      }
       return this.isValid;
     },
     saveAutoexecConfig() {
