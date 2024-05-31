@@ -854,7 +854,8 @@
     "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。",
     "combophasexpired": "组合工具已失效",
     "pleasereedit": "请重新编辑后，提交审核",
-    "abortjob": "终止作业"
+    "abortjob": "终止作业",
+    "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
