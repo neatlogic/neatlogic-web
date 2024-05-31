@@ -108,7 +108,8 @@ export default {
       paramsTypeList: [],
       typeList: [
         'text',
-        'password'
+        'password',
+        'textarea'
       ],
       formValue: {},
       theadList: [

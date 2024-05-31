@@ -1,12 +1,12 @@
 <template>
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
     <ul class="pt-nm pl-nm">
-      <li v-if="hasAutoConfig && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
+      <li v-if="tableData && tableData.tbodyList.length > 0 && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
       <template v-else>
         <li v-if="!hasEditConfigAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
       </template>
     </ul>
-    <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
+    <div v-if="tableData && tableData.tbodyList.length > 0" :class="hasAutoConfig ? 'padding': ''">
       <TsTable
         v-bind="tableConfig"
         :theadList="envTheadList"
@@ -57,10 +57,7 @@ export default {
   data() {
     return {
       isShowEnvEdit: false,
-      hasInstance: false, // 是否存在实例差异
-      hasAutoConfig: false,
       tableConfig: {},
-      instanceAutoConfigList: [],
       envTheadList: [
         {
           title: this.$t('page.attrname'),
@@ -84,7 +81,6 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getEnvInfo();
     this.getEnvAttrList();
   },
   beforeUpdate() {},
@@ -103,23 +99,8 @@ export default {
     closeAutoConfigEdit(needRefresh) {
       this.isShowEnvEdit = false;
       if (needRefresh) {
-        this.getEnvInfo();
         this.getEnvAttrList();
       }
-    },
-    getEnvInfo() {
-      this.$api.deploy.applicationConfig.getEnvInfo(this.params).then((res) => {
-        if (res && res.Status == 'OK') {
-          let returnData = res.Return;
-          if (returnData && returnData.envAutoConfigList) {
-            this.hasAutoConfig = !!(returnData.envAutoConfigList && returnData.envAutoConfigList.length > 0);
-            this.instanceAutoConfigList = returnData.instanceAutoConfigList;
-            this.hasInstance = !!(returnData.instanceAutoConfigList && returnData.instanceAutoConfigList.length > 0);
-          } else {
-            this.hasAutoConfig = false;
-          }
-        }
-      });
     },
     changeCurrentAutoConfig() {
 
