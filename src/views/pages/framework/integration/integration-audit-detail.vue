@@ -4,7 +4,9 @@
       <template v-slot:header>
         {{ $t('page.detail') }}
       </template>
-      <template v-slot><pre>{{ contentFormated }}</pre></template>
+      <template v-slot>
+        <pre class="overflow" style="word-break: break-all; white-space: normal">{{ contentFormated }}</pre>
+      </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
         <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">{{ $t('page.download') }}</Button>
@@ -16,10 +18,9 @@
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
-  directives: {download},
-  components: {
-  },
-  props: { filePath: {type: String}},
+  directives: { download },
+  components: {},
+  props: { filePath: { type: String } },
   data() {
     return {
       isShow: false,
@@ -30,7 +31,8 @@ export default {
         maskClose: true,
         isShow: true,
         width: 'small'
-      }};
+      }
+    };
   },
   beforeCreate() {},
   created() {
@@ -46,7 +48,7 @@ export default {
   destroyed() {},
   methods: {
     getAuditDetail() {
-      this.$api.framework.integration.getIntegrationAuditDetail({filePath: this.filePath}).then(res => {
+      this.$api.framework.integration.getIntegrationAuditDetail({ filePath: this.filePath }).then(res => {
         if (res.Status == 'OK') {
           this.content = res.Return.content;
           this.hasMore = res.Return.hasMore;
@@ -76,9 +78,7 @@ export default {
       };
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
