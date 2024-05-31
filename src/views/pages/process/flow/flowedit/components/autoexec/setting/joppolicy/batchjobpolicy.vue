@@ -17,12 +17,17 @@
     <TsFormItem :label="$t('term.dashboard.datafilter')" labelPosition="left" required>
       <TsFormSwitch v-model="isActive" @on-change="changeActive"></TsFormSwitch>
       <div v-if="isActive">
-        <TsRow v-for="(f,findex) in filterList" :key="findex" :gutter="8">
+        <TsRow
+          v-for="(f,findex) in filterList"
+          :key="findex"
+          :gutter="8"
+          class="pb-xs"
+        >
           <Col span="6">
             <TsFormSelect
               ref="formValid"
               v-model="f.column"
-              :dataList="getAttrList(batchJobDataSource.attributeUuid)"
+              :dataList="getAttrList(batchJobDataSource.attributeUuid, f.column, filterList)"
               :validateList="validateList"
               :firstSelect="false"
               transfer
@@ -40,7 +45,7 @@
               @on-change="changeFilter"
             ></TsFormSelect>
           </Col>
-          <Col span="12">
+          <Col span="10">
             <TsFormInput
               ref="formValid"
               v-model="f.value"
@@ -48,7 +53,11 @@
               @on-change="changeFilter"
             ></TsFormInput>
           </Col>
+          <Col span="2">
+            <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(r.filterList, findex)"></span>
+          </Col>
         </TsRow>
+        <span class="tsfont-plus text-href" @click="addFilter(filterList)">{{ $t('term.pbc.adddata') }}</span>
       </div>
     </TsFormItem>
     <div v-if="autoexecConfig.scenarioParamList.length > 0">
@@ -255,7 +264,7 @@
             <TsFormSelect
               ref="formValid"
               v-model="r.mappingMode"
-              :dataList="mappingModeList"
+              :dataList="runtimeParamMappingModeList(r.type)"
               :validateList="r.isRequired?validateList:[]"
               :firstSelect="false"
               transfer
@@ -299,6 +308,29 @@
                 :config="r.config?r.config:{}"
                 :isRequired="!!r.isRequired"
               ></Edit>
+            </template>
+            <template v-else-if="r.mappingMode === 'expression'">
+              <MappingmodeExpression
+                ref="formValid"
+                jopPolicy="batch"
+                :allFormitemList="allFormitemList"
+                :valueList="r.value"
+                :formCommonComponentList="getFormComponent('formCommonComponent')"
+                :mappingDataList="runtimeParamMappingModeList(r.type)"
+                :formTableComponentList="getFormComponent('formTableComponent')"
+                :isRequired="!!r.isRequired"
+                @setConfig="(val)=>{
+                  $set(r,'value',val);
+                }"
+              ></MappingmodeExpression>
+            </template>
+            <template v-else-if="r.mappingMode === 'processTaskParam'">
+              <TsFormSelect
+                ref="formValid"
+                v-model="r.value"
+                v-bind="processTaskParamConfig"
+                :validateList="r.isRequired? validateList:[]"
+              ></TsFormSelect>
             </template>
             <template v-else>
               <TsFormInput
