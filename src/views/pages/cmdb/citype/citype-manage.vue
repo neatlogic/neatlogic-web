@@ -3,14 +3,11 @@
     <TsDialog :is-show="true" v-bind="dialogConfig" @on-close="close">
       <template v-slot>
         <div>
-          <div class="card-head">
-            <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
-            <div class="block-name text-grey">{{ $t('page.name') }}</div>
-            <!--<div class="block-key text-grey">{{ $t('term.cmdb.keylevel') }}</div>-->
-            <div class="block-topo text-grey">{{ $t('term.cmdb.showintopo') }}</div>
-            <div class="block-type text-grey">{{ $t('term.cmdb.cicount') }}</div>
-            <div class="block-showtype text-grey"></div>
-          </div>
+          <TsRow class="mb-sm">
+            <Col v-for="(item,index) in theadList" :key="index" :span="colSpanList[index]">
+              {{ item.label }}
+            </Col>
+          </TsRow>
           <draggable
             v-bind="dragOptions"
             tag="div"
@@ -22,11 +19,18 @@
             @start="moveStart"
             @end="moveEnd"
           >
-            <div v-for="(item, index) in ciTypeList" :key="index" class="card-item">
-              <div class="block-handler">
-                <div v-if="!item.isDeleted"><i class="tsfont-bar move"></i></div>
-              </div>
-              <div class="block-name">
+            <Row
+              v-for="(item) in ciTypeList"
+              :key="item.id"
+              class="mb-sm"
+              type="flex"
+              align="middle"
+              :gutter="16"
+            >
+              <Col span="2">
+                <span v-if="!item.isDeleted"><i class="tsfont-bar move"></i></span>
+              </Col>
+              <Col span="8">
                 <div v-if="!item.isDeleted">
                   <TsFormInput
                     v-model="item.name"
@@ -36,21 +40,23 @@
                   ></TsFormInput>
                 </div>
                 <div v-else style="text-decoration:line-through" class="text-grey">{{ item.name }}</div>
-              </div>
-              <!--<div class="block-key">
+              </Col>
+              <!-- <Col span="2">
+                <div class="block-key">
                 <div v-if="!item.isDeleted">
                   <i-switch v-model="item.isMenu" :true-value="1" :false-value="0"></i-switch>
                 </div>
-              </div>-->
-              <div class="block-topo">
+              </div>
+              </Col> -->
+              <Col span="4">
                 <div v-if="!item.isDeleted">
                   <i-switch v-model="item.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
                 </div>
-              </div>
-              <div class="block-type">
+              </Col>
+              <Col span="4">
                 <Badge :count="item.ciCount" type="primary"></Badge>
-              </div>
-              <div class="block-showtype">
+              </Col>
+              <Col span="4">
                 <div v-if="!item.ciCount">
                   <div
                     v-if="!item.isDeleted"
@@ -65,8 +71,8 @@
                     @click="recoverCiType(item)"
                   >{{ $t('page.recover') }}</div>
                 </div>
-              </div>
-            </div>
+              </Col>
+            </Row>
           </draggable>
         </div>
       </template>
@@ -80,7 +86,6 @@
 <script>
 import draggable from 'vuedraggable';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
-
 export default {
   name: '',
   components: {
@@ -100,6 +105,33 @@ export default {
         isShow: true,
         width: '600px'
       },
+      colSpanList: [2, 8, 4, 4, 4],
+      theadList: [
+        {
+          label: this.$t('page.sort'),
+          uuid: this.$utils.setUuid()
+        },
+        {
+          label: this.$t('page.name'),
+          uuid: this.$utils.setUuid()
+        },
+        // {
+        //   label: this.$t('term.cmdb.keylevel'),
+        //   uuid: this.$utils.setUuid()
+        // },
+        {
+          label: this.$t('term.cmdb.showintopo'),
+          uuid: this.$utils.setUuid()
+        },
+        {
+          label: this.$t('term.cmdb.cicount'),
+          uuid: this.$utils.setUuid()
+        },
+        {
+          label: this.$t('page.action'),
+          uuid: this.$utils.setUuid()
+        }
+      ],
       dragOptions: {
         animation: 150,
         scroll: true,
@@ -158,67 +190,5 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.card-head {
-  position: relative;
-  height: 30px;
-  line-height: 30px;
-  .block-handler {
-    position: absolute;
-    left: 10px;
-  }
-  .block-name {
-    position: absolute;
-    left: 60px;
-  }
-  /*.block-key {
-    position: absolute;
-    left: 280px;
-  }*/
-  .block-topo {
-    position: absolute;
-    left: 300px;
-  }
-  .block-type {
-    position: absolute;
-    left: 430px;
-  }
-  .block-showtype {
-    position: absolute;
-    right: 0;
-    // left:500px;
-  }
-}
-.card-item {
-  margin-bottom: 10px;
-  position: relative;
-  height: 30px;
-  line-height: 30px;
-  .block-handler {
-    position: absolute;
-    left: 15px;
-    cursor: move;
-  }
-  .block-name {
-    position: absolute;
-    left: 60px;
-  }
-  .block-key {
-    position: absolute;
-    left: 280px;
-  }
-  .block-topo {
-    position: absolute;
-    left: 300px;
-  }
-  .block-type {
-    position: absolute;
-    left: 445px;
-  }
-  .block-showtype {
-    position: absolute;
-    // left:500px;
-    right: 0;
-  }
-}
+
 </style>
