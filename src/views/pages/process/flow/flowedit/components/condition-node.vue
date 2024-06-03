@@ -32,7 +32,7 @@
                 <div class="bg-grey padding-xs radius-sm">
                   <TsRow v-if="conditionItem.type !== 'custom'" :gutter="8">
                     <Col :span="conditionItem.isShowConditionValue == 1 ? 9 : 18">
-                      <span :title="conditionShow(conditionItem.name)" class="overflow" style="font-style: italic">
+                      <span :title="conditionShow(conditionItem.name)" style="font-style: italic;">
                         {{ conditionShow(conditionItem.name) || $t('term.process.empty') }}
                       </span>
                     </Col>
