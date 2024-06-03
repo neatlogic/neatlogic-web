@@ -236,6 +236,9 @@ export default {
       } else {
         this.config.dataConfig.forEach(element => {
           const config = element.config;
+          if (this.$utils.isEmpty(element.key)) {
+            errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+          }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
               errorList.push({ field: 'dataConfig', error: this.$t('form.validate.leastonetarget', {'target': this.$t('page.staticdatasource')}) });
