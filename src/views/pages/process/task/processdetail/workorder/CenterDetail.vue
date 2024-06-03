@@ -280,7 +280,7 @@
           @getStepList="getStepList"
         ></StrategyDetail>
       </template>
-      <template v-else-if="slotList.find(d=>d.name === item.tabValue)">
+      <template v-else-if="slotList.find(d => d.name === item.tabValue)">
         <div class="mb-xs">
           <span>{{ item.label }}</span>
           <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>

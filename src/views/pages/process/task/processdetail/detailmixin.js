@@ -530,16 +530,31 @@ export default {
         this.draftData = this.$utils.deepClone(data);
       }
     },
+    getData() {
+      let data = this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.getData() || {};
+      //检查子组件是否有myGetData方法
+      if (this.$options.mixins && this.$options.mixins.length > 0) {
+        for (let i = 0; i < this.$options.mixins.length; i++) {
+          const mixin = this.$options.mixins[i];
+          if (mixin !== this && mixin.methods && mixin.methods.myGetData) {
+            const myData = mixin.methods.myGetData.call(this);
+            Object.assign(data, myData);
+          }
+        }
+      }
+      console.log(JSON.stringify(data, null, 2));
+      return data;
+    },
     isDraftData(to, from, next, url) {
       //路由跳转比较对比  父组件beforeRouterLeave调用
-      let _this = this;
-      if (_this.actionConfig.save && _this.$refs.TaskCenterDetail) {
-        let draftData = _this.$refs.TaskCenterDetail.getData();
-        let isSame = _this.$utils.isSame(_this.draftData, draftData);
-        if (isSame || _this.draftData == '') {
+      if (this.actionConfig.save && this.$refs.TaskCenterDetail) {
+        let draftData = this.getData();
+        let isSame = this.$utils.isSame(this.draftData, draftData);
+        if (isSame || this.draftData == '') {
           // 没有改变
           url ? this.$utils.gotoHref(url) : next();
         } else {
+          let _this = this;
           this.$utils.jumpDialog.call(
             this,
             {
@@ -576,6 +591,7 @@ export default {
       this.wipeData();
       this.getAllData();
     },
+    
     saveTask(val) {
       //暂存 数据对比
       if (this.$refs.TaskCenterDetail) {
@@ -591,7 +607,7 @@ export default {
     saveTaskData(val) {
       //暂存 保存
       let _this = this;
-      let data = _this.$refs.TaskCenterDetail.getData();
+      let data = this.getData();
       return new Promise((resolve, reject) => {
         let isTime = val || false;
         if (_this.startHandler != 'changecreate' && _this.handler == 'changecreate') {
@@ -1095,9 +1111,22 @@ export default {
     },
     // 校验
     async taskValid() {
+      let isComplete = true;
+      //先检查子组件是否有自定义校验方法，有得话先调用
+      if (this.$options.mixins && this.$options.mixins.length > 0) {
+        for (let i = 0; i < this.$options.mixins.length; i++) {
+          const mixin = this.$options.mixins[i];
+          if (mixin !== this && mixin.methods && mixin.methods.myValidTask) {
+            const isValid = await mixin.methods.myValidTask.call(this);
+            if (!isValid) {
+              isComplete = false;
+            }
+          }
+        }
+      }
       this.validList = [];
       this.validCardOpen = false;
-      let isComplete = true;
+     
       if (this.handler == 'changecreate') {
         let changeValidList = [];
         if (this.startHandler == 'changecreate') {
