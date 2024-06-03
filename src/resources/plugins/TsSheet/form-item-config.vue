@@ -130,12 +130,30 @@ export default {
       formConfig: [
         {
           type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ],
+          value: this.formItem.key,
+          maxlength: 50,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          onChange: val => {
+            this.$set(this.formItem, 'key', val);
+          }
+        },
+        {
+          type: 'text',
           name: 'label',
           label: this.$t('page.name'),
           validateList: ['required'],
           value: this.formItem.label,
           maxlength: 50,
-          disabled: !!this.formItem.inherit,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
           onChange: val => {
             this.$set(this.formItem, 'label', val);
           }
@@ -275,7 +293,8 @@ export default {
           name: 'defaultValue'
         }
       ],
-      isReactionShow: false
+      isReactionShow: false,
+      keyBlacklist: ['formlabel', 'formlink', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
     };
   },
   beforeCreate() {},
@@ -298,6 +317,10 @@ export default {
           const element = this.formConfig[i];
           if (element.name === 'defaultValue') {
             if (!this.formItem.hasValue || this.formItem.config.disableDefaultValue) {
+              this.formConfig.splice(i, 1);
+            }
+          } else if (element.name === 'key') {
+            if (this.keyBlacklist.includes(this.formItem.handler)) {
               this.formConfig.splice(i, 1);
             }
           } else {
@@ -384,7 +407,12 @@ export default {
     },
     changeInherit(val) {
       this.formConfig.forEach(item => {
-        this.$set(item, 'disabled', !!val);
+        //编辑场景时，组件的中、英文名称不可改
+        if (item.name === 'key' || item.name === 'label') {
+          this.$set(item, 'disabled', true);
+        } else {
+          this.$set(item, 'disabled', !!val);
+        }
       });
       if (val) {
         this.$emit('inheritFormItem', this.formItem.uuid);

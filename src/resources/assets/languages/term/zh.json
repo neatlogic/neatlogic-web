@@ -1264,7 +1264,8 @@
     "commercialauth": "商业模块专属权限",
     "regiondispatcherapp": "业务系统",
     "regiondispatcherapptooltip": "请选择业务系统表单",
-    "regiondispatchermatchtooltips": "分派器属性映射矩阵属性"
+    "regiondispatchermatchtooltips": "分派器属性映射矩阵属性",
+    "compkeyname": "组件英文名称"
   },
   "knowledge": {
     "document": "文档",
