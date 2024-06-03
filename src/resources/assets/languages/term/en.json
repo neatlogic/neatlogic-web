@@ -1263,7 +1263,8 @@
     "commercialauth": "Exclusive permissions for commercial modules",
     "regiondispatcherapp": "Business system",
     "regiondispatcherapptooltip": "Please select the business system form",
-    "regiondispatchermatchtooltips": "Dispatcher Property Mapping Matrix Properties"
+    "regiondispatchermatchtooltips": "Dispatcher Property Mapping Matrix Properties",
+    "compkeyname": "Component English Name"
   },
   "knowledge": {
     "document": "Document",

@@ -24,7 +24,8 @@ export default {
   },
   data() {
     return {
-      validateList: []
+      validateList: [],
+      keyBlacklist: ['formlabel', 'formlink', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
     };
   },
   created() {
@@ -36,6 +37,17 @@ export default {
   methods: {
     validConfigBase() {
       const errorList = [];
+      if (!this.keyBlacklist.includes(this.formItem.handler)) {
+        if (!this.formItem.key) {
+          errorList.push({ field: 'key', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        } else {
+          let findKeyItem = this.formItemList.find(item => item.uuid != this.formItem.uuid && item.key === this.formItem.key);
+          if (findKeyItem) {
+            errorList.push({ field: 'key', error: this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}) });
+          }
+        }
+      }
+     
       if (!this.formItem.label) {
         errorList.push({ field: 'label', error: this.$t('form.validate.required', {'target': this.$t('term.dashboard.widgetname')}) });
       } else {

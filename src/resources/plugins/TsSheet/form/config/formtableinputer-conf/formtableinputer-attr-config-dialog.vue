@@ -365,6 +365,19 @@ export default {
       ],
       formConfig: [
         {
+          type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          maxlength: 50,
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ]
+        },
+        {
           name: 'label',
           label: this.$t('page.name'),
           type: 'text',
