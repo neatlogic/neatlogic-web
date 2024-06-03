@@ -104,10 +104,10 @@ function getDirectUrl() {
     xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
     //将参数设置进header，因为referer不靠谱，不支持url带#号，会导致后面的参数都取不到，所以都塞header里
     for (const key in hashParams) {
-      xhr.setRequestHeader(key,hashParams[key]);
+      xhr.setRequestHeader(key, hashParams[key]);
     }
     if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
-        SSOTICKETVALUE = hashParams[SSOTICKETKEY];
+      SSOTICKETVALUE = hashParams[SSOTICKETKEY];
     }
     xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));

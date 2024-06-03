@@ -1,6 +1,21 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
+let validConfig = {};
+try {
+  // 导入组件校验方法
+  const validPath = require.context('@', true, /flowNodeValid.js$/);
+  validPath
+    .keys()
+    .forEach(path => {
+      if (validPath(path).nodeConfigValid) {
+        Object.assign(validConfig, validPath(path).nodeConfigValid);
+      }
+    });
+} catch (error) {
+  console.error('flowNodeValid.js异常', error);
+}
 let valid = {
+  ...validConfig,
   common(nodeConfig, d, that) {
     //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
@@ -278,27 +293,6 @@ let valid = {
     }
     return validList;
   },
-  autoexec(nodeConfig, d, that) {
-    //自动化节点
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let autoexecConfig = nodeData.autoexecConfig || {};
-    if (nodeConfig.handler === 'autoexec') {
-      if (!autoexecConfig.failPolicy) {
-        validList.push({
-          name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
-          href: '#autoexecCombop'
-        });
-      }
-      if (that.$utils.isEmpty(autoexecConfig.configList)) {
-        validList.push({
-          name: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
-          href: '#autoexecCombop'
-        });
-      }
-    }
-    return validList;
-  },
   timer(nodeConfig, d, that) {
     //定时节点
     let validList = [];
@@ -413,6 +407,32 @@ let valid = {
         validList.push({
           name: $t('form.validate.required', { target: '架构图待审批状态' }),
           href: '#diagramSetting'
+        });
+      }
+    }
+    return validList;
+  },
+  collection(nodeConfig, d, that) {
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let collectionConfig = nodeData.collectionConfig || {};
+    if (nodeConfig.handler === 'collection') {
+      if (that.$utils.isEmpty(collectionConfig.systemField)) {
+        validList.push({
+          name: '应用系统关联字段不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.requestField)) {
+        validList.push({
+          name: '需求编号关联字段不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.envField)) {
+        validList.push({
+          name: '环境关联字段不能为空',
+          href: '#collectionConfig'
         });
       }
     }
