@@ -343,38 +343,17 @@ export default {
                         if (formItem && formItem.config) {
                           let valueList = [];
                           let textList = [];
-                          if (this.formData[formItemUuid] instanceof Array) {
+                          let currentFormData = this.formData[formItemUuid];
+                          if (currentFormData instanceof Array) {
                             this.formData[formItemUuid].forEach(value => {
-                              if (typeof value === 'string') {
-                                valueList.push(value);
-                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                  let findData = formItem.config.dataList.find(f => f.value === value);
-                                  textList.push(findData.text);
-                                } else {
-                                  textList.push(value);
-                                }
-                              } else if (typeof value == 'object') {
-                                valueList.push(value[column]);
-                                textList.push(value.text);
-                              }
+                              const { text, value: tmpValue } = this.handleFilterValue(value, column, formItem);  
+                              valueList.push(tmpValue);  
+                              textList.push(text); 
                             });
-                          } else {
-                            let value = this.formData[formItemUuid];
-                            if (!this.$utils.isEmpty(value)) {
-                              let tmpText = value;
-                              let tmpValue = value;
-                              if (typeof value === 'object') {
-                                tmpText = value.text;
-                                tmpValue = value[column];
-                              }
-                              if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                const findData = formItem.config.dataList.find(f => f[column] === tmpValue);
-                                textList.push(findData.text);
-                              } else {
-                                textList.push(tmpText);
-                                valueList.push(tmpValue);
-                              }
-                            }
+                          } else if (!this.$utils.isEmpty(currentFormData)) {
+                            const { text, value: tmpValue } = this.handleFilterValue(currentFormData, column, formItem);  
+                            valueList.push(tmpValue);  
+                            textList.push(text); 
                           }
                           if (valueList.length > 0) {
                             this.filter.push({ uuid: r.matrixAttrUuid,
@@ -416,6 +395,49 @@ export default {
           );
         }
       }
+    },
+    handleFilterValue(value, column, formItem = {}) {
+      let tmpText, tmpValue;
+      let {handler = '', config = {}} = formItem || {};
+      let {dataList = []} = config;
+      if (typeof value === 'string') {  
+        tmpText = tmpValue = value;
+        if (handler == 'formuserselect') {
+          tmpText = tmpValue = this.handleUserSelectValue(value);
+        } else if (!this.$utils.isEmpty(dataList)) {  
+          const findData = dataList.find(f => f.value === value);  
+          tmpText = findData ? findData.text : value;  
+        }  
+      } else if (typeof value === 'object') {  
+        tmpText = value.text;  
+        tmpValue = value[column];
+        if (handler == 'formuserselect') {
+          tmpText = this.handleUserSelectValue(tmpText);
+          tmpValue = this.handleUserSelectValue(tmpValue);
+        } else if (!this.$utils.isEmpty(dataList) && tmpValue) {  
+          const findData = dataList.find(f => f[column] === tmpValue);  
+          tmpText = findData ? findData.text : tmpText;  
+        }  
+      }
+      return { text: tmpText, value: tmpValue };  
+    },
+    handleUserSelectValue(value) {
+      // 处理用户下拉组件的值，去掉前缀
+      let prefixList = ['user#', 'team#', 'role#'];
+      let currentValue = this.$utils.deepClone(value);
+      let uuid = '';
+      let parts = [];
+      prefixList.some((v) => {
+        if (!this.$utils.isEmpty(currentValue) && currentValue.includes(v)) {
+          parts = currentValue.split(v) || [];
+          if (parts.length > 1) {
+            uuid = parts[1] || '';
+            return true;
+          }
+        }
+        return false;
+      });
+      return uuid;
     },
     //检查条件涉及的值是否发生变化，如果没变化则不触发联动
     isConditionDataChange(action, reaction, newFormData, oldFormData, formItemUuid) {
