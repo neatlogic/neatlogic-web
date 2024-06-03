@@ -125,7 +125,7 @@ export default {
   filter: {},
   computed: {
     otherFormItemList() {
-      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox'].includes(d.handler));
+      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox', 'formuserselect'].includes(d.handler));
       let newList = [];
       list.forEach(item => {
         let obj = {
