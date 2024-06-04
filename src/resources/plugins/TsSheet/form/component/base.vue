@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       validateList: [],
-      keyBlacklist: ['formlabel', 'formlink', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
+      keyBlacklist: ['formlabel', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
     };
   },
   created() {

@@ -70,6 +70,7 @@
                       width="350"
                       trigger="hover"
                       :title="$t('page.exception')"
+                      :disabled="!!data.key"
                       transfer
                     >
                       <span :class="!data.key? 'text-error' : ''"> {{ data.label }}</span>
