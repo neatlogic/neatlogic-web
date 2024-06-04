@@ -91,6 +91,12 @@ export default {
           disabled: false,
           disabledHoverTitle: '',
           onChange: val => {
+            this.$set(this.formSetting.attributeMappingList, 'value', [{
+              label: '',
+              uniqueIdentifier: '',
+              isNewLabel: true,
+              isNewUniqueIdentifier: true
+            }]);
             if (val) {
               _this.showAttribute(val);
             }
