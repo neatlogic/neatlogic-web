@@ -514,7 +514,8 @@ export default {
         keyName: 'id',
         tbodyList: [],
         currentPage: 1,
-        pageSize: 20
+        pageSize: 20,
+        rowNum: 0
       },
       settingConfig: {
         tagList: []
@@ -762,6 +763,7 @@ export default {
       this.selectList = [];
       if (needRefresh) {
         this.tableConfig.currentPage = 1;
+        this.tableConfig.rowNum = 0;
         this.searchAssetData(true);
       }
     },
@@ -811,9 +813,13 @@ export default {
       if (!this.selectType.typeId) {
         return;
       }
+      if (this.tableConfig.currentPage == 1) {
+        this.tableConfig.rowNum = 0;
+      }
       let params = {
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
+        rowNum: this.tableConfig.rowNum,
         ...this.searchVal,
         ...this.selectType,
         batchSearchList: this.searchVal.batchSearchList ? this.searchVal.batchSearchList : []
@@ -829,6 +835,7 @@ export default {
       this.$addHistoryData('selectType', this.selectType);
       this.$addHistoryData('currentPage', params.currentPage);
       this.$addHistoryData('pageSize', params.pageSize);
+      this.$addHistoryData('rowNum', params.rowNum);
       return this.$api.cmdb.asset
         .getResourceList(params)
         .then(res => {
@@ -1030,6 +1037,7 @@ export default {
       this.selectType = historyData['selectType'];
       this.tableConfig.currentPage = historyData['currentPage'];
       this.tableConfig.pageSize = historyData['pageSize'];
+      this.tableConfig.rowNum = historyData['rowNum'];
       this.defaultValue = historyData['defaultValue'];
     },
     openExportDialog() {
@@ -1064,10 +1072,14 @@ export default {
       this.tableConfig.pageSize = 20;
     },
     advancedModeSearch(searchVal) {
+      if (this.tableConfig.currentPage == 1) {
+        this.tableConfig.rowNum = 0;
+      }
       // 复杂模式搜索
       let params = {
         currentPage: this.tableConfig.currentPage || 1,
         pageSize: this.tableConfig.pageSize || 20,
+        rowNum: this.tableConfig.rowNum || 0,
         typeId: this.selectType.typeId,
         ...searchVal
       };
