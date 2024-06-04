@@ -66,7 +66,18 @@
                 </td>
                 <td class="text-grey">
                   <div class="overflow" style="width: 80px" :title="data.label">
-                    {{ data.label }}
+                    <Poptip
+                      width="350"
+                      trigger="hover"
+                      :title="$t('page.exception')"
+                      :disabled="!!data.key"
+                      transfer
+                    >
+                      <span :class="!data.key? 'text-error' : ''"> {{ data.label }}</span>
+                      <div slot="content">
+                        {{ $t('form.validate.required',{'target':$t('page.englishname')}) }}
+                      </div>
+                    </Poptip>
                   </div>
                 </td>
                 <td>
@@ -208,6 +219,7 @@ export default {
       const index = this.config.dataConfig.filter(d => d.isExtra).length;
       this.config.dataConfig.push({
         uuid: this.$utils.setUuid(),
+        key: '',
         label: this.$t('term.framework.extraattr') + '_' + (index + 1),
         isPC: true,
         isMobile: false,
@@ -238,7 +250,7 @@ export default {
           dataList.forEach(item => {
             if (!this.config.dataConfig.find(d => d.uuid === item.uuid)) {
               //矩阵的数据默认都是用formtext作为输入组件
-              this.config.dataConfig.push({ uuid: item.uuid, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
+              this.config.dataConfig.push({ uuid: item.uuid, key: item.uniqueIdentifier, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
             }
           });
         }).catch(err => {
