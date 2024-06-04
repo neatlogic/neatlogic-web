@@ -1,6 +1,15 @@
 <template>
   <div>
-    <Tabs v-model="tabActive" class="block-tabs">
+    <div v-if="!hasViewConfigAuth" class="autoconfig-box bg-op env-autoconfig-radius">
+      <ul class="pl-nm add-text-box">
+        <template>
+          <ul slot="content">
+            <li>{{ $t('term.deploy.noconfigviewauthtip') }}</li>
+          </ul>
+        </template>
+      </ul>
+    </div>
+    <Tabs v-if="hasViewConfigAuth" v-model="tabActive" class="block-tabs">
       <TabPane :label="$t('term.deploy.dbconfig')">
         <EnvDbConfigList
           v-if="tabActive == 0"
@@ -57,6 +66,11 @@ export default {
       // 是否有编辑配置权限
       type: Boolean,
       default: false
+    },
+    hasViewConfigAuth: {
+      // 是否有查看配置权限
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -87,4 +101,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.autoconfig-box {
+  height: calc(100vh - 50px - 50px - 32px - 16px);
+  &.env-autoconfig-radius {
+  border-radius: 0 10px 10px;
+  }
+  .autocfg-box {
+    height: 148px;
+  }
+  .add-text-box {
+    padding-top: 20px;
+  }
+}
 </style>

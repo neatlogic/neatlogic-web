@@ -2055,7 +2055,8 @@
     "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
     "withoutconfigeditauth": "请联系发布管理员授权配置",
     "envattr": "环境属性",
-    "addenvattrtips": "未配置属性，点击"
+    "addenvattrtips": "未配置属性，点击",
+    "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权"
   },
   "inspect": {
     "alarmprompt": "告警提示",

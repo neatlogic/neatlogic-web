@@ -71,6 +71,7 @@
                 v-if="configType == 'env' && canShow"
                 :params="{appSystemId,appModuleId, envId}"
                 :hasEditConfigAuth="canEdit"
+                :hasViewConfigAuth="canView"
                 @close="closeEnvManage"
               ></EnvManage>
             </template>
@@ -492,6 +493,13 @@ export default {
   },
   filter: {},
   computed: {
+    canView() {
+      // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
+      if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || this.authList.includes('operation#view') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
+        return true;
+      }
+      return false;
+    },
     canEdit() {
       // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
       if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
