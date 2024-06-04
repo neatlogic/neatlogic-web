@@ -1,15 +1,6 @@
 <template>
   <div>
-    <div v-if="!hasViewConfigAuth" class="autoconfig-box bg-op env-autoconfig-radius">
-      <ul class="pl-nm add-text-box">
-        <template>
-          <ul slot="content">
-            <li>{{ $t('term.deploy.noconfigviewauthtip') }}</li>
-          </ul>
-        </template>
-      </ul>
-    </div>
-    <Tabs v-if="hasViewConfigAuth" v-model="tabActive" class="block-tabs">
+    <Tabs v-model="tabActive" class="block-tabs">
       <TabPane :label="$t('term.deploy.dbconfig')">
         <EnvDbConfigList
           v-if="tabActive == 0"
@@ -64,11 +55,6 @@ export default {
     },
     hasEditConfigAuth: {
       // 是否有编辑配置权限
-      type: Boolean,
-      default: false
-    },
-    hasViewConfigAuth: {
-      // 是否有查看配置权限
       type: Boolean,
       default: false
     }
