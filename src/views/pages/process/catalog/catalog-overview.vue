@@ -58,6 +58,7 @@
                               transfer
                               placement="bottom-start"
                               max-width="300"
+                              :disabled="!item.desc"
                               theme="light"
                             >
                               <div slot="content" class="tooltip-content" v-html="item.desc ? removeHTMLTag(escape2Html(item.desc)) : ''"></div>

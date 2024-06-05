@@ -5,10 +5,10 @@
       :isShow.sync="tsDialoglookSitemap.isShow"
       :fullscreen="true"
       :hasFooter="false"
-      width="medium"
+      width="large"
       :className="stepDialogClass"
       :bgOp="true"
-      height="600px"
+      height="calc(100vh - 200px)"
     >
       <template v-slot:header>
         <span class="text-action" @click="openFlow()">{{ sitemapTitle }}</span>
