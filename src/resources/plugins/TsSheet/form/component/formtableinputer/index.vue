@@ -234,10 +234,11 @@ export default {
       if (!this.config.dataConfig || this.config.dataConfig.length == 0) {
         errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseadd', {'target': this.$t('page.thead')}) });
       } else {
+        let isKey = true;
         this.config.dataConfig.forEach(element => {
           const config = element.config;
           if (this.$utils.isEmpty(element.key)) {
-            errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+            isKey = false;
           }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
@@ -278,6 +279,9 @@ export default {
             }
           }
         });
+        if (!isKey) {
+          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        }
       }
       return errorList;
     },
