@@ -151,6 +151,7 @@ export default {
           validateList: ['required']
         }
       ],
+      //可以迁移到retrest-dialog.vue？
       retreatConfig: [
         {
           //撤回步骤
@@ -171,7 +172,7 @@ export default {
         }
       ],
       retreatList: null, //可撤回步骤列表
-      retreatId: '', //撤回步骤id
+      retreatId: '', //撤回步骤id(迁移到retrest-dialog.vue)
       formEdit: false, //表单是否有编辑权限，查看模式肯定没有
       showActive: false,
       actionConfig: {
@@ -253,6 +254,14 @@ export default {
     sessionStorage.removeItem('taskdetailPrev');
   },
   methods: {
+    //button-bar调用本地函数
+    doAction(actionName, ...args) {
+      if (typeof this[actionName] === 'function') {
+        this[actionName](...args);
+      } else {
+        console.error(`Method ${actionName} not found`);
+      }
+    },
     //初始化数据
     getAllData() {
       this.getTaskActionObj();
@@ -843,6 +852,7 @@ export default {
         }
       }
     },
+    //迁移到retreat-dialog.vue
     retreatStep(item) {
       //选择撤回步骤
       this.retreatId = item.id;
@@ -1000,6 +1010,7 @@ export default {
         }
       }
     },
+    //此方法迁到button-bar
     async completeStep(obj) {
       //单个节点流转
       this.nestStepId = obj.id;
