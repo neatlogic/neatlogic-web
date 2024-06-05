@@ -648,7 +648,7 @@ export default {
     },
     setDefaultValue() {
       //默认选中第一个的判断 ,1、defaultValueIsFirst 2、必填且nodeList长度为1
-      if ((this.readonly || this.disabled) && this.nodeList.length <= 0) { // 处理禁用(只读)状态下，默认值不生效的问题
+      if (((this.readonly || this.disabled) && this.nodeList.length <= 0) || this.nodeList.length <= 0) { // 处理禁用(只读)状态下，默认值不生效的问题
         return;
       }
       if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled)) {
