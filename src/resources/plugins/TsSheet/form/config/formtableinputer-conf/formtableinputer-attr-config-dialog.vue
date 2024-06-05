@@ -726,7 +726,11 @@ export default {
           }).map(i => {
             return {
               value: i.uuid,
-              text: i.name
+              text: i.name,
+              uuid: i.uuid,
+              name: i.name,
+              uniqueIdentifier: i.uniqueIdentifier,
+              label: i.label
             };
           });
         }
