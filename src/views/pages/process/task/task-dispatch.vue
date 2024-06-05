@@ -134,8 +134,8 @@ export default {
       validCardOpen: false,
       isShowFlowmap: false, //展示流程图
       flowmapConfig: {
-        width: 'medium',
-        height: '600px',
+        width: 'large',
+        height: 'calc(100vh - 200px)',
         fullscreen: true,
         hasFooter: false,
         maskClose: true
