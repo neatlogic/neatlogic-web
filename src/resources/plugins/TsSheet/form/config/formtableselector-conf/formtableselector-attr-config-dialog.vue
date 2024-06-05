@@ -2,7 +2,7 @@
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
       <div v-if="propertyLocal.isExtra">
-        <TsForm v-model="propertyLocal" :item-list="formConfig">
+        <TsForm ref="formitem_base" v-model="propertyLocal" :item-list="formConfig">
           <template v-slot:isRequired>
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
           </template>
@@ -310,6 +310,22 @@ export default {
       ],
       formConfig: [
         {
+          type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          maxlength: 50,
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ],
+          onChange: (val) => {
+            this.valieKey();
+          }
+        },
+        {
           name: 'label',
           label: this.$t('page.name'),
           type: 'text',
@@ -441,6 +457,23 @@ export default {
     },
     changeActive() {
       this.propertyLocal.config.urlAttributeValue = '';
+    },
+    valieKey() { //校验英文名称唯一
+      let isValid = true;
+      if (this.propertyLocal && this.propertyLocal.key) {
+        let findKeyItem = this.formItemConfig.dataConfig.find(item => item.uuid != this.propertyLocal.uuid && item.key === this.propertyLocal.key);
+        this.formConfig.forEach(item => {
+          if (item.name === 'key') {
+            if (findKeyItem) {
+              this.$set(item, 'errorMessage', this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}));
+              isValid = false;
+            } else {
+              this.$set(item, 'errorMessage', '');
+            }
+          } 
+        });
+      }
+      return isValid;
     }
   },
   filter: {},

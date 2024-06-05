@@ -365,6 +365,22 @@ export default {
       ],
       formConfig: [
         {
+          type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          maxlength: 50,
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ],
+          onChange: (val) => {
+            this.valieKey();
+          }
+        },
+        {
           name: 'label',
           label: this.$t('page.name'),
           type: 'text',
@@ -512,7 +528,10 @@ export default {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
       }
       if (this.isNeedTable) {
-        this.formConfig[1].dataList.push({ text: 'table', value: 'formtable' });
+        let findFormItem = this.formConfig.find(item => item.name === 'handler');
+        if (findFormItem) {
+          findFormItem.dataList.push({ text: 'table', value: 'formtable' });
+        }
       }
       if (this.propertyLocal.handler != 'formtable') {
         this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
@@ -627,6 +646,23 @@ export default {
       this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
       this.$delete(this.propertyLocal.reaction, 'filter');
+    },
+    valieKey() { //校验英文名称唯一
+      let isValid = true;
+      if (this.propertyLocal && this.propertyLocal.key) {
+        let findKeyItem = this.formItemConfig.dataConfig.find(item => item.uuid != this.propertyLocal.uuid && item.key === this.propertyLocal.key);
+        this.formConfig.forEach(item => {
+          if (item.name === 'key') {
+            if (findKeyItem) {
+              this.$set(item, 'errorMessage', this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}));
+              isValid = false;
+            } else {
+              this.$set(item, 'errorMessage', '');
+            }
+          } 
+        });
+      }
+      return isValid;
     }
   },
   filter: {},

@@ -20,7 +20,7 @@
           >
             <div class="text-width overflow">{{ item.text }}</div>
             <div slot="content">
-              {{ item.text }}
+              <li>{{ item.text }}</li>
             </div>
           </Tooltip>
         </Checkbox>

@@ -87,4 +87,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.autoconfig-box {
+  height: calc(100vh - 50px - 50px - 32px - 16px);
+  &.env-autoconfig-radius {
+  border-radius: 0 10px 10px;
+  }
+  .autocfg-box {
+    height: 148px;
+  }
+  .add-text-box {
+    padding-top: 20px;
+  }
+}
 </style>

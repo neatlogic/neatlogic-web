@@ -3,7 +3,16 @@
     <ul class="pt-nm pl-nm">
       <li v-if="tableData && tableData.tbodyList.length > 0 && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
       <template v-else>
-        <li v-if="!hasEditConfigAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
+        <Tooltip
+          max-width="400"
+          placement="right"
+          transfer
+        >
+          <span class="tsfont-edit text-disabled action-item">{{ $t('page.edit') }}</span>
+          <ul slot="content">
+            <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+          </ul>
+        </Tooltip>
       </template>
     </ul>
     <div v-if="tableData && tableData.tbodyList.length > 0" :class="tableData && tableData.tbodyList.length > 0 ? 'padding': ''">

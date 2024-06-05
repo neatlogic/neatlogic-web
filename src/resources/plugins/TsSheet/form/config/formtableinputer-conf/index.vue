@@ -66,7 +66,18 @@
                 </td>
                 <td class="text-grey overflow" :title="data.label">
                   <div class="overflow" style="width: 80px" :title="data.label">
-                    {{ data.label }}
+                    <Poptip
+                      width="350"
+                      trigger="hover"
+                      :title="$t('page.exception')"
+                      :disabled="!!data.key"
+                      transfer
+                    >
+                      <span :class="!data.key? 'text-error' : ''"> {{ data.label }}</span>
+                      <div slot="content">
+                        {{ $t('form.validate.required',{'target':$t('page.englishname')}) }}
+                      </div>
+                    </Poptip>
                   </div>
                 </td>
                 <td>

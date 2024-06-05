@@ -95,9 +95,7 @@
                       :key="index"
                       class="ovewflow text-action pb-sm valid-list"
                       @click="jumpToItem(key, item)"
-                    >
-                      {{ item.error }}
-                      <span class="text-error tsfont-close-o valid-icon"></span>
+                    >{{ item.error }}<span class="text-error tsfont-close-o valid-icon"></span>
                     </div>
                   </div>
                 </div>

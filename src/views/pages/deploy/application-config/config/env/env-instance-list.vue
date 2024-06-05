@@ -6,7 +6,16 @@
           <ul>
             <li v-if="hasEditConfigAuth" class="tsfont-plus text-href mt-sm" @click="openEnvInstanceEdit">{{ $t('page.instance') }}</li>
             <template v-else>
-              <li>{{ $t('page.noconfigauthtip') }}</li>
+              <Tooltip
+                max-width="400"
+                placement="right"
+                transfer
+              >
+                <span class="tsfont-plus text-disabled action-item">{{ $t('page.instance') }}</span>
+                <ul slot="content">
+                  <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+                </ul>
+              </Tooltip>
             </template>
           </ul>
         </Col>
@@ -37,6 +46,7 @@
         </template>
       </TsTable>
     </div>
+  
     <EnvInstanceEdit v-if="isShowEnInstanceEdit" :params="params" @close="closeEnvInstanceEdit"></EnvInstanceEdit>
   </div>
 </template>

@@ -93,7 +93,9 @@ export default {
           onChange: val => {
             let emptyRow = {
               label: '',
-              uniqueIdentifier: ''
+              uniqueIdentifier: '',
+              isNewLabel: true,
+              isNewUniqueIdentifier: true
             };
             let newList = [];
             newList.push(emptyRow);

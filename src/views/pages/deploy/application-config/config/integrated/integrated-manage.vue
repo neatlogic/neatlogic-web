@@ -10,7 +10,7 @@
         >
           <span v-if="!hasEditConfigAuth" class="text-action text-disabled tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
           <ul slot="content">
-            <li><span>{{ $t('term.deploy.withoutconfigeditauth') }}</span></li>
+            <li><span>{{ $t('term.deploy.noconfigauthtip') }}</span></li>
           </ul>
         </Tooltip>
       </Col>

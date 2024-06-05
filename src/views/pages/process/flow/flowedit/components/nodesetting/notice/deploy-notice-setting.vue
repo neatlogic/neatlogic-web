@@ -29,7 +29,7 @@
             @on-change="changeSwitch"
           ></i-switch>
           <ul slot="content">
-            <li><span>{{ $t('term.deploy.withoutconfigeditauth') }}</span></li>
+            <li><span>{{ $t('term.deploy.noconfigauthtip') }}</span></li>
           </ul>
         </Tooltip>
         <span v-if="hasEditConfigAuth && isActive" class="text-href pl-sm" @click="openNoticePolicyDialog">{{ $t('page.edit') }}</span>

@@ -1264,7 +1264,8 @@
     "commercialauth": "Exclusive permissions for commercial modules",
     "regiondispatcherapp": "Business system",
     "regiondispatcherapptooltip": "Please select the business system form",
-    "regiondispatchermatchtooltips": "Dispatcher Property Mapping Matrix Properties"
+    "regiondispatchermatchtooltips": "Dispatcher Property Mapping Matrix Properties",
+    "compkeyname": "Component English Name"
   },
   "knowledge": {
     "document": "Document",
@@ -2057,7 +2058,8 @@
     "withoutconfigandeditauth": "The current application has not been configured yet. Please contact the publishing administrator to authorize the configuration",
     "withoutconfigeditauth": "Please contact the publishing administrator for authorization configuration",
     "envattr": "Environmental attributes",
-    "addenvattrtips": "Unconfigured attributes, click"
+    "addenvattrtips": "Unconfigured attributes, click",
+    "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

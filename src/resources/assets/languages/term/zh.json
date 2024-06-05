@@ -1264,7 +1264,8 @@
     "commercialauth": "商业模块专属权限",
     "regiondispatcherapp": "业务系统",
     "regiondispatcherapptooltip": "请选择业务系统表单",
-    "regiondispatchermatchtooltips": "分派器属性映射矩阵属性"
+    "regiondispatchermatchtooltips": "分派器属性映射矩阵属性",
+    "compkeyname": "组件英文名称"
   },
   "knowledge": {
     "document": "文档",
@@ -1774,7 +1775,7 @@
     "incrementalrowcoverage": "增量行覆盖率",
     "sealplate": "封版",
     "selectaddversion": "请选中应用或模块后再创建版本",
-    "noconfigauthtip": "您没有当前应用的“编辑配置权限”，请联系管理员授权",
+    "noconfigauthtip": "您没有当前应用的“编辑配置”权限，请联系管理员授权",
     "notversionproductauth": "您没有当前应用的“版本&制品管理”权限，请联系管理员授权",
     "failurecount": "失败${target}次",
     "flowchart": "流程图",
@@ -2054,7 +2055,8 @@
     "withoutconfigandeditauth": "当前应用尚未添加配置，请联系发布管理员授权配置",
     "withoutconfigeditauth": "请联系发布管理员授权配置",
     "envattr": "环境属性",
-    "addenvattrtips": "未配置属性，点击"
+    "addenvattrtips": "未配置属性，点击",
+    "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权"
   },
   "inspect": {
     "alarmprompt": "告警提示",

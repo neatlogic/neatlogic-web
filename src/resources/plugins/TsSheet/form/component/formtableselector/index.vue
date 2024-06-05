@@ -196,12 +196,16 @@ export default {
       if (!this.config.matrixUuid) {
         errorList.push({ field: 'matrixUuid', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.matrix')}) });
       }
+      let isKey = true;
       if (this.config.dataConfig && this.config.dataConfig.length > 0) {
         let attrUuidList = []; //矩阵固有属性
         this.config.dataConfig.forEach(element => {
           const config = element.config;
           if (element.isPC && !element.isExtra) {
             attrUuidList.push(element.uuid);
+          }
+          if (this.$utils.isEmpty(element.key)) {
+            isKey = false;
           }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
@@ -223,6 +227,9 @@ export default {
             }
           }
         });
+        if (!isKey) {
+          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        }
         if (!attrUuidList.length) {
           errorList.push({ field: 'dataConfig', error: this.$t('message.framework.leastoneselectattr') });
         }
