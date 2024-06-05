@@ -721,9 +721,7 @@ export default {
       return (mappingDataList, value) => {
         let list = [];
         if (!this.$utils.isEmpty(mappingDataList)) {
-          list = mappingDataList.filter(item => {
-            return item.uuid != value;
-          }).map(i => {
+          list = mappingDataList.map(i => {
             return {
               value: i.uuid,
               text: i.name,
