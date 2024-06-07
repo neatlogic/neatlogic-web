@@ -23,153 +23,16 @@
           ></NavTop>
 
           <div class="toolbar-right">
-            <div class="action-group">
-              <!-- 开始_start -->
-              <span
-                v-if="actionConfig.start"
-                :class="{disable: disabledConfig.starting}"
-                class="action-item tsfont-play-o"
-                @click="startTaskStep('start')"
-              >{{ actionConfig.start }}</span>
-              <!-- 开始_end -->
-              <!-- accept_start -->
-              <span
-                v-if="actionConfig.accept"
-                :class="{disable: disabledConfig.accepting}"
-                class="action-item tsfont-play-o"
-                @click="startTaskStep('accept')"
-              >{{ actionConfig.accept }}</span>
-              <!-- accept_end -->
-              <!-- 暂存、保存_start -->
-              <span
-                v-if="actionConfig.save"
-                :class="{disable: disabledConfig.saving}"
-                class="action-item tsfont-save"
-                @click="saveTaskData()"
-              >{{ actionConfig.save }}</span>
-              <!-- 暂存、保存_end -->
-              <!-- 转交_start -->
-              <span
-                v-if="actionConfig.transfer"
-                :class="{disable: disabledConfig.transferring}"
-                class="action-item tsfont-arrow-corner-right"
-                @click="transferTask"
-              >{{ actionConfig.transfer }}</span>
-              <!-- 转交_end -->
-              <!-- 暂停步骤 -->
-              <span
-                v-if="actionConfig.pause"
-                :class="{disable: disabledConfig.pausing}"
-                class="action-item tsfont-pause"
-                @click="pauseStep"
-              >{{ actionConfig.pause }}</span>
-              <!-- 恢复步骤 -->
-              <span
-                v-if="actionConfig.recover"
-                :class="{disable: disabledConfig.recoverstep}"
-                class="action-item tsfont-play-o"
-                @click="recoverStep"
-              >{{ actionConfig.recover }}</span>
-              <!-- 查看流程图_start -->
-              <span v-if="!pocesstaskview" class="action-item" @click="lookSitemap">
-                <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
-                  <i class="tsfont-topo"></i>
-                </Tooltip>
-              </span>
-              <!-- 工单关注 -->
-              <span
-                :class="{disable: disabledConfig.focusing}"
-                class="action-item"
-                @click="updateFocus"
-              >
-                <Tooltip v-if="processTaskConfig.isFocus" :content="$t('term.process.notfocustask')" theme="light">
-                  <i :class="['text-danger', 'tsfont-heart-s']"></i>
-                </Tooltip>
-                <Tooltip v-else :content="$t('term.process.focustask')" theme="light">
-                  <i :class="['text-danger', 'tsfont-heart-o']"></i>
-                </Tooltip>
-              </span>
-              <!-- 更多操作 -->
-              <span v-if="isMoreAction" class="action-item">
-                <Dropdown trigger="click" placement="bottom-end">
-                  <span class="tsfont-option-vertical"></span>
-                  <DropdownMenu slot="list">
-                    <!-- 撤回_start -->
-                    <DropdownItem v-if="actionConfig.retreat" :disabled="disabledConfig.retreating" @click.native="retreatTaskStep">
-                      {{ actionConfig.retreat }}
-                    </DropdownItem>
-                    <!-- 撤回_end -->
-                    <!-- 添加子任务_start -->
-                    <DropdownItem v-if="actionConfig.createsubtask" :disabled="disabledConfig.subtasking" @click.native="addAssist">
-                      {{ actionConfig.createsubtask }}
-                    </DropdownItem>
-                    <!-- 添加子任务_end -->
-                    <!--转报  -->
-                    <DropdownItem v-if="actionConfig.tranferreport" @click.native="openRanferreport">
-                      {{ actionConfig.tranferreport }}
-                    </DropdownItem>
-                    <!-- 取消工单_start -->
-                    <DropdownItem v-if="actionConfig.abortprocessTask" :disabled="disabledConfig.aborting" @click.native="cancelTask">
-                      {{ actionConfig.abortprocessTask }}
-                    </DropdownItem>
-                    <!-- 取消_end -->
-                    <!-- 恢复_start -->
-                    <DropdownItem v-if="actionConfig.recoverprocessTask" :disabled="disabledConfig.recovertask" @click.native="recoverTask">
-                      {{ actionConfig.recoverprocessTask }}
-                    </DropdownItem>
-                    <!-- 恢复_end -->
-                    <!-- 催办_start -->
-                    <DropdownItem v-if="actionConfig.urge" :disabled="disabledConfig.urging" @click.native="urgeTask">
-                      {{ actionConfig.urge }}
-                    </DropdownItem>
-                    <!-- 催办_end -->
-                    <!-- 复制上报 -->
-                    <DropdownItem v-if="actionConfig.copyprocesstask" @click.native="copyProcessTask">
-                      {{ actionConfig.copyprocesstask }}
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </span>
-              <!-- 回退s -->
-              <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
-                <Button
-                  icon="tsfont tsfont-reply"
-                  @click="backTask"
-                >{{ actionConfig.back }}</Button>
-              </span>
-              <span v-if="actionConfig.back && backStepList.length == 1" class="action-item">
-                <Button
-                  style="max-width:180px"
-                  class="overflow"
-                  icon="tsfont tsfont-reply"
-                  :title="selectBackConfig.name ? selectBackConfig.flowDirection + selectBackConfig.name : null"
-                  @click="backTask"
-                >{{ actionConfig.back }}</Button>
-              </span>
-              <!-- 回退_end -->
-              <!-- 流转_start -->
-              <!-- 接下来步骤大于1个，弹窗选择 -->
-              <span v-if="actionConfig.complete && nextStepList.length > 1" class="action-item">
-                <Button
-                  icon="tsfont tsfont-refresh"
-                  type="primary"
-                  @click="completeTask"
-                >{{ actionConfig.complete }}</Button>
-              </span>
-              <!-- 接下来步骤1个 直接选择-->
-              <span v-if="actionConfig.complete && nextStepList.length == 1" class="action-item">
-                <Button
-                  icon="tsfont tsfont-refresh"
-                  type="primary"
-                  :disabled="disabledConfig.completing"
-                  :title="nextStepList[0].name ? nextStepList[0].flowDirection + nextStepList[0].name : null"
-                  @click="completeStep(nextStepList[0])"
-                >
-                  <div class="overflow" style="max-width:150px">{{ nextStepList[0].aliasName || actionConfig.complete }}</div>
-                </Button>
-              </span>
-            <!-- 流转_end -->
-            </div>
+            <ButtonBar
+              :actionConfig="actionConfig"
+              :disabledConfig="disabledConfig"
+              :processTaskConfig="processTaskConfig"
+              :selectBackConfig="selectBackConfig"
+              :backStepList="backStepList"
+              :nextStepList="nextStepList"
+              :pocesstaskview="pocesstaskview"
+              @doAction="doAction"
+            ></ButtonBar>
           </div>
         </div>
       </template>
@@ -204,7 +67,6 @@
                   :processTaskStepConfig="processTaskStepConfig"
                   :formEdit="formEdit"
                   :showActive="showActive"
-                  :addAssist="addAssist"
                   :startProcessTaskStep="startProcessTaskStep"
                   :defaultProcessTaskId="processTaskId"
                   :defaultProcessTaskStepId="processTaskStepId"
@@ -255,7 +117,6 @@
               <RightSetting
                 ref="RightSetting"
                 :actionConfig="actionConfig"
-                :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
@@ -319,26 +180,6 @@
       :tooltipStyle="tooltipStyle"
       :stepTooltip="stepTooltip"
     ></LookSitemapDialog>
-    <!-- 添加子任务 -->
-    <TsDialog
-      type="modal"
-      :isShow.sync="assistModal"
-      :title="isEdit ? $t('page.edit') : $t('page.build')"
-      :okBtnDisable="disabledConfig.subtasking"
-      @on-ok="assistOk()"
-      @on-close="assistModal = false"
-    >
-      <template>
-        <div style="width:90%">
-          <TsForm
-            ref="assistForm"
-            :itemList="assistList"
-            type="type"
-            labelPosition="right"
-          ></TsForm>
-        </div>
-      </template>
-    </TsDialog>
     <!-- 校验 -->
     <div v-if="validCardOpen" class="tsscroll-container valid-main">
       <Card style="width:100%;" :padding="0">
@@ -465,6 +306,7 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
+    ButtonBar: () => import('@/views/pages/process/task/processdetail/workorder/common/button-bar.vue'),
     TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CenterDetail: () => import('./workorder/CenterDetail.vue'),
@@ -665,7 +507,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if (actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

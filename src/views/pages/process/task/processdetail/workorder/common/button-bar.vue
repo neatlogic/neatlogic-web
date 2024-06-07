@@ -95,6 +95,8 @@
             {{ actionConfig.copyprocesstask }}
           </DropdownItem>
           <!-- 复制上报 -->
+          <!-- 编辑描述 -->
+          <DropdownItem v-if="actionConfig.update" divided @click.native="doBtnBarAction('editProcessTaskDesc')">{{ $t('dialog.title.edittarget',{'target':$t('page.description')}) }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </span>
@@ -174,7 +176,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if (actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

@@ -218,10 +218,6 @@ export default {
   props: {
     processTaskConfig: Object, //工单基本信息
     actionConfig: Object, //权限按钮
-    addAssist: {
-      type: Function,
-      default: null
-    },
     knowledgeConfig: {
       //知识详情
       type: Object,
@@ -431,10 +427,6 @@ export default {
         }
       });
     },
-    addAssistP() {
-      //添加子任务
-      this.addAssist();
-    },
     //更新标签
     updateTagList(list) {
       const date = {
@@ -593,11 +585,6 @@ export default {
     }
     .knowledge-style{
       padding-left: 4px;
-    }
-    .add-assist {
-      border: 1px solid;
-      padding: 0px 4px 0px 8px;
-      border-radius: 2px;
     }
     .minoruser-list {
       padding-right: 4px;

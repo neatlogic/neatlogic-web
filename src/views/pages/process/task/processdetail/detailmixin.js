@@ -57,7 +57,6 @@ export default {
       isOrderLeft: false,
       transferModal: false, //转交弹框
       transferContent: '', //转交原因
-      assistModal: false, //子任务弹框
       completeModal: false, //流转弹框
       nextStepList: [], //流转任务列表
       selectStepConfig: null, //选择流转节点
@@ -68,39 +67,6 @@ export default {
       startModal: false,
       startId: null,
       startList: [],
-      isEdit: false, //子任务编辑
-      processTaskStepSubtaskId: null, //子任务id
-      assistList: [
-        {
-          //添加子任务
-          isDefault: false,
-          type: 'userselect',
-          name: 'workerList',
-          label: this.$t('term.process.dealwithuser'),
-          value: [],
-          width: '100%',
-          groupList: ['user'],
-          multiple: false,
-          validateList: ['required']
-        },
-        {
-          type: 'datetime',
-          name: 'targetTime',
-          value: '',
-          width: '100%',
-          label: this.$t('term.process.targettime'),
-          valueType: 'timestamp',
-          transfer: true
-        },
-        {
-          type: 'ckeditor',
-          name: 'content',
-          width: '100%',
-          value: '',
-          label: this.$t('page.description'),
-          validateList: ['required']
-        }
-      ],
       assignableWorkerStepList: [], //需指派的步骤列表
       assignTitle: this.$t('term.process.assigntitle'),
       assignModal: false,
@@ -187,7 +153,6 @@ export default {
         save: null, //暂存
         transfer: null, //转交
         comment: null, //回复
-        createsubtask: null, //创建子任务
         back: null, //回退
         pocesstaskview: null, //查看工单权限
         urge: null, //催办
@@ -210,7 +175,6 @@ export default {
         recoverstep: false, //恢复步骤
         focusing: false, //关注
         retreating: false, //撤回
-        subtasking: false, //子任务
         aborting: false, //取消工单
         recovertask: false, //恢复工单
         urging: false, //催办
@@ -745,72 +709,6 @@ export default {
           });
       }
     },
-    addAssist(obj, isEdit) {
-      //添加子任务
-      this.isEdit = isEdit || false;
-      if (obj) {
-        this.processTaskStepSubtaskId = obj.id;
-        this.assistList.forEach(item => {
-          if (item.name == 'workerList' && obj.userUuid) {
-            item.value = 'user#' + obj.userUuid;
-          }
-          if (item.name == 'targetTime' && obj.targetTime) {
-            item.value = obj.targetTime;
-          }
-          if (item.name == 'content' && obj.content) {
-            item.value = obj.content;
-          }
-        });
-      } else {
-        this.assistList.forEach(item => {
-          item.value = null;
-        });
-      }
-      this.assistModal = true;
-    },
-    assistOk() {
-      //子任务确认
-      let _this = this;
-      if (!_this.disabledConfig.subtasking) {
-        let assistForm = _this.$refs.assistForm;
-        if (assistForm.valid()) {
-          _this.disabledConfig.subtasking = true;
-          let assistList = assistForm.getFormValue();
-          if (_this.isEdit) {
-            _this.$set(assistList, 'processTaskStepSubtaskId', _this.processTaskStepSubtaskId);
-            this.$api.process.processtask
-              .subEditable(assistList)
-              .then(res => {
-                _this.disabledConfig.subtasking = false;
-                if (res.Status == 'OK') {
-                  _this.isEdit = false;
-                  _this.assistList.forEach(item => {
-                    item.value = '';
-                  });
-                  _this.toTask(_this.processTaskId, _this.processTaskStepId);
-                }
-              })
-              .catch(error => {
-                _this.disabledConfig.subtasking = false;
-              });
-          } else {
-            _this.$set(assistList, 'processTaskStepId', _this.processTaskStepId);
-            this.$api.process.processtask
-              .createSubtask(assistList)
-              .then(res => {
-                _this.disabledConfig.subtasking = false;
-                if (res.Status == 'OK') {
-                  _this.toTask(_this.processTaskId, _this.processTaskStepId);
-                }
-              })
-              .catch(error => {
-                _this.disabledConfig.subtasking = false;
-              });
-          }
-          _this.assistModal = false;
-        }
-      }
-    },
     retreatTaskStep() {
       //撤回按钮,默认选中第一个步骤
       //回显步骤评论？？？
@@ -1250,6 +1148,10 @@ export default {
     },
     comment() {
       this.$refs.TaskCenterDetail.comment();
+    },
+    editProcessTaskDesc() {
+      //编辑工单上报描述内容
+      
     }
   },
   computed: {
@@ -1271,13 +1173,6 @@ export default {
     // }
   },
   watch: {
-    assistModal(val) {
-      if (val == false) {
-        this.assistList.forEach(item => {
-          item.value = '';
-        });
-      }
-    },
     // processTaskId(val) {
     //   if (val) {
     //     this.getProcessConfig();

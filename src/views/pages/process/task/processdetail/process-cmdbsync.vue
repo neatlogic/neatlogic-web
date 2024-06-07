@@ -209,7 +209,6 @@
                   :processTaskStepConfig="processTaskStepConfig"
                   :formEdit="formEdit"
                   :showActive="showActive"
-                  :addAssist="addAssist"
                   :startProcessTaskStep="startProcessTaskStep"
                   :defaultProcessTaskId="processTaskId"
                   :defaultProcessTaskStepId="processTaskStepId"
@@ -248,7 +247,6 @@
               <RightSetting
                 ref="RightSetting"
                 :actionConfig="actionConfig"
-                :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
@@ -608,7 +606,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if (actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

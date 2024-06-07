@@ -5,5 +5,6 @@ export default {
   LookSitemapDialog: () => import('./lookSitemap.vue'), //查看流程图
   TransferDialog: () => import('./transfer.vue'), //转交
   CompleteDialog: () => import('./complete-dialog.vue'), //完成
-  RetreatDialog: () => import('./retreat-dialog.vue')//回退
+  RetreatDialog: () => import('./retreat-dialog.vue'), //回退
+  ContentDialog: () => import('./content-dialog.vue') //编辑描述
 };

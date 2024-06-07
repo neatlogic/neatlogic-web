@@ -2,7 +2,7 @@
   <div class="CenterDetail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <!-- 头部描述内容 -->
-    <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="mb-nm">
+    <div v-if="haveComment || isEditchange" class="mb-nm">
       <div class="padding bg-op radius-lg" style="min-height: 100px">
         <Report
           ref="taskReport"
@@ -10,6 +10,7 @@
           :actionConfig="actionConfig"
           :processTaskId="processTaskId"
           :processTaskStepId="processTaskStepId"
+          :isEditchange="isEditchange"
           @saveTaskD="saveTaskD"
           @upActivityList="updateStepActive()"
         >
@@ -35,6 +36,114 @@
       </div>
     </div>
     <!-- 描述end -->
+    <!-- 固定页面tab -->
+    <div
+      v-for="(item, index) in fixedPageList"
+      :key="index"
+      class="bg-op radius-lg mt-nm mb-nm padding"
+      :class="item.tabValue == 'step' ? 'common-main' : ''"
+    >
+      <template v-if="item.tabValue == 'report'">
+        <!-- 内容详情 -->
+        <div>
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
+        </div>
+        <div v-if="haveProcessTask(formConfig, processTaskConfig)" class="pt-nm pb-nm">
+          <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+            <template v-if="formConfig._type == 'new'">
+              <TsSheet
+                ref="formSheet"
+                mode="read"
+                :value="formConfig"
+                :formSceneUuid="formSceneUuid"
+                :data="processTaskConfig.formAttributeDataMap"
+                :readonly="!actionConfig.save || !formEdit"
+                class="pl-sm pr-sm"
+                @emit="formSheetEmitData"
+              ></TsSheet>
+            </template>
+            <template v-else>
+              <FormPreview
+                ref="FormPreview"
+                :content="filterCustommergeprocess(formConfig)"
+                :isEdit="formEdit"
+                :isReadonly="actionConfig.save ? false : true"
+                :stephidetrList="stephidetrList"
+                :stepreadtrList="stepreadtrList"
+                :formAttributeHideList="formAttributeHideList"
+              ></FormPreview>
+            </template>
+          </div>
+          <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
+            <FormPreviewHtml
+              ref="FormPreview"
+              class="block-content"
+              lass="order-list"
+              :processTaskId="processTaskId"
+            ></FormPreviewHtml>
+          </div>
+        </div>
+      </template>
+      <template v-else-if="item.tabValue.indexOf('subTask') != -1">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <StrategyDetail
+          :processTaskId="processTaskId"
+          :processTaskStepId="processTaskStepId"
+          :actionConfig="actionConfig"
+          :config="getStrategyConfig(item.tabValue)"
+          @getStepList="getStepList"
+        ></StrategyDetail>
+      </template>
+      <template v-else-if="slotList.find(d => d.name === item.tabValue)">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot :name="item.tabValue"></slot>
+        </div>
+      </template>
+      <template v-else-if="item.tabValue == 'changeDetails'">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <!-- 变更创建s -->
+          <slot name="changecreate"></slot>
+          <!-- 变更创建end -->
+          <!-- 变更处理s -->
+          <slot name="changehandle"></slot>
+          <!-- 变更处理end -->
+        </div>
+      </template>
+      <template v-else>
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <Component
+          :is="item.tabValue"
+          :processTaskId="processTaskId"
+          :processTaskStepId="processTaskStepId"
+          :defaultStepData="stepData"
+          :currentStepId="defaultProcessTaskStepId"
+          :processTaskConfig="processTaskConfig"
+          :defaultActiveData="activeData"
+          :relationAuth="actionConfig.tranferreport"
+          :actionConfig="actionConfig"
+          :repeatList="repeatList"
+          :handlerStepInfo="autoexechandlerStepInfo"
+          :formConfig="formConfig"
+          @closeRepeatTab="closeRepeatTab"
+          @upActivityList="updateStepActive()"
+        ></Component>
+      </template>
+    </div>
     <!-- 中间选项卡内容 -->
     <div v-if="!loadingShow" ref="commonMain" class="common-main">
       <Tabs
@@ -45,14 +154,14 @@
         @on-click="clickTabValue"
       >
         <TabPane
-          v-if="hasForm"
+          v-if="haveProcessTask(formConfig, processTaskConfig)"
           :label="render => getTabPaneLabel(render, 'report', 'ContentDetails')"
           name="report"
           class="tab-content"
           tab="tab1"
         >
           <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
+          <div class="pt-nm pb-nm">
             <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
               <template v-if="processTaskConfig.formConfig._type == 'new'">
                 <TsSheet
@@ -218,115 +327,6 @@
     </div>
     <!-- 中间选项卡内容end -->
 
-    <!-- 固定页面tab -->
-    <div
-      v-for="(item, index) in fixedPageList"
-      :key="index"
-      class="bg-op radius-lg mt-nm mb-nm padding"
-      :class="item.tabValue == 'step' ? 'common-main' : ''"
-    >
-      <template v-if="item.tabValue == 'report'">
-        <!-- 内容详情 -->
-        <div>
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
-        </div>
-        <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-          <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-            <template v-if="formConfig._type == 'new'">
-              <TsSheet
-                ref="formSheet"
-                mode="read"
-                :value="formConfig"
-                :formSceneUuid="formSceneUuid"
-                :data="processTaskConfig.formAttributeDataMap"
-                :readonly="!actionConfig.save || !formEdit"
-                class="pl-sm pr-sm"
-                @emit="formSheetEmitData"
-              ></TsSheet>
-            </template>
-            <template v-else>
-              <FormPreview
-                ref="FormPreview"
-                :content="filterCustommergeprocess(formConfig)"
-                :isEdit="formEdit"
-                :isReadonly="actionConfig.save ? false : true"
-                :stephidetrList="stephidetrList"
-                :stepreadtrList="stepreadtrList"
-                :formAttributeHideList="formAttributeHideList"
-              ></FormPreview>
-            </template>
-          </div>
-          <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
-            <FormPreviewHtml
-              ref="FormPreview"
-              class="block-content"
-              lass="order-list"
-              :processTaskId="processTaskId"
-            ></FormPreviewHtml>
-          </div>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue.indexOf('subTask') != -1">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <StrategyDetail
-          :processTaskId="processTaskId"
-          :processTaskStepId="processTaskStepId"
-          :actionConfig="actionConfig"
-          :config="getStrategyConfig(item.tabValue)"
-          @getStepList="getStepList"
-        ></StrategyDetail>
-      </template>
-      <template v-else-if="slotList.find(d => d.name === item.tabValue)">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot :name="item.tabValue"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'changeDetails'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <!-- 变更创建s -->
-          <slot name="changecreate"></slot>
-          <!-- 变更创建end -->
-          <!-- 变更处理s -->
-          <slot name="changehandle"></slot>
-          <!-- 变更处理end -->
-        </div>
-      </template>
-      <template v-else>
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <Component
-          :is="item.tabValue"
-          :processTaskId="processTaskId"
-          :processTaskStepId="processTaskStepId"
-          :defaultStepData="stepData"
-          :currentStepId="defaultProcessTaskStepId"
-          :processTaskConfig="processTaskConfig"
-          :defaultActiveData="activeData"
-          :relationAuth="actionConfig.tranferreport"
-          :actionConfig="actionConfig"
-          :repeatList="repeatList"
-          :handlerStepInfo="autoexechandlerStepInfo"
-          :formConfig="formConfig"
-          @closeRepeatTab="closeRepeatTab"
-          @upActivityList="updateStepActive()"
-        ></Component>
-      </template>
-    </div>
-
     <!-- 底部内容 -->
     <div ref="footerReply">
       <!-- 用户评分 -->
@@ -405,10 +405,6 @@ export default {
     formConfig: Object, //表单数据
     formEdit: Boolean, //表单是否有编辑权限
     showActive: Boolean, //是否显示活动步骤
-    addAssist: {
-      type: Function,
-      default: null
-    },
     startProcessTaskStep: Object, //上报内容
     replaceableTextConfig: Object, //文案替换（子任务）
     priorityList: {
@@ -470,7 +466,6 @@ export default {
       selectStepId: this.defaultProcessTaskStepId,
       timeSortIcon: false, //活动排序
       issubTaskComplete: true,
-      processTaskStepSubtaskId: null,
       stepData: [], //按步骤分
       //变更
       handlerStepInfo: null,
@@ -599,16 +594,14 @@ export default {
       let startProcessTaskStep = this.startProcessTaskStep;
       this.startHandler = startProcessTaskStep.handler;
       if (startProcessTaskStep.comment) {
-        this.haveComment = true;
         if (startProcessTaskStep.comment.content) {
+          this.haveComment = true;
           this.defaultTaskContent = startProcessTaskStep.comment.content;
           this.newTaskContent = startProcessTaskStep.comment.content;
         }
-        if (startProcessTaskStep.comment.fileList && startProcessTaskStep.comment.fileList.length > 0) {
+        if (!this.$utils.isEmpty(startProcessTaskStep.comment.fileList)) {
           this.defaultTaskFileList = startProcessTaskStep.comment.fileList;
-        }
-        if (!this.actionConfig.update && !startProcessTaskStep.comment.content && startProcessTaskStep.comment.fileList.length == 0) {
-          this.haveComment = false;
+          this.haveComment = true;
         }
       }
       //步骤信息
@@ -1318,10 +1311,10 @@ export default {
       };
     },
     haveProcessTask() {
-      //存在工单信息：上报内容和表单
-      return (haveComment, startHandler, formConfig, processTaskConfig) => {
+      //内容详情：表单
+      return (formConfig, processTaskConfig) => {
         let haveContent = false;
-        if (haveComment || startHandler == 'changecreate' || !this.$utils.isEmpty(formConfig) || (processTaskConfig && processTaskConfig.isHasOldFormProp == 1)) {
+        if (!this.$utils.isEmpty(formConfig) || (processTaskConfig && processTaskConfig.isHasOldFormProp == 1)) {
           haveContent = true;
         }
         return haveContent;
@@ -1329,7 +1322,7 @@ export default {
     },
     hasForm() {
       // 流程是否配置表单，无表单不显示内容详情tab
-      return !!(this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig));
+      return !!(this.fixedPageTab.report && !this.$utils.isEmpty(this.formConfig));
     },
     hasFormRequiredTask() {
       /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】

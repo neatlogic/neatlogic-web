@@ -99,11 +99,6 @@
                       {{ actionConfig.retreat }}
                     </DropdownItem>
                     <!-- 撤回_end -->
-                    <!-- 添加子任务_start -->
-                    <DropdownItem v-if="actionConfig.createsubtask" @click.native="addAssist">
-                      {{ actionConfig.createsubtask }}
-                    </DropdownItem>
-                    <!-- 添加子任务_end -->
                     <!--转报  -->
                     <DropdownItem v-if="actionConfig.tranferreport" @click.native="openRanferreport">
                       {{ actionConfig.tranferreport }}
@@ -229,7 +224,6 @@
                   :processTaskStepConfig="processTaskStepConfig"
                   :formEdit="formEdit"
                   :showActive="showActive"
-                  :addAssist="addAssist"
                   :startProcessTaskStep="startProcessTaskStep"
                   :defaultProcessTaskId="processTaskId"
                   :defaultProcessTaskStepId="processTaskStepId"
@@ -270,7 +264,6 @@
               <RightSetting
                 ref="RightSetting"
                 :actionConfig="actionConfig"
-                :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
@@ -334,26 +327,6 @@
       :tooltipStyle="tooltipStyle"
       :stepTooltip="stepTooltip"
     ></LookSitemapDialog>
-    <!-- 添加子任务 -->
-    <TsDialog
-      type="modal"
-      :isShow.sync="assistModal"
-      :title="isEdit ? $t('page.edit') : $t('page.build')"
-      :okBtnDisable="disabledConfig.subtasking"
-      @on-ok="assistOk()"
-      @on-close="assistModal = false"
-    >
-      <template>
-        <div style="width:90%">
-          <TsForm
-            ref="assistForm"
-            :itemList="assistList"
-            type="type"
-            labelPosition="right"
-          ></TsForm>
-        </div>
-      </template>
-    </TsDialog>
     <!-- 校验 -->
     <div v-if="validCardOpen" class="tsscroll-container valid-main">
       <Card style="width:100%;" :padding="0">
@@ -662,7 +635,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if (actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

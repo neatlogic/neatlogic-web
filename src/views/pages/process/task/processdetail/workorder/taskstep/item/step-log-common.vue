@@ -99,7 +99,6 @@ export default {
         save: this.$t('page.staging'),
         transfer: this.$t('page.transfer'),
         comment: this.$t('page.reply'),
-        createsubtask: this.$t('term.process.createsubtask'),
         back: this.$t('page.rollback'),
         pocesstaskview: this.$t('page.view'),
         urge: this.$t('page.urge'),
