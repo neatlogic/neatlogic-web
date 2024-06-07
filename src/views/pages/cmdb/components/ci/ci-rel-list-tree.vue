@@ -76,7 +76,7 @@ export default {
                 'tsfont-arrow-right': true
               }
             }),
-            h('span', data.toCiLabel + '(' + data.toCiName + data.nodeKey + ')')
+            h('span', data.toCiLabel + '(' + data.toCiName + ')')
           ]
         );
       } else {
@@ -112,7 +112,7 @@ export default {
                 'tsfont-minus': true
               }
             }),
-            h('span', data.fromCiLabel + '(' + data.fromCiName + data.nodeKey + ')')
+            h('span', data.fromCiLabel + '(' + data.fromCiName + ')')
           ]
         );
       }
